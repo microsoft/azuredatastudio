@@ -16,5 +16,5 @@ export interface DacFxDataModel {
 	filePath: string;
 	version: string;
 	upgradeExisting: boolean;
-	dataLossCheck: boolean;
+	potentialDataLoss: boolean;
 }

@@ -57,7 +57,7 @@ describe('Dacfx wizard with connection', function (): void {
 
 	it('Should call all service methods correctly', async () => {
 		wizard.model.server = connectionProfileMock;
-		wizard.model.dataLossCheck = true;
+		wizard.model.potentialDataLoss = true;
 		wizard.model.upgradeExisting = true;
 
 		const fileSizeStub = sinon.stub(utils, 'getFileSize');
@@ -80,7 +80,7 @@ describe('Dacfx wizard with connection', function (): void {
 		let wizard = new DataTierApplicationWizard(service.object);
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = connectionProfileMock;
-		wizard.model.dataLossCheck = true;
+		wizard.model.potentialDataLoss = true;
 		wizard.model.upgradeExisting = true;
 		const fileSizeStub = sinon.stub(utils, 'getFileSize');
 		fileSizeStub.resolves(TypeMoq.It.isAny());
@@ -142,7 +142,7 @@ describe('Dacfx wizard with connection', function (): void {
 		let wizard = new DataTierApplicationWizard(service.object);
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = connectionProfileMock;
-		wizard.model.dataLossCheck = false;
+		wizard.model.potentialDataLoss = true;
 		const fileSizeStub = sinon.stub(utils, 'getFileSize');
 		fileSizeStub.resolves(TypeMoq.It.isAny());
 		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();

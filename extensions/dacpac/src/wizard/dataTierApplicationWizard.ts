@@ -311,9 +311,8 @@ export class DataTierApplicationWizard {
 		TelemetryReporter.createActionEvent(TelemetryViews.DeployDacpac, 'DeployDacpacOperation')
 			.withAdditionalProperties({
 				deploymentStatus: result.success.toString(),
-				error: result.errorMessage,
 				upgradeExistingDatabase: this.model.upgradeExisting.toString(),
-				dataLossCheck: this.model.dataLossCheck.toString()
+				potentialDataLoss: this.model.potentialDataLoss.toString()
 			}).withAdditionalMeasurements({
 				deployDacpacFileSizeBytes: await utils.getFileSize(this.model.filePath),
 				totalDurationMs: (new Date().getTime() - deployStartTime)
@@ -332,8 +331,7 @@ export class DataTierApplicationWizard {
 		// Extract Dacpac: 'Extract button' clicked in extract summary page, Reporting the event selection to the telemetry
 		TelemetryReporter.createActionEvent(TelemetryViews.ExtractDacpac, 'ExtractDacpacOperation')
 			.withAdditionalProperties({
-				extractStatus: result.success.toString(),
-				error: result.errorMessage
+				extractStatus: result.success.toString()
 			}).withAdditionalMeasurements({
 				extractedDacpacFileSizeBytes: await utils.getFileSize(this.model.filePath),
 				totalDurationMs: (new Date().getTime() - extractStartTime)
@@ -352,8 +350,7 @@ export class DataTierApplicationWizard {
 		// Export Bacpac: 'Export button' clicked in Export summary page, Reporting the event selection to the telemetry
 		TelemetryReporter.createActionEvent(TelemetryViews.ExportBacpac, 'ExportBacpacOperation')
 			.withAdditionalProperties({
-				exportStatus: result.success.toString(),
-				error: result.errorMessage
+				exportStatus: result.success.toString()
 			}).withAdditionalMeasurements({
 				exportedBacpacFileSizeBytes: await utils.getFileSize(this.model.filePath),
 				totalDurationMs: (new Date().getTime() - exportStartTime)
@@ -372,8 +369,7 @@ export class DataTierApplicationWizard {
 		// Import Bacpac: 'Import button' clicked in Import summary page, Reporting the event selection to the telemetry
 		TelemetryReporter.createActionEvent(TelemetryViews.ImportBacpac, 'ImportBacpacOperation')
 			.withAdditionalProperties({
-				importStatus: result.success.toString(),
-				error: result.errorMessage
+				importStatus: result.success.toString()
 			}).withAdditionalMeasurements({
 				importedBacpacFileSizeBytes: await utils.getFileSize(this.model.filePath),
 				totalDurationMs: (new Date().getTime() - importStartTime)
@@ -402,9 +398,8 @@ export class DataTierApplicationWizard {
 		TelemetryReporter.createActionEvent(TelemetryViews.DeployDacpac, 'GenerateDeployScriptOperation')
 			.withAdditionalProperties({
 				targetDatabaseStatus: 'Upgrade Existing Databse',
-				scriptGenerated: result.success.toString(),
-				errorMessage: result.errorMessage,
-				dataLossCheck: this.model.dataLossCheck.toString()
+				isScriptGenerated: result.success.toString(),
+				potentialDataLoss: this.model.potentialDataLoss.toString()
 			}).withAdditionalMeasurements({
 				deployDacpacFileSizeBytes: await utils.getFileSize(this.model.filePath),
 				totalDurationMs: (new Date().getTime() - genScriptStartTime)
@@ -465,8 +460,7 @@ export class DataTierApplicationWizard {
 		// Generate deploy plan error/succes
 		TelemetryReporter.createActionEvent(TelemetryViews.DeployPlanPage, 'GenerateDeployPlanOperation')
 			.withAdditionalProperties({
-				planGenerated: result.success.toString(),
-				errorMessage: result.errorMessage
+				isPlanGenerated: result.success.toString()
 			}).withAdditionalMeasurements({
 				totalDurationMs: (new Date().getTime() - deployPlanStartTime)
 			}).send();
