@@ -55,9 +55,9 @@ describe('Jupyter server instance', function (): void {
 
 	it('Should create config and data directories on configure', async function (): Promise<void> {
 		// Given a server instance
-		let mkdirStub = sinon.stub(utils,'mkDir').withArgs(sinon.match.any,sinon.match.any).returns(Promise.resolve());
-		let copyStub = sinon.stub(fs,'copy').returns();
-		let pathStub = sinon.stub(utils,'exists').withArgs(sinon.match.any).returns(Promise.resolve(false));
+		let mkdirStub = sinon.stub(utils,'mkDirSync').withArgs(sinon.match.any,sinon.match.any).returns();
+		let copyStub = sinon.stub(fs,'copySync').returns();
+		let pathStub = sinon.stub(utils,'existsSync').withArgs(sinon.match.any).returns(false);
 
 		// When I run configure
 		await serverInstance.configure();
@@ -152,8 +152,8 @@ describe('Jupyter server instance', function (): void {
 
 	it('Should remove directory on close', async function (): Promise<void> {
 		// Given configure and startup are done
-		sinon.stub(utils,'mkDir').withArgs(sinon.match.any,sinon.match.any).returns(Promise.resolve());
-		sinon.stub(fs,'copy').returns();
+		sinon.stub(utils,'mkDirSync').withArgs(sinon.match.any,sinon.match.any).returns();
+		sinon.stub(fs,'copySync').returns();
 
 		let process = setupSpawn({
 			sdtout: (listener: (msg: string) => void) => { },
