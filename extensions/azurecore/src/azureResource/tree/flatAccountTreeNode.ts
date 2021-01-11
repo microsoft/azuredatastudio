@@ -127,7 +127,7 @@ async function getSubscriptionInfo(account: AzureAccount, subscriptionService: I
 			subscriptions.push(...(await subscriptionService.getSubscriptions(account, new TokenCredentials(token.token, token.tokenType), tenant.id) || <azureResource.AzureResourceSubscription[]>[]));
 		}
 	} catch (error) {
-		throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', "Failed to get credential for account {0}. Please refresh the account.", account.key.accountId), error);
+		throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', "Failed to get credential for account {0}. Please go to the accounts dialog and refresh the account.", account.key.accountId), error);
 	}
 	const total = subscriptions.length;
 	let selected = total;
