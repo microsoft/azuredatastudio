@@ -154,7 +154,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			await utils.tryDeleteDB(server, targetDB, ownerUri);
 		}
 	});
-	test('Schema compare dacpac to database comparison, script generation, and scmp', async function () {
+	test('Schema compare dacpac to database comparison, script generation, and scmp @UNSTABLE@', async function () {
 		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
