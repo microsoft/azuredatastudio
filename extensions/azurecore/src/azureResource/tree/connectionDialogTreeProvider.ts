@@ -56,6 +56,7 @@ export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<Tre
 		if (this.accounts && this.accounts.length > 0) {
 			const accountNodes: FlatAccountTreeNode[] = [];
 			const errorMessages: string[] = [];
+			// We are doing sequential account loading to avoid the Azure request throttling
 			for (const account of this.accounts) {
 				try {
 					const accountNode = new FlatAccountTreeNode(account, this.appContext, this);
