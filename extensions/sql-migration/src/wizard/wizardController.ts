@@ -6,10 +6,10 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { MigrationStateModel } from '../models/stateMachine';
-// import { SourceConfigurationPage } from './sourceConfigurationPage';
+import { SourceConfigurationPage } from './sourceConfigurationPage';
 import { WIZARD_TITLE } from '../models/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-// import { SKURecommendationPage } from './skuRecommendationPage';
+import { SKURecommendationPage } from './skuRecommendationPage';
 // import { SubscriptionSelectionPage } from './subscriptionSelectionPage';
 import { DatabaseBackupPage } from './databaseBackupPage';
 import { AccountsSelectionPage } from './accountsSelectionPage';
@@ -33,16 +33,16 @@ export class WizardController {
 		wizard.generateScriptButton.enabled = false;
 		wizard.generateScriptButton.hidden = true;
 		// Disabling unused pages
-		// const sourceConfigurationPage = new SourceConfigurationPage(wizard, stateModel);
-		// const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
+		const sourceConfigurationPage = new SourceConfigurationPage(wizard, stateModel);
+		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
 		// const subscriptionSelectionPage = new SubscriptionSelectionPage(wizard, stateModel);
 		const azureAccountsPage = new AccountsSelectionPage(wizard, stateModel);
 		const databaseBackupPage = new DatabaseBackupPage(wizard, stateModel);
 		const pages: MigrationWizardPage[] = [
-			// sourceConfigurationPage,
-			// skuRecommendationPage,
 			// subscriptionSelectionPage,
 			azureAccountsPage,
+			sourceConfigurationPage,
+			skuRecommendationPage,
 			databaseBackupPage];
 
 		wizard.pages = pages.map(p => p.getwizardPage());
