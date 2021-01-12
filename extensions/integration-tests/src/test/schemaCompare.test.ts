@@ -39,7 +39,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).dacFx;
 		console.log(`Start schema compare tests`);
 	});
-	test('Schema compare dacpac to dacpac comparison and scmp @UNSTABLE@', async function () {
+	test('Schema compare dacpac to dacpac comparison and scmp', async function () {
 		this.timeout(5 * 60 * 1000);
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 		const now = new Date();
@@ -154,7 +154,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			await utils.tryDeleteDB(server, targetDB, ownerUri);
 		}
 	});
-	test('Schema compare dacpac to database comparison, script generation, and scmp @UNSTABLE@', async function () {
+	test('Schema compare dacpac to database comparison, script generation, and scmp', async function () {
 		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
@@ -214,7 +214,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			await utils.tryDeleteDB(server, targetDB, ownerUri);
 		}
 	});
-	test('Schema compare dacpac to dacpac comparison with include exclude @UNSTABLE@', async function () {
+	test('Schema compare dacpac to dacpac comparison with include exclude', async function () {
 		this.timeout(5 * 60 * 1000);
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 		const operationId = 'testOperationId_' + new Date().getTime().toString();
