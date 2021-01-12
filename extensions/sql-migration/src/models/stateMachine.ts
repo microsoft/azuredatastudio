@@ -65,7 +65,7 @@ export interface DatabaseBackupModel {
 	azureSecurityToken: string;
 }
 export interface Model {
-	readonly sourceConnection: azdata.connection.Connection;
+	readonly sourceConnectionId: string;
 	readonly currentState: State;
 	gatheringInformationError: string | undefined;
 	skuRecommendations: SKURecommendations | undefined;
@@ -89,7 +89,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	constructor(
 		private readonly _extensionContext: vscode.ExtensionContext,
-		private readonly _sourceConnection: azdata.connection.Connection,
+		private readonly _sourceConnectionId: string,
 		public readonly migrationService: mssql.ISqlMigrationService
 	) {
 		this._currentState = State.INIT;
@@ -112,8 +112,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._databaseBackup = dbBackup;
 	}
 
-	public get sourceConnection(): azdata.connection.Connection {
-		return this._sourceConnection;
+	public get sourceConnectionId(): string {
+		return this._sourceConnectionId;
 	}
 
 	public get currentState(): State {
