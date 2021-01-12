@@ -157,7 +157,7 @@ steps:
       do
       folder=${folder%/}
       # Only archive directories we want for debugging purposes
-      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/User $folder/logs
+      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
       done
 
     displayName: Archive Logs
