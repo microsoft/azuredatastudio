@@ -40,8 +40,7 @@ export default class AccountStore implements IAccountStore {
 
 	public async getAccountsByProvider(providerId: string): Promise<azdata.Account[]> {
 		const accounts = await this.doOperation(async () => {
-			await this.cleanupDeprecatedAccounts();
-			const accounts = await this.readFromMemento();
+			const accounts = await this.getAllAccounts();
 			return accounts.filter(account => account.key.providerId === providerId);
 		});
 		return accounts ?? [];
