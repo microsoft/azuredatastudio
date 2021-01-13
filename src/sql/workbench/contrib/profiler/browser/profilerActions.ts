@@ -16,6 +16,7 @@ import * as nls from 'vs/nls';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 
 export class ProfilerConnect extends Action {
 	private static readonly ConnectText = nls.localize('profilerAction.connect', "Connect");
@@ -155,13 +156,24 @@ export class ProfilerClear extends Action {
 	public static ID = 'profiler.clear';
 	public static LABEL = nls.localize('profiler.clear', "Clear Data");
 
-	constructor(id: string, label: string) {
+	constructor(id: string,
+		label: string,
+		@INotificationService private _notificationService: INotificationService) {
 		super(id, label, 'clear-results');
 	}
 
-	run(input: ProfilerInput): Promise<void> {
-		input.data.clear();
-		return Promise.resolve(null);
+	async run(input: ProfilerInput): Promise<void> {
+		this._notificationService.prompt(Severity.Warning, nls.localize('profiler.clearDataPrompt', "Are you sure you want to clear the data?"), [
+			{
+				label: nls.localize('profiler.yes', "Yes"),
+				run: () => {
+					input.data.clear();
+				}
+			}, {
+				label: nls.localize('profiler.no', "No"),
+				run: () => { }
+			}
+		]);
 	}
 }
 
@@ -317,13 +329,24 @@ export class ProfilerClearSessionFilter extends Action {
 	public static LABEL = nls.localize('profiler.clearFilter', "Clear Filter");
 
 	constructor(
-		id: string, label: string
+		id: string,
+		label: string,
+		@INotificationService private _notificationService: INotificationService
 	) {
 		super(id, label, 'clear-filter');
 	}
 
-	public run(input: ProfilerInput): Promise<boolean> {
-		input.clearFilter();
-		return Promise.resolve(true);
+	public async run(input: ProfilerInput): Promise<void> {
+		this._notificationService.prompt(Severity.Warning, nls.localize('profiler.clearFilterPrompt', "Are you sure you want to clear the filters?"), [
+			{
+				label: nls.localize('profiler.yes', "Yes"),
+				run: () => {
+					input.clearFilter();
+				}
+			}, {
+				label: nls.localize('profiler.no', "No"),
+				run: () => { }
+			}
+		]);
 	}
 }
