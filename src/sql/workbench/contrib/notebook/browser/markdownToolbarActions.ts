@@ -16,7 +16,7 @@ import { Selection } from 'vs/editor/common/core/selection';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
-import { CalloutDialog, ICalloutType } from 'sql/workbench/contrib/notebook/browser/calloutDialog';
+import { CalloutDialog, ICalloutType } from 'sql/workbench/browser/modal/calloutDialog';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class TransformMarkdownAction extends Action {
