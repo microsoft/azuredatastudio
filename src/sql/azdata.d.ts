@@ -3739,7 +3739,7 @@ declare module 'azdata' {
 		 * Create a wizard page with the given title, for inclusion in a wizard
 		 * @param title The title of the page
 		 */
-		export function createWizardPage(title: string): WizardPage;
+		export function createWizardPage(title: string, pageName?: string): WizardPage;
 
 		/**
 		 * Create a wizard with the given title and pages
@@ -3934,6 +3934,12 @@ declare module 'azdata' {
 			 * An optional description for the page. If provided it will be displayed underneath the page title.
 			 */
 			description: string;
+
+			/**
+			 * An optional name for the page. If provided it will be used fot telemetry
+			 */
+			pageName?: string;
+
 		}
 
 		export interface Wizard {

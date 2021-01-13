@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
+
 export interface IPackageInfo {
 	name: string;
 	version: string;
@@ -24,20 +25,23 @@ export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
 
 /**
  * Get file size from the file stats using the file path uri
+ * If the file does not exists, purposely returning undefined instead of throwing an error for telemetry purpose.
  * @param uri The file path
  */
-export async function getFileSize(uri: string): Promise<number | undefined> {
-	const stats = await getFileStatus(uri);
-	return stats ? stats.size : undefined;
-}
-
-async function getFileStatus(path: string): Promise<fs.Stats | undefined> {
+export async function tryGetFileSize(uri: string): Promise<number | undefined> {
 	try {
-		const stats = await fs.promises.stat(path);
-		return stats;
+		const stats = await fs.promises.stat(uri);
+		return stats?.size;
 	}
 	catch (e) {
-		// 'ENOENT' - Error NO ENTity
 		return undefined;
 	}
+}
+
+export function isNullOrUndefined(val: any): boolean {
+	return val === null || val === undefined;
+}
+
+export function isStringEmpty(val: string): boolean {
+	return val === '' || val.length === 0;
 }

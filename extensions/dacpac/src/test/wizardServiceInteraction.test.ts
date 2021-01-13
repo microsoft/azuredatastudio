@@ -60,8 +60,8 @@ describe('Dacfx wizard with connection', function (): void {
 		wizard.model.potentialDataLoss = true;
 		wizard.model.upgradeExisting = true;
 
-		const fileSizeStub = sinon.stub(utils, 'getFileSize');
-		fileSizeStub.resolves(TypeMoq.It.isAny());
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber()); //FileSize will return 1000bytes
 
 		await validateServiceCalls(wizard, Operation.deploy, deployOperationId);
 		await validateServiceCalls(wizard, Operation.extract, extractOperationId);
@@ -82,8 +82,8 @@ describe('Dacfx wizard with connection', function (): void {
 		wizard.model.server = connectionProfileMock;
 		wizard.model.potentialDataLoss = true;
 		wizard.model.upgradeExisting = true;
-		const fileSizeStub = sinon.stub(utils, 'getFileSize');
-		fileSizeStub.resolves(TypeMoq.It.isAny());
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber()); //FileSize will return 1000bytes
 		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
 		wizard.selectedOperation = Operation.deploy;
 		await wizard.executeOperation();
@@ -102,8 +102,8 @@ describe('Dacfx wizard with connection', function (): void {
 		let wizard = new DataTierApplicationWizard(service.object);
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = connectionProfileMock;
-		const fileSizeStub = sinon.stub(utils, 'getFileSize');
-		fileSizeStub.resolves(TypeMoq.It.isAny());
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber()); //FileSize will return 1000bytes
 		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
 		wizard.selectedOperation = Operation.export;
 		await wizard.executeOperation();
@@ -122,8 +122,8 @@ describe('Dacfx wizard with connection', function (): void {
 		let wizard = new DataTierApplicationWizard(service.object);
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = connectionProfileMock;
-		const fileSizeStub = sinon.stub(utils, 'getFileSize');
-		fileSizeStub.resolves(TypeMoq.It.isAny());
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber()); //FileSize will return 1000bytes
 		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
 		wizard.selectedOperation = Operation.extract;
 		await wizard.executeOperation();
@@ -143,8 +143,8 @@ describe('Dacfx wizard with connection', function (): void {
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = connectionProfileMock;
 		wizard.model.potentialDataLoss = true;
-		const fileSizeStub = sinon.stub(utils, 'getFileSize');
-		fileSizeStub.resolves(TypeMoq.It.isAny());
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber()); //FileSize will return 1000bytes
 		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
 		await wizard.generateDeployScript();
 		should(showErrorMessageStub.calledOnce).be.true();
@@ -162,8 +162,8 @@ describe('Dacfx wizard with connection', function (): void {
 		let wizard = new DataTierApplicationWizard(service.object);
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = connectionProfileMock;
-		const fileSizeStub = sinon.stub(utils, 'getFileSize');
-		fileSizeStub.resolves(TypeMoq.It.isAny());
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber()); //FileSize will return 1000bytes
 		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
 		wizard.selectedOperation = Operation.import;
 		await wizard.executeOperation();

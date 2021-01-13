@@ -391,7 +391,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Hides the modal and removes key listeners
 	 */
-	protected hide(reason?: string, currentPageTitle?: string) {
+	protected hide(reason?: string, currentPageName?: string) {
 		this._modalShowingContext.get()!.pop();
 		this._bodyContainer!.remove();
 		this.disposableStore.clear();
@@ -399,8 +399,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			.withAdditionalProperties({
 				name: this._name,
 				reason: reason,
-				wizard: this._title,
-				wizardCurrentPageTitle: currentPageTitle
+				wizardCurrentPageName: currentPageName
 			})
 			.send();
 		this.restoreKeyboardFocus();
