@@ -174,7 +174,7 @@ export class ClusterController implements IClusterController {
 		}
 		catch (error) {
 			if (!error.response) {
-				console.warn(`No response when verifying Kerberos support for BDC Cluster ${this._url}`);
+				console.warn(`No response when verifying Kerberos support for BDC Cluster ${this._url} - ${error}`);
 				return false;
 			}
 
