@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import 'vs/css!./media/dialogModal';
 import { Modal, IModalOptions } from 'sql/workbench/browser/modal/modal';
 import { Wizard, DialogButton, WizardPage } from 'sql/workbench/services/dialog/common/dialogTypes';
@@ -49,7 +50,7 @@ export class WizardModal extends Modal {
 		options: IModalOptions,
 		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
-		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
+		@IAdsTelemetryService private telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IClipboardService clipboardService: IClipboardService,
@@ -78,8 +79,8 @@ export class WizardModal extends Modal {
 			this.updateButtonElement(buttonElement, button);
 		});
 
-		this._previousButton = this.addDialogButton(this._wizard.backButton, () => this.showPage(this._wizard.currentPage - 1));
-		this._nextButton = this.addDialogButton(this._wizard.nextButton, () => this.showPage(this._wizard.currentPage + 1, true, true), true, true);
+		this._previousButton = this.addDialogButton(this._wizard.backButton, () => this.showPage(this._wizard.currentPage - 1, this._wizard.currentPage));
+		this._nextButton = this.addDialogButton(this._wizard.nextButton, () => this.showPage(this._wizard.currentPage + 1, this._wizard.currentPage, true, true), true, true);
 		this.addDialogButton(this._wizard.generateScriptButton, () => undefined);
 		this._doneButton = this.addDialogButton(this._wizard.doneButton, () => this.done(), false, true);
 		this._wizard.doneButton.registerClickEvent(this._onDone.event);
@@ -138,13 +139,13 @@ export class WizardModal extends Modal {
 		this._wizard.onPageAdded(page => {
 			this.registerPage(page);
 			this.updatePageNumbers();
-			this.showPage(this._wizard.currentPage, false, false, false).catch(err => onUnexpectedError(err));
+			this.showPage(this._wizard.currentPage, -1, false, false, false).catch(err => onUnexpectedError(err));
 		});
 		this._wizard.onPageRemoved(page => {
 			let dialogPane = this._dialogPanes.get(page);
 			this._dialogPanes.delete(page);
 			this.updatePageNumbers();
-			this.showPage(this._wizard.currentPage, false, false, false).catch(err => onUnexpectedError(err));
+			this.showPage(this._wizard.currentPage, -1, false, false, false).catch(err => onUnexpectedError(err));
 			dialogPane.dispose();
 		});
 		this.updatePageNumbers();
@@ -173,7 +174,7 @@ export class WizardModal extends Modal {
 		page.onUpdate(() => this.setButtonsForPage(this._wizard.currentPage));
 	}
 
-	public async showPage(index: number, validate: boolean = true, focus: boolean = false, readHeader: boolean = true): Promise<void> {
+	public async showPage(index: number, prevIndex: number, validate: boolean = true, focus: boolean = false, readHeader: boolean = true): Promise<void> {
 		let pageToShow = this._wizard.pages[index];
 		if (!pageToShow) {
 			this.done(validate).catch(err => onUnexpectedError(err));
@@ -209,6 +210,15 @@ export class WizardModal extends Modal {
 				this._doneButton.enabled = this._wizard.doneButton.enabled && pageToShow.valid;
 			}
 		});
+
+		if (prevIndex !== -1) {
+			this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.WizardPagesNavigation)
+				.withAdditionalProperties({
+					wizardName: this._wizard.name,
+					pageNavigationFrom: this._wizard.pages[prevIndex].pageName,
+					pageNavigationTo: this._wizard.pages[index].pageName
+				}).send();
+		}
 	}
 
 	private setButtonsForPage(index: number) {
@@ -244,14 +254,14 @@ export class WizardModal extends Modal {
 			'wizard-navigation',
 			{
 				wizard: this._wizard,
-				navigationHandler: (index: number) => this.showPage(index, index > this._wizard.currentPage, true)
+				navigationHandler: (index: number) => this.showPage(index, this._wizard.currentPage, index > this._wizard.currentPage, true)
 			},
 			undefined,
 			() => undefined);
 	}
 
 	public open(): void {
-		this.showPage(0, false, true).then(() => {
+		this.showPage(0, -1, false, true).then(() => {
 			this.show();
 		}).catch(err => onUnexpectedError(err));
 	}
@@ -303,7 +313,7 @@ export class WizardModal extends Modal {
 			this.done().catch(err => onUnexpectedError(err));
 		} else {
 			if (this._nextButton.enabled) {
-				this.showPage(this._wizard.currentPage + 1, true, true).catch(err => onUnexpectedError(err));
+				this.showPage(this._wizard.currentPage + 1, this._wizard.currentPage, true, true).catch(err => onUnexpectedError(err));
 			}
 		}
 	}

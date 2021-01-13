@@ -86,7 +86,7 @@ export class DataTierApplicationWizard {
 	public selectedOperation: Operation;
 
 	constructor(dacfxInputService?: mssql.IDacFxService) {
-		this.wizard = azdata.window.createWizard(loc.wizardTitle);
+		this.wizard = azdata.window.createWizard(loc.wizardTitle, loc.wizardTitle);
 		this.dacfxService = dacfxInputService;
 	}
 
@@ -201,15 +201,6 @@ export class DataTierApplicationWizard {
 				page.dacFxPage.setupNavigationValidator();
 				page.dacFxPage.onPageEnter();
 			}
-
-			// Telemetry event for each page change, if idxLast page is -1, means the wizard instance just started
-			if (idxLast !== -1) {
-				TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, 'DacpacPageChangeEvents')
-					.withAdditionalProperties({
-						fromPage: lastPage === undefined ? loc.selectOperationPageName : lastPage.wizardPage.title,
-						toPage: page === undefined ? loc.selectOperationPageName : page.wizardPage.title
-					}).send();
-			}
 		});
 
 		this.wizard.pages = [selectOperationWizardPage, deployConfigWizardPage, deployPlanWizardPage, summaryWizardPage];
@@ -312,7 +303,7 @@ export class DataTierApplicationWizard {
 			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 			result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
 		} catch (e) {
-			additionalProps.exceptionOccured = 'true';
+			additionalProps.exceptionOccurred = 'true';
 		}
 
 		// If result is null which means exception occured, will be adding additional props to the Telemetry
@@ -343,7 +334,7 @@ export class DataTierApplicationWizard {
 			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 			result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
 		} catch (e) {
-			additionalProps.exceptionOccured = 'true';
+			additionalProps.exceptionOccurred = 'true';
 		}
 
 		// If result is null which means exception occured, will be adding additional props to the Telemetry
@@ -370,7 +361,7 @@ export class DataTierApplicationWizard {
 			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 			result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
 		} catch (e) {
-			additionalProps.exceptionOccured = 'true';
+			additionalProps.exceptionOccurred = 'true';
 		}
 
 		// If result is null which means exception occured, will be adding additional props to the Telemetry
@@ -397,7 +388,7 @@ export class DataTierApplicationWizard {
 			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 			result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 		} catch (e) {
-			additionalProps.exceptionOccured = 'true';
+			additionalProps.exceptionOccurred = 'true';
 		}
 
 		// If result is null which means exception occured, will be adding additional props to the Telemetry
@@ -430,7 +421,7 @@ export class DataTierApplicationWizard {
 			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 			result = await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
 		} catch (e) {
-			additionalProps.exceptionOccured = 'true';
+			additionalProps.exceptionOccurred = 'true';
 		}
 
 		if (!result || !result.success) {
@@ -501,7 +492,7 @@ export class DataTierApplicationWizard {
 			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 			result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 		} catch (e) {
-			additionalProps.exceptionOccured = 'true';
+			additionalProps.exceptionOccurred = 'true';
 		}
 
 		if (!result || !result.success) {

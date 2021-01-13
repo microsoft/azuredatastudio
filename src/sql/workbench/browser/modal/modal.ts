@@ -399,7 +399,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			.withAdditionalProperties({
 				name: this._name,
 				reason: reason,
-				wizardCurrentPageName: currentPageName
+				currentPageName: currentPageName
 			})
 			.send();
 		this.restoreKeyboardFocus();
