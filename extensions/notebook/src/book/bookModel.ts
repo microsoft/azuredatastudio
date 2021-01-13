@@ -12,15 +12,10 @@ import * as fileServices from 'fs';
 import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, JupyterBookSection } from '../contracts/content';
-import { BookVersionHandler } from './bookVersionHandler';
+import { BookVersionHandler, getContentPath, BookVersion } from './bookVersionHandler';
 
 const fsPromises = fileServices.promises;
 const content = 'content';
-
-export enum BookVersion {
-	v1 = 'v1',
-	v2 = 'v2'
-}
 
 export class BookModel {
 	private _bookItems: BookTreeItem[];
@@ -203,8 +198,8 @@ export class BookModel {
 
 				notebooks.push(externalLink);
 			} else if (sections[i].file) {
-				const pathToNotebook: string = book.version === BookVersion.v1 ? path.join(book.root, content, sections[i].file.concat('.ipynb')) : path.join(book.root, sections[i].file.concat('.ipynb'));
-				const pathToMarkdown: string = book.version === BookVersion.v1 ? path.join(book.root, content, sections[i].file.concat('.md')) : path.join(book.root, sections[i].file.concat('.md'));
+				const pathToNotebook: string = getContentPath(book.version, book.root, sections[i].file.concat('.ipynb'));
+				const pathToMarkdown: string = getContentPath(book.version, book.root, sections[i].file.concat('.md'));
 
 				// Note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
 				// Following Jupyter Books behavior for now

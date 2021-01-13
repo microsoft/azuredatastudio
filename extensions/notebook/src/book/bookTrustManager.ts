@@ -6,7 +6,8 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as constants from './../common/constants';
 import { BookTreeItem } from './bookTreeItem';
-import { BookModel, BookVersion } from './bookModel';
+import { BookModel } from './bookModel';
+import { BookVersion } from './bookVersionHandler';
 
 export interface IBookTrustManager {
 	isNotebookTrustedByDefault(notebookUri: string): boolean;

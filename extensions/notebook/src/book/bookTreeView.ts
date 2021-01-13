@@ -11,7 +11,7 @@ import * as constants from '../common/constants';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
-import { BookModel, BookVersion } from './bookModel';
+import { BookModel } from './bookModel';
 import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
@@ -19,8 +19,7 @@ import * as glob from 'fast-glob';
 import { debounce, getPinnedNotebooks } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager } from './bookTocManager';
-
-const content = 'content';
+import { getContentPath } from './bookVersionHandler';
 
 interface BookSearchResults {
 	notebookPaths: string[];
@@ -186,8 +185,18 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 								movingElement.tableOfContents.sections = sourceBook.bookItems[0].sections;
 							}
 						}
-						this.bookTocManager.updateBookModel(this.books.find(book => book.bookPath === movingElement.book.root), movingElement);
-						this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
+						const sourceBook = this.books.find(book => book.bookPath === movingElement.book.root);
+						// remove watch on toc file from both books.
+						fs.unwatchFile(movingElement.tableOfContentsPath);
+						await this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
+						// refresh source book model to pick up latest changes
+						this.fireBookRefresh(sourceBook);
+
+						fs.watchFile(movingElement.tableOfContentsPath, async (curr, prev) => {
+							if (curr.mtime > prev.mtime) {
+								this.fireBookRefresh(sourceBook);
+							}
+						});
 					}
 				}
 			}
@@ -319,7 +328,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				if (urlToOpen) {
 					const bookRoot = this.currentBook.bookItems[0];
 					const sectionToOpen = bookRoot.findChildSection(urlToOpen);
-					urlPath = sectionToOpen?.url;
+					urlPath = sectionToOpen?.file;
 				} else {
 					urlPath = this.currentBook.bookItems[0].tableOfContents.sections[0].file;
 				}
@@ -485,20 +494,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public async searchJupyterBooks(treeItem?: BookTreeItem): Promise<void> {
 		let folderToSearch: string;
 		if (treeItem && treeItem.sections !== undefined) {
-			if (treeItem.book.version === BookVersion.v1) {
-				if (treeItem.uri) {
-					folderToSearch = path.join(treeItem.book.root, content, path.dirname(treeItem.uri));
-				} else {
-					folderToSearch = path.join(treeItem.root, content);
-				}
-			} else if (treeItem.book.version === BookVersion.v2) {
-				if (treeItem.uri) {
-					folderToSearch = path.join(treeItem.book.root, path.dirname(treeItem.uri));
-				} else {
-					folderToSearch = path.join(treeItem.root);
-				}
-			}
-
+			folderToSearch = treeItem.uri ? getContentPath(treeItem.version, treeItem.book.root, path.dirname(treeItem.uri)) : getContentPath(treeItem.version, treeItem.book.root, '');
 		} else if (this.currentBook && !this.currentBook.isNotebook) {
 			folderToSearch = path.join(this.currentBook.contentFolderPath);
 		} else {
@@ -627,7 +623,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
 		if (element?.uri) {
 			let parentPath: string;
-			let contentFolder = element.book.version === BookVersion.v1 ? path.join(element.book.root, content) : element.book.root;
+			let contentFolder = getContentPath(element.book.version, element.book.root, '');
 			parentPath = path.join(contentFolder, element.uri.substring(0, element.uri.lastIndexOf(path.posix.sep)));
 			if (parentPath === element.root) {
 				return undefined;

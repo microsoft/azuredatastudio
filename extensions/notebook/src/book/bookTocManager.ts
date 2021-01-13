@@ -7,13 +7,11 @@ import { BookTreeItem } from './bookTreeItem';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs-extra';
 import { JupyterBookSection } from '../contracts/content';
-import { BookVersionHandler } from './bookVersionHandler';
+import { BookVersionHandler, BookVersion } from './bookVersionHandler';
 import * as vscode from 'vscode';
-import { BookModel, BookVersion } from './bookModel';
 
 export interface IBookTocManager {
 	updateBook(element: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
-	updateBookModel(book: BookModel, element: BookTreeItem): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
 }
 
@@ -98,6 +96,13 @@ export class BookTocManager implements IBookTocManager {
 		this.tableofContents = [];
 	}
 
+	/**
+	 * Reads and modifies the table of contents file of the target book.
+	 * @param version Current table of contents of a book.
+	 * @param section Current section of table of contents of a book.
+	 * @param findSection The section that will be modified.
+	 * @param addSection The section that'll be added to the target section. If it's undefined then the target section (findSection) is removed from the table of contents.
+	*/
 	private buildTOC(version: string, section: JupyterBookSection, findSection: JupyterBookSection, addSection: JupyterBookSection): JupyterBookSection {
 		if (section.title === findSection.title && (section.file && section.file === findSection.file || section.url && section.url === findSection.file)) {
 			if (addSection) {
@@ -136,18 +141,22 @@ export class BookTocManager implements IBookTocManager {
 		await vscode.commands.executeCommand('notebook.command.openNotebookFolder', bookContentPath, undefined, true);
 	}
 
+	traverseSections(files: JupyterBookSection[], dirName: string): JupyterBookSection[] {
+		let movedSections: JupyterBookSection[] = [];
+		for (const elem of files) {
+			movedSections.push({ file: path.join(dirName, elem.file), title: elem.title, sections: elem.sections ? this.traverseSections(elem.sections, dirName) : undefined });
+		}
+		return movedSections;
+	}
+
 	async addSection(section: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
 		this.newSection.title = section.title;
 		const rootPath = targetSection ? path.join(book.rootContentPath, path.dirname(targetSection.file)) : book.rootContentPath;
 		const uri = path.sep.concat(path.relative(section.rootContentPath, section.book.contentPath));
 		this.newSection.file = targetSection ? path.join(path.dirname(targetSection.file), path.parse(uri).dir, path.parse(uri).name) : path.join(path.parse(uri).dir, path.parse(uri).name);
-		let movedSections: JupyterBookSection[] = [];
 		let files = section.sections as JupyterBookSection[];
 		await fs.move(path.dirname(section.book.contentPath), path.join(rootPath, path.parse(uri).dir));
-		for (const elem of files) {
-			//TODO: support for nested section
-			movedSections.push({ file: targetSection ? path.join(path.dirname(targetSection.file), elem.file) : elem.file, title: elem.title, sections: elem.sections });
-		}
+		const movedSections = this.traverseSections(files, targetSection ? path.dirname(targetSection.file) : '');
 		this.newSection.sections = movedSections;
 		if (book.version === BookVersion.v1) {
 			// here we only convert if is v1 because we are already using the v2 notation for every book that we read.
@@ -167,20 +176,8 @@ export class BookTocManager implements IBookTocManager {
 		}
 	}
 
-	public async updateBookModel(book: BookModel, element: BookTreeItem): Promise<void> {
-		const findSection: JupyterBookSection = { file: element.book.page.file, title: element.book.page.title };
-		let newToc = new Array<JupyterBookSection>(book.bookItems[0].sections.length);
-		for (const [index, section] of book.bookItems[0].sections.entries()) {
-			let newSection = this.buildTOC(book.version, section, findSection, undefined);
-			if (newSection) {
-				newToc[index] = newSection;
-			}
-		}
-		book.bookItems[0].sections = newToc;
-	}
-
 	/**
-	 * Moves the element to the book's folder and adds it to the table of contents.
+	 * Moves the element to the target book's folder and adds it to the table of contents.
 	 * @param element Notebook, Markdown File, or section that will be added to the book.
 	 * @param targetBook Book that will be modified.
 	 * @param targetSection Book section that'll be modified.

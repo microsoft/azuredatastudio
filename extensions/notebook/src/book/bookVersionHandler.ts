@@ -4,7 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { JupyterBookSection, IJupyterBookSectionV1, IJupyterBookSectionV2 } from '../contracts/content';
-import { BookVersion } from './bookModel';
+import * as path from 'path';
+
+export enum BookVersion {
+	v1 = 'v1',
+	v2 = 'v2'
+}
+
+export function getContentPath(version: string, bookPath: string, filePath: string): string {
+	return BookVersion.v1 === version ? path.posix.join(bookPath, 'content', filePath) : path.posix.join(bookPath, filePath);
+}
+
+export function getTocPath(version: string, bookPath: string): string {
+	return BookVersion.v1 === version ? path.posix.join(bookPath, '_data', 'toc.yml') : path.posix.join(bookPath, '_toc.yml');
+}
 
 export class BookVersionHandler {
 
