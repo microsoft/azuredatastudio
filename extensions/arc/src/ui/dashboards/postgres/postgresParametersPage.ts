@@ -267,6 +267,8 @@ export class PostgresParametersPage extends DashboardPage {
 						}
 
 					);
+
+					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 					this.parameterUpdates!.clear();
 
 				} catch (error) {
@@ -299,8 +301,23 @@ export class PostgresParametersPage extends DashboardPage {
 						return;
 					}
 
-					this._parametersTableLoading!.loading = true;
-					await vscode.commands.executeCommand('workbench.extensions.installExtension', loc.postgresExtension);
+					await vscode.window.withProgress(
+						{
+							location: vscode.ProgressLocation.Notification,
+							title: loc.installingExtension(loc.postgresExtension),
+							cancellable: false
+						},
+						async (_progress, _token): Promise<void> => {
+							try {
+								await vscode.commands.executeCommand('workbench.extensions.installExtension', loc.postgresExtension);
+							} catch (err) {
+								vscode.window.showErrorMessage(loc.extensionInstallationFailed(loc.postgresExtension));
+								this.connectToServerButton!.enabled = true;
+								throw err;
+							}
+						}
+					);
+					vscode.window.showInformationMessage(loc.extensionInstalled(loc.postgresExtension));
 				}
 
 				this._parametersTableLoading!.loading = true;
