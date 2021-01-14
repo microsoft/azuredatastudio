@@ -18,6 +18,7 @@ import { ImportConfigPage } from './pages/importConfigPage';
 import { DacFxDataModel } from './api/models';
 import { BasePage } from './api/basePage';
 import { TelemetryReporter, TelemetryViews } from '../telemetry';
+import { TelemetryEventMeasures, TelemetryEventProperties } from 'ads-extension-telemetry';
 
 const msSqlProvider = 'MSSQL';
 class Page {
@@ -296,8 +297,8 @@ export class DataTierApplicationWizard {
 		let service: mssql.IDacFxService;
 		let ownerUri: string;
 		let result: mssql.DacFxResult;
-		let additionalProps: { [key: string]: string } = {};
-		let additionalMeasurements: { [key: string]: number } = {};
+		let additionalProps: TelemetryEventProperties = {};
+		let additionalMeasurements: TelemetryEventMeasures = {};
 		try {
 			service = await this.getService(msSqlProvider);
 			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
@@ -318,7 +319,7 @@ export class DataTierApplicationWizard {
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - deployStartTime);
 
 		// Deploy Dacpac: 'Deploy button' clicked in deploy summary page, Reporting the event selection to the telemetry
-		this.DacServiceTelemetry(TelemetryViews.DeployDacpac, 'DeployDacpacOperation', additionalProps, additionalMeasurements);
+		this.sendDacServiceTelemetryEvent(TelemetryViews.DeployDacpac, 'DeployDacpacOperation', additionalProps, additionalMeasurements);
 		return result;
 	}
 
@@ -327,8 +328,8 @@ export class DataTierApplicationWizard {
 		let service: mssql.IDacFxService;
 		let ownerUri: string;
 		let result: mssql.DacFxResult;
-		let additionalProps: { [key: string]: string } = {};
-		let additionalMeasurements: { [key: string]: number } = {};
+		let additionalProps: TelemetryEventProperties = {};
+		let additionalMeasurements: TelemetryEventMeasures = {};
 		try {
 			service = await this.getService(msSqlProvider);
 			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
@@ -345,7 +346,7 @@ export class DataTierApplicationWizard {
 		additionalMeasurements.extractedDacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - extractStartTime);
 		// Extract Dacpac: 'Extract button' clicked in extract summary page, Reporting the event selection to the telemetry
-		this.DacServiceTelemetry(TelemetryViews.ExtractDacpac, 'ExtractDacpacOperation', additionalProps, additionalMeasurements);
+		this.sendDacServiceTelemetryEvent(TelemetryViews.ExtractDacpac, 'ExtractDacpacOperation', additionalProps, additionalMeasurements);
 		return result;
 	}
 
@@ -354,8 +355,8 @@ export class DataTierApplicationWizard {
 		let service: mssql.IDacFxService;
 		let ownerUri: string;
 		let result: mssql.DacFxResult;
-		let additionalProps: { [key: string]: string } = {};
-		let additionalMeasurements: { [key: string]: number } = {};
+		let additionalProps: TelemetryEventProperties = {};
+		let additionalMeasurements: TelemetryEventMeasures = {};
 		try {
 			service = await this.getService(msSqlProvider);
 			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
@@ -372,7 +373,7 @@ export class DataTierApplicationWizard {
 		additionalMeasurements.exportedBacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - exportStartTime);
 		// Export Bacpac: 'Export button' clicked in Export summary page, Reporting the event selection to the telemetry
-		this.DacServiceTelemetry(TelemetryViews.ExportBacpac, 'ExportBacpacOperation', additionalProps, additionalMeasurements);
+		this.sendDacServiceTelemetryEvent(TelemetryViews.ExportBacpac, 'ExportBacpacOperation', additionalProps, additionalMeasurements);
 		return result;
 	}
 
@@ -381,8 +382,8 @@ export class DataTierApplicationWizard {
 		let service: mssql.IDacFxService;
 		let ownerUri: string;
 		let result: mssql.DacFxResult;
-		let additionalProps: { [key: string]: string } = {};
-		let additionalMeasurements: { [key: string]: number } = {};
+		let additionalProps: TelemetryEventProperties = {};
+		let additionalMeasurements: TelemetryEventMeasures = {};
 		try {
 			service = await this.getService(msSqlProvider);
 			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
@@ -399,7 +400,7 @@ export class DataTierApplicationWizard {
 		additionalMeasurements.importedBacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - importStartTime);
 		// Import Bacpac: 'Import button' clicked in Import summary page, Reporting the event selection to the telemetry
-		this.DacServiceTelemetry(TelemetryViews.ImportBacpac, 'ImportBacpacOperation', additionalProps, additionalMeasurements);
+		this.sendDacServiceTelemetryEvent(TelemetryViews.ImportBacpac, 'ImportBacpacOperation', additionalProps, additionalMeasurements);
 		return result;
 	}
 
@@ -408,8 +409,8 @@ export class DataTierApplicationWizard {
 		let service: mssql.IDacFxService;
 		let ownerUri: string;
 		let result: mssql.DacFxResult;
-		let additionalProps: { [key: string]: string } = {};
-		let additionalMeasurements: { [key: string]: number } = {};
+		let additionalProps: TelemetryEventProperties = {};
+		let additionalMeasurements: TelemetryEventMeasures = {};
 		try {
 			this.wizard.message = {
 				text: loc.generatingScriptMessage,
@@ -437,7 +438,7 @@ export class DataTierApplicationWizard {
 		additionalMeasurements.deployDacpacFileSizeBytes = await utils.tryGetFileSize(this.model.filePath);
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - genScriptStartTime);
 		// Deploy Dacpac 'generate script' button clicked in DeployPlanPage, Reporting the event selection to the telemetry with fail/sucess status
-		this.DacServiceTelemetry(TelemetryViews.DeployDacpac, 'GenerateDeployScriptOperation', additionalProps, additionalMeasurements);
+		this.sendDacServiceTelemetryEvent(TelemetryViews.DeployDacpac, 'GenerateDeployScriptOperation', additionalProps, additionalMeasurements);
 		return result;
 	}
 
@@ -485,8 +486,8 @@ export class DataTierApplicationWizard {
 		let service: mssql.IDacFxService;
 		let ownerUri: string;
 		let result: mssql.GenerateDeployPlanResult;
-		let additionalProps: { [key: string]: string } = {};
-		let additionalMeasurements: { [key: string]: number } = {};
+		let additionalProps: TelemetryEventProperties = {};
+		let additionalMeasurements: TelemetryEventMeasures = {};
 		try {
 			service = await this.getService(msSqlProvider);
 			ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
@@ -506,7 +507,7 @@ export class DataTierApplicationWizard {
 		additionalProps.isPlanGenerated = result?.success.toString();
 		additionalMeasurements.totalDurationMs = (new Date().getTime() - deployPlanStartTime);
 		// send Generate deploy plan error/succes telemetry event
-		this.DacServiceTelemetry(TelemetryViews.DeployPlanPage, 'GenerateDeployPlanOperation', additionalProps, additionalMeasurements);
+		this.sendDacServiceTelemetryEvent(TelemetryViews.DeployPlanPage, 'GenerateDeployPlanOperation', additionalProps, additionalMeasurements);
 		return result.report;
 	}
 
@@ -526,7 +527,7 @@ export class DataTierApplicationWizard {
 		};
 	}
 
-	private DacServiceTelemetry(telemetryView: string, telemetryAction: string, additionalProps: any, additionalMeasurements: any): void {
+	private sendDacServiceTelemetryEvent(telemetryView: string, telemetryAction: string, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {
 		TelemetryReporter.createActionEvent(telemetryView, telemetryAction)
 			.withAdditionalProperties(additionalProps)
 			.withAdditionalMeasurements(additionalMeasurements)
