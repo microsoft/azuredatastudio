@@ -141,6 +141,7 @@ export class BookTocManager implements IBookTocManager {
 		await vscode.commands.executeCommand('notebook.command.openNotebookFolder', bookContentPath, undefined, true);
 	}
 
+	//traverse sections to convert them to the
 	traverseSections(files: JupyterBookSection[], dirName: string): JupyterBookSection[] {
 		let movedSections: JupyterBookSection[] = [];
 		for (const elem of files) {
@@ -154,8 +155,8 @@ export class BookTocManager implements IBookTocManager {
 		const rootPath = targetSection ? path.join(book.rootContentPath, path.dirname(targetSection.file)) : book.rootContentPath;
 		const uri = path.sep.concat(path.relative(section.rootContentPath, section.book.contentPath));
 		this.newSection.file = targetSection ? path.join(path.dirname(targetSection.file), path.parse(uri).dir, path.parse(uri).name) : path.join(path.parse(uri).dir, path.parse(uri).name);
-		let files = section.sections as JupyterBookSection[];
 		await fs.move(path.dirname(section.book.contentPath), path.join(rootPath, path.parse(uri).dir));
+		const files = section.sections as JupyterBookSection[];
 		const movedSections = this.traverseSections(files, targetSection ? path.dirname(targetSection.file) : '');
 		this.newSection.sections = movedSections;
 		if (book.version === BookVersion.v1) {

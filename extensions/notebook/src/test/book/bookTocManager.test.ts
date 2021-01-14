@@ -7,12 +7,14 @@ import * as should from 'should';
 import * as path from 'path';
 import { BookTocManager, hasSections } from '../../book/bookTocManager';
 import { BookTreeItem, BookTreeItemFormat, BookTreeItemType } from '../../book/bookTreeItem';
-import * as yaml from 'js-yaml';
 import * as sinon from 'sinon';
 import { IJupyterBookSectionV1, IJupyterBookSectionV2, JupyterBookSection } from '../../contracts/content';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as uuid from 'uuid';
+import { exists } from '../../common/utils';
+import * as rimraf from 'rimraf';
+import { promisify } from 'util';
 
 export function equalTOC(actualToc: IJupyterBookSectionV2[], expectedToc: IJupyterBookSectionV2[]): boolean {
 	for (let [i, section] of actualToc.entries()) {
@@ -103,267 +105,327 @@ describe('BookTocManagerTests', function () {
 	});
 
 	describe('EditingBooks', () => {
-		let book: BookTreeItem;
-		let bookSection: BookTreeItem;
-		let bookSection2: BookTreeItem;
-		let notebook: BookTreeItem;
-		let rootBookFolderPath: string = path.join(os.tmpdir(), uuid.v4(), 'Book');
-		let rootSectionFolderPath: string = path.join(os.tmpdir(), uuid.v4(), 'BookSection');
-		let rootSection2FolderPath: string = path.join(os.tmpdir(), uuid.v4(), 'BookSection2');
-		let notebookFolder: string = path.join(os.tmpdir(), uuid.v4(), 'Notebook');
+		let targetBook: BookTreeItem;
+		let sectionC: BookTreeItem;
+		let sectionA: BookTreeItem;
+		let sectionB: BookTreeItem;
+		let sourceBookFolderPath: string = path.join(os.tmpdir(), uuid.v4(), 'sourceBook');
+		let targetBookFolderPath: string = path.join(os.tmpdir(), uuid.v4(), 'targetBook');
 		let bookTocManager: BookTocManager;
 
 		let runs = [
 			{
 				it: 'using the jupyter-book legacy version < 0.7.0',
 				version: 'v1',
-				url: 'file',
-				book: {
-					'rootBookFolderPath': rootBookFolderPath,
-					'bookContentFolderPath': path.join(rootBookFolderPath, 'content', 'sample'),
-					'bookDataFolderPath': path.join(rootBookFolderPath, '_data'),
-					'notebook1': path.join(rootBookFolderPath, 'content', 'notebook'),
-					'notebook2': path.join(rootBookFolderPath, 'content', 'notebook2'),
-					'tocPath': path.join(rootBookFolderPath, '_data', 'toc.yml')
-				},
-				bookSection1: {
-					'contentPath': path.join(rootSectionFolderPath, 'content', 'sample', 'readme.md'),
-					'sectionRoot': rootSectionFolderPath,
-					'sectionName': 'Sample',
-					'bookContentFolderPath': path.join(rootSectionFolderPath, 'content', 'sample'),
-					'bookDataFolderPath': path.join(rootSectionFolderPath, '_data'),
-					'notebook3': path.join(rootSectionFolderPath, 'content', 'sample', 'notebook3'),
-					'notebook4': path.join(rootSectionFolderPath, 'content', 'sample', 'notebook4'),
-					'tocPath': path.join(rootSectionFolderPath, '_data', 'toc.yml')
-				},
-				bookSection2: {
-					'contentPath': path.join(rootSection2FolderPath, 'content', 'test', 'readme.md'),
-					'sectionRoot': rootSection2FolderPath,
-					'sectionName': 'Test',
-					'bookContentFolderPath': path.join(rootSection2FolderPath, 'content', 'test'),
-					'bookDataFolderPath': path.join(rootSection2FolderPath, '_data'),
-					'notebook5': path.join(rootSection2FolderPath, 'content', 'test', 'notebook5'),
-					'notebook6': path.join(rootSection2FolderPath, 'content', 'test', 'notebook6'),
-					'tocPath': path.join(rootSection2FolderPath, '_data', 'toc.yml')
-				},
-				notebook: {
-					'contentPath': path.join(notebookFolder, 'test', 'readme.md')
-				},
-				section: [
-					{
-						'title': 'Notebook',
-						'url': path.join(path.sep, 'notebook')
-					},
-					{
-						'title': 'Notebook 2',
-						'url': path.join(path.sep, 'notebook2')
-					}
-				],
-				section1: [
-					{
-						'title': 'Notebook 3',
-						'url': path.join('sample', 'notebook3')
-					},
-					{
-						'title': 'Notebook 4',
-						'url': path.join('sample', 'notebook4')
-					}
-				],
-				section2: [
+				sourceBook: {
+					'rootBookFolderPath': sourceBookFolderPath,
+					'bookContentFolderPath': path.join(sourceBookFolderPath, 'content'),
+					'tocPath': path.join(sourceBookFolderPath, '_data', 'toc.yml'),
+					'readme': path.join(sourceBookFolderPath, 'content', 'readme.md'),
+					'toc': [
 						{
-							'title': 'Notebook 5',
-							'url': path.join(path.sep, 'test', 'notebook5')
+							'title': 'Notebook 1',
+							'file': path.join(path.sep, 'sectionA', 'notebook1')
 						},
 						{
-							'title': 'Notebook 6',
-							'url': path.join(path.sep, 'test', 'notebook6')
+							'title': 'Notebook 2',
+							'file': path.join(path.sep, 'sectionA', 'notebook2')
 						}
 					]
+				},
+				sectionA: {
+					'contentPath': path.join(sourceBookFolderPath, 'content', 'sectionA', 'readme.md'),
+					'sectionRoot': path.join(sourceBookFolderPath, 'content', 'sectionA'),
+					'sectionName': 'Section A',
+					'notebook1': path.join(sourceBookFolderPath, 'content', 'sectionA', 'notebook1.ipynb'),
+					'notebook2': path.join(sourceBookFolderPath, 'content', 'sectionA', 'notebook2.ipynb'),
+					'sectionFormat': [
+						{
+							'title': 'Notebook 1',
+							'file': path.join(path.sep, 'sectionA', 'notebook1')
+						},
+						{
+							'title': 'Notebook 2',
+							'file': path.join(path.sep, 'sectionA', 'notebook2')
+						}
+					]
+				},
+				sectionB: {
+					'contentPath': path.join(sourceBookFolderPath, 'content', 'sectionB', 'readme.md'),
+					'sectionRoot': path.join(sourceBookFolderPath, 'content', 'sectionB'),
+					'sectionName': 'Section B',
+					'notebook3': path.join(sourceBookFolderPath, 'content', 'sectionB', 'notebook3.ipynb'),
+					'notebook4': path.join(sourceBookFolderPath, 'content', 'sectionB', 'notebook4.ipynb'),
+					'sectionFormat': [
+						{
+							'title': 'Notebook 3',
+							'file': path.join(path.sep, 'sectionB', 'notebook3')
+						},
+						{
+							'title': 'Notebook 4',
+							'file': path.join(path.sep, 'sectionB', 'notebook4')
+						}
+					]
+				},
+				notebook5: {
+					'contentPath': path.join(sourceBookFolderPath, 'content', 'notebook5.ipynb')
+				},
+				targetBook: {
+					'rootBookFolderPath': targetBookFolderPath,
+					'bookContentFolderPath': path.join(targetBookFolderPath, 'content'),
+					'tocPath': path.join(targetBookFolderPath, '_data', 'toc.yml'),
+					'readme': path.join(targetBookFolderPath, 'content', 'readme.md'),
+					'toc': [
+						{
+							'title': 'Welcome page',
+							'file': path.join(path.sep, 'readme'),
+						},
+						{
+							'title': 'Section C',
+							'file': path.join(path.sep, 'sectionC', 'readme'),
+							'sections': [
+								{
+									'title': 'Notebook 6',
+									'file': path.join(path.sep, 'sectionC', 'notebook6')
+								}
+							]
+						}
+					]
+				},
+				sectionC: {
+					'contentPath': path.join(targetBookFolderPath, 'content', 'sectionC', 'readme.md'),
+					'sectionRoot': path.join(targetBookFolderPath, 'content', 'sectionC'),
+					'sectionName': 'Section C',
+					'notebook6': path.join(targetBookFolderPath, 'content', 'sectionC', 'notebook6.ipynb'),
+					'sectionFormat': [
+						{
+							'title': 'Notebook 6',
+							'file': path.join(path.sep, 'sectionC', 'notebook6')
+						}
+					]
+				}
 			}, {
-				it: 'using jupyter-book versions >= 0.7.0',
+				it: 'using the jupyter-book legacy version >= 0.7.0',
 				version: 'v2',
-				url: 'file',
-				book: {
-					'bookContentFolderPath': path.join(rootBookFolderPath, 'sample'),
-					'rootBookFolderPath': rootBookFolderPath,
-					'notebook1': path.join(rootBookFolderPath, 'notebook'),
-					'notebook2': path.join(rootBookFolderPath, 'notebook2'),
-					'tocPath': path.join(rootBookFolderPath, '_toc.yml')
+				sourceBook: {
+					'rootBookFolderPath': sourceBookFolderPath,
+					'bookContentFolderPath': sourceBookFolderPath,
+					'tocPath': path.join(sourceBookFolderPath, '_toc.yml'),
+					'readme': path.join(sourceBookFolderPath, 'readme.md')
 				},
-				bookSection1: {
-					'bookContentFolderPath': path.join(rootSectionFolderPath, 'sample'),
-					'contentPath': path.join(rootSectionFolderPath, 'sample', 'readme.md'),
-					'sectionRoot': rootSectionFolderPath,
-					'sectionName': 'Sample',
-					'notebook3': path.join(rootSectionFolderPath, 'sample', 'notebook3'),
-					'notebook4': path.join(rootSectionFolderPath, 'sample', 'notebook4'),
-					'tocPath': path.join(rootSectionFolderPath, '_toc.yml')
-				},
-				bookSection2: {
-					'bookContentFolderPath': path.join(rootSection2FolderPath, 'test'),
-					'contentPath': path.join(rootSection2FolderPath, 'test', 'readme.md'),
-					'sectionRoot': rootSection2FolderPath,
-					'sectionName': 'Test',
-					'notebook5': path.join(rootSection2FolderPath, 'test', 'notebook5'),
-					'notebook6': path.join(rootSection2FolderPath, 'test', 'notebook6'),
-					'tocPath': path.join(rootSection2FolderPath, '_toc.yml')
-				},
-				notebook: {
-					'contentPath': path.join(notebookFolder, 'test', 'readme.md')
-				},
-				section: [
-					{
-						'title': 'Notebook',
-						'file': path.join(path.sep, 'notebook')
-					},
-					{
-						'title': 'Notebook 2',
-						'file': path.join(path.sep, 'notebook2')
-					}
-				],
-				section1: [
-					{
-						'title': 'Notebook 3',
-						'file': path.join('sample', 'notebook3')
-					},
-					{
-						'title': 'Notebook 4',
-						'file': path.join('sample', 'notebook4')
-					}
-				],
-				section2: [
+				sectionA: {
+					'contentPath': path.join(sourceBookFolderPath, 'sectionA', 'readme.md'),
+					'sectionRoot': path.join(sourceBookFolderPath, 'sectionA'),
+					'sectionName': 'Section A',
+					'notebook1': path.join(sourceBookFolderPath, 'sectionA', 'notebook1.ipynb'),
+					'notebook2': path.join(sourceBookFolderPath, 'sectionA', 'notebook2.ipynb'),
+					'sectionFormat': [
 						{
-							'title': 'Notebook 5',
-							'file': path.join(path.sep, 'test', 'notebook5')
+							'title': 'Notebook 1',
+							'file': path.join(path.sep, 'sectionA', 'notebook1')
 						},
 						{
-							'title': 'Notebook 6',
-							'file': path.join(path.sep, 'test', 'notebook6')
+							'title': 'Notebook 2',
+							'file': path.join(path.sep, 'sectionA', 'notebook2')
 						}
 					]
+				},
+				sectionB: {
+					'contentPath': path.join(sourceBookFolderPath, 'sectionB', 'readme.md'),
+					'sectionRoot': path.join(sourceBookFolderPath, 'sectionB'),
+					'sectionName': 'Section B',
+					'notebook3': path.join(sourceBookFolderPath, 'sectionB', 'notebook3.ipynb'),
+					'notebook4': path.join(sourceBookFolderPath, 'sectionB', 'notebook4.ipynb'),
+					'sectionFormat': [
+						{
+							'title': 'Notebook 3',
+							'file': path.join(path.sep, 'sectionB', 'notebook3')
+						},
+						{
+							'title': 'Notebook 4',
+							'file': path.join(path.sep, 'sectionB', 'notebook4')
+						}
+					]
+				},
+				notebook5: {
+					'contentPath': path.join(sourceBookFolderPath, 'notebook5.ipynb')
+				},
+				targetBook: {
+					'rootBookFolderPath': targetBookFolderPath,
+					'bookContentFolderPath': targetBookFolderPath,
+					'tocPath': path.join(targetBookFolderPath, '_toc.yml'),
+					'readme': path.join(targetBookFolderPath, 'readme.md'),
+					'toc': [
+						{
+							'title': 'Welcome',
+							'file': path.join(path.sep, 'readme'),
+						},
+						{
+							'title': 'Section C',
+							'file': path.join(path.sep, 'sectionC', 'readme'),
+							'sections': [
+								{
+									'title': 'Notebook 6',
+									'file': path.join(path.sep, 'sectionC', 'notebook6')
+								}
+							]
+						}
+					]
+				},
+				sectionC: {
+					'contentPath': path.join(targetBookFolderPath, 'sectionC', 'readme.md'),
+					'sectionRoot': path.join(targetBookFolderPath, 'sectionC'),
+					'sectionName': 'Section C',
+					'notebook6': path.join(targetBookFolderPath, 'sectionC', 'notebook6.ipynb'),
+					'sectionFormat': [
+						{
+							'title': 'Notebook 6',
+							'file': path.join(path.sep, 'sectionC', 'notebook6')
+						}
+					]
+				}
 			}
 		];
 
 		runs.forEach(function (run) {
 			describe('Editing Books ' + run.it, function (): void {
 				beforeEach(async () => {
-					let bookTreeItemFormat1: BookTreeItemFormat = {
-						contentPath: run.version === 'v1' ? path.join(run.book.rootBookFolderPath, 'content', 'index.md') : path.join(run.book.rootBookFolderPath, 'index.md'),
-						root: run.book.rootBookFolderPath,
+					let targetBookTreeItemFormat: BookTreeItemFormat = {
+						contentPath: run.targetBook.readme,
+						root: run.targetBook.rootBookFolderPath,
 						tableOfContents: {
-							sections: run.section
+							sections: run.targetBook.toc
 						},
 						isUntitled: undefined,
-						title: undefined,
+						title: 'Target Book',
 						treeItemCollapsibleState: undefined,
 						type: BookTreeItemType.Book,
 						version: run.version,
-						page: run.section
+						page: run.targetBook.toc
 					};
 
-					let bookTreeItemFormat2: BookTreeItemFormat = {
-						title: run.bookSection1.sectionName,
-						contentPath: run.bookSection1.contentPath,
-						root: run.bookSection1.sectionRoot,
+					let sectionCTreeItemFormat: BookTreeItemFormat = {
+						title: run.sectionC.sectionName,
+						contentPath: run.sectionC.contentPath,
+						root: run.targetBook.rootBookFolderPath,
 						tableOfContents: {
-							sections: run.section1
+							sections: run.sectionC.sectionFormat
 						},
 						isUntitled: undefined,
 						treeItemCollapsibleState: undefined,
-						type: BookTreeItemType.Book,
+						type: BookTreeItemType.Markdown,
 						version: run.version,
-						page: run.section1
+						page: run.sectionC.sectionFormat
 					};
 
-					let bookTreeItemFormat3: BookTreeItemFormat = {
-						title: run.bookSection2.sectionName,
-						contentPath: run.bookSection2.contentPath,
-						root: run.bookSection2.sectionRoot,
+					// section A is from source book
+					let sectionATreeItemFormat: BookTreeItemFormat = {
+						title: run.sectionA.sectionName,
+						contentPath: run.sectionA.contentPath,
+						root: run.sourceBook.rootBookFolderPath,
 						tableOfContents: {
-							sections: run.section2
+							sections: run.sectionA.sectionFormat
 						},
 						isUntitled: undefined,
 						treeItemCollapsibleState: undefined,
-						type: BookTreeItemType.Book,
+						type: BookTreeItemType.Markdown,
 						version: run.version,
-						page: run.section2
+						page: run.sectionA.sectionFormat
 					};
 
-					let bookTreeItemFormat4: BookTreeItemFormat = {
-						title: run.bookSection2.sectionName,
-						contentPath: run.notebook.contentPath,
-						root: run.bookSection2.sectionRoot,
+					// section B is from source book
+					let sectionBTreeItemFormat: BookTreeItemFormat = {
+						title: run.sectionB.sectionName,
+						contentPath: run.sectionB.contentPath,
+						root: run.sourceBook.rootBookFolderPath,
 						tableOfContents: {
-							sections: undefined
+							sections: run.sectionB.sectionFormat
 						},
 						isUntitled: undefined,
 						treeItemCollapsibleState: undefined,
-						type: BookTreeItemType.Notebook,
-						page: {
-							sections: undefined
-						}
+						type: BookTreeItemType.Markdown,
+						version: run.version,
+						page: run.sectionB.sectionFormat
 					};
 
-					book = new BookTreeItem(bookTreeItemFormat1, undefined);
-					bookSection = new BookTreeItem(bookTreeItemFormat2, undefined);
-					bookSection2 = new BookTreeItem(bookTreeItemFormat3, undefined);
-					notebook = new BookTreeItem(bookTreeItemFormat4, undefined);
+					targetBook = new BookTreeItem(targetBookTreeItemFormat, undefined);
+					sectionC = new BookTreeItem(sectionCTreeItemFormat, undefined);
+					sectionA = new BookTreeItem(sectionATreeItemFormat, undefined);
+					sectionB = new BookTreeItem(sectionBTreeItemFormat, undefined);
 					bookTocManager = new BookTocManager();
 
-					bookSection.uri = path.join('sample', 'readme');
-					bookSection2.uri = path.join('test', 'readme');
+					sectionC.uri = path.join('sectionC', 'readme');
+					sectionA.uri = path.join('sectionA', 'readme');
+					sectionB.uri = path.join('sectionB', 'readme');
 
-					book.contextValue = 'savedBook';
-					bookSection.contextValue = 'section';
-					bookSection2.contextValue = 'section';
-					notebook.contextValue = 'savedNotebook';
+					targetBook.contextValue = 'savedBook';
+					sectionA.contextValue = 'section';
+					sectionB.contextValue = 'section';
+					sectionC.contextValue = 'section';
+
+					sectionC.tableOfContentsPath = run.targetBook.tocPath;
+					sectionA.tableOfContentsPath = run.sourceBook.tocPath;
+					sectionB.tableOfContentsPath = run.sourceBook.tocPath;
+
+					sectionA.sections = run.sectionA.sectionFormat;
+					sectionB.sections = run.sectionB.sectionFormat;
+					sectionC.sections = run.sectionC.sectionFormat;
+
+					await fs.promises.mkdir(run.targetBook.bookContentFolderPath, { recursive: true });
+					await fs.promises.mkdir(run.sectionA.contentPath, { recursive: true });
+					await fs.promises.mkdir(run.sectionB.contentPath, { recursive: true });
+					await fs.promises.mkdir(run.sectionC.contentPath, { recursive: true });
+
+					await fs.writeFile(run.sectionA.notebook1, '');
+					await fs.writeFile(run.sectionA.notebook2, '');
+					await fs.writeFile(run.sectionB.notebook3, '');
+					await fs.writeFile(run.sectionB.notebook4, '');
+					await fs.writeFile(run.sectionC.notebook6, '');
+					await fs.writeFile(run.notebook5.contentPath, '');
+					await fs.writeFile(path.join(run.targetBook.rootBookFolderPath, '_config.yml'), 'title: Target Book');
+					await fs.writeFile(path.join(run.sourceBook.rootBookFolderPath, '_config.yml'), 'title: Source Book');
 
 
-					await fs.promises.mkdir(run.book.bookContentFolderPath, { recursive: true });
-					await fs.promises.mkdir(run.bookSection1.bookContentFolderPath, { recursive: true });
-					await fs.promises.mkdir(run.bookSection2.bookContentFolderPath, { recursive: true });
-					await fs.promises.mkdir(path.dirname(run.notebook.contentPath), { recursive: true });
-
-					if (run.book.bookDataFolderPath && run.bookSection1.bookDataFolderPath && run.bookSection2.bookDataFolderPath) {
-						await fs.promises.mkdir(run.book.bookDataFolderPath, { recursive: true });
-						await fs.promises.mkdir(run.bookSection1.bookDataFolderPath, { recursive: true });
-						await fs.promises.mkdir(run.bookSection2.bookDataFolderPath, { recursive: true });
+					if (run.version === 'v1') {
+						await fs.promises.mkdir(path.dirname(run.targetBook.tocPath), { recursive: true });
+						await fs.promises.mkdir(path.dirname(run.sourceBook.tocPath), { recursive: true });
 					}
-					await fs.writeFile(run.book.notebook1, '');
-					await fs.writeFile(run.book.notebook2, '');
-					await fs.writeFile(run.bookSection1.notebook3, '');
-					await fs.writeFile(run.bookSection1.notebook4, '');
-					await fs.writeFile(run.bookSection2.notebook5, '');
-					await fs.writeFile(run.bookSection2.notebook6, '');
-					await fs.writeFile(run.notebook.contentPath, '');
+
+					// target book
+					await fs.writeFile(run.targetBook.tocPath, '- title: Welcome\n  file: /readme\n- title: Section C\n  file: /sectionC/readme\n  sections:\n  - title: Notebook6\n    file: /sectionC/notebook6');
+					// source book
+					await fs.writeFile(run.sourceBook.tocPath, '- title: Section A\n  file: /sectionA/readme\n  sections:\n  - title: Notebook1\n    file: /sectionA/notebook1\n  - title: Notebook2\n    file: /sectionA/notebook2');
 				});
 
+
 				it('Add section to book', async () => {
-					await bookTocManager.updateBook(bookSection, book, undefined);
-					const listFiles = await fs.promises.readdir(run.book.bookContentFolderPath);
-					const tocFile = await fs.promises.readFile(run.book.tocPath, 'utf8');
-					let toc = yaml.safeLoad(tocFile);
-					should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['notebook3', 'notebook4']), 'The files of the section should be moved to the books folder');
-					should(equalSections(toc.sections[2], bookTocManager.newSection)).be.true;
+					await bookTocManager.updateBook(sectionA, targetBook, undefined);
+					const listFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionA'));
+					const listSourceFiles = await fs.promises.readdir(path.join(run.sourceBook.bookContentFolderPath));
+					should(JSON.stringify(listSourceFiles).includes('sectionA')).be.false('The source book files should not contain the section A files');
+					should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['notebook1.ipynb', 'notebook2.ipynb', 'readme.md']), 'The files of the section should be moved to the target book folder');
 				});
 
 				it('Add section to section', async () => {
-					await bookTocManager.updateBook(bookSection, bookSection2);
-					let listFiles = await fs.promises.readdir(path.join(run.bookSection2.bookContentFolderPath, 'sample'));
-					const tocFile = await fs.promises.readFile(path.join(run.bookSection2.tocPath), 'utf8');
-					let toc = yaml.safeLoad(tocFile);
-					should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['notebook3', 'notebook4']), 'The files of the section should be moved to the books folder');
-					should(equalSections(toc[1].sections, bookTocManager.newSection)).be.true;
+					await bookTocManager.updateBook(sectionB, sectionC, {
+						'title': 'Notebook 6',
+						'file': path.join(path.sep, 'sectionC', 'notebook6')
+					});
+					const sectionCFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionC'));
+					const sectionBFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionC', 'sectionB'));
+					should(JSON.stringify(sectionCFiles)).be.equal(JSON.stringify(['notebook6.ipynb', 'readme.md', 'sectionB']), 'sectionB has been moved to the targetBook under sectionC directory');
+					should(JSON.stringify(sectionBFiles)).be.equal(JSON.stringify(['notebook3.ipynb', 'notebook4.ipynb', 'readme.md']), ' Verify that the files on sectionB had been moved to the targetBook');
 				});
 
-				it('Add notebook to book', async () => {
-					await bookTocManager.updateBook(notebook, book);
-					const folder = run.version === 'v1' ? path.join(run.book.rootBookFolderPath, 'content') : path.join(run.book.rootBookFolderPath);
-					let listFiles = await fs.promises.readdir(folder);
-					const tocFile = await fs.promises.readFile(run.book.tocPath, 'utf8');
-					let toc = yaml.safeLoad(tocFile);
-					should(listFiles.findIndex(f => f === 'readme.md')).not.equal(-1);
-					should(equalSections(toc.sections[2], bookTocManager.newSection)).be.true;
+				afterEach(async function (): Promise<void> {
+					console.log('Removing temporary files...');
+					if (await exists(sourceBookFolderPath)) {
+						await promisify(rimraf)(sourceBookFolderPath);
+					}
+					if (await exists(targetBookFolderPath)) {
+						await promisify(rimraf)(targetBookFolderPath);
+					}
+					console.log('Successfully removed temporary files.');
 				});
 			});
 		});
