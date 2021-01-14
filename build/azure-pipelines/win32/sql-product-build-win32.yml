@@ -290,7 +290,7 @@ steps:
       searchFolder: '$(Build.SourcesDirectory)'
       failTaskOnFailedTests: true
     continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
+    condition: and(succeededOrFailed(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection'
