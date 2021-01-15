@@ -29,7 +29,7 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     gc-signals: https://github.com/Microsoft/node-gc-signals
     getmac: https://github.com/bevry/getmac
     graceful-fs: https://github.com/isaacs/node-graceful-fs
-		gridstack: https://github.com/gridstack/gridstack.js
+    gridstack: https://github.com/gridstack/gridstack.js
     html-query-plan: https://github.com/JustinPealing/html-query-plan
     http-proxy-agent: https://github.com/TooTallNate/node-https-proxy-agent
     https-proxy-agent: https://github.com/TooTallNate/node-https-proxy-agent
