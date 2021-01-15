@@ -8,7 +8,7 @@ import * as TypeMoq from 'typemoq';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
 import * as constants from '../../common/constants';
-import { promises as fs } from 'fs';
+import * as utils from '../../common/utils';
 import { WorkspaceService } from '../../services/workspaceService';
 import { OpenExistingDialog } from '../../dialogs/openExistingDialog';
 import { createProjectFile, generateUniqueProjectFilePath, generateUniqueWorkspaceFilePath, testProjectType } from '../testUtils';
@@ -26,14 +26,18 @@ suite('Open Existing Dialog', function (): void {
 		await dialog.open();
 
 		dialog._targetTypeRadioCardGroup?.updateProperty( 'selectedCardId', constants.Project);
-		dialog._filePathTextBox!.value = '';
+		dialog._filePathTextBox!.value = 'nonExistentProjectFile';
 		dialog.workspaceInputBox!.value = 'test.code-workspace';
 
-		should.equal(await dialog.validate(), false, 'Validation fail because project file does not exist');
+		const validateResult = await dialog.validate();
+
+		const msg = constants.FileNotExistError('project', 'nonExistentProjectFile');
+		should.equal(dialog.dialogObject.message.text, msg);
+		should.equal(validateResult, false, 'Validation should fail because project file does not exist, but passed');
 
 		// create a project file
 		dialog._filePathTextBox!.value = await createProjectFile('testproj');
-		should.equal(await dialog.validate(), true, 'Validation pass because project file exists');
+		should.equal(await dialog.validate(), true, `Validation should pass because project file exists, but failed with: ${dialog.dialogObject.message.text}`);
 	});
 
 	test('Should validate workspace file exists', async function (): Promise<void> {
@@ -42,13 +46,18 @@ suite('Open Existing Dialog', function (): void {
 		await dialog.open();
 
 		dialog._targetTypeRadioCardGroup?.updateProperty( 'selectedCardId', constants.Workspace);
-		dialog._filePathTextBox!.value = '';
-		should.equal(await dialog.validate(), false, 'Validation fail because workspace file does not exist');
+		dialog._filePathTextBox!.value = 'nonExistentWorkspaceFile';
+		const fileExistStub = sinon.stub(utils, 'fileExist').resolves(false);
 
-		// create a workspace file
+		const validateResult = await dialog.validate();
+		const msg = constants.FileNotExistError('workspace', 'nonExistentWorkspaceFile');
+		should.equal(dialog.dialogObject.message.text, msg);
+		should.equal(validateResult, false, 'Validation should fail because workspace file does not exist, but passed');
+
+		// validation should pass if workspace file exists
 		dialog._filePathTextBox!.value = generateUniqueWorkspaceFilePath();
-		await fs.writeFile(dialog._filePathTextBox!.value , '');
-		should.equal(await dialog.validate(), true, 'Validation pass because workspace file exists');
+		fileExistStub.resolves(true);
+		should.equal(await dialog.validate(), true, `Validation should pass because workspace file exists, but failed with: ${dialog.dialogObject.message.text}`);
 	});
 
 

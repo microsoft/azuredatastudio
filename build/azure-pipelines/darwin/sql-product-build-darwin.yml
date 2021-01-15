@@ -199,7 +199,7 @@ steps:
       testResultsFiles: 'test-results.xml'
       searchFolder: '$(Build.SourcesDirectory)'
     continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+    condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: PublishCodeCoverageResults@1
     displayName: 'Publish code coverage from $(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
