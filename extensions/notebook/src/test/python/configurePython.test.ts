@@ -35,7 +35,7 @@ describe('Configure Python Wizard', function () {
 		mockWizard.setup(w => w.doneButton).returns(() => mockDoneButton);
 		mockWizard.setup(w => w.nextButton).returns(() => mockNextButton);
 
-		let mockPythonWizard = TypeMoq.Mock.ofType(ConfigurePythonWizard);
+		let mockPythonWizard = TypeMoq.Mock.ofType(ConfigurePythonWizard, undefined, undefined, mockInstall.object, mockOutputChannel.object);
 		mockPythonWizard.setup(w => w.showErrorMessage(TypeMoq.It.isAnyString()));
 		mockPythonWizard.setup(w => w.wizard).returns(() => mockWizard.object);
 		testWizard = mockPythonWizard.object;
@@ -72,6 +72,7 @@ describe('Configure Python Wizard', function () {
 		should(wizard.wizard.message).be.undefined();
 
 		await wizard.close();
+		await should(wizard.setupComplete).be.resolved();
 	});
 
 	it('Configure Path Page test', async () => {
