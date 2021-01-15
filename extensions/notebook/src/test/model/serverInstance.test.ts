@@ -57,7 +57,6 @@ describe('Jupyter server instance', function (): void {
 		// Given a server instance
 		let mkdirStub = sinon.stub(utils,'mkDirSync').withArgs(sinon.match.any,sinon.match.any).returns();
 		let copyStub = sinon.stub(fs,'copySync').returns();
-		let pathStub = sinon.stub(fs,'pathExistsSync').withArgs(sinon.match.any).returns(false);
 
 		// When I run configure
 		await serverInstance.configure();
@@ -65,7 +64,6 @@ describe('Jupyter server instance', function (): void {
 		// Then I expect a folder to have been created with config and data subdirs
 		sinon.assert.callCount(mkdirStub,5);
 		sinon.assert.callCount(copyStub,3);
-		sinon.assert.callCount(pathStub,1);
 	});
 
 	it('Should have URI info after start', async function (): Promise<void> {

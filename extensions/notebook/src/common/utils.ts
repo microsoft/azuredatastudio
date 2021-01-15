@@ -23,20 +23,16 @@ export function getLivyUrl(serverName: string, port: string): string {
 }
 
 export async function mkDir(dirPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
-	if (!await fs.pathExists(dirPath)) {
-		if (outputChannel) {
-			outputChannel.appendLine(localize('mkdirOutputMsg', "... Creating {0}", dirPath));
-		}
-		await fs.ensureDir(dirPath);
+	if (outputChannel) {
+		outputChannel.appendLine(localize('ensureDirOutputMsg', "... Ensuring {0} exists", dirPath));
 	}
+	await fs.ensureDir(dirPath);
 }
 export function mkDirSync(dirPath: string, outputChannel?: vscode.OutputChannel): void {
-	if (!fs.pathExistsSync(dirPath)) {
-		if (outputChannel) {
-			outputChannel.appendLine(localize('mkdirOutputMsg', "... Creating {0}", dirPath));
-		}
-		fs.ensureDirSync(dirPath);
+	if (outputChannel) {
+		outputChannel.appendLine(localize('ensureDirOutputMsg', "... Ensuring {0} exists", dirPath));
 	}
+	fs.ensureDirSync(dirPath);
 }
 
 export function getErrorMessage(error: Error | string): string {
