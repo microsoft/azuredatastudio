@@ -70,20 +70,15 @@ export class PostgresParametersPage extends DashboardPage {
 			CSSStyles: { ...cssStyles.title }
 		}).component());
 
-		const info = this.modelView.modelBuilder.text().withProps({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.nodeParametersDescription,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
-		}).component();
+		}).component());
 
-		const link = this.modelView.modelBuilder.hyperlink().withProps({
+		content.addItem(this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.learnAboutNodeParameters,
-			url: 'https://docs.microsoft.com/azure/azure-arc/data/configure-server-parameters-postgresql-hyperscale',
-		}).component();
-
-		const infoAndLink = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
-		infoAndLink.addItem(info, { CSSStyles: { 'margin-right': '5px' } });
-		infoAndLink.addItem(link);
-		content.addItem(infoAndLink, { CSSStyles: { 'margin-bottom': '20px' } });
+			url: 'https://docs.microsoft.com/azure/azure-arc/data/configure-server-parameters-postgresql-hyperscale'
+		}).component(), { CSSStyles: { 'margin-bottom': '20px' } });
 
 		content.addItem(this.searchBox!, { CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'margin-bottom': '20px' } });
 
@@ -113,11 +108,7 @@ export class PostgresParametersPage extends DashboardPage {
 					width: '50%',
 					headerCssStyles: cssStyles.tableHeader,
 					rowCssStyles: {
-						...cssStyles.tableRow,
-						'overflow': 'hidden',
-						'text-overflow': 'ellipsis',
-						'white-space': 'nowrap',
-						'max-width': '0'
+						...cssStyles.tableRow
 					}
 				},
 				{
@@ -393,8 +384,8 @@ export class PostgresParametersPage extends DashboardPage {
 		// Information bubble title to be set depening on type of input
 		let information = this.modelView.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.information,
-			width: '12px',
-			height: '12px',
+			width: '15px',
+			height: '15px',
 			enabled: false
 		}).component();
 
@@ -409,7 +400,8 @@ export class PostgresParametersPage extends DashboardPage {
 			let valueBox = this.modelView.modelBuilder.dropDown().withProps({
 				values: values,
 				value: engineSetting.value,
-				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+				width: '150px',
+				CSSStyles: { 'height': '40px' }
 			}).component();
 			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
 
@@ -433,7 +425,7 @@ export class PostgresParametersPage extends DashboardPage {
 				label: loc.on,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
-			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
+			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'width': '150px' } });
 			if (engineSetting.value === 'on') {
 				valueBox.checked = true;
 			} else {
@@ -464,7 +456,7 @@ export class PostgresParametersPage extends DashboardPage {
 				required: true,
 				readOnly: false,
 				value: engineSetting.value,
-				CSSStyles: { 'min-width': '50px', 'max-width': '200px' }
+				width: '150px'
 			}).component();
 			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
 
@@ -487,7 +479,7 @@ export class PostgresParametersPage extends DashboardPage {
 				validationErrorMessage: loc.outOfRange(engineSetting.min!, engineSetting.max!),
 				inputType: 'number',
 				value: engineSetting.value,
-				CSSStyles: { 'min-width': '50px', 'max-width': '200px' }
+				width: '150px'
 			}).component();
 			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
 
