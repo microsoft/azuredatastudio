@@ -85,7 +85,7 @@ export class PythonPathLookup {
 		return results;
 	}
 
-	private async getPythonPath(options: { command: string; args?: string[] }): Promise<string> {
+	private async getPythonPath(options: { command: string; args?: string[] }): Promise<string | undefined> {
 		try {
 			let args = Array.isArray(options.args) ? options.args : [];
 			args = args.concat(['-c', '"import sys;print(sys.executable)"']);
@@ -140,7 +140,7 @@ export class PythonPathLookup {
 		});
 	}
 
-	private async getInfoForPath(pythonPath: string): Promise<PythonPathInfo> {
+	private async getInfoForPath(pythonPath: string): Promise<PythonPathInfo | undefined> {
 		try {
 			// "python --version" returns nothing from executeBufferedCommand with Python 2.X,
 			// so use sys.version_info here instead.
