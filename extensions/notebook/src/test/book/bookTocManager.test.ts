@@ -109,6 +109,7 @@ describe('BookTocManagerTests', function () {
 		let sectionC: BookTreeItem;
 		let sectionA: BookTreeItem;
 		let sectionB: BookTreeItem;
+		let notebook: BookTreeItem;
 		let sourceBookFolderPath: string = path.join(os.tmpdir(), uuid.v4(), 'sourceBook');
 		let targetBookFolderPath: string = path.join(os.tmpdir(), uuid.v4(), 'targetBook');
 		let bookTocManager: BookTocManager;
@@ -348,10 +349,38 @@ describe('BookTocManagerTests', function () {
 						page: run.sectionB.sectionFormat
 					};
 
+					// notebook5 is from source book
+					let notebookTreeItemFormat: BookTreeItemFormat = {
+						title: '',
+						contentPath: run.notebook5.contentPath,
+						root: run.sourceBook.rootBookFolderPath,
+						tableOfContents: {
+							sections: [
+								{
+									'title': 'Notebook 5',
+									'file': path.join(path.sep, 'notebook5')
+								}
+							]
+						},
+						isUntitled: undefined,
+						treeItemCollapsibleState: undefined,
+						type: BookTreeItemType.Notebook,
+						version: run.version,
+						page: {
+							sections: [
+								{
+									'title': 'Notebook 5',
+									'file': path.join(path.sep, 'notebook5')
+								}
+							]
+						}
+					};
+
 					targetBook = new BookTreeItem(targetBookTreeItemFormat, undefined);
 					sectionC = new BookTreeItem(sectionCTreeItemFormat, undefined);
 					sectionA = new BookTreeItem(sectionATreeItemFormat, undefined);
 					sectionB = new BookTreeItem(sectionBTreeItemFormat, undefined);
+					notebook = new BookTreeItem(notebookTreeItemFormat, undefined);
 					bookTocManager = new BookTocManager();
 
 					sectionC.uri = path.join('sectionC', 'readme');
@@ -362,14 +391,22 @@ describe('BookTocManagerTests', function () {
 					sectionA.contextValue = 'section';
 					sectionB.contextValue = 'section';
 					sectionC.contextValue = 'section';
+					notebook.contextValue = 'savedNotebook';
 
 					sectionC.tableOfContentsPath = run.targetBook.tocPath;
 					sectionA.tableOfContentsPath = run.sourceBook.tocPath;
 					sectionB.tableOfContentsPath = run.sourceBook.tocPath;
+					notebook.tableOfContentsPath = run.sourceBook.tocPath;
 
 					sectionA.sections = run.sectionA.sectionFormat;
 					sectionB.sections = run.sectionB.sectionFormat;
 					sectionC.sections = run.sectionC.sectionFormat;
+					notebook.sections = [
+						{
+							'title': 'Notebook 5',
+							'file': path.join(path.sep, 'notebook5')
+						}
+					];
 
 					await fs.promises.mkdir(run.targetBook.bookContentFolderPath, { recursive: true });
 					await fs.promises.mkdir(run.sectionA.contentPath, { recursive: true });
@@ -394,7 +431,7 @@ describe('BookTocManagerTests', function () {
 					// target book
 					await fs.writeFile(run.targetBook.tocPath, '- title: Welcome\n  file: /readme\n- title: Section C\n  file: /sectionC/readme\n  sections:\n  - title: Notebook6\n    file: /sectionC/notebook6');
 					// source book
-					await fs.writeFile(run.sourceBook.tocPath, '- title: Section A\n  file: /sectionA/readme\n  sections:\n  - title: Notebook1\n    file: /sectionA/notebook1\n  - title: Notebook2\n    file: /sectionA/notebook2');
+					await fs.writeFile(run.sourceBook.tocPath, '- title: Notebook 5\n  file: /notebook5\n- title: Section A\n  file: /sectionA/readme\n  sections:\n  - title: Notebook1\n    file: /sectionA/notebook1\n  - title: Notebook2\n    file: /sectionA/notebook2');
 				});
 
 
@@ -417,15 +454,19 @@ describe('BookTocManagerTests', function () {
 					should(JSON.stringify(sectionBFiles)).be.equal(JSON.stringify(['notebook3.ipynb', 'notebook4.ipynb', 'readme.md']), ' Verify that the files on sectionB had been moved to the targetBook');
 				});
 
+				it('Add notebook to book', async() => {
+					await bookTocManager.updateBook(notebook, targetBook);
+					const listFiles = await fs.promises.readdir(run.targetBook.bookContentFolderPath);
+					should(JSON.stringify(listFiles).includes('notebook5.ipynb')).be.true('Notebook 5 should be under the target book content folder');
+				});
+
 				afterEach(async function (): Promise<void> {
-					console.log('Removing temporary files...');
 					if (await exists(sourceBookFolderPath)) {
 						await promisify(rimraf)(sourceBookFolderPath);
 					}
 					if (await exists(targetBookFolderPath)) {
 						await promisify(rimraf)(targetBookFolderPath);
 					}
-					console.log('Successfully removed temporary files.');
 				});
 			});
 		});
