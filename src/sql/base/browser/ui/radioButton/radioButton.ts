@@ -38,13 +38,15 @@ export class RadioButton extends Widget {
 		this.checked = opts.checked || false;
 		this.onclick(this.inputElement, () => {
 			this._onClicked.fire();
+			const event = document.createEvent('HTMLEvents');
+			event.initEvent('change', true, true);
 			if (this.name) {
 				const buttonGroup = document.getElementsByName(this.name);
 				buttonGroup.forEach((button) => {
-					const event = document.createEvent('HTMLEvents');
-					event.initEvent('change', true, true);
 					button.dispatchEvent(event);
 				});
+			} else {
+				this.inputElement.dispatchEvent(event);
 			}
 		});
 		this.inputElement.addEventListener('change', () => this.checked = this.inputElement.checked);
@@ -76,6 +78,8 @@ export class RadioButton extends Widget {
 	public set checked(val: boolean) {
 		if (val !== this._internalCheckedStateTracker) {
 			this.inputElement.checked = val;
+		}
+		if (this.inputElement.checked !== this._internalCheckedStateTracker) {
 			this._internalCheckedStateTracker = val;
 			this._onChangedCheckedState.fire(this.checked);
 		}
