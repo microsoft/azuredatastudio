@@ -16,7 +16,7 @@ import { EventEmitter } from 'vscode';
 import { MockOutputChannel } from '../common/stubs';
 import { PythonPathLookup } from '../../dialog/pythonPathLookup';
 
-describe('ConfigurePythonWizard', function () {
+describe('Configure Python Wizard', function () {
 	let testWizard: ConfigurePythonWizard;
 	let viewContext: TestContext;
 	let testInstallation: JupyterServerInstallation;
@@ -36,7 +36,7 @@ describe('ConfigurePythonWizard', function () {
 		mockWizard.setup(w => w.doneButton).returns(() => mockDoneButton);
 		mockWizard.setup(w => w.nextButton).returns(() => mockNextButton);
 
-		let mockPythonWizard = TypeMoq.Mock.ofType(ConfigurePythonWizard, undefined, undefined, mockInstall.object, mockOutputChannel.object);
+		let mockPythonWizard = TypeMoq.Mock.ofType(ConfigurePythonWizard);
 		mockPythonWizard.setup(w => w.showErrorMessage(TypeMoq.It.isAnyString()));
 		mockPythonWizard.setup(w => w.wizard).returns(() => mockWizard.object);
 		testWizard = mockPythonWizard.object;
