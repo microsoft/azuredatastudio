@@ -71,7 +71,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			// select the active .
 			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
 				preventDefaultAndExecCommand(e, 'selectAll');
-			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y')) {
+			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y') && !this.markdownMode) {
 				preventDefaultAndExecCommand(e, 'redo');
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
 				preventDefaultAndExecCommand(e, 'undo');
