@@ -2,8 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-//import 'vs/css!./placeholder';
-
 import { Component, Input, ViewChildren, QueryList, ChangeDetectorRef, forwardRef, Inject, ViewChild, ElementRef } from '@angular/core';
 import { ICellModel, INotebookModel, ISingleNotebookEditOperation } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
@@ -160,9 +158,6 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 
 	ngOnDestroy() {
 		this.dispose();
-		if (this.notebookService) {
-			//this.notebookService.removeNotebookEditor(this);
-		}
 	}
 
 	ngOnChanges() {
