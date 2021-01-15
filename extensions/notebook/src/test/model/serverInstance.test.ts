@@ -55,14 +55,14 @@ describe('Jupyter server instance', function (): void {
 
 	it('Should create config and data directories on configure', async function (): Promise<void> {
 		// Given a server instance
-		let mkdirStub = sinon.stub(utils,'mkDirSync').withArgs(sinon.match.any,sinon.match.any).returns();
+		let ensureDirSyncStub = sinon.stub(utils,'ensureDirSync').withArgs(sinon.match.any,sinon.match.any).returns();
 		let copyStub = sinon.stub(fs,'copySync').returns();
 
 		// When I run configure
 		await serverInstance.configure();
 
 		// Then I expect a folder to have been created with config and data subdirs
-		sinon.assert.callCount(mkdirStub,5);
+		sinon.assert.callCount(ensureDirSyncStub,5);
 		sinon.assert.callCount(copyStub,3);
 	});
 
@@ -150,7 +150,7 @@ describe('Jupyter server instance', function (): void {
 
 	it('Should remove directory on close', async function (): Promise<void> {
 		// Given configure and startup are done
-		sinon.stub(utils,'mkDirSync').withArgs(sinon.match.any,sinon.match.any).returns();
+		sinon.stub(utils,'ensureDirSync').withArgs(sinon.match.any,sinon.match.any).returns();
 		sinon.stub(fs,'copySync').returns();
 
 		let process = setupSpawn({

@@ -22,16 +22,12 @@ export function getLivyUrl(serverName: string, port: string): string {
 	return this.getKnoxUrl(serverName, port) + '/default/livy/v1/';
 }
 
-export async function mkDir(dirPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
-	if (outputChannel) {
-		outputChannel.appendLine(localize('ensureDirOutputMsg', "... Ensuring {0} exists", dirPath));
-	}
+export async function ensureDir(dirPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
+	outputChannel?.appendLine(localize('ensureDirOutputMsg', "... Ensuring {0} exists", dirPath));
 	await fs.ensureDir(dirPath);
 }
-export function mkDirSync(dirPath: string, outputChannel?: vscode.OutputChannel): void {
-	if (outputChannel) {
-		outputChannel.appendLine(localize('ensureDirOutputMsg', "... Ensuring {0} exists", dirPath));
-	}
+export function ensureDirSync(dirPath: string, outputChannel?: vscode.OutputChannel): void {
+	outputChannel?.appendLine(localize('ensureDirOutputMsg', "... Ensuring {0} exists", dirPath));
 	fs.ensureDirSync(dirPath);
 }
 

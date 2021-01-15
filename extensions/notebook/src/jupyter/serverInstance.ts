@@ -153,9 +153,9 @@ export class PerFolderServerInstance implements IServerInstance {
 		this.baseDir = path.join(this.getSystemJupyterHomeDir(), 'instances', `${UUID.generateUuid()}`);
 		this.instanceConfigRoot = path.join(this.baseDir, 'config');
 		this.instanceDataRoot = path.join(this.baseDir, 'data');
-		utils.mkDirSync(this.baseDir, this.options.install.outputChannel);
-		utils.mkDirSync(this.instanceConfigRoot, this.options.install.outputChannel);
-		utils.mkDirSync(this.instanceDataRoot, this.options.install.outputChannel);
+		utils.ensureDirSync(this.baseDir, this.options.install.outputChannel);
+		utils.ensureDirSync(this.instanceConfigRoot, this.options.install.outputChannel);
+		utils.ensureDirSync(this.instanceDataRoot, this.options.install.outputChannel);
 	}
 
 	private copyInstanceConfig(resourcesFolder: string): void {
@@ -166,7 +166,7 @@ export class PerFolderServerInstance implements IServerInstance {
 
 	private copyCustomJs(resourcesFolder: string): void {
 		let customPath = path.join(this.instanceConfigRoot, 'custom');
-		utils.mkDirSync(customPath, this.options.install.outputChannel);
+		utils.ensureDirSync(customPath, this.options.install.outputChannel);
 		let customSource = path.join(resourcesFolder, CustomJsFilename);
 		let customDest = path.join(customPath, CustomJsFilename);
 		fs.copySync(customSource, customDest);
@@ -180,7 +180,7 @@ export class PerFolderServerInstance implements IServerInstance {
 			kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
 		}
 		this._systemJupyterDir = path.join(this.getSystemJupyterHomeDir(), 'kernels');
-		utils.mkDirSync(this._systemJupyterDir, this.options.install.outputChannel);
+		utils.ensureDirSync(this._systemJupyterDir, this.options.install.outputChannel);
 		fs.copySync(kernelsExtensionSource, this._systemJupyterDir);
 		if (this.options.install.runningOnSaw) {
 			await this.options.install.updateKernelSpecPaths(this._systemJupyterDir);
