@@ -74,7 +74,7 @@ export class RadioButton extends Widget {
 	}
 
 	public set checked(val: boolean) {
-		if (this.inputElement.checked !== this._internalCheckedStateTracker) {
+		if (val !== this._internalCheckedStateTracker) {
 			this.inputElement.checked = val;
 			this._internalCheckedStateTracker = val;
 			this._onChangedCheckedState.fire(this.checked);
