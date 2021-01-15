@@ -56,7 +56,7 @@ export class PythonPathLookup {
 			let condaFiles = condaResults.reduce((first, second) => first.concat(second));
 			return condaFiles.filter(condaPath => condaPath && condaPath.length > 0);
 		} catch (err) {
-			console.log(err);
+			console.log(`Problem encountered getting Conda installations: ${err}`);
 		}
 		return [];
 	}
@@ -159,7 +159,7 @@ export class PythonPathLookup {
 				};
 			}
 		} catch (err) {
-			console.log(err);
+			console.log(`Problem encountered getting Python info for path: ${err}`);
 		}
 		return undefined;
 	}
