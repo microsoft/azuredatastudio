@@ -155,18 +155,23 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
+							let loginSession: azdataExt.AzdataLoginSession | undefined = undefined;
 							try {
-								await this._postgresModel.controllerModel.azdataLogin();
+								loginSession = await this._postgresModel.controllerModel.acquireAzdataLoginSession();
 								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name,
 									this.saveArgs,
-									this._postgresModel.engineVersion
+									this._postgresModel.engineVersion,
+									this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+									loginSession
 								);
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since
 								// the edit wasn't successfully applied
 								this.saveButton!.enabled = true;
 								throw err;
+							} finally {
+								loginSession?.dispose();
 							}
 							await this._postgresModel.refresh();
 						}

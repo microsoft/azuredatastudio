@@ -43,7 +43,7 @@ describe('ControllerModel', function (): void {
 			// Returning an undefined model here indicates that the dialog closed without clicking "Ok" - usually through the user clicking "Cancel"
 			sinon.stub(ConnectToControllerDialog.prototype, 'waitForClose').returns(Promise.resolve(undefined));
 			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
-			await should(model.azdataLogin()).be.rejectedWith(new UserCancelledError(loc.userCancelledError));
+			await should(model.acquireAzdataLoginSession()).be.rejectedWith(new UserCancelledError(loc.userCancelledError));
 		});
 
 		it('Reads password from cred store', async function (): Promise<void> {
@@ -63,8 +63,9 @@ describe('ControllerModel', function (): void {
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: azdataExtApiMock.object });
 			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
 
-			await model.azdataLogin();
+			const loginSession = await model.acquireAzdataLoginSession();
 			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password, TypeMoq.It.isAny()), TypeMoq.Times.once());
+			loginSession.dispose();
 		});
 
 		it('Prompt for password when not in cred store', async function (): Promise<void> {
@@ -89,8 +90,9 @@ describe('ControllerModel', function (): void {
 
 			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
 
-			await model.azdataLogin();
+			const loginSession = await model.acquireAzdataLoginSession();
 			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password, TypeMoq.It.isAny()), TypeMoq.Times.once());
+			loginSession.dispose();
 		});
 
 		it('Prompt for password when rememberPassword is true but prompt reconnect is true', async function (): Promise<void> {
@@ -114,9 +116,10 @@ describe('ControllerModel', function (): void {
 
 			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
 
-			await model.azdataLogin(true);
+			const loginSession = await model.acquireAzdataLoginSession(true);
 			should(waitForCloseStub.called).be.true('waitForClose should have been called');
 			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password, TypeMoq.It.isAny()), TypeMoq.Times.once());
+			loginSession.dispose();
 		});
 
 		it('Prompt for password when we already have a password but prompt reconnect is true', async function (): Promise<void> {
@@ -141,9 +144,10 @@ describe('ControllerModel', function (): void {
 			// Set up original model with a password
 			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, 'originalPassword');
 
-			await model.azdataLogin(true);
+			const loginSession = await model.acquireAzdataLoginSession(true);
 			should(waitForCloseStub.called).be.true('waitForClose should have been called');
 			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password, TypeMoq.It.isAny()), TypeMoq.Times.once());
+			loginSession.dispose();
 		});
 
 		it('Model values are updated correctly when modified during reconnect', async function (): Promise<void> {
@@ -199,10 +203,15 @@ describe('ControllerModel', function (): void {
 			const waitForCloseStub = sinon.stub(ConnectToControllerDialog.prototype, 'waitForClose').returns(Promise.resolve(
 				{ controllerModel: newModel, password: newPassword }));
 
-			await model.azdataLogin(true);
-			should(waitForCloseStub.called).be.true('waitForClose should have been called');
-			should((await treeDataProvider.getChildren()).length).equal(1, 'Tree Data provider should still only have 1 node');
-			should(model.info).deepEqual(newInfo, 'Model info should have been updated');
+			const loginSession = await model.acquireAzdataLoginSession(true);
+			try {
+				should(waitForCloseStub.called).be.true('waitForClose should have been called');
+				should((await treeDataProvider.getChildren()).length).equal(1, 'Tree Data provider should still only have 1 node');
+				should(model.info).deepEqual(newInfo, 'Model info should have been updated');
+			} finally {
+				loginSession.dispose();
+			}
+
 		});
 
 	});

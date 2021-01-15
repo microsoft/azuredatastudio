@@ -206,8 +206,13 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token) => {
-								await this._controllerModel.azdataLogin();
-								return await this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name);
+								const loginSession = await this._controllerModel.acquireAzdataLoginSession();
+								try {
+									return await this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name, this._controllerModel.azdataAdditionalEnvVars, loginSession);
+								} finally {
+									loginSession.dispose();
+								}
+
 							}
 						);
 						await this._controllerModel.refreshTreeNode();
