@@ -20,7 +20,7 @@ import { IJupyterBookSectionV2, IJupyterBookSectionV1 } from '../contracts/conte
 import { debounce, getPinnedNotebooks } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager } from './bookTocManager';
-import { TelemetryReporter, NotebookTelemetryView, NbTelemetryActions } from '../telemetry';
+import { TelemetryReporter, BookTelemetryView, NbTelemetryActions } from '../telemetry';
 
 const content = 'content';
 
@@ -108,7 +108,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						}
 					});
 				}
-				TelemetryReporter.createActionEvent(NotebookTelemetryView, NbTelemetryActions.TrustNotebook).send();
+				TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.TrustNotebook).send();
 				vscode.window.showInformationMessage(loc.msgBookTrusted);
 			} else {
 				vscode.window.showInformationMessage(loc.msgBookAlreadyTrusted);
@@ -120,7 +120,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		let bookPathToUpdate = bookTreeItem.book?.contentPath;
 		if (bookPathToUpdate) {
 			let pinStatusChanged = await this.bookPinManager.pinNotebook(bookTreeItem);
-			TelemetryReporter.createActionEvent(NotebookTelemetryView, NbTelemetryActions.PinNotebook).send();
+			TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.PinNotebook).send();
 			if (pinStatusChanged) {
 				bookTreeItem.contextValue = 'pinnedNotebook';
 			}
@@ -141,7 +141,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		bookPath = path.normalize(bookPath);
 		contentPath = path.normalize(contentPath);
 		await this.bookTocManager.createBook(bookPath, contentPath);
-		TelemetryReporter.createActionEvent(NotebookTelemetryView, NbTelemetryActions.CreateBook).send();
+		TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.CreateBook).send();
 	}
 
 	async editBook(book: BookTreeItem, section: BookTreeItem): Promise<void> {
@@ -167,7 +167,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				await this.showPreviewFile(urlToOpen);
 			}
 
-			TelemetryReporter.createActionEvent(NotebookTelemetryView, NbTelemetryActions.OpenBook).send();
+			TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.OpenBook).send();
 			// add file watcher on toc file.
 			if (!isNotebook) {
 				fs.watchFile(this.currentBook.tableOfContentsPath, async (curr, prev) => {
@@ -220,7 +220,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				}
 				this._onDidChangeTreeData.fire(undefined);
 			}
-			TelemetryReporter.createActionEvent(NotebookTelemetryView, NbTelemetryActions.CloseBook).send();
+			TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.CloseBook).send();
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.closeBookError(book.root, e instanceof Error ? e.message : e));
 		} finally {
@@ -313,7 +313,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					this._visitedNotebooks = this._visitedNotebooks.concat([normalizedResource]);
 				}
 			}
-			TelemetryReporter.createActionEvent(NotebookTelemetryView, NbTelemetryActions.OpenNotebookFromBook);
+			TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.OpenNotebookFromBook);
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openNotebookError(resource, e instanceof Error ? e.message : e));
 		}

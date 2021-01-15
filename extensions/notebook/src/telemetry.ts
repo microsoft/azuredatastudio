@@ -8,7 +8,7 @@ import AdsTelemetryReporter from 'ads-extension-telemetry';
 const packageJson = require('../package.json');
 export const TelemetryReporter = new AdsTelemetryReporter(packageJson.name, packageJson.version, packageJson.aiKey);
 
-export const NotebookTelemetryView = 'Notebook';
+export const BookTelemetryView = 'Book';
 
 export enum NbTelemetryActions {
 	OpenNotebook = 'NotebookOpened',
