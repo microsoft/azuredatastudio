@@ -13,17 +13,14 @@ import { PickPackagesPage } from '../../dialog/configurePython/pickPackagesPage'
 import { python3DisplayName, allKernelsName } from '../../common/constants';
 import { TestContext, createViewContext, TestButton } from '../common';
 import { EventEmitter } from 'vscode';
-import { MockOutputChannel } from '../common/stubs';
 import { PythonPathLookup } from '../../dialog/pythonPathLookup';
 
 describe('Configure Python Wizard', function () {
 	let testWizard: ConfigurePythonWizard;
 	let viewContext: TestContext;
 	let testInstallation: JupyterServerInstallation;
-	let mockOutputChannel: TypeMoq.IMock<MockOutputChannel>;
 
 	beforeEach(() => {
-		mockOutputChannel = TypeMoq.Mock.ofType(MockOutputChannel);
 		let mockInstall = TypeMoq.Mock.ofType(JupyterServerInstallation);
 		mockInstall.setup(i => i.getInstalledPipPackages(TypeMoq.It.isAnyString())).returns(() => Promise.resolve([]));
 		mockInstall.setup(i => i.getRequiredPackagesForKernel(TypeMoq.It.isAnyString())).returns(() => [{ name: 'TestPkg', version: '1.0.0'}]);
