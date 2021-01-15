@@ -234,7 +234,7 @@ export class JupyterController {
 	}
 
 	public doConfigurePython(jupyterInstaller: JupyterServerInstallation): void {
-		let pythonWizard = new ConfigurePythonWizard(jupyterInstaller, this.appContext.outputChannel);
+		let pythonWizard = new ConfigurePythonWizard(jupyterInstaller);
 		pythonWizard.start().catch((err: any) => {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		});

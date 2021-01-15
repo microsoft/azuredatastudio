@@ -14,8 +14,9 @@ import { python3DisplayName, allKernelsName } from '../../common/constants';
 import { TestContext, createViewContext, TestButton } from '../common';
 import { EventEmitter } from 'vscode';
 import { MockOutputChannel } from '../common/stubs';
+import { PythonPathLookup } from '../../dialog/pythonPathLookup';
 
-describe('Configure Python Wizard', function () {
+describe('ConfigurePythonWizard', function () {
 	let testWizard: ConfigurePythonWizard;
 	let viewContext: TestContext;
 	let testInstallation: JupyterServerInstallation;
@@ -44,21 +45,21 @@ describe('Configure Python Wizard', function () {
 	});
 
 	it('Start wizard test', async () => {
-		let wizard = new ConfigurePythonWizard(testInstallation, mockOutputChannel.object);
+		let wizard = new ConfigurePythonWizard(testInstallation);
 		await wizard.start();
 		await wizard.close();
 		await should(wizard.setupComplete).be.resolved();
 	});
 
 	it('Reject setup on cancel test', async () => {
-		let wizard = new ConfigurePythonWizard(testInstallation, mockOutputChannel.object);
+		let wizard = new ConfigurePythonWizard(testInstallation);
 		await wizard.start(undefined, true);
 		await wizard.close();
 		await should(wizard.setupComplete).be.rejected();
 	});
 
 	it('Error message test', async () => {
-		let wizard = new ConfigurePythonWizard(testInstallation, mockOutputChannel.object);
+		let wizard = new ConfigurePythonWizard(testInstallation);
 		await wizard.start();
 
 		should(wizard.wizard.message).be.undefined();
@@ -77,12 +78,16 @@ describe('Configure Python Wizard', function () {
 
 	it('Configure Path Page test', async () => {
 		let testPythonLocation = '/not/a/real/path';
-		let model = <ConfigurePythonModel>{
-			useExistingPython: true,
-			pythonPathsPromise: Promise.resolve([{
+		let mockPathLookup = TypeMoq.Mock.ofType(PythonPathLookup);
+		mockPathLookup.setup(p => p.getSuggestions()).returns(() =>
+			Promise.resolve([{
 				installDir: testPythonLocation,
 				version: '4000'
 			}])
+		);
+		let model = <ConfigurePythonModel>{
+			useExistingPython: true,
+			pythonPathLookup: mockPathLookup.object
 		};
 
 		let page = azdata.window.createWizardPage('Page 1');
