@@ -706,14 +706,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.1.0",
-							"lastUpdated": "10/06/2020",
+							"version": "1.2.0",
+							"lastUpdated": "1/14/2020",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-1.1.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-1.2.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
