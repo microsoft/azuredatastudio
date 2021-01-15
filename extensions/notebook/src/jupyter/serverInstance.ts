@@ -180,7 +180,7 @@ export class PerFolderServerInstance implements IServerInstance {
 			kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
 		}
 		this._systemJupyterDir = path.join(this.getSystemJupyterHomeDir(), 'kernels');
-		if (!(utils.existsSync(this._systemJupyterDir))) {
+		if (!(fs.pathExistsSync(this._systemJupyterDir))) {
 			utils.mkDirSync(this._systemJupyterDir, this.options.install.outputChannel);
 		}
 		fs.copySync(kernelsExtensionSource, this._systemJupyterDir);

@@ -57,7 +57,7 @@ describe('Jupyter server instance', function (): void {
 		// Given a server instance
 		let mkdirStub = sinon.stub(utils,'mkDirSync').withArgs(sinon.match.any,sinon.match.any).returns();
 		let copyStub = sinon.stub(fs,'copySync').returns();
-		let pathStub = sinon.stub(utils,'existsSync').withArgs(sinon.match.any).returns(false);
+		let pathStub = sinon.stub(fs,'pathExistsSync').withArgs(sinon.match.any).returns(false);
 
 		// When I run configure
 		await serverInstance.configure();

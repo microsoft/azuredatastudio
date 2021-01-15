@@ -259,15 +259,6 @@ export async function exists(path: string): Promise<boolean> {
 	}
 }
 
-export function existsSync(path: string): boolean {
-	try {
-		fs.accessSync(path);
-		return true;
-	} catch (e) {
-		return false;
-	}
-}
-
 const bdcConfigSectionName = 'bigDataCluster';
 const ignoreSslConfigName = 'ignoreSslVerification';
 
