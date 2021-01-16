@@ -6,58 +6,56 @@
 .grid-stack {
 	margin: 0 8px;
 }
-.grid-stack>.grid-stack-item {
+.grid-stack > .grid-stack-item {
 	margin: 0;
 }
-.grid-stack>.grid-stack-item .grid-stack-item-content {
+.grid-stack > .grid-stack-item .grid-stack-item-content {
 	display: flex;
 	cursor: move;
 	box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.13);
 	border-radius: 2px;
 	overflow: visible;
 }
-.grid-stack>.grid-stack-item .grid-stack-item-content > .grid-stack-content-wrapper {
+.grid-stack > .grid-stack-item .grid-stack-item-content > .grid-stack-content-wrapper {
 	width: 100%;
 	display: flex;
 	flex-direction: column;
 	flex: 1;
 	margin-bottom: 20px;
 }
-.grid-stack>.grid-stack-item .grid-stack-item-content .grid-stack-content-wrapper-inner {
+.grid-stack > .grid-stack-item .grid-stack-item-content .grid-stack-content-wrapper-inner {
 	overflow-y: auto;
-	background: #fff;
 	height: 100%;
 	cursor: auto;
 }
-.grid-stack>.grid-stack-item .grid-stack-item-content ::-webkit-scrollbar {
+.grid-stack > .grid-stack-item .grid-stack-item-content ::-webkit-scrollbar {
 	width: 8px;
 }
-.grid-stack>.grid-stack-item .grid-stack-item-content .grid-stack-content-header {
+.grid-stack > .grid-stack-item .grid-stack-item-content .grid-stack-content-header {
 	flex-direction: row;
 	justify-content: space-between;
 	display: flex;
 	margin-bottom: 3px;
 	padding: 0 5px;
 }
-.grid-stack>.grid-stack-item .grid-stack-item-content .grid-stack-content-header .action-label.codicon{
+.grid-stack > .grid-stack-item .grid-stack-item-content .grid-stack-content-header .action-label.codicon{
 	background-size: 16px;
 	padding: 11px;
 }
-.grid-stack>.grid-stack-item .grid-stack-item-content .grid-stack-item-title {
+.grid-stack > .grid-stack-item .grid-stack-item-content .grid-stack-item-title {
 	font-size: 13px;
 	line-height: 25px;
 	font-weight: 400;
 }
-.grid-stack>.grid-stack-item .grid-stack-item-content .actionbar {
+.grid-stack > .grid-stack-item .grid-stack-item-content .actionbar {
 	top: -14px;
 	z-index: 999;
 }
-.grid-stack>.grid-stack-item.notebook-cell.active .actionbar {
-	background-color: #ffffff;
+.grid-stack > .grid-stack-item.notebook-cell.active .actionbar {
 	z-index: 1;
 	transform: translate(0px, 7px);
 }
-.grid-stack>.grid-stack-item.ui-draggable-dragging>.grid-stack-item-content,.grid-stack>.grid-stack-item.ui-resizable-resizing>.grid-stack-item-content{
+.grid-stack > .grid-stack-item.ui-draggable-dragging > .grid-stack-item-content,.grid-stack > .grid-stack-item.ui-resizable-resizing > .grid-stack-item-content{
 	box-shadow:1px 4px 6px rgba(0,0,0,.2);
 	opacity:.8
 }
@@ -67,56 +65,56 @@
 	background-position:center;
 	transform: rotate(0deg);
 }
-.grid-stack>.grid-stack-item>.ui-resizable-nw{
+.grid-stack > .grid-stack-item > .ui-resizable-nw{
 	cursor:nw-resize;
 	width:20px;
 	height:20px;
 	left:10px;
 	top:0
 }
-.grid-stack>.grid-stack-item>.ui-resizable-n{
+.grid-stack > .grid-stack-item > .ui-resizable-n{
 	cursor:n-resize;
 	height:10px;
 	top:0;
 	left:25px;
 	right:25px
 }
-.grid-stack>.grid-stack-item>.ui-resizable-ne{
+.grid-stack > .grid-stack-item > .ui-resizable-ne{
 	cursor:ne-resize;
 	width:20px;
 	height:20px;
 	right:10px;
 	top:0
 }
-.grid-stack>.grid-stack-item>.ui-resizable-e{
+.grid-stack > .grid-stack-item > .ui-resizable-e{
 	cursor:e-resize;
 	width:10px;
 	right:10px;
 	top:15px;
 	bottom:15px
 }
-.grid-stack>.grid-stack-item>.ui-resizable-se{
+.grid-stack > .grid-stack-item > .ui-resizable-se{
 	cursor:se-resize;
 	width:20px;
 	height:20px;
 	right:5px;
 	bottom:0
 }
-.grid-stack>.grid-stack-item>.ui-resizable-s{
+.grid-stack > .grid-stack-item > .ui-resizable-s{
 	cursor:s-resize;
 	height:10px;
 	left:25px;
 	bottom:0;
 	right:25px
 }
-.grid-stack>.grid-stack-item>.ui-resizable-sw{
+.grid-stack > .grid-stack-item > .ui-resizable-sw{
 	cursor:sw-resize;
 	width:20px;
 	height:20px;
 	left:10px;
 	bottom:0
 }
-.grid-stack>.grid-stack-item>.ui-resizable-w{
+.grid-stack > .grid-stack-item > .ui-resizable-w{
 	cursor:w-resize;
 	width:10px;
 	left:10px;
