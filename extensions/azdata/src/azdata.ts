@@ -280,7 +280,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 			this._currentlyExecutingCommands = this._currentlyExecutingCommands.filter(c => c !== executingDeferred);
 			executingDeferred.resolve();
 			// If there isn't an active session and we still have queued commands then we have to manually kick off the next one
-			if (this._currentlyExecutingCommands.length > 0 && !this._currentLoginSession) {
+			if (this._queuedCommands.length > 0 && !this._currentLoginSession) {
 				this._queuedCommands.shift()?.deferred.resolve();
 			}
 		}
