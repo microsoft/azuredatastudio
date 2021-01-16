@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as glob from 'glob';
-import * as vscode from 'vscode';
 
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
@@ -16,7 +15,7 @@ export interface PythonPathInfo {
 
 export class PythonPathLookup {
 	private condaLocations: string[];
-	constructor(private readonly _outputChannel: vscode.OutputChannel) {
+	constructor() {
 		if (process.platform !== constants.winPlatform) {
 			let userFolder = process.env['HOME'];
 			this.condaLocations = [
@@ -57,7 +56,7 @@ export class PythonPathLookup {
 			let condaFiles = condaResults.reduce((first, second) => first.concat(second));
 			return condaFiles.filter(condaPath => condaPath && condaPath.length > 0);
 		} catch (err) {
-			this._outputChannel.appendLine(`Problem encountered getting Conda installations: ${err}`);
+			console.log(`Problem encountered getting Conda installations: ${err}`);
 		}
 		return [];
 	}
@@ -86,7 +85,7 @@ export class PythonPathLookup {
 		return results;
 	}
 
-	private async getPythonPath(options: { command: string; args?: string[] }): Promise<string> {
+	private async getPythonPath(options: { command: string; args?: string[] }): Promise<string | undefined> {
 		try {
 			let args = Array.isArray(options.args) ? options.args : [];
 			args = args.concat(['-c', '"import sys;print(sys.executable)"']);
@@ -97,7 +96,7 @@ export class PythonPathLookup {
 				return value;
 			}
 		} catch (err) {
-			this._outputChannel.appendLine(`Problem encountered getting Python path: ${err}`);
+			// Ignoring this error since it's probably from trying to run a non-existent python executable.
 		}
 
 		return undefined;
@@ -141,7 +140,7 @@ export class PythonPathLookup {
 		});
 	}
 
-	private async getInfoForPath(pythonPath: string): Promise<PythonPathInfo> {
+	private async getInfoForPath(pythonPath: string): Promise<PythonPathInfo | undefined> {
 		try {
 			// "python --version" returns nothing from executeBufferedCommand with Python 2.X,
 			// so use sys.version_info here instead.
@@ -160,7 +159,7 @@ export class PythonPathLookup {
 				};
 			}
 		} catch (err) {
-			this._outputChannel.appendLine(`Problem encountered getting Python info for path: ${err}`);
+			console.log(`Problem encountered getting Python info for path: ${err}`);
 		}
 		return undefined;
 	}
