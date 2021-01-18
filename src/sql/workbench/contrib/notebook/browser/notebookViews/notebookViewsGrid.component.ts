@@ -8,9 +8,8 @@ import { Component, OnInit, ViewChildren, QueryList, Input, Inject, forwardRef, 
 import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCard.component';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { GridStack } from 'gridstack';
+import { GridStack, GridStackEvent, GridStackNode } from 'gridstack';
 import 'gridstack/dist/h5/gridstack-dd-native';
-import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { CellChangeEvent, INotebookViewCell } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
@@ -26,7 +25,7 @@ export class NotebookViewsGridComponent implements OnInit {
 
 	@ViewChildren(NotebookViewsCardComponent) private _items: QueryList<NotebookViewsCardComponent>;
 
-	protected _grid: any;
+	protected _grid: GridStack;
 	public loaded: boolean;
 
 	constructor(
@@ -56,14 +55,12 @@ export class NotebookViewsGridComponent implements OnInit {
 				styleInHead: true
 			});
 
-			this.cells.forEach((cell) => self._grid);
-
 			this.loaded = true;
 			this.detectChanges();
 
-			self._grid.on('added', function (e, items) { self.persist('added', items, self._grid, self._items); });
-			self._grid.on('removed', function (e, items) { self.persist('removed', items, self._grid, self._items); });
-			self._grid.on('change', function (e, items) { self.persist('change', items, self._grid, self._items); });
+			self._grid.on('added', function (e: Event, items: GridStackNode[]) { self.persist('added', items, self._grid, self._items); });
+			self._grid.on('removed', function (e: Event, items: GridStackNode[]) { self.persist('removed', items, self._grid, self._items); });
+			self._grid.on('change', function (e: Event, items: GridStackNode[]) { self.persist('change', items, self._grid, self._items); });
 		}, 100);
 	}
 
@@ -73,10 +70,10 @@ export class NotebookViewsGridComponent implements OnInit {
 		}
 	}
 
-	async onCellChanged(e: CellChangeEvent) {
+	async onCellChanged(e: CellChangeEvent): Promise<void> {
 		const currentView = this.views.getActiveView();
 		if (this._grid && currentView) {
-			const cellElem = this._grid.el.querySelector(`[data-cell-id='${e.cell.cellGuid}']`);
+			const cellElem: HTMLElement = this._grid.el.querySelector(`[data-cell-id='${e.cell.cellGuid}']`);
 			if (cellElem && e.event === 'hide') {
 				this._grid.removeWidget(cellElem);
 				currentView.hideCell(e.cell);
@@ -89,7 +86,7 @@ export class NotebookViewsGridComponent implements OnInit {
 
 				const el = this._grid.getGridItems().find(x => x.getAttribute('data-cell-id') === e.cell.cellGuid);
 				this._grid.makeWidget(el);
-				this._grid.move(el, 0, 0);
+				this._grid.update(el, { x: 0, y: 0 });
 				this._grid.resizable(el, true);
 				this._grid.movable(el, true);
 
@@ -99,8 +96,10 @@ export class NotebookViewsGridComponent implements OnInit {
 		}
 	}
 
-	/* Update the document model with the gridstack data as metadata */
-	persist(action, changedItems, grid, items) {
+	/**
+	 * Update the document model with the gridstack data as metadata
+	 */
+	persist(action: GridStackEvent, changedItems: GridStackNode[], grid: GridStack, items: QueryList<NotebookViewsCardComponent>): void {
 		changedItems.forEach((changedItem) => {
 			const cellId = changedItem.el.getAttribute('data-cell-id');
 			const item = items.toArray().find(item => item.cell.cellGuid === cellId);
@@ -111,8 +110,8 @@ export class NotebookViewsGridComponent implements OnInit {
 					guid: activeView.guid,
 					x: changedItem.x,
 					y: changedItem.y,
-					width: changedItem.width,
-					height: changedItem.height
+					width: changedItem.w,
+					height: changedItem.h
 				};
 
 				if (action === 'added') {
