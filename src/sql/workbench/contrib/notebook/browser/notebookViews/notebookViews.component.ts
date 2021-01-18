@@ -30,10 +30,10 @@ import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/
 import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { NotebookViewsGridComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsGrid.component';
 
-export const PLACEHOLDER_SELECTOR: string = 'notebook-view-component';
+export const NOTEBOOKVIEWS_SELECTOR: string = 'notebook-view-component';
 
 @Component({
-	selector: PLACEHOLDER_SELECTOR,
+	selector: NOTEBOOKVIEWS_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./notebookViews.component.html'))
 })
 
