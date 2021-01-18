@@ -6,6 +6,11 @@
 .grid-stack {
 	margin: 0 8px;
 }
+
+.grid-stack + .empty-message{
+	text-align: center;
+}
+
 .grid-stack > .grid-stack-item {
 	margin: 0;
 }

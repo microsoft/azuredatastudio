@@ -126,11 +126,3 @@ export class NotebookViewsGridComponent implements OnInit {
 
 	}
 }
-
-registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
-	collector.addRule(`
-		.empty-message {
-			text-align: center;
-		}
-	`);
-});
