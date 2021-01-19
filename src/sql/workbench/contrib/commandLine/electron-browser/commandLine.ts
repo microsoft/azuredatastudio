@@ -285,13 +285,14 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 			2. Take --integrated, if not
 			3. take --aad, if not
 			4. If user exists, and user has @, then it's azureMFA
-			5. If user doesn't exist, or user doesn't have @, then integrated
+			5. If user exists but doesn't have @, then its SqlLogin
+			6. If user doesn't exist, then integrated
 		*/
 		profile.authenticationType =
 			args.authenticationType ? args.authenticationType :
 				args.integrated ? Constants.integrated :
 					args.aad ? Constants.azureMFA :
-						(args.user && args.user.length > 0) ? args.user.includes('@') ? Constants.azureMFA : Constants.integrated :
+						(args.user && args.user.length > 0) ? args.user.includes('@') ? Constants.azureMFA : Constants.sqlLogin :
 							Constants.integrated;
 
 		profile.connectionName = '';

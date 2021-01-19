@@ -174,7 +174,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 	$registerDataGridProvider(provider: azdata.DataGridProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.DataGridProvider);
-		this._proxy.$registerDataGridProvider(provider.providerId, provider.handle);
+		this._proxy.$registerDataGridProvider(provider.providerId, provider.title, provider.handle);
 		return rt;
 	}
 	$registerCapabilitiesServiceProvider(provider: azdata.CapabilitiesProvider): vscode.Disposable {

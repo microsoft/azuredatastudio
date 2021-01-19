@@ -47,7 +47,7 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 		throw new Error('Method not implemented.');
 	}
 
-	schemaCompare(operationId: string, sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaCompareResult> {
+	schemaCompare(operationId: string, sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: mssql.DeploymentOptions): Thenable<mssql.SchemaCompareResult> {
 		let result: mssql.SchemaCompareResult;
 		if (this.testState === testStateScmp.FAILURE) {
 			result = {
@@ -103,11 +103,39 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 	}
 
 	schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-		return undefined;
+		let result: azdata.ResultStatus;
+		if (this.testState === testStateScmp.FAILURE) {
+			result = {
+				success: false,
+				errorMessage: 'Test failure'
+			};
+		}
+		else {
+			result = {
+				success: true,
+				errorMessage: ''
+			};
+		}
+
+		return Promise.resolve(result);
 	}
 
 	schemaCompareCancel(operationId: string): Thenable<azdata.ResultStatus> {
-		return undefined;
+		let result: azdata.ResultStatus;
+		if (this.testState === testStateScmp.FAILURE) {
+			result = {
+				success: false,
+				errorMessage: 'Test failure'
+			};
+		}
+		else {
+			result = {
+				success: true,
+				errorMessage: ''
+			};
+		}
+
+		return Promise.resolve(result);
 	}
 
 	handle?: number;

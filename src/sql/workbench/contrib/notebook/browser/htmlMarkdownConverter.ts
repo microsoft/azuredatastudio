@@ -8,6 +8,28 @@ import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
 import * as turndownPluginGfm from 'sql/workbench/contrib/notebook/browser/turndownPluginGfm';
 
+// These replacements apply only to text. Here's how it's handled from Turndown:
+// if (node.nodeType === 3) {
+//	replacement = node.isCode ? node.nodeValue : self.escape(node.nodeValue);
+// }
+const markdownReplacements = [
+	[/\\/g, '\\\\'],
+	[/\*/g, '\\*'],
+	[/^-/g, '\\-'],
+	[/^\+ /g, '\\+ '],
+	[/^(=+)/g, '\\$1'],
+	[/^(#{1,6}) /g, '\\$1 '],
+	[/`/g, '\\`'],
+	[/^~~~/g, '\\~~~'],
+	[/\[/g, '\\['],
+	[/\]/g, '\\]'],
+	[/^>/g, '\\>'],
+	[/_/g, '\\_'],
+	[/^(\d+)\. /g, '$1\\. '],
+	[/</g, '\\<'], // Added to ensure sample text like <hello> is escaped
+	[/>/g, '\\>'], // Added to ensure sample text like <hello> is escaped
+];
+
 export class HTMLMarkdownConverter {
 	private turndownService: TurndownService;
 
@@ -21,12 +43,28 @@ export class HTMLMarkdownConverter {
 	}
 
 	private setTurndownOptions() {
-		this.turndownService.keep(['u', 'mark', 'style']);
+		this.turndownService.keep(['style']);
 		this.turndownService.use(turndownPluginGfm.gfm);
 		this.turndownService.addRule('pre', {
 			filter: 'pre',
 			replacement: function (content, node) {
 				return '\n```\n' + node.textContent + '\n```\n';
+			}
+		});
+		this.turndownService.addRule('mark', {
+			filter: 'mark',
+			replacement: (content, node) => {
+				return '<mark>' + content + '</mark>';
+			}
+		});
+		this.turndownService.addRule('underline', {
+			filter: ['u'],
+			replacement: (content, node, options) => {
+				if (!content.trim()) {
+					return '';
+				}
+				content = addHighlightIfYellowBgExists(node, content);
+				return '<u>' + content + '</u>';
 			}
 		});
 		this.turndownService.addRule('caption', {
@@ -102,10 +140,95 @@ export class HTMLMarkdownConverter {
 				if (relativePath) {
 					return `[${node.innerText}](${relativePath})`;
 				}
-				return `[${node.innerText}](${node.href})`;
+				return `[${content}](${node.href})`;
 			}
 		});
+		this.turndownService.addRule('listItem', {
+			filter: 'li',
+			replacement: function (content, node, options) {
+				content = content
+					.replace(/^\n+/, '') // remove leading newlines
+					.replace(/\n+$/, '\n') // replace trailing newlines with just a single one
+					.replace(/\n/gm, '\n    '); // indent
+				let prefix = options.bulletListMarker + ' ';
+				let parent = node.parentNode;
+				let nestedCount = 0;
+				if (parent.nodeName === 'OL') {
+					let start = parent.getAttribute('start');
+					let index = Array.prototype.indexOf.call(parent.children, node);
+					prefix = (start ? Number(start) + index : index + 1) + '. ';
+				} else if (parent.nodeName === 'UL') {
+					while (parent?.nodeName === 'UL') {
+						nestedCount++;
+						parent = parent?.parentNode;
+					}
+					prefix = ('    '.repeat(nestedCount - 1)) + options.bulletListMarker + ' ';
+				}
+				return (
+					prefix + content + (node.nextSibling && !/\n$/.test(content) ? '\n' : '')
+				);
+			}
+		});
+		this.turndownService.addRule('heading', {
+			filter: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+			replacement: function (content, node, options) {
+				let hLevel = Number(node.nodeName.charAt(1));
+				if (options.headingStyle === 'setext' && hLevel < 3) {
+					let underline = '#'.repeat(hLevel);
+					return '\n\n' + content + '\n' + underline + '\n\n';
+				} else {
+					return '\n\n' + '#'.repeat(hLevel) + ' ' + content + '\n\n';
+				}
+			}
+		});
+		this.turndownService.addRule('bold', {
+			filter: ['strong', 'b'],
+			replacement: function (content, node, options) {
+				content = addHighlightIfYellowBgExists(node, content);
+				if (!content.trim()) { return ''; }
+				return options.strongDelimiter + content + options.strongDelimiter;
+			}
+		});
+		this.turndownService.addRule('italicize', {
+			filter: ['em', 'i'],
+			replacement: function (content, node, options) {
+				content = addHighlightIfYellowBgExists(node, content);
+				if (!content.trim()) { return ''; }
+				return options.emDelimiter + content + options.emDelimiter;
+			}
+		});
+		this.turndownService.addRule('code', {
+			filter: function (node) {
+				let hasSiblings = node.previousSibling || node.nextSibling;
+				let isCodeBlock = node.parentNode.nodeName === 'PRE' && !hasSiblings;
+
+				return node.nodeName === 'CODE' && !isCodeBlock;
+			},
+			replacement: function (content, node, options) {
+				if (!content.trim()) { return ''; }
+
+				let delimiter = '`';
+				let leadingSpace = '';
+				let trailingSpace = '';
+				let matches = content.match(/`+/gm);
+				if (matches) {
+					if (/^`/.test(content)) { leadingSpace = ' '; }
+					if (/`$/.test(content)) { trailingSpace = ' '; }
+					while (matches.indexOf(delimiter) !== -1) { delimiter = delimiter + '`'; }
+				}
+
+				return delimiter + leadingSpace + content + trailingSpace + delimiter;
+			}
+		});
+		this.turndownService.escape = escapeMarkdown;
 	}
+}
+
+function escapeMarkdown(text) {
+	return markdownReplacements.reduce(
+		(search, replacement) => search.replace(replacement[0], replacement[1]),
+		text,
+	);
 }
 
 export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined): string {
@@ -123,4 +246,11 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 		}
 	}
 	return '';
+}
+
+export function addHighlightIfYellowBgExists(node, content: string): string {
+	if (node?.style?.backgroundColor === 'yellow') {
+		return '<mark>' + content + '</mark>';
+	}
+	return content;
 }

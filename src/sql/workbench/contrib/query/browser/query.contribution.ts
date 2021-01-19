@@ -19,7 +19,7 @@ import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResult
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
-	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
+	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, CopyQueryWithResultsKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction, ToggleFocusBetweenQueryEditorAndResultsAction
 } from 'sql/workbench/contrib/query/browser/keyboardQueryActions';
 import * as gridActions from 'sql/workbench/contrib/editData/browser/gridActions';
 import * as gridCommands from 'sql/workbench/contrib/editData/browser/gridCommands';
@@ -141,6 +141,16 @@ actionRegistry.registerWorkbenchAction(
 
 actionRegistry.registerWorkbenchAction(
 	SyncActionDescriptor.create(
+		CopyQueryWithResultsKeyboardAction,
+		CopyQueryWithResultsKeyboardAction.ID,
+		CopyQueryWithResultsKeyboardAction.LABEL,
+		{ primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_C }
+	),
+	CopyQueryWithResultsKeyboardAction.LABEL
+);
+
+actionRegistry.registerWorkbenchAction(
+	SyncActionDescriptor.create(
 		CancelQueryKeyboardAction,
 		CancelQueryKeyboardAction.ID,
 		CancelQueryKeyboardAction.LABEL,
@@ -188,6 +198,17 @@ actionRegistry.registerWorkbenchAction(
 		QueryEditorVisibleCondition
 	),
 	ToggleQueryResultsKeyboardAction.LABEL
+);
+
+actionRegistry.registerWorkbenchAction(
+	SyncActionDescriptor.create(
+		ToggleFocusBetweenQueryEditorAndResultsAction,
+		ToggleFocusBetweenQueryEditorAndResultsAction.ID,
+		ToggleFocusBetweenQueryEditorAndResultsAction.LABEL,
+		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_F },
+		QueryEditorVisibleCondition
+	),
+	ToggleFocusBetweenQueryEditorAndResultsAction.LABEL
 );
 
 // Register Flavor Action

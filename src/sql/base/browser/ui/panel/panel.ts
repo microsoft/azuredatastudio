@@ -311,7 +311,7 @@ export class TabbedPanel extends Disposable {
 		}
 	}
 
-	private focusCurrentTab(): void {
+	public focusCurrentTab(): void {
 		if (this._shownTabId) {
 			const tab = this._tabMap.get(this._shownTabId);
 			if (tab) {
@@ -337,10 +337,6 @@ export class TabbedPanel extends Disposable {
 				color: ${styles.titleActiveForeground};
 				border-bottom-color: ${styles.titleActiveBorder};
 				border-bottom-width: 2px;
-			}
-
-			.tabbedPanel > .title .tabList .tab-header.active {
-				outline: none;
 			}`);
 		}
 

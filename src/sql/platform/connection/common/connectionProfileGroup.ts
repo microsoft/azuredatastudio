@@ -27,6 +27,8 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	public parentId?: string;
 	private _isRenamed = false;
 	public readonly isRoot: boolean = false;
+	public readonly textColor: string = 'white'; // This value should come from the constructor when issue: https://github.com/microsoft/azuredatastudio/issues/13138 is fixed
+
 	public constructor(
 		public name: string,
 		public parent?: ConnectionProfileGroup,

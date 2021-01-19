@@ -136,7 +136,7 @@ class TreeModel {
 	private readonly registry = Registry.as<ResourceViewerResourcesRegistry>(Extensions.ResourceViewerExtension);
 
 	getChildren(): ResourceType[] {
-		return this.registry.allResources.slice();
+		return this.registry.allResources.filter(resource => resource.id === 'azure-resources');
 	}
 }
 

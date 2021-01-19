@@ -27,6 +27,7 @@ export const crashButtonText = localize('import.serviceCrashButton', "Give Feedb
 export const serviceCrashMessageText = localize('serviceCrashMessage', "service component could not start");
 export const serverDropDownTitleText = localize('flatFileImport.serverDropdownTitle', "Server the database is in");
 export const databaseDropdownTitleText = localize('flatFileImport.databaseDropdownTitle', "Database the table is created in");
+export const invalidFileLocationError = localize('flatFile.InvalidFileLocation', "Invalid file location. Please try a different input file");
 export const browseFilesText = localize('flatFileImport.browseFiles', "Browse");
 export const openFileText = localize('flatFileImport.openFile', "Open");
 export const fileTextboxTitleText = localize('flatFileImport.fileTextboxTitle', "Location of the file to be imported");

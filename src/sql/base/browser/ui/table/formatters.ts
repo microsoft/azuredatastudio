@@ -16,6 +16,7 @@ export interface DBCellValue {
  */
 export interface ExecuteCommandInfo {
 	id: string;
+	displayText?: string;
 	args?: string[]
 }
 
@@ -35,6 +36,12 @@ export interface HyperlinkCellValue {
 	linkOrCommand: string | ExecuteCommandInfo;
 }
 
+export interface CssIconCellValue {
+	iconCssClass: string,
+	title: string
+}
+
+
 export namespace DBCellValue {
 	export function isDBCellValue(object: any): boolean {
 		return (object !== undefined && object.displayValue !== undefined && object.isNull !== undefined);
@@ -49,6 +56,9 @@ export function isHyperlinkCellValue(obj: any | undefined): obj is HyperlinkCell
 	return !!(<HyperlinkCellValue>obj)?.linkOrCommand;
 }
 
+export function isCssIconCellValue(obj: any | undefined): obj is CssIconCellValue {
+	return !!(<CssIconCellValue>obj)?.iconCssClass;
+}
 
 /**
  * Format xml field into a hyperlink and performs HTML entity encoding
@@ -102,13 +112,20 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	return `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
 
+
+export function iconCssFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
+	if (isCssIconCellValue(value)) {
+		return `<div role="image" title="${escape(value.title)}" aria-label="${escape(value.title)}" class="grid-cell-value-container icon codicon slick-icon-cell-content ${value.iconCssClass}"></div>`;
+	}
+	return textFormatter(row, cell, value, columnDef, dataContext);
+}
+
 export function imageFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
 	return `<img src="${value.text}" />`;
 }
 
 /**
- * Provide slick grid cell with encoded ariaLabel and plain text.
- * text will be escaped by the textFormatter and ariaLabel will be consumed by slickgrid directly.
+ * Extracts the specified field into the expected object to be handled by SlickGrid and/or formatters as needed.
  */
 export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any): TextCellValue | HyperlinkCellValue {
 	let fieldValue = value[columnDef.field];
@@ -123,7 +140,6 @@ export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any
 			ariaLabel: fieldValue ? escape(fieldValue) : fieldValue
 		};
 	}
-
 }
 
 /**
@@ -131,7 +147,7 @@ export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any
  * In this case, for no display value ariaLabel will be set to specific string "no data available" for accessibily support for screen readers
  * Set 'no data' label only if cell is present and has no value (so that checkbox and other custom plugins do not get 'no data' label)
  */
-export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: any): { text: string; ariaLabel: string; } {
+export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: any): { text: string; ariaLabel: string; } | CssIconCellValue {
 	let displayValue = value[columnDef.field];
 	if (typeof displayValue === 'number') {
 		displayValue = displayValue.toString();
@@ -139,6 +155,11 @@ export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: an
 	if (displayValue instanceof Array) {
 		displayValue = displayValue.toString();
 	}
+
+	if (isCssIconCellValue(displayValue)) {
+		return displayValue;
+	}
+
 	return {
 		text: displayValue,
 		ariaLabel: displayValue ? escape(displayValue) : ((displayValue !== undefined) ? localize("tableCell.NoDataAvailable", "no data available") : displayValue)

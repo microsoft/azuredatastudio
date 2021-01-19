@@ -33,7 +33,7 @@ export class TreeCreationUtils {
 	public static createConnectionTree(treeContainer: HTMLElement, instantiationService: IInstantiationService, configurationService: IConfigurationService, ariaLabel: string, useController?: IController): Tree | AsyncServerTree {
 		if (useAsyncServerTree(configurationService)) {
 			const dataSource = instantiationService.createInstance(AsyncRecentConnectionTreeDataSource);
-			const connectionProfileGroupRender = instantiationService.createInstance(ConnectionProfileGroupRenderer);
+			const connectionProfileGroupRender = instantiationService.createInstance(ConnectionProfileGroupRenderer, { showColor: true });
 			const connectionProfileRenderer = instantiationService.createInstance(ConnectionProfileRenderer, true);
 			const treeNodeRenderer = instantiationService.createInstance(TreeNodeRenderer);
 			const dnd = instantiationService.createInstance(AsyncRecentConnectionsDragAndDrop);
@@ -88,7 +88,7 @@ export class TreeCreationUtils {
 
 		if (useAsyncServerTree(configurationService)) {
 			const dataSource = instantiationService.createInstance(AsyncServerTreeDataSource);
-			const connectionProfileGroupRender = instantiationService.createInstance(ConnectionProfileGroupRenderer);
+			const connectionProfileGroupRender = instantiationService.createInstance(ConnectionProfileGroupRenderer, { showColor: true });
 			const connectionProfileRenderer = instantiationService.createInstance(ConnectionProfileRenderer, false);
 			const treeNodeRenderer = instantiationService.createInstance(TreeNodeRenderer);
 			const dnd = instantiationService.createInstance(AsyncServerTreeDragAndDrop);

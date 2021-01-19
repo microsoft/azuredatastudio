@@ -20,6 +20,11 @@
     "postinstall": "node ./build/postinstall.js"
   },
   "contributes": {
+    "problemMatchers": [
+      {
+        "name": "tasks"
+      }
+    ],
     "commands": [
       {
         "command": "mssql.exportSqlAsNotebook",
@@ -474,7 +479,7 @@
       "notebook/toolbar": [
         {
           "command": "mssql.exportNotebookToSql",
-          "when": "config.notebook.showNotebookConvertActions && providerId == sql"
+          "when": "config.workbench.enablePreviewFeatures && providerId == sql"
         }
       ]
     },

@@ -85,9 +85,9 @@ function validate(test: TestDefinition, semVerProxy: SymVerProxyTest) {
 	}
 }
 
-suite('SemVeryProxy Tests', function (): void {
+describe('SemVeryProxy Tests', function (): void {
 	testDefinitions.forEach((semVerTest: TestDefinition) => {
-		test(semVerTest.testName, () => {
+		it(semVerTest.testName, () => {
 			const semVerProxy = new SymVerProxyTest(semVerTest.inputVersion);
 			validate(semVerTest, semVerProxy);
 		});

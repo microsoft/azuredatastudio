@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { MiaaResourceInfo, ResourceInfo, ResourceType } from 'arc';
+import { MiaaResourceInfo, PGResourceInfo, ResourceInfo, ResourceType } from 'arc';
 import * as vscode from 'vscode';
-import { UserCancelledError } from '../../common/utils';
+import { UserCancelledError } from '../../common/api';
 import * as loc from '../../localizedConstants';
 import { ControllerModel, Registration } from '../../models/controllerModel';
 import { MiaaModel } from '../../models/miaaModel';
@@ -102,7 +102,11 @@ export class ControllerTreeNode extends TreeNode {
 
 				switch (registration.instanceType) {
 					case ResourceType.postgresInstances:
-						const postgresModel = new PostgresModel(this.model, resourceInfo, registration);
+						// Fill in the username too if we already have it
+						(resourceInfo as PGResourceInfo).userName = (this.model.info.resources.find(info =>
+							info.name === resourceInfo.name &&
+							info.resourceType === resourceInfo.resourceType) as PGResourceInfo)?.userName;
+						const postgresModel = new PostgresModel(this.model, resourceInfo, registration, this._treeDataProvider);
 						node = new PostgresTreeNode(postgresModel, this.model, this._context);
 						break;
 					case ResourceType.sqlManagedInstances:

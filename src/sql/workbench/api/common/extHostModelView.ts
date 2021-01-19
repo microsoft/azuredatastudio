@@ -1271,6 +1271,7 @@ class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonC
 		super(proxy, handle, ModelComponentTypes.RadioButton, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<boolean>());
 	}
 
 	public get name(): string {
@@ -1304,6 +1305,11 @@ class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonC
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}
+
+	public get onDidChangeCheckedState(): vscode.Event<boolean> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
 }
 
 class TextComponentWrapper extends ComponentWrapper implements azdata.TextComponentProperties {
@@ -1325,6 +1331,13 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	}
 	public set title(title: string) {
 		this.setProperty('title', title);
+	}
+
+	public get requiredIndicator(): boolean {
+		return this.properties['requiredIndicator'];
+	}
+	public set requiredIndicator(requiredIndicator: boolean) {
+		this.setProperty('requiredIndicator', requiredIndicator);
 	}
 }
 
@@ -1570,7 +1583,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		// data property though since the caller would still expect that to contain
 		// the Component objects they created
 		const properties = assign({}, this.properties);
-		if (properties.data) {
+		if (properties.data?.length > 0) {
 			properties.data = properties.data.map((row: any[]) => row.map(cell => {
 				if (cell instanceof ComponentWrapper) {
 					// First ensure that we register the component using addItem
@@ -1582,6 +1595,20 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 				}
 				return cell;
 			}));
+		} else {
+			if (properties.dataValues) {
+				properties.dataValues = properties.dataValues.map((row: azdata.DeclarativeTableCellValue[]) => row.map(cell => {
+					if (cell.value instanceof ComponentWrapper) {
+						// First ensure that we register the component using addItem
+						// such that it gets added to the ModelStore. We don't want to
+						// make the table component an actual container since that exposes
+						// a lot of functionality we don't need.
+						this.addItem(cell.value);
+						return { value: cell.value.id, ariaLabel: cell.ariaLabel, style: cell.style };
+					}
+					return cell;
+				}));
+			}
 		}
 		return properties;
 	}
@@ -1639,8 +1666,9 @@ class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonCom
 class LoadingComponentWrapper extends ComponentWrapper implements azdata.LoadingComponent {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.LoadingComponent, id);
-		this.properties = {};
-		this.loading = true;
+		this.properties = {
+			loading: true
+		};
 	}
 
 	public get loading(): boolean {
@@ -1649,6 +1677,30 @@ class LoadingComponentWrapper extends ComponentWrapper implements azdata.Loading
 
 	public set loading(value: boolean) {
 		this.setProperty('loading', value);
+	}
+
+	public get showText(): boolean {
+		return this.properties['showText'];
+	}
+
+	public set showText(value: boolean) {
+		this.setProperty('showText', value);
+	}
+
+	public get loadingText(): string {
+		return this.properties['loadingText'];
+	}
+
+	public set loadingText(value: string) {
+		this.setProperty('loadingText', value);
+	}
+
+	public get loadingCompletedText(): string {
+		return this.properties['loadingCompletedText'];
+	}
+
+	public set loadingCompletedText(value: string) {
+		this.setProperty('loadingCompletedText', value);
 	}
 
 	public get component(): azdata.Component {

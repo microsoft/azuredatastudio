@@ -210,7 +210,12 @@ const apiMenus: IAPIMenu[] = [
 		key: 'connectionDialog/browseTree',
 		id: MenuId.ConnectionDialogBrowseTreeContext,
 		description: localize('connectionDialogBrowseTree.context', "The connection dialog's browse tree context menu")
-	}
+	},
+	{
+		key: 'dataGrid/item/context',
+		id: MenuId.DataGridItemContext,
+		description: localize('dataGrid.context', "The data grid item context menu")
+	},
 	// {{SQL CARBON EDIT}} end menu entries
 ];
 

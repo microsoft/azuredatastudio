@@ -5,7 +5,7 @@
 import 'vs/css!./media/flexContainer';
 
 import {
-	ChangeDetectorRef, ViewChildren, ElementRef, OnDestroy, OnInit, QueryList
+	ChangeDetectorRef, ViewChildren, ElementRef, OnDestroy, QueryList, AfterViewInit
 } from '@angular/core';
 
 import * as types from 'vs/base/common/types';
@@ -20,6 +20,8 @@ import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IComponentDescriptor, IComponent, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
 
@@ -27,7 +29,7 @@ export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) { }
 }
 
-export abstract class ComponentBase<TPropertyBag extends azdata.ComponentProperties> extends Disposable implements IComponent, OnDestroy, OnInit {
+export abstract class ComponentBase<TPropertyBag extends azdata.ComponentProperties> extends Disposable implements IComponent, OnDestroy, AfterViewInit {
 	protected properties: { [key: string]: any; } = {};
 	private _valid: boolean = true;
 	protected _validations: (() => boolean | Thenable<boolean>)[] = [];
@@ -35,7 +37,8 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 
 	constructor(
 		protected _changeRef: ChangeDetectorRef,
-		protected _el: ElementRef) {
+		protected _el: ElementRef,
+		protected logService: ILogService) {
 		super();
 	}
 
@@ -58,7 +61,7 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 		}
 	}
 
-	abstract ngOnInit(): void;
+	abstract ngAfterViewInit(): void;
 
 	protected baseDestroy(): void {
 		if (this.modelStore) {
@@ -83,28 +86,19 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 	public refreshDataProvider(item: any): void {
 	}
 
-	public updateStyles(): void {
-		const element = (<HTMLElement>this._el.nativeElement);
-		for (const style in this.CSSStyles) {
-			element.style[style] = this.CSSStyles[style];
-		}
-	}
-
 	public setProperties(properties: { [key: string]: any; }): void {
 		properties = properties || {};
 		this.properties = properties;
-		this.updateStyles();
 		this.layout();
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	// Helper Function to update single property
 	public updateProperty(key: string, value: any): void {
 		if (key) {
 			this.properties[key] = value;
-			this.updateStyles();
 			this.layout();
-			this.validate();
+			this.validate().catch(onUnexpectedError);
 		}
 	}
 
@@ -123,7 +117,7 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 			eventType: ComponentEventType.PropertiesChanged,
 			args: this.getProperties()
 		});
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	public get enabled(): boolean {
@@ -244,19 +238,18 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 		}
 	}
 
-	public validate(): Thenable<boolean> {
+	public async validate(): Promise<boolean> {
 		let validations = this._validations.map(validation => Promise.resolve(validation()));
-		return Promise.all(validations).then(values => {
-			let isValid = values.every(value => value === true);
-			if (this._valid !== isValid) {
-				this._valid = isValid;
-				this.fireEvent({
-					eventType: ComponentEventType.validityChanged,
-					args: this._valid
-				});
-			}
-			return isValid;
-		});
+		const validationResults = await Promise.all(validations);
+		const isValid = validationResults.every(value => value === true);
+		if (this._valid !== isValid) {
+			this._valid = isValid;
+			this.fireEvent({
+				eventType: ComponentEventType.validityChanged,
+				args: this._valid
+			});
+		}
+		return isValid;
 	}
 
 	public focus(): void {
@@ -280,17 +273,24 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 	@ViewChildren(ModelComponentWrapper) protected _componentWrappers: QueryList<ModelComponentWrapper>;
 	constructor(
 		_changeRef: ChangeDetectorRef,
-		_el: ElementRef
+		_el: ElementRef,
+		logService: ILogService
 	) {
-		super(_changeRef, _el);
+		super(_changeRef, _el, logService);
 		this.items = [];
-		this._validations.push(() => this.items.every(item => {
-			return this.modelStore.getComponent(item.descriptor.id)?.valid || false;
-		}));
+		this._validations.push(() => {
+			this.logService.debug(`Running container validation on component ${this.descriptor.id} to check validity of all child items`);
+			return this.items.every(item => {
+				const valid = this.modelStore.getComponent(item.descriptor.id)?.valid;
+				this.logService.debug(`Child item ${item.descriptor.id} validity is ${valid}`);
+				return valid || false;
+			});
+		});
 	}
 
 	/// IComponent container-related implementation
 	public addToContainer(componentDescriptor: IComponentDescriptor, config: any, index?: number): void {
+		this.logService.debug(`Adding component ${componentDescriptor.id} to container ${this.descriptor.id}`);
 		if (!componentDescriptor) {
 			return;
 		}
@@ -304,11 +304,17 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 		} else {
 			throw new Error(nls.localize('invalidIndex', "The index {0} is invalid.", index));
 		}
-		this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => component.registerEventHandler(event => {
-			if (event.eventType === ComponentEventType.validityChanged) {
-				this.validate();
-			}
-		}));
+
+		this.logService.debug(`Queueing up action to register validation event handler on component ${componentDescriptor.id} in container ${this.descriptor.id}`);
+		this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => {
+			this.logService.debug(`Registering validation event handler on component ${componentDescriptor.id} in container ${this.descriptor.id}`);
+			component.registerEventHandler(async event => {
+				if (event.eventType === ComponentEventType.validityChanged) {
+					this.logService.debug(`Running validation on container ${this.descriptor.id} because validity of child component ${componentDescriptor.id} changed`);
+					this.validate().catch(onUnexpectedError);
+				}
+			});
+		}, true);
 		this._changeRef.detectChanges();
 		this.onItemsUpdated();
 		return;
@@ -332,26 +338,27 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 		this.items = [];
 		this.onItemsUpdated();
 		this._changeRef.detectChanges();
-		this.validate();
+		this.validate().catch(onUnexpectedError);
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this.items.forEach(item => {
 			let component = this.modelStore.getComponent(item.descriptor.id);
-			if (component) {
+			// Let child components control their own enabled status if we don't have one specifically set
+			if (component && properties.enabled !== undefined) {
 				component.enabled = this.enabled;
 			}
 		});
 	}
 
 	public layout(): void {
+		super.layout();
 		if (this._componentWrappers) {
 			this._componentWrappers.forEach(wrapper => {
 				wrapper.layout();
 			});
 		}
-		super.layout();
 	}
 
 	abstract setLayout(layout: any): void;

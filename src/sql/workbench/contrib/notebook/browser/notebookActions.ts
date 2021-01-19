@@ -382,7 +382,7 @@ export class KernelsDropdown extends SelectBox {
 				}
 				this.setOptions(kernels, index);
 			}
-		} else if (this.model.clientSession.isInErrorState) {
+		} else if (this.model.clientSession?.isInErrorState) {
 			kernels.unshift(noKernelName);
 			this.setOptions(kernels, 0);
 		}
@@ -398,7 +398,8 @@ export class KernelsDropdown extends SelectBox {
 	}
 }
 
-export const attachToDropdownElementId = 'attach-to-dropdown';
+const attachToDropdownElementId = 'attach-to-dropdown';
+const saveConnectionNameConfigName = 'notebook.saveConnectionName';
 
 export class AttachToDropdown extends SelectBox {
 	private model: NotebookModel;
@@ -409,6 +410,7 @@ export class AttachToDropdown extends SelectBox {
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@INotificationService private _notificationService: INotificationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false, ariaLabel: attachToLabel, id: attachToDropdownElementId } as ISelectBoxOptionsWithLabel);
 		if (modelReady) {
@@ -444,7 +446,7 @@ export class AttachToDropdown extends SelectBox {
 		let kernelDisplayName: string = this.getKernelDisplayName();
 		if (kernelDisplayName) {
 			this.loadAttachToDropdown(this.model, kernelDisplayName, showSelectConnection);
-		} else if (this.model.clientSession.isInErrorState) {
+		} else if (this.model.clientSession?.isInErrorState) {
 			this.setOptions([localize('noContextAvailable', "None")], 0);
 		}
 	}
@@ -475,7 +477,7 @@ export class AttachToDropdown extends SelectBox {
 			let connections: string[] = [];
 			if (model.context && model.context.title && (connProviderIds.includes(this.model.context.providerName))) {
 				connections.push(model.context.title);
-			} else if (model.savedConnectionName) {
+			} else if (this._configurationService.getValue(saveConnectionNameConfigName) && model.savedConnectionName) {
 				connections.push(model.savedConnectionName);
 			} else {
 				connections.push(msgSelectConnection);
@@ -522,7 +524,7 @@ export class AttachToDropdown extends SelectBox {
 			}
 			let connection = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
 				{
-					connectionType: ConnectionType.temporary,
+					connectionType: ConnectionType.editor,
 					providers: providers
 				},
 				useProfile ? this.model.connectionProfile : undefined);

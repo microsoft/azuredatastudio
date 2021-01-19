@@ -299,14 +299,11 @@ export class QueryEditor extends EditorPane {
 
 				if (providerId === 'MSSQL') {
 					content.push({ element: separator },
-						{ action: this._estimatedQueryPlanAction }, // Preview
-						{ action: this._toggleSqlcmdMode } // Preview)
+						{ action: this._estimatedQueryPlanAction },
+						{ action: this._toggleSqlcmdMode }
 					);
 
-					const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['showNotebookConvertActions'];
-					if (notebookConvertActionsEnabled) {
-						content.push({ action: this._exportAsNotebookAction });
-					}
+					content.push({ action: this._exportAsNotebookAction });
 				}
 			} else {
 				content = [
@@ -317,15 +314,6 @@ export class QueryEditor extends EditorPane {
 					{ action: this._changeConnectionAction },
 					{ action: this._listDatabasesAction }
 				];
-
-				if (providerId === 'MSSQL') {
-					const notebookConvertActionsEnabled = this.configurationService.getValue('notebook')['notebook.showNotebookConvertActions'];
-					if (notebookConvertActionsEnabled) {
-						content.push(
-							{ element: separator },
-							{ action: this._exportAsNotebookAction });
-					}
-				}
 			}
 		}
 
@@ -480,6 +468,14 @@ export class QueryEditor extends EditorPane {
 	 */
 	public focus(): void {
 		this.currentTextEditor.focus();
+	}
+
+	public toggleFocusBetweenQueryEditorAndResults(): void {
+		if (!this.resultsVisible || this.resultsEditorContainer.contains(document.activeElement)) {
+			this.focus();
+		} else {
+			this.resultsEditor.focus();
+		}
 	}
 
 	/**

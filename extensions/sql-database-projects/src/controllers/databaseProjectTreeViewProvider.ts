@@ -28,6 +28,10 @@ export class SqlDatabaseProjectTreeViewProvider implements vscode.TreeDataProvid
 		this.roots = [];
 	}
 
+	public notifyTreeDataChanged() {
+		this._onDidChangeTreeData.fire(undefined);
+	}
+
 	public getTreeItem(element: BaseProjectTreeItem): vscode.TreeItem {
 		return element.treeItem;
 	}

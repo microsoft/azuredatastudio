@@ -230,7 +230,7 @@ describe('Jupyter Server Installation', function () {
 			version: '1.0.0'
 		}, {
 			name: 'powershell-kernel',
-			version: '0.1.3'
+			version: '0.1.4'
 		}];
 		let packages = installation.getRequiredPackagesForKernel(powershellDisplayName);
 		should(packages).be.deepEqual(expectedPackages);
@@ -246,9 +246,6 @@ describe('Jupyter Server Installation', function () {
 		}, {
 			name: 'pandas',
 			version: '0.24.2'
-		}, {
-			name: 'prose-codeaccelerator',
-			version: '1.3.0'
 		}];
 		let packages = installation.getRequiredPackagesForKernel(pysparkDisplayName);
 		should(packages).be.deepEqual(expectedPackages, "Unexpected packages for PySpark kernel.");

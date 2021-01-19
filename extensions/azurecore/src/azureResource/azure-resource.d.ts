@@ -8,6 +8,10 @@ declare module 'azureResource' {
 	import { DataProvider, Account, TreeItem } from 'azdata';
 	export namespace azureResource {
 
+		/**
+		 * AzureCore core extension supports following resource types of Azure Resource Graph.
+		 * To add more resources, please refer this guide: https://docs.microsoft.com/en-us/azure/governance/resource-graph/reference/supported-tables-resources
+		 */
 		export const enum AzureResourceType {
 			resourceGroup = 'microsoft.resources/subscriptions/resourcegroups',
 			sqlServer = 'microsoft.sql/servers',
@@ -18,7 +22,8 @@ declare module 'azureResource' {
 			kustoClusters = 'microsoft.kusto/clusters',
 			azureArcPostgresServer = 'microsoft.azuredata/postgresinstances',
 			postgresServer = 'microsoft.dbforpostgresql/servers',
-			azureArcService = 'microsoft.azuredata/datacontrollers'
+			azureArcService = 'microsoft.azuredata/datacontrollers',
+			storageAccount = 'microsoft.storage/storageaccounts',
 		}
 
 		export interface IAzureResourceProvider extends DataProvider {
@@ -26,6 +31,7 @@ declare module 'azureResource' {
 		}
 
 		export interface IAzureResourceTreeDataProvider extends TreeDataProvider<IAzureResourceNode> {
+			browseConnectionMode: boolean;
 		}
 
 		export interface IAzureResourceNode {
@@ -35,23 +41,29 @@ declare module 'azureResource' {
 			readonly treeItem: TreeItem;
 		}
 
+		export interface IAzureSubscriptionInfo {
+			id: string;
+			name: string;
+		}
+
 		export interface AzureResource {
 			name: string;
 			id: string;
-			subscriptionId: string;
+			subscription: IAzureSubscriptionInfo;
 			resourceGroup?: string;
 			tenant?: string;
 		}
 
-		export interface AzureResourceSubscription extends Omit<AzureResource, 'subscriptionId'> {
+		export interface AzureResourceSubscription extends Omit<AzureResource, 'subscription'> {
 		}
 
 		export interface AzureSqlResource extends AzureResource {
 			loginName: string;
 		}
 
-		export interface AzureGraphResource extends Omit<AzureResource, 'tenant'> {
+		export interface AzureGraphResource extends Omit<AzureResource, 'tenant' | 'subscription'> {
 			tenantId: string;
+			subscriptionId: string;
 			type: string;
 			location: string;
 		}
@@ -68,7 +80,8 @@ declare module 'azureResource' {
 			fullName: string;
 			defaultDatabaseName: string;
 		}
+		export interface BlobContainer extends AzureResource { }
 
-
+		export interface FileShare extends AzureResource { }
 	}
 }

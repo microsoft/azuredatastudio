@@ -6,7 +6,6 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
-import { LoadingComponentProperties } from 'azdata';
 
 declare module 'azdata' {
 	/**
@@ -74,8 +73,12 @@ declare module 'azdata' {
 			data: any;
 		}
 
-		export interface ICellOutputMetadata {
-			resultSet?: ResultSetSummary;
+		export interface INotebookMetadata {
+			connection_name?: string;
+		}
+
+		export interface ICellMetadata {
+			connection_name?: string;
 		}
 
 		export interface INotebookMetadata {
@@ -148,7 +151,11 @@ declare module 'azdata' {
 		DataGridProvider = 'DataGridProvider'
 	}
 
+	/**
+	 * The type of the DataGrid column
+	 */
 	export type DataGridColumnType = 'hyperlink' | 'text' | 'image';
+
 	/**
 	 * A column in a data grid
 	 */
@@ -208,9 +215,13 @@ declare module 'azdata' {
 		 */
 		id: string;
 		/**
+		 * The text to display for the action
+		 */
+		displayText?: string;
+		/**
 		 * The optional args to pass to the command
 		 */
-		args?: string[];
+		args?: any[];
 	}
 
 	/**
@@ -235,12 +246,9 @@ declare module 'azdata' {
 		 * A unique identifier for this item
 		 */
 		id: string;
+
 		/**
-		 * The optional icon to display for this item
-		 */
-		iconPath?: string;
-		/**
-		 * The other properties that will be displayed in the grid
+		 * The other properties that will be displayed in the grid columns
 		 */
 		[key: string]: string | DataGridHyperlinkInfo;
 	}
@@ -257,13 +265,29 @@ declare module 'azdata' {
 		 * Gets the list of data grid columns for this provider
 		 */
 		getDataGridColumns(): Thenable<DataGridColumn[]>;
+
+		/**
+		 * The user visible string to use for the title of the grid
+		 */
+		title: string;
 	}
 
 	export interface HyperlinkComponent {
 		/**
-		 * An event called when the text is clicked
+		 * An event called when the hyperlink is clicked
 		 */
 		onDidClick: vscode.Event<any>;
+	}
+
+	export interface HyperlinkComponentProperties {
+		showLinkIcon?: boolean;
+	}
+
+	export interface RadioButtonComponent {
+		/**
+		 * An event called when the value of radio button changes
+		 */
+		onDidChangeCheckedState: vscode.Event<boolean>;
 	}
 
 	export interface DeclarativeTableColumn {
@@ -406,7 +430,7 @@ declare module 'azdata' {
 	}
 
 	export interface DeclarativeTableCellValue {
-		value: string | number | boolean;
+		value: string | number | boolean | Component;
 		ariaLabel?: string;
 		style?: CssStyles
 	}
@@ -806,6 +830,19 @@ declare module 'azdata' {
 		title: string;
 	}
 
+	export namespace workspace {
+		/**
+		 * Creates and enters a workspace at the specified location
+		 */
+		export function createWorkspace(location: vscode.Uri, workspaceFile?: vscode.Uri): Promise<void>;
+
+		/**
+		 * Enters the workspace with the provided path
+		 * @param workspacefile
+		 */
+		export function enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+	}
+
 	export interface TableComponentProperties {
 		/**
 		 * Specifies whether to use headerFilter plugin
@@ -814,10 +851,87 @@ declare module 'azdata' {
 	}
 
 	export interface TableComponent {
-
 		/**
 		 * Append data to an exsiting table data.
 		 */
 		appendData(data: any[][]);
+	}
+
+	export interface IconColumnCellValue {
+		/**
+		 * The icon to be displayed.
+		 */
+		icon: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		/**
+		 * The title of the icon.
+		 */
+		title: string;
+	}
+
+	export interface ButtonColumnCellValue {
+		/**
+		 * The icon to be displayed.
+		 */
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		/**
+		 * The title of the button.
+		 */
+		title?: string;
+	}
+
+	export interface HyperlinkColumnCellValue {
+		/**
+		 * The icon to be displayed.
+		 */
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		/**
+		 * The title of the hyperlink.
+		 */
+		title?: string;
+
+		/**
+		 * The url to open.
+		 */
+		url?: string;
+	}
+
+	export enum ColumnType {
+		icon = 3,
+		hyperlink = 4
+	}
+
+	export interface TableColumn {
+		/**
+		 * The text to display on the column heading. 'value' property will be used, if not specified
+		 */
+		name?: string;
+	}
+
+	export interface IconColumnOptions {
+		/**
+		 * The icon to use for all the cells in this column.
+		 */
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+	}
+
+	export interface ButtonColumn extends IconColumnOptions, TableColumn {
+		/**
+		 * Whether to show the text, default value is false.
+		 */
+		showText?: boolean;
+	}
+
+	export interface HyperlinkColumn extends IconColumnOptions, TableColumn {
+	}
+
+	export interface CheckboxColumn extends TableColumn {
+		action: ActionOnCellCheckboxCheck;
+	}
+
+	export enum AzureResource {
+		/**
+		 * Microsoft Graph
+		 */
+		MsGraph = 7
 	}
 }

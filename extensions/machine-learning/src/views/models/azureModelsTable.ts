@@ -132,11 +132,13 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 
 				if (this.isTableEmpty) {
 					this._table.dataValues = [];
+					this._table.data = [];
 				} else {
 					this._table.data = tableData;
 				}
 			} else {
 				this._table.dataValues = [];
+				this._table.data = [];
 			}
 		}
 		this._onModelSelectionChanged.fire();

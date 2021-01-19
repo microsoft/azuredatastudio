@@ -25,14 +25,14 @@ before(function (): void {
 	testContext = createContext();
 });
 
-describe('SchemaCompareDialog.openDialog', function (): void {
+describe('SchemaCompareDialog.openDialog @DacFx@', function (): void {
 	before(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
 	});
 
 	it('Should be correct when created.', async function (): Promise<void> {
-		let schemaCompareResult = new SchemaCompareMainWindow(testContext.apiWrapper.object, undefined, mockExtensionContext.object);
+		let schemaCompareResult = new SchemaCompareMainWindow(undefined, mockExtensionContext.object);
 		let dialog = new SchemaCompareDialog(schemaCompareResult);
 		await dialog.openDialog();
 
@@ -42,7 +42,7 @@ describe('SchemaCompareDialog.openDialog', function (): void {
 	});
 
 	it('Simulate ok button- with both endpoints set to dacpac', async function (): Promise<void> {
-		let schemaCompareResult = new SchemaCompareMainWindowTest(testContext.apiWrapper.object, undefined, mockExtensionContext.object);
+		let schemaCompareResult = new SchemaCompareMainWindowTest(undefined, mockExtensionContext.object, undefined);
 		await schemaCompareResult.start(undefined);
 		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
 		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
@@ -53,7 +53,7 @@ describe('SchemaCompareDialog.openDialog', function (): void {
 		await dialog.execute();
 
 		// Confirm that ok button got clicked
-		schemaCompareResult.verifyButtonsState( {
+		schemaCompareResult.verifyButtonsState({
 			compareButtonState: true,
 			optionsButtonState: true,
 			switchButtonState: true,
@@ -64,6 +64,6 @@ describe('SchemaCompareDialog.openDialog', function (): void {
 			selectTargetButtonState: true,
 			generateScriptButtonState: false,
 			applyButtonState: false
-		} );
+		});
 	});
 });

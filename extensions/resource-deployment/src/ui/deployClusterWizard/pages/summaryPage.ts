@@ -9,7 +9,7 @@ import { createSection, createGroupContainer, createFlexContainer, createLabel }
 import * as VariableNames from '../constants';
 import { AuthenticationMode, DeployClusterWizardModel } from '../deployClusterWizardModel';
 import * as localizedConstants from '../../../localizedConstants';
-import { ResourceTypePage } from '../../resourceTypeWizard';
+import { ResourceTypePage } from '../../resourceTypePage';
 const localize = nls.loadMessageBundle();
 
 export class SummaryPage extends ResourceTypePage {

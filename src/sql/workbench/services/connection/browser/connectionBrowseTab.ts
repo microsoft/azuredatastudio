@@ -3,57 +3,68 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/connectionBrowseTab';
+import { IConnectionProfile } from 'azdata';
+import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { ITreeItem } from 'sql/workbench/common/views';
 import { IConnectionTreeDescriptor, IConnectionTreeService } from 'sql/workbench/services/connection/common/connectionTreeService';
+import { AsyncRecentConnectionTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/asyncRecentConnectionTreeDataSource';
+import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { ConnectionProfileRenderer, TreeNodeRenderer } from 'sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer';
+import { ServerTreeRenderer } from 'sql/workbench/services/objectExplorer/browser/serverTreeRenderer';
+import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
+import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import * as DOM from 'vs/base/browser/dom';
+import { status } from 'vs/base/browser/ui/aria/aria';
 import { IIdentityProvider, IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
-import { IAsyncDataSource, ITreeMouseEvent, ITreeNode, ITreeRenderer } from 'vs/base/browser/ui/tree/tree';
+import { ProgressBar } from 'vs/base/browser/ui/progressbar/progressbar';
+import { IAsyncDataSource, ITreeNode, ITreeRenderer } from 'vs/base/browser/ui/tree/tree';
+import { IAction } from 'vs/base/common/actions';
+import { debounce } from 'vs/base/common/decorators';
+import { Emitter, Event } from 'vs/base/common/event';
 import { Iterable } from 'vs/base/common/iterator';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { basename, dirname } from 'vs/base/common/resources';
 import { isString } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
+import 'vs/css!./media/connectionBrowseTab';
 import { localize } from 'vs/nls';
+import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { FileKind } from 'vs/platform/files/common/files';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { WorkbenchAsyncDataTree } from 'vs/platform/list/browser/listService';
+import { attachProgressBarStyler } from 'vs/platform/theme/common/styler';
+import { ColorScheme } from 'vs/platform/theme/common/theme';
 import { FileThemeIcon, FolderThemeIcon, IThemeService, ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { IResourceLabel, ResourceLabels } from 'vs/workbench/browser/labels';
 import { ITreeItemLabel, ITreeViewDataProvider, TreeItemCollapsibleState, TreeViewItemHandleArg } from 'vs/workbench/common/views';
-import { Emitter, Event } from 'vs/base/common/event';
-import { AsyncRecentConnectionTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/asyncRecentConnectionTreeDataSource';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
-import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
-import { ServerTreeRenderer } from 'sql/workbench/services/objectExplorer/browser/serverTreeRenderer';
-import { ConnectionProfileGroupRenderer, ConnectionProfileRenderer, TreeNodeRenderer } from 'sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer';
-import { ColorScheme } from 'vs/platform/theme/common/theme';
-import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
-import { debounce } from 'vs/base/common/decorators';
-import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
-import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { IAction } from 'vs/base/common/actions';
-import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+
+
 
 export type TreeElement = ConnectionDialogTreeProviderElement | ITreeItemFromProvider | SavedConnectionNode | ServerTreeElement;
 
 export class ConnectionBrowseTab implements IPanelTab {
-	public readonly title = localize('connectionDialog.browser', "Browse");
+	public readonly title = localize('connectionDialog.browser', "Browse (Preview)");
 	public readonly identifier = 'connectionBrowse';
 	public readonly view = this.instantiationService.createInstance(ConnectionBrowserView);
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService) { }
+}
+
+export interface SelectedConnectionChangedEventArgs {
+	connectionProfile: IConnectionProfile,
+	connect: boolean
 }
 
 export class ConnectionBrowserView extends Disposable implements IPanelView {
@@ -64,14 +75,12 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 	private treeLabels: ResourceLabels | undefined;
 	private treeDataSource: DataSource | undefined;
 	private readonly contextKey = new ContextKey(this.contextKeyService);
+	private filterProgressBar: ProgressBar | undefined;
 
 	public onDidChangeVisibility = Event.None;
 
-	private readonly _onSelect = this._register(new Emitter<ITreeMouseEvent<TreeElement>>());
-	public readonly onSelect = this._onSelect.event;
-
-	private readonly _onDblClick = this._register(new Emitter<ITreeMouseEvent<TreeElement>>());
-	public readonly onDblClick = this._onDblClick.event;
+	private readonly _onSelectedConnectionChanged = this._register(new Emitter<SelectedConnectionChangedEventArgs>());
+	public readonly onSelectedConnectionChanged = this._onSelectedConnectionChanged.event;
 
 	constructor(
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
@@ -99,6 +108,9 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 			placeholder: localize('connectionDialog.FilterPlaceHolder', "Type here to filter the list"),
 			ariaLabel: localize('connectionDialog.FilterInputTitle', "Filter connections")
 		});
+		this.filterProgressBar = new ProgressBar(this.filterInput.element);
+		this._register(this.filterProgressBar);
+		this._register(attachProgressBarStyler(this.filterProgressBar, this.themeService));
 		this.filterInput.element.style.margin = '5px';
 		this._register(this.filterInput);
 		this._register(attachInputBoxStyler(this.filterInput, this.themeService));
@@ -109,9 +121,17 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 
 	@debounce(500)
 	async applyFilter(): Promise<void> {
+		const applyingFilterStatusMessage = this.filterInput.value ? localize('connectionDialog.ApplyingFilter', "Applying filter")
+			: localize('connectionDialog.RemovingFilter', "Removing filter");
+		const filterAppliedStatusMessage = this.filterInput.value ? localize('connectionDialog.FilterApplied', "Filter applied")
+			: localize('connectionDialog.FilterRemoved', "Filter removed");
+		status(applyingFilterStatusMessage);
+		this.filterProgressBar.infinite().show(100);
 		this.treeDataSource.setFilter(this.filterInput.value);
 		await this.refresh();
 		await this.expandAll();
+		this.filterProgressBar.hide();
+		status(filterAppliedStatusMessage);
 	}
 
 	async expandAll(): Promise<void> {
@@ -180,19 +200,12 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 				});
 			}
 		}));
-		this._register(this.tree.onMouseDblClick(e => this._onDblClick.fire(e)));
-		this._register(this.tree.onMouseClick(e => this._onSelect.fire(e)));
+		this._register(this.tree.onMouseDblClick(e => {
+			this.handleTreeElementSelection(e?.element, true);
+		}));
+
 		this._register(this.tree.onDidOpen((e) => {
-			if (!e.browserEvent) {
-				return;
-			}
-			const selection = this.tree.getSelection();
-			if (selection.length === 1) {
-				const selectedNode = selection[0];
-				if ('element' in selectedNode && selectedNode.element.command) {
-					this.commandService.executeCommand(selectedNode.element.command.id, ...(selectedNode.element.command.arguments || []));
-				}
-			}
+			this.handleTreeElementSelection(e?.element, false);
 		}));
 
 		this.tree.setInput(this.model);
@@ -215,6 +228,34 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		this._register(this.capabilitiesService.onCapabilitiesRegistered(() => {
 			this.updateSavedConnectionsNode();
 		}));
+
+		this._register(this.themeService.onDidColorThemeChange(async () => {
+			await this.refresh();
+		}));
+	}
+
+	private handleTreeElementSelection(selectedNode: TreeElement, connect: boolean): void {
+		if (!selectedNode) {
+			return;
+		}
+		if ('element' in selectedNode) {
+			if (selectedNode.element.command) {
+				this.commandService.executeCommand(selectedNode.element.command.id, ...(selectedNode.element.command.arguments || []));
+			} else {
+				if (selectedNode.element.payload) {
+					this._onSelectedConnectionChanged.fire(
+						{
+							connectionProfile: selectedNode.element.payload,
+							connect: connect
+						});
+				}
+			}
+		} else if (selectedNode instanceof ConnectionProfile) {
+			this._onSelectedConnectionChanged.fire({
+				connectionProfile: selectedNode,
+				connect: connect
+			});
+		}
 	}
 
 	private updateSavedConnectionsNode(): void {
@@ -244,7 +285,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 export interface ITreeItemFromProvider {
 	readonly element: ITreeItem;
 	readonly treeId?: string;
-	getChildren?(): Promise<ITreeItemFromProvider[]>
+	getChildren?(): Promise<ITreeItemFromProvider[]>;
 }
 
 export function instanceOfITreeItemFromProvider(obj: any): obj is ITreeItemFromProvider {
@@ -279,7 +320,7 @@ class ListDelegate implements IListVirtualDelegate<TreeElement> {
 		} else if (element instanceof ConnectionProfile) {
 			return ServerTreeRenderer.CONNECTION_TEMPLATE_ID;
 		} else if (element instanceof ConnectionProfileGroup) {
-			return ServerTreeRenderer.CONNECTION_GROUP_TEMPLATE_ID;
+			return ConnectionProfileGroupRenderer.TEMPLATE_ID;
 		} else if (element instanceof TreeNode) {
 			return ServerTreeRenderer.OBJECTEXPLORER_TEMPLATE_ID;
 		} else if (element instanceof SavedConnectionNode) {
@@ -290,49 +331,68 @@ class ListDelegate implements IListVirtualDelegate<TreeElement> {
 	}
 }
 
-interface ProviderElementTemplate {
+interface TreeElementTemplate {
 	readonly icon: HTMLElement;
 	readonly name: HTMLElement;
 }
 
-class ProviderElementRenderer implements ITreeRenderer<ConnectionDialogTreeProviderElement, void, ProviderElementTemplate> {
+abstract class BaseTreeItemRender<T> implements ITreeRenderer<T, void, TreeElementTemplate> {
+	public readonly abstract templateId: string;
+	protected abstract getText(element: T): string;
+	protected abstract getIconClass(element: T): string;
+
+	renderTemplate(container: HTMLElement): TreeElementTemplate {
+		const root = DOM.append(container, DOM.$('div.browse-tree-element'));
+		const icon = DOM.append(root, DOM.$('.icon'));
+		const name = DOM.append(root, DOM.$('.name'));
+		return { name, icon };
+	}
+
+	renderElement(element: ITreeNode<T, void>, index: number, templateData: TreeElementTemplate, height: number): void {
+		templateData.name.innerText = this.getText(element.element);
+		templateData.icon.classList.add('codicon', this.getIconClass(element.element));
+	}
+
+	disposeTemplate(templateData: TreeElementTemplate): void {
+	}
+}
+
+class ProviderElementRenderer extends BaseTreeItemRender<ConnectionDialogTreeProviderElement> {
 	public static readonly TEMPLATE_ID = 'ProviderElementTemplate';
 	public readonly templateId = ProviderElementRenderer.TEMPLATE_ID;
 
-	renderTemplate(container: HTMLElement): ProviderElementTemplate {
-		const icon = DOM.append(container, DOM.$('.icon'));
-		const name = DOM.append(container, DOM.$('.name'));
-		return { name, icon };
+	getText(element: ConnectionDialogTreeProviderElement): string {
+		return element.name;
 	}
 
-	renderElement(element: ITreeNode<ConnectionDialogTreeProviderElement, void>, index: number, templateData: ProviderElementTemplate, height: number): void {
-		templateData.name.innerText = element.element.name;
-	}
-
-	disposeTemplate(templateData: ProviderElementTemplate): void {
+	getIconClass(element: ConnectionDialogTreeProviderElement): string {
+		return 'codicon-folder';
 	}
 }
 
-interface SavedConnectionNodeElementTemplate {
-	readonly icon: HTMLElement;
-	readonly name: HTMLElement;
-}
-
-class SavedConnectionsNodeRenderer implements ITreeRenderer<ConnectionDialogTreeProviderElement, void, SavedConnectionNodeElementTemplate> {
+class SavedConnectionsNodeRenderer extends BaseTreeItemRender<SavedConnectionNode> {
 	public static readonly TEMPLATE_ID = 'savedConnectionNode';
 	public readonly templateId = SavedConnectionsNodeRenderer.TEMPLATE_ID;
 
-	renderTemplate(container: HTMLElement): SavedConnectionNodeElementTemplate {
-		const icon = DOM.append(container, DOM.$('.icon'));
-		const name = DOM.append(container, DOM.$('.name'));
-		return { name, icon };
+	getText(element: SavedConnectionNode): string {
+		return localize('savedConnections', "Saved Connections");
 	}
 
-	renderElement(element: ITreeNode<ConnectionDialogTreeProviderElement, void>, index: number, templateData: SavedConnectionNodeElementTemplate, height: number): void {
-		templateData.name.innerText = localize('savedConnections', "Saved Connections");
+	getIconClass(element: SavedConnectionNode): string {
+		return 'codicon-folder';
+	}
+}
+
+class ConnectionProfileGroupRenderer extends BaseTreeItemRender<ConnectionProfileGroup>{
+	public static readonly TEMPLATE_ID = 'connectionProfileGroup';
+	public readonly templateId = ConnectionProfileGroupRenderer.TEMPLATE_ID;
+
+	getText(element: ConnectionProfileGroup): string {
+		return element.name;
 	}
 
-	disposeTemplate(templateData: SavedConnectionNodeElementTemplate): void {
+	getIconClass(element: ConnectionProfileGroup): string {
+		return 'codicon-folder';
 	}
 }
 
@@ -411,7 +471,7 @@ class DataSource implements IAsyncDataSource<TreeModel, TreeElement> {
 		} else if (element instanceof ConnectionProfile) {
 			return false;
 		} else if (element instanceof ConnectionProfileGroup) {
-			return element.hasChildren();
+			return true;
 		} else if (element instanceof TreeNode) {
 			return element.children.length > 0;
 		} else if (element instanceof SavedConnectionNode) {
@@ -425,7 +485,11 @@ class DataSource implements IAsyncDataSource<TreeModel, TreeElement> {
 
 	public get expandableTreeNodes(): TreeElement[] {
 		return this.treeNodes.filter(node => {
-			return instanceOfITreeItemFromProvider(node) && node.element.collapsibleState !== TreeItemCollapsibleState.None;
+			return (node instanceof TreeModel)
+				|| (node instanceof ConnectionDialogTreeProviderElement)
+				|| (node instanceof SavedConnectionNode)
+				|| (node instanceof ConnectionProfileGroup)
+				|| (instanceOfITreeItemFromProvider(node) && node.element.collapsibleState !== TreeItemCollapsibleState.None);
 		});
 	}
 
@@ -440,11 +504,7 @@ class DataSource implements IAsyncDataSource<TreeModel, TreeElement> {
 					children = (children as (ConnectionProfile | ConnectionProfileGroup)[]).filter(item => {
 						return (item instanceof ConnectionProfileGroup) || this._filterRegex.test(item.title);
 					});
-				} else if (
-					!(element instanceof TreeModel) &&
-					!(element instanceof TreeNode) &&
-					!(element instanceof ConnectionDialogTreeProviderElement)
-				) {
+				} else if (instanceOfITreeItemFromProvider(element)) {
 					children = (children as ITreeItemFromProvider[]).filter(item => {
 						return item.element.collapsibleState !== TreeItemCollapsibleState.None || this._filterRegex.test(item.element.label.label);
 					});

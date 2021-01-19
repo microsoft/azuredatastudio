@@ -61,6 +61,7 @@ export const RegisterAzureModelEventName = 'registerAzureLocalModel';
 export const DownloadAzureModelEventName = 'downloadAzureLocalModel';
 export const DownloadRegisteredModelEventName = 'downloadRegisteredModel';
 export const PredictModelEventName = 'predictModel';
+export const PredictWizardEventName = 'predictWizard';
 export const RegisterModelEventName = 'registerModel';
 export const EditModelEventName = 'editModel';
 export const UpdateModelEventName = 'updateModel';
@@ -108,7 +109,8 @@ export abstract class ModelViewBase extends ViewBase {
 			EditModelEventName,
 			UpdateModelEventName,
 			DeleteModelEventName,
-			SignInToAzureEventName]);
+			SignInToAzureEventName,
+			PredictWizardEventName]);
 	}
 
 	/**

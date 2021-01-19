@@ -35,9 +35,15 @@ export async function connectToServer(connectionInfo: TestConnectionInfo, timeou
 		options: {}
 	};
 	await ensureConnectionViewOpened();
-	let result = <azdata.ConnectionResult>await azdata.connection.connect(connectionProfile);
-	assert(result.connected, `Failed to connect to "${connectionProfile.serverName}", error code: ${result.errorCode}, error message: ${result.errorMessage}`);
 
+	// Try connecting 3 times
+	let result = await retryFunction(
+		async () => {
+			let connection = <azdata.ConnectionResult>await azdata.connection.connect(connectionProfile);
+			assert(connection?.connected, `Failed to connect to "${connectionProfile.serverName}", error code: ${connection.errorCode}, error message: ${connection.errorMessage}`);
+			return connection;
+
+		}, 3);
 	//workaround
 	//wait for OE to load
 	await pollTimeout(async () => {
@@ -179,6 +185,26 @@ export async function runQuery(query: string, ownerUri: string): Promise<azdata.
 	}
 
 }
+
+export async function retryFunction<T>(fn: () => Promise<T>, retryCount: number): Promise<T> {
+	let attempts: number = 1;
+	while (attempts <= retryCount) {
+		try {
+			return await fn();
+		}
+		catch (e) {
+			console.error(`utils.retryFunction: Attempt #${attempts} from ${retryCount} failed. Error: ${e}`);
+			if (attempts === retryCount) {
+				throw e;
+			}
+		}
+
+		await sleep(10000);
+		attempts++;
+	}
+	throw new Error(`utils.retryFunction: Failed after ${attempts} attempts`);
+}
+
 
 export async function assertThrowsAsync(fn: () => Promise<any>, msg: string): Promise<void> {
 	let f = () => {

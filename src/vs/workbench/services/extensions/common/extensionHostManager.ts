@@ -206,7 +206,7 @@ export class ExtensionHostManager extends Disposable {
 
 		// Check that no named customers are missing
 		// {{SQL CARBON EDIT}} filter out services we don't expose
-		const filtered: ProxyIdentifier<any>[] = [MainContext.MainThreadDebugService, MainContext.MainThreadTask];
+		const filtered: ProxyIdentifier<any>[] = [MainContext.MainThreadDebugService];
 		const expected: ProxyIdentifier<any>[] = Object.keys(MainContext).map((key) => (<any>MainContext)[key]).filter(v => !filtered.some(x => x === v));
 		this._rpcProtocol.assertRegistered(expected);
 

@@ -107,18 +107,21 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 		this._selectedSourceLabel = modelBuilder.text().withProperties({
 			value: this.getSourceTypeDescription(this._sourceType),
 			CSSStyles: {
-				'font-size': '14px',
+				'font-size': '13px',
 				'margin': '0',
 				'width': '438px'
 			}
 		}).component();
 
 		this._toDispose.push(radioCardGroup.onSelectionChanged(({ cardId }) => {
-			this._sourceType = this.convertSourceIdToEnum(cardId);
-			if (this._selectedSourceLabel) {
-				this._selectedSourceLabel.value = this.getSourceTypeDescription(this._sourceType);
+			const selectedValue = this.convertSourceIdToEnum(cardId);
+			if (selectedValue !== this._sourceType) {
+				this._sourceType = selectedValue;
+				if (this._selectedSourceLabel) {
+					this._selectedSourceLabel.value = this.getSourceTypeDescription(this._sourceType);
+				}
+				this.sendRequest(SourceModelSelectedEventName, this._sourceType);
 			}
-			this.sendRequest(SourceModelSelectedEventName, this._sourceType);
 		}));
 
 		this._form = modelBuilder.formContainer().withFormItems([{
