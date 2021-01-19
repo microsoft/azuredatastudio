@@ -110,16 +110,3 @@ export class NotebookViewsCardComponent implements OnInit {
 		return this.cell.active;
 	}
 }
-
-registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
-	collector.addRule(`
-		.notebook-button.toolbarIconStop {
-			background-color: white;
-			margin: 0 2px;
-			background-size: 20px 25px;
-			height: 24px;
-			width: 29px;
-			background-repeat: no-repeat;
-		}
-	`);
-});
