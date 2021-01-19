@@ -35,6 +35,14 @@ export async function getSubscriptions(account: azdata.Account): Promise<Subscri
 
 export type AzureProduct = azureResource.AzureGraphResource;
 
+export type ResourceGroup = azureResource.AzureResource;
+export async function getResourceGroups(account: azdata.Account, subscription: Subscription): Promise<ResourceGroup[]> {
+	const api = await getAzureCoreAPI();
+	const result = await api.getResourceGroups(account, subscription, false);
+	sortResourceArrayByName(result.resourceGroups);
+	return result.resourceGroups;
+}
+
 export type SqlManagedInstance = AzureProduct;
 export async function getAvailableManagedInstanceProducts(account: azdata.Account, subscription: Subscription): Promise<SqlManagedInstance[]> {
 	const api = await getAzureCoreAPI();
@@ -81,6 +89,14 @@ export async function getBlobContainers(account: azdata.Account, subscription: S
 	let blobContainers = result.blobContainers;
 	sortResourceArrayByName(blobContainers!);
 	return blobContainers!;
+}
+
+export async function getMigrationControllers(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string): Promise<azureResource.MigrationController[]> {
+	const api = await getAzureCoreAPI();
+	let result = await api.getMigrationControllers(account, subscription, resourceGroupName, regionName, true);
+	let controllers = result.controllers;
+	sortResourceArrayByName(controllers!);
+	return controllers!;
 }
 
 function sortResourceArrayByName(resourceArray: AzureProduct[] | azureResource.FileShare[] | azureResource.BlobContainer[] | undefined): void {

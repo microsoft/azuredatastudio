@@ -7,7 +7,7 @@ import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import axios, { AxiosRequestConfig } from 'axios';
 import * as azdata from 'azdata';
-import { HttpGetRequestResult, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult } from 'azurecore';
+import { HttpGetRequestResult, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, GetMigrationControllersResult } from 'azurecore';
 import { azureResource } from 'azureResource';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
@@ -383,6 +383,18 @@ export async function getFileShares(account: azdata.Account, subscription: azure
 	const response = await makeHttpGetRequest(account, subscription, ignoreErrors, apiEndpoint);
 	return {
 		fileShares: response.response.data.value,
+		errors: response.errors ? response.errors : []
+	};
+}
+
+export async function getMigrationControllers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, regionName: string, ignoreErrors: boolean): Promise<GetMigrationControllersResult> {
+	const apiEndpoint = `https://` + regionName + `.management.azure.com` +
+		`/subscriptions/${subscription.id}` +
+		`/resourceGroups/${resourceGroupName}` +
+		`/providers/Microsoft.DataMigration/Controllers/default/shares?api-version=2020-09-01-preview`;
+	const response = await makeHttpGetRequest(account, subscription, ignoreErrors, apiEndpoint);
+	return {
+		controllers: response.response.data.value,
 		errors: response.errors ? response.errors : []
 	};
 }
