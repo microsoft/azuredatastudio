@@ -435,7 +435,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled();
 		let areRequiredPackagesInstalled = await this.areRequiredPackagesInstalled(kernelDisplayName);
 		if (!isPythonInstalled || !areRequiredPackagesInstalled) {
-			let pythonWizard = new ConfigurePythonWizard(this, this.outputChannel);
+			let pythonWizard = new ConfigurePythonWizard(this);
 			await pythonWizard.start(kernelDisplayName, true);
 			return pythonWizard.setupComplete.then(() => {
 				this._kernelSetupCache.set(kernelDisplayName, true);

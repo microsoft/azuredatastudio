@@ -610,7 +610,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.5"
+                "version": "20.2.6"
               }
             ],
             "when": true
@@ -663,6 +663,8 @@
                               "variableNames": {
                                 "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
                                 "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
+                                "kubeConfig": "AZDATA_NB_VAR_CONTROLLER_KUBECONFIG",
+                                "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT",
                                 "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
                               }
                             },
@@ -789,7 +791,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.5"
+                "version": "20.2.6"
               }
             ],
             "when": "true"
@@ -855,6 +857,8 @@
                               "variableNames": {
                                 "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
                                 "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
+                                "kubeConfig": "AZDATA_NB_VAR_CONTROLLER_KUBECONFIG",
+                                "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT",
                                 "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
                               }
                             },
@@ -868,7 +872,7 @@
                           "description": "%arc.postgres.server.group.name.validation.description%",
                           "validations" : [{
                             "type": "regex_match",
-                            "regex": "^[a-z]([-a-z0-9]{0,10}[a-z0-9])?$",
+                            "regex": "^[a-z]([-a-z0-9]{0,9}[a-z0-9])?$",
                             "description": "%arc.postgres.server.group.name.validation.description%"
                           }],
                           "required": true
@@ -1037,7 +1041,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.5"
+                "version": "20.2.6"
               }
             ],
             "when": "true"
@@ -1072,6 +1076,7 @@
     "@types/sinon": "^9.0.4",
     "@types/uuid": "^8.3.0",
     "@types/yamljs": "^0.2.31",
+    "azdata-test": "^1.1.1",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",

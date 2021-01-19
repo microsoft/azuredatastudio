@@ -20,10 +20,18 @@ class SQLMigration {
 	async registerCommands(): Promise<void> {
 		const commandDisposables: vscode.Disposable[] = [ // Array of disposables returned by registerCommand
 			vscode.commands.registerCommand('sqlmigration.start', async () => {
-				const connection = await azdata.connection.openConnectionDialog();
-
+				let activeConnection = await azdata.connection.getCurrentConnection();
+				let connectionId: string = '';
+				if (!activeConnection) {
+					const connection = await azdata.connection.openConnectionDialog();
+					if (connection) {
+						connectionId = connection.connectionId;
+					}
+				} else {
+					connectionId = activeConnection.connectionId;
+				}
 				const wizardController = new WizardController(this.context);
-				await wizardController.openWizard(connection);
+				await wizardController.openWizard(connectionId);
 			}),
 
 			vscode.commands.registerCommand('sqlmigration.testDialog', async () => {

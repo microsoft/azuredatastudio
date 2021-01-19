@@ -18,7 +18,10 @@ export class RadioButton extends Widget {
 	private inputElement: HTMLInputElement;
 	private _onClicked = new Emitter<void>();
 	public readonly onClicked: Event<void> = this._onClicked.event;
+	private _onChangedCheckedState = new Emitter<boolean>();
+	public readonly onDidChangeCheckedState: Event<boolean> = this._onChangedCheckedState.event;
 	private _label: HTMLSpanElement;
+	private _internalCheckedStateTracker: boolean = false;
 
 	constructor(container: HTMLElement, opts: IRadioButtonOptions) {
 		super();
@@ -33,8 +36,16 @@ export class RadioButton extends Widget {
 		this.label = opts.label;
 		this.enabled = opts.enabled || true;
 		this.checked = opts.checked || false;
-		this.onclick(this.inputElement, () => this._onClicked.fire());
-
+		this.onclick(this.inputElement, () => {
+			this._onClicked.fire();
+			this.checked = true;
+		});
+		this.inputElement.addEventListener('change', () => {
+			if (this._internalCheckedStateTracker !== this.inputElement.checked) {
+				this._internalCheckedStateTracker = this.inputElement.checked;
+				this._onChangedCheckedState.fire(this._internalCheckedStateTracker);
+			}
+		});
 		container.appendChild(this.inputElement);
 		container.appendChild(this._label);
 	}
@@ -60,7 +71,19 @@ export class RadioButton extends Widget {
 	}
 
 	public set checked(val: boolean) {
-		this.inputElement.checked = val;
+		if (val !== this._internalCheckedStateTracker) {
+			this.inputElement.checked = val;
+			const event = document.createEvent('HTMLEvents');
+			event.initEvent('change', true, true);
+			if (this.name) {
+				const buttonGroup = document.getElementsByName(this.name);
+				buttonGroup.forEach((button) => {
+					button.dispatchEvent(event);
+				});
+			} else {
+				this.inputElement.dispatchEvent(event);
+			}
+		}
 	}
 
 	public get checked(): boolean {

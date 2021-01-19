@@ -242,18 +242,47 @@ export class DataTierApplicationWizard {
 	}
 
 	public async executeOperation(): Promise<mssql.DacFxResult> {
+		let result: mssql.DacFxResult;
+
 		switch (this.selectedOperation) {
 			case Operation.deploy: {
-				return await this.deploy();
+				result = await this.deploy();
+				break;
 			}
 			case Operation.extract: {
-				return await this.extract();
+				result = await this.extract();
+				break;
 			}
 			case Operation.import: {
-				return await this.import();
+				result = await this.import();
+				break;
 			}
 			case Operation.export: {
-				return await this.export();
+				result = await this.export();
+				break;
+			}
+		}
+
+		if (!result || !result.success) {
+			vscode.window.showErrorMessage(this.getOperationErrorMessage(this.selectedOperation, result?.errorMessage));
+		}
+
+		return result;
+	}
+
+	private getOperationErrorMessage(operation: Operation, error: any): string {
+		switch (this.selectedOperation) {
+			case Operation.deploy: {
+				return loc.operationErrorMessage(loc.deploy, error);
+			}
+			case Operation.extract: {
+				return loc.operationErrorMessage(loc.extract, error);
+			}
+			case Operation.import: {
+				return loc.operationErrorMessage(loc.importText, error);
+			}
+			case Operation.export: {
+				return loc.operationErrorMessage(loc.exportText, error);
 			}
 		}
 	}
@@ -286,7 +315,7 @@ export class DataTierApplicationWizard {
 		return await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 	}
 
-	private async generateDeployScript(): Promise<mssql.DacFxResult> {
+	public async generateDeployScript(): Promise<mssql.DacFxResult> {
 		const service = await this.getService(msSqlProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 		this.wizard.message = {
@@ -295,7 +324,12 @@ export class DataTierApplicationWizard {
 			description: ''
 		};
 
-		return await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
+		let result = await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
+
+		if (!result || !result.success) {
+			vscode.window.showErrorMessage(loc.generateDeployErrorMessage(result?.errorMessage));
+		}
+		return result;
 	}
 
 	public getPage(idx: number): Page {
@@ -344,7 +378,7 @@ export class DataTierApplicationWizard {
 		const result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 
 		if (!result || !result.success) {
-			vscode.window.showErrorMessage(loc.deployPlanErrorMessage(result.errorMessage));
+			vscode.window.showErrorMessage(loc.deployPlanErrorMessage(result?.errorMessage));
 		}
 
 		return result.report;

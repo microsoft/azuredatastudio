@@ -11,23 +11,29 @@ import { initializeWizardPage, InputComponent, InputComponentInfo, Validator, Wi
 import { FieldType } from '../../../interfaces';
 import { IToolsService } from '../../../services/toolsService';
 import { Deferred } from '../../utils';
-import { createMockComponentBuilder, createModelViewMock as createMockModelView, StubCheckbox, StubInputBox } from '../../stubs';
+import { createModelViewMock } from 'azdata-test/out/mocks/modelView/modelViewMock';
+import { StubCheckbox } from 'azdata-test/out/stubs/modelView/stubCheckbox';
+import { StubInputBox } from 'azdata-test/out/stubs/modelView/stubInputBox';
 import * as should from 'should';
 import * as sinon from 'sinon';
 
-
 describe('WizardPage', () => {
-	let mockModelBuilder: TypeMoq.IMock<azdata.ModelBuilder>;
+	let stubCheckbox: StubCheckbox;
+	let stubInputBox: StubInputBox;
 	let testWizardPage: WizardPageContext;
 	let contentRegistered: Deferred<void>;
 
 	before(function () {
 		contentRegistered = new Deferred<void>();
 		const mockWizardPage = TypeMoq.Mock.ofType<azdata.window.WizardPage>();
-		const mockModelView = createMockModelView();
-		mockModelBuilder = mockModelView.modelBuilder;
+		stubCheckbox = new StubCheckbox();
+		stubInputBox = new StubInputBox();
+		const mockModelView = createModelViewMock({
+			checkBox: () => stubCheckbox,
+			inputBox: () => stubInputBox
+		});
 		mockWizardPage.setup(p => p.registerContent(TypeMoq.It.isAny())).callback(async (handler: (view: azdata.ModelView) => Thenable<void>) => {
-			await handler(mockModelView.modelView.object);
+			await handler(mockModelView.modelViewMock.object);
 			contentRegistered.resolve();
 		});
 		const mockWizard = TypeMoq.Mock.ofType<azdata.window.Wizard>();
@@ -75,9 +81,7 @@ describe('WizardPage', () => {
 	});
 
 	it('dynamic enablement', async function (): Promise<void> {
-		const stubCheckbox = new StubCheckbox();
-		const mockCheckboxBuilder = createMockComponentBuilder<azdata.CheckBoxComponent>(stubCheckbox);
-		const stubInputBox = new StubInputBox();
+
 		// Stub out the enabled property so we can hook into when that's set to ensure we wait for the state to be updated
 		// before continuing the test
 		let enabled = false;
@@ -88,11 +92,8 @@ describe('WizardPage', () => {
 		sinon.stub(stubInputBox, 'enabled').get(() => {
 			return enabled;
 		});
-		const mockInputBoxBuilder = createMockComponentBuilder<azdata.InputBoxComponent>(stubInputBox);
 		// Used to ensure that we wait until the enabled state is updated for our mocked components before continuing
 		let enabledDeferred = new Deferred();
-		mockModelBuilder.setup(b => b.checkBox()).returns(() => mockCheckboxBuilder.mockBuilder.object);
-		mockModelBuilder.setup(b => b.inputBox()).returns(() => mockInputBoxBuilder.mockBuilder.object);
 
 		initializeWizardPage(testWizardPage);
 		await contentRegistered.promise;

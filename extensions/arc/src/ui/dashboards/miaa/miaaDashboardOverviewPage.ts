@@ -205,8 +205,9 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 								title: loc.deletingInstance(this._miaaModel.info.name),
 								cancellable: false
 							},
-							(_progress, _token) => {
-								return this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name);
+							async (_progress, _token) => {
+								await this._controllerModel.azdataLogin();
+								return await this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name);
 							}
 						);
 						await this._controllerModel.refreshTreeNode();
@@ -251,7 +252,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				const config = this._controllerModel.controllerConfig;
 				if (config) {
 					vscode.env.openExternal(vscode.Uri.parse(
-						`https://portal.azure.com/#resource/subscriptions/${config.spec.settings.azure.subscription}/resourceGroups/${config.spec.settings.azure.resourceGroup}/providers/Microsoft.AzureData/${ResourceType.sqlManagedInstances}/${this._miaaModel.info.name}`));
+						`https://portal.azure.com/#resource/subscriptions/${config.spec.settings.azure.subscription}/resourceGroups/${config.spec.settings.azure.resourceGroup}/providers/Microsoft.AzureArcData/${ResourceType.sqlManagedInstances}/${this._miaaModel.info.name}`));
 				} else {
 					vscode.window.showErrorMessage(loc.couldNotFindControllerRegistration);
 				}
