@@ -4,7 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<div class="grid-stack">
+<div class="nb-grid-stack grid-stack">
 	<ng-container *ngFor="let cell of cells">
 		<view-card-component #wrapper [ready]="loaded" [views]="views" [cell]="cell" [model]="model" (onChange)="onCellChanged($event)"></view-card-component>
 		<ng-content *ngTemplateOutlet='wrapper.templateRef'></ng-content>
