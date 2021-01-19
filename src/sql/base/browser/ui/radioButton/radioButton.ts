@@ -38,19 +38,9 @@ export class RadioButton extends Widget {
 		this.checked = opts.checked || false;
 		this.onclick(this.inputElement, () => {
 			this._onClicked.fire();
-			const event = document.createEvent('HTMLEvents');
-			event.initEvent('change', true, true);
-			if (this.name) {
-				const buttonGroup = document.getElementsByName(this.name);
-				buttonGroup.forEach((button) => {
-					button.dispatchEvent(event);
-				});
-			} else {
-				this.inputElement.dispatchEvent(event);
-			}
+			this.checked = true;
 		});
-		this.inputElement.addEventListener('change', () => this.checked = this.inputElement.checked);
-
+		this.inputElement.addEventListener('change', () => this.propogatedSetCheck());
 		container.appendChild(this.inputElement);
 		container.appendChild(this._label);
 	}
@@ -78,8 +68,16 @@ export class RadioButton extends Widget {
 	public set checked(val: boolean) {
 		if (val !== this._internalCheckedStateTracker) {
 			this.inputElement.checked = val;
-			this._internalCheckedStateTracker = val;
-			this._onChangedCheckedState.fire(this.checked);
+			const event = document.createEvent('HTMLEvents');
+			event.initEvent('change', true, true);
+			if (this.name) {
+				const buttonGroup = document.getElementsByName(this.name);
+				buttonGroup.forEach((button) => {
+					button.dispatchEvent(event);
+				});
+			} else {
+				this.inputElement.dispatchEvent(event);
+			}
 		}
 	}
 
@@ -110,5 +108,12 @@ export class RadioButton extends Widget {
 
 	public blur(): void {
 		this.inputElement.blur();
+	}
+
+	private propogatedSetCheck(): void {
+		if (this._internalCheckedStateTracker !== this.inputElement.checked) {
+			this._internalCheckedStateTracker = this.inputElement.checked;
+			this._onChangedCheckedState.fire(this._internalCheckedStateTracker);
+		}
 	}
 }
