@@ -39,6 +39,7 @@ export const CmsService = 'cmsService';
 export const DacFxService = 'dacfxService';
 export const SchemaCompareService = 'schemaCompareService';
 export const LanguageExtensionService = 'languageExtensionService';
+export const ModelManagementService = 'modelManagementService';
 export const objectExplorerPrefix: string = 'objectexplorer://';
 export const SqlAssessmentService = 'sqlAssessmentService';
 export const SqlMigrationService = 'sqlMigrationService';

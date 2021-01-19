@@ -105,7 +105,7 @@ export class PredictService {
 					list.push({
 						databaseName: databaseName,
 						tableName: row[0].displayValue,
-						schema: row[1].displayValue
+						schemaName: row[1].displayValue
 					});
 				});
 			}

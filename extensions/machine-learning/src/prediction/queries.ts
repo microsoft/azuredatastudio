@@ -12,7 +12,7 @@ export function getTableColumnsScript(databaseTable: DatabaseTable): string {
 SELECT COLUMN_NAME,DATA_TYPE,CHARACTER_MAXIMUM_LENGTH
 FROM INFORMATION_SCHEMA.COLUMNS
 WHERE TABLE_NAME='${utils.doubleEscapeSingleQuotes(databaseTable.tableName)}'
-AND TABLE_SCHEMA='${utils.doubleEscapeSingleQuotes(databaseTable.schema)}'
+AND TABLE_SCHEMA='${utils.doubleEscapeSingleQuotes(databaseTable.schemaName)}'
 AND TABLE_CATALOG='${utils.doubleEscapeSingleQuotes(databaseTable.databaseName)}'
 	`;
 }
@@ -31,7 +31,7 @@ export function getPredictScriptWithModelId(
 	outputColumns: PredictColumn[],
 	sourceTable: DatabaseTable,
 	importTable: DatabaseTable): string {
-	const threePartTableName = utils.getRegisteredModelsThreePartsName(importTable.databaseName || '', importTable.tableName || '', importTable.schema || '');
+	const threePartTableName = utils.getRegisteredModelsThreePartsName(importTable.databaseName || '', importTable.tableName || '', importTable.schemaName || '');
 	return `
 DECLARE @model VARBINARY(max) = (
 SELECT model
@@ -42,7 +42,7 @@ WITH predict_input
 AS (
 	SELECT TOP 1000
 	${getInputColumnNames(columns, 'pi')}
-FROM [${utils.doubleEscapeSingleBrackets(sourceTable.databaseName)}].[${sourceTable.schema}].[${utils.doubleEscapeSingleBrackets(sourceTable.tableName)}] AS pi
+FROM [${utils.doubleEscapeSingleBrackets(sourceTable.databaseName)}].[${sourceTable.schemaName}].[${utils.doubleEscapeSingleBrackets(sourceTable.tableName)}] AS pi
 )
 SELECT
 ${getPredictColumnNames(columns, 'predict_input')},
@@ -64,7 +64,7 @@ WITH predict_input
 AS (
 	SELECT TOP 1000
 	${getInputColumnNames(columns, 'pi')}
-FROM [${utils.doubleEscapeSingleBrackets(sourceTable.databaseName)}].[${sourceTable.schema}].[${utils.doubleEscapeSingleBrackets(sourceTable.tableName)}] AS pi
+FROM [${utils.doubleEscapeSingleBrackets(sourceTable.databaseName)}].[${sourceTable.schemaName}].[${utils.doubleEscapeSingleBrackets(sourceTable.tableName)}] AS pi
 )
 SELECT
 ${getPredictColumnNames(columns, 'predict_input')},

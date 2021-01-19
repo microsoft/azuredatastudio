@@ -132,7 +132,12 @@ export abstract class ModelViewBase extends ViewBase {
 	 * list registered models
 	 */
 	public async listModels(table: DatabaseTable): Promise<ImportedModel[]> {
-		return await this.sendDataRequest(ListModelsEventName, table);
+		try {
+			return await this.sendDataRequest(ListModelsEventName, table);
+		} catch (err) {
+			this.showErrorMessage(err);
+			return [];
+		}
 	}
 
 	/**

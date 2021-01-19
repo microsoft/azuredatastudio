@@ -33,7 +33,7 @@ function createContext(): TestContext {
 		importTable: {
 			databaseName: 'db',
 			tableName: 'tb',
-			schema: 'dbo'
+			schemaName: 'dbo'
 		},
 		queryRunner: TypeMoq.Mock.ofType(QueryRunner)
 	};
@@ -63,13 +63,13 @@ describe('PredictService', () => {
 		const expected: DatabaseTable[] = [
 			{
 				databaseName: 'db1',
-				schema: 'dbo',
+				schemaName: 'dbo',
 				tableName: 'tb1'
 			},
 			{
 				databaseName: 'db1',
 				tableName: 'tb2',
-				schema: 'dbo'
+				schemaName: 'dbo'
 			}
 		];
 
@@ -127,7 +127,7 @@ describe('PredictService', () => {
 		const table: DatabaseTable =
 			{
 				databaseName: 'db1',
-				schema: 'dbo',
+				schemaName: 'dbo',
 				tableName: 'tb1'
 			};
 
@@ -207,7 +207,7 @@ describe('PredictService', () => {
 			],
 			databaseName: '',
 			tableName: '',
-			schema: ''
+			schemaName: ''
 		};
 		const model: ImportedModel =
 		{
@@ -277,7 +277,7 @@ describe('PredictService', () => {
 			],
 			databaseName: '',
 			tableName: '',
-			schema: ''
+			schemaName: ''
 		};
 		const tempFilePath = path.join(os.tmpdir(), `ads_ml_temp_${UUID.generateUuid()}`);
 		await fs.promises.writeFile(tempFilePath, 'test');

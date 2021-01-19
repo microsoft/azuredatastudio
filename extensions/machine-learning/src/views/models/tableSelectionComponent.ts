@@ -261,14 +261,14 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 
 
 		if (this._tableNames && !this._tableNames.find(x => x.tableName === this._settings.defaultTableName)) {
-			const firstRow: DatabaseTable = { tableName: this._settings.defaultTableName, databaseName: '', schema: '' };
+			const firstRow: DatabaseTable = { tableName: this._settings.defaultTableName, databaseName: '', schemaName: '' };
 			tableNames = [firstRow].concat(this._tableNames);
 		}
 
 		if (this._tables && tableNames && tableNames.length > 0) {
 			this._tables.values = tableNames.map(t => this.getTableFullName(t));
 			if (this._settings.useImportModelCache && this.importTable && this.importTable.databaseName === this._databases?.value) {
-				const selectedTable = tableNames.find(t => t.tableName === this.importTable?.tableName && t.schema === this.importTable?.schema);
+				const selectedTable = tableNames.find(t => t.tableName === this.importTable?.tableName && t.schemaName === this.importTable?.schemaName);
 				if (selectedTable) {
 					this._selectedTableName = this.getTableFullName(selectedTable);
 					this._tables.value = this.getTableFullName(selectedTable);
@@ -296,7 +296,7 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	}
 
 	private getTableFullName(table: DatabaseTable): string {
-		return table.tableName === this._settings.defaultTableName ? table.tableName : `${table.schema}.${table.tableName}`;
+		return table.tableName === this._settings.defaultTableName ? table.tableName : `${table.schemaName}.${table.tableName}`;
 	}
 
 	private async onTableSelected(): Promise<void> {
@@ -315,13 +315,13 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 			selectedItem = {
 				databaseName: this.databaseName,
 				tableName: parts && parts.length > 1 ? parts[1] : value,
-				schema: parts && parts.length > 1 ? parts[0] : 'dbo',
+				schemaName: parts && parts.length > 1 ? parts[0] : 'dbo',
 			};
 		}
 		return {
 			databaseName: this.databaseName,
 			tableName: selectedItem?.tableName,
-			schema: selectedItem?.schema
+			schemaName: selectedItem?.schemaName
 		};
 	}
 }

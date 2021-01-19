@@ -36,7 +36,7 @@ describe('Predict Wizard', () => {
 		view.importTable = {
 			databaseName: 'db',
 			tableName: 'tb',
-			schema: 'dbo'
+			schemaName: 'dbo'
 		};
 		await view.open();
 		let accounts: azdata.Account[] = [
@@ -90,7 +90,7 @@ describe('Predict Wizard', () => {
 				table: {
 					databaseName: 'db',
 					tableName: 'tb',
-					schema: 'dbo'
+					schemaName: 'dbo'
 				}
 			}
 		];
@@ -101,13 +101,13 @@ describe('Predict Wizard', () => {
 		const tableNames: DatabaseTable[] = [
 			{
 				databaseName: 'db1',
-				schema: 'dbo',
+				schemaName: 'dbo',
 				tableName: 'tb1'
 			},
 			{
 				databaseName: 'db1',
 				tableName: 'tb2',
-				schema: 'dbo'
+				schemaName: 'dbo'
 			}
 		];
 		const columnNames: TableColumn[] = [

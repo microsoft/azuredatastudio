@@ -40,6 +40,8 @@ export interface IExtension {
 
 	readonly languageExtension: ILanguageExtensionService;
 
+	readonly modelManagement: IModelManagementService;
+
 	readonly dacFx: IDacFxService;
 
 	readonly sqlAssessment: ISqlAssessmentService;
@@ -403,6 +405,41 @@ export interface GenerateDeployPlan {
 	taskExecutionMode: azdata.TaskExecutionMode;
 }
 
+//#endregion
+
+//#region --- Model Management
+export interface ModelMetadata {
+	id: number;
+	content?: string;
+	contentLength?: number;
+	modelName: string;
+	created?: string;
+	deploymentTime?: string;
+	version?: string;
+	description?: string;
+	fileName?: string;
+	framework?: string;
+	frameworkVersion?: string;
+	runId?: string;
+	deployedBy?: string;
+}
+
+export interface ModelTable {
+	databaseName: string | undefined;
+	tableName: string | undefined;
+	schemaName: string | undefined
+}
+
+
+export interface IModelManagementService {
+	configureModelTable(ownerUri: string, table: ModelTable): Thenable<void>;
+	verifyModelTable(ownerUri: string, table: ModelTable): Thenable<boolean>;
+	deleteModel(ownerUri: string, table: ModelTable, modelId: number): Thenable<void>;
+	importModel(ownerUri: string, table: ModelTable, model: ModelMetadata): Thenable<void>;
+	updateModel(ownerUri: string, table: ModelTable, model: ModelMetadata): Thenable<void>;
+	downloadModel(ownerUri: string, table: ModelTable, modelId: number): Thenable<string>;
+	getModels(ownerUri: string, table: ModelTable): Thenable<ModelMetadata[]>;
+}
 //#endregion
 
 //#region --- Language Extensibility

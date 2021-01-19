@@ -22,7 +22,7 @@ describe('Edit Model Dialog', () => {
 			table: {
 				databaseName: 'db',
 				tableName: 'tb',
-				schema: 'dbo'
+				schemaName: 'dbo'
 			}
 		};
 		let view = new EditModelDialog(testContext.apiWrapper.object, '', undefined, model);

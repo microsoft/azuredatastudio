@@ -17,7 +17,7 @@ export interface PredictColumn extends TableColumn {
 export interface DatabaseTable {
 	databaseName: string | undefined;
 	tableName: string | undefined;
-	schema: string | undefined
+	schemaName: string | undefined
 }
 
 export interface PredictInputParameters extends DatabaseTable {

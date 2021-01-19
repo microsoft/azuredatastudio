@@ -25,6 +25,7 @@ import { LanguageExtensionService } from './languageExtension/languageExtensionS
 import { SqlAssessmentService } from './sqlAssessment/sqlAssessmentService';
 import { NotebookConvertService } from './notebookConvert/notebookConvertService';
 import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
+import { ModelManagementService } from './modelManagement/modelManagementService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -160,6 +161,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 			SqlAssessmentServicesFeature,
 			SchemaCompareService.asFeature(context),
 			LanguageExtensionService.asFeature(context),
+			ModelManagementService.asFeature(context),
 			DacFxService.asFeature(context),
 			CmsService.asFeature(context),
 			SqlAssessmentService.asFeature(context),

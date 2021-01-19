@@ -34,7 +34,7 @@ describe('Registered Models Dialog', () => {
 				table: {
 					databaseName: 'db',
 					tableName: 'tb',
-					schema: 'dbo'
+					schemaName: 'dbo'
 				}
 			}
 		];

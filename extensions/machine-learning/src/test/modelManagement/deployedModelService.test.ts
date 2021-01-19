@@ -42,7 +42,7 @@ function createContext(): TestContext {
 		importTable: {
 			databaseName: 'db',
 			tableName: 'tb',
-			schema: 'dbo'
+			schemaName: 'dbo'
 		}
 	};
 }
@@ -54,7 +54,7 @@ describe('DeployedModelService', () => {
 		let importTable: DatabaseTable = {
 			databaseName: 'db',
 			tableName: 'tb',
-			schema: 'dbo'
+			schemaName: 'dbo'
 		};
 
 		testContext.apiWrapper.setup(x => x.getCurrentConnection()).returns(() => { return Promise.resolve(connection); });
@@ -63,7 +63,8 @@ describe('DeployedModelService', () => {
 			testContext.config.object,
 			testContext.queryRunner.object,
 			testContext.modelClient.object,
-			testContext.recentModels.object);
+			testContext.recentModels.object,
+			undefined!);
 		await should(service.getDeployedModels(importTable)).rejected();
 	});
 
@@ -156,7 +157,8 @@ describe('DeployedModelService', () => {
 			testContext.config.object,
 			testContext.queryRunner.object,
 			testContext.modelClient.object,
-			testContext.recentModels.object);
+			testContext.recentModels.object,
+			undefined!);
 		testContext.queryRunner.setup(x => x.safeRunQuery(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(result));
 		const actual = await service.getDeployedModels(testContext.importTable);
 		should.deepEqual(actual, expected);
@@ -188,7 +190,8 @@ describe('DeployedModelService', () => {
 			testContext.config.object,
 			testContext.queryRunner.object,
 			testContext.modelClient.object,
-			testContext.recentModels.object);
+			testContext.recentModels.object,
+			undefined!);
 		const actual = await service.loadModelParameters('');
 		should.deepEqual(actual, expected);
 	});
@@ -231,7 +234,8 @@ describe('DeployedModelService', () => {
 			testContext.config.object,
 			testContext.queryRunner.object,
 			testContext.modelClient.object,
-			testContext.recentModels.object);
+			testContext.recentModels.object,
+			undefined!);
 		testContext.queryRunner.setup(x => x.safeRunQuery(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(result));
 
 		testContext.config.setup(x => x.registeredModelDatabaseName).returns(() => 'db');
@@ -334,7 +338,8 @@ describe('DeployedModelService', () => {
 			testContext.config.object,
 			testContext.queryRunner.object,
 			testContext.modelClient.object,
-			testContext.recentModels.object);
+			testContext.recentModels.object,
+			undefined!);
 
 		testContext.queryRunner.setup(x => x.runWithDatabaseChange(TypeMoq.It.isAny(), TypeMoq.It.is(x => x.indexOf('INSERT INTO') > 0), TypeMoq.It.isAny())).returns(() => {
 			deployed = true;
@@ -364,7 +369,7 @@ describe('DeployedModelService', () => {
 
 		testContext.importTable.databaseName = 'd[]b';
 		testContext.importTable.tableName = 'ta[b]le';
-		testContext.importTable.schema = 'dbo';
+		testContext.importTable.schemaName = 'dbo';
 		const expected = `
 		IF NOT EXISTS
 			(  SELECT t.name, s.name
@@ -401,7 +406,7 @@ describe('DeployedModelService', () => {
 		const testContext = createContext();
 		testContext.importTable.databaseName = 'd[]b';
 		testContext.importTable.tableName = 'ta[b]le';
-		testContext.importTable.schema = 'dbo';
+		testContext.importTable.schemaName = 'dbo';
 		const expected = `
 		SELECT model_id, model_name, model_description, model_version, model_creation_time, model_framework, model_framework_version, model_deployment_time, deployed_by, run_id, len(model)
 		FROM [d[[]]b].[dbo].[ta[[b]]le]
@@ -452,7 +457,7 @@ describe('DeployedModelService', () => {
 		};
 
 		model.table = {
-			databaseName: 'd[]b', tableName: 'ta[b]le', schema: 'dbo'
+			databaseName: 'd[]b', tableName: 'ta[b]le', schemaName: 'dbo'
 		};
 		const expected = `
 		DECLARE @str varbinary(max)

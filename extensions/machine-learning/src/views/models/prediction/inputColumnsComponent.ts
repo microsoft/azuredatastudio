@@ -163,7 +163,7 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 		return {
 			databaseName: selectedItem?.databaseName,
 			tableName: selectedItem?.tableName,
-			schema: selectedItem?.schema
+			schemaName: selectedItem?.schemaName
 		};
 	}
 

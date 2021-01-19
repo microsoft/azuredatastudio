@@ -578,6 +578,68 @@ export namespace RemoveServerGroupRequest {
 }
 // ------------------------------- <CMS> ----------------------------------------
 
+// ------------------------------- <Model Management> -----------------------------
+
+
+export interface ModelManagementRequestParam extends mssql.ModelTable {
+	ownerUri: string;
+}
+
+export interface ModelManagementDeleteRequestParam extends ModelManagementRequestParam {
+	modelId: number;
+}
+
+export interface ModelManagementDownloadRequestParam extends ModelManagementRequestParam {
+	modelId: number;
+}
+
+export interface ModelManagementImportRequestParam extends ModelManagementRequestParam {
+	model: mssql.ModelMetadata;
+}
+
+export interface ModelManagementDownloadResponseParam extends ModelManagementRequestParam {
+	filePath: string;
+}
+
+export interface ModelManagementVerifyModelTableResponseParam extends ModelManagementRequestParam {
+	verified: boolean;
+}
+
+export interface ModelManagementGetResponseParam extends ModelManagementRequestParam {
+	models: mssql.ModelMetadata[];
+}
+
+export interface ModelManagementResponseParam {
+}
+
+export namespace ModelManagementConfigureModelTableRequest {
+	export const type = new RequestType<ModelManagementRequestParam, ModelManagementResponseParam, void, void>('models/configure');
+}
+
+export namespace ModelManagementDeleteRequest {
+	export const type = new RequestType<ModelManagementDeleteRequestParam, ModelManagementResponseParam, void, void>('models/delete');
+}
+
+export namespace ModelManagementDownloadRequest {
+	export const type = new RequestType<ModelManagementDownloadRequestParam, ModelManagementDownloadResponseParam, void, void>('models/download');
+}
+
+export namespace ModelManagementGetRequest {
+	export const type = new RequestType<ModelManagementRequestParam, ModelManagementGetResponseParam, void, void>('models/get');
+}
+
+export namespace ModelManagementImportRequest {
+	export const type = new RequestType<ModelManagementImportRequestParam, ModelManagementResponseParam, void, void>('models/import');
+}
+
+export namespace ModelManagementUpdateRequest {
+	export const type = new RequestType<ModelManagementImportRequestParam, ModelManagementResponseParam, void, void>('models/update');
+}
+
+export namespace ModelManagementVerifyModelTableRequest {
+	export const type = new RequestType<ModelManagementRequestParam, ModelManagementVerifyModelTableResponseParam, void, void>('models/verify');
+}
+
 // ------------------------------- <Language Extensibility> -----------------------------
 
 export interface LanguageExtensionRequestParam {

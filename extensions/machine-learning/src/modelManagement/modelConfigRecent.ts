@@ -21,9 +21,9 @@ export class ModelConfigRecent {
 	}
 
 	public storeModelTable(connection: azdata.connection.ConnectionProfile, table: DatabaseTable): void {
-		if (connection && table?.databaseName && table?.tableName && table?.schema) {
+		if (connection && table?.databaseName && table?.tableName && table?.schemaName) {
 			const current = this.getModelTable(connection);
-			if (!current || current.databaseName !== table.databaseName || current.tableName !== table.tableName || current.schema !== table.schema) {
+			if (!current || current.databaseName !== table.databaseName || current.tableName !== table.tableName || current.schemaName !== table.schemaName) {
 				this._memento.update(this.getKey(connection), table);
 			}
 		}

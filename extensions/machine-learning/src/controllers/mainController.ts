@@ -21,6 +21,7 @@ import { ModelPythonClient } from '../modelManagement/modelPythonClient';
 import { PredictService } from '../prediction/predictService';
 import { DashboardWidget } from '../views/widgets/dashboardWidget';
 import { ModelConfigRecent } from '../modelManagement/modelConfigRecent';
+import * as mssql from '../../../mssql';
 
 /**
  * The main controller class that initializes the extension
@@ -77,6 +78,13 @@ export default class MainController implements vscode.Disposable {
 		}
 	}
 
+	public async getModelManagementService(): Promise<mssql.IModelManagementService> {
+		const ext: vscode.Extension<any> = vscode.extensions.getExtension(mssql.extension.name)!;
+
+		await ext.activate();
+		return (ext.exports as mssql.IExtension).modelManagement;
+	}
+
 	private async initialize(): Promise<void> {
 
 		this._outputChannel.show(true);
@@ -93,9 +101,10 @@ export default class MainController implements vscode.Disposable {
 		let modelImporter = new ModelPythonClient(this._outputChannel, this._apiWrapper, this._processService, this._config, packageManager);
 		let modelRecentService = new ModelConfigRecent(this._context.globalState);
 
+		let modelManagementService = await this.getModelManagementService();
 		// Model Management
 		//
-		let registeredModelService = new DeployedModelService(this._apiWrapper, this._config, this._queryRunner, modelImporter, modelRecentService);
+		let registeredModelService = new DeployedModelService(this._apiWrapper, this._config, this._queryRunner, modelImporter, modelRecentService, modelManagementService);
 		let azureModelsService = new AzureModelRegistryService(this._apiWrapper, this._config, this.httpClient, this._outputChannel);
 		let predictService = new PredictService(this._apiWrapper, this._queryRunner);
 		let modelManagementController = new ModelManagementController(this._apiWrapper, this._rootPath,

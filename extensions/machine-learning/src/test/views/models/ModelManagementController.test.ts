@@ -67,7 +67,7 @@ const localModels: ImportedModel[] = [
 		table: {
 			databaseName: 'db',
 			tableName: 'tb',
-			schema: 'dbo'
+			schemaName: 'dbo'
 		}
 	}
 ];
@@ -79,13 +79,13 @@ const dbNames: string[] = [
 const tableNames: DatabaseTable[] = [
 	{
 		databaseName: 'db1',
-		schema: 'dbo',
+		schemaName: 'dbo',
 		tableName: 'tb1'
 	},
 	{
 		databaseName: 'db1',
 		tableName: 'tb2',
-		schema: 'dbo'
+		schemaName: 'dbo'
 	}
 ];
 const columnNames: TableColumn[] = [
@@ -127,7 +127,7 @@ describe('Model Controller', () => {
 		testContext.deployModelService.setup(x => x.getRecentImportTable()).returns(() => Promise.resolve({
 			databaseName: 'db',
 			tableName: 'table',
-			schema: 'dbo'
+			schemaName: 'dbo'
 		}));
 		testContext.deployModelService.setup(x => x.storeRecentImportTable(TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		testContext.deployModelService.setup(x => x.getDeployedModels(TypeMoq.It.isAny())).returns(() => Promise.resolve(localModels));
@@ -158,14 +158,14 @@ describe('Model Controller', () => {
 		testContext.deployModelService.setup(x => x.getRecentImportTable()).returns(() => Promise.resolve({
 			databaseName: 'db',
 			tableName: 'table',
-			schema: 'dbo'
+			schemaName: 'dbo'
 		}));
 		testContext.deployModelService.setup(x => x.getDeployedModels(TypeMoq.It.isAny())).returns(() => Promise.resolve(localModels));
 		testContext.predictService.setup(x => x.getDatabaseList()).returns(() => Promise.resolve([
 			'db', 'db1'
 		]));
 		testContext.predictService.setup(x => x.getTableList(TypeMoq.It.isAny())).returns(() => Promise.resolve([
-			{ tableName: 'tb', databaseName: 'db', schema: 'dbo' }
+			{ tableName: 'tb', databaseName: 'db', schemaName: 'dbo' }
 		]));
 		testContext.azureModelService.setup(x => x.getAccounts()).returns(() => Promise.resolve(accounts));
 		testContext.azureModelService.setup(x => x.getSubscriptions(TypeMoq.It.isAny())).returns(() => Promise.resolve(subscriptions));
@@ -211,7 +211,7 @@ describe('Model Controller', () => {
 			table: {
 				databaseName: 'db',
 				tableName: 'tb',
-				schema: 'dbo'
+				schemaName: 'dbo'
 			}
 		};
 		const view = <EditModelDialog>await controller.editModel(model);

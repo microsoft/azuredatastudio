@@ -21,7 +21,7 @@ export function getDatabaseConfigureQuery(configTable: DatabaseTable): string {
 export function getDeployedModelsQuery(table: DatabaseTable): string {
 	return `
 		${selectQuery}
-		FROM ${utils.getRegisteredModelsThreePartsName(table.databaseName || '', table.tableName || '', table.schema || '')}
+		FROM ${utils.getRegisteredModelsThreePartsName(table.databaseName || '', table.tableName || '', table.schemaName || '')}
 		WHERE model_name not like 'MLmodel' and model_name not like 'conda.yaml'
 		ORDER BY model_id
 		`;
@@ -34,8 +34,8 @@ export function getDeployedModelsQuery(table: DatabaseTable): string {
  */
 export function getConfigTableVerificationQuery(table: DatabaseTable): string {
 	let tableName = table.tableName;
-	let schemaName = table.schema;
-	const twoPartTableName = utils.getRegisteredModelsTwoPartsName(table.tableName || '', table.schema || '');
+	let schemaName = table.schemaName;
+	const twoPartTableName = utils.getRegisteredModelsTwoPartsName(table.tableName || '', table.schemaName || '');
 
 	return `
 		IF NOT EXISTS (
@@ -86,8 +86,8 @@ export function getConfigTableVerificationQuery(table: DatabaseTable): string {
  */
 export function getConfigureTableQuery(table: DatabaseTable): string {
 	let tableName = table.tableName;
-	let schemaName = table.schema;
-	const twoPartTableName = utils.getRegisteredModelsTwoPartsName(table.tableName || '', table.schema || '');
+	let schemaName = table.schemaName;
+	const twoPartTableName = utils.getRegisteredModelsTwoPartsName(table.tableName || '', table.schemaName || '');
 
 	return `
 		IF NOT EXISTS
@@ -120,8 +120,8 @@ export function getConfigureTableQuery(table: DatabaseTable): string {
 }
 
 export function getInsertModelQuery(model: ImportedModel, table: DatabaseTable): string {
-	const twoPartTableName = utils.getRegisteredModelsTwoPartsName(table.tableName || '', table.schema || '');
-	const threePartTableName = utils.getRegisteredModelsThreePartsName(table.databaseName || '', table.tableName || '', table.schema || '');
+	const twoPartTableName = utils.getRegisteredModelsTwoPartsName(table.tableName || '', table.schemaName || '');
+	const threePartTableName = utils.getRegisteredModelsThreePartsName(table.databaseName || '', table.tableName || '', table.schemaName || '');
 	let updateScript = `
 		INSERT INTO ${twoPartTableName}
 		(model_name, model, model_version, model_description, model_creation_time, model_framework, model_framework_version, run_id)
@@ -149,7 +149,7 @@ export function getInsertModelQuery(model: ImportedModel, table: DatabaseTable):
  * @param model model information
  */
 export function getModelContentQuery(model: ImportedModel): string {
-	const threePartTableName = utils.getRegisteredModelsThreePartsName(model.table.databaseName || '', model.table.tableName || '', model.table.schema || '');
+	const threePartTableName = utils.getRegisteredModelsThreePartsName(model.table.databaseName || '', model.table.tableName || '', model.table.schemaName || '');
 	const len = model.contentLength !== undefined ? model.contentLength : 0;
 	const maxLength = 1000;
 	let numberOfColumns = len / maxLength;
@@ -179,8 +179,8 @@ export function getModelContentQuery(model: ImportedModel): string {
 }
 
 export function getUpdateModelQuery(model: ImportedModel): string {
-	const twoPartTableName = utils.getRegisteredModelsTwoPartsName(model.table.tableName || '', model.table.schema || '');
-	const threePartTableName = utils.getRegisteredModelsThreePartsName(model.table.databaseName || '', model.table.tableName || '', model.table.schema || '');
+	const twoPartTableName = utils.getRegisteredModelsTwoPartsName(model.table.tableName || '', model.table.schemaName || '');
+	const threePartTableName = utils.getRegisteredModelsThreePartsName(model.table.databaseName || '', model.table.tableName || '', model.table.schemaName || '');
 	let updateScript = `
 	UPDATE ${twoPartTableName}
 	SET
@@ -202,8 +202,8 @@ export function getUpdateModelQuery(model: ImportedModel): string {
 }
 
 export function getDeleteModelQuery(model: ImportedModel): string {
-	const twoPartTableName = utils.getRegisteredModelsTwoPartsName(model.table.tableName || '', model.table.schema || '');
-	const threePartTableName = utils.getRegisteredModelsThreePartsName(model.table.databaseName || '', model.table.tableName || '', model.table.schema || '');
+	const twoPartTableName = utils.getRegisteredModelsTwoPartsName(model.table.tableName || '', model.table.schemaName || '');
+	const threePartTableName = utils.getRegisteredModelsThreePartsName(model.table.databaseName || '', model.table.tableName || '', model.table.schemaName || '');
 	let updateScript = `
 		Delete from ${twoPartTableName}
 		WHERE model_id = ${model.id}`;

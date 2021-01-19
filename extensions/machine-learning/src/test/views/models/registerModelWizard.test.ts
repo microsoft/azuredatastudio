@@ -66,7 +66,7 @@ let localModels: ImportedModel[] = [
 		table: {
 			databaseName: 'db',
 			tableName: 'tb',
-			schema: 'dbo'
+			schemaName: 'dbo'
 		}
 	}
 ];
@@ -74,7 +74,7 @@ let localModels: ImportedModel[] = [
 let importTable: DatabaseTable = {
 	databaseName: 'db',
 	tableName: 'tb',
-	schema: 'dbo'
+	schemaName: 'dbo'
 };
 describe('Register Model Wizard', () => {
 	it('Should create view components successfully ', async function (): Promise<void> {
