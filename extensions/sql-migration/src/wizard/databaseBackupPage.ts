@@ -472,7 +472,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}).component();
 
 		emailCheckbox.onChanged((value) => {
-			if (value) {
+			if (value !== undefined) {
 				this.migrationStateModel.databaseBackup.emailNotification = value;
 			}
 		});
