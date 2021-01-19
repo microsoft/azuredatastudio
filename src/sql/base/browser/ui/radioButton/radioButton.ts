@@ -40,7 +40,12 @@ export class RadioButton extends Widget {
 			this._onClicked.fire();
 			this.checked = true;
 		});
-		this.inputElement.addEventListener('change', () => this.propogatedSetCheck());
+		this.inputElement.addEventListener('change', () => {
+			if (this._internalCheckedStateTracker !== this.inputElement.checked) {
+				this._internalCheckedStateTracker = this.inputElement.checked;
+				this._onChangedCheckedState.fire(this._internalCheckedStateTracker);
+			}
+		});
 		container.appendChild(this.inputElement);
 		container.appendChild(this._label);
 	}
@@ -108,12 +113,5 @@ export class RadioButton extends Widget {
 
 	public blur(): void {
 		this.inputElement.blur();
-	}
-
-	private propogatedSetCheck(): void {
-		if (this._internalCheckedStateTracker !== this.inputElement.checked) {
-			this._internalCheckedStateTracker = this.inputElement.checked;
-			this._onChangedCheckedState.fire(this._internalCheckedStateTracker);
-		}
 	}
 }
