@@ -6,12 +6,12 @@
 import { IProjectProvider } from 'dataworkspace';
 import * as vscode from 'vscode';
 import { IProjectProviderRegistry } from './interfaces';
+import { TelemetryReporter, TelemetryViews } from './telemetry';
 
 export const ProjectProviderRegistry: IProjectProviderRegistry = new class implements IProjectProviderRegistry {
 	private _providers = new Array<IProjectProvider>();
 	private _providerFileExtensionMapping: { [key: string]: IProjectProvider } = {};
 	private _providerProjectTypeMapping: { [key: string]: IProjectProvider } = {};
-
 
 	registerProvider(provider: IProjectProvider): vscode.Disposable {
 		this.validateProvider(provider);
@@ -20,6 +20,14 @@ export const ProjectProviderRegistry: IProjectProviderRegistry = new class imple
 			this._providerFileExtensionMapping[projectType.projectFileExtension.toUpperCase()] = provider;
 			this._providerProjectTypeMapping[projectType.id.toUpperCase()] = provider;
 		});
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProviderRegistration, 'ProviderRegistered')
+			.withAdditionalProperties({
+				providerId: provider.providerExtensionId,
+				extensions: provider.supportedProjectTypes.sort().join(', ')
+			})
+			.send();
+
 		return new vscode.Disposable(() => {
 			const idx = this._providers.indexOf(provider);
 			if (idx >= 0) {

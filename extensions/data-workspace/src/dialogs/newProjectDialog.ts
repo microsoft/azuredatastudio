@@ -13,6 +13,7 @@ import { IProjectType } from 'dataworkspace';
 import { directoryExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
 import { defaultProjectSaveLocation } from '../common/projectLocationHelper';
+import { TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 class NewProjectDialogModel {
 	projectTypeId: string = '';
@@ -25,6 +26,11 @@ export class NewProjectDialog extends DialogBase {
 
 	constructor(private workspaceService: IWorkspaceService) {
 		super(constants.NewProjectDialogTitle, 'NewProject');
+
+		// dialog launched from Welcome message button (only visible when no current workspace) vs. "add project" button
+		TelemetryReporter.createActionEvent(TelemetryViews.NewProjectDialog, 'NewProjectDialogLaunched')
+			.withAdditionalProperties({ isWorkspaceOpen: (vscode.workspace.workspaceFile !== undefined).toString() })
+			.send();
 	}
 
 	async validate(): Promise<boolean> {
