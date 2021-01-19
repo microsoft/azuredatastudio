@@ -35,7 +35,7 @@ export async function getSubscriptions(account: azdata.Account): Promise<Subscri
 
 export type AzureProduct = azureResource.AzureGraphResource;
 
-export type ResourceGroup = azureResource.AzureResource;
+export type ResourceGroup = azureResource.AzureResourceResourceGroup;
 export async function getResourceGroups(account: azdata.Account, subscription: Subscription): Promise<ResourceGroup[]> {
 	const api = await getAzureCoreAPI();
 	const result = await api.getResourceGroups(account, subscription, false);

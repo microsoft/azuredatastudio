@@ -388,7 +388,7 @@ export async function getFileShares(account: azdata.Account, subscription: azure
 }
 
 export async function getMigrationControllers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, regionName: string, ignoreErrors: boolean): Promise<GetMigrationControllersResult> {
-	const apiEndpoint = `https://` + regionName + `.management.azure.com` +
+	const apiEndpoint = `https://${regionName}.management.azure.com` +
 		`/subscriptions/${subscription.id}` +
 		`/resourceGroups/${resourceGroupName}` +
 		`/providers/Microsoft.DataMigration/Controllers/default/shares?api-version=2020-09-01-preview`;
