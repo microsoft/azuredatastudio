@@ -34,7 +34,7 @@ export class HTMLMarkdownConverter {
 	private turndownService: TurndownService;
 
 	constructor(private notebookUri: URI) {
-		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-', 'headingStyle': 'atx' });
+		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-', 'headingStyle': 'atx', blankReplacement: blankReplacement });
 		this.setTurndownOptions();
 	}
 
@@ -143,6 +143,28 @@ export class HTMLMarkdownConverter {
 				return `[${content}](${node.href})`;
 			}
 		});
+		this.turndownService.addRule('list', {
+			filter: ['ul', 'ol'],
+			replacement: function (content, node) {
+				if (!node?.firstChild) {
+					return '';
+				}
+				let parent = node.parentNode;
+				if ((parent.nodeName === 'LI' && parent.lastElementChild === node)) {
+					return '\n' + content;
+				} else if (parent.nodeName === 'UL' || parent.nodeName === 'OL') { // Nested list case
+					return '\n' + content + '\n';
+				} else {
+					return '\n\n' + content + '\n\n';
+				}
+			}
+		});
+		this.turndownService.addRule('lineBreak', {
+			filter: 'br',
+			replacement: function (content, node, options) {
+				return node.parentElement?.nodeName !== 'LI' ? options.br + '\n' : '';
+			}
+		});
 		this.turndownService.addRule('listItem', {
 			filter: 'li',
 			replacement: function (content, node, options) {
@@ -162,10 +184,10 @@ export class HTMLMarkdownConverter {
 						nestedCount++;
 						parent = parent?.parentNode;
 					}
-					prefix = ('    '.repeat(nestedCount - 1)) + options.bulletListMarker + ' ';
+					prefix = ('  '.repeat(nestedCount - 1)) + options.bulletListMarker + ' ';
 				}
 				return (
-					prefix + content + (node.nextSibling && !/\n$/.test(content) ? '\n' : '')
+					prefix + content + (node.nextSibling?.nodeName === 'LI' && !/\n$/.test(content) ? '\n' : '')
 				);
 			}
 		});
@@ -229,6 +251,14 @@ function escapeMarkdown(text) {
 		(search, replacement) => search.replace(replacement[0], replacement[1]),
 		text,
 	);
+}
+
+function blankReplacement(content, node) {
+	// When outdenting a nested list, an empty list will still remain. Need to handle this case.
+	if (node.nodeName === 'UL' || node.nodeName === 'OL') {
+		return '\n';
+	}
+	return node.isBlock && node.nodeName !== 'UL' && node.nodeName !== 'OL' ? '\n\n' : '';
 }
 
 export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined): string {
