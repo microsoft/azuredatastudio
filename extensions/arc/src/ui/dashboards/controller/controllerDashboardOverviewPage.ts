@@ -179,7 +179,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 				const config = this._controllerModel.controllerConfig;
 				if (config) {
 					await vscode.env.openExternal(vscode.Uri.parse(
-						`https://portal.azure.com/#resource/subscriptions/${config.spec.settings.azure.subscription}/resourceGroups/${config.spec.settings.azure.resourceGroup}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${config.metadata.name}`));
+						`https://portal.azure.com/#resource/subscriptions/${config.spec.settings.azure.subscription}/resourceGroups/${config.spec.settings.azure.resourceGroup}/providers/Microsoft.AzureArcData/${ResourceType.dataControllers}/${config.metadata.name}`));
 				} else {
 					vscode.window.showErrorMessage(loc.couldNotFindControllerRegistration);
 				}

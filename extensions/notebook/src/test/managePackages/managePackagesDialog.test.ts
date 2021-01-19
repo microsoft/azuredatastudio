@@ -117,6 +117,7 @@ describe('Manage Package Dialog', () => {
 		dialog.setup(x => x.model).returns(() => model.object);
 
 		let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+		let onChange: vscode.EventEmitter<boolean> = new vscode.EventEmitter<boolean>();
 
 		let componentBase: azdata.Component = {
 			id: '',
@@ -132,8 +133,10 @@ describe('Manage Package Dialog', () => {
 			onDidClick: onClick.event
 		});
 		let radioButton: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
-			onDidClick: onClick.event
+			onDidClick: onClick.event,
+			onDidChangeCheckedState: onChange.event
 		});
+
 		const components: azdata.Component[] = [];
 		let container = {
 			clearItems: () => { },
