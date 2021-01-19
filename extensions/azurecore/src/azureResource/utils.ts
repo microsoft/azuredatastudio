@@ -368,8 +368,14 @@ export async function getBlobContainers(account: azdata.Account, subscription: a
 		`/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}` +
 		`/blobServices/default/containers?api-version=2019-06-01`;
 	const response = await makeHttpGetRequest(account, subscription, ignoreErrors, apiEndpoint);
+	let blobContainers;
+	if (response?.response?.data?.value !== undefined) {
+		blobContainers = response.response.data.value;
+	} else {
+		blobContainers = [];
+	}
 	return {
-		blobContainers: response.response.data.value,
+		blobContainers: blobContainers,
 		errors: response.errors ? response.errors : []
 	};
 }
@@ -381,8 +387,14 @@ export async function getFileShares(account: azdata.Account, subscription: azure
 		`/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}` +
 		`/fileServices/default/shares?api-version=2019-06-01`;
 	const response = await makeHttpGetRequest(account, subscription, ignoreErrors, apiEndpoint);
+	let fileShares;
+	if (response?.response?.data?.value !== undefined) {
+		fileShares = response.response.data.value;
+	} else {
+		fileShares = [];
+	}
 	return {
-		fileShares: response.response.data.value,
+		fileShares: fileShares,
 		errors: response.errors ? response.errors : []
 	};
 }
@@ -393,8 +405,14 @@ export async function getMigrationControllers(account: azdata.Account, subscript
 		`/resourceGroups/${resourceGroupName}` +
 		`/providers/Microsoft.DataMigration/Controllers/default/shares?api-version=2020-09-01-preview`;
 	const response = await makeHttpGetRequest(account, subscription, ignoreErrors, apiEndpoint);
+	let controllers;
+	if (response?.response?.data?.value !== undefined) {
+		controllers = response.response.data.value;
+	} else {
+		controllers = [];
+	}
 	return {
-		controllers: response.response.data.value,
+		controllers: controllers,
 		errors: response.errors ? response.errors : []
 	};
 }
