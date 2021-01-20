@@ -373,8 +373,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		// Check if Python is running before attempting to overwrite the installation.
-		// This step is skipped when using an existing installation, since we only add
-		// extra packages in that case and don't modify the install itself.
+		// This step is skipped when using an existing installation or when upgrading
+		// packages, since those cases wouldn't overwrite the installation.
 		if (!installSettings.existingPython && !installSettings.packageUpgradeOnly) {
 			let pythonExePath = JupyterServerInstallation.getPythonExePath(installSettings.installPath, false);
 			let isPythonRunning = await this.isPythonRunning(pythonExePath);
