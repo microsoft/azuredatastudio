@@ -175,7 +175,6 @@ export class PostgresParametersPage extends DashboardPage {
 								throw err;
 							}
 							await this._postgresModel.refresh();
-							await this.callGetEngineSettings();
 						}
 					);
 
@@ -254,7 +253,6 @@ export class PostgresParametersPage extends DashboardPage {
 								session?.dispose();
 							}
 							await this._postgresModel.refresh();
-							await this.callGetEngineSettings();
 						}
 
 					);
@@ -526,7 +524,6 @@ export class PostgresParametersPage extends DashboardPage {
 								session.dispose();
 							}
 							await this._postgresModel.refresh();
-							await this.callGetEngineSettings();
 						}
 					);
 
@@ -556,6 +553,8 @@ export class PostgresParametersPage extends DashboardPage {
 			this.parameterContainer!.addItem(this.connectToServerButton!, { CSSStyles: { 'max-width': '125px' } });
 			this.parameterContainer!.addItem(this._parametersTableLoading!);
 		} else {
+			this.searchBox!.enabled = true;
+			this.resetAllButton!.enabled = true;
 			this.parameterContainer!.addItem(this.parametersTable!);
 			this.refreshParametersTable();
 		}
@@ -581,10 +580,12 @@ export class PostgresParametersPage extends DashboardPage {
 		this.parametersTable.data = this._parameters.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
 	}
 
-	private handleServiceUpdated(): void {
+	private async handleServiceUpdated(): Promise<void> {
 		if (this._postgresModel.configLastUpdated && !this._postgresModel.engineSettingsLastUpdated) {
 			this.connectToServerButton!.enabled = true;
 			this._parametersTableLoading!.loading = false;
+		} else if (this._postgresModel.engineSettingsLastUpdated) {
+			await this.callGetEngineSettings();
 		}
 	}
 }
