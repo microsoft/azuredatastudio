@@ -9,7 +9,6 @@ import * as loc from '../../localizedConstants';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
-import { TelemetryReporter, TelemetryViews } from '../../telemetry';
 
 enum deployPlanXml {
 	AlertElement = 'Alert',
@@ -107,12 +106,6 @@ export class DeployPlanPage extends DacFxConfigPage {
 			});
 			this.dataLossCheckbox.enabled = true;
 			this.model.potentialDataLoss = true;
-
-			// This will send telemetry event if potential data loss exists
-			TelemetryReporter.createActionEvent(TelemetryViews.DeployPlanPage, 'potentialDataLoss')
-				.withAdditionalProperties({
-					potentialDataLoss: this.model.potentialDataLoss.toString()
-				}).send();
 		} else {
 			// check checkbox to enable Next button and remove checkbox because there won't be any possible data loss
 			this.dataLossCheckbox.checked = true;

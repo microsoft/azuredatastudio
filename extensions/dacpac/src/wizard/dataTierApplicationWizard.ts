@@ -87,7 +87,7 @@ export class DataTierApplicationWizard {
 	public selectedOperation: Operation;
 
 	constructor(dacfxInputService?: mssql.IDacFxService) {
-		this.wizard = azdata.window.createWizard(loc.wizardTitle, loc.wizardTitle);
+		this.wizard = azdata.window.createWizard(loc.wizardTitle, 'Data Tier Application Wizard');
 		this.dacfxService = dacfxInputService;
 	}
 
@@ -128,13 +128,13 @@ export class DataTierApplicationWizard {
 	}
 
 	public setPages(): void {
-		let selectOperationWizardPage = azdata.window.createWizardPage(loc.selectOperationPageName, loc.selectOperationPageName);
-		let deployConfigWizardPage = azdata.window.createWizardPage(loc.deployConfigPageName, loc.deployConfigPageName);
-		let deployPlanWizardPage = azdata.window.createWizardPage(loc.deployPlanPageName, loc.deployPlanPageName);
-		let summaryWizardPage = azdata.window.createWizardPage(loc.summaryPageName, loc.summaryPageName);
-		let extractConfigWizardPage = azdata.window.createWizardPage(loc.extractConfigPageName, loc.extractConfigPageName);
-		let importConfigWizardPage = azdata.window.createWizardPage(loc.importConfigPageName, loc.importConfigPageName);
-		let exportConfigWizardPage = azdata.window.createWizardPage(loc.exportConfigPageName, loc.exportConfigPageName);
+		let selectOperationWizardPage = azdata.window.createWizardPage(loc.selectOperationPageName, 'Select an Operation Page');
+		let deployConfigWizardPage = azdata.window.createWizardPage(loc.deployConfigPageName, 'Deploy Config Page');
+		let deployPlanWizardPage = azdata.window.createWizardPage(loc.deployPlanPageName, 'Deploy Plan Page');
+		let summaryWizardPage = azdata.window.createWizardPage(loc.summaryPageName, 'Summary Page');
+		let extractConfigWizardPage = azdata.window.createWizardPage(loc.extractConfigPageName, 'Extract Config Page');
+		let importConfigWizardPage = azdata.window.createWizardPage(loc.importConfigPageName, 'Import Config Page');
+		let exportConfigWizardPage = azdata.window.createWizardPage(loc.exportConfigPageName, 'Export Config Page');
 
 		this.pages.set(PageName.selectOperation, new Page(selectOperationWizardPage));
 		this.pages.set(PageName.deployConfig, new Page(deployConfigWizardPage));
@@ -295,12 +295,10 @@ export class DataTierApplicationWizard {
 
 	// Cancel button on click event is using to send the data loss information to telemetry
 	private cancelDataTierWizard(): void {
-		if (this.model.potentialDataLoss) {
-			TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, 'WizardCanceled')
-				.withAdditionalProperties({
-					ispotentialDataLoss: this.model.potentialDataLoss.toString()
-				}).send();
-		}
+		TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, 'WizardCanceled')
+			.withAdditionalProperties({
+				isPotentialDataLoss: this.model.potentialDataLoss.toString()
+			}).send();
 	}
 
 	public async deploy(): Promise<mssql.DacFxResult> {
@@ -531,10 +529,10 @@ export class DataTierApplicationWizard {
 
 	public getDacServiceArgsAsProps(service: mssql.IDacFxService, database: string, filePath: string, ownerUri: string): { [k: string]: string } {
 		return {
-			isServiceExist: (!utils.isNullOrUndefined(service)).toString(),
-			isDatabaseExists: (!utils.isStringEmpty(database)).toString(),
-			isFilePathExist: (!utils.isStringEmpty(filePath)).toString(),
-			isOwnerUriExist: (!utils.isStringEmpty(ownerUri)).toString(),
+			isServiceExist: (!!service).toString(),
+			isDatabaseExists: (!!database).toString(),
+			isFilePathExist: (!!filePath).toString(),
+			isOwnerUriExist: (!!ownerUri).toString()
 		};
 	}
 

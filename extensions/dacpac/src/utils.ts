@@ -37,11 +37,3 @@ export async function tryGetFileSize(uri: string): Promise<number | undefined> {
 		return undefined;
 	}
 }
-
-export function isNullOrUndefined(val: any): boolean {
-	return val === null || val === undefined;
-}
-
-export function isStringEmpty(val: string): boolean {
-	return val === '' || val.length === 0;
-}

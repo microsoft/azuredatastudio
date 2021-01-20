@@ -391,7 +391,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Hides the modal and removes key listeners
 	 */
-	protected hide(reason?: string, currentPageName?: string) {
+	protected hide(reason?: string, currentPageName?: string): void {
 		this._modalShowingContext.get()!.pop();
 		this._bodyContainer!.remove();
 		this.disposableStore.clear();
