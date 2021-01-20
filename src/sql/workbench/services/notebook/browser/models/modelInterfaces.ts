@@ -346,6 +346,16 @@ export interface INotebookModel {
 	viewMode: ViewMode;
 
 	/**
+	 * Add custom metadata values to the notebook
+	 */
+	setMetaValue(key: string, value: any);
+
+	/**
+	 * Get a custom metadata value from the notebook
+	 */
+	getMetaValue(key: string): any;
+
+	/**
 	 * Change the current kernel from the Kernel dropdown
 	 * @param displayName kernel name (as displayed in Kernel dropdown)
 	 */
@@ -476,6 +486,7 @@ export interface ICellModel {
 	source: string | string[];
 	cellType: CellType;
 	trustedMode: boolean;
+	metadata: any | undefined;
 	active: boolean;
 	hover: boolean;
 	executionCount: number | undefined;
