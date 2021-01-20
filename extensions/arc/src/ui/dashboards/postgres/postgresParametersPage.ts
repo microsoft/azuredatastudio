@@ -168,10 +168,15 @@ export class PostgresParametersPage extends DashboardPage {
 								this.parameterUpdates!.forEach((value, key) => {
 									engineSettings.push(`${key}=${value}`);
 								});
-								await this._azdataApi.azdata.arc.postgres.server.edit(
-									this._postgresModel.info.name,
-									{ engineSettings: engineSettings.toString() },
-									this._postgresModel.engineVersion);
+								const session = await this._postgresModel.controllerModel.acquireAzdataSession();
+								try {
+									await this._azdataApi.azdata.arc.postgres.server.edit(
+										this._postgresModel.info.name,
+										{ engineSettings: engineSettings.toString() },
+										this._postgresModel.engineVersion);
+								} finally {
+									session.dispose();
+								}
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since
 								// the edit wasn't successfully applied
@@ -236,7 +241,11 @@ export class PostgresParametersPage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
+							//all
+							// azdata arc postgres server edit -n <server group name> -e '' -re
+							let session: azdataExt.AzdataSession | undefined = undefined;
 							try {
+								session = await this._postgresModel.controllerModel.acquireAzdataSession();
 								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name,
 									{ engineSettings: `''`, replaceEngineSettings: true },
@@ -250,6 +259,8 @@ export class PostgresParametersPage extends DashboardPage {
 								}
 								this.resetAllButton!.enabled = true;
 								throw err;
+							} finally {
+								session?.dispose();
 							}
 							await this._postgresModel.refresh();
 							await this.callGetEngineSettings();
@@ -496,13 +507,14 @@ export class PostgresParametersPage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
+							const session = await this._postgresModel.controllerModel.acquireAzdataSession();
 							try {
 								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name,
 									{ engineSettings: engineSetting.parameterName + '=' },
 									this._postgresModel.engineVersion);
-							} catch (err) {
-								throw err;
+							} finally {
+								session.dispose();
 							}
 							await this._postgresModel.refresh();
 							await this.callGetEngineSettings();
