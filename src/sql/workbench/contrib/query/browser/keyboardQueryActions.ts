@@ -306,6 +306,32 @@ export class ToggleQueryResultsKeyboardAction extends Action {
 	}
 }
 
+
+
+/**
+ * Toggle the focus between query editor and results pane
+ */
+export class ToggleFocusBetweenQueryEditorAndResultsAction extends Action {
+	public static ID = 'ToggleFocusBetweenQueryEditorAndResultsAction';
+	public static LABEL = nls.localize('ToggleFocusBetweenQueryEditorAndResultsAction', "Toggle Focus Between Query And Results");
+
+	constructor(
+		id: string,
+		label: string,
+		@IEditorService private _editorService: IEditorService
+	) {
+		super(id, label);
+		this.enabled = true;
+	}
+
+	public async run(): Promise<void> {
+		const editor = this._editorService.activeEditorPane;
+		if (editor instanceof QueryEditor) {
+			editor.toggleFocusBetweenQueryEditorAndResults();
+		}
+	}
+}
+
 /**
  * Action class that runs a query in the active SQL text document.
  */

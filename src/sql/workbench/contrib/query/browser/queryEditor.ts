@@ -470,6 +470,14 @@ export class QueryEditor extends EditorPane {
 		this.currentTextEditor.focus();
 	}
 
+	public toggleFocusBetweenQueryEditorAndResults(): void {
+		if (!this.resultsVisible || this.resultsEditorContainer.contains(document.activeElement)) {
+			this.focus();
+		} else {
+			this.resultsEditor.focus();
+		}
+	}
+
 	/**
 	 * Updates the internal variable keeping track of the editor's size, and re-calculates the sash position.
 	 * To be called when the container of this editor changes size.
