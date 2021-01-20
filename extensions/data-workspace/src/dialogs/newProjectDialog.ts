@@ -65,11 +65,21 @@ export class NewProjectDialog extends DialogBase {
 	async onComplete(): Promise<void> {
 		try {
 			const validateWorkspace = await this.workspaceService.validateWorkspace();
+
+			TelemetryReporter.createActionEvent(TelemetryViews.NewProjectDialog, 'NewProjectDialogCompleted')
+				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId, workspaceValidationPassed: validateWorkspace.toString() })
+				.send();
+
 			if (validateWorkspace) {
 				await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId, vscode.Uri.file(this.workspaceInputBox!.value!));
 			}
 		}
 		catch (err) {
+
+			TelemetryReporter.createActionEvent(TelemetryViews.NewProjectDialog, 'NewProjectDialogErrorThrown')
+				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId, error: err?.message ? err.message : err })
+				.send();
+
 			vscode.window.showErrorMessage(err?.message ? err.message : err);
 		}
 	}

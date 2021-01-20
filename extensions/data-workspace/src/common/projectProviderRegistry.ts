@@ -24,7 +24,7 @@ export const ProjectProviderRegistry: IProjectProviderRegistry = new class imple
 		TelemetryReporter.createActionEvent(TelemetryViews.ProviderRegistration, 'ProviderRegistered')
 			.withAdditionalProperties({
 				providerId: provider.providerExtensionId,
-				extensions: provider.supportedProjectTypes.sort().join(', ')
+				extensions: provider.supportedProjectTypes.map(p => p.projectFileExtension).sort().join(', ')
 			})
 			.send();
 
