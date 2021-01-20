@@ -38,6 +38,7 @@ import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{

@@ -398,7 +398,7 @@ export class KernelsDropdown extends SelectBox {
 	}
 }
 
-const attachToDropdownElementId = 'attach-to-dropdown';
+export const attachToDropdownElementId = 'attach-to-dropdown';
 const saveConnectionNameConfigName = 'notebook.saveConnectionName';
 
 export class AttachToDropdown extends SelectBox {
