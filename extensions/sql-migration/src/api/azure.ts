@@ -21,19 +21,18 @@ export async function getSubscriptions(account: azdata.Account): Promise<Subscri
 	const api = await getAzureCoreAPI();
 	const subscriptions = await api.getSubscriptions(account, false);
 	let listOfSubscriptions = subscriptions.subscriptions;
-	listOfSubscriptions.sort((a, b) => {
-		if (a.name < b.name) {
-			return -1;
-		}
-		if (a.name > b.name) {
-			return 1;
-		}
-		return 0;
-	});
+	sortResourceArrayByName(listOfSubscriptions);
 	return subscriptions.subscriptions;
 }
 
 export type AzureProduct = azureResource.AzureGraphResource;
+
+export async function getResourceGroups(account: azdata.Account, subscription: Subscription): Promise<azureResource.AzureResourceResourceGroup[]> {
+	const api = await getAzureCoreAPI();
+	const result = await api.getResourceGroups(account, subscription, false);
+	sortResourceArrayByName(result.resourceGroups);
+	return result.resourceGroups;
+}
 
 export type SqlManagedInstance = AzureProduct;
 export async function getAvailableManagedInstanceProducts(account: azdata.Account, subscription: Subscription): Promise<SqlManagedInstance[]> {
@@ -71,7 +70,7 @@ export async function getFileShares(account: azdata.Account, subscription: Subsc
 	const api = await getAzureCoreAPI();
 	let result = await api.getFileShares(account, subscription, storageAccount, true);
 	let fileShares = result.fileShares;
-	sortResourceArrayByName(fileShares!);
+	sortResourceArrayByName(fileShares);
 	return fileShares!;
 }
 
@@ -79,19 +78,28 @@ export async function getBlobContainers(account: azdata.Account, subscription: S
 	const api = await getAzureCoreAPI();
 	let result = await api.getBlobContainers(account, subscription, storageAccount, true);
 	let blobContainers = result.blobContainers;
-	sortResourceArrayByName(blobContainers!);
+	sortResourceArrayByName(blobContainers);
 	return blobContainers!;
 }
 
-function sortResourceArrayByName(resourceArray: AzureProduct[] | azureResource.FileShare[] | azureResource.BlobContainer[] | undefined): void {
+export async function getMigrationControllers(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string): Promise<azureResource.MigrationController[]> {
+	const api = await getAzureCoreAPI();
+	let result = await api.getMigrationControllers(account, subscription, resourceGroupName, regionName, true);
+	let controllers = result.controllers;
+	sortResourceArrayByName(controllers);
+	return controllers!;
+}
+
+type SortableAzureResources = AzureProduct | azureResource.FileShare | azureResource.BlobContainer | azureResource.MigrationController | azureResource.AzureResourceSubscription;
+function sortResourceArrayByName(resourceArray: SortableAzureResources[]): void {
 	if (!resourceArray) {
 		return;
 	}
-	resourceArray.sort((a: AzureProduct | azureResource.BlobContainer | azureResource.FileShare, b: AzureProduct | azureResource.BlobContainer | azureResource.FileShare) => {
-		if (a.name! < b.name!) {
+	resourceArray.sort((a: SortableAzureResources, b: SortableAzureResources) => {
+		if (a.name.toLowerCase() < b.name.toLowerCase()) {
 			return -1;
 		}
-		if (a.name! > b.name!) {
+		if (a.name.toLowerCase() > b.name.toLowerCase()) {
 			return 1;
 		}
 		return 0;
