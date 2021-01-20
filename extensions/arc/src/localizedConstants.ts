@@ -30,6 +30,8 @@ export const newSupportRequest = localize('arc.newSupportRequest', "New support 
 export const diagnoseAndSolveProblems = localize('arc.diagnoseAndSolveProblems', "Diagnose and solve problems");
 export const supportAndTroubleshooting = localize('arc.supportAndTroubleshooting', "Support + troubleshooting");
 export const resourceHealth = localize('arc.resourceHealth', "Resource health");
+export const parameterName = localize('arc.parameterName', "Parameter Name");
+export const value = localize('arc.value', "Value");
 
 export const newInstance = localize('arc.createNew', "New Instance");
 export const deleteText = localize('arc.delete', "Delete");
