@@ -150,8 +150,12 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test`, 'Basic unordered list test failed');
 		htmlString = '<ul><li>Test</li><li>Test2</li></ul>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test\n- Test2`, 'Basic unordered 2 item list test failed');
-		htmlString = '<ul><li>Test<ul><li>Test2</li></ul><li>Test3</li></ul>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test\n    - Test2\n- Test3`, 'Nested item list test failed');
+		htmlString = '<ul><li>Test</li><ul><li>Test2</li></ul><li>Test3</li></ul>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test\n  - Test2\n- Test3`, 'Nested item list test failed');
+		htmlString = '<ul><li>Test</li><ul><li>Test2</li></ul><ul></ul><li>Test3</li></ul>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test\n  - Test2\n- Test3`, 'Nested item list test empty list failed');
+		htmlString = '<ul><li><span>Hello</span><br></li><li><span>Hello</span></li></ul>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Hello\n- Hello`, 'Nested item list test empty list failed');
 		htmlString = '<ol><li>Test</li></ol>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `1. Test`, 'Basic ordered item test failed');
 		htmlString = '<ol><li>Test</li><li>Test2</li></ol>';
