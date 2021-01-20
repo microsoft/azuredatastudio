@@ -16,6 +16,7 @@ export interface ViewTestContext {
 
 export function createViewContext(): ViewTestContext {
 	let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let onChange: vscode.EventEmitter<boolean> = new vscode.EventEmitter<boolean>();
 
 	let apiWrapper = TypeMoq.Mock.ofType(ApiWrapper);
 	let componentBase: azdata.Component = {
@@ -38,7 +39,8 @@ export function createViewContext(): ViewTestContext {
 	});
 	let radioButton: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
 		checked: true,
-		onDidClick: onClick.event
+		onDidClick: onClick.event,
+		onDidChangeCheckedState: onChange.event,
 	});
 	let checkbox: azdata.CheckBoxComponent = Object.assign({}, componentBase, {
 		checked: true,
