@@ -233,25 +233,25 @@ declare module 'azdata-ext' {
 		code?: number
 	}
 
-	export interface AzdataLoginSession extends vscode.Disposable { }
+	export interface AzdataSession extends vscode.Disposable { }
 
 	export interface IAzdataApi {
 		arc: {
 			dc: {
-				create(namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string, additionalEnvVars?: AdditionalEnvVars, loginSession?: AzdataLoginSession): Promise<AzdataOutput<void>>,
+				create(namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string, additionalEnvVars?: AdditionalEnvVars, session?: AzdataSession): Promise<AzdataOutput<void>>,
 				endpoint: {
-					list(additionalEnvVars?: AdditionalEnvVars, loginSession?: AzdataLoginSession): Promise<AzdataOutput<DcEndpointListResult[]>>
+					list(additionalEnvVars?: AdditionalEnvVars, session?: AzdataSession): Promise<AzdataOutput<DcEndpointListResult[]>>
 				},
 				config: {
-					list(additionalEnvVars?: AdditionalEnvVars, loginSession?: AzdataLoginSession): Promise<AzdataOutput<DcConfigListResult[]>>,
-					show(additionalEnvVars?: AdditionalEnvVars, loginSession?: AzdataLoginSession): Promise<AzdataOutput<DcConfigShowResult>>
+					list(additionalEnvVars?: AdditionalEnvVars, session?: AzdataSession): Promise<AzdataOutput<DcConfigListResult[]>>,
+					show(additionalEnvVars?: AdditionalEnvVars, session?: AzdataSession): Promise<AzdataOutput<DcConfigShowResult>>
 				}
 			},
 			postgres: {
 				server: {
-					delete(name: string, additionalEnvVars?: AdditionalEnvVars, loginSession?: AzdataLoginSession): Promise<AzdataOutput<void>>,
-					list(additionalEnvVars?: AdditionalEnvVars, loginSession?: AzdataLoginSession): Promise<AzdataOutput<PostgresServerListResult[]>>,
-					show(name: string, additionalEnvVars?: AdditionalEnvVars, loginSession?: AzdataLoginSession): Promise<AzdataOutput<PostgresServerShowResult>>,
+					delete(name: string, additionalEnvVars?: AdditionalEnvVars, session?: AzdataSession): Promise<AzdataOutput<void>>,
+					list(additionalEnvVars?: AdditionalEnvVars, session?: AzdataSession): Promise<AzdataOutput<PostgresServerListResult[]>>,
+					show(name: string, additionalEnvVars?: AdditionalEnvVars, session?: AzdataSession): Promise<AzdataOutput<PostgresServerShowResult>>,
 					edit(
 						name: string,
 						args: {
@@ -269,15 +269,15 @@ declare module 'azdata-ext' {
 						},
 						engineVersion?: string,
 						additionalEnvVars?: AdditionalEnvVars,
-						loginSession?: AzdataLoginSession
+						session?: AzdataSession
 					): Promise<AzdataOutput<void>>
 				}
 			},
 			sql: {
 				mi: {
-					delete(name: string, additionalEnvVars?: AdditionalEnvVars, loginSession?: AzdataLoginSession): Promise<AzdataOutput<void>>,
-					list(additionalEnvVars?: AdditionalEnvVars, loginSession?: AzdataLoginSession): Promise<AzdataOutput<SqlMiListResult[]>>,
-					show(name: string, additionalEnvVars?: AdditionalEnvVars, loginSession?: AzdataLoginSession): Promise<AzdataOutput<SqlMiShowResult>>,
+					delete(name: string, additionalEnvVars?: AdditionalEnvVars, session?: AzdataSession): Promise<AzdataOutput<void>>,
+					list(additionalEnvVars?: AdditionalEnvVars, session?: AzdataSession): Promise<AzdataOutput<SqlMiListResult[]>>,
+					show(name: string, additionalEnvVars?: AdditionalEnvVars, session?: AzdataSession): Promise<AzdataOutput<SqlMiShowResult>>,
 					edit(
 						name: string,
 						args: {
@@ -288,7 +288,7 @@ declare module 'azdata-ext' {
 							noWait?: boolean,
 						},
 						additionalEnvVars?: AdditionalEnvVars,
-						loginSession?: AzdataLoginSession
+						session?: AzdataSession
 					): Promise<AzdataOutput<void>>
 				}
 			}
@@ -297,13 +297,13 @@ declare module 'azdata-ext' {
 		login(endpoint: string, username: string, password: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<void>>,
 		/**
 		 * Acquires a session for the specified controller, which will log in to the specified controller and then block all other commands
-		 * from executing until the session is released (disposed).
+		 * that are not part of the original session from executing until the session is released (disposed).
 		 * @param endpoint
 		 * @param username
 		 * @param password
 		 * @param additionalEnvVars
 		 */
-		acquireLoginSession(endpoint: string, username: string, password: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataLoginSession>,
+		acquireSession(endpoint: string, username: string, password: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataSession>,
 		/**
 		 * The semVersion corresponding to this installation of azdata. version() method should have been run
 		 * before fetching this value to ensure that correct value is returned. This is almost always correct unless

@@ -78,7 +78,7 @@ export class FakeAzdataApi implements azdataExt.IAzdataApi {
 	login(_endpoint: string, _username: string, _password: string): Promise<azdataExt.AzdataOutput<void>> {
 		return <any>undefined;
 	}
-	acquireLoginSession(_endpoint: string, _username: string, _password: string): Promise<azdataExt.AzdataLoginSession> {
+	acquireSession(_endpoint: string, _username: string, _password: string): Promise<azdataExt.AzdataSession> {
 		return Promise.resolve({ dispose: () => { } });
 	}
 	version(): Promise<azdataExt.AzdataOutput<string>> {

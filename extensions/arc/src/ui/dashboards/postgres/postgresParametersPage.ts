@@ -172,12 +172,12 @@ export class PostgresParametersPage extends DashboardPage {
 								this.engineSettingUpdates!.forEach((value: string) => {
 									this.engineSettings += value + ', ';
 								});
-								const loginSession = await this._postgresModel.controllerModel.acquireAzdataLoginSession();
+								const session = await this._postgresModel.controllerModel.acquireAzdataSession();
 								try {
 									await this._azdataApi.azdata.arc.postgres.server.edit(
 										this._postgresModel.info.name, { engineSettings: this.engineSettings + `'` });
 								} finally {
-									loginSession.dispose();
+									session.dispose();
 								}
 
 							} catch (err) {
@@ -243,9 +243,9 @@ export class PostgresParametersPage extends DashboardPage {
 						async (_progress, _token): Promise<void> => {
 							//all
 							// azdata arc postgres server edit -n <server group name> -e '' -re
-							let loginSession: azdataExt.AzdataLoginSession | undefined = undefined;
+							let session: azdataExt.AzdataSession | undefined = undefined;
 							try {
-								loginSession = await this._postgresModel.controllerModel.acquireAzdataLoginSession();
+								session = await this._postgresModel.controllerModel.acquireAzdataSession();
 								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name, { engineSettings: `'' -re` });
 							} catch (err) {
@@ -254,7 +254,7 @@ export class PostgresParametersPage extends DashboardPage {
 								this.resetButton!.enabled = true;
 								throw err;
 							} finally {
-								loginSession?.dispose();
+								session?.dispose();
 							}
 							await this._postgresModel.refresh();
 						}
@@ -474,12 +474,12 @@ export class PostgresParametersPage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token) => {
-							const loginSession = await this._postgresModel.controllerModel.acquireAzdataLoginSession();
+							const session = await this._postgresModel.controllerModel.acquireAzdataSession();
 							try {
 								this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name, { engineSettings: name + '=' });
 							} finally {
-								loginSession.dispose();
+								session.dispose();
 							}
 						}
 					);

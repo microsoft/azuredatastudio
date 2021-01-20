@@ -24,7 +24,7 @@ describe('api', function (): void {
 			await assertRejected(api.azdata.getPath(), 'getPath');
 			await assertRejected(api.azdata.getSemVersion(), 'getSemVersion');
 			await assertRejected(api.azdata.login('', '', ''), 'login');
-			await assertRejected(api.azdata.acquireLoginSession('', '', ''), 'acquireLoginSession');
+			await assertRejected(api.azdata.acquireSession('', '', ''), 'acquireSession');
 			await assertRejected(api.azdata.version(), 'version');
 
 			await assertRejected(api.azdata.arc.dc.create('', '', '', '', '', ''), 'arc dc create');

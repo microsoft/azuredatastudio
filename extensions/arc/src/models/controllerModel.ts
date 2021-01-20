@@ -65,7 +65,7 @@ export class ControllerModel {
 	 * calls from changing the context while commands for this session are being executed.
 	 * @param promptReconnect
 	 */
-	public async acquireAzdataLoginSession(promptReconnect: boolean = false): Promise<azdataExt.AzdataLoginSession> {
+	public async acquireAzdataSession(promptReconnect: boolean = false): Promise<azdataExt.AzdataSession> {
 		let promptForValidClusterContext: boolean = false;
 		try {
 			const contexts = await getKubeConfigClusterContexts(this.info.kubeConfigFilePath);
@@ -103,7 +103,7 @@ export class ControllerModel {
 			}
 		}
 
-		return this._azdataApi.azdata.acquireLoginSession(this.info.url, this.info.username, this._password, this.azdataAdditionalEnvVars);
+		return this._azdataApi.azdata.acquireSession(this.info.url, this.info.username, this._password, this.azdataAdditionalEnvVars);
 	}
 
 	/**
@@ -124,7 +124,7 @@ export class ControllerModel {
 		}
 		// create a new in progress promise object
 		ControllerModel._refreshInProgress = new Deferred<void>();
-		const session = await this.acquireAzdataLoginSession(promptReconnect);
+		const session = await this.acquireAzdataSession(promptReconnect);
 		const newRegistrations: Registration[] = [];
 		try {
 			await Promise.all([
@@ -134,7 +134,7 @@ export class ControllerModel {
 					this._onConfigUpdated.fire(this._controllerConfig);
 				}).catch(err => {
 					// If an error occurs show a message so the user knows something failed but still
-					// fire the event so callers can know to update (e.g. so dashboards don't show the
+					// fire the event so callers hooking into this can handle the error (e.g. so dashboards don't show the
 					// loading icon forever)
 					if (showErrors) {
 						vscode.window.showErrorMessage(loc.fetchConfigFailed(this.info.name, err));

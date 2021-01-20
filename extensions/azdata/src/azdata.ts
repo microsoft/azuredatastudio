@@ -35,7 +35,7 @@ export interface IAzdataTool extends azdataExt.IAzdataApi {
 	executeCommand<R>(args: string[], additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<R>>
 }
 
-class AzdataLoginSession implements azdataExt.AzdataLoginSession {
+class AzdataSession implements azdataExt.AzdataSession {
 
 	private _session = new Deferred<void>();
 
@@ -54,9 +54,9 @@ class AzdataLoginSession implements azdataExt.AzdataLoginSession {
 export class AzdataTool implements azdataExt.IAzdataApi {
 
 	private _semVersion: SemVer;
-	private _currentLoginSession: azdataExt.AzdataLoginSession | undefined = undefined;
+	private _currentSession: azdataExt.AzdataSession | undefined = undefined;
 	private _currentlyExecutingCommands: Deferred<void>[] = [];
-	private _queuedCommands: { deferred: Deferred<void>, session?: azdataExt.AzdataLoginSession }[] = [];
+	private _queuedCommands: { deferred: Deferred<void>, session?: azdataExt.AzdataSession }[] = [];
 
 	constructor(private _path: string, version: string) {
 		this._semVersion = new SemVer(version);
@@ -90,7 +90,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 				profileName?: string,
 				storageClass?: string,
 				additionalEnvVars?: azdataExt.AdditionalEnvVars,
-				loginSession?: azdataExt.AzdataLoginSession): Promise<azdataExt.AzdataOutput<void>> => {
+				session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<void>> => {
 				const args = ['arc', 'dc', 'create',
 					'--namespace', namespace,
 					'--name', name,
@@ -104,32 +104,32 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 				if (storageClass) {
 					args.push('--storage-class', storageClass);
 				}
-				return this.executeCommand<void>(args, additionalEnvVars, loginSession);
+				return this.executeCommand<void>(args, additionalEnvVars, session);
 			},
 			endpoint: {
-				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, loginSession?: azdataExt.AzdataLoginSession): Promise<azdataExt.AzdataOutput<azdataExt.DcEndpointListResult[]>> => {
-					return this.executeCommand<azdataExt.DcEndpointListResult[]>(['arc', 'dc', 'endpoint', 'list'], additionalEnvVars, loginSession);
+				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<azdataExt.DcEndpointListResult[]>> => {
+					return this.executeCommand<azdataExt.DcEndpointListResult[]>(['arc', 'dc', 'endpoint', 'list'], additionalEnvVars, session);
 				}
 			},
 			config: {
-				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, loginSession?: azdataExt.AzdataLoginSession): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigListResult[]>> => {
-					return this.executeCommand<azdataExt.DcConfigListResult[]>(['arc', 'dc', 'config', 'list'], additionalEnvVars, loginSession);
+				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigListResult[]>> => {
+					return this.executeCommand<azdataExt.DcConfigListResult[]>(['arc', 'dc', 'config', 'list'], additionalEnvVars, session);
 				},
-				show: (additionalEnvVars?: azdataExt.AdditionalEnvVars, loginSession?: azdataExt.AzdataLoginSession): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigShowResult>> => {
-					return this.executeCommand<azdataExt.DcConfigShowResult>(['arc', 'dc', 'config', 'show'], additionalEnvVars, loginSession);
+				show: (additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigShowResult>> => {
+					return this.executeCommand<azdataExt.DcConfigShowResult>(['arc', 'dc', 'config', 'show'], additionalEnvVars, session);
 				}
 			}
 		},
 		postgres: {
 			server: {
-				delete: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, loginSession?: azdataExt.AzdataLoginSession): Promise<azdataExt.AzdataOutput<void>> => {
-					return this.executeCommand<void>(['arc', 'postgres', 'server', 'delete', '-n', name, '--force'], additionalEnvVars, loginSession);
+				delete: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<void>> => {
+					return this.executeCommand<void>(['arc', 'postgres', 'server', 'delete', '-n', name, '--force'], additionalEnvVars, session);
 				},
-				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, loginSession?: azdataExt.AzdataLoginSession): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerListResult[]>> => {
-					return this.executeCommand<azdataExt.PostgresServerListResult[]>(['arc', 'postgres', 'server', 'list'], additionalEnvVars, loginSession);
+				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerListResult[]>> => {
+					return this.executeCommand<azdataExt.PostgresServerListResult[]>(['arc', 'postgres', 'server', 'list'], additionalEnvVars, session);
 				},
-				show: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, loginSession?: azdataExt.AzdataLoginSession): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerShowResult>> => {
-					return this.executeCommand<azdataExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name], additionalEnvVars, loginSession);
+				show: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerShowResult>> => {
+					return this.executeCommand<azdataExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name], additionalEnvVars, session);
 				},
 				edit: (
 					name: string,
@@ -148,7 +148,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 					},
 					engineVersion?: string,
 					additionalEnvVars?: azdataExt.AdditionalEnvVars,
-					loginSession?: azdataExt.AzdataLoginSession): Promise<azdataExt.AzdataOutput<void>> => {
+					session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<void>> => {
 					const argsArray = ['arc', 'postgres', 'server', 'edit', '-n', name];
 					if (args.adminPassword) { argsArray.push('--admin-password'); }
 					if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
@@ -162,20 +162,20 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 					if (args.replaceEngineSettings) { argsArray.push('--replace-engine-settings'); }
 					if (args.workers) { argsArray.push('--workers', args.workers.toString()); }
 					if (engineVersion) { argsArray.push('--engine-version', engineVersion); }
-					return this.executeCommand<void>(argsArray, additionalEnvVars, loginSession);
+					return this.executeCommand<void>(argsArray, additionalEnvVars, session);
 				}
 			}
 		},
 		sql: {
 			mi: {
-				delete: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, loginSession?: azdataExt.AzdataLoginSession): Promise<azdataExt.AzdataOutput<void>> => {
-					return this.executeCommand<void>(['arc', 'sql', 'mi', 'delete', '-n', name], additionalEnvVars, loginSession);
+				delete: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<void>> => {
+					return this.executeCommand<void>(['arc', 'sql', 'mi', 'delete', '-n', name], additionalEnvVars, session);
 				},
-				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, loginSession?: azdataExt.AzdataLoginSession): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiListResult[]>> => {
-					return this.executeCommand<azdataExt.SqlMiListResult[]>(['arc', 'sql', 'mi', 'list'], additionalEnvVars, loginSession);
+				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiListResult[]>> => {
+					return this.executeCommand<azdataExt.SqlMiListResult[]>(['arc', 'sql', 'mi', 'list'], additionalEnvVars, session);
 				},
-				show: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, loginSession?: azdataExt.AzdataLoginSession): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiShowResult>> => {
-					return this.executeCommand<azdataExt.SqlMiShowResult>(['arc', 'sql', 'mi', 'show', '-n', name], additionalEnvVars, loginSession);
+				show: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiShowResult>> => {
+					return this.executeCommand<azdataExt.SqlMiShowResult>(['arc', 'sql', 'mi', 'show', '-n', name], additionalEnvVars, session);
 				},
 				edit: (
 					name: string,
@@ -187,7 +187,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 						noWait?: boolean,
 					},
 					additionalEnvVars?: azdataExt.AdditionalEnvVars,
-					loginSession?: azdataExt.AzdataLoginSession
+					session?: azdataExt.AzdataSession
 				): Promise<azdataExt.AzdataOutput<void>> => {
 					const argsArray = ['arc', 'sql', 'mi', 'edit', '-n', name];
 					if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
@@ -195,7 +195,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 					if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
 					if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
 					if (args.noWait) { argsArray.push('--no-wait'); }
-					return this.executeCommand<void>(argsArray, additionalEnvVars, loginSession);
+					return this.executeCommand<void>(argsArray, additionalEnvVars, session);
 				}
 			}
 		}
@@ -210,14 +210,14 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 		return this.executeCommandImpl<void>(['login', '-e', endpoint, '-u', username], Object.assign({}, additionalEnvVars, { 'AZDATA_PASSWORD': password }));
 	}
 
-	public async acquireLoginSession(endpoint: string, username: string, password: string, additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataLoginSession> {
-		const session = new AzdataLoginSession();
+	public async acquireSession(endpoint: string, username: string, password: string, additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataSession> {
+		const session = new AzdataSession();
 		session.sessionEnded().then(async () => {
 			// Wait for all commands running for this session to end
 			while (this._currentlyExecutingCommands.length > 0) {
 				await this._currentlyExecutingCommands[0].promise;
 			}
-			this._currentLoginSession = undefined;
+			this._currentSession = undefined;
 			// Start our next command now that we're all done with this session
 			// TODO: Should we check if the command has a session that hasn't started? That should never happen..
 			// TODO: Look into kicking off multiple commands
@@ -225,17 +225,17 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 		});
 
 		// We're not in a session or waiting on anything so just set the current session right now
-		if (!this._currentLoginSession && this._queuedCommands.length === 0) {
-			this._currentLoginSession = session;
+		if (!this._currentSession && this._queuedCommands.length === 0) {
+			this._currentSession = session;
 		} else {
 			// We're in a session or another command is executing so add this to the end of the queued commands and wait our turn
 			const deferred = new Deferred<void>();
 			deferred.promise.then(() => {
-				this._currentLoginSession = session;
+				this._currentSession = session;
 				// We've started a new session so look at all our queued commands and start
 				// the ones for this session now.
 				this._queuedCommands = this._queuedCommands.filter(c => {
-					if (c.session === this._currentLoginSession) {
+					if (c.session === this._currentSession) {
 						c.deferred.resolve();
 						return false;
 					}
@@ -265,10 +265,10 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 		};
 	}
 
-	public async executeCommand<R>(args: string[], additionalEnvVars?: azdataExt.AdditionalEnvVars, loginSession?: azdataExt.AzdataLoginSession): Promise<azdataExt.AzdataOutput<R>> {
-		if (this._currentLoginSession && this._currentLoginSession !== loginSession) {
+	public async executeCommand<R>(args: string[], additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<R>> {
+		if (this._currentSession && this._currentSession !== session) {
 			const deferred = new Deferred<void>();
-			this._queuedCommands.push({ deferred, session: loginSession });
+			this._queuedCommands.push({ deferred, session: session });
 			await deferred.promise;
 		}
 		const executingDeferred = new Deferred<void>();
@@ -280,7 +280,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 			this._currentlyExecutingCommands = this._currentlyExecutingCommands.filter(c => c !== executingDeferred);
 			executingDeferred.resolve();
 			// If there isn't an active session and we still have queued commands then we have to manually kick off the next one
-			if (this._queuedCommands.length > 0 && !this._currentLoginSession) {
+			if (this._queuedCommands.length > 0 && !this._currentSession) {
 				this._queuedCommands.shift()?.deferred.resolve();
 			}
 		}

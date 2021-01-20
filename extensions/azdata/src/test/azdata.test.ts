@@ -226,18 +226,18 @@ describe('azdata', function () {
 			verifyExecuteCommandCalledWithArgs(['login', endpoint, username]);
 		});
 
-		describe('acquireLoginSession', function (): void {
+		describe('acquireSession', function (): void {
 			it('calls login', async function (): Promise<void> {
 				const endpoint = 'myEndpoint';
 				const username = 'myUsername';
 				const password = 'myPassword';
-				const session = await azdataTool.acquireLoginSession(endpoint, username, password);
+				const session = await azdataTool.acquireSession(endpoint, username, password);
 				session.dispose();
 				verifyExecuteCommandCalledWithArgs(['login', endpoint, username]);
 			});
 
 			it('command executed under current session completes', async function (): Promise<void> {
-				const session = await azdataTool.acquireLoginSession('', '', '');
+				const session = await azdataTool.acquireSession('', '', '');
 				try {
 					await azdataTool.arc.dc.config.show(undefined, session);
 				} finally {
@@ -247,7 +247,7 @@ describe('azdata', function () {
 				verifyExecuteCommandCalledWithArgs(['arc', 'dc', 'config', 'show'], 1);
 			});
 			it('multiple commands executed under current session completes', async function (): Promise<void> {
-				const session = await azdataTool.acquireLoginSession('', '', '');
+				const session = await azdataTool.acquireSession('', '', '');
 				try {
 					// Kick off multiple commands at the same time and then ensure that they both complete
 					await Promise.all([
@@ -262,7 +262,7 @@ describe('azdata', function () {
 				verifyExecuteCommandCalledWithArgs(['arc', 'sql', 'mi', 'list'], 2);
 			});
 			it('command executed without session context is queued up until session is closed', async function (): Promise<void> {
-				const session = await azdataTool.acquireLoginSession('', '', '');
+				const session = await azdataTool.acquireSession('', '', '');
 				let nonSessionCommand: Promise<any> | undefined = undefined;
 				try {
 					// Start one command in the current session
@@ -281,7 +281,7 @@ describe('azdata', function () {
 				verifyExecuteCommandCalledWithArgs(['arc', 'sql', 'mi', 'list'], 2);
 			});
 			it('multiple commands executed without session context are queued up until session is closed', async function (): Promise<void> {
-				const session = await azdataTool.acquireLoginSession('', '', '');
+				const session = await azdataTool.acquireSession('', '', '');
 				let nonSessionCommand1: Promise<any> | undefined = undefined;
 				let nonSessionCommand2: Promise<any> | undefined = undefined;
 				try {
@@ -303,8 +303,8 @@ describe('azdata', function () {
 				verifyExecuteCommandCalledWithArgs(['arc', 'postgres', 'server', 'list'], 3);
 			});
 			it('attempting to acquire a second session while a first is still active queues the second session', async function (): Promise<void> {
-				const firstSession = await azdataTool.acquireLoginSession('', '', '');
-				let loginSessionPromise: Promise<azdataExt.AzdataLoginSession> | undefined = undefined;
+				const firstSession = await azdataTool.acquireSession('', '', '');
+				let sessionPromise: Promise<azdataExt.AzdataSession> | undefined = undefined;
 				let secondSessionCommand: Promise<any> | undefined = undefined;
 				try {
 					try {
@@ -312,8 +312,8 @@ describe('azdata', function () {
 						await azdataTool.arc.dc.config.show(undefined, firstSession);
 						// Verify that none of the commands for the second session are completed before the first is disposed
 						let isFulfilled = false;
-						loginSessionPromise = azdataTool.acquireLoginSession('', '', '');
-						loginSessionPromise.then(session => {
+						sessionPromise = azdataTool.acquireSession('', '', '');
+						sessionPromise.then(session => {
 							isFulfilled = true;
 							secondSessionCommand = azdataTool.arc.sql.mi.list(undefined, session).then(() => isFulfilled = true);
 						});
@@ -323,7 +323,7 @@ describe('azdata', function () {
 						firstSession.dispose();
 					}
 				} finally {
-					(await loginSessionPromise)?.dispose();
+					(await sessionPromise)?.dispose();
 				}
 				should(secondSessionCommand).not.equal(undefined, 'The second command should have been queued already');
 				await secondSessionCommand!;

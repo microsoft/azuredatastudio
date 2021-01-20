@@ -107,10 +107,10 @@ export class PostgresModel extends ResourceModel {
 			return this._refreshPromise.promise;
 		}
 		this._refreshPromise = new Deferred();
-		let loginSession: azdataExt.AzdataLoginSession | undefined = undefined;
+		let session: azdataExt.AzdataSession | undefined = undefined;
 		try {
-			loginSession = await this.controllerModel.acquireAzdataLoginSession();
-			this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name, this.controllerModel.azdataAdditionalEnvVars, loginSession)).result;
+			session = await this.controllerModel.acquireAzdataSession();
+			this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name, this.controllerModel.azdataAdditionalEnvVars, session)).result;
 			this.configLastUpdated = new Date();
 			this._onConfigUpdated.fire(this._config);
 			this._refreshPromise.resolve();
@@ -118,7 +118,7 @@ export class PostgresModel extends ResourceModel {
 			this._refreshPromise.reject(err);
 			throw err;
 		} finally {
-			loginSession?.dispose();
+			session?.dispose();
 			this._refreshPromise = undefined;
 		}
 	}

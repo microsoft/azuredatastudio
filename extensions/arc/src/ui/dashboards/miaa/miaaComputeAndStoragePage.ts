@@ -129,16 +129,16 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
-							let loginSession: azdataExt.AzdataLoginSession | undefined = undefined;
+							let session: azdataExt.AzdataSession | undefined = undefined;
 							try {
-								loginSession = await this._miaaModel.controllerModel.acquireAzdataLoginSession();
+								session = await this._miaaModel.controllerModel.acquireAzdataSession();
 								await this._azdataApi.azdata.arc.sql.mi.edit(
-									this._miaaModel.info.name, this.saveArgs, this._miaaModel.controllerModel.azdataAdditionalEnvVars, loginSession);
+									this._miaaModel.info.name, this.saveArgs, this._miaaModel.controllerModel.azdataAdditionalEnvVars, session);
 							} catch (err) {
 								this.saveButton!.enabled = true;
 								throw err;
 							} finally {
-								loginSession?.dispose();
+								session?.dispose();
 							}
 
 							await this._miaaModel.refresh();

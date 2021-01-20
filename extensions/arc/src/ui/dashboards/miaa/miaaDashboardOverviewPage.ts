@@ -206,11 +206,11 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token) => {
-								const loginSession = await this._controllerModel.acquireAzdataLoginSession();
+								const session = await this._controllerModel.acquireAzdataSession();
 								try {
-									return await this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name, this._controllerModel.azdataAdditionalEnvVars, loginSession);
+									return await this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name, this._controllerModel.azdataAdditionalEnvVars, session);
 								} finally {
-									loginSession.dispose();
+									session.dispose();
 								}
 
 							}
