@@ -11,7 +11,7 @@ import * as constants from '../common/constants';
 import { IWorkspaceService } from '../common/interfaces';
 import { fileExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
-import { CalculateRelativity, TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { calculateRelativity, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 export class OpenExistingDialog extends DialogBase {
 	public _targetTypeRadioCardGroup: azdata.RadioCardGroupComponent | undefined;
@@ -82,7 +82,7 @@ export class OpenExistingDialog extends DialogBase {
 				let addProjectsPromise: Promise<void>;
 
 				if (validateWorkspace) {
-					telemetryProps.workspaceProjectRelativity = CalculateRelativity(this._filePathTextBox!.value!, this.workspaceInputBox!.value!);
+					telemetryProps.workspaceProjectRelativity = calculateRelativity(this._filePathTextBox!.value!, this.workspaceInputBox!.value!);
 					telemetryProps.cancelled = 'false';
 					addProjectsPromise = this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._filePathTextBox!.value!)], vscode.Uri.file(this.workspaceInputBox!.value!));
 				} else {

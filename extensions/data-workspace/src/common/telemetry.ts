@@ -22,7 +22,7 @@ export enum TelemetryViews {
 	ProviderRegistration = 'ProviderRegistration'
 }
 
-export function CalculateRelativity(projectPath: string, workspacePath?: string): string {
+export function calculateRelativity(projectPath: string, workspacePath?: string): string {
 	workspacePath = workspacePath ?? vscode.workspace.workspaceFile?.fsPath;
 
 	if (!workspacePath) {

@@ -11,7 +11,7 @@ import * as constants from '../common/constants';
 import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
-import { TelemetryReporter, TelemetryViews, CalculateRelativity } from '../common/telemetry';
+import { TelemetryReporter, TelemetryViews, calculateRelativity } from '../common/telemetry';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
@@ -118,7 +118,7 @@ export class WorkspaceService implements IWorkspaceService {
 
 				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, 'ProjectAddedToWorkspace')
 					.withAdditionalProperties({
-						workspaceProjectRelativity: CalculateRelativity(projectFile.fsPath),
+						workspaceProjectRelativity: calculateRelativity(projectFile.fsPath),
 						projectType: path.extname(projectFile.fsPath)
 					}).send();
 
