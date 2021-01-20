@@ -91,7 +91,7 @@ export class PostgresParametersPage extends DashboardPage {
 			width: '100%',
 			columns: [
 				{
-					displayName: 'Parameter Name',
+					displayName: loc.parameterName,
 					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
 					width: '20%',
@@ -99,7 +99,7 @@ export class PostgresParametersPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				},
 				{
-					displayName: 'Value',
+					displayName: loc.value,
 					valueType: azdata.DeclarativeDataType.component,
 					isReadOnly: false,
 					width: '20%',
@@ -107,7 +107,7 @@ export class PostgresParametersPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				},
 				{
-					displayName: 'Description',
+					displayName: loc.description,
 					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
 					width: '50%',
@@ -121,7 +121,7 @@ export class PostgresParametersPage extends DashboardPage {
 					}
 				},
 				{
-					displayName: 'Reset To Default',
+					displayName: loc.resetToDefault,
 					valueType: azdata.DeclarativeDataType.component,
 					isReadOnly: false,
 					width: '10%',
@@ -536,6 +536,7 @@ export class PostgresParametersPage extends DashboardPage {
 			this.parameterContainer!.addItem(this._parametersTableLoading!);
 		} else {
 			this.parameterContainer!.addItem(this.parametersTable!);
+			this.refreshParametersTable();
 		}
 	}
 
