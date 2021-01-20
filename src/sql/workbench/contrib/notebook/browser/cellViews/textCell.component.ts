@@ -222,12 +222,15 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0 || this._previewMode === true;
 		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
-			if ((!cellModelSourceJoined) && !this.isEditMode) {
+			let setPlaceholderText = () => {
 				if (this.doubleClickEditEnabled) {
 					this._content = localize('doubleClickEdit', "<i>Double-click to edit</i>");
 				} else {
 					this._content = localize('addContent', "<i>Add content here...</i>");
 				}
+			};
+			if ((!cellModelSourceJoined) && !this.isEditMode) {
+				setPlaceholderText();
 			} else {
 				this._content = this.cellModel.source;
 			}
@@ -243,6 +246,12 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
+				let hasTextContent = this.cellModel.renderedOutputTextContent.some(text => text && text.trim() !== '');
+				if (!hasTextContent) {
+					// Some text (like rich-text tabs) can get reduced to an empty string after markdown rendering,
+					// so re-add the placeholder here so that the cell doesn't become invisible.
+					setPlaceholderText();
+				}
 				outputElement.focus();
 			}
 		}
