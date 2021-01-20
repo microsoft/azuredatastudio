@@ -26,13 +26,22 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private igComponent: azdata.FormComponent<azdata.TextComponent> | undefined;
 	private detailsComponent: azdata.FormComponent<azdata.TextComponent> | undefined;
 	private chooseTargetComponent: azdata.FormComponent<azdata.DivContainer> | undefined;
+	private azureSubscriptionText: azdata.FormComponent<azdata.TextComponent> | undefined;
+	private azureSubscriptionLabel: azdata.FormComponent<azdata.TextComponent> | undefined;
+	private azureSubscriptionDropDown: azdata.FormComponent<azdata.DropDownComponent> | undefined;
+	private azureSqlInstanceLabel: azdata.FormComponent<azdata.TextComponent> | undefined;
+	private azureSqlInstanceDropDown: azdata.FormComponent<azdata.DropDownComponent> | undefined;
 	private view: azdata.ModelView | undefined;
 
 	private async initialState(view: azdata.ModelView) {
 		this.igComponent = this.createStatusComponent(view); // The first component giving basic information
 		this.detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
 		this.chooseTargetComponent = this.createChooseTargetComponent(view);
-
+		this.azureSubscriptionText = this.createAzureSubscriptionText(view);
+		this.azureSubscriptionLabel = this.createAzureSubscriptionLabel(view);
+		this.azureSubscriptionDropDown = this.createAzureSubscriptionDropDown(view);
+		this.azureSqlInstanceLabel = this.createAzureSqlInstanceLabel(view);
+		this.azureSqlInstanceDropDown = this.createAzureSqlInstanceDropDown(view);
 
 		const assessmentLink = view.modelBuilder.hyperlink()
 			.withProperties<azdata.HyperlinkComponentProperties>({
@@ -55,6 +64,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this.igComponent,
 				this.detailsComponent,
 				this.chooseTargetComponent,
+				this.azureSubscriptionText,
+				this.azureSubscriptionLabel,
+				this.azureSubscriptionDropDown,
+				this.azureSqlInstanceLabel,
+				this.azureSqlInstanceDropDown,
 				assessmentFormLink
 			]
 		);
@@ -159,6 +173,64 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		});
 
 		this.chooseTargetComponent?.component.addItem(rbg.component());
+	}
+
+	private createAzureSubscriptionText(view: azdata.ModelView): azdata.FormComponent<azdata.TextComponent> {
+		const component = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: 'Select an Azure subscription and an Azure SQL Managed Instance for your target.', //TODO: Localize
+
+		});
+
+		return {
+			title: '',
+			component: component.component(),
+		};
+	}
+
+	private createAzureSubscriptionLabel(view: azdata.ModelView): azdata.FormComponent<azdata.TextComponent> {
+		const component = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: 'Azure Subscription' //TODO: Localize
+
+		});
+
+		return {
+			title: '',
+			component: component.component(),
+		};
+	}
+
+	private createAzureSubscriptionDropDown(view: azdata.ModelView): azdata.FormComponent<azdata.DropDownComponent> {
+		const component = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+			value: 'Select Subscription',
+			editable: false
+		});
+		return {
+			title: '',
+			component: component.component(),
+		};
+	}
+
+
+	private createAzureSqlInstanceLabel(view: azdata.ModelView): azdata.FormComponent<azdata.TextComponent> {
+		const component = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: 'Azure SQL Managed Instance', //TODO: Localize
+		});
+
+		return {
+			title: '',
+			component: component.component(),
+		};
+	}
+
+	private createAzureSqlInstanceDropDown(view: azdata.ModelView): azdata.FormComponent<azdata.DropDownComponent> {
+		const component = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+			value: 'Select Managed Instance',
+			editable: false
+		});
+		return {
+			title: '',
+			component: component.component(),
+		};
 	}
 
 	private eventListener: Disposable | undefined;

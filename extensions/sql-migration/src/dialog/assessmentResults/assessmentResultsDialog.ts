@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { MigrationStateModel } from '../../models/stateMachine';
 import { SqlDatabaseTree } from './sqlDatabasesTree';
-import { SqlAssessmentResultList } from './sqlAssessmentResultsList';
+// import { SqlAssessmentResultList } from './sqlAssessmentResultsList';
 import { SqlAssessmentResult } from './sqlAssessmentResult';
 
 
@@ -22,12 +22,12 @@ export class AssessmentResultsDialog {
 	public dialogName: string | undefined;
 
 	private _tree: SqlDatabaseTree;
-	private _list: SqlAssessmentResultList;
+	// private _list: SqlAssessmentResultList;
 	private _result: SqlAssessmentResult;
 
 	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string) {
 		this._tree = new SqlDatabaseTree();
-		this._list = new SqlAssessmentResultList();
+		// this._list = new SqlAssessmentResultList();
 		this._result = new SqlAssessmentResult();
 	}
 
@@ -36,12 +36,16 @@ export class AssessmentResultsDialog {
 			dialog.registerContent(async (view) => {
 				try {
 					const treeComponent = await this._tree.createComponent(view);
-					const separator1 = view.modelBuilder.separator().component();
-					const listComponent = await this._list.createComponent(view);
-					const separator2 = view.modelBuilder.separator().component();
+					// const separator1 = this.buildSeparator(view);
+					// const listComponent = await this._list.createComponent(view);
+					// const separator2 = view.modelBuilder.separator().component();
 					const resultComponent = await this._result.createComponent(view);
 
-					const flex = view.modelBuilder.flexContainer().withItems([treeComponent, separator1, listComponent, separator2, resultComponent]);
+					const flex = view.modelBuilder.flexContainer().withLayout({
+						flexFlow: 'row'
+					}).withItems([treeComponent, resultComponent]).withProps({
+
+					});
 
 					view.initializeModel(flex.component());
 					resolve();
@@ -51,6 +55,15 @@ export class AssessmentResultsDialog {
 			});
 		});
 	}
+
+	// private buildSeparator(view: azdata.ModelView): azdata.SeparatorComponent {
+	// 	const separator = view.modelBuilder.separator().withProps({
+	// 		CSSStyles: {
+	// 			'Rotation': '-90'
+	// 		}
+	// 	}).component();
+	// 	return separator;
+	// }
 
 	public async openDialog(dialogName?: string) {
 		if (!this._isOpen) {

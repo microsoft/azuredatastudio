@@ -10,65 +10,90 @@ export class SqlAssessmentResult extends AssessmentDialogComponent {
 	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
 
 		const title = this.createTitleComponent(view);
-		const impact = this.createImpactComponent(view);
-		const recommendation = this.createRecommendationComponent(view);
-		const moreInfo = this.createMoreInfoComponent(view);
+		const impact = this.createPlatformComponent(view);
+		const recommendation = this.createDatabaseComponent(view);
+		// const moreInfo = this.createMoreInfoComponent(view);
 		const impactedObjects = this.createImpactedObjectsComponent(view);
 
-		return view.modelBuilder.divContainer().withItems([title, impact, recommendation, moreInfo, impactedObjects]).component();
+		return view.modelBuilder.flexContainer().withItems([title, impact, recommendation, impactedObjects]).withLayout({
+			flexFlow: 'column',
+			// width: '100%'
+		}).component();
 	}
 
 	private createTitleComponent(view: azdata.ModelView): azdata.TextComponent {
 		const title = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: 'Azure SQL Managed Instance does not support multiple log files', // TODO: Get this string from the actual results
+			value: 'Target Platform',
+			CSSStyles: {
+				'font-size': '14px'
+			}
 		});
 
 		return title.component();
 	}
 
-	private createImpactComponent(view: azdata.ModelView): azdata.TextComponent {
+	private createPlatformComponent(view: azdata.ModelView): azdata.TextComponent {
 		const impact = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			title: 'Impact', // TODO localize
-			value: 'SQL Server allows a database to log transactions across multiple files. This databases uses multiple log files' // TODO: Get this string from the actual results
+			title: 'Platform', // TODO localize
+			value: 'Azure SQL Managed Instance', // TODO: Get this string from the actual results
+			CSSStyles: {
+				'font-size': '18px'
+			}
 		});
 
 		return impact.component();
 	}
 
-	private createRecommendationComponent(view: azdata.ModelView): azdata.TextComponent {
+	private createDatabaseComponent(view: azdata.ModelView): azdata.TextComponent {
 		const recommendation = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			title: 'Recommendation', // TODO localize
-			value: 'Azure SQL Managed Instance allows a single log file per database only. Please delete all but one of the log files before migrating this database.' // TODO: Get this string from the actual results
+			value: 'SQL Server 1', // TODO: Get this string from the actual results
+			CSSStyles: {
+				'font-size': '14px',
+				'font-weight': 'bold'
+			}
 		});
 
 		return recommendation.component();
 	}
 
-	private createMoreInfoComponent(view: azdata.ModelView): azdata.TextComponent {
-		const moreInfo = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			title: 'More info', // TODO localize
-			value: '{0}',
-			links: [
-				{
-					text: 'Managed instance T-SQL differences - Azure SQL Database', // TODO: Get this string from the actual results
-					url: 'https://microsoft.com' // TODO: Get this string from the actual results
-				}
-			]
-		});
 
-		return moreInfo.component();
-	}
+	private createImpactedObjectsComponent(view: azdata.ModelView): azdata.DeclarativeTableComponent {
 
-	private createImpactedObjectsComponent(view: azdata.ModelView): azdata.TableComponent {
-		const impactedObjects = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
-			title: 'Impacted Objects',
-			columns: [
-				'Type', // TODO localize
-				'Name',
-			],
-			data: [
-				['Database', 'AAAW2008P7'] // TODO: Get this string from the actual results
-			]
+		const headerStyle: azdata.CssStyles = {
+			'border-bottom': 'solid 1px',
+			'text-align': 'left'
+		};
+		const rowStyle: azdata.CssStyles = {
+			'border': 'none',
+			'text-align': 'left'
+		};
+
+		const impactedObjects = view.modelBuilder.declarativeTable().withProps(
+			{
+				selectEffect: true,
+				columns: [
+					{
+						displayName: 'Assessment Results', // TODO localize
+						valueType: azdata.DeclarativeDataType.string,
+						width: '100%',
+						isReadOnly: true,
+						headerCssStyles: headerStyle,
+						rowCssStyles: rowStyle
+					}
+				],
+				dataValues: [
+					[
+						{
+							value: 'DB1'
+						}
+					]
+				]
+			}
+		);
+
+		impactedObjects.component().onRowSelected(({ row }) => {
+			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected, need some kind of dictionary
 		});
 
 		return impactedObjects.component();

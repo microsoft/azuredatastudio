@@ -6,87 +6,184 @@ import * as azdata from 'azdata';
 import { AssessmentDialogComponent } from './model/assessmentDialogComponent';
 
 export class SqlDatabaseTree extends AssessmentDialogComponent {
+
 	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
 
-		return view.modelBuilder.divContainer().withItems([
-			this.createTableComponent(view)
-		]
-		).component();
+		return view.modelBuilder.flexContainer().withItems([
+			this.createSearchComponent(view),
+			this.createInstanceComponent(view),
+			this.createDatabaseComponent(view)
+
+		]).withLayout({
+			flexFlow: 'column',
+			// width: '33%'
+		}).withProps({
+			CSSStyles: {
+				'border-right': 'solid 1px'
+			},
+		}).component();
 	}
 
-	private createTableComponent(view: azdata.ModelView): azdata.DeclarativeTableComponent {
+	private createDatabaseComponent(view: azdata.ModelView): azdata.DivContainer {
 
-		const style: azdata.CssStyles = {
+		const styleLeft: azdata.CssStyles = {
 			'border': 'none',
 			'text-align': 'left'
 		};
+		const styleRight: azdata.CssStyles = {
+			'border': 'none',
+			'text-align': 'right'
+		};
 
-		const table = view.modelBuilder.declarativeTable().withProps(
+		const databaseTable = view.modelBuilder.declarativeTable().withProps(
 			{
 				selectEffect: true,
 				columns: [
 					{
 						displayName: '',
 						valueType: azdata.DeclarativeDataType.boolean,
-						width: 5,
+						width: 1,
 						isReadOnly: false,
 						showCheckAll: true,
-						headerCssStyles: style,
+						headerCssStyles: styleLeft,
 						ariaLabel: 'Database Migration Check' // TODO localize
 					},
 					{
-						displayName: 'Database', // TODO localize
-						valueType: azdata.DeclarativeDataType.string,
-						width: 50,
-						isReadOnly: true,
-						headerCssStyles: style
-					},
-					{
-						displayName: '', // Incidents
+						displayName: 'Databases', // TODO localize
 						valueType: azdata.DeclarativeDataType.string,
 						width: 5,
 						isReadOnly: true,
-						headerCssStyles: style,
+						headerCssStyles: styleLeft
+					},
+					{
+						displayName: 'Issues', // Incidents
+						valueType: azdata.DeclarativeDataType.string,
+						width: 1,
+						isReadOnly: true,
+						headerCssStyles: styleRight,
 						ariaLabel: 'Issue Count' // TODO localize
+
 					}
 				],
 				dataValues: [
 					[
 						{
 							value: false,
-							style
+							style: styleLeft
 						},
 						{
 							value: 'DB1',
-							style
+							style: styleLeft
 						},
 						{
 							value: 1,
-							style
+							style: styleRight
 						}
 					],
 					[
 						{
 							value: true,
-							style
+							style: styleLeft
 						},
 						{
 							value: 'DB2',
-							style
+							style: styleLeft
 						},
 						{
 							value: 2,
-							style
+							style: styleRight
 						}
 					]
 				],
 			}
 		);
 
-		table.component().onRowSelected(({ row }) => {
-			console.log(row);
+		databaseTable.component().onRowSelected(({ row }) => {
+			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected
 		});
 
-		return table.component();
+
+		const tableContainer = view.modelBuilder.divContainer().withItems([databaseTable.component()]).withProps({
+			CSSStyles: {
+				'margin-left': '15px',
+			},
+		}).component();
+		return tableContainer;
+	}
+
+	private createSearchComponent(view: azdata.ModelView): azdata.DivContainer {
+		let resourceSearchBox = view.modelBuilder.inputBox().withProperties({
+			placeHolder: 'Search',
+			ariaLabel: 'searchbar'
+		}).component();
+
+		const searchContainer = view.modelBuilder.divContainer().withItems([resourceSearchBox]).withProps({
+			CSSStyles: {
+				'width': '200px',
+				'margin-left': '15px',
+				'margin-right': '5px'
+
+			},
+		}).component();
+
+		return searchContainer;
+	}
+
+	private createInstanceComponent(view: azdata.ModelView): azdata.DivContainer {
+		const styleLeft: azdata.CssStyles = {
+			'border': 'none',
+			'text-align': 'left'
+		};
+
+		const styleRight: azdata.CssStyles = {
+			'border': 'none',
+			'text-align': 'right'
+		};
+
+		const instanceTable = view.modelBuilder.declarativeTable().withProps(
+			{
+				selectEffect: true,
+				columns: [
+					{
+						displayName: 'Instance',
+						valueType: azdata.DeclarativeDataType.string,
+						width: 5,
+						isReadOnly: true,
+						headerCssStyles: styleLeft,
+						ariaLabel: 'Database Migration Check' // TODO localize
+					},
+					{
+						displayName: 'Warnings', // TODO localize
+						valueType: azdata.DeclarativeDataType.string,
+						width: 1,
+						isReadOnly: true,
+						headerCssStyles: styleRight
+					}
+				],
+				dataValues: [
+					[
+						{
+							value: 'SQL Server 1',
+							style: styleLeft
+						},
+						{
+							value: 2,
+							style: styleRight
+						}
+					]
+				]
+			});
+
+		instanceTable.component().onRowSelected(({ row }) => {
+			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected
+		});
+
+		const instanceContainer = view.modelBuilder.divContainer().withItems([instanceTable.component()]).withProps({
+			CSSStyles: {
+				'margin-left': '15px',
+			},
+		}).component();
+
+		return instanceContainer;
 	}
 }
