@@ -211,7 +211,7 @@ export class DataTierApplicationWizard {
 		this.wizard.generateScriptButton.hidden = true;
 		this.wizard.generateScriptButton.onClick(async () => await this.generateDeployScript());
 		this.wizard.doneButton.onClick(async () => await this.executeOperation());
-		this.wizard.cancelButton.onClick(() => this.cancelDataTierWizard());
+		this.wizard.cancelButton.onClick(() => this.cancelDataTierApplicationWizard());
 	}
 
 	public registerNavigationValidator(validator: (pageChangeInfo: azdata.window.WizardPageChangeInfo) => boolean) {
@@ -294,7 +294,7 @@ export class DataTierApplicationWizard {
 	}
 
 	// Cancel button on click event is using to send the data loss information to telemetry
-	private cancelDataTierWizard(): void {
+	private cancelDataTierApplicationWizard(): void {
 		TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, 'WizardCanceled')
 			.withAdditionalProperties({
 				isPotentialDataLoss: this.model.potentialDataLoss.toString()
