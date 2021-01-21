@@ -10,7 +10,7 @@ import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as crypto from 'crypto';
-import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey, AUTHTYPE, INTEGRATED_AUTH, KNOX_ENDPOINT_PORT, KNOX_ENDPOINT_SERVER } from './constants';
+import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey, AUTHTYPE, INTEGRATED_AUTH, KNOX_ENDPOINT_PORT, KNOX_ENDPOINT_SERVER, pinToWorkspace } from './constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -380,9 +380,9 @@ function hasWorkspaceFolders(): boolean {
 
 export async function setPinnedBookPathsInConfig(pinnedNotebookPaths: IBookNotebook[]): Promise<void> {
 	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
-	let storeInWorspace: boolean = hasWorkspaceFolders();
+	let storeInWorkspace: boolean = config[pinToWorkspace] && hasWorkspaceFolders();
 
-	await config.update(pinnedBooksConfigKey, pinnedNotebookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
+	await config.update(pinnedBooksConfigKey, pinnedNotebookPaths, storeInWorkspace ? false : vscode.ConfigurationTarget.Global);
 }
 
 

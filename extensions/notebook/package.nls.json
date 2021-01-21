@@ -11,6 +11,7 @@
 	"notebook.collapseBookItems.description": "Collapse Book items at root level in the Notebooks Viewlet",
 	"notebook.remoteBookDownloadTimeout.description": "Download timeout in milliseconds for GitHub books",
 	"notebook.pinnedNotebooks.description": "Notebooks that are pinned by the user for the current workspace",
+	"notebook.pinToWorkspace.description": "Store pinned notebooks to workspace settings.",
 	"notebook.command.new": "New Notebook",
 	"notebook.command.open": "Open Notebook",
 	"notebook.analyzeJupyterNotebook": "Analyze in Notebook",

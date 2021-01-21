@@ -61,6 +61,7 @@ export interface NotebookConfig {
 	maxTableRows: number;
 	overrideEditorTheming: boolean;
 	pinnedNotebooks: Array<string>;
+	pinToWorkspace: boolean;
 	pythonPath: string;
 	remoteBookDownloadTimeout: number;
 	showAllKernels: boolean;

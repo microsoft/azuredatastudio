@@ -67,6 +67,11 @@
           "items": {
             "type": "object"
           }
+        },
+        "notebook.pinToWorkspace": {
+          "type": "boolean",
+          "default": false,
+          "description": "%notebook.pinToWorkspace.description%"
         }
       }
     },
