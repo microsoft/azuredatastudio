@@ -176,7 +176,7 @@ export function allowedValue(value: string): string { return localize('arc.allow
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
 export function deletingInstance(name: string): string { return localize('arc.deletingInstance', "Deleting instance '{0}'...", name); }
 export function installingExtension(name: string): string { return localize('arc.installingExtension', "Installing extension '{0}'...", name); }
-export function extensionInstalled(name: string): string { return localize('arc.extensionInstalled', "Extension'{0}' has been installed.", name); }
+export function extensionInstalled(name: string): string { return localize('arc.extensionInstalled', "Extension '{0}' has been installed.", name); }
 export function updatingInstance(name: string): string { return localize('arc.updatingInstance', "Updating instance '{0}'...", name); }
 export function instanceDeleted(name: string): string { return localize('arc.instanceDeleted', "Instance '{0}' deleted", name); }
 export function instanceUpdated(name: string): string { return localize('arc.instanceUpdated', "Instance '{0}' updated", name); }
