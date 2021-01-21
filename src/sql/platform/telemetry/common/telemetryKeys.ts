@@ -27,6 +27,7 @@ export const FirewallRuleRequested = 'FirewallRuleCreated';
 export const DashboardNavigated = 'DashboardNavigated';
 export const GetDataGridItems = 'GetDataGridItems';
 export const GetDataGridColumns = 'GetDataGridColumns';
+export const WizardPagesNavigation = 'WizardPagesNavigation';
 
 // Telemetry Properties
 

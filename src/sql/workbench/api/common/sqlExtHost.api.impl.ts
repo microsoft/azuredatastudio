@@ -435,8 +435,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				closeDialog(dialog: azdata.window.Dialog) {
 					return extHostModelViewDialog.closeDialog(dialog);
 				},
-				createWizardPage(title: string): azdata.window.WizardPage {
-					return extHostModelViewDialog.createWizardPage(title, extension);
+				createWizardPage(title: string, pageName?: string): azdata.window.WizardPage {
+					return extHostModelViewDialog.createWizardPage(title, extension, pageName);
 				},
 				createWizard(title: string, name?: string, width?: azdata.window.DialogWidth): azdata.window.Wizard {
 					return extHostModelViewDialog.createWizard(title, name, width);
