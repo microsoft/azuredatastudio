@@ -76,9 +76,9 @@ export class ModelStore implements IModelStore {
 		this._validationCallbacks.push(callback);
 	}
 
-	validate(component: IComponent): Thenable<boolean> {
-		let componentId = entries(this._componentMappings).find(([id, mappedComponent]) => component === mappedComponent)[0];
-		return Promise.all(this._validationCallbacks.map(callback => callback(componentId))).then(validations => validations.every(validation => validation === true));
+	async validate(component: IComponent): Promise<boolean> {
+		const validations = await Promise.all(this._validationCallbacks.map(callback => callback(component.descriptor.id)));
+		return validations.every(validation => validation === true);
 	}
 
 	/**
