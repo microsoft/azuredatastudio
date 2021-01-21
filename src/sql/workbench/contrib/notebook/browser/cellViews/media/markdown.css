@@ -6,6 +6,7 @@
 .notebook-preview {
 	font-size: 14px;
 	line-height: 22px;
+	min-height: 22px;
 	word-wrap: break-word;
 }
 
