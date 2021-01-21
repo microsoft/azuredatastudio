@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Deferred } from 'sql/base/common/promise';
-import { entries } from 'sql/base/common/collections';
 import { IComponentDescriptor, IModelStore, IComponent } from 'sql/platform/dashboard/browser/interfaces';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
