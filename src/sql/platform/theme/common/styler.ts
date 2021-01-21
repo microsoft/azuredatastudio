@@ -283,12 +283,14 @@ export function attachEditableDropdownStyler(widget: IThemable, themeService: IT
 	}, widget);
 }
 
-export function attachButtonStyler(widget: IThemable, themeService: IThemeService, style?: {
+type ButtonStyle = {
 	buttonForeground?: cr.ColorIdentifier,
 	buttonBackground?: cr.ColorIdentifier,
 	buttonHoverBackground?: cr.ColorIdentifier,
 	buttonFocusOutline?: cr.ColorIdentifier
-}): IDisposable {
+};
+
+export function attachButtonStyler(widget: IThemable, themeService: IThemeService, style?: ButtonStyle): IDisposable {
 	return attachStyler(themeService, {
 		buttonForeground: (style && style.buttonForeground) || cr.buttonForeground,
 		buttonBackground: (style && style.buttonBackground) || cr.buttonBackground,
