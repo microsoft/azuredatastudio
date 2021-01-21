@@ -13,6 +13,8 @@ let packageInfo = Utils.getPackageInfo(packageJson)!;
 
 export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 
+
 export enum TelemetryViews {
-	ProjectController = 'ProjectController'
+	ProjectController = 'ProjectController',
+	PublishDialog = 'PublishDialog'
 }

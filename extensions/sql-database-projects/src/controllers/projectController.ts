@@ -117,6 +117,7 @@ export class ProjectsController {
 			workingDirectory: project.projectFolderPath,
 			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath)
 		};
+
 		try {
 			await this.netCoreTool.runDotnetCommand(options);
 
@@ -125,10 +126,8 @@ export class ProjectsController {
 			}).send();
 
 			return project.dacpacOutputPath;
-		}
-		catch (err) {
-
-			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, 'buildFailed').withAdditionalProperties({
+		} catch (err) {
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, 'buildFailed').withAdditionalProperties({
 				duration: (new Date().getMilliseconds() - date.getMilliseconds()).toString(),
 				error: utils.getErrorMessage(err)
 			}).send();
@@ -162,10 +161,19 @@ export class ProjectsController {
 	}
 
 	public async publishProjectCallback(project: Project, settings: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
-		//TelemetryReporter.
+		const telemetryProps: Record<string, string> = {};
+		const buildStartTime = new Date().getMilliseconds();
+
 		const dacpacPath = await this.buildProject(project);
 
+		const buildEndTime = new Date().getMilliseconds();
+		telemetryProps.buildDuration = (buildEndTime - buildStartTime).toString();
+
 		if (!dacpacPath) {
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, 'publishProjectBuildFailure')
+				.withAdditionalProperties(telemetryProps)
+				.send();
+
 			return undefined; // buildProject() handles displaying the error
 		}
 
@@ -175,12 +183,41 @@ export class ProjectsController {
 
 		const dacFxService = await this.getDaxFxService();
 
-		if ((<IPublishSettings>settings).upgradeExisting) {
-			return await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdata.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
+		let result: mssql.DacFxResult;
+		telemetryProps.profileUsed = (settings.profileUsed ?? false).toString();
+		const actionStartTime = new Date().getMilliseconds();
+
+		try {
+			if ((<IPublishSettings>settings).upgradeExisting) {
+				telemetryProps.action = 'deploy';
+				result = await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdata.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
+			}
+			else {
+				telemetryProps.action = 'generateScript';
+				result = await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdata.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
+			}
+		} catch (err) {
+			const actionEndTime = new Date().getMilliseconds();
+			telemetryProps.actionDuration = (actionEndTime - actionStartTime).toString();
+			telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
+			telemetryProps.errorMessage = utils.getErrorMessage(err);
+
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, `publishProject${telemetryProps.action}Failure`)
+				.withAdditionalProperties(telemetryProps)
+				.send();
+
+			throw err;
 		}
-		else {
-			return await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdata.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
-		}
+
+		const actionEndTime = new Date().getMilliseconds();
+		telemetryProps.actionDuration = (actionEndTime - actionStartTime).toString();
+		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, `publishProject${telemetryProps.action}Complete`)
+			.withAdditionalProperties(telemetryProps)
+			.send();
+
+		return result;
 	}
 
 	public async readPublishProfileCallback(profileUri: vscode.Uri): Promise<PublishProfile> {
@@ -188,27 +225,37 @@ export class ProjectsController {
 			const dacFxService = await this.getDaxFxService();
 			const profile = await load(profileUri, dacFxService);
 			return profile;
-		}
-		catch (e) {
+		} catch (e) {
 			vscode.window.showErrorMessage(constants.profileReadError);
 			throw e;
 		}
 	}
 
 	public async schemaCompare(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
-		// check if schema compare extension is installed
-		if (vscode.extensions.getExtension(constants.schemaCompareExtensionId)) {
-			// build project
-			const dacpacPath = await this.buildProject(treeNode);
+		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, 'projectSchemaCompareStarted');
 
-			// check that dacpac exists
-			if (await utils.exists(dacpacPath)) {
-				await vscode.commands.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
+		try {
+			// check if schema compare extension is installed
+			if (vscode.extensions.getExtension(constants.schemaCompareExtensionId)) {
+				// build project
+				const dacpacPath = await this.buildProject(treeNode);
+
+				// check that dacpac exists
+				if (await utils.exists(dacpacPath)) {
+					TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, 'projectSchemaCompareCommandInvoked');
+					await vscode.commands.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
+				} else {
+					throw new Error(constants.buildFailedCannotStartSchemaCompare);
+				}
 			} else {
-				vscode.window.showErrorMessage(constants.buildFailedCannotStartSchemaCompare);
+				throw new Error(constants.schemaCompareNotInstalled);
 			}
-		} else {
-			vscode.window.showErrorMessage(constants.schemaCompareNotInstalled);
+		} catch (err) {
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, 'projectSchemaCompareCommandInvoked')
+				.withAdditionalProperties({ errorMessage: utils.getErrorMessage(err) })
+				.send();
+
+			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
 
@@ -677,8 +724,7 @@ export class ProjectsController {
 				workspaceApi.showProjectsView();
 				await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)], model.newWorkspaceFilePath);
 			}
-		}
-		catch (err) {
+		} catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
