@@ -11,7 +11,7 @@ import {
 import * as azdata from 'azdata';
 
 import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
-import { attachButtonStyler, ButtonStyle } from 'sql/platform/theme/common/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_TITLE_FOREGROUND } from 'vs/workbench/common/theme';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -24,12 +24,6 @@ import { convertSize } from 'sql/base/browser/dom';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IDisposable } from 'vs/base/common/lifecycle';
-
-const NoIconButtonStyle: ButtonStyle = {
-	buttonBackground: SIDE_BAR_BACKGROUND,
-	buttonHoverBackground: SIDE_BAR_BACKGROUND,
-	buttonForeground: SIDE_BAR_TITLE_FOREGROUND
-};
 
 @Component({
 	selector: 'modelview-button',
@@ -96,7 +90,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		}
 
 		this._register(this._button);
-		this._buttonStyler = this._register(attachButtonStyler(this._button, this.themeService, NoIconButtonStyle));
+		this.updateStyler();
 		this._register(this._button.onDidClick(e => {
 			if (this._fileInputContainer) {
 				const self = this;
@@ -124,6 +118,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 			}
 		}));
 	}
+
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		if (this._currentButtonType !== this.buttonType) {
@@ -183,21 +178,36 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 			if (!this._iconClass) {
 				super.updateIcon();
 				this._button.icon = this._iconClass + ' icon';
-				this._buttonStyler?.dispose();
-				// Styling for icon button
-				this._register(attachButtonStyler(this._button, this.themeService, {
-					buttonBackground: Color.transparent.toString(),
-					buttonHoverBackground: Color.transparent.toString(),
-					buttonFocusOutline: focusBorder,
-					buttonForeground: foreground
-				}));
+				this.updateStyler();
 			} else {
 				super.updateIcon();
 			}
 		} else {
-			this._buttonStyler?.dispose();
-			this._register(attachButtonStyler(this._button, this.themeService, NoIconButtonStyle));
+			this.updateStyler();
 		}
+	}
+
+	/**
+	 * Updates the styler for this button based on whether it has an icon or not
+	 */
+	private updateStyler(): void {
+		this._buttonStyler?.dispose();
+		if (this.iconPath) {
+			this._buttonStyler = this._register(attachButtonStyler(this._button, this.themeService, {
+				buttonBackground: Color.transparent.toString(),
+				buttonHoverBackground: Color.transparent.toString(),
+				buttonFocusOutline: focusBorder,
+				buttonForeground: foreground
+			}));
+		} else {
+			this._buttonStyler = this._register(attachButtonStyler(this._button, this.themeService, {
+				buttonBackground: SIDE_BAR_BACKGROUND,
+				buttonHoverBackground: SIDE_BAR_BACKGROUND,
+				buttonForeground: SIDE_BAR_TITLE_FOREGROUND
+			}));
+		}
+
+
 	}
 
 	protected get defaultIconHeight(): number {

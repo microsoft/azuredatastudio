@@ -283,7 +283,7 @@ export function attachEditableDropdownStyler(widget: IThemable, themeService: IT
 	}, widget);
 }
 
-export type ButtonStyle = {
+type ButtonStyle = {
 	buttonForeground?: cr.ColorIdentifier,
 	buttonBackground?: cr.ColorIdentifier,
 	buttonHoverBackground?: cr.ColorIdentifier,
