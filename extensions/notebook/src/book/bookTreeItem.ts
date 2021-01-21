@@ -67,6 +67,7 @@ export class BookTreeItem extends vscode.TreeItem {
 			this.setCommand();
 		}
 		this.iconPath = icons;
+		this._tableOfContentsPath = undefined;
 
 		if (this.book.type === BookTreeItemType.ExternalLink) {
 			this.tooltip = `${this._uri}`;
@@ -75,8 +76,6 @@ export class BookTreeItem extends vscode.TreeItem {
 			// if it's a section, book or a notebook's book then we set the table of contents path.
 			if (this.book.type === BookTreeItemType.Book || this.contextValue === 'section' || (book.tableOfContents.sections && book.type === BookTreeItemType.Notebook)) {
 				this._tableOfContentsPath = getTocPath(this.book.version, this.book.root);
-			} else {
-				this._tableOfContentsPath = undefined;
 			}
 			this._rootContentPath = getContentPath(this.book.version, this.book.root, '');
 			this.tooltip = this.book.type === BookTreeItemType.Book ? this._rootContentPath : this.book.contentPath;

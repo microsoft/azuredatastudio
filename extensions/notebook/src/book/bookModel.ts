@@ -274,7 +274,7 @@ export class BookModel {
 			if (section.length > 0) {
 				this._errorMessage = loc.invalidTocError(section[0].title);
 			}
-			throw this._errorMessage;
+			throw new Error(this._errorMessage);
 		}
 	}
 

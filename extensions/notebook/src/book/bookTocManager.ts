@@ -78,7 +78,8 @@ export class BookTocManager implements IBookTocManager {
 
 	/**
 	 * Reads and modifies the table of contents file of the target book.
-	 * @param tableOfContents Current table of contents of a book.
+	 * @param version the version of the target book
+	 * @param tocPath Path to the table of contents
 	 * @param findSection The section that will be modified.
 	 * @param addSection The section that'll be added to the target section. If it's undefined then the target section (findSection) is removed from the table of contents.
 	*/
@@ -97,18 +98,22 @@ export class BookTocManager implements IBookTocManager {
 	}
 
 	/**
-	 * Reads and modifies the table of contents file of the target book.
-	 * @param version Current table of contents of a book.
-	 * @param section Current section of table of contents of a book.
+	 * Creates a new table of contents structure containing the added section. This method is only called when we move a section to another section.
+	 * Since the sections can be arranged in a tree structure we need to look for the section that will be modified in a recursively.
+	 * @param version Version of the book
+	 * @param section The current section that we are iterating
 	 * @param findSection The section that will be modified.
 	 * @param addSection The section that'll be added to the target section. If it's undefined then the target section (findSection) is removed from the table of contents.
 	*/
 	private buildTOC(version: string, section: JupyterBookSection, findSection: JupyterBookSection, addSection: JupyterBookSection): JupyterBookSection {
+		// condition to find the section to be modified
 		if (section.title === findSection.title && (section.file && section.file === findSection.file || section.url && section.url === findSection.file)) {
 			if (addSection) {
+				//if addSection is not undefined, then we added to the table of contents.
 				section.sections !== undefined && section.sections.length > 0 ? section.sections.push(addSection) : section.sections = [addSection];
 				return section;
 			}
+			// if addSection is undefined then we remove the whole section from the table of contents.
 			return addSection;
 		} else {
 			let newSection = this._versionHandler.convertTo(version, section);

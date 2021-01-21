@@ -307,7 +307,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (!this.currentBook) {
 				this.currentBook = book;
 			}
-			this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this, canSelectMany: true });
+			this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 			this._bookViewer.onDidChangeVisibility(e => {
 				let openDocument = azdata.nb.activeNotebookEditor;
 				let notebookPath = openDocument?.document.uri;
