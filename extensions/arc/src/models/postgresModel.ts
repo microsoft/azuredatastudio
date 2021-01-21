@@ -145,7 +145,7 @@ export class PostgresModel extends ResourceModel {
 			throw new Error('Could not fetch engine settings');
 		}
 
-		const blacklistedEngineSettings: String[] = [
+		const skippedEngineSettings: String[] = [
 			'archive_command', 'archive_timeout', 'log_directory', 'log_file_mode', 'log_filename', 'restore_command',
 			'shared_preload_libraries', 'synchronous_commit', 'ssl', 'unix_socket_permissions', 'wal_level'
 		];
@@ -155,7 +155,7 @@ export class PostgresModel extends ResourceModel {
 		engineSettings.rows.forEach(row => {
 			let rowValues = row.map(c => c.displayValue);
 			let name = rowValues.shift();
-			if (!blacklistedEngineSettings.includes(name!)) {
+			if (!skippedEngineSettings.includes(name!)) {
 				let result: EngineSettingsModel = {
 					parameterName: name,
 					value: rowValues.shift(),
