@@ -8,7 +8,13 @@ import * as azurecore from 'azurecore';
 import { azureResource } from 'azureResource';
 
 export class AzurecoreApiStub implements azurecore.IExtension {
-	getMigrationControllers(_account: azdata.Account, _subscription: azureResource.AzureResourceSubscription, _resourceGroupName: string, _regionName: string, _ignoreErrors?: boolean): Promise<azurecore.GetMigrationControllersResult> {
+	getMigrationControllerAuthKeys(_account: azdata.Account, _subscription: azureResource.AzureResourceSubscription, _resourceGroupName: string, _regionName: string, _controllerName: string, _ignoreErrors?: boolean): Promise<azurecore.GetMigrationControllerAuthKeysResult> {
+		throw new Error('Method not implemented.');
+	}
+	createMigrationController(_account: azdata.Account, _subscription: azureResource.AzureResourceSubscription, _resourceGroupName: string, _regionName: string, _controllerName: string, _ignoreErrors?: boolean): Promise<azurecore.CreateMigrationControllerResult> {
+		throw new Error('Method not implemented.');
+	}
+	getMigrationController(_account: azdata.Account, _subscription: azureResource.AzureResourceSubscription, _resourceGroupName: string, _regionName: string, _controllerName: string, _ignoreErrors?: boolean): Promise<azurecore.GetMigrationControllerResult> {
 		throw new Error('Method not implemented.');
 	}
 	getFileShares(_account: azdata.Account, _subscription: azureResource.AzureResourceSubscription, _storageAccount: azureResource.AzureGraphResource, _ignoreErrors?: boolean): Promise<azurecore.GetFileSharesResult> {
