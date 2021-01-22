@@ -259,7 +259,7 @@ export class JupyterSession implements nb.ISession {
 
 	public async configureKernel(): Promise<void> {
 		let sparkmagicConfDir = path.join(utils.getUserHome(), '.sparkmagic');
-		await utils.mkDir(sparkmagicConfDir);
+		await utils.ensureDir(sparkmagicConfDir);
 
 		// Default to localhost in config file.
 		let creds: ICredentials = {

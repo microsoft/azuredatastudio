@@ -17,7 +17,7 @@ interface Deferred<T> {
 
 export abstract class DialogBase {
 	protected _toDispose: vscode.Disposable[] = [];
-	protected _dialogObject: azdata.window.Dialog;
+	public dialogObject: azdata.window.Dialog;
 	protected initDialogComplete: Deferred<void> | undefined;
 	protected initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
 	protected workspaceDescriptionFormComponent: azdata.FormComponent | undefined;
@@ -25,11 +25,11 @@ export abstract class DialogBase {
 	protected workspaceInputFormComponent: azdata.FormComponent | undefined;
 
 	constructor(dialogTitle: string, dialogName: string, dialogWidth: azdata.window.DialogWidth = 600) {
-		this._dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, dialogWidth);
-		this._dialogObject.okButton.label = constants.OkButtonText;
-		this.register(this._dialogObject.cancelButton.onClick(() => this.onCancelButtonClicked()));
-		this.register(this._dialogObject.okButton.onClick(() => this.onOkButtonClicked()));
-		this._dialogObject.registerCloseValidator(async () => {
+		this.dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, dialogWidth);
+		this.dialogObject.okButton.label = constants.OkButtonText;
+		this.register(this.dialogObject.cancelButton.onClick(() => this.onCancelButtonClicked()));
+		this.register(this.dialogObject.okButton.onClick(() => this.onOkButtonClicked()));
+		this.dialogObject.registerCloseValidator(async () => {
 			return this.validate();
 		});
 	}
@@ -43,8 +43,8 @@ export abstract class DialogBase {
 		tab.registerContent(async (view: azdata.ModelView) => {
 			return this.initialize(view);
 		});
-		this._dialogObject.content = [tab];
-		azdata.window.openDialog(this._dialogObject);
+		this.dialogObject.content = [tab];
+		azdata.window.openDialog(this.dialogObject);
 		await this.initDialogPromise;
 	}
 
@@ -69,14 +69,14 @@ export abstract class DialogBase {
 	}
 
 	protected showErrorMessage(message: string): void {
-		this._dialogObject.message = {
+		this.dialogObject.message = {
 			text: message,
 			level: azdata.window.MessageLevel.Error
 		};
 	}
 
 	public getErrorMessage(): azdata.window.DialogMessage {
-		return this._dialogObject.message;
+		return this.dialogObject.message;
 	}
 
 	protected createHorizontalContainer(view: azdata.ModelView, items: azdata.Component[]): azdata.FlexContainer {

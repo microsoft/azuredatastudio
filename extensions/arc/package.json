@@ -610,7 +610,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.5"
+                "version": "20.2.6"
               }
             ],
             "when": true
@@ -791,7 +791,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.5"
+                "version": "20.2.6"
               }
             ],
             "when": "true"
@@ -1041,7 +1041,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.5"
+                "version": "20.2.6"
               }
             ],
             "when": "true"
