@@ -274,6 +274,13 @@ declare module 'azdata' {
 		showLinkIcon?: boolean;
 	}
 
+	export interface RadioButtonComponent {
+		/**
+		 * An event called when the value of radio button changes
+		 */
+		onDidChangeCheckedState: vscode.Event<boolean>;
+	}
+
 	export interface DeclarativeTableColumn {
 		headerCssStyles?: CssStyles;
 		rowCssStyles?: CssStyles;
@@ -543,7 +550,7 @@ declare module 'azdata' {
 	}
 
 	/**
-	 * Builder for TabbedPannelComponent
+	 * Builder for TabbedPanelComponent
 	 */
 	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties> {
 		/**
@@ -637,6 +644,13 @@ declare module 'azdata' {
 			width?: DialogWidth;
 		}
 
+		export interface WizardPage extends ModelViewPanel {
+			/**
+			 * An optional name for the page. If provided it will be used for telemetry
+			 */
+			pageName?: string;
+		}
+
 		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
 		/**
@@ -654,6 +668,13 @@ declare module 'azdata' {
 		 * @param width The width of the wizard, default value is 'narrow'
 		 */
 		export function createWizard(title: string, name?: string, width?: DialogWidth): Wizard;
+
+		/**
+		 * Create a wizard page with the given title, for inclusion in a wizard
+		 * @param title The title of the page
+		 * @param pageName The optional page name parameter will be used for telemetry
+		 */
+		export function createWizardPage(title: string, pageName?: string): WizardPage;
 	}
 
 	export namespace workspace {
@@ -836,9 +857,9 @@ declare module 'azdata' {
 
 	export interface TableComponent {
 		/**
-		 * Append data to an exsiting table data.
+		 * Append data to an existing table data.
 		 */
-		appendData(data: any[][]);
+		appendData(data: any[][]): void;
 	}
 
 	export interface IconColumnCellValue {

@@ -51,6 +51,14 @@ export default class RadioButtonComponent extends ComponentBase<azdata.RadioButt
 					args: e
 				});
 			}));
+
+			this._register(this._input.onDidChangeCheckedState(e => {
+				this.checked = e;
+				this.fireEvent({
+					eventType: ComponentEventType.onDidChange,
+					args: e
+				});
+			}));
 		}
 		this.baseInit();
 	}
