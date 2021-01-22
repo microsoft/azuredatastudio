@@ -366,7 +366,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				this._databaseDropdownExpanded = true;
 				if (this.serverName) {
 					this._databaseNameInputBox.values = [this._loadingDatabaseName];
-					this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password, this.token).then(databases => {
+					this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password, this.authToken).then(databases => {
 						if (databases) {
 							this._databaseNameInputBox.values = databases.sort((a, b) => a.localeCompare(b));
 						} else {
@@ -514,7 +514,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						databaseName: this.databaseName
 					};
 
-					this._accountManagementService.getAccountSecurityToken(accounts[0], '', null).then(securityToken => {
+					this._accountManagementService.getAccountSecurityToken(accounts[0], undefined, undefined).then(securityToken => {
 						this._token = securityToken.token;
 					});
 				}
@@ -844,7 +844,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		return this._authTypeSelectBox ? this.getAuthTypeName(this._authTypeSelectBox.value) : undefined;
 	}
 
-	public get token(): string {
+	public get authToken(): string | undefined {
 		if (this.authenticationType === AuthenticationType.AzureMFAAndUser || this.authenticationType === AuthenticationType.AzureMFA) {
 			return this._azureAccountDropdown.value;
 		}
@@ -907,7 +907,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			model.userName = this.userName;
 			model.password = this.password;
 			model.authenticationType = this.authenticationType;
-			model.azureAccount = this.token;
+			model.azureAccount = this.authToken;
 			model.savePassword = this._rememberPasswordCheckBox.checked;
 			model.connectionName = this.connectionName;
 			model.databaseName = this.databaseName;

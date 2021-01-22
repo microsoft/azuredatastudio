@@ -803,7 +803,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
-	 * Fills in the Azure account token if it's needed for this connection and doesn't already have one
+	 * Fills in the account token if it's needed for this connection and doesn't already have one
 	 * and clears it if it isn't.
 	 * @param connection The connection to fill in or update
 	 */
@@ -830,7 +830,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				databaseName: connection.databaseName
 			};
 
-			connection.options['azureAccountToken'] = await (await this._accountManagementService.getAccountSecurityToken(dstsAccounts[0], '', null)).token;
+			let tokenPromise = await this._accountManagementService.getAccountSecurityToken(dstsAccounts[0], undefined, undefined);
+			connection.options['azureAccountToken'] = tokenPromise.token;
 			return true;
 		}
 
