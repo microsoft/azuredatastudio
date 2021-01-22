@@ -306,16 +306,20 @@ export function attachCheckboxStyler(widget: IThemable, themeService: IThemeServ
 	}, widget);
 }
 
-export function attachInfoBoxStyler(widget: IThemable, themeService: IThemeService, style?: {
-	informationBackground: string,
-	warningBackground: string,
-	errorBackground: string,
-	successBackground: string
-}): IDisposable {
-	return attachStyler(themeService, {
-		informationBackground: (style && style.informationBackground) || sqlcr.InfoBoxInformationBackground,
-		warningBackground: (style && style.warningBackground) || sqlcr.InfoBoxWarningBackground,
-		errorBackground: (style && style.errorBackground) || sqlcr.InfoBoxErrorBackground,
-		successBackground: (style && style.successBackground) || sqlcr.InfoBoxSuccessBackground
-	}, widget);
+export interface IInfoBoxStyleOverrides {
+	informationBackground: cr.ColorIdentifier,
+	warningBackground: cr.ColorIdentifier,
+	errorBackground: cr.ColorIdentifier,
+	successBackground: cr.ColorIdentifier
+}
+
+export const defaultInfoBoxStyles: IInfoBoxStyleOverrides = {
+	informationBackground: sqlcr.InfoBoxInformationBackground,
+	warningBackground: sqlcr.InfoBoxWarningBackground,
+	errorBackground: sqlcr.InfoBoxErrorBackground,
+	successBackground: sqlcr.InfoBoxSuccessBackground
+};
+
+export function attachInfoBoxStyler(widget: IThemable, themeService: IThemeService, style?: IInfoBoxStyleOverrides): IDisposable {
+	return attachStyler(themeService, { ...defaultInfoBoxStyles, ...style }, widget);
 }
