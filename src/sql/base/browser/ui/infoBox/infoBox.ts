@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/infoBox';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { status } from 'vs/base/browser/ui/aria/aria';
+import { alert, status } from 'vs/base/browser/ui/aria/aria';
 import { IThemable } from 'vs/base/common/styler';
 import { Color } from 'vs/base/common/color';
 
@@ -21,6 +21,7 @@ export type InfoBoxStyle = 'information' | 'warning' | 'error' | 'success';
 export interface InfoBoxOptions {
 	text: string;
 	style: InfoBoxStyle;
+	announceText?: boolean;
 }
 
 export class InfoBox extends Disposable implements IThemable {
@@ -30,6 +31,7 @@ export class InfoBox extends Disposable implements IThemable {
 	private _text = '';
 	private _infoBoxStyle: InfoBoxStyle = 'information';
 	private _styles: IInfoBoxStyles;
+	private _announceText: boolean = false;
 
 	constructor(container: HTMLElement, options?: InfoBoxOptions) {
 		super();
@@ -44,6 +46,7 @@ export class InfoBox extends Disposable implements IThemable {
 		if (options) {
 			this.infoBoxStyle = options.style;
 			this.text = options.text;
+			this._announceText = (options.announceText === true);
 		}
 	}
 
@@ -52,6 +55,13 @@ export class InfoBox extends Disposable implements IThemable {
 		this.updateStyle();
 	}
 
+	public get announceText(): boolean {
+		return this._announceText;
+	}
+
+	public set announceText(v: boolean) {
+		this._announceText = v;
+	}
 
 	public get infoBoxStyle(): InfoBoxStyle {
 		return this._infoBoxStyle;
@@ -73,9 +83,16 @@ export class InfoBox extends Disposable implements IThemable {
 
 	public set text(text: string) {
 		if (this._text !== text) {
-			status(text);
 			this._text = text;
 			this._textElement.innerText = text;
+			if (this.announceText) {
+				if (this.infoBoxStyle === 'warning' || this.infoBoxStyle === 'error') {
+					alert(text);
+				}
+				else {
+					status(text);
+				}
+			}
 		}
 	}
 

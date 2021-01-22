@@ -62,6 +62,7 @@ export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxCompon
 		if (this._infoBox) {
 			this._container.nativeElement.style.width = this.getWidth();
 			this._container.nativeElement.style.height = this.getHeight();
+			this._infoBox.announceText = this.announceText;
 			this._infoBox.infoBoxStyle = this.style;
 			this._infoBox.text = this.text;
 		}
@@ -73,5 +74,9 @@ export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxCompon
 
 	public get text(): string {
 		return this.getPropertyOrDefault<string>((props) => props.text, '');
+	}
+
+	public get announceText(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.announceText, false);
 	}
 }

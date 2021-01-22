@@ -619,6 +619,10 @@ declare module 'azdata' {
 	export interface InfoBoxComponentProperties extends ComponentProperties {
 		style: InfoBoxStyle;
 		text: string;
+		/**
+		 * Controls whether the text should be announced by the screen reader. Default value is false.
+		 */
+		announceText?: boolean;
 	}
 
 	export namespace nb {

@@ -2013,6 +2013,14 @@ class InfoBoxComponentWrapper extends ComponentWrapper implements azdata.InfoBox
 	public set text(v: string) {
 		this.setProperty('text', v);
 	}
+
+	public get announceText(): boolean {
+		return this.properties['announceText'];
+	}
+
+	public set announceText(v: boolean) {
+		this.setProperty('announceText', v);
+	}
 }
 
 class GroupContainerComponentWrapper extends ComponentWrapper implements azdata.GroupContainer {
