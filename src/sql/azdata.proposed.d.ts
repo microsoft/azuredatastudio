@@ -617,7 +617,13 @@ declare module 'azdata' {
 	 * Properties for configuring a InfoBoxComponent
 	 */
 	export interface InfoBoxComponentProperties extends ComponentProperties {
+		/**
+		 * The style of the InfoBox
+		 */
 		style: InfoBoxStyle;
+		/**
+		 * The display text of the InfoBox
+		 */
 		text: string;
 		/**
 		 * Controls whether the text should be announced by the screen reader. Default value is false.
