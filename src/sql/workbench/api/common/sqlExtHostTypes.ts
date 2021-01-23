@@ -177,7 +177,8 @@ export enum ModelComponentTypes {
 	ListView,
 	TabbedPanel,
 	Separator,
-	PropertiesContainer
+	PropertiesContainer,
+	InfoBox
 }
 
 export enum ModelViewAction {
