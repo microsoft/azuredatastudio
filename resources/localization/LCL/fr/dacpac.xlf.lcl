@@ -5,7 +5,7 @@
     <Str Name="BuildNumber" Val="" />
     <Str Name="ProductName" Val="" />
   </Props>
-  <OwnedComments>
+  <OwnedComments
     <Cmt Name="Dev" />
     <Cmt Name="LcxAdmin" />
     <Cmt Name="Rccx" />
