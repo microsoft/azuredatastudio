@@ -3835,14 +3835,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.0.4",
-							"lastUpdated": "01/01/2021",
+							"version": "0.0.5",
+							"lastUpdated": "01/23/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/jimmystelzer/azuredatastudio-select-top-n/releases/tag/0.0.4"
+									"source": "https://github.com/jimmystelzer/azuredatastudio-select-top-n/releases/tag/0.0.5"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
