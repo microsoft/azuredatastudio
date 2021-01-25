@@ -173,7 +173,6 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 						}
 					}).component();
 					this._agreementContainer.addItem(agreementTitle);
-					this._agreementContainer.addItem(this.createAgreementCheckbox(this._resourceType.agreement));
 				} else {
 					this.form.removeFormItem({
 						component: this._agreementContainer
@@ -227,6 +226,9 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					});
 				}
 
+				if (this._agreementContainer) {
+					this._agreementContainer.addItem(this.createAgreementCheckbox());
+				}
 				this.updateOkButtonText();
 				this.updateToolsDisplayTable();
 			});
@@ -235,7 +237,8 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	}
 
 
-	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
+	private createAgreementCheckbox(): azdata.FlexContainer {
+		const agreementInfo = this._resourceType.getAgreementInfo(this.getSelectedOption())!;
 		this._agreementCheckBox = this.view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
 			ariaLabel: this.getAgreementDisplayText(agreementInfo),
 			required: true
@@ -275,26 +278,24 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	}
 
 	private getCurrentProvider(): DeploymentProvider {
-		const options: { option: string, value: string }[] = [];
 
-		this._optionDropDownMap.forEach((selectBox, option) => {
-			let selectedValue: azdata.CategoryValue = selectBox.value as azdata.CategoryValue;
-			options.push({ option: option, value: selectedValue.name });
-		});
+		const options = this.getSelectedOption();
 
 		this.resourceProvider = this._resourceType.getProvider(options)!;
 		return this._resourceType.getProvider(options)!;
 	}
 
 	private getCurrentOkText(): string {
-		const options: { option: string, value: string }[] = [];
+		return this._resourceType.getOkButtonText(this.getSelectedOption())!;
+	}
 
+	private getSelectedOption(): { option: string, value: string }[] {
+		const options: { option: string, value: string }[] = [];
 		this._optionDropDownMap.forEach((selectBox, option) => {
 			let selectedValue: azdata.CategoryValue = selectBox.value as azdata.CategoryValue;
 			options.push({ option: option, value: selectedValue.name });
 		});
-
-		return this._resourceType.getOkButtonText(options)!;
+		return options;
 	}
 
 	private updateOkButtonText(): void {

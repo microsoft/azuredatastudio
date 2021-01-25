@@ -9,7 +9,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption } from '../interfaces';
+import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption, ResourceSubType, AgreementInfo } from '../interfaces';
 import { AzdataService } from './azdataService';
 import { KubeService } from './kubeService';
 import { INotebookService } from './notebookService';
@@ -44,6 +44,8 @@ export class ResourceTypeService implements IResourceTypeService {
 						this.updatePathProperties(resourceType, extension.extensionPath);
 						resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
 						resourceType.getOkButtonText = (selectedOptions) => { return this.getOkButtonText(resourceType, selectedOptions); };
+						resourceType.getAgreementInfo = (selectedOptions) => { return this.getAgreementInfo(resourceType, selectedOptions); };
+						this.getResourceSubTypes(filterByPlatform, resourceType);
 						this._resourceTypes.push(resourceType);
 					});
 				}
@@ -66,24 +68,28 @@ export class ResourceTypeService implements IResourceTypeService {
 			resourceType.icon.light = path.join(extensionPath, resourceType.icon.light);
 		}
 		resourceType.providers.forEach((provider) => {
-			if (instanceOfNotebookDeploymentProvider(provider)) {
-				this.updateNotebookPath(provider, extensionPath);
-			} else if (instanceOfDialogDeploymentProvider(provider) && instanceOfNotebookBasedDialogInfo(provider.dialog)) {
-				this.updateNotebookPath(provider.dialog, extensionPath);
-			}
-			else if ('bdcWizard' in provider) {
-				this.updateNotebookPath(provider.bdcWizard, extensionPath);
-			}
-			else if ('notebookWizard' in provider) {
-				this.updateNotebookPath(provider.notebookWizard, extensionPath);
-			}
-			else if ('azureSQLVMWizard' in provider) {
-				this.updateNotebookPath(provider.azureSQLVMWizard, extensionPath);
-			}
-			else if ('azureSQLDBWizard' in provider) {
-				this.updateNotebookPath(provider.azureSQLDBWizard, extensionPath);
-			}
+			this.updateProviderPathProperties(provider, extensionPath);
 		});
+	}
+
+	private updateProviderPathProperties(provider: DeploymentProvider, extensionPath: string) {
+		if (instanceOfNotebookDeploymentProvider(provider)) {
+			this.updateNotebookPath(provider, extensionPath);
+		} else if (instanceOfDialogDeploymentProvider(provider) && instanceOfNotebookBasedDialogInfo(provider.dialog)) {
+			this.updateNotebookPath(provider.dialog, extensionPath);
+		}
+		else if ('bdcWizard' in provider) {
+			this.updateNotebookPath(provider.bdcWizard, extensionPath);
+		}
+		else if ('notebookWizard' in provider) {
+			this.updateNotebookPath(provider.notebookWizard, extensionPath);
+		}
+		else if ('azureSQLVMWizard' in provider) {
+			this.updateNotebookPath(provider.azureSQLVMWizard, extensionPath);
+		}
+		else if ('azureSQLDBWizard' in provider) {
+			this.updateNotebookPath(provider.azureSQLDBWizard, extensionPath);
+		}
 	}
 
 	private updateNotebookPath(objWithNotebookProperty: { notebook: string | NotebookPathInfo | NotebookInfo[] } | undefined, extensionPath: string): void {
@@ -106,6 +112,34 @@ export class ResourceTypeService implements IResourceTypeService {
 				}
 			}
 		}
+	}
+
+	private getResourceSubTypes(filterByPlatform: boolean = true, resourceType: ResourceType): void {
+		const resourceSubTypes: ResourceSubType[] = [];
+		vscode.extensions.all.forEach((extension) => {
+			const extensionResourceSubTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.resourceDeploymentSubTypes as ResourceSubType[];
+			if (extensionResourceSubTypes) {
+				extensionResourceSubTypes.forEach((resourceSubType: ResourceSubType) => {
+					if (resourceSubType.name === resourceType.name) {
+						this.updateProviderPathProperties(resourceSubType.provider, extension.extensionPath);
+						resourceSubTypes.push(resourceSubType);
+						const tagSet = new Set(resourceType.tags);
+						resourceSubType.tags?.forEach(tag => tagSet.add(tag));
+						resourceType.tags = Array.from(tagSet);
+						resourceType.providers.push(resourceSubType.provider);
+						resourceType.okButtonText?.push(resourceSubType.okButtonText!);
+						resourceType.options.forEach((roption) => {
+							resourceSubType.options.forEach((soption) => {
+								if (roption.name === soption.name) {
+									roption.values = roption.values.concat(soption.values);
+								}
+							});
+						});
+						resourceType.agreement?.push(resourceSubType.agreement!);
+					}
+				});
+			}
+		});
 	}
 
 	/**
@@ -237,7 +271,7 @@ export class ResourceTypeService implements IResourceTypeService {
 	private getOkButtonText(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): string | undefined {
 		if (resourceType.okButtonText) {
 			for (const possibleOption of resourceType.okButtonText) {
-				if (processWhenClause(possibleOption.when, selectedOptions)) {
+				if (possibleOption && processWhenClause(possibleOption.when, selectedOptions)) {
 					return possibleOption.value;
 				}
 			}
@@ -245,6 +279,16 @@ export class ResourceTypeService implements IResourceTypeService {
 		return loc.select;
 	}
 
+	private getAgreementInfo(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): AgreementInfo | undefined {
+		if (resourceType.agreement) {
+			for (const possibleOption of resourceType.agreement) {
+				if (possibleOption && processWhenClause(possibleOption.when, selectedOptions)) {
+					return possibleOption;
+				}
+			}
+		}
+		return undefined;
+	}
 
 	public startDeployment(resourceType: ResourceType): void {
 		const wizard = new ResourceTypeWizard(resourceType, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this);
