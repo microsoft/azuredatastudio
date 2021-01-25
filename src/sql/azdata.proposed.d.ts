@@ -550,7 +550,7 @@ declare module 'azdata' {
 	}
 
 	/**
-	 * Builder for TabbedPannelComponent
+	 * Builder for TabbedPanelComponent
 	 */
 	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties> {
 		/**
@@ -843,9 +843,9 @@ declare module 'azdata' {
 
 	export interface TableComponent {
 		/**
-		 * Append data to an exsiting table data.
+		 * Append data to an existing table data.
 		 */
-		appendData(data: any[][]);
+		appendData(data: any[][]): void;
 	}
 
 	export interface IconColumnCellValue {
