@@ -205,7 +205,8 @@
         "icon": "./images/sql_bdc.svg",
         "tags": [
           "On-premises",
-          "SQL Server"
+          "SQL Server",
+          "Cloud"
         ],
         "options": [
           {
