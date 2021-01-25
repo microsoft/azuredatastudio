@@ -176,8 +176,9 @@ export class WorkspaceService implements IWorkspaceService {
 
 			if (workspaceFolders) {
 				for (const extType of supportedProjectExtensions) {
+					// find all project files with extType in each workspace folder
 					for (const folder of workspaceFolders) {
-						// find all project files with extType in the folder
+						// path needs to use forward slashes for glob to work
 						const escapedPath = glob.escapePath(folder.uri.fsPath.replace(/\\/g, '/'));
 						const projFilter = path.posix.join(escapedPath, '**', `*.${extType}`);
 						const results = await glob(projFilter);
