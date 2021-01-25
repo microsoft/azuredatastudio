@@ -40,7 +40,7 @@ describe('Manage Package Dialog', () => {
 
 	it('getLocationComponent should create text component for undefined location', async function (): Promise<void> {
 		let testContext = createViewContext();
-		let locations: IPackageLocation[] | undefined  = undefined;
+		let locations: IPackageLocation[] | undefined = undefined;
 		testContext.model.setup(x => x.getLocations()).returns(() => Promise.resolve(locations));
 
 		let actual = await InstalledPackagesTab.getLocationComponent(testContext.view, testContext.dialog.object);
@@ -300,7 +300,8 @@ describe('Manage Package Dialog', () => {
 				hyperlink: undefined!,
 				tabbedPanel: undefined!,
 				separator: undefined!,
-				propertiesContainer: undefined!
+				propertiesContainer: undefined!,
+				infoBox: undefined!
 			}
 		};
 
