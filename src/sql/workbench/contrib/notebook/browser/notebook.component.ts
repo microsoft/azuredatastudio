@@ -700,22 +700,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	navigateToSection(id: string): void {
-		id = id.toLowerCase();
-		let chromeHeight: number = 0;
-		let elBody: HTMLElement = document.body;
-		let tabBar = elBody.querySelector('.title.tabs') as HTMLElement;
-		let actionBar = elBody.querySelector('.editor-toolbar.actionbar-container') as HTMLElement;
-		let section = this.getSectionElements().find(s => s.relativeUri && s.relativeUri.toLowerCase() === id);
+		let section = this.getSectionElements().find(s => s.relativeUri && s.relativeUri.toLowerCase() === id.toLowerCase());
 		if (section) {
-			// Scroll this section to the top of the header instead of just bringing header into view.
-			if (tabBar && actionBar) {
-				chromeHeight = tabBar.scrollHeight + actionBar.scrollHeight;
-			}
-			let scrollTop: number = section.headerEl.getBoundingClientRect().top - (chromeHeight + 10);
-			(<HTMLElement>this.container.nativeElement).scrollTo({
-				top: scrollTop,
-				behavior: 'smooth'
-			});
+			section.headerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 			section.headerEl.focus();
 		}
 	}
