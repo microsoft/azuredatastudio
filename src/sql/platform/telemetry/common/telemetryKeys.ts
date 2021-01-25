@@ -77,3 +77,8 @@ export enum TelemetryAction {
 	ModelViewDashboardOpened = 'ModelViewDashboardOpened'
 }
 
+export enum NbTelemetryAction {
+	RunCell = 'RunCell',
+	RunAll = 'RunNotebook'
+}
+
