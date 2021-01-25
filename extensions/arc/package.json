@@ -900,7 +900,6 @@
         "options": [
           {
             "name": "mi-type",
-            "displayName": "Resource Type",
             "values": [
               {
                 "name": "arc-mi",

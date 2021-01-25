@@ -238,7 +238,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 
 
 	private createAgreementCheckbox(): azdata.FlexContainer {
-		const agreementInfo = this._resourceType.getAgreementInfo(this.getSelectedOption())!;
+		const agreementInfo = this._resourceType.getAgreementInfo(this.getSelectedOptions())!;
 		this._agreementCheckBox = this.view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
 			ariaLabel: this.getAgreementDisplayText(agreementInfo),
 			required: true
@@ -279,17 +279,17 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 
 	private getCurrentProvider(): DeploymentProvider {
 
-		const options = this.getSelectedOption();
+		const options = this.getSelectedOptions();
 
 		this.resourceProvider = this._resourceType.getProvider(options)!;
 		return this._resourceType.getProvider(options)!;
 	}
 
 	private getCurrentOkText(): string {
-		return this._resourceType.getOkButtonText(this.getSelectedOption())!;
+		return this._resourceType.getOkButtonText(this.getSelectedOptions())!;
 	}
 
-	private getSelectedOption(): { option: string, value: string }[] {
+	private getSelectedOptions(): { option: string, value: string }[] {
 		const options: { option: string, value: string }[] = [];
 		this._optionDropDownMap.forEach((selectBox, option) => {
 			let selectedValue: azdata.CategoryValue = selectBox.value as azdata.CategoryValue;

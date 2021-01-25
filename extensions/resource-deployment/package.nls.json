@@ -83,9 +83,9 @@
 	"azure-sqldb-agreement-azdata-eula": "azdata License Terms",
 	"azure-sql-mi-display-name": "Azure SQL managed instance",
 	"azure-sql-mi-display-description": "Create an SQL instance, a fully managed database service. Best for migration and applicatiohns requiring the broadest SQL Server engine compatibility",
-	"azure-sql-mi-okButton-test": "Open in Portal",
+	"azure-sql-mi-okButton-text": "Open in Portal",
 	"azure-sql-mi-resource-type-option-label": "Resource Type",
-	"azure-sql-mi-resource-type-option-azure-sql-label": "Azure SQL Managed Instance",
+	"azure-sql-mi-resource-type-option-azure-sql-label": "Azure SQL managed instance",
 	"azure-sql-mi-agreement": "I accept {0} and {1}.",
 	"azure-sql-mi-agreement-eula": "Azure SQL MI License Terms"
 }

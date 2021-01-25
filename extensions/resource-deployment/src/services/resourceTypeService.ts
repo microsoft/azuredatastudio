@@ -38,17 +38,16 @@ export class ResourceTypeService implements IResourceTypeService {
 	getResourceTypes(filterByPlatform: boolean = true): ResourceType[] {
 		if (this._resourceTypes.length === 0) {
 			vscode.extensions.all.forEach((extension) => {
-				const extensionResourceTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.resourceDeploymentTypes as ResourceType[];
-				if (extensionResourceTypes) {
-					extensionResourceTypes.forEach((resourceType: ResourceType) => {
-						this.updatePathProperties(resourceType, extension.extensionPath);
-						resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
-						resourceType.getOkButtonText = (selectedOptions) => { return this.getOkButtonText(resourceType, selectedOptions); };
-						resourceType.getAgreementInfo = (selectedOptions) => { return this.getAgreementInfo(resourceType, selectedOptions); };
-						this.getResourceSubTypes(filterByPlatform, resourceType);
-						this._resourceTypes.push(resourceType);
-					});
-				}
+				const extensionResourceTypes = extension.packageJSON.contributes?.resourceDeploymentSubTypes as ResourceType[];
+				extensionResourceTypes?.forEach((resourceType: ResourceType) => {
+					this.updatePathProperties(resourceType, extension.extensionPath);
+					resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
+					resourceType.getOkButtonText = (selectedOptions) => { return this.getOkButtonText(resourceType, selectedOptions); };
+					resourceType.getAgreementInfo = (selectedOptions) => { return this.getAgreementInfo(resourceType, selectedOptions); };
+					this.getResourceSubTypes(filterByPlatform, resourceType);
+					this._resourceTypes.push(resourceType);
+				});
+
 			});
 		}
 
@@ -72,7 +71,7 @@ export class ResourceTypeService implements IResourceTypeService {
 		});
 	}
 
-	private updateProviderPathProperties(provider: DeploymentProvider, extensionPath: string) {
+	private updateProviderPathProperties(provider: DeploymentProvider, extensionPath: string): void {
 		if (instanceOfNotebookDeploymentProvider(provider)) {
 			this.updateNotebookPath(provider, extensionPath);
 		} else if (instanceOfDialogDeploymentProvider(provider) && instanceOfNotebookBasedDialogInfo(provider.dialog)) {
@@ -117,28 +116,27 @@ export class ResourceTypeService implements IResourceTypeService {
 	private getResourceSubTypes(filterByPlatform: boolean = true, resourceType: ResourceType): void {
 		const resourceSubTypes: ResourceSubType[] = [];
 		vscode.extensions.all.forEach((extension) => {
-			const extensionResourceSubTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.resourceDeploymentSubTypes as ResourceSubType[];
-			if (extensionResourceSubTypes) {
-				extensionResourceSubTypes.forEach((resourceSubType: ResourceSubType) => {
-					if (resourceSubType.name === resourceType.name) {
-						this.updateProviderPathProperties(resourceSubType.provider, extension.extensionPath);
-						resourceSubTypes.push(resourceSubType);
-						const tagSet = new Set(resourceType.tags);
-						resourceSubType.tags?.forEach(tag => tagSet.add(tag));
-						resourceType.tags = Array.from(tagSet);
-						resourceType.providers.push(resourceSubType.provider);
-						resourceType.okButtonText?.push(resourceSubType.okButtonText!);
-						resourceType.options.forEach((roption) => {
-							resourceSubType.options.forEach((soption) => {
-								if (roption.name === soption.name) {
-									roption.values = roption.values.concat(soption.values);
-								}
-							});
+			const extensionResourceSubTypes = extension.packageJSON.contributes?.resourceDeploymentSubTypes as ResourceSubType[];
+			extensionResourceSubTypes?.forEach((resourceSubType: ResourceSubType) => {
+				if (resourceSubType.name === resourceType.name) {
+					this.updateProviderPathProperties(resourceSubType.provider, extension.extensionPath);
+					resourceSubTypes.push(resourceSubType);
+					const tagSet = new Set(resourceType.tags);
+					resourceSubType.tags?.forEach(tag => tagSet.add(tag));
+					resourceType.tags = Array.from(tagSet);
+					resourceType.providers.push(resourceSubType.provider);
+					resourceType.okButtonText?.push(resourceSubType.okButtonText!);
+					resourceType.options.forEach((roption) => {
+						resourceSubType.options.forEach((soption) => {
+							if (roption.name === soption.name) {
+								roption.values = roption.values.concat(soption.values);
+							}
 						});
-						resourceType.agreement?.push(resourceSubType.agreement!);
-					}
-				});
-			}
+					});
+					resourceType.agreement?.push(resourceSubType.agreement!);
+				}
+			});
+
 		});
 	}
 

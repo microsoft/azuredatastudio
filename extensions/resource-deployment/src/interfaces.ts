@@ -40,7 +40,6 @@ export interface ResourceSubType {
 	tags?: string[];
 	provider: DeploymentProvider;
 	okButtonText?: OkButtonTextValue;
-	helpText?: string;
 	agreement?: AgreementInfo;
 }
 

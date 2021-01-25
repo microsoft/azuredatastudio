@@ -541,7 +541,7 @@
         "displayName": "%azure-sql-mi-display-name%",
         "description": "%azure-sql-mi-display-description%",
         "platforms": "*",
-        "icon": "./images/miaa.svg",
+        "icon": "./images/managed-instance.svg",
         "tags": [
           "SQL Server",
           "Cloud"
@@ -555,7 +555,7 @@
         ],
         "okButtonText": [
           {
-            "value": "%azure-sql-mi-okButton-test%",
+            "value": "%azure-sql-mi-okButton-text%",
             "when": "mi-type=azure-sql-mi"
           }
         ],
