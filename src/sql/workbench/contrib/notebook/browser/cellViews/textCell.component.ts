@@ -370,9 +370,21 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
 					if (findModel?.findMatches?.length > 0) {
 						let searchString = findModel.findExpression;
+						let totalcount = 0;
 						mark.mark(searchString, {
-							className: 'rangeHighlight'
+							className: 'rangeHighlight',
+							done: function (counter) {
+								totalcount += counter;
+							}
 						});
+						if (totalcount > 1) {
+							mark.markRanges([{
+								start: range.startColumn,
+								length: range.endColumn - range.startColumn
+							}], {
+								className: 'rangespecifcHighlight'
+							});
+						}
 						elementContainingText.scrollIntoView({ behavior: 'smooth' });
 					}
 				}
@@ -386,6 +398,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			let elementContainingText = elements[range.startLineNumber - 1];
 			let mark = new Mark(elementContainingText);
 			mark.unmark({ acrossElements: true, className: 'rangeHighlight' });
+			mark.unmark({ acrossElements: true, className: 'rangespecifcHighlight' });
 		}
 	}
 
