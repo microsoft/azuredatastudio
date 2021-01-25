@@ -38,7 +38,7 @@ export class ResourceTypeService implements IResourceTypeService {
 	getResourceTypes(filterByPlatform: boolean = true): ResourceType[] {
 		if (this._resourceTypes.length === 0) {
 			vscode.extensions.all.forEach((extension) => {
-				const extensionResourceTypes = extension.packageJSON.contributes?.resourceDeploymentSubTypes as ResourceType[];
+				const extensionResourceTypes = extension.packageJSON.contributes?.resourceDeploymentTypes as ResourceType[];
 				extensionResourceTypes?.forEach((resourceType: ResourceType) => {
 					this.updatePathProperties(resourceType, extension.extensionPath);
 					resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
@@ -125,15 +125,21 @@ export class ResourceTypeService implements IResourceTypeService {
 					resourceSubType.tags?.forEach(tag => tagSet.add(tag));
 					resourceType.tags = Array.from(tagSet);
 					resourceType.providers.push(resourceSubType.provider);
-					resourceType.okButtonText?.push(resourceSubType.okButtonText!);
-					resourceType.options.forEach((roption) => {
-						resourceSubType.options.forEach((soption) => {
-							if (roption.name === soption.name) {
-								roption.values = roption.values.concat(soption.values);
-							}
+					if (resourceSubType.okButtonText) {
+						resourceType.okButtonText?.push(resourceSubType.okButtonText!);
+					}
+					if (resourceSubType.options) {
+						resourceType.options.forEach((roption) => {
+							resourceSubType.options.forEach((soption) => {
+								if (roption.name === soption.name) {
+									roption.values = roption.values.concat(soption.values);
+								}
+							});
 						});
-					});
-					resourceType.agreement?.push(resourceSubType.agreement!);
+					}
+					if (resourceSubType.agreement) {
+						resourceType.agreement?.push(resourceSubType.agreement!);
+					}
 				}
 			});
 
@@ -269,7 +275,7 @@ export class ResourceTypeService implements IResourceTypeService {
 	private getOkButtonText(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): string | undefined {
 		if (resourceType.okButtonText) {
 			for (const possibleOption of resourceType.okButtonText) {
-				if (possibleOption && processWhenClause(possibleOption.when, selectedOptions)) {
+				if (processWhenClause(possibleOption.when, selectedOptions)) {
 					return possibleOption.value;
 				}
 			}
@@ -280,7 +286,7 @@ export class ResourceTypeService implements IResourceTypeService {
 	private getAgreementInfo(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): AgreementInfo | undefined {
 		if (resourceType.agreement) {
 			for (const possibleOption of resourceType.agreement) {
-				if (possibleOption && processWhenClause(possibleOption.when, selectedOptions)) {
+				if (processWhenClause(possibleOption.when, selectedOptions)) {
 					return possibleOption;
 				}
 			}

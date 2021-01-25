@@ -896,7 +896,6 @@
     "resourceDeploymentSubTypes": [
       {
         "name": "azure-sql-mi",
-        "icon": "./images/miaa.svg",
         "options": [
           {
             "name": "mi-type",
