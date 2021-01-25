@@ -394,6 +394,9 @@ export class CellAttachToDropdown extends SelectBox {
 					this._register(model.onValidConnectionSelected(validConnection => {
 						this.handleContextsChanged(!validConnection);
 					}));
+					this._register(this.notebookModel.onConnectionModeChanged(multiConnection => {
+						this.handleConnectionModeChanged(multiConnection);
+					}));
 				})
 				.catch(err => {
 					// No-op for now
@@ -423,6 +426,14 @@ export class CellAttachToDropdown extends SelectBox {
 			this.loadAttachToDropdown(this.cellModel, kernelDisplayName, showSelectConnection);
 		} else if (this.notebookModel.clientSession.isInErrorState) {
 			this.setOptions([localize('noContextAvailable', "None")], 0);
+		}
+	}
+
+	private handleConnectionModeChanged(multiConnection: boolean): void {
+		if (multiConnection) {
+			this.enable();
+		} else {
+			this.disable();
 		}
 	}
 

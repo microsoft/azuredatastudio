@@ -36,6 +36,7 @@ const kernelLabel: string = localize('Kernel', "Kernel ");
 export const msgLoadingContexts = localize('loadingContexts', "Loading contexts...");
 export const msgChangeConnection = localize('changeConnection', "Change Connection");
 export const msgSelectConnection = localize('selectConnection', "Select Connection");
+export const msgPerCell = localize('perCell', "Per Cell");
 export const msgLocalHost = localize('localhost', "localhost");
 
 export const noKernel: string = localize('noKernel', "No Kernel");
@@ -204,50 +205,6 @@ export class TrustedAction extends ToggleableAction {
 		const editor = this._notebookService.findNotebookEditor(context);
 		this.trusted = !this.trusted;
 		editor.model.trustedMode = this.trusted;
-		return true;
-	}
-}
-
-export class MultiConnectionAction extends ToggleableAction {
-	// Constants
-	private static readonly multiConnectionLabel = localize('multiConnectionLabel', "Multiple Connections");
-	private static readonly singleConnectionLabel = localize('singleConnectionLabel', "Single Connection");
-	// TODO: Update icons
-	private static readonly baseClass = 'notebook-button';
-	private static readonly previewTrustedCssClass = 'icon-shield';
-	private static readonly trustedCssClass = 'icon-trusted';
-	private static readonly previewNotTrustedCssClass = 'icon-shield-x';
-	private static readonly notTrustedCssClass = 'icon-notTrusted';
-	private static readonly maskedIconClass = 'masked-icon';
-
-
-	constructor(
-		id: string, toggleTooltip: boolean,
-		@INotebookService private _notebookService: INotebookService
-	) {
-		super(id, {
-			baseClass: MultiConnectionAction.baseClass,
-			toggleOnLabel: MultiConnectionAction.multiConnectionLabel,
-			toggleOnClass: toggleTooltip === true ? MultiConnectionAction.previewTrustedCssClass : MultiConnectionAction.trustedCssClass,
-			toggleOffLabel: MultiConnectionAction.singleConnectionLabel,
-			toggleOffClass: toggleTooltip === true ? MultiConnectionAction.previewNotTrustedCssClass : MultiConnectionAction.notTrustedCssClass,
-			maskedIconClass: MultiConnectionAction.maskedIconClass,
-			shouldToggleTooltip: toggleTooltip,
-			isOn: false
-		});
-	}
-
-	public get multiConnection(): boolean {
-		return this.state.isOn;
-	}
-	public set multiConnection(value: boolean) {
-		this.toggle(value);
-	}
-
-	public async run(context: URI): Promise<boolean> {
-		const editor = this._notebookService.findNotebookEditor(context);
-		this.multiConnection = !this.multiConnection;
-		editor.model.multiConnectionMode = this.multiConnection;
 		return true;
 	}
 }
@@ -485,6 +442,7 @@ export class AttachToDropdown extends SelectBox {
 			if (!connections.find(x => x === msgChangeConnection)) {
 				connections.push(msgChangeConnection);
 			}
+			connections.push(msgPerCell);
 			this.setOptions(connections, 0);
 			this.enable();
 
@@ -497,6 +455,10 @@ export class AttachToDropdown extends SelectBox {
 	public doChangeContext(connection?: ConnectionProfile, hideErrorMessage?: boolean): void {
 		if (this.value === msgChangeConnection || this.value === msgSelectConnection) {
 			this.openConnectionDialog().catch(err => this._notificationService.error(getErrorMessage(err)));
+		} else if (this.value === msgPerCell) {
+			this.model.multiConnectionMode = true;
+			let index = this.values.findIndex(connection => connection === msgPerCell);
+			this.select(index);
 		} else {
 			this.model.changeContext(this.value, connection, hideErrorMessage).catch(err => this._notificationService.error(getErrorMessage(err)));
 		}
