@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as dataworkspace from 'dataworkspace';
 import * as path from 'path';
 import * as constants from '../common/constants';
+import * as glob from 'fast-glob';
 import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
@@ -156,6 +157,55 @@ export class WorkspaceService implements IWorkspaceService {
 
 	getProjectsInWorkspace(): vscode.Uri[] {
 		return vscode.workspace.workspaceFile ? this.getWorkspaceConfigurationValue<string[]>(ProjectsConfigurationName).map(project => this.toUri(project)) : [];
+	}
+
+	/**
+	 * Check for projects that are in the workspace folders but have not been added to the workspace through the dialog or by editing the .code-workspace file
+	 */
+	async checkForProjectsNotAddedToWorkspace(): Promise<void> {
+		const config = vscode.workspace.getConfiguration(constants.projectsConfigurationKey);
+
+		// only check if the user hasn't selected not to show this prompt again
+		if (config[constants.showNotAddedProjectsMessageKey]) {
+			// get the unique supported project extensions
+			const supportedProjectExtensions = [...new Set((await this.getAllProjectTypes()).map(p => { return p.projectFileExtension; }))];
+
+			// look for any projects that haven't been added to the workspace
+			const projectsInWorkspace = this.getProjectsInWorkspace();
+			const workspaceFolders = vscode.workspace.workspaceFolders;
+
+			if (workspaceFolders) {
+				for (const extType of supportedProjectExtensions) {
+					for (const folder of workspaceFolders) {
+						// find all project files with extType in the folder
+						const escapedPath = glob.escapePath(folder.uri.fsPath.replace(/\\/g, '/'));
+						const projFilter = path.posix.join(escapedPath, '**', `*.${extType}`);
+						const results = await glob(projFilter);
+
+						let containsNotAddedProject = false;
+						for (const projFile of results) {
+							// if any of the found projects aren't already in the workspace's projects, we can stop checking and show the info message
+							if (!projectsInWorkspace.find(p => p.fsPath === projFile)) {
+								containsNotAddedProject = true;
+								break;
+							}
+						}
+
+						if (containsNotAddedProject) {
+							const result = await vscode.window.showInformationMessage(constants.WorkspaceContainsNotAddedProjects, constants.LaunchOpenExisitingDialog, constants.DoNotShowAgain);
+							if (result === constants.LaunchOpenExisitingDialog) {
+								//open settings
+								await vscode.commands.executeCommand('projects.openExisting');
+							} else if (result === constants.DoNotShowAgain) {
+								await config.update(constants.showNotAddedProjectsMessageKey, false, true);
+							}
+
+							return;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	async getProjectProvider(projectFile: vscode.Uri): Promise<dataworkspace.IProjectProvider | undefined> {
