@@ -12,7 +12,7 @@ import * as os from 'os';
 import { azureResource } from 'azureResource';
 import { IntergrationRuntimePage } from './integrationRuntimePage';
 
-export class CreateIntegrationRuntimeDialog {
+export class CreateMigrationControllerDialog {
 
 	private migrationControllerSubscriptionDropdown!: azdata.DropDownComponent;
 	private migrationControllerResourceGroupDropdown!: azdata.DropDownComponent;
@@ -66,23 +66,28 @@ export class CreateIntegrationRuntimeDialog {
 					return;
 				}
 
-				const createdController = await createMigrationController(this.migrationStateModel.azureAccount, subscription, resourceGroup, region, controllerName!);
-				if (createdController.error) {
-					this.setDialogMessage(`${createdController.error.code} : ${createdController.error.message}`);
+				try {
+					const createdController = await createMigrationController(this.migrationStateModel.azureAccount, subscription, resourceGroup, region, controllerName!);
+					if (createdController.error) {
+						this.setDialogMessage(`${createdController.error.code} : ${createdController.error.message}`);
+						this._statusLoadingComponent.loading = false;
+						this._formSubmitButton.enabled = true;
+						return;
+					}
+					this._dialogObject.message = {
+						text: ''
+					};
+					this.migrationStateModel.migrationController = createdController;
+					await this.refreshAuthTable();
+					await this.refreshStatus();
+					this._setupContainer.display = 'inline';
+					this._statusLoadingComponent.loading = false;
+				} catch (e) {
+					console.log(e);
 					this._statusLoadingComponent.loading = false;
 					this._formSubmitButton.enabled = true;
 					return;
 				}
-
-				this._dialogObject.message = {
-					text: ''
-				};
-				this.migrationStateModel.migrationController = createdController;
-				await this.refreshAuthTable();
-				await this.refreshStatus();
-				this._setupContainer.display = 'inline';
-				this._formSubmitButton.enabled = false;
-				this._statusLoadingComponent.loading = false;
 			});
 
 			this._statusLoadingComponent = view.modelBuilder.loadingComponent().withProps({
@@ -171,9 +176,7 @@ export class CreateIntegrationRuntimeDialog {
 			value: constants.NAME
 		}).component();
 
-		this.migrationControllerNameText = this._view.modelBuilder.inputBox().withProps({
-
-		}).component();
+		this.migrationControllerNameText = this._view.modelBuilder.inputBox().component();
 
 		const regionsDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.REGION
@@ -304,7 +307,7 @@ export class CreateIntegrationRuntimeDialog {
 
 		const manualSetupButton = this._view.modelBuilder.hyperlink().withProps({
 			label: constants.CONTROLLER_OPTION2_STEP1,
-			url: 'https://www.microsoft.com/en-in/download/details.aspx?id=39717'
+			url: 'https://www.microsoft.com/download/details.aspx?id=39717'
 		}).component();
 
 		const manualSetupSecondDescription = this._view.modelBuilder.text().withProps({
@@ -332,7 +335,11 @@ export class CreateIntegrationRuntimeDialog {
 
 		refreshButton.onDidClick(async (e) => {
 			refreshLoadingIndicator.loading = true;
-			await this.refreshStatus();
+			try {
+				await this.refreshStatus();
+			} catch (e) {
+				console.log(e);
+			}
 			refreshLoadingIndicator.loading = false;
 		});
 

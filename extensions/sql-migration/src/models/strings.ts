@@ -90,14 +90,14 @@ export const INVALID_USER_ACCOUNT = localize('sql.migration.invalid.user.account
 
 // integration runtime page
 export const IR_PAGE_TITLE = localize('sql.migration.ir.page.title', "Migration Controller");
-export const IR_PAGE_DESCRIPTION = localize('sql.migration.ir.page.description', "An migration controller is an ARM (Azure Resource Manager) resource created in your Azure subscription and it is needed to coordinate and monitor data migration activities. If one already exists in your subscription, you can reuse it here. Alternatively you can create a new one by clicking New. {0}");
+export const IR_PAGE_DESCRIPTION = localize('sql.migration.ir.page.description', "A migration controller is an ARM (Azure Resource Manager) resource created in your Azure subscription and it is needed to coordinate and monitor data migration activities. If one already exists in your subscription, you can reuse it here. Alternatively you can create a new one by clicking New. {0}");
 export const SELECT_A_MIGRATION_CONTROLLER = localize('sql.migration.controller', "Select a migration controller");
 export const DEFAULT_SETUP_BUTTON = localize('sql.migration.default.setup.button', "Setup with defaults: Add migration controller with one click express setup using default options.");
 export const CUSTOM_SETUP_BUTTON = localize('sql.migration.custom.setup.button', "Custom setup: Add migration controller after customizing most options.");
 export const MIGRATION_CONTROLLER_NOT_FOUND_ERROR = localize('sql.migration.ir.page.migration.controller.not.found', "No Migration Controllers found. Please create a new one");
 
 // create migration controller dialog
-export const CONTROLLER_DIALOG_DESCRIPTION = localize('sql.migration.controller.dialog.description', "A migration controller is an ARM (Azure Resource Manager) resource created in your Azure subscription and it is needed to coordinate and monitor data migration activities. {0}");
+export const CONTROLLER_DIALOG_DESCRIPTION = localize('sql.migration.controller.container.description', "A migration controller is an ARM (Azure Resource Manager) resource created in your Azure subscription and it is needed to coordinate and monitor data migration activities. {0}");
 export const CONTROLLER_DIALOG_CONTROLLER_CONTAINER_LOADING_HELP = localize('sql.migration.controller.container.loading.help', "Loading Controller");
 export const CONTROLLER_DIALOG_CREATE_CONTROLLER_FORM_HEADING = localize('sql.migration.controller.dialog.create.controller.form.heading', "Enter the information below to add a new migration controller.");
 export const CONTROLLER_DIALOG_CONTROLLER_CONTAINER_DESCRIPTION = localize('sql.migration.contoller.container.description', "Migration Controller uses self-hosted Integration Runtime offered by Azure Data Factory for data movement and other migration activities. Follow the instructions below to setup self-hosted Integration Runtime.");
@@ -107,19 +107,19 @@ export const CONTROLLER_OPTION2_HEADING = localize('sql.migration.controller.set
 export const CONTROLLER_OPTION2_STEP1 = localize('sql.migration.option2.step1', "Step 1: Download and install integration runtime");
 export const CONTROLLER_OPTION2_STEP2 = localize('sql.migration.option2.step2', "Step 2: Use this key to register your integration runtime");
 export const CONTROLLER_CONNECTION_STATUS = localize('sql.migration.connection.status', "Connection Status");
-export const CONTROLELR_KEY1_LABEL = localize('sql.migraiton.key1.label', "Key 1");
-export const CONTROLELR_KEY2_LABEL = localize('sql.migraiton.key2.label', "Key 2");
+export const CONTROLELR_KEY1_LABEL = localize('sql.migration.key1.label', "Key 1");
+export const CONTROLELR_KEY2_LABEL = localize('sql.migration.key2.label', "Key 2");
 export const CONTROLLER_KEY_COPIED_HELP = localize('sql.migration.key.copied', "Key copied");
 export const REFRESH_KEYS = localize('sql.migration.refresh.keys', "Refresh keys");
-export const COPY_KEY = localize('sql.migraiton.copy.key', "Copy key");
+export const COPY_KEY = localize('sql.migration.copy.key', "Copy key");
 export const AUTH_KEY_COLUMN_HEADER = localize('sql.migration.authkeys.header', "Authentication key");
 export function CONTRLLER_NOT_READY(controllerName: string): string {
 	return localize('sql.migration.controller.not.ready', "Migration Controller {0} is not connected to self-hosted Integration Runtime on any node. Click Refresh", controllerName);
 }
 export function CONTRLLER_READY(controllerName: string, host: string): string {
-	return localize('sql.migration.controller.ready', "Migration Controller '{0}' is connected to self-hosted Integration Runtime on the node(s) - '{1}'.`", controllerName, host);
+	return localize('sql.migration.controller.ready', "Migration Controller '{0}' is connected to self-hosted Integration Runtime on the node - '{1}'.`", controllerName, host);
 }
-export const RESOURCE_GROUP_NOT_FOUND = localize('sql.migration.resource.group.not.found', "No Resource Groups found");
+export const RESOURCE_GROUP_NOT_FOUND = localize('sql.migration.resource.group.not.found', "No resource Groups found");
 export const INVALID_RESOURCE_GROUP_ERROR = localize('sql.migration.invalid.resourceGroup.error', "Please select a valid resource group to proceed.");
 export const INVALID_REGION_ERROR = localize('sql.migration.invalid.region.error', "Please select a valid region to proceed.");
 export const INVALID_CONTROLLER_NAME_ERROR = localize('sql.migration.invalid.controller.name.error', "Please enter a valid name for the migration controller.");
@@ -137,3 +137,5 @@ export const NEW = localize('sql.migration.new', "New");
 export const FEATURE_NOT_AVAILABLE = localize('sql.migration.feature.not.available', "This feature is not available yet.");
 export const REFRESH = localize('sql.migration.refresh', "Refresh");
 export const SUBMIT = localize('sql.migration.submit', "Submit");
+export const CREATE = localize('sql.migration.create', "Create");
+export const CANCEL = localize('sql.migration.cancel', "Cancel");

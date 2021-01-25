@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
-import { CreateIntegrationRuntimeDialog } from './createMigrationControllerDialog';
+import { CreateMigrationControllerDialog } from './createMigrationControllerDialog';
 import * as constants from '../models/strings';
 import * as os from 'os';
 
@@ -52,7 +52,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		}).component();
 
 		this.startSetupButton = view.modelBuilder.button().withProps({
-			label: 'Create',
+			label: constants.CREATE,
 			width: '100px'
 		}).component();
 
@@ -61,13 +61,13 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				vscode.window.showInformationMessage(constants.FEATURE_NOT_AVAILABLE);
 			} else {
 				this.createMigrationContainer.display = 'none';
-				const dialog = new CreateIntegrationRuntimeDialog(this.migrationStateModel, this);
+				const dialog = new CreateMigrationControllerDialog(this.migrationStateModel, this);
 				dialog.initialize();
 			}
 		});
 
 		this.cancelSetupButton = view.modelBuilder.button().withProps({
-			label: 'Cancel',
+			label: constants.CANCEL,
 			width: '100px'
 		}).component();
 
