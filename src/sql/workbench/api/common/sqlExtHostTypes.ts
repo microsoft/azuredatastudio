@@ -177,7 +177,8 @@ export enum ModelComponentTypes {
 	ListView,
 	TabbedPanel,
 	Separator,
-	PropertiesContainer
+	PropertiesContainer,
+	InfoBox
 }
 
 export enum ModelViewAction {
@@ -278,6 +279,7 @@ export interface IModelViewWizardPageDetails {
 	enabled: boolean;
 	customButtons: number[];
 	description: string;
+	pageName?: string;
 }
 
 export interface IModelViewWizardDetails {

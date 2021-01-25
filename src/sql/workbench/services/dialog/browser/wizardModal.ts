@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import 'vs/css!./media/dialogModal';
 import { Modal, IModalOptions } from 'sql/workbench/browser/modal/modal';
 import { Wizard, DialogButton, WizardPage } from 'sql/workbench/services/dialog/common/dialogTypes';
@@ -49,14 +50,14 @@ export class WizardModal extends Modal {
 		options: IModalOptions,
 		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
-		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
+		@IAdsTelemetryService private _telemetryEventService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(_wizard.title, _wizard.name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
+		super(_wizard.title, _wizard.name, _telemetryEventService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
 		this._useDefaultMessageBoxLocation = false;
 	}
 
@@ -175,6 +176,7 @@ export class WizardModal extends Modal {
 
 	public async showPage(index: number, validate: boolean = true, focus: boolean = false, readHeader: boolean = true): Promise<void> {
 		let pageToShow = this._wizard.pages[index];
+		const prevPageIndex = this._wizard.currentPage;
 		if (!pageToShow) {
 			this.done(validate).catch(err => onUnexpectedError(err));
 			return;
@@ -209,6 +211,15 @@ export class WizardModal extends Modal {
 				this._doneButton.enabled = this._wizard.doneButton.enabled && pageToShow.valid;
 			}
 		});
+
+		if (index !== prevPageIndex) {
+			this._telemetryEventService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.WizardPagesNavigation)
+				.withAdditionalProperties({
+					wizardName: this._wizard.name,
+					pageNavigationFrom: this._wizard.pages[prevPageIndex].pageName ?? prevPageIndex,
+					pageNavigationTo: this._wizard.pages[index].pageName ?? index
+				}).send();
+		}
 	}
 
 	private setButtonsForPage(index: number) {
@@ -268,9 +279,10 @@ export class WizardModal extends Modal {
 	}
 
 	public cancel(): void {
+		const currentPage = this._wizard.pages[this._wizard.currentPage];
 		this._onCancel.fire();
 		this.dispose();
-		this.hide('cancel');
+		this.hide('cancel', currentPage.pageName ?? this._wizard.currentPage.toString());
 	}
 
 	private async validateNavigation(newPage: number): Promise<boolean> {

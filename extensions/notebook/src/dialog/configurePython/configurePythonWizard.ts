@@ -23,6 +23,7 @@ export interface ConfigurePythonModel {
 	pythonPathLookup: PythonPathLookup;
 	packagesToInstall: PythonPkgDetails[];
 	installation: JupyterServerInstallation;
+	packageUpgradeOnly: boolean;
 }
 
 export class ConfigurePythonWizard {
@@ -164,7 +165,8 @@ export class ConfigurePythonWizard {
 		let installSettings: PythonInstallSettings = {
 			installPath: pythonLocation,
 			existingPython: useExistingPython,
-			packages: this.model.packagesToInstall
+			packages: this.model.packagesToInstall,
+			packageUpgradeOnly: this.model.packageUpgradeOnly
 		};
 		this.jupyterInstallation.startInstallProcess(false, installSettings)
 			.then(() => {

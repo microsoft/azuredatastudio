@@ -4,9 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { IWorkspaceService } from './interfaces';
 import { UnknownProjectsError } from './constants';
 import { WorkspaceTreeItem } from 'dataworkspace';
+import { TelemetryReporter } from './telemetry';
 
 /**
  * Tree data provider for the workspace main view
@@ -40,8 +42,14 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 			await vscode.commands.executeCommand('setContext', 'isProjectsViewEmpty', projects.length === 0);
 			const unknownProjects: string[] = [];
 			const treeItems: WorkspaceTreeItem[] = [];
+
+			const typeMetric: Record<string, number> = {};
+
 			for (const project of projects) {
 				const projectProvider = await this._workspaceService.getProjectProvider(project);
+
+				this.incrementProjectTypeMetric(typeMetric, project);
+
 				if (projectProvider === undefined) {
 					unknownProjects.push(project.path);
 					continue;
@@ -60,10 +68,30 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 					});
 				});
 			}
+
+			TelemetryReporter.sendMetricsEvent(typeMetric, 'OpenWorkspaceProjectTypes');
+			TelemetryReporter.sendMetricsEvent(
+				{
+					'handled': projects.length - unknownProjects.length,
+					'unhandled': unknownProjects.length
+				},
+				'OpenWorkspaceProjectsHandled');
+
 			if (unknownProjects.length > 0) {
 				vscode.window.showErrorMessage(UnknownProjectsError(unknownProjects));
 			}
+
 			return treeItems;
 		}
+	}
+
+	private incrementProjectTypeMetric(typeMetric: Record<string, number>, projectUri: vscode.Uri) {
+		const ext = path.extname(projectUri.fsPath);
+
+		if (!typeMetric.hasOwnProperty(ext)) {
+			typeMetric[ext] = 0;
+		}
+
+		typeMetric[ext]++;
 	}
 }

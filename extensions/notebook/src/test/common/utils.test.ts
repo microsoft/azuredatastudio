@@ -28,10 +28,10 @@ describe('Utils Tests', function () {
 		should(utils.getLivyUrl(host, port)).endWith('/gateway/default/livy/v1/');
 	});
 
-	it('mkDir', async () => {
+	it('ensureDir', async () => {
 		const dirPath = path.join(os.tmpdir(), uuid.v4());
 		await should(fs.stat(dirPath)).be.rejected();
-		await utils.mkDir(dirPath, new MockOutputChannel());
+		await utils.ensureDir(dirPath, new MockOutputChannel());
 		should.exist(await fs.stat(dirPath), `Folder ${dirPath} did not exist after creation`);
 	});
 
