@@ -644,6 +644,13 @@ declare module 'azdata' {
 			width?: DialogWidth;
 		}
 
+		export interface WizardPage extends ModelViewPanel {
+			/**
+			 * An optional name for the page. If provided it will be used for telemetry
+			 */
+			pageName?: string;
+		}
+
 		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
 		/**
@@ -661,6 +668,13 @@ declare module 'azdata' {
 		 * @param width The width of the wizard, default value is 'narrow'
 		 */
 		export function createWizard(title: string, name?: string, width?: DialogWidth): Wizard;
+
+		/**
+		 * Create a wizard page with the given title, for inclusion in a wizard
+		 * @param title The title of the page
+		 * @param pageName The optional page name parameter will be used for telemetry
+		 */
+		export function createWizardPage(title: string, pageName?: string): WizardPage;
 	}
 
 	export namespace workspace {

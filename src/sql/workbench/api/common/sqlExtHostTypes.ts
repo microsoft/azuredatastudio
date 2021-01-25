@@ -278,6 +278,7 @@ export interface IModelViewWizardPageDetails {
 	enabled: boolean;
 	customButtons: number[];
 	description: string;
+	pageName?: string;
 }
 
 export interface IModelViewWizardDetails {
