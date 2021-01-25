@@ -11,6 +11,7 @@ import * as constants from '../common/constants';
 import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
+import { TelemetryReporter, TelemetryViews, calculateRelativity } from '../common/telemetry';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
@@ -115,6 +116,12 @@ export class WorkspaceService implements IWorkspaceService {
 				currentProjects.push(projectFile);
 				newProjectFileAdded = true;
 
+				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, 'ProjectAddedToWorkspace')
+					.withAdditionalProperties({
+						workspaceProjectRelativity: calculateRelativity(projectFile.fsPath),
+						projectType: path.extname(projectFile.fsPath)
+					}).send();
+
 				// if the relativePath and the original path is the same, that means the project file is not under
 				// any workspace folders, we should add the parent folder of the project file to the workspace
 				const relativePath = vscode.workspace.asRelativePath(projectFile, false);
@@ -166,6 +173,12 @@ export class WorkspaceService implements IWorkspaceService {
 			const projectIdx = currentProjects.findIndex((p: vscode.Uri) => p.fsPath === projectFile.fsPath);
 			if (projectIdx !== -1) {
 				currentProjects.splice(projectIdx, 1);
+
+				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, 'ProjectRemovedFromWorkspace')
+					.withAdditionalProperties({
+						projectType: path.extname(projectFile.fsPath)
+					}).send();
+
 				await this.setWorkspaceConfigurationValue(ProjectsConfigurationName, currentProjects.map(project => this.toRelativePath(project)));
 				this._onDidWorkspaceProjectsChange.fire();
 			}
