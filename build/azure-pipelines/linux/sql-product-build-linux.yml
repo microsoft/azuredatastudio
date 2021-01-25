@@ -232,7 +232,7 @@ steps:
       testResultsFiles: '*.xml'
       searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
     continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+    condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
