@@ -274,6 +274,13 @@ declare module 'azdata' {
 		showLinkIcon?: boolean;
 	}
 
+	export interface RadioButtonComponent {
+		/**
+		 * An event called when the value of radio button changes
+		 */
+		onDidChangeCheckedState: vscode.Event<boolean>;
+	}
+
 	export interface DeclarativeTableColumn {
 		headerCssStyles?: CssStyles;
 		rowCssStyles?: CssStyles;

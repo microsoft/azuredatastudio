@@ -292,10 +292,10 @@ axios@^0.19.2:
   dependencies:
     follow-redirects "1.5.10"
 
-azdata-test@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/azdata-test/-/azdata-test-1.0.0.tgz#b8821a5a313e6919dac8b8ef56f22dc8592cad2c"
-  integrity sha512-/QZkHeVKc0HbJtx45nFXNQLTe3lY8la37Re+YfBIzybMIul3FmBszwIyq9/MPHMhrjkvf5xDkEF+CuSlI4KeIA==
+azdata-test@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/azdata-test/-/azdata-test-1.1.1.tgz#0feb13ec01397841f7bbce0ad25a41e4a3afb5b5"
+  integrity sha512-+jZ5/4Orqt5Q2MLPqmV+iQjGYxG5FK4pC3UqTOPdSzlbs0JQhOXckC8Hmw8ZOS0N6Cn7mNDCpfaqEU9coTyVsw==
   dependencies:
     http-proxy-agent "^2.1.0"
     https-proxy-agent "^2.2.4"
