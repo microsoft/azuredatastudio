@@ -194,7 +194,7 @@ export class WorkspaceService implements IWorkspaceService {
 						if (containsNotAddedProject) {
 							const result = await vscode.window.showInformationMessage(constants.WorkspaceContainsNotAddedProjects, constants.LaunchOpenExisitingDialog, constants.DoNotShowAgain);
 							if (result === constants.LaunchOpenExisitingDialog) {
-								//open settings
+								// open settings
 								await vscode.commands.executeCommand('projects.openExisting');
 							} else if (result === constants.DoNotShowAgain) {
 								await config.update(constants.showNotAddedProjectsMessageKey, false, true);

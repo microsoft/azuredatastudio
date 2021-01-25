@@ -17,6 +17,9 @@ export function activate(context: vscode.ExtensionContext): Promise<IExtension> 
 	const workspaceService = new WorkspaceService(context);
 	workspaceService.loadTempProjects();
 	workspaceService.checkForProjectsNotAddedToWorkspace();
+	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => {
+		workspaceService.checkForProjectsNotAddedToWorkspace();
+	}));
 
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
 	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
