@@ -85,14 +85,13 @@ export async function getBlobContainers(account: azdata.Account, subscription: S
 export async function getMigrationController(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<azureResource.MigrationController> {
 	const api = await getAzureCoreAPI();
 	let result = await api.getMigrationController(account, subscription, resourceGroupName, regionName, controllerName, true);
-	let controller = result.controller;
-	return controller;
+	return result.controller!;
 }
 
 export async function createMigrationController(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<azureResource.MigrationController> {
 	const api = await getAzureCoreAPI();
 	let result = await api.createMigrationController(account, subscription, resourceGroupName, regionName, controllerName, true);
-	return result.controller;
+	return result.controller!;
 }
 
 export async function getMigrationControllerAuthKeys(accounts: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<azurecore.GetMigrationControllerAuthKeysResult> {

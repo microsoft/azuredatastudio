@@ -97,8 +97,8 @@ declare module 'azurecore' {
 	export type GetStorageAccountResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };
 	export type GetBlobContainersResult = { blobContainers: azureResource.BlobContainer[], errors: Error[] };
 	export type GetFileSharesResult = { fileShares: azureResource.FileShare[], errors: Error[] };
-	export type GetMigrationControllerResult = { controller: azureResource.MigrationController, errors: Error[] };
-	export type CreateMigrationControllerResult = { controller: azureResource.MigrationController, errors: Error[] };
+	export type GetMigrationControllerResult = { controller: azureResource.MigrationController | undefined, errors: Error[] };
+	export type CreateMigrationControllerResult = { controller: azureResource.MigrationController | undefined, errors: Error[] };
 	export type GetMigrationControllerAuthKeysResult = { keyName1: string, keyName2: string, errors: Error[] };
 
 	export type ResourceQueryResult<T extends azureResource.AzureGraphResource> = { resources: T[], errors: Error[] };
