@@ -803,7 +803,7 @@ declare module 'azdata' {
 		generateAssessmentScript(items: SqlAssessmentResultItem[]): Promise<ResultStatus>;
 	}
 
-	export interface TreeItem2 extends vscode.TreeItem2 {
+	export interface TreeItem2 extends vscode.TreeItem {
 		payload?: IConnectionProfile;
 		childProvider?: string;
 		type?: ExtensionNodeType;

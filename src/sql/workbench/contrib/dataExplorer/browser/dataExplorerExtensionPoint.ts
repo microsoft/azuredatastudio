@@ -17,8 +17,7 @@ import { coalesce } from 'vs/base/common/arrays';
 import { VIEWLET_ID } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { ICustomViewDescriptor } from 'vs/workbench/api/browser/viewsExtensionPoint';
-import { CustomTreeView as VSCustomTreeView } from 'vs/workbench/contrib/views/browser/treeView';
-import { TreeViewPane } from 'vs/workbench/browser/parts/views/treeView';
+import { CustomTreeView as VSCustomTreeView, TreeViewPane } from 'vs/workbench/browser/parts/views/treeView';
 import { CustomTreeView } from 'sql/workbench/contrib/views/browser/treeView';
 
 interface IUserFriendlyViewDescriptor {

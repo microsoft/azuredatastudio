@@ -227,7 +227,7 @@ suite('Assessment Actions', () => {
 		openerService.setup(s => s.open(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 
 		const fileUri = URI.file('/user/home');
-		const fileDialogService = new TestFileDialogService();
+		const fileDialogService = new TestFileDialogService(undefined);
 		fileDialogService.setPickFileToSave(fileUri);
 
 		const notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);

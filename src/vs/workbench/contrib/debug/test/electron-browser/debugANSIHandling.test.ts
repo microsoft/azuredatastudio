@@ -15,8 +15,8 @@ import { TestThemeService, TestColorTheme } from 'vs/platform/theme/test/common/
 import { ansiColorMap } from 'vs/workbench/contrib/terminal/common/terminalColorRegistry';
 import { DebugModel } from 'vs/workbench/contrib/debug/common/debugModel';
 import { DebugSession } from 'vs/workbench/contrib/debug/browser/debugSession';
-import { NullOpenerService } from 'vs/platform/opener/common/opener';
-import { createMockDebugModel } from 'vs/workbench/contrib/debug/test/common/mockDebug';
+import { createMockDebugModel } from 'vs/workbench/contrib/debug/test/browser/mockDebug';
+import { createMockSession } from 'vs/workbench/contrib/debug/test/browser/callStack.test';
 
 suite.skip('Debug - ANSI Handling', () => {
 
@@ -30,7 +30,7 @@ suite.skip('Debug - ANSI Handling', () => {
 	 */
 	setup(() => {
 		model = createMockDebugModel();
-		session = new DebugSession(generateUuid(), { resolved: { name: 'test', type: 'node', request: 'launch' }, unresolved: undefined }, undefined!, model, undefined, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, NullOpenerService, undefined!, undefined!);
+		session = createMockSession(model);
 
 		const instantiationService: TestInstantiationService = <TestInstantiationService>workbenchInstantiationService();
 		linkDetector = instantiationService.createInstance(LinkDetector);
@@ -49,8 +49,8 @@ suite.skip('Debug - ANSI Handling', () => {
 
 		assert.equal(0, root.children.length);
 
-		appendStylizedStringToContainer(root, 'content1', ['class1', 'class2'], linkDetector, session);
-		appendStylizedStringToContainer(root, 'content2', ['class2', 'class3'], linkDetector, session);
+		appendStylizedStringToContainer(root, 'content1', ['class1', 'class2'], linkDetector, session.root);
+		appendStylizedStringToContainer(root, 'content2', ['class2', 'class3'], linkDetector, session.root);
 
 		assert.equal(2, root.children.length);
 
@@ -80,7 +80,7 @@ suite.skip('Debug - ANSI Handling', () => {
 	 * @returns An {@link HTMLSpanElement} that contains the stylized text.
 	 */
 	function getSequenceOutput(sequence: string): HTMLSpanElement {
-		const root: HTMLSpanElement = handleANSIOutput(sequence, linkDetector, themeService, session);
+		const root: HTMLSpanElement = handleANSIOutput(sequence, linkDetector, themeService, session.root);
 		assert.equal(1, root.children.length);
 		const child: Node = root.lastChild!;
 		if (child instanceof HTMLSpanElement) {
@@ -320,7 +320,7 @@ suite.skip('Debug - ANSI Handling', () => {
 		if (elementsExpected === undefined) {
 			elementsExpected = assertions.length;
 		}
-		const root: HTMLSpanElement = handleANSIOutput(sequence, linkDetector, themeService, session);
+		const root: HTMLSpanElement = handleANSIOutput(sequence, linkDetector, themeService, session.root);
 		assert.equal(elementsExpected, root.children.length);
 		for (let i = 0; i < elementsExpected; i++) {
 			const child: Node = root.children[i];

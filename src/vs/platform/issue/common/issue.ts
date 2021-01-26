@@ -55,6 +55,7 @@ export interface IssueReporterData extends WindowData {
 	enabledExtensions: IssueReporterExtensionData[];
 	issueType?: IssueType;
 	extensionId?: string;
+	experiments?: string;
 	readonly issueTitle?: string;
 	readonly issueBody?: string;
 }
@@ -77,7 +78,7 @@ export interface ProcessExplorerStyles extends WindowStyles {
 export interface ProcessExplorerData extends WindowData {
 	pid: number;
 	styles: ProcessExplorerStyles;
-	platform: string;
+	platform: 'win32' | 'darwin' | 'linux';
 	applicationName: string;
 }
 

@@ -4,18 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { coalesceInPlace, equals } from 'vs/base/common/arrays';
-import { escapeCodicons } from 'vs/base/common/codicons';
 import { illegalArgument } from 'vs/base/common/errors';
 import { IRelativePattern } from 'vs/base/common/glob';
-import { isMarkdownString } from 'vs/base/common/htmlContent';
+import { isMarkdownString, MarkdownString as BaseMarkdownString } from 'vs/base/common/htmlContent';
 import { ResourceMap } from 'vs/base/common/map';
-import { startsWith } from 'vs/base/common/strings';
 import { isStringArray } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
 import { FileSystemProviderErrorCode, markAsFileSystemProviderError } from 'vs/platform/files/common/files';
 import { RemoteAuthorityResolverErrorCode } from 'vs/platform/remote/common/remoteAuthorityResolver';
-import { addIdToOutput, CellEditType, ICellEditOperation } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { addIdToOutput, CellEditType, ICellEditOperation, IDisplayOutput } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import type * as vscode from 'vscode';
 
 function es5ClassCompat(target: Function): any {
@@ -434,16 +432,23 @@ export class Selection extends Range {
 export class ResolvedAuthority {
 	readonly host: string;
 	readonly port: number;
+	readonly connectionToken: string | undefined;
 
-	constructor(host: string, port: number) {
+	constructor(host: string, port: number, connectionToken?: string) {
 		if (typeof host !== 'string' || host.length === 0) {
 			throw illegalArgument('host');
 		}
 		if (typeof port !== 'number' || port === 0 || Math.round(port) !== port) {
 			throw illegalArgument('port');
 		}
+		if (typeof connectionToken !== 'undefined') {
+			if (typeof connectionToken !== 'string' || connectionToken.length === 0 || !/^[0-9A-Za-z\-]+$/.test(connectionToken)) {
+				throw illegalArgument('connectionToken');
+			}
+		}
 		this.host = host;
 		this.port = Math.round(port);
+		this.connectionToken = connectionToken;
 	}
 }
 
@@ -469,7 +474,7 @@ export class RemoteAuthorityResolverError extends Error {
 		this._detail = detail;
 
 		// workaround when extending builtin objects and when compiling to ES5, see:
-		// https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
+		// https://github.com/microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
 		if (typeof (<any>Object).setPrototypeOf === 'function') {
 			(<any>Object).setPrototypeOf(this, RemoteAuthorityResolverError.prototype);
 		}
@@ -637,11 +642,23 @@ export class WorkspaceEdit implements vscode.WorkspaceEdit {
 	}
 
 	replaceNotebookCells(uri: URI, start: number, end: number, cells: vscode.NotebookCellData[], metadata?: vscode.WorkspaceEditEntryMetadata): void {
-		this._edits.push({ _type: FileEditType.Cell, metadata, uri, edit: { editType: CellEditType.Replace, index: start, count: end - start, cells: cells.map(cell => ({ ...cell, outputs: cell.outputs.map(output => addIdToOutput(output)) })) } });
+		if (start !== end || cells.length > 0) {
+			this._edits.push({ _type: FileEditType.Cell, metadata, uri, edit: { editType: CellEditType.Replace, index: start, count: end - start, cells: cells.map(cell => ({ ...cell, outputs: cell.outputs.map(output => addIdToOutput(output)) })) } });
+		}
 	}
 
-	replaceNotebookCellOutput(uri: URI, index: number, outputs: vscode.CellOutput[], metadata?: vscode.WorkspaceEditEntryMetadata): void {
-		this._edits.push({ _type: FileEditType.Cell, metadata, uri, edit: { editType: CellEditType.Output, index, outputs: outputs.map(output => addIdToOutput(output)) } });
+	replaceNotebookCellOutput(uri: URI, index: number, outputs: (vscode.NotebookCellOutput | vscode.CellOutput)[], metadata?: vscode.WorkspaceEditEntryMetadata): void {
+		this._edits.push({
+			_type: FileEditType.Cell, metadata, uri, edit: {
+				editType: CellEditType.Output, index, outputs: outputs.map(output => {
+					if (NotebookCellOutput.isNotebookCellOutput(output)) {
+						return addIdToOutput(output.toJSON());
+					} else {
+						return addIdToOutput(output);
+					}
+				})
+			}
+		});
 	}
 
 	replaceNotebookCellMetadata(uri: URI, index: number, cellMetadata: vscode.NotebookCellMetadata, metadata?: vscode.WorkspaceEditEntryMetadata): void {
@@ -780,7 +797,7 @@ export class SnippetString {
 	}
 
 	appendChoice(values: string[], number: number = this._tabstop++): SnippetString {
-		const value = SnippetString._escape(values.toString());
+		const value = values.map(s => s.replace(/\$|}|\\|,/g, '\\$&')).join(',');
 
 		this.value += '${';
 		this.value += number;
@@ -1169,7 +1186,7 @@ export class CodeActionKind {
 	}
 
 	public contains(other: CodeActionKind): boolean {
-		return this.value === other.value || startsWith(other.value, this.value + CodeActionKind.sep);
+		return this.value === other.value || other.value.startsWith(this.value + CodeActionKind.sep);
 	}
 }
 CodeActionKind.Empty = new CodeActionKind('');
@@ -1258,54 +1275,8 @@ export class CodeLens {
 	}
 }
 
-
-export class CodeInset {
-
-	range: Range;
-	height?: number;
-
-	constructor(range: Range, height?: number) {
-		this.range = range;
-		this.height = height;
-	}
-}
-
-
 @es5ClassCompat
-export class MarkdownString {
-
-	value: string;
-	isTrusted?: boolean;
-	readonly supportThemeIcons?: boolean;
-
-	constructor(value?: string, supportThemeIcons: boolean = false) {
-		this.value = value ?? '';
-		this.supportThemeIcons = supportThemeIcons;
-	}
-
-	appendText(value: string): MarkdownString {
-		// escape markdown syntax tokens: http://daringfireball.net/projects/markdown/syntax#backslash
-		this.value += (this.supportThemeIcons ? escapeCodicons(value) : value)
-			.replace(/[\\`*_{}[\]()#+\-.!]/g, '\\$&')
-			.replace(/\n/, '\n\n');
-
-		return this;
-	}
-
-	appendMarkdown(value: string): MarkdownString {
-		this.value += value;
-
-		return this;
-	}
-
-	appendCodeblock(code: string, language: string = ''): MarkdownString {
-		this.value += '\n```';
-		this.value += language;
-		this.value += '\n';
-		this.value += code;
-		this.value += '\n```\n';
-		return this;
-	}
+export class MarkdownString extends BaseMarkdownString implements vscode.MarkdownString {
 
 	static isMarkdownString(thing: any): thing is vscode.MarkdownString {
 		if (thing instanceof MarkdownString) {
@@ -1313,6 +1284,11 @@ export class MarkdownString {
 		}
 		return thing && thing.appendCodeblock && thing.appendMarkdown && thing.appendText && (thing.value !== undefined);
 	}
+
+	constructor(value?: string, supportThemeIcons: boolean = false) {
+		super(value ?? '', { supportThemeIcons });
+	}
+
 }
 
 @es5ClassCompat
@@ -2170,9 +2146,11 @@ export class ThemeIcon {
 	static Folder: ThemeIcon;
 
 	readonly id: string;
+	readonly color?: ThemeColor;
 
-	constructor(id: string) {
+	constructor(id: string, color?: ThemeColor) {
 		this.id = id;
+		this.color = color;
 	}
 }
 ThemeIcon.File = new ThemeIcon('file');
@@ -2198,13 +2176,18 @@ export enum ConfigurationTarget {
 @es5ClassCompat
 export class RelativePattern implements IRelativePattern {
 	base: string;
-	baseFolder?: URI;
-
 	pattern: string;
 
-	constructor(base: vscode.WorkspaceFolder | string, pattern: string) {
+	// expose a `baseFolder: URI` property as a workaround for the short-coming
+	// of `IRelativePattern` only supporting `base: string` which always translates
+	// to a `file://` URI. With `baseFolder` we can support non-file based folders
+	// in searches
+	// (https://github.com/microsoft/vscode/commit/6326543b11cf4998c8fd1564cab5c429a2416db3)
+	readonly baseFolder?: URI;
+
+	constructor(base: vscode.WorkspaceFolder | URI | string, pattern: string) {
 		if (typeof base !== 'string') {
-			if (!base || !URI.isUri(base.uri)) {
+			if (!base || !URI.isUri(base) && !URI.isUri(base.uri)) {
 				throw illegalArgument('base');
 			}
 		}
@@ -2214,7 +2197,11 @@ export class RelativePattern implements IRelativePattern {
 		}
 
 		if (typeof base === 'string') {
+			this.baseFolder = URI.file(base);
 			this.base = base;
+		} else if (URI.isUri(base)) {
+			this.baseFolder = base;
+			this.base = base.fsPath;
 		} else {
 			this.baseFolder = base.uri;
 			this.base = base.uri.fsPath;
@@ -2349,16 +2336,6 @@ export class EvaluatableExpression implements vscode.EvaluatableExpression {
 	}
 }
 
-export enum LogLevel {
-	Trace = 1,
-	Debug = 2,
-	Info = 3,
-	Warning = 4,
-	Error = 5,
-	Critical = 6,
-	Off = 7
-}
-
 //#region file api
 
 export enum FileChangeType {
@@ -2401,7 +2378,7 @@ export class FileSystemError extends Error {
 		markAsFileSystemProviderError(this, code);
 
 		// workaround when extending builtin objects and when compiling to ES5, see:
-		// https://github.com/Microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
+		// https://github.com/microsoft/TypeScript-wiki/blob/master/Breaking-Changes.md#extending-built-ins-like-error-array-and-map-may-no-longer-work
 		if (typeof (<any>Object).setPrototypeOf === 'function') {
 			(<any>Object).setPrototypeOf(this, FileSystemError.prototype);
 		}
@@ -2716,7 +2693,7 @@ export enum DebugConfigurationProviderTriggerKind {
 @es5ClassCompat
 export class QuickInputButtons {
 
-	static readonly Back: vscode.QuickInputButton = { iconPath: 'back.svg' };
+	static readonly Back: vscode.QuickInputButton = { iconPath: new ThemeIcon('arrow-left') };
 
 	private constructor() { }
 }
@@ -2726,22 +2703,29 @@ export enum ExtensionKind {
 	Workspace = 2
 }
 
-export class Decoration {
+export class FileDecoration {
 
-	static validate(d: Decoration): void {
-		if (d.letter && d.letter.length !== 1) {
-			throw new Error(`The 'letter'-property must be undefined or a single character`);
+	static validate(d: FileDecoration): void {
+		if (d.badge && d.badge.length !== 1 && d.badge.length !== 2) {
+			throw new Error(`The 'badge'-property must be undefined or a short character`);
 		}
-		if (!d.bubble && !d.color && !d.letter && !d.priority && !d.title) {
+		if (!d.color && !d.badge && !d.tooltip) {
 			throw new Error(`The decoration is empty`);
 		}
 	}
 
-	letter?: string;
-	title?: string;
+	badge?: string;
+	tooltip?: string;
 	color?: vscode.ThemeColor;
 	priority?: number;
-	bubble?: boolean;
+	propagate?: boolean;
+
+
+	constructor(badge?: string, tooltip?: string, color?: ThemeColor) {
+		this.badge = badge;
+		this.tooltip = tooltip;
+		this.color = color;
+	}
 }
 
 //#region Theming
@@ -2761,6 +2745,50 @@ export enum ColorThemeKind {
 //#endregion Theming
 
 //#region Notebook
+
+export class NotebookCellOutputItem {
+
+	static isNotebookCellOutputItem(obj: unknown): obj is vscode.NotebookCellOutputItem {
+		return obj instanceof NotebookCellOutputItem;
+	}
+
+	constructor(
+		readonly mime: string,
+		readonly value: unknown, // JSON'able
+		readonly metadata?: Record<string, string | number | boolean>
+	) { }
+}
+
+export class NotebookCellOutput {
+
+	static isNotebookCellOutput(obj: unknown): obj is vscode.NotebookCellOutput {
+		return obj instanceof NotebookCellOutput;
+	}
+
+	constructor(
+		readonly outputs: NotebookCellOutputItem[],
+		readonly metadata?: Record<string, string | number | boolean>
+	) { }
+
+	toJSON(): IDisplayOutput {
+		let data: { [key: string]: unknown; } = {};
+		let custom: { [key: string]: unknown; } = {};
+		let hasMetadata = false;
+
+		for (let item of this.outputs) {
+			data[item.mime] = item.value;
+			if (item.metadata) {
+				custom[item.mime] = item.metadata;
+				hasMetadata = true;
+			}
+		}
+		return {
+			outputKind: CellOutputKind.Rich,
+			data,
+			metadata: hasMetadata ? { custom } : undefined
+		};
+	}
+}
 
 export enum CellKind {
 	Markdown = 1,
@@ -2849,3 +2877,64 @@ export enum StandardTokenType {
 	String = 2,
 	RegEx = 4
 }
+
+
+export class LinkedEditingRanges {
+	constructor(public readonly ranges: Range[], public readonly wordPattern?: RegExp) {
+	}
+}
+
+//#region Testing
+export enum TestRunState {
+	Unset = 0,
+	Running = 1,
+	Passed = 2,
+	Failed = 3,
+	Skipped = 4,
+	Errored = 5
+}
+
+export enum TestMessageSeverity {
+	Error = 0,
+	Warning = 1,
+	Information = 2,
+	Hint = 3
+}
+
+@es5ClassCompat
+export class TestState {
+	#runState: TestRunState;
+	#duration?: number;
+	#messages: ReadonlyArray<Readonly<vscode.TestMessage>>;
+
+	public get runState() {
+		return this.#runState;
+	}
+
+	public get duration() {
+		return this.#duration;
+	}
+
+	public get messages() {
+		return this.#messages;
+	}
+
+	constructor(runState: TestRunState, messages: vscode.TestMessage[] = [], duration?: number) {
+		this.#runState = runState;
+		this.#messages = Object.freeze(messages.map(m => Object.freeze(m)));
+		this.#duration = duration;
+	}
+}
+
+type AllowedUndefined = 'description' | 'location';
+
+/**
+ * Test item without any optional properties. Only some properties are
+ * permitted to be undefined, but they must still exist.
+ */
+export type RequiredTestItem = {
+	[K in keyof Required<vscode.TestItem>]: K extends AllowedUndefined ? vscode.TestItem[K] : Required<vscode.TestItem>[K]
+};
+
+
+//#endregion

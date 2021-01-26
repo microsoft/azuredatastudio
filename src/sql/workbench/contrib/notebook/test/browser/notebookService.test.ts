@@ -384,6 +384,7 @@ suite.skip('NotebookService:', function (): void {
 						}
 					},
 					isBuiltin: false,
+					isUserBuiltin: false,
 					isUnderDevelopment: true,
 					extensionLocation: URI.parse('extLocation1'),
 					enableProposedApi: false,

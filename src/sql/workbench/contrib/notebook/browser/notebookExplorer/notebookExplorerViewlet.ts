@@ -443,7 +443,7 @@ export const NOTEBOOK_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(View
 	id: VIEWLET_ID,
 	name: localize('notebookExplorer.name', "Notebooks"),
 	ctorDescriptor: new SyncDescriptor(NotebookExplorerViewPaneContainer),
-	icon: 'book',
+	icon: { id: 'book' },
 	order: 6,
 	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Sidebar);

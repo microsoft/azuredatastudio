@@ -44,9 +44,14 @@
 	//#region Add support for using node_modules.asar
 
 	/**
-	 * @param {string} appRoot
+	 * @param {string | undefined} appRoot
 	 */
 	function enableASARSupport(appRoot) {
+		if (!path || !Module || typeof process === 'undefined') {
+			console.warn('enableASARSupport() is only available in node.js environments'); // TODO@sandbox ASAR is currently non-sandboxed only
+			return;
+		}
+
 		let NODE_MODULES_PATH = appRoot ? path.join(appRoot, 'node_modules') : undefined;
 		if (!NODE_MODULES_PATH) {
 			NODE_MODULES_PATH = path.join(__dirname, '../node_modules');
@@ -110,13 +115,14 @@
 	//#region NLS helpers
 
 	/**
-	 * @returns {{locale?: string, availableLanguages: {[lang: string]: string;}, pseudo?: boolean }}
+	 * @returns {{locale?: string, availableLanguages: {[lang: string]: string;}, pseudo?: boolean } | undefined}
 	 */
 	function setupNLS() {
 
-		// Get the nls configuration into the process.env as early as possible.
+		// Get the nls configuration as early as possible.
+		const process = safeProcess();
 		let nlsConfig = { availableLanguages: {} };
-		if (process.env['VSCODE_NLS_CONFIG']) {
+		if (process && process.env['VSCODE_NLS_CONFIG']) {
 			try {
 				nlsConfig = JSON.parse(process.env['VSCODE_NLS_CONFIG']);
 			} catch (e) {
@@ -135,8 +141,7 @@
 					return;
 				}
 
-				const bundleFile = path.join(nlsConfig._resolvedLanguagePackCoreLocation, `${bundle.replace(/\//g, '!')}.nls.json`);
-				fs.promises.readFile(bundleFile, 'utf8').then(function (content) {
+				safeReadNlsFile(nlsConfig._resolvedLanguagePackCoreLocation, `${bundle.replace(/\//g, '!')}.nls.json`).then(function (content) {
 					const json = JSON.parse(content);
 					bundles[bundle] = json;
 
@@ -144,7 +149,7 @@
 				}).catch((error) => {
 					try {
 						if (nlsConfig._corruptedFile) {
-							fs.promises.writeFile(nlsConfig._corruptedFile, 'corrupted', 'utf8').catch(function (error) { console.error(error); });
+							safeWriteNlsFile(nlsConfig._corruptedFile, 'corrupted').catch(function (error) { console.error(error); });
 						}
 					} finally {
 						cb(error, undefined);
@@ -162,13 +167,21 @@
 	//#region Portable helpers
 
 	/**
-	 * @param {{ portable: string; applicationName: string; }} product
-	 * @returns {{portableDataPath: string;isPortable: boolean;}}
+	 * @param {{ portable: string | undefined; applicationName: string; }} product
+	 * @returns {{ portableDataPath: string; isPortable: boolean; } | undefined}
 	 */
 	function configurePortable(product) {
+		if (!path || !fs || typeof process === 'undefined') {
+			console.warn('configurePortable() is only available in node.js environments'); // TODO@sandbox Portable is currently non-sandboxed only
+			return;
+		}
+
 		const appRoot = path.dirname(__dirname);
 
-		function getApplicationPath() {
+		/**
+		 * @param {import('path')} path
+		 */
+		function getApplicationPath(path) {
 			if (process.env['VSCODE_DEV']) {
 				return appRoot;
 			}
@@ -180,21 +193,24 @@
 			return path.dirname(path.dirname(appRoot));
 		}
 
-		function getPortableDataPath() {
+		/**
+		 * @param {import('path')} path
+		 */
+		function getPortableDataPath(path) {
 			if (process.env['VSCODE_PORTABLE']) {
 				return process.env['VSCODE_PORTABLE'];
 			}
 
 			if (process.platform === 'win32' || process.platform === 'linux') {
-				return path.join(getApplicationPath(), 'data');
+				return path.join(getApplicationPath(path), 'data');
 			}
 
 			// @ts-ignore
 			const portableDataName = product.portable || `${product.applicationName}-portable-data`;
-			return path.join(path.dirname(getApplicationPath()), portableDataName);
+			return path.join(path.dirname(getApplicationPath(path)), portableDataName);
 		}
 
-		const portableDataPath = getPortableDataPath();
+		const portableDataPath = getPortableDataPath(path);
 		const isPortable = !('target' in product) && fs.existsSync(portableDataPath);
 		const portableTempPath = path.join(portableDataPath, 'tmp');
 		const isTempPortable = isPortable && fs.existsSync(portableTempPath);
@@ -233,13 +249,95 @@
 		global['diagnosticsSource'] = {}; // Prevents diagnostic channel (which patches "require") from initializing entirely
 	}
 
+	function safeGlobals() {
+		const globals = (typeof self === 'object' ? self : typeof global === 'object' ? global : {});
+
+		return globals.vscode;
+	}
+
+	/**
+	 * @returns {NodeJS.Process | undefined}
+	 */
+	function safeProcess() {
+		if (typeof process !== 'undefined') {
+			return process; // Native environment (non-sandboxed)
+		}
+
+		const globals = safeGlobals();
+		if (globals) {
+			return globals.process; // Native environment (sandboxed)
+		}
+	}
+
+	/**
+	 * @returns {Electron.IpcRenderer | undefined}
+	 */
+	function safeIpcRenderer() {
+		const globals = safeGlobals();
+		if (globals) {
+			return globals.ipcRenderer;
+		}
+	}
+
+	/**
+	 * @param {string[]} pathSegments
+	 * @returns {Promise<string>}
+	 */
+	async function safeReadNlsFile(...pathSegments) {
+		const ipcRenderer = safeIpcRenderer();
+		if (ipcRenderer) {
+			return ipcRenderer.invoke('vscode:readNlsFile', ...pathSegments);
+		}
+
+		if (fs && path) {
+			return (await fs.promises.readFile(path.join(...pathSegments))).toString();
+		}
+
+		throw new Error('Unsupported operation (read NLS files)');
+	}
+
+	/**
+	 * @param {string} path
+	 * @param {string} content
+	 * @returns {Promise<void>}
+	 */
+	function safeWriteNlsFile(path, content) {
+		const ipcRenderer = safeIpcRenderer();
+		if (ipcRenderer) {
+			return ipcRenderer.invoke('vscode:writeNlsFile', path, content);
+		}
+
+		if (fs) {
+			return fs.promises.writeFile(path, content);
+		}
+
+		throw new Error('Unsupported operation (write NLS files)');
+	}
+
+	//#endregion
+
+
+	//#region ApplicationInsights
+
+	// Prevents appinsights from monkey patching modules.
+	// This should be called before importing the applicationinsights module
+	function avoidMonkeyPatchFromAppInsights() {
+		if (typeof process === 'undefined') {
+			console.warn('avoidMonkeyPatchFromAppInsights() is only available in node.js environments');
+			return;
+		}
+
+		// @ts-ignore
+		process.env['APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL'] = true; // Skip monkey patching of 3rd party modules by appinsights
+		global['diagnosticsSource'] = {}; // Prevents diagnostic channel (which patches "require") from initializing entirely
+	}
+
 	//#endregion
 
 
 	return {
 		enableASARSupport,
 		avoidMonkeyPatchFromAppInsights,
-		configurePortable,
 		setupNLS,
 		fileUriFromPath
 	};

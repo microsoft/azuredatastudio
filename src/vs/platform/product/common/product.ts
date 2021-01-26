@@ -5,14 +5,14 @@
 
 import { IProductConfiguration } from 'vs/platform/product/common/productService';
 import { isWeb } from 'vs/base/common/platform';
-import * as path from 'vs/base/common/path';
-import { getPathFromAmdModule } from 'vs/base/common/amd';
 import { env } from 'vs/base/common/process';
+import { FileAccess } from 'vs/base/common/network';
+import { dirname, joinPath } from 'vs/base/common/resources';
 
 let product: IProductConfiguration;
 
-// Web
-if (isWeb) {
+// Web or Native (sandbox TODO@sandbox need to add all properties of product.json)
+if (isWeb || typeof require === 'undefined' || typeof require.__$__nodeRequire !== 'function') {
 
 	// Built time configuration (do NOT modify)
 	product = { /*BUILD->INSERT_PRODUCT_CONFIGURATION*/ } as IProductConfiguration;
@@ -21,26 +21,32 @@ if (isWeb) {
 	if (Object.keys(product).length === 0) {
 		Object.assign(product, {
 			version: '1.17.0-dev',
-			vscodeVersion: '1.49.0-dev',
+			vscodeVersion: '1.50.0-dev',
 			nameLong: 'Azure Data Studio Web Dev',
 			nameShort: 'Azure Data Studio Web Dev',
+			applicationName: 'ads-oss',
+			dataFolderName: '.ads-oss',
 			urlProtocol: 'azuredatastudio-oss',
+			reportIssueUrl: 'https://github.com/microsoft/azuredatastudio/issues/new',
+			licenseName: 'Source EULA',
+			licenseUrl: 'https://github.com/v/vscode/blob/main/LICENSE.txt',
 			extensionAllowedProposedApi: [
-				'ms-vscode.references-view',
+				'ms-vscode.vscode-js-profile-flame',
+				'ms-vscode.vscode-js-profile-table',
 				'ms-vscode.github-browser'
 			],
 		});
 	}
 }
 
-// Node: AMD loader
-else if (typeof require !== 'undefined' && typeof require.__$__nodeRequire === 'function') {
+// Native (non-sandboxed)
+else {
 
 	// Obtain values from product.json and package.json
-	const rootPath = path.dirname(getPathFromAmdModule(require, ''));
+	const rootPath = dirname(FileAccess.asFileUri('', require));
 
-	product = require.__$__nodeRequire(path.join(rootPath, 'product.json'));
-	const pkg = require.__$__nodeRequire(path.join(rootPath, 'package.json')) as { version: string; };
+	product = require.__$__nodeRequire(joinPath(rootPath, 'product.json').fsPath);
+	const pkg = require.__$__nodeRequire(joinPath(rootPath, 'package.json').fsPath) as { version: string; };
 
 	// Running out of sources
 	if (env['VSCODE_DEV']) {
@@ -54,11 +60,6 @@ else if (typeof require !== 'undefined' && typeof require.__$__nodeRequire === '
 	Object.assign(product, {
 		version: pkg.version
 	});
-}
-
-// Unknown
-else {
-	throw new Error('Unable to resolve product configuration');
 }
 
 export default product;

@@ -13,12 +13,12 @@ import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiati
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { isString } from 'vs/base/common/types';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { ResourceViewResourcesExtensionHandler } from 'sql/workbench/contrib/resourceViewer/common/resourceViewerViewExtensionPoint';
 import { ResourceViewerView } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerView';
 import { ResourceViewerViewlet } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerViewlet';
 import { RESOURCE_VIEWER_VIEW_CONTAINER_ID, RESOURCE_VIEWER_VIEW_ID } from 'sql/workbench/contrib/resourceViewer/common/resourceViewer';
-import { Codicon } from 'vs/base/common/codicons';
+import { Codicon, registerCodicon } from 'vs/base/common/codicons';
 import { localize } from 'vs/nls';
 import { Extensions as ViewContainerExtensions, IViewsRegistry, IViewContainersRegistry, ViewContainerLocation } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -64,14 +64,16 @@ class ResourceViewerContributor implements IWorkbenchContribution {
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(ResourceViewerContributor, LifecyclePhase.Ready);
 
 function registerResourceViewerContainer() {
+
+	const resourceViewerIcon = registerCodicon('reosurce-view', Codicon.database);
 	const viewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 		id: RESOURCE_VIEWER_VIEW_CONTAINER_ID,
 		name: localize('resourceViewer', "Resource Viewer"),
 		ctorDescriptor: new SyncDescriptor(ResourceViewerViewlet),
-		icon: Codicon.database.classNames,
+		icon: resourceViewerIcon,
 		alwaysUseContainerInfo: true
 	}, ViewContainerLocation.Sidebar);
 
 	const viewsRegistry = Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry);
-	viewsRegistry.registerViews([{ id: RESOURCE_VIEWER_VIEW_ID, name: localize('resourceViewer', "Resource Viewer"), containerIcon: Codicon.database.classNames, ctorDescriptor: new SyncDescriptor(ResourceViewerView), canToggleVisibility: false, canMoveView: false }], viewContainer);
+	viewsRegistry.registerViews([{ id: RESOURCE_VIEWER_VIEW_ID, name: localize('resourceViewer', "Resource Viewer"), containerIcon: resourceViewerIcon, ctorDescriptor: new SyncDescriptor(ResourceViewerView), canToggleVisibility: false, canMoveView: false }], viewContainer);
 }

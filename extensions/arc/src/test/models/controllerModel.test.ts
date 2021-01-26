@@ -18,6 +18,10 @@ import { ControllerModel } from '../../models/controllerModel';
 import { ConnectToControllerDialog } from '../../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../../ui/tree/azureArcTreeDataProvider';
 
+interface ExtensionGlobalMemento extends vscode.Memento {
+	setKeysForSync(keys: string[]): void;
+}
+
 describe('ControllerModel', function (): void {
 	afterEach(function (): void {
 		sinon.restore();
@@ -25,11 +29,11 @@ describe('ControllerModel', function (): void {
 
 	describe('azdataLogin', function (): void {
 		let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
-		let mockGlobalState: TypeMoq.IMock<vscode.Memento>;
+		let mockGlobalState: TypeMoq.IMock<ExtensionGlobalMemento>;
 
 		before(function (): void {
 			mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-			mockGlobalState = TypeMoq.Mock.ofType<vscode.Memento>();
+			mockGlobalState = TypeMoq.Mock.ofType<ExtensionGlobalMemento>();
 			mockExtensionContext.setup(x => x.globalState).returns(() => mockGlobalState.object);
 		});
 

@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { Memento } from 'vs/workbench/common/memento';
 
 import AccountStore from 'sql/platform/accounts/common/accountStore';
@@ -61,7 +61,7 @@ export class AccountManagementService implements IAccountManagementService {
 		// Create the account store
 		if (!this._mementoObj) {
 			this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO, this._storageService);
-			this._mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL);
+			this._mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
 		}
 		this._accountStore = this._instantiationService.createInstance(AccountStore, this._mementoObj);
 

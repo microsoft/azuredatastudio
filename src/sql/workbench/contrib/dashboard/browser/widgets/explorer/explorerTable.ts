@@ -127,7 +127,7 @@ export class ExplorerTable extends Disposable {
 		const primary: IAction[] = [];
 		const secondary: IAction[] = [];
 		const result = { primary, secondary };
-		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, this.contextMenuService, g => g === 'inline');
+		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, g => g === 'inline');
 
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => anchor,

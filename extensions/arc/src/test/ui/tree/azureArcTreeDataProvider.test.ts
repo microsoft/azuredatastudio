@@ -20,11 +20,15 @@ import { MiaaTreeNode } from '../../../ui/tree/miaaTreeNode';
 import { FakeControllerModel } from '../../mocks/fakeControllerModel';
 import { FakeAzdataApi } from '../../mocks/fakeAzdataApi';
 
+interface ExtensionGlobalMemento extends vscode.Memento {
+	setKeysForSync(keys: string[]): void;
+}
+
 describe('AzureArcTreeDataProvider tests', function (): void {
 	let treeDataProvider: AzureArcTreeDataProvider;
 	beforeEach(function (): void {
 		const mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		const mockGlobalState = TypeMoq.Mock.ofType<vscode.Memento>();
+		const mockGlobalState = TypeMoq.Mock.ofType<ExtensionGlobalMemento>();
 		mockGlobalState.setup(x => x.update(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		mockExtensionContext.setup(x => x.globalState).returns(() => mockGlobalState.object);
 		//treeDataProviderMock = TypeMoq.Mock.ofType<AzureArcTreeDataProvider>();
