@@ -20,6 +20,42 @@ describe('PythonPathLookup', function () {
 		sinon.restore();
 	});
 
+	it('getInfoForPaths', async () => {
+		let expectedPathInfo: PythonPathInfo = {
+			installDir: 'C:\\Not\\A\\Real\\Path\\Python38',
+			version: '3.8.0'
+		};
+
+		let callNumber = 0;
+		sinon.stub(pathLookup, 'getInfoForPath')
+			.onCall(callNumber++).resolves({
+				installDir: undefined,
+				version: ''
+			})
+			.onCall(callNumber++).resolves({
+				installDir: '',
+				version: undefined
+			})
+			.onCall(callNumber++).resolves({
+				installDir: '',
+				version: ''
+			})
+			.onCall(callNumber++).resolves({
+				installDir: 'C:\\Not\\A\\Real\\Path\\Python',
+				version: '2.7.0'
+			})
+			.onCall(callNumber++).resolves(expectedPathInfo)
+			.onCall(callNumber++).resolves(expectedPathInfo)
+			.onCall(callNumber++).rejects('Unexpected number of getInfoForPath calls.');
+
+		// getInfoForPath is mocked out above, so the actual path arguments here are irrelevant
+		let result = await pathLookup.getInfoForPaths(['1', '2', '3', '4', '5', '6']);
+
+		// The path lookup should filter out any invalid path info, any Python 2 info, and any duplicates.
+		// So, we should be left with a single info object using the mocked setup above.
+		should(result).be.deepEqual([expectedPathInfo]);
+	});
+
 	it('getInfoForPath', async () => {
 		let pythonVersion = '3.8.0';
 		let pythonFolder = 'C:\\Not\\A\\Real\\Path\\Python38';
