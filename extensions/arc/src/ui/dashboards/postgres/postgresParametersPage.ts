@@ -401,13 +401,6 @@ export class PostgresParametersPage extends DashboardPage {
 		// Container to hold input component and information bubble
 		const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 
-		// Information bubble title to be set depening on type of input
-		let information = this.modelView.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.information,
-			width: '15px',
-			height: '15px',
-			enabled: false
-		}).component();
 
 		if (engineSetting.type === 'enum') {
 			// If type is enum, component should be drop down menu
@@ -423,7 +416,7 @@ export class PostgresParametersPage extends DashboardPage {
 				width: '150px',
 				CSSStyles: { 'height': '40px' }
 			}).component();
-			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
+			valueContainer.addItem(valueBox);
 
 			this.disposables.push(
 				valueBox.onValueChanged(() => {
@@ -436,16 +429,14 @@ export class PostgresParametersPage extends DashboardPage {
 					}
 				})
 			);
-
-			information.updateProperty('title', loc.allowedValue(engineSetting.options!));
-			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
 		} else if (engineSetting.type === 'bool') {
 			// If type is bool, component should be checkbox to turn on or off
 			let valueBox = this.modelView.modelBuilder.checkBox().withProps({
 				label: loc.on,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
-			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px', 'width': '150px' } });
+			valueContainer.addItem(valueBox);
+
 			if (engineSetting.value === 'on') {
 				valueBox.checked = true;
 			} else {
@@ -467,9 +458,6 @@ export class PostgresParametersPage extends DashboardPage {
 					}
 				})
 			);
-
-			information.updateProperty('title', loc.allowedValue(`${loc.on},${loc.off}`));
-			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
 		} else if (engineSetting.type === 'string') {
 			// If type is string, component should be text inputbox
 			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
@@ -478,7 +466,7 @@ export class PostgresParametersPage extends DashboardPage {
 				value: engineSetting.value,
 				width: '150px'
 			}).component();
-			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
+			valueContainer.addItem(valueBox);
 
 			this.disposables.push(
 				valueBox.onTextChanged(() => {
@@ -490,6 +478,9 @@ export class PostgresParametersPage extends DashboardPage {
 				})
 			);
 		} else {
+			// Child components to be added to container
+			let components: Array<azdata.Component> = [];
+
 			// If type is real or interger, component should be inputbox set to inputType of number. Max and min values also set.
 			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
 				required: true,
@@ -501,7 +492,7 @@ export class PostgresParametersPage extends DashboardPage {
 				value: engineSetting.value,
 				width: '150px'
 			}).component();
-			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
+			components.push(valueBox);
 
 			this.disposables.push(
 				valueBox.onTextChanged(() => {
@@ -513,8 +504,17 @@ export class PostgresParametersPage extends DashboardPage {
 				})
 			);
 
+			// Information bubble title to show allowed values
+			let information = this.modelView.modelBuilder.button().withProps({
+				iconPath: IconPathHelper.information,
+				width: '15px',
+				height: '15px',
+				enabled: false
+			}).component();
+
 			information.updateProperty('title', loc.allowedValue(loc.rangeSetting(engineSetting.min!, engineSetting.max!)));
-			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
+			components.push(information);
+			valueContainer.addItems(components);
 		}
 
 		// Can reset individual parameter
