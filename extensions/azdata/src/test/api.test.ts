@@ -57,9 +57,9 @@ describe('api', function (): void {
 			// Not using a mock here because it'll hang when resolving mocked objects
 			const api = getExtensionApi(mementoMock.object, azdataToolService, Promise.resolve(azdataTool));
 			should(await api.isEulaAccepted()).be.true('EULA should be accepted');
-			const executeCommandStub = sinon.stub(childProcess, 'executeCommand').callsFake(async (command, args) => {
+			sinon.stub(childProcess, 'executeCommand').callsFake(async (_command, args) => {
+				// Version needs to be valid so it can be parsed correctly
 				if (args[0] === '--version') {
-					console.log('VERSION callbback');
 					return { stdout: `1.0.0`, stderr: '' };
 				}
 				console.log(args[0]);
