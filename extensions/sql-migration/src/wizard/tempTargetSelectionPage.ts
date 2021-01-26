@@ -19,8 +19,7 @@ export class TempTargetSelectionPage extends MigrationWizardPage {
 
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
-		super(wizard, azdata.window.createWizardPage(constants.DATABASE_BACKUP_PAGE_TITLE), migrationStateModel);
-		this.wizardPage.description = constants.DATABASE_BACKUP_PAGE_DESCRIPTION;
+		super(wizard, azdata.window.createWizardPage(constants.TARGET_SELECTION_PAGE_TITLE), migrationStateModel);
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {

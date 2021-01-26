@@ -126,6 +126,10 @@ export const INVALID_CONTROLLER_NAME_ERROR = localize('sql.migration.invalid.con
 export const CONTROLLER_NOT_FOUND = localize('sql.migration.controller.not.found', "No Migration Controllers found. Please create a new one.");
 export const CONTROLLER_NOT_SETUP_ERROR = localize('sql.migration.controller.not.setup', "Please add a migration controller to proceed.");
 
+export const MANAGED_INSTANCE = localize('sql.migration.managed.instance', "Azure SQL managed instance");
+export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instance found");
+export const TARGET_SELECTION_PAGE_TITLE = localize('sql.migration.target.page.title', "Choose the target Azure SQL");
+
 // common strings
 export const LEARN_MORE = localize('sql.migration.learn.more', "Learn more");
 export const SUBSCRIPTION = localize('sql.migration.subscription', "Subscription");
@@ -139,5 +143,3 @@ export const REFRESH = localize('sql.migration.refresh', "Refresh");
 export const SUBMIT = localize('sql.migration.submit', "Submit");
 export const CREATE = localize('sql.migration.create', "Create");
 export const CANCEL = localize('sql.migration.cancel', "Cancel");
-export const MANAGED_INSTANCE = localize('sql.migration.managed.instance', "Azure SQL managed instance");
-export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instance found");
