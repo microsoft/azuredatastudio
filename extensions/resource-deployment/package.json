@@ -200,7 +200,7 @@
         "description": "%resource-type-sql-bdc-description%",
         "platforms": "*",
         "icon": "./images/sql_bdc.svg",
-        "tags": ["On-premises", "SQL Server"],
+        "tags": ["On-premises", "SQL Server", "Cloud"],
         "options": [
           {
             "name": "version",
