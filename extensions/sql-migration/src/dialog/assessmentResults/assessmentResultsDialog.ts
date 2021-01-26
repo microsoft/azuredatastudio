@@ -42,10 +42,10 @@ export class AssessmentResultsDialog {
 					const resultComponent = await this._result.createComponent(view);
 
 					const flex = view.modelBuilder.flexContainer().withLayout({
-						flexFlow: 'row'
-					}).withItems([treeComponent, resultComponent]).withProps({
-
-					});
+						flexFlow: 'row',
+					}).withItems([treeComponent, resultComponent],
+						// {flex: '0 0 auto'}
+					);
 
 					view.initializeModel(flex.component());
 					resolve();
@@ -55,15 +55,6 @@ export class AssessmentResultsDialog {
 			});
 		});
 	}
-
-	// private buildSeparator(view: azdata.ModelView): azdata.SeparatorComponent {
-	// 	const separator = view.modelBuilder.separator().withProps({
-	// 		CSSStyles: {
-	// 			'Rotation': '-90'
-	// 		}
-	// 	}).component();
-	// 	return separator;
-	// }
 
 	public async openDialog(dialogName?: string) {
 		if (!this._isOpen) {

@@ -15,11 +15,11 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			this.createDatabaseComponent(view)
 
 		]).withLayout({
-			flexFlow: 'column',
-			// width: '33%'
+			flexFlow: 'column'
 		}).withProps({
 			CSSStyles: {
-				'border-right': 'solid 1px'
+				'border-right': 'solid 1px',
+				'width': '300px'
 			},
 		}).component();
 	}
@@ -38,6 +38,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		const databaseTable = view.modelBuilder.declarativeTable().withProps(
 			{
 				selectEffect: true,
+				width: '100%',
 				columns: [
 					{
 						displayName: '',
@@ -93,13 +94,101 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 							value: 2,
 							style: styleRight
 						}
+					],
+					[
+						{
+							value: false,
+							style: styleLeft
+						},
+						{
+							value: 'DB3',
+							style: styleLeft
+						},
+						{
+							value: 1,
+							style: styleRight
+						}
+					],
+					[
+						{
+							value: true,
+							style: styleLeft
+						},
+						{
+							value: 'DB4',
+							style: styleLeft
+						},
+						{
+							value: 2,
+							style: styleRight
+						}
+					],
+					[
+						{
+							value: false,
+							style: styleLeft
+						},
+						{
+							value: 'DB5',
+							style: styleLeft
+						},
+						{
+							value: 1,
+							style: styleRight
+						}
+					],
+					[
+						{
+							value: true,
+							style: styleLeft
+						},
+						{
+							value: 'DB6',
+							style: styleLeft
+						},
+						{
+							value: 2,
+							style: styleRight
+						}
+					],
+					[
+						{
+							value: false,
+							style: styleLeft
+						},
+						{
+							value: 'DB7',
+							style: styleLeft
+						},
+						{
+							value: 1,
+							style: styleRight
+						}
+					],
+					[
+						{
+							value: true,
+							style: styleLeft
+						},
+						{
+							value: 'DB8',
+							style: styleLeft
+						},
+						{
+							value: 2,
+							style: styleRight
+						}
 					]
 				],
+				CSSStyles: {
+					'text-align': 'left'
+				}
 			}
 		);
 
 		databaseTable.component().onRowSelected(({ row }) => {
 			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected
+			// deselect instance table
 		});
 
 
@@ -143,6 +232,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		const instanceTable = view.modelBuilder.declarativeTable().withProps(
 			{
 				selectEffect: true,
+				width: '100%',
 				columns: [
 					{
 						displayName: 'Instance',
@@ -176,6 +266,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 		instanceTable.component().onRowSelected(({ row }) => {
 			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected
+			//deselect database table
 		});
 
 		const instanceContainer = view.modelBuilder.divContainer().withItems([instanceTable.component()]).withProps({
