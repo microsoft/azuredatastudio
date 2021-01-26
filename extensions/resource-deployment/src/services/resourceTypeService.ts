@@ -42,6 +42,9 @@ export class ResourceTypeService implements IResourceTypeService {
 				const extensionResourceTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.resourceDeploymentTypes as ResourceType[];
 				if (extensionResourceTypes) {
 					extensionResourceTypes.forEach((extensionResourceType: ResourceType) => {
+						// Clone the object - we modify it by adding complex types and so if we modify the original contribution then
+						// we can break VS Code functionality since it will sometimes pass this object over the RPC layer which requires
+						// stringifying it - which can break with some of the complex types we add.
 						const resourceType = deepClone(extensionResourceType);
 						this.updatePathProperties(resourceType, extension.extensionPath);
 						resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
