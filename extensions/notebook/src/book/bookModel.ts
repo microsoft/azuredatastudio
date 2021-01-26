@@ -253,7 +253,7 @@ export class BookModel {
 					);
 					notebooks.push(markdown);
 				} else {
-					this._errorMessage = book.tableOfContents !== undefined ? loc.missingFileError(sections[i].title, root) : loc.missingFileError(sections[i].title, undefined);
+					this._errorMessage = loc.missingFileError(sections[i].title, root);
 				}
 			}
 		}

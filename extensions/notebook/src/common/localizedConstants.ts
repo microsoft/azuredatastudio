@@ -34,7 +34,7 @@ export const noBooksSelectedError = localize('noBooksSelected', "No books are cu
 export const labelBookSection = localize('labelBookSection', "Select Book Section");
 export const labelAddToLevel = localize('labelAddToLevel', "Add to this level");
 
-export function missingFileError(title: string, path: string): string { return localize('missingFileError', "Missing file : {0} from {1}", title, path); }
+export function missingFileError(title: string, path: string): string { return localize('missingFileError', "Missing file : ${0} from ${1}", title, path); }
 export function invalidTocFileError(): string { return localize('InvalidError.tocFile', "Invalid toc file"); }
 export function invalidTocError(title: string): string { return localize('Invalid toc.yml', "Error: {0} has an incorrect toc.yml file", title); }
 export function configFileError(): string { return localize('configFileError', "Configuration file missing"); }
