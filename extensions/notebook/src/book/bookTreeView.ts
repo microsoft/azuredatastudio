@@ -139,19 +139,18 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async editBook(movingElement: BookTreeItem): Promise<void> {
+		let bookOptions: vscode.QuickPickItem[] = [];
+		let pickedSection: vscode.QuickPickItem;
+		this.books.forEach(book => {
+			if (!book.isNotebook) {
+				bookOptions.push({ label: book.bookItems[0].title, detail: book.bookPath });
+			}
+		});
+		let pickedBook = await vscode.window.showQuickPick(bookOptions, {
+			canPickMany: false,
+			placeHolder: loc.labelBookFolder
+		});
 		try {
-			let bookOptions: vscode.QuickPickItem[] = [];
-			let pickedSection: vscode.QuickPickItem;
-			this.books.forEach(book => {
-				if (!book.isNotebook) {
-					bookOptions.push({ label: book.bookItems[0].title, detail: book.bookPath });
-				}
-			});
-			let pickedBook = await vscode.window.showQuickPick(bookOptions, {
-				canPickMany: false,
-				placeHolder: loc.labelBookFolder
-			});
-
 			if (pickedBook && movingElement) {
 				const updateBook = this.books.find(book => book.bookPath === pickedBook.detail).bookItems[0];
 				if (updateBook) {
@@ -160,7 +159,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						bookOptions = [{ label: loc.labelAddToLevel, detail: pickedSection ? pickedSection.detail : '' }];
 						bookSections.forEach(section => {
 							if (section.sections) {
-								bookOptions.push({ label: section.title, detail: section.file });
+								bookOptions.push({ label: section.title ? section.title : section.file, detail: section.file });
 							}
 						});
 						bookSections = [];
@@ -169,11 +168,16 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 								canPickMany: false,
 								placeHolder: loc.labelBookSection
 							});
-							if (pickedSection.label && pickedSection.label === loc.labelAddToLevel) {
+
+							if (pickedSection && pickedSection.label === loc.labelAddToLevel) {
 								break;
 							}
-							else if (pickedSection.detail) {
-								bookSections = updateBook.findChildSection(pickedSection.detail).sections;
+							else if (pickedSection && pickedSection.detail) {
+								if (updateBook.root === movingElement.root && pickedSection.detail === movingElement.uri) {
+									pickedSection = undefined;
+								} else {
+									bookSections = updateBook.findChildSection(pickedSection.detail).sections;
+								}
 							}
 						}
 					}
@@ -186,22 +190,40 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							}
 						}
 						const sourceBook = this.books.find(book => book.bookPath === movingElement.book.root);
+						const targetBook = this.books.find(book => book.bookPath === updateBook.book.root);
 						// remove watch on toc file from both books.
-						fs.unwatchFile(movingElement.tableOfContentsPath);
-						await this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
-						// refresh source book model to pick up latest changes
-						this.fireBookRefresh(sourceBook);
+						if (sourceBook) {
+							fs.unwatchFile(movingElement.tableOfContentsPath);
+						}
 
-						fs.watchFile(movingElement.tableOfContentsPath, async (curr, prev) => {
-							if (curr.mtime > prev.mtime) {
+						this.bookTocManager.updateBook(movingElement, updateBook, targetSection).finally(() => {
+							// refresh source book model to pick up latest changes
+							if (sourceBook) {
 								this.fireBookRefresh(sourceBook);
+								fs.watchFile(sourceBook.tableOfContentsPath, async (curr, prev) => {
+									if (curr.mtime > prev.mtime) {
+										this.fireBookRefresh(sourceBook);
+									}
+								});
 							}
+
+							this.fireBookRefresh(targetBook);
+
+							fs.watchFile(targetBook.tableOfContentsPath, async (curr, prev) => {
+								if (curr.mtime > prev.mtime) {
+									this.fireBookRefresh(targetBook);
+								}
+							});
+						}).catch((error) => {
+							vscode.window.showErrorMessage(error instanceof Error ? error.message : error);
 						});
 					}
 				}
 			}
 		}
 		catch (e) {
+			// add specific error
+			// error trying to move notebook
 			vscode.window.showErrorMessage(e instanceof Error ? e.message : e);
 		}
 	}
@@ -621,18 +643,20 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
-		if (element?.uri) {
-			let parentPath: string;
-			let contentFolder = getContentPath(element.book.version, element.book.root, '');
-			parentPath = path.join(contentFolder, element.uri.substring(0, element.uri.lastIndexOf(path.posix.sep)));
-			if (parentPath === element.root) {
-				return undefined;
-			}
-			let parentPaths = Array.from(this.currentBook.getAllNotebooks()?.keys()).filter(x => x.indexOf(parentPath) > -1);
-			return parentPaths.length > 0 ? this.currentBook.getAllNotebooks().get(parentPaths[0]) : undefined;
-		} else {
-			return undefined;
-		}
+		// Remove it for perf issues.
+		return undefined;
+		// if (element?.uri) {
+		// 	let parentPath: string;
+		// 	let contentFolder = getContentPath(element.book.version, element.book.root, '');
+		// 	parentPath = path.join(contentFolder, element.uri.substring(0, element.uri.lastIndexOf(path.posix.sep)));
+		// 	if (parentPath === element.root) {
+		// 		return undefined;
+		// 	}
+		// let parentPaths = Array.from(this.currentBook.getAllNotebooks()?.keys()).filter(x => x.indexOf(parentPath) > -1);
+		// 	return parentPaths.length > 0 ? this.currentBook.getAllNotebooks().get(parentPaths[0]) : undefined;
+		// } else {
+		// 	return undefined;
+		// }
 	}
 
 	getUntitledNotebookUri(resource: string): vscode.Uri {

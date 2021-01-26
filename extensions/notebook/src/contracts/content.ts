@@ -113,7 +113,7 @@ export interface IJupyterBookSectionV1 {
 	/**
 	 * Will insert a header with no link in the sidebar
 	 */
-	header?: boolean;
+	header?: string;
 }
 
 /**
@@ -147,6 +147,22 @@ export interface IJupyterBookSectionV2 {
 	 * External link
 	 */
 	url?: string;
+
+	// Below are some special values that trigger specific behavior:
+
+	/**
+	 * Will insert a header with no link in the sidebar
+	 */
+	header?: string;
+	/**
+	 * If a book is divided into groups then part is the title of the group
+	 */
+	part?: string;
+	/**
+	 * the equivalent of sections in a group.
+	*/
+	chapters?: string[];
+
 }
 
 export interface JupyterBookSection extends IJupyterBookSectionV1, IJupyterBookSectionV2 { }

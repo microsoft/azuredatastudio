@@ -34,7 +34,7 @@ export const noBooksSelectedError = localize('noBooksSelected', "No books are cu
 export const labelBookSection = localize('labelBookSection', "Select Book Section");
 export const labelAddToLevel = localize('labelAddToLevel', "Add to this level");
 
-export function missingFileError(title: string): string { return localize('missingFileError', "Missing file : {0}", title); }
+export function missingFileError(title: string, path: string): string { return localize('missingFileError', "Missing file : {0} from {1}", title, path); }
 export function invalidTocFileError(): string { return localize('InvalidError.tocFile', "Invalid toc file"); }
 export function invalidTocError(title: string): string { return localize('Invalid toc.yml', "Error: {0} has an incorrect toc.yml file", title); }
 export function configFileError(): string { return localize('configFileError', "Configuration file missing"); }
@@ -46,6 +46,7 @@ export function openMarkdownError(resource: string, error: string): string { ret
 export function openUntitledNotebookError(resource: string, error: string): string { return localize('openUntitledNotebookError', "Open untitled notebook {0} as untitled failed: {1}", resource, error); }
 export function openExternalLinkError(resource: string, error: string): string { return localize('openExternalLinkError', "Open link {0} failed: {1}", resource, error); }
 export function closeBookError(resource: string, error: string): string { return localize('closeBookError', "Close book {0} failed: {1}", resource, error); }
+export function duplicateFileError(title: string, path: string): string { return localize('duplicateFileError', "File {0} already exists in the destination folder {1} Rename file to prevent any data loss.", title, path); }
 
 // Remote Book dialog constants
 export const url = localize('url', "URL");

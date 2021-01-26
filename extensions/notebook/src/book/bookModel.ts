@@ -165,7 +165,7 @@ export class BookModel {
 				this._bookItems.push(book);
 			} catch (e) {
 				this._errorMessage = loc.readBookError(this.bookPath, e instanceof Error ? e.message : e);
-				throw (this._errorMessage);
+				throw new Error(this._errorMessage);
 			}
 		}
 		return this._bookItems;
@@ -253,8 +253,7 @@ export class BookModel {
 					);
 					notebooks.push(markdown);
 				} else {
-					this._errorMessage = loc.missingFileError(sections[i].title);
-					vscode.window.showErrorMessage(this._errorMessage);
+					this._errorMessage = book.tableOfContents !== undefined ? loc.missingFileError(sections[i].title, root) : loc.missingFileError(sections[i].title, undefined);
 				}
 			}
 		}
