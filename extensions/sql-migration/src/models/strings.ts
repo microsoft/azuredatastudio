@@ -139,3 +139,5 @@ export const REFRESH = localize('sql.migration.refresh', "Refresh");
 export const SUBMIT = localize('sql.migration.submit', "Submit");
 export const CREATE = localize('sql.migration.create', "Create");
 export const CANCEL = localize('sql.migration.cancel', "Cancel");
+export const MANAGED_INSTANCE = localize('sql.migration.managed.instance', "Azure SQL managed instance");
+export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instance found");
