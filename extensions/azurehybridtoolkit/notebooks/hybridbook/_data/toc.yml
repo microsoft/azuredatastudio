@@ -64,6 +64,8 @@
   sections:
   - title: Backup Database to Blob Storage
     url: hadr/backup-to-blob
+  - title: Create Failover Cluster
+    url: hadr/configure-failover
 - title: Offline Migration
   url: /offline-migration/readme
   not_numbered: true
