@@ -7,7 +7,7 @@ import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import axios, { AxiosRequestConfig } from 'axios';
 import * as azdata from 'azdata';
-import { HttpGetRequestResult, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, GetMigrationControllersResult } from 'azurecore';
+import { HttpRequestResult, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, GetMigrationControllerResult, CreateMigrationControllerResult, GetMigrationControllerAuthKeysResult } from 'azurecore';
 import { azureResource } from 'azureResource';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
@@ -288,11 +288,18 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
 	return result;
 }
 
+enum HttpRequestType {
+	GET,
+	POST,
+	PUT,
+	DELETE
+}
+
 /**
- * makes a GET request to Azure REST apis. Currently, it only supports GET ARM queries.
+ * Make a HTTP request to Azure REST apis.
  */
-export async function makeHttpGetRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false, url: string): Promise<HttpGetRequestResult> {
-	const result: HttpGetRequestResult = { response: {}, errors: [] };
+export async function makeHttpRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false, url: string, requestType: HttpRequestType, requestBody?: any): Promise<HttpRequestResult> {
+	const result: HttpRequestResult = { response: {}, errors: [] };
 
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
 		const error = new Error(invalidAzureAccount);
@@ -340,7 +347,22 @@ export async function makeHttpGetRequest(account: azdata.Account, subscription: 
 		validateStatus: () => true // Never throw
 	};
 
-	const response = await axios.get(url, config);
+	let response;
+
+	switch (requestType) {
+		case HttpRequestType.GET:
+			response = await axios.get(url, config);
+			break;
+		case HttpRequestType.POST:
+			response = await axios.post(url, requestBody, config);
+			break;
+		case HttpRequestType.PUT:
+			response = await axios.put(url, requestBody, config);
+			break;
+		case HttpRequestType.DELETE:
+			response = await axios.delete(url, config);
+			break;
+	}
 
 	if (response.status !== 200) {
 		let errorMessage: string[] = [];
@@ -362,12 +384,8 @@ export async function makeHttpGetRequest(account: azdata.Account, subscription: 
 }
 
 export async function getBlobContainers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetBlobContainersResult> {
-	const apiEndpoint = `https://management.azure.com` +
-		`/subscriptions/${subscription.id}` +
-		`/resourceGroups/${storageAccount.resourceGroup}` +
-		`/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}` +
-		`/blobServices/default/containers?api-version=2019-06-01`;
-	const response = await makeHttpGetRequest(account, subscription, ignoreErrors, apiEndpoint);
+	const apiEndpoint = `https://management.azure.com/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/blobServices/default/containers?api-version=2019-06-01`;
+	const response = await makeHttpRequest(account, subscription, ignoreErrors, apiEndpoint, HttpRequestType.GET);
 	return {
 		blobContainers: response?.response?.data?.value ?? [],
 		errors: response.errors ? response.errors : []
@@ -375,26 +393,42 @@ export async function getBlobContainers(account: azdata.Account, subscription: a
 }
 
 export async function getFileShares(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetFileSharesResult> {
-	const apiEndpoint = `https://management.azure.com` +
-		`/subscriptions/${subscription.id}` +
-		`/resourceGroups/${storageAccount.resourceGroup}` +
-		`/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}` +
-		`/fileServices/default/shares?api-version=2019-06-01`;
-	const response = await makeHttpGetRequest(account, subscription, ignoreErrors, apiEndpoint);
+	const apiEndpoint = `https://management.azure.com/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/fileServices/default/shares?api-version=2019-06-01`;
+	const response = await makeHttpRequest(account, subscription, ignoreErrors, apiEndpoint, HttpRequestType.GET);
 	return {
 		fileShares: response?.response?.data?.value ?? [],
 		errors: response.errors ? response.errors : []
 	};
 }
 
-export async function getMigrationControllers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, regionName: string, ignoreErrors: boolean): Promise<GetMigrationControllersResult> {
-	const apiEndpoint = `https://${regionName}.management.azure.com` +
-		`/subscriptions/${subscription.id}` +
-		`/resourceGroups/${resourceGroupName}` +
-		`/providers/Microsoft.DataMigration/Controllers/default/shares?api-version=2020-09-01-preview`;
-	const response = await makeHttpGetRequest(account, subscription, ignoreErrors, apiEndpoint);
+export async function getMigrationControllers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, regionName: string, controllerName: string, ignoreErrors: boolean): Promise<GetMigrationControllerResult> {
+	const apiEndpoint = `https://${regionName}.management.azure.com/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/Controllers/${controllerName}?api-version=2020-09-01-preview`;
+	const response = await makeHttpRequest(account, subscription, false, apiEndpoint, HttpRequestType.GET);
 	return {
-		controllers: response?.response?.data?.value ?? [],
+		controller: response?.response?.data ?? undefined,
+		errors: response.errors ? response.errors : []
+	};
+}
+
+export async function createMigrationController(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, regionName: string, controllerName: string, ignoreErrors: boolean): Promise<CreateMigrationControllerResult> {
+	const apiEndpoint = `https://${regionName}.management.azure.com/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/Controllers/${controllerName}?api-version=2020-09-01-preview`;
+
+	const requestBody = {
+		'location': regionName
+	};
+	const response = await makeHttpRequest(account, subscription, ignoreErrors, apiEndpoint, HttpRequestType.PUT, requestBody);
+	return {
+		controller: response?.response?.data ?? undefined,
+		errors: response.errors ? response.errors : []
+	};
+}
+
+export async function getMigrationControllerAuthKeys(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, regionName: string, controllerName: string, ignoreErrors: boolean): Promise<GetMigrationControllerAuthKeysResult> {
+	const apiEndpoint = `https://${regionName}.management.azure.com/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/Controllers/${controllerName}/ListAuthKeys?api-version=2020-09-01-preview`;
+	const response = await makeHttpRequest(account, subscription, ignoreErrors, apiEndpoint, HttpRequestType.POST);
+	return {
+		keyName1: response?.response?.data?.keyName1 ?? '',
+		keyName2: response?.response?.data?.keyName2 ?? '',
 		errors: response.errors ? response.errors : []
 	};
 }
