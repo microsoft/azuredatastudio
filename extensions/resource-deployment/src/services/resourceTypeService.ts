@@ -39,7 +39,8 @@ export class ResourceTypeService implements IResourceTypeService {
 		if (this._resourceTypes.length === 0) {
 			vscode.extensions.all.forEach((extension) => {
 				const extensionResourceTypes = extension.packageJSON.contributes?.resourceDeploymentTypes as ResourceType[];
-				extensionResourceTypes?.forEach((resourceType: ResourceType) => {
+				extensionResourceTypes?.forEach((resourceType2: ResourceType) => {
+					const resourceType = <ResourceType>JSON.parse(JSON.stringify(resourceType2)); // Deep copying the object from the extension to keep the original object intact.
 					this.updatePathProperties(resourceType, extension.extensionPath);
 					resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
 					resourceType.getOkButtonText = (selectedOptions) => { return this.getOkButtonText(resourceType, selectedOptions); };
@@ -210,6 +211,7 @@ export class ResourceTypeService implements IResourceTypeService {
 
 					if (dupePositions.length !== 0) {
 						errorMessages.push(`Option values with same name or display name are found at the following positions: ${i + 1}, ${dupePositions.join(',')}.${positionInfo} `);
+						errorMessages.push(JSON.stringify(option));
 					}
 				}
 			}
