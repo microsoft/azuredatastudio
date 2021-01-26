@@ -157,7 +157,7 @@ export class PostgresParametersPage extends DashboardPage {
 						async (_progress, _token): Promise<void> => {
 							try {
 								this.parameterUpdates!.forEach((value, key) => {
-									engineSettings.push(`${key}=${value}`);
+									engineSettings.push(`${key}="${value}"`);
 								});
 								const session = await this._postgresModel.controllerModel.acquireAzdataSession();
 								try {
