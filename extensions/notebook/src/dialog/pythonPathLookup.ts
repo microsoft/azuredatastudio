@@ -115,7 +115,7 @@ export class PythonPathLookup {
 		}));
 	}
 
-	private async getInfoForPaths(pythonPaths: string[]): Promise<PythonPathInfo[]> {
+	public async getInfoForPaths(pythonPaths: string[]): Promise<PythonPathInfo[]> {
 		let pathsInfo = await Promise.all(pythonPaths.map(path => this.getInfoForPath(path)));
 
 		// Remove duplicate paths, and entries with missing values
@@ -140,7 +140,7 @@ export class PythonPathLookup {
 		});
 	}
 
-	private async getInfoForPath(pythonPath: string): Promise<PythonPathInfo | undefined> {
+	public async getInfoForPath(pythonPath: string): Promise<PythonPathInfo | undefined> {
 		try {
 			// "python --version" returns nothing from executeBufferedCommand with Python 2.X,
 			// so use sys.version_info here instead.
