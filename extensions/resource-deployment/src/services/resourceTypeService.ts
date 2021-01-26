@@ -17,6 +17,7 @@ import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
 import * as loc from './../localizedConstants';
 import { ResourceTypeWizard } from '../ui/resourceTypeWizard';
+import { deepClone } from '../common/utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -40,7 +41,8 @@ export class ResourceTypeService implements IResourceTypeService {
 			vscode.extensions.all.forEach((extension) => {
 				const extensionResourceTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.resourceDeploymentTypes as ResourceType[];
 				if (extensionResourceTypes) {
-					extensionResourceTypes.forEach((resourceType: ResourceType) => {
+					extensionResourceTypes.forEach((extensionResourceType: ResourceType) => {
+						const resourceType = deepClone(extensionResourceType);
 						this.updatePathProperties(resourceType, extension.extensionPath);
 						resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
 						resourceType.getOkButtonText = (selectedOptions) => { return this.getOkButtonText(resourceType, selectedOptions); };
