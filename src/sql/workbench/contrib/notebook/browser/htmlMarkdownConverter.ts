@@ -143,12 +143,10 @@ export class HTMLMarkdownConverter {
 				return `[${content}](${node.href})`;
 			}
 		});
+		// Only nested list case differs from original turndown rule
 		this.turndownService.addRule('list', {
 			filter: ['ul', 'ol'],
 			replacement: function (content, node) {
-				if (!node?.firstChild) {
-					return '';
-				}
 				let parent = node.parentNode;
 				if ((parent.nodeName === 'LI' && parent.lastElementChild === node)) {
 					return '\n' + content;
@@ -162,7 +160,17 @@ export class HTMLMarkdownConverter {
 		this.turndownService.addRule('lineBreak', {
 			filter: 'br',
 			replacement: function (content, node, options) {
-				return node.parentElement?.nodeName !== 'LI' ? options.br + '\n' : '';
+				if (node.parentElement?.nodeName !== 'LI') {
+					return options.br + '\n';
+				}
+				// One (and only one) line break is ignored when it's inside of a list item
+				let numberLineBreaks = 0;
+				(node.parentElement as HTMLElement)?.childNodes?.forEach(n => {
+					if (n.nodeName === 'BR') {
+						numberLineBreaks++;
+					}
+				});
+				return numberLineBreaks > 1 ? options.br + '\n' : '';
 			}
 		});
 		this.turndownService.addRule('listItem', {
@@ -184,10 +192,10 @@ export class HTMLMarkdownConverter {
 						nestedCount++;
 						parent = parent?.parentNode;
 					}
-					prefix = ('  '.repeat(nestedCount - 1)) + options.bulletListMarker + ' ';
+					prefix = ('    '.repeat(nestedCount - 1)) + options.bulletListMarker + ' ';
 				}
 				return (
-					prefix + content + (node.nextSibling?.nodeName === 'LI' && !/\n$/.test(content) ? '\n' : '')
+					prefix + content + (node.nextSibling && !/\n$/.test(content) ? '\n' : '')
 				);
 			}
 		});
@@ -258,7 +266,7 @@ function blankReplacement(content, node) {
 	if (node.nodeName === 'UL' || node.nodeName === 'OL') {
 		return '\n';
 	}
-	return node.isBlock && node.nodeName !== 'UL' && node.nodeName !== 'OL' ? '\n\n' : '';
+	return node.isBlock ? '\n\n' : '';
 }
 
 export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined): string {
