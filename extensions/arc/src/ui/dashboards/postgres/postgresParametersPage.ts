@@ -368,15 +368,9 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	private filterParameters(search: string): void {
-		let filterData: ParametersModel[] = [];
-
-		this._parameters.forEach(param => {
-			if (param.parameterName?.search(search) !== -1 || param.description?.search(search) !== -1) {
-				filterData.push(param);
-			}
-		});
-
-		this.parametersTable.data = filterData.map(f => [f.parameterName, f.valueContainer, f.description, f.resetButton]);
+		this.parametersTable.data = this._parameters
+			.filter(p => p.parameterName?.search(search) !== -1 || p.description?.search(search) !== -1)
+			.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
 	}
 
 	private handleOnTextChanged(component: azdata.InputBoxComponent, currentValue: string | undefined): boolean {
