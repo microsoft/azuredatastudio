@@ -114,7 +114,8 @@ const indentationFilter = [
 	'!extensions/sql-database-projects/BuildDirectory/SystemDacpacs/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
-	'!resources/linux/snap/electron-launch'
+	'!resources/linux/snap/electron-launch',
+	'!resources/xlf/LocProject.json'
 ];
 
 const copyrightFilter = [
