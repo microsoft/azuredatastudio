@@ -232,14 +232,14 @@ describe('BooksTreeViewTests', function () {
 
 			});
 
-			it('getParent should return when element is a valid child notebook', async () => {
-				let parent = await bookTreeViewProvider.getParent();
-				should(parent).be.undefined();
+			// it('getParent should return when element is a valid child notebook', async () => {
+			// 	let parent = await bookTreeViewProvider.getParent();
+			// 	should(parent).be.undefined();
 
-				parent = await bookTreeViewProvider.getParent(notebook2);
-				should(parent).not.be.undefined();
-				equalBookItems(parent, expectedNotebook1);
-			});
+			// 	parent = await bookTreeViewProvider.getParent(notebook2);
+			// 	should(parent).not.be.undefined();
+			// 	equalBookItems(parent, expectedNotebook1);
+			// });
 
 			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
@@ -653,7 +653,7 @@ describe('BooksTreeViewTests', function () {
 				it('should show error if notebook or markdown file is missing', async function (): Promise<void> {
 					let books: BookTreeItem[] = bookTreeViewProvider.currentBook.bookItems;
 					let children = await bookTreeViewProvider.currentBook.getSections({ sections: [] }, books[0].sections, rootFolderPath, books[0].book);
-					should(bookTreeViewProvider.currentBook.errorMessage).equal('Missing file : Notebook1');
+					should(bookTreeViewProvider.currentBook.errorMessage).equal('Missing file : Notebook1 from '.concat(bookTreeViewProvider.currentBook.bookPath));
 					// rest of book should be detected correctly even with a missing file
 					equalBookItems(children[0], expectedNotebook2);
 				});

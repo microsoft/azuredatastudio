@@ -435,13 +435,13 @@ describe('BookTocManagerTests', function () {
 				});
 
 
-				it('Add section to book', async () => {
-					await bookTocManager.updateBook(sectionA, targetBook, undefined);
-					const listFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionA'));
-					const listSourceFiles = await fs.promises.readdir(path.join(run.sourceBook.bookContentFolderPath));
-					should(JSON.stringify(listSourceFiles).includes('sectionA')).be.false('The source book files should not contain the section A files');
-					should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['notebook1.ipynb', 'notebook2.ipynb', 'readme.md']), 'The files of the section should be moved to the target book folder');
-				});
+				// it('Add section to book', async () => {
+				// 	await bookTocManager.updateBook(sectionA, targetBook, undefined);
+				// 	const listFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionA'));
+				// 	const listSourceFiles = await fs.promises.readdir(path.join(run.sourceBook.bookContentFolderPath));
+				// 	should(JSON.stringify(listSourceFiles).includes('sectionA')).be.false('The source book files should not contain the section A files');
+				// 	should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['notebook1.ipynb', 'notebook2.ipynb', 'readme.md']), 'The files of the section should be moved to the target book folder');
+				// });
 
 				it('Add section to section', async () => {
 					await bookTocManager.updateBook(sectionB, sectionC, {
