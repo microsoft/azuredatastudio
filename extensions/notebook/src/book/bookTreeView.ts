@@ -90,6 +90,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._extensionContext.globalState.update(constants.visitedNotebooksMementoKey, value);
 	}
 
+	setFileWatcher(book: BookModel): void {
+		fs.watchFile(book.tableOfContentsPath, async (curr, prev) => {
+			if (curr.mtime > prev.mtime) {
+				this.fireBookRefresh(book);
+			}
+		});
+	}
+
 	trustBook(bookTreeItem?: BookTreeItem): void {
 		let bookPathToTrust: string = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
 		if (bookPathToTrust) {
@@ -200,31 +208,20 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							// refresh source book model to pick up latest changes
 							if (sourceBook) {
 								this.fireBookRefresh(sourceBook);
-								fs.watchFile(sourceBook.tableOfContentsPath, async (curr, prev) => {
-									if (curr.mtime > prev.mtime) {
-										this.fireBookRefresh(sourceBook);
-									}
-								});
+								this.setFileWatcher(sourceBook);
 							}
-
 							this.fireBookRefresh(targetBook);
+							this.setFileWatcher(targetBook);
 
-							fs.watchFile(targetBook.tableOfContentsPath, async (curr, prev) => {
-								if (curr.mtime > prev.mtime) {
-									this.fireBookRefresh(targetBook);
-								}
-							});
-						}).catch((error) => {
-							vscode.window.showErrorMessage(error instanceof Error ? error.message : error);
+						}).catch((e) => {
+							vscode.window.showErrorMessage(loc.editBookError(updateBook.book.contentPath, e instanceof Error ? e.message : e));
 						});
 					}
 				}
 			}
 		}
 		catch (e) {
-			// add specific error
-			// error trying to move notebook
-			vscode.window.showErrorMessage(e instanceof Error ? e.message : e);
+			vscode.window.showErrorMessage(loc.selectBookError(e instanceof Error ? e.message : e));
 		}
 	}
 

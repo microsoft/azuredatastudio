@@ -170,7 +170,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		return this.book.tableOfContents;
 	}
 
-	public get sections(): any[] {
+	public get sections(): JupyterBookSection[] {
 		return this._sections;
 	}
 
@@ -188,7 +188,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		this._uri = uri;
 	}
 
-	public set sections(sections: any[]) {
+	public set sections(sections: JupyterBookSection[]) {
 		this._sections = sections;
 	}
 

@@ -19,6 +19,7 @@ import { RemoteBookDialog } from './dialog/remoteBookDialog';
 import { RemoteBookDialogModel } from './dialog/remoteBookDialogModel';
 import { IconPathHelper } from './common/iconHelper';
 import { ExtensionContextHelper } from './common/extensionContextHelper';
+import { BookTreeItem } from './book/bookTreeItem';
 
 const localize = nls.loadMessageBundle();
 
@@ -69,7 +70,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		});
 	}));
 
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.moveTo', async (book: any) => {
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.moveTo', async (book: BookTreeItem) => {
 		await bookTreeViewProvider.editBook(book);
 	}));
 

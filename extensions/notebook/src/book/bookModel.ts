@@ -12,7 +12,7 @@ import * as fileServices from 'fs';
 import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, JupyterBookSection } from '../contracts/content';
-import { BookVersionHandler, getContentPath, BookVersion } from './bookVersionHandler';
+import { convertFrom, getContentPath, BookVersion } from './bookVersionHandler';
 
 const fsPromises = fileServices.promises;
 const content = 'content';
@@ -267,7 +267,7 @@ export class BookModel {
 	public parseJupyterSections(version: string, section: any[]): JupyterBookSection[] {
 		try {
 			return section.reduce((acc, val) => Array.isArray(val.sections) ?
-				acc.concat(BookVersionHandler.convertFrom(version, val)).concat(this.parseJupyterSections(version, val.sections)) : acc.concat(BookVersionHandler.convertFrom(version, val)), []);
+				acc.concat(convertFrom(version, val)).concat(this.parseJupyterSections(version, val.sections)) : acc.concat(convertFrom(version, val)), []);
 		} catch (e) {
 			this._errorMessage = loc.invalidTocFileError();
 			if (section.length > 0) {

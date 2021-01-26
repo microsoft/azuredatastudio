@@ -7,7 +7,7 @@ import { BookTreeItem } from './bookTreeItem';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs-extra';
 import { JupyterBookSection } from '../contracts/content';
-import { BookVersionHandler, BookVersion } from './bookVersionHandler';
+import { BookVersion, convertTo } from './bookVersionHandler';
 import * as vscode from 'vscode';
 import * as loc from '../common/localizedConstants';
 
@@ -26,7 +26,6 @@ export function hasSections(node: JupyterBookSection): boolean {
 export class BookTocManager implements IBookTocManager {
 	public tableofContents: JupyterBookSection[];
 	public newSection: JupyterBookSection = {};
-	private _versionHandler = new BookVersionHandler();
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
 
@@ -118,13 +117,13 @@ export class BookTocManager implements IBookTocManager {
 			// if addSection is undefined then we remove the whole section from the table of contents.
 			return addSection;
 		} else {
-			let newSection = this._versionHandler.convertTo(version, section);
+			let newSection = convertTo(version, section);
 			if (section.sections && section.sections.length > 0) {
 				newSection.sections = [] as JupyterBookSection[];
 				for (let s of section.sections) {
 					const child = this.buildTOC(version, s, findSection, addSection);
 					if (child) {
-						newSection.sections.push(this._versionHandler.convertTo(version, child));
+						newSection.sections.push(convertTo(version, child));
 					}
 				}
 			}
@@ -148,7 +147,12 @@ export class BookTocManager implements IBookTocManager {
 		await vscode.commands.executeCommand('notebook.command.openNotebookFolder', bookContentPath, undefined, true);
 	}
 
-	//traverse sections to convert them to the
+	/**
+	 * When moving a section, we need to modify every file path that it's within the section. Since sections is a tree like structure, we need to recursively and modify each of the file paths
+	 * and move the files individually. The overwrite option is set to false to prevent any issues with duplicated file names.
+	 * @param files Files in the section.
+	 * @param dirName The directory path of the target section that will be appended to the target book's root.
+	*/
 	async traverseSections(files: JupyterBookSection[], dirName: string): Promise<JupyterBookSection[]> {
 		let movedSections: JupyterBookSection[] = [];
 		for (const elem of files) {
@@ -159,6 +163,9 @@ export class BookTocManager implements IBookTocManager {
 				if (error.code === 'EEXIST') {
 					throw (loc.duplicateFileError(elem.file, path.join(this.targetBookContentPath, dirName, elem.file).concat('.ipynb')));
 				}
+				else if (error.code !== 'ENOENT') {
+					throw (error);
+				}
 			}
 			try {
 				await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.md'), { overwrite: false });
@@ -166,11 +173,21 @@ export class BookTocManager implements IBookTocManager {
 				if (error.code === 'EEXIST') {
 					throw (loc.duplicateFileError(elem.file, path.join(this.targetBookContentPath, dirName, elem.file).concat('.md')));
 				}
+				else if (error.code !== 'ENOENT') {
+					throw (error);
+				}
 			}
 		}
 		return movedSections;
 	}
 
+	/**
+	 * Moves a section to a book top level or another book's section. If there's a target section we add the the targetSection directory if it has one and append it to the
+	 * notebook's path. The overwrite option is set to false to prevent any issues with duplicated file names.
+	 * @param section The section that's been moved.
+	 * @param book The target book.
+	 * @param targetSection The target book's section that'll be modified.
+	*/
 	async addSection(section: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
 		this.sourceBookContentPath = section.rootContentPath;
 		this.targetBookContentPath = book.rootContentPath;
@@ -184,16 +201,26 @@ export class BookTocManager implements IBookTocManager {
 			if (error.code === 'EEXIST') {
 				throw (loc.duplicateFileError(uri, path.join(this.targetBookContentPath, this.newSection.file).concat(path.parse(uri).ext)));
 			}
+			else if (error.code !== 'ENOENT') {
+				throw (error);
+			}
 		}
 		const files = section.sections as JupyterBookSection[];
 		const movedSections = await this.traverseSections(files, dirName);
 		this.newSection.sections = movedSections;
 		if (book.version === BookVersion.v1) {
 			// here we only convert if is v1 because we are already using the v2 notation for every book that we read.
-			this.newSection = this._versionHandler.convertTo(book.version, this.newSection);
+			this.newSection = convertTo(book.version, this.newSection);
 		}
 	}
 
+	/**
+	 * Moves a notebook to a book top level or a book's section. If there's a target section we add the the targetSection directory if it has one and append it to the
+	 * notebook's path. The overwrite option is set to false to prevent any issues with duplicated file names.
+	 * @param element Notebook, Markdown File, or section that will be added to the book.
+	 * @param targetBook Book that will be modified.
+	 * @param targetSection Book section that'll be modified.
+	*/
 	async addNotebook(notebook: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
 		//the book's contentPath contains the first file of the section, we get the dirname to identify the section's root path
 		const rootPath = targetSection ? path.join(book.rootContentPath, path.dirname(targetSection.file)) : book.rootContentPath;
@@ -201,13 +228,17 @@ export class BookTocManager implements IBookTocManager {
 		try {
 			await fs.move(notebook.book.contentPath, path.join(rootPath, notebookPath.base), { overwrite: false });
 		} catch (error) {
-			throw (loc.duplicateFileError(notebookPath.base, path.join(rootPath, notebookPath.base)));
+			if (error.code === 'EEXIST') {
+				throw (loc.duplicateFileError(notebookPath.base, path.join(rootPath, notebookPath.base)));
+			}
+			else {
+				throw (error);
+			}
 		}
-
 		this.newSection = { file: targetSection ? path.join(path.dirname(targetSection.file), notebookPath.name) : path.sep.concat(notebookPath.name), title: notebook.book.title };
 		if (book.version === BookVersion.v1) {
 			// here we only convert if is v1 because we are already using the v2 notation for every book that we read.
-			this.newSection = this._versionHandler.convertTo(book.version, this.newSection);
+			this.newSection = convertTo(book.version, this.newSection);
 		}
 	}
 
@@ -230,7 +261,7 @@ export class BookTocManager implements IBookTocManager {
 			else {
 				//since there's not a target section, we just append the section at the end of the file
 				if (element.rootContentPath !== targetBook.rootContentPath) {
-					this.tableofContents = targetBook.sections.map(section => this._versionHandler.convertTo(targetBook.version, section));
+					this.tableofContents = targetBook.sections.map(section => convertTo(targetBook.version, section));
 				}
 				this.tableofContents.push(this.newSection);
 				await fs.writeFile(targetBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
@@ -247,7 +278,7 @@ export class BookTocManager implements IBookTocManager {
 				await vscode.commands.executeCommand('notebook.command.closeNotebook', element);
 			}
 			if (!targetSection) {
-				this.tableofContents = targetBook.sections.map(section => this._versionHandler.convertTo(targetBook.version, section));
+				this.tableofContents = targetBook.sections.map(section => convertTo(targetBook.version, section));
 				this.tableofContents.push(this.newSection);
 				await fs.writeFile(targetBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
 			} else {
