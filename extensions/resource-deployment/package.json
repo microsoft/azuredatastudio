@@ -336,7 +336,7 @@
             "when": "target=existing-openshift&&version=bdc2019"
           }
         ],
-        "agreement": [
+        "agreements": [
           {
             "template": "%bdc-agreement%",
             "links": [
@@ -470,7 +470,7 @@
             "when": "resource-type=database-server"
           }
         ],
-        "agreement": [
+        "agreements": [
           {
             "template": "%azure-sqldb-agreement%",
             "links": [
@@ -515,7 +515,7 @@
             "when": true
           }
         ],
-        "agreement": [
+        "agreements": [
           {
             "template": "%azure-sqlvm-agreement%",
             "links": [
@@ -567,12 +567,12 @@
             "values": [
               {
                 "name": "azure-sql-mi",
-                "displayName": "%azure-sql-mi-resource-type-option-azure-sql-label%"
+                "displayName": "%azure-sql-mi-display-name%"
               }
             ]
           }
         ],
-        "agreement": [
+        "agreements": [
           {
             "template": "%azure-sql-mi-agreement%",
             "links": [

@@ -164,7 +164,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			);
 			return view.initializeModel(this.form!.withLayout({ width: '100%' }).component()).then(() => {
 				this._agreementContainer.clearItems();
-				if (this._resourceType.agreement) {
+				if (this._resourceType.agreements) {
 					const agreementTitle = this.view.modelBuilder.text().withProps({
 						value: localize('resourceDeployment.AgreementTitle', "Accept terms of use"),
 						CSSStyles: {

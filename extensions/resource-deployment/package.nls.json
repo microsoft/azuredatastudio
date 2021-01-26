@@ -85,7 +85,6 @@
 	"azure-sql-mi-display-description": "Create a SQL Managed Instance. Best for most migrations to the cloud.",
 	"azure-sql-mi-okButton-text": "Open in Portal",
 	"azure-sql-mi-resource-type-option-label": "Resource Type",
-	"azure-sql-mi-resource-type-option-azure-sql-label": "Azure SQL managed instance",
 	"azure-sql-mi-agreement": "I accept {0} and {1}.",
 	"azure-sql-mi-agreement-eula": "Azure SQL MI License Terms"
 }

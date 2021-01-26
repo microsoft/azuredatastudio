@@ -139,7 +139,7 @@ export class ResourceTypeService implements IResourceTypeService {
 						});
 					}
 					if (resourceSubType.agreement) {
-						resourceType.agreement?.push(resourceSubType.agreement!);
+						resourceType.agreements?.push(resourceSubType.agreement!);
 					}
 				}
 			});
@@ -286,8 +286,8 @@ export class ResourceTypeService implements IResourceTypeService {
 	}
 
 	private getAgreementInfo(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): AgreementInfo | undefined {
-		if (resourceType.agreement) {
-			for (const possibleOption of resourceType.agreement) {
+		if (resourceType.agreements) {
+			for (const possibleOption of resourceType.agreements) {
 				if (processWhenClause(possibleOption.when, selectedOptions)) {
 					return possibleOption;
 				}

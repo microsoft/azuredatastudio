@@ -582,7 +582,7 @@
             "when": "type=azure-multi-device"
           }
         ],
-        "agreement": [
+        "agreements": [
           {
             "template": "%edge-agreement%",
             "links": [

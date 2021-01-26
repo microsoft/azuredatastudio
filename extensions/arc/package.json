@@ -875,7 +875,7 @@
             "when": "true"
           }
         ],
-        "agreement": [
+        "agreements": [
           {
             "template": "%arc.agreement%",
             "links": [

@@ -18,7 +18,7 @@ export interface ResourceType {
 	icon: { light: string; dark: string } | string;
 	options: ResourceTypeOption[];
 	providers: DeploymentProvider[];
-	agreement?: AgreementInfo[];
+	agreements?: AgreementInfo[];
 	displayIndex?: number;
 	okButtonText?: OkButtonTextValue[];
 	getOkButtonText(selectedOptions: { option: string, value: string }[]): string | undefined;

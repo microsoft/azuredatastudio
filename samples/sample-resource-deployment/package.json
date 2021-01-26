@@ -101,7 +101,7 @@
             "when": true
           }
         ],
-        "agreement": [
+        "agreements": [
           {
             "template": "%wizard.data.controller.agreement%",
             "links": [
@@ -414,7 +414,7 @@
             "when": true
           }
         ],
-        "agreement": [
+        "agreements": [
           {
             "template": "%wizard.data.controller.agreement%",
             "links": [
@@ -570,7 +570,7 @@
             "when": "edition=standard"
           }
         ],
-        "agreement": [
+        "agreements": [
           {
             "template": "%agreement%",
             "links": [
