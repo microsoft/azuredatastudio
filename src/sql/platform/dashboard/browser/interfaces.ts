@@ -77,7 +77,7 @@ export interface IModelStore {
 	/**
 	 * Run all validations for the given component and return the new validation value
 	 */
-	validate(component: IComponent): Thenable<boolean>;
+	validate(component: IComponent): Promise<boolean>;
 }
 
 /**
@@ -139,5 +139,6 @@ export enum ModelComponentTypes {
 	ListView,
 	TabbedPanel,
 	Separator,
-	PropertiesContainer
+	PropertiesContainer,
+	InfoBox
 }

@@ -271,6 +271,14 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	infoBox(): azdata.ComponentBuilder<azdata.InfoBoxComponent, azdata.InfoBoxComponentProperties> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.InfoBoxComponent, azdata.InfoBoxComponentProperties> = this.getComponentBuilder(new InfoBoxComponentWrapper(this._proxy, this._handle, id), id);
+
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	getComponentBuilder<T extends azdata.Component, TPropertyBag extends azdata.ComponentProperties>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T, TPropertyBag> {
 		let componentBuilder: ComponentBuilderImpl<T, TPropertyBag> = new ComponentBuilderImpl<T, TPropertyBag>(component);
 		this._componentBuilders.set(id, componentBuilder);
@@ -1981,6 +1989,37 @@ class PropertiesContainerComponentWrapper extends ComponentWrapper implements az
 	}
 	public set loading(v: boolean) {
 		this.setProperty('loading', v);
+	}
+}
+
+class InfoBoxComponentWrapper extends ComponentWrapper implements azdata.InfoBoxComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.InfoBox, id);
+		this.properties = {};
+	}
+
+	public get style(): azdata.InfoBoxStyle {
+		return this.properties['style'];
+	}
+
+	public set style(v: azdata.InfoBoxStyle) {
+		this.setProperty('style', v);
+	}
+
+	public get text(): string {
+		return this.properties['text'];
+	}
+
+	public set text(v: string) {
+		this.setProperty('text', v);
+	}
+
+	public get announceText(): boolean {
+		return this.properties['announceText'];
+	}
+
+	public set announceText(v: boolean) {
+		this.setProperty('announceText', v);
 	}
 }
 

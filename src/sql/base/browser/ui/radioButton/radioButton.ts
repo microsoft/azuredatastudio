@@ -38,17 +38,14 @@ export class RadioButton extends Widget {
 		this.checked = opts.checked || false;
 		this.onclick(this.inputElement, () => {
 			this._onClicked.fire();
-			if (this.name) {
-				const buttonGroup = document.getElementsByName(this.name);
-				buttonGroup.forEach((button) => {
-					const event = document.createEvent('HTMLEvents');
-					event.initEvent('change', true, true);
-					button.dispatchEvent(event);
-				});
+			this.checked = true;
+		});
+		this.inputElement.addEventListener('change', () => {
+			if (this._internalCheckedStateTracker !== this.inputElement.checked) {
+				this._internalCheckedStateTracker = this.inputElement.checked;
+				this._onChangedCheckedState.fire(this._internalCheckedStateTracker);
 			}
 		});
-		this.inputElement.addEventListener('change', () => this.checked = this.inputElement.checked);
-
 		container.appendChild(this.inputElement);
 		container.appendChild(this._label);
 	}
@@ -74,10 +71,18 @@ export class RadioButton extends Widget {
 	}
 
 	public set checked(val: boolean) {
-		if (this.inputElement.checked !== this._internalCheckedStateTracker) {
+		if (val !== this._internalCheckedStateTracker) {
 			this.inputElement.checked = val;
-			this._internalCheckedStateTracker = val;
-			this._onChangedCheckedState.fire(this.checked);
+			const event = document.createEvent('HTMLEvents');
+			event.initEvent('change', true, true);
+			if (this.name) {
+				const buttonGroup = document.getElementsByName(this.name);
+				buttonGroup.forEach((button) => {
+					button.dispatchEvent(event);
+				});
+			} else {
+				this.inputElement.dispatchEvent(event);
+			}
 		}
 	}
 

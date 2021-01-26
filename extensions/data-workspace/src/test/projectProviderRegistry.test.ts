@@ -23,6 +23,7 @@ export function createProjectProvider(projectTypes: IProjectType[]): IProjectPro
 	const treeDataProvider = new MockTreeDataProvider();
 	const projectProvider: IProjectProvider = {
 		supportedProjectTypes: projectTypes,
+		providerExtensionId: 'testProvider',
 		RemoveProject: (projectFile: vscode.Uri): Promise<void> => {
 			return Promise.resolve();
 		},
