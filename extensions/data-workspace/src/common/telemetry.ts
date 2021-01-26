@@ -3,11 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import AdsTelemetryReporter from '@microsoft/ads-extension-telemetry';
 import * as path from 'path';
 import * as utils from './utils';
 import * as vscode from 'vscode';
-
-import AdsTelemetryReporter from 'ads-extension-telemetry';
 
 const packageJson = require('../../package.json');
 
