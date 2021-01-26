@@ -261,7 +261,8 @@ export function createViewContext(): ViewTestContext {
 			hyperlink: () => hyperLinkBuilder,
 			tabbedPanel: undefined!,
 			separator: undefined!,
-			propertiesContainer: undefined!
+			propertiesContainer: undefined!,
+			infoBox: undefined!
 		}
 	};
 	let tab: azdata.window.DialogTab = {
