@@ -43,38 +43,12 @@ export class Notebook {
 		await this.code.waitForElement('.notebook-cell.active');
 	}
 
-	async changeKernel(kernel: string): Promise<void> {
-		await this.toolbar.changeKernel(kernel);
-	}
-
-	async waitForKernel(kernel: string): Promise<void> {
-		await this.toolbar.waitForKernel(kernel);
-	}
-
 	async runActiveCell(): Promise<void> {
 		await this.code.dispatchKeybinding('F5');
 	}
 
 	async runAllCells(): Promise<void> {
 		await this.code.dispatchKeybinding(winOrCtrl + '+shift+F5');
-	}
-
-	async clearResults(): Promise<void> {
-		await this.code.waitAndClick('.notebookEditor');
-		const clearResultsButton = '.editor-toolbar a[class="action-label codicon notebook-button icon-clear-results masked-icon"]';
-		await this.code.waitAndClick(clearResultsButton);
-	}
-
-	async trustNotebook(): Promise<void> {
-		await this.toolbar.trustNotebook();
-	}
-
-	async waitForTrustedIcon(): Promise<void> {
-		await this.toolbar.waitForTrustedIcon();
-	}
-
-	async waitForNotTrustedIcon(): Promise<void> {
-		await this.toolbar.waitForNotTrustedIcon();
 	}
 
 	async waitForTypeInEditor(text: string) {
@@ -105,11 +79,7 @@ export class Notebook {
 	}
 
 	async waitForAllResults(): Promise<void> {
-		let cellIds: string[] = [];
-		await this.code.waitForElements('div.notebook-cell', false, result => {
-			cellIds = result.map(cell => cell.attributes['id']);
-			return true;
-		});
+		let cellIds: string[] = await this.getCellIds();
 		await this.waitForResults(cellIds);
 	}
 
@@ -125,11 +95,7 @@ export class Notebook {
 	}
 
 	async waitForAllResultsGone(): Promise<void> {
-		let cellIds: string[] = [];
-		await this.code.waitForElements('div.notebook-cell', false, result => {
-			cellIds = result.map(cell => cell.attributes['id']);
-			return true;
-		});
+		let cellIds: string[] = await this.getCellIds();
 		await this.waitForResultsGone(cellIds);
 	}
 
@@ -147,6 +113,46 @@ export class Notebook {
 		await this.code.waitForElementGone(`${cellSelector} dialog`);
 		await this.code.waitForElementGone(`${cellSelector} embed`);
 		await this.code.waitForElementGone(`${cellSelector} svg`);
+	}
+
+	// Cell toolbar actions
+
+	async moveCellUp(cellPosition: number): Promise<void> {
+		if (cellPosition < 1) {
+			return;
+		}
+
+		let cellIds: string[] = await this.getCellIds();
+		let cell: NotebookCell = new NotebookCell(this.code, cellIds[cellPosition]);
+		await cell.moveUp();
+		[cellIds[cellPosition - 1], cellIds[cellPosition]] = [cellIds[cellPosition], cellIds[cellPosition - 1]];
+		let newCellIds = await this.getCellIds();
+		if (cellIds !== newCellIds) {
+			throw new Error(`Cell in position ${cellPosition} was not successfully moved up.`);
+		}
+	}
+
+	async moveCellDown(cellPosition: number): Promise<void> {
+		let cellIds: string[] = await this.getCellIds();
+		let cell: NotebookCell = new NotebookCell(this.code, cellIds[cellPosition]);
+		await cell.moveDown();
+	}
+
+	async deleteCell(cellPosition: number): Promise<void> {
+		let cellIds: string[] = await this.getCellIds();
+		let cell: NotebookCell = new NotebookCell(this.code, cellIds[cellPosition]);
+		await cell.delete();
+	}
+
+	// End cell toolbar actions
+
+	async getCellIds(): Promise<string[]> {
+		let cellIds: string[] = [];
+		await this.code.waitForElements('div.notebook-cell', false, result => {
+			cellIds = result.map(cell => cell.attributes['id']);
+			return true;
+		});
+		return cellIds;
 	}
 }
 
@@ -172,6 +178,12 @@ export class NotebookToolbar {
 		await this.code.waitForElement(kernelDropdownValue, undefined, 3000); // wait up to 5 minutes for kernel change
 	}
 
+	async clearResults(): Promise<void> {
+		await this.code.waitAndClick(NotebookToolbar.toolbarSelector);
+		const clearResultsButton = '${NotebookToolbar.toolbarSelector} a[class="action-label codicon notebook-button icon-clear-results masked-icon"]';
+		await this.code.waitAndClick(clearResultsButton);
+	}
+
 	async trustNotebook(): Promise<void> {
 		await this.code.waitAndClick(NotebookToolbar.toolbarSelector);
 
@@ -192,5 +204,32 @@ export class NotebookToolbar {
 
 	async waitForNotTrustedIcon(): Promise<void> {
 		await this.code.waitForElement(NotebookToolbar.notTrustedButtonSelector);
+	}
+}
+
+export class NotebookCell {
+
+	private readonly cellSelector = `div.notebook-cell[id="${this.cellId}"] .monaco-editor`;
+	private readonly cellToolbarSelector = `${this.cellSelector}"] cell-toolbar-component`;
+	private readonly cellToolbarButtonSelector = `${this.cellToolbarSelector} li.action-item`;
+
+	constructor(private code: Code, private cellId: string) { }
+
+	async moveUp(): Promise<void> {
+		await this.code.waitAndClick(this.cellSelector);
+		const moveUpButtonSelector = `${this.cellToolbarButtonSelector} a[class="action-label codicon masked-icon move-up]`;
+		await this.code.waitAndClick(moveUpButtonSelector);
+	}
+
+	async moveDown(): Promise<void> {
+		await this.code.waitAndClick(this.cellSelector);
+		const moveDownButtonSelector = `${this.cellToolbarButtonSelector} a[class="action-label codicon masked-icon move-down]`;
+		await this.code.waitAndClick(moveDownButtonSelector);
+	}
+
+	async delete(): Promise<void> {
+		await this.code.waitAndClick(this.cellSelector);
+		const deleteButtonSelector = `${this.cellToolbarButtonSelector} a[class="action-label codicon masked-icon delete]`;
+		await this.code.waitAndClick(deleteButtonSelector);
 	}
 }
