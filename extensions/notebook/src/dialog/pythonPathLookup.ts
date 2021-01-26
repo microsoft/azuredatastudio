@@ -50,7 +50,7 @@ export class PythonPathLookup {
 		}
 	}
 
-	private async getCondaSuggestions(): Promise<string[]> {
+	public async getCondaSuggestions(): Promise<string[]> {
 		try {
 			let condaResults = await Promise.all(this.condaLocations.map(location => this.globSearch(location)));
 			let condaFiles = condaResults.reduce((first, second) => first.concat(second));
@@ -72,7 +72,7 @@ export class PythonPathLookup {
 		});
 	}
 
-	private async getPythonSuggestions(): Promise<string[]> {
+	public async getPythonSuggestions(): Promise<string[]> {
 		let pathsToCheck = this.getPythonCommands();
 
 		let pythonPaths = await Promise.all(pathsToCheck.map(item => this.getPythonPath(item)));

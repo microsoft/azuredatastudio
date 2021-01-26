@@ -20,6 +20,26 @@ describe('PythonPathLookup', function () {
 		sinon.restore();
 	});
 
+	it('getSuggestions', async () => {
+		sinon.stub(pathLookup, 'getPythonSuggestions').resolves(['C:\\a\\b\\c\\Python38\\python.exe']);
+		sinon.stub(pathLookup, 'getCondaSuggestions').resolves(['C:\\a\\b\\c\\Anaconda\\conda.exe']);
+
+		let expectedResults: PythonPathInfo[] = [{
+			installDir: 'C:\\a\\b\\c\\Python38',
+			version: '3.8.0'
+		}, {
+			installDir: 'C:\\a\\b\\c\\Anaconda',
+			version: '3.6.0'
+		}];
+
+		let getInfoStub = sinon.stub(pathLookup, 'getInfoForPaths').resolves(expectedResults);
+
+		let results = await pathLookup.getSuggestions();
+		should(results).be.deepEqual(expectedResults);
+		should(getInfoStub.callCount).be.equal(1);
+		should(getInfoStub.firstCall.args[0].length).be.equal(2);
+	});
+
 	it('getInfoForPaths', async () => {
 		let expectedPathInfo: PythonPathInfo = {
 			installDir: 'C:\\Not\\A\\Real\\Path\\Python38',
@@ -54,6 +74,14 @@ describe('PythonPathLookup', function () {
 		// The path lookup should filter out any invalid path info, any Python 2 info, and any duplicates.
 		// So, we should be left with a single info object using the mocked setup above.
 		should(result).be.deepEqual([expectedPathInfo]);
+	});
+
+	it('getInfoForPaths - empty array arg', async () => {
+		let getInfoStub = sinon.stub(pathLookup, 'getInfoForPath').rejects('Unexpected getInfoForPath call');
+		let result = await pathLookup.getInfoForPaths([]);
+		should(result).not.be.undefined;
+		should(result.length).be.equal(0);
+		should(getInfoStub.callCount).be.equal(0);
 	});
 
 	it('getInfoForPath', async () => {
