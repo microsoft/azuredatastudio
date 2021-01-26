@@ -40,14 +40,8 @@ export class PythonPathLookup {
 		let pythonSuggestions = await this.getPythonSuggestions();
 		let condaSuggestions = await this.getCondaSuggestions();
 
-		if (pythonSuggestions) {
-			if (condaSuggestions && condaSuggestions.length > 0) {
-				pythonSuggestions = pythonSuggestions.concat(condaSuggestions);
-			}
-			return this.getInfoForPaths(pythonSuggestions);
-		} else {
-			return [];
-		}
+		let allSuggestions = pythonSuggestions.concat(condaSuggestions);
+		return this.getInfoForPaths(allSuggestions);
 	}
 
 	public async getCondaSuggestions(): Promise<string[]> {
@@ -56,7 +50,7 @@ export class PythonPathLookup {
 			let condaFiles = condaResults.reduce((first, second) => first.concat(second));
 			return condaFiles.filter(condaPath => condaPath && condaPath.length > 0);
 		} catch (err) {
-			console.log(`Problem encountered getting Conda installations: ${err}`);
+			console.log(`Problem encountered getting Conda installs: ${err}`);
 		}
 		return [];
 	}
@@ -73,16 +67,14 @@ export class PythonPathLookup {
 	}
 
 	public async getPythonSuggestions(): Promise<string[]> {
-		let pathsToCheck = this.getPythonCommands();
-
-		let pythonPaths = await Promise.all(pathsToCheck.map(item => this.getPythonPath(item)));
-		let results: string[];
-		if (pythonPaths) {
-			results = pythonPaths.filter(path => path && path.length > 0);
-		} else {
-			results = [];
+		try {
+			let pathsToCheck = this.getPythonCommands();
+			let pythonPaths = await Promise.all(pathsToCheck.map(item => this.getPythonPath(item)));
+			return pythonPaths.filter(path => path && path.length > 0);
+		} catch (err) {
+			console.log(`Problem encountered getting Python installs: ${err}`);
 		}
-		return results;
+		return [];
 	}
 
 	private async getPythonPath(options: { command: string; args?: string[] }): Promise<string | undefined> {
