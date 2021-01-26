@@ -2,7 +2,7 @@
 
 [Home](../readme.md)
 
-Notebooks to help with High Availability and Disaster Recovery tasks in a Hybrid Cloud environment.
+Notebooks to help with HADR tasks in a Hybrid Cloud environment.
 
 ## Notebooks in this Chapter
 
