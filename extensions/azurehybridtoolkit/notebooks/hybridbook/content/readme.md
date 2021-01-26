@@ -14,7 +14,7 @@
 
 * [High Availability and Disaster Recovery](hadr/readme.md) - Notebooks to leverage Azure SQL for business continuity in a hybrid cloud environment.
 
-* [Offline Migration](offline-migration/readme.md) - Notebooks to perform various migrations.
+* [Offline Migration](offline-migration/readme.md) - Notebooks to manage SQL migration tasks to the cloud
 
 * [Glossary](glossary.md) - set of defined terms.
 
