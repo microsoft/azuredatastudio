@@ -328,13 +328,32 @@ export class ProjectsController {
 		const newFileText = templates.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
 		const relativeFilePath = path.join(relativePath, itemObjectName + constants.sqlFileExtension);
 
+		const telemetryProps: Record<string, string> = { itemType: itemType.type };
+		const telemetryMeasurements: Record<string, number> = {};
+
+		if (itemType.type === templates.preDeployScript) {
+			telemetryMeasurements.numPredeployScripts = project.preDeployScripts.length;
+		} else if (itemType.type === templates.postDeployScript) {
+			telemetryMeasurements.numPostdeployScripts = project.postDeployScripts.length;
+		}
+
 		try {
 			const newEntry = await project.addScriptItem(relativeFilePath, newFileText, itemType.type);
+
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, 'itemAddedFromTree')
+				.withAdditionalProperties(telemetryProps)
+				.withAdditionalMeasurements(telemetryMeasurements)
+				.send();
 
 			await vscode.commands.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
 			treeDataProvider?.notifyTreeDataChanged();
 		} catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, 'itemAddedFromTreeFailed')
+				.withAdditionalProperties(telemetryProps)
+				.withAdditionalMeasurements(telemetryMeasurements)
+				.send();
 		}
 	}
 
@@ -345,8 +364,10 @@ export class ProjectsController {
 		const fileEntry = this.getFileProjectEntry(project, node);
 
 		if (fileEntry) {
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, 'excludeFromProject');
 			await project.exclude(fileEntry);
 		} else {
+			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectTree, 'exludeFromProjectFailed');
 			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, node.uri.path));
 		}
 
@@ -391,8 +412,16 @@ export class ProjectsController {
 		}
 
 		if (success) {
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, 'deleteObjectFromProject')
+				.withAdditionalProperties({ objectType: node.constructor.name })
+				.send();
+
 			this.refreshProjectsTree(context);
 		} else {
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, 'deleteObjectFromProjectFailed')
+				.withAdditionalProperties({ objectType: node.constructor.name })
+				.send();
+
 			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.uri.path));
 		}
 	}
