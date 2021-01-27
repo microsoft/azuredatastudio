@@ -144,6 +144,7 @@ export class HTMLMarkdownConverter {
 			}
 		});
 		// Only nested list case differs from original turndown rule
+		// This ensures that tightly coupled lists are treated as such and do not have excess newlines in markdown
 		this.turndownService.addRule('list', {
 			filter: ['ul', 'ol'],
 			replacement: function (content, node) {
@@ -160,10 +161,12 @@ export class HTMLMarkdownConverter {
 		this.turndownService.addRule('lineBreak', {
 			filter: 'br',
 			replacement: function (content, node, options) {
+				// For elements that aren't lists, convert <br> into its markdown equivalent
 				if (node.parentElement?.nodeName !== 'LI') {
 					return options.br + '\n';
 				}
 				// One (and only one) line break is ignored when it's inside of a list item
+				// Otherwise, a new list will be created due to the looseness of the list
 				let numberLineBreaks = 0;
 				(node.parentElement as HTMLElement)?.childNodes?.forEach(n => {
 					if (n.nodeName === 'BR') {
