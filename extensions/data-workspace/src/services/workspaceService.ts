@@ -175,34 +175,34 @@ export class WorkspaceService implements IWorkspaceService {
 			const workspaceFolders = vscode.workspace.workspaceFolders;
 
 			if (workspaceFolders) {
-				for (const extType of supportedProjectExtensions) {
-					// find all project files with extType in each workspace folder
-					for (const folder of workspaceFolders) {
-						// path needs to use forward slashes for glob to work
-						const escapedPath = glob.escapePath(folder.uri.fsPath.replace(/\\/g, '/'));
-						const projFilter = path.posix.join(escapedPath, '**', `*.${extType}`);
-						const results = await glob(projFilter);
+				// find all project files with extType in each workspace folder
+				for (const folder of workspaceFolders) {
+					// path needs to use forward slashes for glob to work
+					const escapedPath = glob.escapePath(folder.uri.fsPath.replace(/\\/g, '/'));
+					// can filter for multiple file extensions using folder/**/*.{sqlproj,csproj} format, but this notation doesn't work if there's only one extension
+					// so the filter needs to be in the format folder/**/*.sqlproj if there's only one supported projectextension
+					const projFilter = supportedProjectExtensions.length > 1 ? path.posix.join(escapedPath, '**', `*.{${supportedProjectExtensions.toString()}}`) : path.posix.join(escapedPath, '**', `*.${supportedProjectExtensions[0]}`);
+					const results = await glob(projFilter);
 
-						let containsNotAddedProject = false;
-						for (const projFile of results) {
-							// if any of the found projects aren't already in the workspace's projects, we can stop checking and show the info message
-							if (!projectsInWorkspace.find(p => p.fsPath === projFile)) {
-								containsNotAddedProject = true;
-								break;
-							}
+					let containsNotAddedProject = false;
+					for (const projFile of results) {
+						// if any of the found projects aren't already in the workspace's projects, we can stop checking and show the info message
+						if (!projectsInWorkspace.find(p => p.fsPath === projFile)) {
+							containsNotAddedProject = true;
+							break;
+						}
+					}
+
+					if (containsNotAddedProject) {
+						const result = await vscode.window.showInformationMessage(constants.WorkspaceContainsNotAddedProjects, constants.LaunchOpenExisitingDialog, constants.DoNotShowAgain);
+						if (result === constants.LaunchOpenExisitingDialog) {
+							// open settings
+							await vscode.commands.executeCommand('projects.openExisting');
+						} else if (result === constants.DoNotShowAgain) {
+							await config.update(constants.showNotAddedProjectsMessageKey, false, true);
 						}
 
-						if (containsNotAddedProject) {
-							const result = await vscode.window.showInformationMessage(constants.WorkspaceContainsNotAddedProjects, constants.LaunchOpenExisitingDialog, constants.DoNotShowAgain);
-							if (result === constants.LaunchOpenExisitingDialog) {
-								// open settings
-								await vscode.commands.executeCommand('projects.openExisting');
-							} else if (result === constants.DoNotShowAgain) {
-								await config.update(constants.showNotAddedProjectsMessageKey, false, true);
-							}
-
-							return;
-						}
+						return;
 					}
 				}
 			}
