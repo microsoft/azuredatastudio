@@ -167,22 +167,13 @@ export class WorkspaceService implements IWorkspaceService {
 
 		// only check if the user hasn't selected not to show this prompt again
 		if (config[constants.showNotAddedProjectsMessageKey]) {
-			// get the unique supported project extensions
-			const supportedProjectExtensions = [...new Set((await this.getAllProjectTypes()).map(p => { return p.projectFileExtension; }))];
-
 			// look for any projects that haven't been added to the workspace
 			const projectsInWorkspace = this.getProjectsInWorkspace();
 			const workspaceFolders = vscode.workspace.workspaceFolders;
 
 			if (workspaceFolders) {
-				// find all project files with extType in each workspace folder
 				for (const folder of workspaceFolders) {
-					// path needs to use forward slashes for glob to work
-					const escapedPath = glob.escapePath(folder.uri.fsPath.replace(/\\/g, '/'));
-					// can filter for multiple file extensions using folder/**/*.{sqlproj,csproj} format, but this notation doesn't work if there's only one extension
-					// so the filter needs to be in the format folder/**/*.sqlproj if there's only one supported projectextension
-					const projFilter = supportedProjectExtensions.length > 1 ? path.posix.join(escapedPath, '**', `*.{${supportedProjectExtensions.toString()}}`) : path.posix.join(escapedPath, '**', `*.${supportedProjectExtensions[0]}`);
-					const results = await glob(projFilter);
+					const results = await this.getAllProjectsInWorkspaceFolder(folder);
 
 					let containsNotAddedProject = false;
 					for (const projFile of results) {
@@ -207,6 +198,20 @@ export class WorkspaceService implements IWorkspaceService {
 				}
 			}
 		}
+	}
+
+	async getAllProjectsInWorkspaceFolder(folder: vscode.WorkspaceFolder): Promise<string[]> {
+		// get the unique supported project extensions
+		const supportedProjectExtensions = [...new Set((await this.getAllProjectTypes()).map(p => { return p.projectFileExtension; }))];
+
+		// path needs to use forward slashes for glob to work
+		const escapedPath = glob.escapePath(folder.uri.fsPath.replace(/\\/g, '/'));
+
+		// can filter for multiple file extensions using folder/**/*.{sqlproj,csproj} format, but this notation doesn't work if there's only one extension
+		// so the filter needs to be in the format folder/**/*.sqlproj if there's only one supported projectextension
+		const projFilter = supportedProjectExtensions.length > 1 ? path.posix.join(escapedPath, '**', `*.{${supportedProjectExtensions.toString()}}`) : path.posix.join(escapedPath, '**', `*.${supportedProjectExtensions[0]}`);
+
+		return await glob(projFilter);
 	}
 
 	async getProjectProvider(projectFile: vscode.Uri): Promise<dataworkspace.IProjectProvider | undefined> {
