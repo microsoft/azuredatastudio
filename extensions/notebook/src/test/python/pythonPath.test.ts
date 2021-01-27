@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as sinon from 'sinon';
-// import * as TypeMoq from 'typemoq';
 import * as should from 'should';
 import * as utils from '../../common/utils';
 import { PythonPathInfo, PythonPathLookup } from '../../dialog/pythonPathLookup';
@@ -40,9 +39,29 @@ describe('PythonPathLookup', function () {
 		should(getInfoStub.firstCall.args[0].length).be.equal(2);
 	});
 
+	it('getCondaSuggestions', async () => {
+	});
+
+	it('getCondaSuggestions - return empty array on error', async () => {
+		sinon.stub(pathLookup, 'globSearch').rejects('Planned test failure.');
+
+		let result: string[] = await should(pathLookup.getCondaSuggestions(['C:\\a\\b\\c'])).not.be.rejected();
+		should(result).not.be.undefined();
+		should(result.length).be.equal(0);
+	});
+
+	it('getPythonSuggestions', async () => {
+	});
+
+	it('getPythonSuggestions - return empty array on error', async () => {
+	});
+
+	it('globSearch', async () => {
+	});
+
 	it('getInfoForPaths', async () => {
 		let expectedPathInfo: PythonPathInfo = {
-			installDir: 'C:\\Not\\A\\Real\\Path\\Python38',
+			installDir: 'C:\\a\\b\\c\\Python38',
 			version: '3.8.0'
 		};
 
@@ -61,7 +80,7 @@ describe('PythonPathLookup', function () {
 				version: ''
 			})
 			.onCall(callNumber++).resolves({
-				installDir: 'C:\\Not\\A\\Real\\Path\\Python',
+				installDir: 'C:\\a\\b\\c\\Python',
 				version: '2.7.0'
 			})
 			.onCall(callNumber++).resolves(expectedPathInfo)
@@ -86,7 +105,7 @@ describe('PythonPathLookup', function () {
 
 	it('getInfoForPath', async () => {
 		let pythonVersion = '3.8.0';
-		let pythonFolder = 'C:\\Not\\A\\Real\\Path\\Python38';
+		let pythonFolder = 'C:\\a\\b\\c\\Python38';
 		sinon.stub(utils, 'executeBufferedCommand')
 			.onFirstCall().resolves(pythonVersion)
 			.onSecondCall().resolves(pythonFolder);
@@ -102,7 +121,7 @@ describe('PythonPathLookup', function () {
 	it('getInfoForPath - Return undefined string on error', async () => {
 		sinon.stub(utils, 'executeBufferedCommand').rejects('Planned test failure.');
 
-		let pythonFolder = 'C:\\Not\\A\\Real\\Path\\Python38';
+		let pythonFolder = 'C:\\a\\b\\c\\Python38';
 		let pathInfoPromise = pathLookup.getInfoForPath(`${pythonFolder}\\python.exe`);
 		let result = await should(pathInfoPromise).not.be.rejected();
 		should(result).be.undefined();
@@ -111,7 +130,7 @@ describe('PythonPathLookup', function () {
 	it('getInfoForPath - Return undefined if commands return no data', async () => {
 		sinon.stub(utils, 'executeBufferedCommand').resolves('');
 
-		let pythonFolder = 'C:\\Not\\A\\Real\\Path\\Python38';
+		let pythonFolder = 'C:\\a\\b\\c\\Python38';
 		let pathInfoPromise = pathLookup.getInfoForPath(`${pythonFolder}\\python.exe`);
 		let result = await should(pathInfoPromise).not.be.rejected();
 		should(result).be.undefined();
