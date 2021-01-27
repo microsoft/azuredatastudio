@@ -14,6 +14,7 @@ const assetNameRE = /([a-zA-Z0-9]+)(?:-|_)([a-zA-Z0-9.]+)(?:-|_)([a-zA-Z0-9]+).(
 
 export class RemoteBookController {
 	constructor(public model: RemoteBookDialogModel, public outputChannel: vscode.OutputChannel) {
+		this.model.releases = [];
 	}
 
 	public async setRemoteBook(url: vscode.Uri, remoteLocation: string, asset?: IAsset): Promise<void> {
