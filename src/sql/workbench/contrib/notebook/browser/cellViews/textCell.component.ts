@@ -26,9 +26,8 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/services/notebook/browser/outputs/sanitizer';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
-import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
-import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -105,8 +104,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
-		@Inject(INotebookService) private _notebookService: INotebookService,
-
 	) {
 		super();
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
@@ -365,29 +362,13 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (elements?.length >= range.startLineNumber) {
 				let elementContainingText = elements[range.startLineNumber - 1];
 				let mark = new Mark(elementContainingText);
-				let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
-				if (editor) {
-					let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
-					if (findModel?.findMatches?.length > 0) {
-						let searchString = findModel.findExpression;
-						let totalcount = 0;
-						mark.mark(searchString, {
-							className: 'rangeHighlight',
-							done: function (counter) {
-								totalcount += counter;
-							}
-						});
-						if (totalcount > 1) {
-							mark.markRanges([{
-								start: range.startColumn,
-								length: range.endColumn - range.startColumn
-							}], {
-								className: 'rangespecifcHighlight'
-							});
-						}
-						elementContainingText.scrollIntoView({ behavior: 'smooth' });
-					}
-				}
+				mark.markRanges([{
+					start: range.startColumn - 1,
+					length: range.endColumn - range.startColumn
+				}], {
+					className: 'rangeHighlight'
+				});
+				elementContainingText.scrollIntoView({ behavior: 'smooth' });
 			}
 		}
 	}
@@ -443,8 +424,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		let textOutput: string[] = [];
 		let elements = this.getHtmlElements();
 		elements.forEach(element => {
-			if (element && element.innerText) {
-				textOutput.push(element.innerText);
+			if (element && element.textContent) {
+				textOutput.push(element.textContent);
 			} else {
 				textOutput.push('');
 			}
