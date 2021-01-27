@@ -26,6 +26,7 @@ export function hasSections(node: JupyterBookSection): boolean {
 export class BookTocManager implements IBookTocManager {
 	public tableofContents: JupyterBookSection[];
 	public newSection: JupyterBookSection = {};
+	private _movedFiles = new Map<string, string>();
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
 
@@ -91,8 +92,20 @@ export class BookTocManager implements IBookTocManager {
 			counter++;
 		}
 		await fs.move(src, path.join(newFileName.concat(' - ', counter.toString())).concat(path.parse(dest).ext), { overwrite: true });
+		this._movedFiles.set(src, path.join(newFileName.concat(' - ', counter.toString())).concat(path.parse(dest).ext));
 		vscode.window.showInformationMessage(loc.duplicateFileError(path.parse(dest).base, src, newFileName.concat(' - ', counter.toString())));
 		return newFileName.concat(' - ', counter.toString());
+	}
+
+	/**
+	 * If there's an error while trying to move files, then we need to restore the user's filesystem.
+	 * We keep track of all the moved files in the _movedFiles. The value of the map contains the current path of the file,
+	 * while the key contains the original path.
+	*/
+	async recovery(): Promise<void> {
+		this._movedFiles.forEach(async (value, key) => {
+			await fs.move(value, key);
+		});
 	}
 
 	/**
@@ -180,21 +193,25 @@ export class BookTocManager implements IBookTocManager {
 			let fileName = undefined;
 			try {
 				await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.ipynb'), { overwrite: false });
+				this._movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.ipynb'));
 			} catch (error) {
 				if (error.code === 'EEXIST') {
 					fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.ipynb'));
 				}
 				else if (error.code !== 'ENOENT') {
+					await this.recovery();
 					throw (error);
 				}
 			}
 			try {
 				await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.md'), { overwrite: false });
+				this._movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.ipynb'));
 			} catch (error) {
 				if (error.code === 'EEXIST') {
 					fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.md'));
 				}
 				else if (error.code !== 'ENOENT') {
+					await this.recovery();
 					throw (error);
 				}
 			}
@@ -225,6 +242,7 @@ export class BookTocManager implements IBookTocManager {
 				fileName = await this.renameFile(section.book.contentPath, path.join(this.targetBookContentPath, moveFile).concat(path.parse(uri).ext));
 			}
 			else if (error.code !== 'ENOENT') {
+				await this.recovery();
 				throw (error);
 			}
 		}
@@ -261,6 +279,7 @@ export class BookTocManager implements IBookTocManager {
 				fileName = await this.renameFile(notebook.book.contentPath, path.join(rootPath, notebookPath.base));
 			}
 			else {
+				await this.recovery();
 				throw (error);
 			}
 		}
