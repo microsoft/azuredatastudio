@@ -97,7 +97,7 @@ export class PythonPathLookup {
 		return [];
 	}
 
-	private async getPythonPath(options: PythonCommand): Promise<string | undefined> {
+	public async getPythonPath(options: PythonCommand): Promise<string | undefined> {
 		try {
 			let args = Array.isArray(options.args) ? options.args : [];
 			args = args.concat(['-c', '"import sys;print(sys.executable)"']);

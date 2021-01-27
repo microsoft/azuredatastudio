@@ -51,9 +51,25 @@ describe('PythonPathLookup', function () {
 	});
 
 	it('getPythonSuggestions', async () => {
+		let expectedPath = 'C:\\a\\b\\c\\Python38';
+		sinon.stub(pathLookup, 'getPythonPath')
+			.onCall(0).resolves(undefined)
+			.onCall(1).resolves(expectedPath)
+			.onCall(2).resolves('');
+
+			// getPythonPath is mocked out, so only the number of command args matters here
+			let result: string[] = await should(pathLookup.getPythonSuggestions([{ command: '1' }, { command: '2' }, { command: '3' }])).not.be.rejected();
+			should(result).not.be.undefined();
+			should(result.length).be.equal(1);
+			should(result[0]).be.equal(expectedPath);
 	});
 
 	it('getPythonSuggestions - return empty array on error', async () => {
+		sinon.stub(pathLookup, 'getPythonPath').rejects('Planned test failure.');
+
+		let result: string[] = await should(pathLookup.getPythonSuggestions([{ command: 'C:\\a\\b\\c\\Python38\\python.exe' }])).not.be.rejected();
+		should(result).not.be.undefined();
+		should(result.length).be.equal(0);
 	});
 
 	it('globSearch', async () => {
@@ -87,7 +103,7 @@ describe('PythonPathLookup', function () {
 			.onCall(callNumber++).resolves(expectedPathInfo)
 			.onCall(callNumber++).rejects('Unexpected number of getInfoForPath calls.');
 
-		// getInfoForPath is mocked out above, so the actual path arguments here are irrelevant
+		// getInfoForPath is mocked out above, so only the number of path arguments matters here
 		let result = await pathLookup.getInfoForPaths(['1', '2', '3', '4', '5', '6']);
 
 		// The path lookup should filter out any invalid path info, any Python 2 info, and any duplicates.
