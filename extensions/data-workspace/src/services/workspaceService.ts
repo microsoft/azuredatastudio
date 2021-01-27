@@ -166,36 +166,40 @@ export class WorkspaceService implements IWorkspaceService {
 		const config = vscode.workspace.getConfiguration(constants.projectsConfigurationKey);
 
 		// only check if the user hasn't selected not to show this prompt again
-		if (config[constants.showNotAddedProjectsMessageKey]) {
-			// look for any projects that haven't been added to the workspace
-			const projectsInWorkspace = this.getProjectsInWorkspace();
-			const workspaceFolders = vscode.workspace.workspaceFolders;
+		if (!config[constants.showNotAddedProjectsMessageKey]) {
+			return;
+		}
 
-			if (workspaceFolders) {
-				for (const folder of workspaceFolders) {
-					const results = await this.getAllProjectsInWorkspaceFolder(folder);
+		// look for any projects that haven't been added to the workspace
+		const projectsInWorkspace = this.getProjectsInWorkspace();
+		const workspaceFolders = vscode.workspace.workspaceFolders;
 
-					let containsNotAddedProject = false;
-					for (const projFile of results) {
-						// if any of the found projects aren't already in the workspace's projects, we can stop checking and show the info message
-						if (!projectsInWorkspace.find(p => p.fsPath === projFile)) {
-							containsNotAddedProject = true;
-							break;
-						}
-					}
+		if (!workspaceFolders) {
+			return;
+		}
 
-					if (containsNotAddedProject) {
-						const result = await vscode.window.showInformationMessage(constants.WorkspaceContainsNotAddedProjects, constants.LaunchOpenExisitingDialog, constants.DoNotShowAgain);
-						if (result === constants.LaunchOpenExisitingDialog) {
-							// open settings
-							await vscode.commands.executeCommand('projects.openExisting');
-						} else if (result === constants.DoNotShowAgain) {
-							await config.update(constants.showNotAddedProjectsMessageKey, false, true);
-						}
+		for (const folder of workspaceFolders) {
+			const results = await this.getAllProjectsInWorkspaceFolder(folder);
 
-						return;
-					}
+			let containsNotAddedProject = false;
+			for (const projFile of results) {
+				// if any of the found projects aren't already in the workspace's projects, we can stop checking and show the info message
+				if (!projectsInWorkspace.find(p => p.fsPath === projFile)) {
+					containsNotAddedProject = true;
+					break;
 				}
+			}
+
+			if (containsNotAddedProject) {
+				const result = await vscode.window.showInformationMessage(constants.WorkspaceContainsNotAddedProjects, constants.LaunchOpenExisitingDialog, constants.DoNotShowAgain);
+				if (result === constants.LaunchOpenExisitingDialog) {
+					// open settings
+					await vscode.commands.executeCommand('projects.openExisting');
+				} else if (result === constants.DoNotShowAgain) {
+					await config.update(constants.showNotAddedProjectsMessageKey, false, true);
+				}
+
+				return;
 			}
 		}
 	}
