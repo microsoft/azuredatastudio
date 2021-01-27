@@ -72,6 +72,43 @@ describe('PythonPathLookup', function () {
 		should(result.length).be.equal(0);
 	});
 
+	it('getPythonPath', async () => {
+		let expectedPath = 'C:\\a\\b\\c\\Python38';
+		sinon.stub(utils, 'executeBufferedCommand').resolves(expectedPath);
+		sinon.stub(utils, 'exists').resolves(true);
+
+		let result: string = await should(pathLookup.getPythonPath({ command: 'C:\\a\\b\\c\\Python38\\python.exe' })).not.be.rejected();
+		should(result).be.equal(expectedPath);
+	});
+
+	it('getPythonPath - return undefined if resulting path does not exist', async () => {
+		let expectedPath = 'C:\\a\\b\\c\\Python38';
+		sinon.stub(utils, 'executeBufferedCommand').resolves(expectedPath);
+		sinon.stub(utils, 'exists').resolves(false);
+
+		let result: string = await should(pathLookup.getPythonPath({ command: 'C:\\a\\b\\c\\Python38\\python.exe' })).not.be.rejected();
+		should(result).be.undefined();
+	});
+
+	it('getPythonPath - return undefined on error', async () => {
+		sinon.stub(utils, 'executeBufferedCommand').rejects('Planned test failure.');
+
+		let result: string = await should(pathLookup.getPythonPath({ command: 'C:\\a\\b\\c\\Python38\\python.exe' })).not.be.rejected();
+		should(result).be.undefined();
+	});
+
+	it('getPythonPath - return undefined if command returns no data', async () => {
+		sinon.stub(utils, 'executeBufferedCommand')
+			.onCall(0).resolves(undefined)
+			.onCall(1).resolves('');
+
+		let result: string = await should(pathLookup.getPythonPath({ command: 'C:\\a\\b\\c\\Python38\\python.exe' })).not.be.rejected();
+		should(result).be.undefined();
+
+		result = await should(pathLookup.getPythonPath({ command: 'C:\\a\\b\\c\\Python38\\python.exe' })).not.be.rejected();
+		should(result).be.undefined();
+	});
+
 	it('globSearch', async () => {
 	});
 
