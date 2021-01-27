@@ -26,7 +26,6 @@ export class RemoteBookController {
 
 	public async getReleases(url?: vscode.Uri): Promise<IRelease[]> {
 		if (url) {
-			this.model.releases = [];
 			let options = {
 				headers: {
 					'User-Agent': 'request'
