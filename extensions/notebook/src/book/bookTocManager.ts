@@ -205,9 +205,13 @@ export class BookTocManager implements IBookTocManager {
 				throw (error);
 			}
 		}
-		const files = section.sections as JupyterBookSection[];
-		const movedSections = await this.traverseSections(files, dirName);
-		this.newSection.sections = movedSections;
+
+		if (section.sections) {
+			const files = section.sections as JupyterBookSection[];
+			const movedSections = await this.traverseSections(files, dirName);
+			this.newSection.sections = movedSections;
+		}
+
 		if (book.version === BookVersion.v1) {
 			// here we only convert if is v1 because we are already using the v2 notation for every book that we read.
 			this.newSection = convertTo(book.version, this.newSection);
@@ -285,6 +289,7 @@ export class BookTocManager implements IBookTocManager {
 				await this.updateTOC(targetBook.book.version, targetBook.tableOfContentsPath, targetSection, this.newSection);
 			}
 		}
+		this.newSection = {};
 	}
 }
 
