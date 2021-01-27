@@ -363,7 +363,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				let elementContainingText = elements[range.startLineNumber - 1];
 				let mark = new Mark(elementContainingText);
 				mark.markRanges([{
-					start: range.startColumn - 1,
+					start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
 					length: range.endColumn - range.startColumn
 				}], {
 					className: 'rangeHighlight'
