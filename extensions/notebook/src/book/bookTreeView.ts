@@ -193,7 +193,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
 						if (movingElement.tableOfContents.sections) {
 							if (movingElement.contextValue === 'savedNotebook') {
-								let sourceBook = this.books.find(book => book.getNotebook(movingElement.book.contentPath));
+								let sourceBook = this.books.find(book => book.getNotebook(path.normalize(movingElement.book.contentPath)));
 								movingElement.tableOfContents.sections = sourceBook.bookItems[0].sections;
 							}
 						}
