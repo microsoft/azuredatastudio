@@ -12,14 +12,19 @@ export class SqlAssessmentResult extends AssessmentDialogComponent {
 		const topContainer = this.createTopContainer(view);
 		const bottomContainer = this.createBottomContainer(view);
 
-		return view.modelBuilder.flexContainer().withItems([topContainer, bottomContainer]).withLayout({
-			flexFlow: 'column'
+		const container = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+			height: '100%'
 		}).withProps({
 			CSSStyles: {
-				'margin-left': '10px',
-				'flex': '1 1 auto'
+				'margin-left': '10px'
 			}
 		}).component();
+
+		container.addItem(topContainer, { flex: '0 0 auto' });
+		container.addItem(bottomContainer, { flex: '1 1 auto' });
+
+		return container;
 	}
 
 
@@ -45,13 +50,20 @@ export class SqlAssessmentResult extends AssessmentDialogComponent {
 	private createBottomContainer(view: azdata.ModelView): azdata.FlexContainer {
 		// need a left and right container here
 
-		const impactedObjects = this.createImpactedObjectsComponent(view);
+		const impactedObjects = this.createImpactedObjectsTable(view);
 		const rightContainer = this.createAssessmentContainer(view);
 
-		const container = view.modelBuilder.flexContainer().withItems([impactedObjects, rightContainer]).withLayout({
-			flexFlow: 'row'
+		const container = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row',
+			height: '100%'
+		}).withProps({
+			CSSStyles: {
+				'height': '100%'
+			}
 		}).component();
 
+		container.addItem(impactedObjects, { flex: '0 0 auto' });
+		container.addItem(rightContainer, { flex: '1 1 auto' });
 		return container;
 	}
 
@@ -74,7 +86,7 @@ export class SqlAssessmentResult extends AssessmentDialogComponent {
 
 	private createDescriptionContainer(view: azdata.ModelView): azdata.FlexContainer {
 		const description = this.createDescription(view);
-		const impactedObjects = this.createImpactedObjects(view);
+		const impactedObjects = this.createImpactedObjectsDescription(view);
 
 
 		const container = view.modelBuilder.flexContainer().withItems([description, impactedObjects]).withLayout({
@@ -84,7 +96,7 @@ export class SqlAssessmentResult extends AssessmentDialogComponent {
 		return container;
 	}
 
-	private createImpactedObjects(view: azdata.ModelView): azdata.FlexContainer {
+	private createImpactedObjectsDescription(view: azdata.ModelView): azdata.FlexContainer {
 		const impactedObjectsTitle = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: 'Impacted Objects',
 			CSSStyles: {
@@ -296,7 +308,7 @@ export class SqlAssessmentResult extends AssessmentDialogComponent {
 	}
 
 
-	private createImpactedObjectsComponent(view: azdata.ModelView): azdata.DeclarativeTableComponent {
+	private createImpactedObjectsTable(view: azdata.ModelView): azdata.DeclarativeTableComponent {
 
 		const headerStyle: azdata.CssStyles = {
 			'border': 'none',

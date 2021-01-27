@@ -7,35 +7,37 @@ import { AssessmentDialogComponent } from './model/assessmentDialogComponent';
 
 export class SqlDatabaseTree extends AssessmentDialogComponent {
 
+	private instanceTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
+	private databaseTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
+
 	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
-
-		return view.modelBuilder.flexContainer().withItems([
-			this.createSearchComponent(view),
-			this.createInstanceComponent(view),
-			this.createDatabaseComponent(view)
-
-		]).withLayout({
+		const component = view.modelBuilder.flexContainer().withLayout({
+			height: '100%',
 			flexFlow: 'column'
 		}).withProps({
 			CSSStyles: {
-				'border-right': 'solid 1px',
-				'width': '300px'
+				'border-right': 'solid 1px'
 			},
 		}).component();
+
+		component.addItem(this.createSearchComponent(view), { flex: '0 0 auto' });
+		component.addItem(this.createInstanceComponent(view), { flex: '0 0 auto' });
+		component.addItem(this.createDatabaseComponent(view), { flex: '1 1 auto' });
+		return component;
 	}
 
 	private createDatabaseComponent(view: azdata.ModelView): azdata.DivContainer {
 
 		const styleLeft: azdata.CssStyles = {
 			'border': 'none',
-			'text-align': 'left'
+			'text-align': 'left !important'
 		};
 		const styleRight: azdata.CssStyles = {
 			'border': 'none',
 			'text-align': 'right'
 		};
 
-		const databaseTable = view.modelBuilder.declarativeTable().withProps(
+		this.databaseTable = view.modelBuilder.declarativeTable().withProps(
 			{
 				selectEffect: true,
 				width: '100%',
@@ -179,20 +181,21 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 							style: styleRight
 						}
 					]
-				],
-				CSSStyles: {
-					'text-align': 'left'
-				}
+				]
 			}
 		);
 
-		databaseTable.component().onRowSelected(({ row }) => {
+		this.databaseTable.component().onRowSelected(({ row }) => {
 			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected
 			// deselect instance table
+
+			// if (this.instanceTable.component().) {
+
+			// }
 		});
 
 
-		const tableContainer = view.modelBuilder.divContainer().withItems([databaseTable.component()]).withProps({
+		const tableContainer = view.modelBuilder.divContainer().withItems([this.databaseTable.component()]).withProps({
 			CSSStyles: {
 				'margin-left': '15px',
 			},
@@ -229,7 +232,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			'text-align': 'right'
 		};
 
-		const instanceTable = view.modelBuilder.declarativeTable().withProps(
+		this.instanceTable = view.modelBuilder.declarativeTable().withProps(
 			{
 				selectEffect: true,
 				width: '100%',
@@ -264,12 +267,12 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				]
 			});
 
-		instanceTable.component().onRowSelected(({ row }) => {
+		this.instanceTable.component().onRowSelected(({ row }) => {
 			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected
 			//deselect database table
 		});
 
-		const instanceContainer = view.modelBuilder.divContainer().withItems([instanceTable.component()]).withProps({
+		const instanceContainer = view.modelBuilder.divContainer().withItems([this.instanceTable.component()]).withProps({
 			CSSStyles: {
 				'margin-left': '15px',
 			},
