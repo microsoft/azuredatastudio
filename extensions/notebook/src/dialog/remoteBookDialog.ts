@@ -208,13 +208,15 @@ export class RemoteBookDialog {
 		try {
 			if (this.remoteLocationValue === loc.onGitHub) {
 				let releases = await this.controller.getReleases();
-				let selected_release = releases.filter(release =>
-					release.name === this.releaseDropdown.value);
-				let assets = await this.controller.getAssets(selected_release[0]);
-				if (assets?.length > 0) {
-					this.bookDropdown.values = ['-'].concat([...new Set(assets.map(asset => asset.book))]);
+				if (releases) {
+					let selected_release = releases.filter(release =>
+						release.name === this.releaseDropdown.value);
+					let assets = await this.controller.getAssets(selected_release[0]);
+					if (assets?.length > 0) {
+						this.bookDropdown.values = ['-'].concat([...new Set(assets.map(asset => asset.book))]);
+					}
+					this.checkValues();
 				}
-				this.checkValues();
 			}
 		}
 		catch (error) {
