@@ -144,6 +144,10 @@ export class BookTocManager implements IBookTocManager {
 					}
 				}
 			}
+			if (newSection.sections?.length === 0) {
+				// if sections is an empty array then assign it to undefined, so it's converted into a markdown file.
+				newSection.sections = undefined;
+			}
 			return newSection;
 		}
 	}
@@ -260,7 +264,7 @@ export class BookTocManager implements IBookTocManager {
 				throw (error);
 			}
 		}
-		fileName = fileName === undefined ? notebookPath.name : fileName;
+		fileName = fileName === undefined ? notebookPath.name : path.parse(fileName).name;
 		this.newSection = { file: targetSection ? path.join(path.dirname(targetSection.file), fileName) : path.sep.concat(fileName), title: notebook.book.title };
 		if (book.version === BookVersion.v1) {
 			// here we only convert if is v1 because we are already using the v2 notation for every book that we read.

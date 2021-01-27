@@ -204,18 +204,23 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							fs.unwatchFile(movingElement.tableOfContentsPath);
 						}
 
-						this.bookTocManager.updateBook(movingElement, updateBook, targetSection).finally(() => {
-							// refresh source book model to pick up latest changes
-							if (sourceBook) {
-								this.fireBookRefresh(sourceBook);
-								this.setFileWatcher(sourceBook);
-							}
-							this.fireBookRefresh(targetBook);
-							this.setFileWatcher(targetBook);
+						this.bookTocManager.updateBook(movingElement, updateBook, targetSection)
+							.catch((e) => { vscode.window.showErrorMessage(loc.editBookError(updateBook.book.contentPath, e instanceof Error ? e.message : e)); })
+							.then(() => {
+								this.fireBookRefresh(targetBook);
+								if (sourceBook) {
+									// refresh source book model to pick up latest changes
+									this.fireBookRefresh(sourceBook);
+								}
+							})
+							.finally(() => {
+								// even if it fails, we still need to watch the toc file again.
+								if (sourceBook) {
+									this.setFileWatcher(sourceBook);
+								}
+								this.setFileWatcher(targetBook);
 
-						}).catch((e) => {
-							vscode.window.showErrorMessage(loc.editBookError(updateBook.book.contentPath, e instanceof Error ? e.message : e));
-						});
+							});
 					}
 				}
 			}
