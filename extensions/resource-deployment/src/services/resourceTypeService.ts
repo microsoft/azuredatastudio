@@ -122,7 +122,8 @@ export class ResourceTypeService implements IResourceTypeService {
 		const resourceSubTypes: ResourceSubType[] = [];
 		vscode.extensions.all.forEach((extension) => {
 			const extensionResourceSubTypes = extension.packageJSON.contributes?.resourceDeploymentSubTypes as ResourceSubType[];
-			extensionResourceSubTypes?.forEach((resourceSubType: ResourceSubType) => {
+			extensionResourceSubTypes?.forEach((extensionResourceSubType: ResourceSubType) => {
+				const resourceSubType = deepClone(extensionResourceSubType);
 				if (resourceSubType.name === resourceType.name) {
 					this.updateProviderPathProperties(resourceSubType.provider, extension.extensionPath);
 					resourceSubTypes.push(resourceSubType);
