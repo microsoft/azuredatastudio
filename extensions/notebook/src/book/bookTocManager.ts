@@ -79,6 +79,23 @@ export class BookTocManager implements IBookTocManager {
 	}
 
 	/**
+	 * Renames files if it already exists in the target book
+	 * @param src The source file that will be moved.
+	 * @param dest The destination path of the file, that it's been moved.
+	 * Returns a new file name that does not exist in destination folder.
+	*/
+	async renameFile(src: string, dest: string): Promise<string> {
+		let newFileName = path.join(path.parse(dest).dir, path.parse(dest).name);
+		let counter = 2;
+		while (await fs.pathExists(path.join(newFileName.concat(' - ', counter.toString())).concat(path.parse(dest).ext))) {
+			counter++;
+		}
+		await fs.move(src, path.join(newFileName.concat(' - ', counter.toString())).concat(path.parse(dest).ext), { overwrite: true });
+		vscode.window.showInformationMessage(loc.duplicateFileError(path.parse(dest).base, src, newFileName.concat(' - ', counter.toString())));
+		return newFileName.concat(' - ', counter.toString());
+	}
+
+	/**
 	 * Reads and modifies the table of contents file of the target book.
 	 * @param version the version of the target book
 	 * @param tocPath Path to the table of contents
@@ -156,12 +173,12 @@ export class BookTocManager implements IBookTocManager {
 	async traverseSections(files: JupyterBookSection[], dirName: string): Promise<JupyterBookSection[]> {
 		let movedSections: JupyterBookSection[] = [];
 		for (const elem of files) {
-			movedSections.push({ file: path.join(dirName, elem.file), title: elem.title, sections: elem.sections ? await this.traverseSections(elem.sections, dirName) : undefined });
+			let fileName = undefined;
 			try {
 				await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.ipynb'), { overwrite: false });
 			} catch (error) {
 				if (error.code === 'EEXIST') {
-					throw (loc.duplicateFileError(elem.file, path.join(this.targetBookContentPath, dirName, elem.file).concat('.ipynb')));
+					fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.ipynb'));
 				}
 				else if (error.code !== 'ENOENT') {
 					throw (error);
@@ -171,12 +188,13 @@ export class BookTocManager implements IBookTocManager {
 				await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.md'), { overwrite: false });
 			} catch (error) {
 				if (error.code === 'EEXIST') {
-					throw (loc.duplicateFileError(elem.file, path.join(this.targetBookContentPath, dirName, elem.file).concat('.md')));
+					fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.md'));
 				}
 				else if (error.code !== 'ENOENT') {
 					throw (error);
 				}
 			}
+			movedSections.push({ file: fileName === undefined ? path.join(dirName, elem.file) : path.join(dirName, path.parse(fileName).name), title: elem.title, sections: elem.sections ? await this.traverseSections(elem.sections, dirName) : undefined });
 		}
 		return movedSections;
 	}
@@ -194,18 +212,20 @@ export class BookTocManager implements IBookTocManager {
 		this.newSection.title = section.title;
 		const uri = path.sep.concat(path.relative(section.rootContentPath, section.book.contentPath));
 		const dirName = targetSection ? path.dirname(targetSection.file) : '';
-		this.newSection.file = targetSection ? path.join(path.dirname(targetSection.file), path.parse(uri).dir, path.parse(uri).name) : path.join(path.parse(uri).dir, path.parse(uri).name);
+		let moveFile = targetSection ? path.join(path.dirname(targetSection.file), path.parse(uri).dir, path.parse(uri).name) : path.join(path.parse(uri).dir, path.parse(uri).name);
+		let fileName = undefined;
 		try {
-			await fs.move(section.book.contentPath, path.join(this.targetBookContentPath, this.newSection.file).concat(path.parse(uri).ext), { overwrite: false });
+			await fs.move(section.book.contentPath, path.join(this.targetBookContentPath, moveFile).concat(path.parse(uri).ext), { overwrite: false });
 		} catch (error) {
 			if (error.code === 'EEXIST') {
-				throw (loc.duplicateFileError(uri, path.join(this.targetBookContentPath, this.newSection.file).concat(path.parse(uri).ext)));
+				fileName = await this.renameFile(section.book.contentPath, path.join(this.targetBookContentPath, moveFile).concat(path.parse(uri).ext));
 			}
 			else if (error.code !== 'ENOENT') {
 				throw (error);
 			}
 		}
-
+		fileName = fileName === undefined ? path.parse(uri).name : path.parse(fileName).name;
+		this.newSection.file = targetSection ? path.join(path.dirname(targetSection.file), path.parse(uri).dir, fileName) : path.join(path.parse(uri).dir, fileName);
 		if (section.sections) {
 			const files = section.sections as JupyterBookSection[];
 			const movedSections = await this.traverseSections(files, dirName);
@@ -229,17 +249,19 @@ export class BookTocManager implements IBookTocManager {
 		//the book's contentPath contains the first file of the section, we get the dirname to identify the section's root path
 		const rootPath = targetSection ? path.join(book.rootContentPath, path.dirname(targetSection.file)) : book.rootContentPath;
 		const notebookPath = path.parse(notebook.book.contentPath);
+		let fileName = undefined;
 		try {
 			await fs.move(notebook.book.contentPath, path.join(rootPath, notebookPath.base), { overwrite: false });
 		} catch (error) {
 			if (error.code === 'EEXIST') {
-				throw (loc.duplicateFileError(notebookPath.base, path.join(rootPath, notebookPath.base)));
+				fileName = await this.renameFile(notebook.book.contentPath, path.join(rootPath, notebookPath.base));
 			}
 			else {
 				throw (error);
 			}
 		}
-		this.newSection = { file: targetSection ? path.join(path.dirname(targetSection.file), notebookPath.name) : path.sep.concat(notebookPath.name), title: notebook.book.title };
+		fileName = fileName === undefined ? notebookPath.name : fileName;
+		this.newSection = { file: targetSection ? path.join(path.dirname(targetSection.file), fileName) : path.sep.concat(fileName), title: notebook.book.title };
 		if (book.version === BookVersion.v1) {
 			// here we only convert if is v1 because we are already using the v2 notation for every book that we read.
 			this.newSection = convertTo(book.version, this.newSection);
