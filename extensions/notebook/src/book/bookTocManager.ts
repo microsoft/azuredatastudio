@@ -14,6 +14,7 @@ import * as loc from '../common/localizedConstants';
 export interface IBookTocManager {
 	updateBook(element: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
+	recovery(): Promise<void>
 }
 
 const allowedFileExtensions: string[] = ['.md', '.ipynb'];
@@ -27,6 +28,7 @@ export class BookTocManager implements IBookTocManager {
 	public tableofContents: JupyterBookSection[];
 	public newSection: JupyterBookSection = {};
 	private _movedFiles = new Map<string, string>();
+	private _tocFiles = new Map<string, JupyterBookSection[]>();
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
 
@@ -98,14 +100,41 @@ export class BookTocManager implements IBookTocManager {
 	}
 
 	/**
-	 * If there's an error while trying to move files, then we need to restore the user's filesystem.
+	 * Restore user's original state in case of error, when trying to move files.
 	 * We keep track of all the moved files in the _movedFiles. The value of the map contains the current path of the file,
 	 * while the key contains the original path.
+	 *
+	 * Rewrite the original table of contents of the book, in case of error as well.
 	*/
 	async recovery(): Promise<void> {
 		this._movedFiles.forEach(async (value, key) => {
 			await fs.move(value, key);
 		});
+
+		this._tocFiles.forEach(async (value, key) => {
+			await fs.writeFile(key, yaml.safeDump(value, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
+		});
+	}
+
+	async cleanUp(directory: string): Promise<void> {
+		let contents = await fs.readdir(directory);
+		if (contents.length === 0) {
+			// remove empty folders
+			await fs.rmdir(directory);
+		} else {
+			contents.forEach(async (content) => {
+				if ((await fs.stat(path.join(directory, content))).isFile) {
+					//check if the file is in the moved files
+					let isCopy = this._movedFiles.get(content);
+					if (isCopy) {
+						// the file could not be renamed, so a copy was created.
+						await fs.unlink(path.join(directory, content));
+					}
+				} else if ((await fs.stat(path.join(directory, content))).isDirectory) {
+					await this.cleanUp(path.join(directory, content));
+				}
+			});
+		}
 	}
 
 	/**
@@ -115,8 +144,9 @@ export class BookTocManager implements IBookTocManager {
 	 * @param findSection The section that will be modified.
 	 * @param addSection The section that'll be added to the target section. If it's undefined then the target section (findSection) is removed from the table of contents.
 	*/
-	async updateTOC(version: string, tocPath: string, findSection: JupyterBookSection, addSection?: JupyterBookSection): Promise<void> {
+	async updateTOC(version: BookVersion, tocPath: string, findSection: JupyterBookSection, addSection?: JupyterBookSection): Promise<void> {
 		const toc = yaml.safeLoad((await fs.readFile(tocPath, 'utf8')));
+		this._tocFiles.set(tocPath, toc);
 		let newToc = new Array<JupyterBookSection>(toc.length);
 		for (const [index, section] of toc.entries()) {
 			let newSection = this.buildTOC(version, section, findSection, addSection);
@@ -136,7 +166,7 @@ export class BookTocManager implements IBookTocManager {
 	 * @param findSection The section that will be modified.
 	 * @param addSection The section that'll be added to the target section. If it's undefined then the target section (findSection) is removed from the table of contents.
 	*/
-	private buildTOC(version: string, section: JupyterBookSection, findSection: JupyterBookSection, addSection: JupyterBookSection): JupyterBookSection {
+	private buildTOC(version: BookVersion, section: JupyterBookSection, findSection: JupyterBookSection, addSection: JupyterBookSection): JupyterBookSection {
 		// condition to find the section to be modified
 		if (section.title === findSection.title && (section.file && section.file === findSection.file || section.url && section.url === findSection.file)) {
 			if (addSection) {
@@ -182,7 +212,7 @@ export class BookTocManager implements IBookTocManager {
 	}
 
 	/**
-	 * When moving a section, we need to modify every file path that it's within the section. Since sections is a tree like structure, we need to recursively and modify each of the file paths
+	 * When moving a section, we need to modify every file path that it's within the section. Since sections is a tree like structure, we need to modify each of the file paths
 	 * and move the files individually. The overwrite option is set to false to prevent any issues with duplicated file names.
 	 * @param files Files in the section.
 	 * @param dirName The directory path of the target section that will be appended to the target book's root.
@@ -199,7 +229,6 @@ export class BookTocManager implements IBookTocManager {
 					fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.ipynb'));
 				}
 				else if (error.code !== 'ENOENT') {
-					await this.recovery();
 					throw (error);
 				}
 			}
@@ -211,11 +240,12 @@ export class BookTocManager implements IBookTocManager {
 					fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.md'));
 				}
 				else if (error.code !== 'ENOENT') {
-					await this.recovery();
 					throw (error);
 				}
 			}
-			movedSections.push({ file: fileName === undefined ? path.join(dirName, elem.file) : path.join(dirName, path.parse(fileName).name), title: elem.title, sections: elem.sections ? await this.traverseSections(elem.sections, dirName) : undefined });
+			elem.file = fileName === undefined ? path.join(dirName, elem.file) : path.join(dirName, path.parse(fileName).name);
+			elem.sections = elem.sections ? await this.traverseSections(elem.sections, dirName) : undefined;
+			movedSections.push(elem);
 		}
 		return movedSections;
 	}
@@ -237,12 +267,12 @@ export class BookTocManager implements IBookTocManager {
 		let fileName = undefined;
 		try {
 			await fs.move(section.book.contentPath, path.join(this.targetBookContentPath, moveFile).concat(path.parse(uri).ext), { overwrite: false });
+			this._movedFiles.set(section.book.contentPath, path.join(this.targetBookContentPath, moveFile).concat(path.parse(uri).ext));
 		} catch (error) {
 			if (error.code === 'EEXIST') {
 				fileName = await this.renameFile(section.book.contentPath, path.join(this.targetBookContentPath, moveFile).concat(path.parse(uri).ext));
 			}
 			else if (error.code !== 'ENOENT') {
-				await this.recovery();
 				throw (error);
 			}
 		}
@@ -252,6 +282,7 @@ export class BookTocManager implements IBookTocManager {
 			const files = section.sections as JupyterBookSection[];
 			const movedSections = await this.traverseSections(files, dirName);
 			this.newSection.sections = movedSections;
+			this.cleanUp(path.dirname(section.book.contentPath));
 		}
 
 		if (book.version === BookVersion.v1) {
@@ -298,14 +329,16 @@ export class BookTocManager implements IBookTocManager {
 	 * @param targetSection Book section that'll be modified.
 	*/
 	public async updateBook(element: BookTreeItem, targetBook: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
+		const targetBookVersion = targetBook.book.version === BookVersion.v1 ? BookVersion.v1 : BookVersion.v2;
 		if (element.contextValue === 'section') {
 			await this.addSection(element, targetBook, targetSection);
+			const elementVersion = element.book.version === BookVersion.v1 ? BookVersion.v1 : BookVersion.v2;
 			// modify the sourceBook toc and remove the section
 			const findSection: JupyterBookSection = { file: element.book.page.file, title: element.book.page.title };
-			await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
+			await this.updateTOC(elementVersion, element.tableOfContentsPath, findSection, undefined);
 			if (targetSection) {
 				// adding new section to the target book toc file
-				await this.updateTOC(targetBook.book.version, targetBook.tableOfContentsPath, targetSection, this.newSection);
+				await this.updateTOC(targetBookVersion, targetBook.tableOfContentsPath, targetSection, this.newSection);
 			}
 			else {
 				//since there's not a target section, we just append the section at the end of the file
@@ -319,9 +352,10 @@ export class BookTocManager implements IBookTocManager {
 		else if (element.contextValue === 'savedNotebook') {
 			await this.addNotebook(element, targetBook, targetSection);
 			if (element.book.tableOfContents.sections) {
+				const elementVersion = element.book.version === BookVersion.v1 ? BookVersion.v1 : BookVersion.v2;
 				// the notebook is part of a book so we need to modify its toc as well
 				const findSection = { file: element.book.page.file, title: element.book.page.title };
-				await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
+				await this.updateTOC(elementVersion, element.tableOfContentsPath, findSection, undefined);
 			} else {
 				// close the standalone notebook, so it doesn't throw an error when we move the notebook to new location.
 				await vscode.commands.executeCommand('notebook.command.closeNotebook', element);
@@ -331,10 +365,9 @@ export class BookTocManager implements IBookTocManager {
 				this.tableofContents.push(this.newSection);
 				await fs.writeFile(targetBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
 			} else {
-				await this.updateTOC(targetBook.book.version, targetBook.tableOfContentsPath, targetSection, this.newSection);
+				await this.updateTOC(targetBookVersion, targetBook.tableOfContentsPath, targetSection, this.newSection);
 			}
 		}
 		this.newSection = {};
 	}
 }
-

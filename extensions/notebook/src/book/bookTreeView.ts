@@ -205,7 +205,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						}
 
 						this.bookTocManager.updateBook(movingElement, updateBook, targetSection)
-							.catch((e) => { vscode.window.showErrorMessage(loc.editBookError(updateBook.book.contentPath, e instanceof Error ? e.message : e)); })
+							.catch(async (e) => {
+								await this.bookTocManager.recovery();
+								vscode.window.showErrorMessage(loc.editBookError(updateBook.book.contentPath, e instanceof Error ? e.message : e));
+							})
 							.then(() => {
 								this.fireBookRefresh(targetBook);
 								if (sourceBook) {
