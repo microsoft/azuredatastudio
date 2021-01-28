@@ -21,10 +21,13 @@ import { deepClone } from '../common/utils';
 
 const localize = nls.loadMessageBundle();
 
+export interface OptionValuesFilter {
+	[key: string]: Record<string, string[]>
+}
 export interface IResourceTypeService {
 	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
 	validateResourceTypes(resourceTypes: ResourceType[]): string[];
-	startDeployment(resourceType: ResourceType): void;
+	startDeployment(resourceType: ResourceType, optionValuesFilter?: OptionValuesFilter): void;
 }
 
 export class ResourceTypeService implements IResourceTypeService {
@@ -124,7 +127,7 @@ export class ResourceTypeService implements IResourceTypeService {
 			const extensionResourceSubTypes = extension.packageJSON.contributes?.resourceDeploymentSubTypes as ResourceSubType[];
 			extensionResourceSubTypes?.forEach((extensionResourceSubType: ResourceSubType) => {
 				const resourceSubType = deepClone(extensionResourceSubType);
-				if (resourceSubType.name === resourceType.name) {
+				if (resourceSubType.resourceName === resourceType.name) {
 					this.updateProviderPathProperties(resourceSubType.provider, extension.extensionPath);
 					resourceSubTypes.push(resourceSubType);
 					const tagSet = new Set(resourceType.tags);
@@ -301,8 +304,8 @@ export class ResourceTypeService implements IResourceTypeService {
 		return undefined;
 	}
 
-	public startDeployment(resourceType: ResourceType): void {
-		const wizard = new ResourceTypeWizard(resourceType, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this);
+	public startDeployment(resourceType: ResourceType, optionValuesFilter?: OptionValuesFilter): void {
+		const wizard = new ResourceTypeWizard(resourceType, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this, optionValuesFilter);
 		wizard.open();
 	}
 
