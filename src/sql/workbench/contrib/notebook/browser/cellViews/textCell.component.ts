@@ -26,8 +26,9 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/services/notebook/browser/outputs/sanitizer';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
-import { NotebookRange, ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -104,6 +105,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
+		@Inject(INotebookService) private _notebookService: INotebookService,
 	) {
 		super();
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
@@ -358,15 +360,27 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private addDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
+			let markDoc = new Mark(this.output.nativeElement);
 			let elements = this.getHtmlElements();
 			if (elements?.length >= range.startLineNumber) {
 				let elementContainingText = elements[range.startLineNumber - 1];
 				let mark = new Mark(elementContainingText);
+				let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
+				if (editor) {
+					let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
+					if (findModel?.findMatches?.length > 0) {
+						let searchString = findModel.findExpression;
+						markDoc.mark(searchString, {
+							className: 'rangeHighlight'
+						});
+						elementContainingText.scrollIntoView({ behavior: 'smooth' });
+					}
+				}
 				mark.markRanges([{
 					start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
 					length: range.endColumn - range.startColumn
 				}], {
-					className: 'rangeHighlight'
+					className: 'rangeSpecifcHighlight'
 				});
 				elementContainingText.scrollIntoView({ behavior: 'smooth' });
 			}
@@ -375,11 +389,12 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private removeDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
+			let markDoc = new Mark(this.output.nativeElement);
 			let elements = this.getHtmlElements();
 			let elementContainingText = elements[range.startLineNumber - 1];
 			let mark = new Mark(elementContainingText);
-			mark.unmark({ acrossElements: true, className: 'rangeHighlight' });
-			mark.unmark({ acrossElements: true, className: 'rangespecifcHighlight' });
+			markDoc.unmark({ acrossElements: true, className: 'rangeHighlight' });
+			mark.unmark({ acrossElements: true, className: 'rangeSpecifcHighlight' });
 		}
 	}
 

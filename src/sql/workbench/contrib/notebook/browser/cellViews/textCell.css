@@ -42,11 +42,19 @@ text-cell-component code-component .monaco-editor .inputarea.ime-input {
 }
 
 .vs .notebook-preview .rangeHighlight {
-	background-color: rgba(255, 255, 0, 0.2)
+	background-color: yellow;
 }
 
 .vs-dark .notebook-preview .rangeHighlight {
-	background-color: rgba(255, 255, 0, 0.2)
+	background-color: yellow;
+}
+
+.vs .notebook-preview .rangeSpecifcHighlight {
+	background-color: orange;
+}
+
+.vs-dark .notebook-preview .rangeSpecifcHighlight {
+	background-color: orange;
 }
 
 text-cell-component table {
