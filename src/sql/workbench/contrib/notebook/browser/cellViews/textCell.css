@@ -21,7 +21,7 @@ text-cell-component .notebook-preview {
 	user-select: none;
 	width: 100%;
 	outline: none;
-	padding-top: 1.2em;
+	padding-top: 14px;
 }
 text-cell-component .notebook-preview > *:first-child {
 	margin-top: 0;
