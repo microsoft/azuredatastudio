@@ -76,6 +76,9 @@ export class NotebookModelStub implements INotebookModel {
 	get savedConnectionName(): string {
 		throw new Error('method not implemented.');
 	}
+	get multiConnection(): boolean {
+		throw new Error('method not implemented.');
+	}
 	get providerId(): string {
 		throw new Error('method not implemented.');
 	}
