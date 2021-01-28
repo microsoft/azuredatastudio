@@ -33,7 +33,7 @@ import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDat
 import { TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 /**
- * Controller for managing project lifecycle
+ * Controller for managing lifecycle of projects
  */
 export class ProjectsController {
 	private netCoreTool: NetCoreTool;

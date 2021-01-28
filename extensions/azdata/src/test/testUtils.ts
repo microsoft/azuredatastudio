@@ -18,3 +18,7 @@ export async function assertRejected(promise: Promise<any>, message: string): Pr
 	throw new Error(message);
 }
 
+export async function sleep(ms: number): Promise<void> {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+

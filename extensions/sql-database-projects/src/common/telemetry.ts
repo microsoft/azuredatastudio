@@ -3,13 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import AdsTelemetryReporter from 'ads-extension-telemetry';
+import AdsTelemetryReporter from '@microsoft/ads-extension-telemetry';
 
-import * as Utils from './utils';
+import { GetPackageInfo } from './utils';
 
-const packageJson = require('../package.json');
-
-let packageInfo = Utils.getPackageInfo(packageJson)!;
+const packageInfo = GetPackageInfo()!;
 
 export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 
