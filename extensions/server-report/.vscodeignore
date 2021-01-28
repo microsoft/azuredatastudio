@@ -1,0 +1,6 @@
+*.vsix
+src/**
+.gitignore
+**/*.ts
+**/*.map
+.gitignore
