@@ -36,7 +36,7 @@ steps:
     password $(github-distro-mixin-password)
     EOF
 
-    git config user.email "andresse@microsoft.com"
+    git config user.email "sqltools@service.microsoft.com"
     git config user.name "AzureDataStudio"
   displayName: Prepare tooling
   condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))

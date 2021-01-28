@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import AdsTelemetryReporter from 'ads-extension-telemetry';
+import AdsTelemetryReporter from '@microsoft/ads-extension-telemetry';
 
 import * as Utils from './utils';
 
@@ -14,5 +14,10 @@ let packageInfo = Utils.getPackageInfo(packageJson);
 export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 
 export enum TelemetryViews {
-	SelectOperationPage = 'SelectOperationPage'
+	DataTierApplicationWizard = 'DataTierApplicationWizard',
+	DeployDacpac = 'DeployDacpac',
+	DeployPlanPage = 'DeployPlanPage',
+	ExportBacpac = 'ExportBacpac',
+	ExtractDacpac = 'ExtractDacpac',
+	ImportBacpac = 'ImportBacpac'
 }

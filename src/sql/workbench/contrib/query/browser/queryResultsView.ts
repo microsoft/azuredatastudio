@@ -430,4 +430,8 @@ export class QueryResultsView extends Disposable {
 			tab.putState(this.input.state.dynamicModelViewTabsState);
 		}
 	}
+
+	public focus(): void {
+		this._panelView.focusCurrentTab();
+	}
 }

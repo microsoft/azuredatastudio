@@ -27,6 +27,7 @@ export const FirewallRuleRequested = 'FirewallRuleCreated';
 export const DashboardNavigated = 'DashboardNavigated';
 export const GetDataGridItems = 'GetDataGridItems';
 export const GetDataGridColumns = 'GetDataGridColumns';
+export const WizardPagesNavigation = 'WizardPagesNavigation';
 
 // Telemetry Properties
 
@@ -74,5 +75,10 @@ export enum TelemetryAction {
 	Click = 'Click',
 	Open = 'Open',
 	ModelViewDashboardOpened = 'ModelViewDashboardOpened'
+}
+
+export enum NbTelemetryAction {
+	RunCell = 'RunCell',
+	RunAll = 'RunNotebook'
 }
 

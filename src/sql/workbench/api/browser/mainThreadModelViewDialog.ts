@@ -151,7 +151,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	public $setWizardPageDetails(handle: number, details: IModelViewWizardPageDetails): Thenable<void> {
 		let page = this._wizardPages.get(handle);
 		if (!page) {
-			page = new WizardPage(details.title, details.content);
+			page = new WizardPage(details.title, details.content, details.pageName);
 			page.onValidityChanged(valid => this._proxy.$onPanelValidityChanged(handle, valid));
 			this._wizardPages.set(handle, page);
 			this._wizardPageHandles.set(page, handle);
@@ -161,6 +161,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		page.content = details.content;
 		page.enabled = details.enabled;
 		page.description = details.description;
+		page.pageName = details.pageName;
 		if (details.customButtons !== undefined) {
 			page.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
 		}
