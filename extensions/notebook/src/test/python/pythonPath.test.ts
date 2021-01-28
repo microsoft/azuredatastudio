@@ -5,8 +5,15 @@
 
 import * as sinon from 'sinon';
 import * as should from 'should';
+import * as path from 'path';
+import * as os from 'os';
+import * as uuid from 'uuid';
+import * as fs from 'fs-extra';
+import * as rimraf from 'rimraf';
 import * as utils from '../../common/utils';
 import { PythonPathInfo, PythonPathLookup } from '../../dialog/pythonPathLookup';
+import * as constants from '../../common/constants';
+import { promisify } from 'util';
 
 describe('PythonPathLookup', function () {
 	let pathLookup: PythonPathLookup;
@@ -40,6 +47,14 @@ describe('PythonPathLookup', function () {
 	});
 
 	it('getCondaSuggestions', async () => {
+		sinon.stub(pathLookup, 'globSearch')
+			.onCall(0).resolves(['a', undefined, 'b'])
+			.onCall(1).resolves(['', 'c'])
+			.onCall(2).resolves(['d']);
+
+		// globSearch is mocked out, so only the number of location args matters here
+		let result: string[] = await should(pathLookup.getCondaSuggestions(['1', '2', '3'])).not.be.rejected();
+		should(result).be.deepEqual(['a', 'b', 'c', 'd']);
 	});
 
 	it('getCondaSuggestions - return empty array on error', async () => {
@@ -110,6 +125,36 @@ describe('PythonPathLookup', function () {
 	});
 
 	it('globSearch', async () => {
+		let testFolder = path.join(os.tmpdir(), `PythonPathTest_${uuid.v4()}`);
+		await fs.mkdir(testFolder);
+		try {
+			let standaloneFile = path.join(testFolder, 'testFile.txt');
+			let folderFile1 = path.join(testFolder, 'TestFolder1', 'testFile.txt');
+			let folderFile2 = path.join(testFolder, 'TestFolder2', 'testFile.txt');
+
+			await fs.ensureFile(standaloneFile);
+			await fs.ensureFile(folderFile1);
+			await fs.ensureFile(folderFile2);
+
+			let normalizedFolderPath: string;
+			if (process.platform === constants.winPlatform) {
+				let driveColonIndex = testFolder.indexOf(':');
+				normalizedFolderPath = testFolder.substr(driveColonIndex + 1).replace(/\\/g, '/');
+			} else {
+				normalizedFolderPath = testFolder;
+			}
+
+			let searchResults = await pathLookup.globSearch(`${normalizedFolderPath}/*.txt`);
+			should(searchResults).be.deepEqual([standaloneFile]);
+
+			searchResults = await pathLookup.globSearch(`${normalizedFolderPath}/[tT]estFolder*/*.txt`);
+			should(searchResults).be.deepEqual([folderFile1, folderFile2]);
+
+			searchResults = await pathLookup.globSearch(`${normalizedFolderPath}/[tT]estFolder*/*.csv`);
+			should(searchResults).be.deepEqual([]);
+		} finally {
+			await promisify(rimraf)(testFolder);
+		}
 	});
 
 	it('getInfoForPaths', async () => {
