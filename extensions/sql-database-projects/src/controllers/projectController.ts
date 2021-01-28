@@ -468,6 +468,9 @@ export class ProjectsController {
 
 		try {
 			await vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(project.projectFilePath));
+
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, 'editProjectFile');
+
 			const projFileWatcher: vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher(project.projectFilePath);
 			this.projFileWatchers.set(project.projectFilePath, projFileWatcher);
 
