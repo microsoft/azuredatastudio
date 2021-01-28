@@ -9,6 +9,7 @@ text-cell-component {
 text-cell-component .notebook-text {
 	display: flex;
 	outline: none;
+	min-height: 50px;
 }
 text-cell-component code-component {
 	flex-direction: column;
