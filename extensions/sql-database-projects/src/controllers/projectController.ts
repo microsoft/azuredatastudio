@@ -589,15 +589,24 @@ export class ProjectsController {
 		const project: Project = this.getProjectFromContext(node);
 
 		let dacpacPath: string = project.dacpacOutputPath;
+		const preExistingDacpac = await utils.exists(dacpacPath);
 
-		if (!await utils.exists(dacpacPath)) {
+		const telemetryProps: Record<string, string> = { preExistingDacpac: preExistingDacpac.toString() };
+
+
+		if (!preExistingDacpac) {
 			dacpacPath = await this.buildProject(project);
 		}
 
 		const streamingJobDefinition: string = (await fs.readFile(node.element.fileSystemUri.fsPath)).toString();
 
 		const dacFxService = await this.getDaxFxService();
+		const actionStartTime = new Date().getMilliseconds();
+
 		const result: mssql.ValidateStreamingJobResult = await dacFxService.validateStreamingJob(dacpacPath, streamingJobDefinition);
+
+		telemetryProps.duration = (new Date().getMilliseconds() - actionStartTime).toString();
+		telemetryProps.success = result.success.toString();
 
 		if (result.success) {
 			vscode.window.showInformationMessage(constants.externalStreamingJobValidationPassed);
@@ -605,6 +614,10 @@ export class ProjectsController {
 		else {
 			vscode.window.showErrorMessage(result.errorMessage);
 		}
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, 'streamingJobValidationRun')
+			.withAdditionalProperties(telemetryProps)
+			.send();
 
 		return result;
 	}
