@@ -23,9 +23,9 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 
@@ -53,7 +53,7 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) dashboardService: IDashboardService,
-		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
+		@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService
 	) {
 		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService, undefined);
 	}
@@ -111,7 +111,7 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 			this._treeDataSource.data = data;
 			await this._tree.refresh();
 		});
-		this._telemetryService.publicLog(TelemetryKeys.JobStepsView);
+		this._telemetryService.sendViewEvent(TelemetryView.AgentJobSteps);
 	}
 
 	public onFirstVisible() {
