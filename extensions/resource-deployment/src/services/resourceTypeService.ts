@@ -21,9 +21,13 @@ import { deepClone } from '../common/utils';
 
 const localize = nls.loadMessageBundle();
 
+/**
+ * Used to filter the specific optionValues that the deployment wizard shows
+ */
 export interface OptionValuesFilter {
 	[key: string]: Record<string, string[]>
 }
+
 export interface IResourceTypeService {
 	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
 	validateResourceTypes(resourceTypes: ResourceType[]): string[];
@@ -127,7 +131,7 @@ export class ResourceTypeService implements IResourceTypeService {
 			const extensionResourceSubTypes = extension.packageJSON.contributes?.resourceDeploymentSubTypes as ResourceSubType[];
 			extensionResourceSubTypes?.forEach((extensionResourceSubType: ResourceSubType) => {
 				const resourceSubType = deepClone(extensionResourceSubType);
-				if (resourceSubType.resourceName === resourceType.name) {
+				if (resourceSubType.name === resourceType.name) {
 					this.updateProviderPathProperties(resourceSubType.provider, extension.extensionPath);
 					resourceSubTypes.push(resourceSubType);
 					const tagSet = new Set(resourceType.tags);
