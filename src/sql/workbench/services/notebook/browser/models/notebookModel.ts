@@ -79,6 +79,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _savedConnectionName: string | undefined;
 	private readonly _nbformat: number = nbversion.MAJOR_VERSION;
 	private readonly _nbformatMinor: number = nbversion.MINOR_VERSION;
+	private readonly expectedMetadataKeys = ['kernelspec', 'language_info', 'tags', 'connection_name', 'multi_connection'];
 	private _activeConnection: ConnectionProfile | undefined;
 	private _activeCell: ICellModel | undefined;
 	private _providerId: string;
@@ -93,7 +94,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _kernelAliases: string[] = [];
 	private _currentKernelAlias: string | undefined;
 	private _selectedKernelDisplayName: string | undefined;
-	private _multiConnection: boolean = false;
+	private _multiConnectionMode: boolean = false;
 
 	public requestConnectionHandler: (() => Promise<boolean>) | undefined;
 
@@ -215,12 +216,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._savedConnectionName;
 	}
 
-	public get multiConnection(): boolean {
-		return this._multiConnection;
+	public get multiConnectionMode(): boolean {
+		return this._multiConnectionMode;
 	}
 
-	public set multiConnection(isMultiConnection: boolean) {
-		this._multiConnection = isMultiConnection;
+	public set multiConnectionMode(isMultiConnection: boolean) {
+		this._multiConnectionMode = isMultiConnection;
 	}
 
 	public get specs(): nb.IAllKernels | undefined {
@@ -433,7 +434,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	private loadContentMetadata(metadata: any): void {
+	private loadContentMetadata(metadata: nb.INotebookMetadata): void {
 		this._savedKernelInfo = metadata.kernelspec;
 		this._defaultLanguageInfo = metadata.language_info;
 		// If language info was serialized in the notebook, attempt to use that to decrease time
@@ -442,7 +443,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this.updateLanguageInfo(this._defaultLanguageInfo);
 		}
 		this._savedConnectionName = metadata.connection_name;
-		this._multiConnection = metadata.multi_connection ? metadata.multi_connection : false;
+		this._multiConnectionMode = !!metadata.multi_connection_mode;
 
 		//Telemetry of loading notebook
 		if (metadata.azdata_notebook_guid && metadata.azdata_notebook_guid.length === 36) {
@@ -455,9 +456,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 		}
 		Object.keys(metadata).forEach(key => {
-			let expectedKeys = ['kernelspec', 'language_info', 'tags', 'connection_name', 'multi_connection'];
 			// If custom metadata is defined, add to the _existingMetadata object
-			if (expectedKeys.indexOf(key) < 0) {
+			if (this.expectedMetadataKeys.indexOf(key) < 0) {
 				this._existingMetadata[key] = metadata[key];
 			}
 		});
@@ -1253,7 +1253,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		metadata.kernelspec = this._savedKernelInfo;
 		metadata.language_info = this.languageInfo;
 		metadata.tags = this._tags;
-		metadata.multi_connection = this._multiConnection ? this._multiConnection : undefined;
+		metadata.multi_connection_mode = this._multiConnectionMode ? this._multiConnectionMode : undefined;
 		if (this.configurationService.getValue(saveConnectionNameConfigName)) {
 			metadata.connection_name = this._savedConnectionName;
 		}
