@@ -52,7 +52,7 @@ export class AddDatabaseReferenceDialog {
 	public addReference: ((proj: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings) => any) | undefined;
 
 	constructor(private project: Project) {
-		this.dialog = azdata.window.createModelViewDialog(constants.addDatabaseReferenceDialogName);
+		this.dialog = azdata.window.createModelViewDialog(constants.addDatabaseReferenceDialogName, 'addDatabaseReferencesDialog');
 		this.addDatabaseReferenceTab = azdata.window.createTab(constants.addDatabaseReferenceDialogName);
 	}
 

@@ -39,7 +39,6 @@ export class ProjectsController {
 	private netCoreTool: NetCoreTool;
 	private buildHelper: BuildHelper;
 
-	//projects: Project[] = [];
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
 	constructor() {
@@ -121,16 +120,16 @@ export class ProjectsController {
 		try {
 			await this.netCoreTool.runDotnetCommand(options);
 
-			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, 'buildSucceeded').withAdditionalProperties({
-				duration: (new Date().getMilliseconds() - date.getMilliseconds()).toString(),
-			}).send();
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, 'buildSucceeded')
+				.withAdditionalMeasurements({ duration: new Date().getMilliseconds() - date.getMilliseconds() })
+				.send();
 
 			return project.dacpacOutputPath;
 		} catch (err) {
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, 'buildFailed').withAdditionalProperties({
-				duration: (new Date().getMilliseconds() - date.getMilliseconds()).toString(),
-				error: utils.getErrorMessage(err)
-			}).send();
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, 'buildFailed')
+				.withAdditionalProperties({ error: utils.getErrorMessage(err) })
+				.withAdditionalMeasurements({ duration: new Date().getMilliseconds() - date.getMilliseconds() })
+				.send();
 
 			vscode.window.showErrorMessage(constants.projBuildFailed(utils.getErrorMessage(err)));
 			return '';
@@ -608,7 +607,7 @@ export class ProjectsController {
 
 		const result: mssql.ValidateStreamingJobResult = await dacFxService.validateStreamingJob(dacpacPath, streamingJobDefinition);
 
-		telemetryProps.duration = (new Date().getMilliseconds() - actionStartTime).toString();
+		const duration = new Date().getMilliseconds() - actionStartTime;
 		telemetryProps.success = result.success.toString();
 
 		if (result.success) {
@@ -620,6 +619,7 @@ export class ProjectsController {
 
 		TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, 'streamingJobValidationRun')
 			.withAdditionalProperties(telemetryProps)
+			.withAdditionalMeasurements({ duration: duration })
 			.send();
 
 		return result;

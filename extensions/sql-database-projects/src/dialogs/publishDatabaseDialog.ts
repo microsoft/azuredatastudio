@@ -50,13 +50,11 @@ export class PublishDatabaseDialog {
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
 	constructor(private project: Project) {
-		this.dialog = azdata.window.createModelViewDialog(constants.publishDialogName);
+		this.dialog = azdata.window.createModelViewDialog(constants.publishDialogName, 'publishDialog');
 		this.publishTab = azdata.window.createTab(constants.publishDialogName);
 	}
 
 	public openDialog(): void {
-		TelemetryReporter.sendActionEvent(TelemetryViews.PublishDialog, 'publishDialogOpened');
-
 		this.initializeDialog();
 		this.dialog.okButton.label = constants.publishDialogOkButtonText;
 		this.dialog.okButton.enabled = false;
@@ -183,8 +181,6 @@ export class PublishDatabaseDialog {
 	}
 
 	public async publishClick(): Promise<void> {
-		TelemetryReporter.sendActionEvent(TelemetryViews.PublishDialog, 'publishClicked');
-
 		const settings: IPublishSettings = {
 			databaseName: this.getTargetDatabaseName(),
 			upgradeExisting: true,

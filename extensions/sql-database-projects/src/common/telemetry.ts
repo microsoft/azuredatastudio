@@ -5,9 +5,9 @@
 
 import AdsTelemetryReporter from '@microsoft/ads-extension-telemetry';
 
-import { GetPackageInfo } from './utils';
+import { getPackageInfo } from './utils';
 
-const packageInfo = GetPackageInfo()!;
+const packageInfo = getPackageInfo()!;
 
 export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 

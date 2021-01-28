@@ -36,7 +36,7 @@ export class CreateProjectFromDatabaseDialog {
 	public createProjectFromDatabaseCallback: ((model: ImportDataModel) => any) | undefined;
 
 	constructor(private profile: azdata.IConnectionProfile | undefined) {
-		this.dialog = azdata.window.createModelViewDialog(constants.createProjectFromDatabaseDialogName);
+		this.dialog = azdata.window.createModelViewDialog(constants.createProjectFromDatabaseDialogName, 'createProjectFromDatabaseDialog');
 		this.createProjectFromDatabaseTab = azdata.window.createTab(constants.createProjectFromDatabaseDialogName);
 		this.dialog.registerCloseValidator(async () => {
 			return this.validate();
