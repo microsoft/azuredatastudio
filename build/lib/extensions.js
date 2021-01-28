@@ -223,10 +223,10 @@ const externalExtensions = [
     'profiler',
     'query-history',
     'schema-compare',
+    'server-report',
     'sql-assessment',
     'sql-database-projects',
-    'sql-migration',
-    'server-report'
+    'sql-migration'
 ];
 // extensions that require a rebuild since they have native parts
 const rebuildExtensions = [

@@ -1,7 +1,5 @@
-out/**/*.map
 *.vsix
 src/**
-typings/**
 .gitignore
 **/*.ts
 **/*.map
