@@ -260,6 +260,7 @@ const externalExtensions = [
 	'sql-assessment',
 	'sql-database-projects',
 	'sql-migration',
+	'server-report'
 ];
 
 // extensions that require a rebuild since they have native parts
