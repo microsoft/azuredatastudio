@@ -60,6 +60,9 @@ export class BookTreeItem extends vscode.TreeItem {
 				} else {
 					this.contextValue = isBookItemPinned(book.contentPath) ? 'pinnedNotebook' : 'savedNotebook';
 				}
+			} else if (book.type === BookTreeItemType.ExternalLink) {
+				this.contextValue = BookTreeItemType.ExternalLink;
+
 			} else {
 				this.contextValue = book.type === BookTreeItemType.Notebook ? (isBookItemPinned(book.contentPath) ? 'pinnedNotebook' : 'savedNotebook') : 'section';
 			}

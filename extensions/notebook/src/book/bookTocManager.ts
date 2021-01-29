@@ -231,31 +231,34 @@ export class BookTocManager implements IBookTocManager {
 	async traverseSections(files: JupyterBookSection[]): Promise<JupyterBookSection[]> {
 		let movedSections: JupyterBookSection[] = [];
 		for (const elem of files) {
-			let fileName = undefined;
-			try {
-				await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'), { overwrite: false });
-				this._movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'));
-			} catch (error) {
-				if (error.code === 'EEXIST') {
-					fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'));
+			if (elem.file) {
+				let fileName = undefined;
+				try {
+					await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'), { overwrite: false });
+					this._movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'));
+				} catch (error) {
+					if (error.code === 'EEXIST') {
+						fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'));
+					}
+					else if (error.code !== 'ENOENT') {
+						throw (error);
+					}
 				}
-				else if (error.code !== 'ENOENT') {
-					throw (error);
+				try {
+					await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'), { overwrite: false });
+					this._movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'));
+				} catch (error) {
+					if (error.code === 'EEXIST') {
+						fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'));
+					}
+					else if (error.code !== 'ENOENT') {
+						throw (error);
+					}
 				}
+				elem.file = fileName === undefined ? elem.file : path.parse(fileName).name;
+				elem.sections = elem.sections ? await this.traverseSections(elem.sections) : undefined;
 			}
-			try {
-				await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'), { overwrite: false });
-				this._movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'));
-			} catch (error) {
-				if (error.code === 'EEXIST') {
-					fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'));
-				}
-				else if (error.code !== 'ENOENT') {
-					throw (error);
-				}
-			}
-			elem.file = fileName === undefined ? elem.file : path.parse(fileName).name;
-			elem.sections = elem.sections ? await this.traverseSections(elem.sections) : undefined;
+
 			movedSections.push(elem);
 		}
 		return movedSections;
