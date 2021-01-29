@@ -21,10 +21,17 @@ import { deepClone } from '../common/utils';
 
 const localize = nls.loadMessageBundle();
 
+/**
+ * Used to filter the specific optionValues that the deployment wizard shows
+ */
+export interface OptionValuesFilter {
+	[key: string]: Record<string, string[]>
+}
+
 export interface IResourceTypeService {
 	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
 	validateResourceTypes(resourceTypes: ResourceType[]): string[];
-	startDeployment(resourceType: ResourceType): void;
+	startDeployment(resourceType: ResourceType, optionValuesFilter?: OptionValuesFilter): void;
 }
 
 export class ResourceTypeService implements IResourceTypeService {
@@ -301,8 +308,8 @@ export class ResourceTypeService implements IResourceTypeService {
 		return undefined;
 	}
 
-	public startDeployment(resourceType: ResourceType): void {
-		const wizard = new ResourceTypeWizard(resourceType, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this);
+	public startDeployment(resourceType: ResourceType, optionValuesFilter?: OptionValuesFilter): void {
+		const wizard = new ResourceTypeWizard(resourceType, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this, optionValuesFilter);
 		wizard.open();
 	}
 
