@@ -28,7 +28,7 @@ import { INotebookService, INotebookParams, INotebookEditor, INotebookSection, I
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { Deferred } from 'sql/base/common/promise';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction, NotebookViewsOptions } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
@@ -125,9 +125,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	ngOnDestroy() {
 		this.dispose();
-		if (this.notebookService) {
-			this.notebookService.removeNotebookEditor(this);
-		}
 	}
 
 	public get model(): NotebookModel | null {
@@ -408,6 +405,28 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			dropdownMenuActionViewItem.render(buttonDropdownContainer);
 			dropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
 
+			let viewsDropdownContainer;
+			if (true) { //if (this._configurationService.getValue<boolean>(NOTEBOOK_VIEWS_ENABLED_PROPERTY)) {
+				let viewsContainer = document.createElement('li');
+				let viewsActionsProvider = new NotebookViewsOptions(viewsContainer, this.contextViewService, this.modelReady, this.notebookService, this.instantiationService);
+				let viewsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.OpenViews', localize('views', "Views"), 'notebook-button masked-pseudo code');
+				viewsDropdownContainer = DOM.$('li.action-item');
+				viewsDropdownContainer.setAttribute('role', 'presentation');
+				let viewsDropdownMenuActionViewItem = new DropdownMenuActionViewItem(
+					viewsButton,
+					viewsActionsProvider,
+					this.contextMenuService,
+					undefined,
+					this._actionBar.actionRunner,
+					undefined,
+					'codicon notebook-button masked-pseudo masked-pseudo-after icon-dashboard-view dropdown-arrow',
+					localize('editor', "Editor"),
+					undefined
+				);
+				viewsDropdownMenuActionViewItem.render(viewsDropdownContainer);
+				viewsDropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
+			}
+
 			this._actionBar.setContent([
 				{ element: buttonDropdownContainer },
 				{ action: this._runAllCellsAction },
@@ -415,6 +434,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ element: kernelContainer },
 				{ element: attachToContainer },
 				{ element: spacerElement },
+				{ element: Taskbar.createTaskbarSeparator() },
+				{ element: viewsDropdownContainer },
 				{ action: collapseCellsAction },
 				{ action: clearResultsButton },
 				{ action: this._trustedAction },
