@@ -9,10 +9,10 @@
 		*ngIf="display"
 		class="grid-stack-item"
 		attr.data-cell-id="{{cell.cellGuid}}"
-		attr.data-gs-width="{{width}}"
-		attr.data-gs-height="{{height}}"
-		attr.data-gs-x="{{x}}"
-		attr.data-gs-y="{{y}}"
+		attr.gs-w="{{width}}"
+		attr.gs-h="{{height}}"
+		attr.gs-x="{{x}}"
+		attr.gs-y="{{y}}"
 		(click)="selectCell(cell, $event)"
 	>
 		<div
