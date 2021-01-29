@@ -6,7 +6,7 @@
 import { IProjectProvider } from 'dataworkspace';
 import * as vscode from 'vscode';
 import { IProjectProviderRegistry } from './interfaces';
-import { TelemetryReporter, TelemetryViews } from './telemetry';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from './telemetry';
 
 export const ProjectProviderRegistry: IProjectProviderRegistry = new class implements IProjectProviderRegistry {
 	private _providers = new Array<IProjectProvider>();
@@ -21,7 +21,7 @@ export const ProjectProviderRegistry: IProjectProviderRegistry = new class imple
 			this._providerProjectTypeMapping[projectType.id.toUpperCase()] = provider;
 		});
 
-		TelemetryReporter.createActionEvent(TelemetryViews.ProviderRegistration, 'ProviderRegistered')
+		TelemetryReporter.createActionEvent(TelemetryViews.ProviderRegistration, TelemetryActions.ProviderRegistered)
 			.withAdditionalProperties({
 				providerId: providerId,
 				extensions: provider.supportedProjectTypes.map(p => p.projectFileExtension).sort().join(', ')
