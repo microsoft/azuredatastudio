@@ -30,7 +30,7 @@ export function convertFrom(version: string, section: JupyterBookSection): Jupyt
 	if (version === BookVersion.v1) {
 		return Object.assign(section, {
 			title: section.title,
-			file: (section as IJupyterBookSectionV1).external ? undefined : section.url,
+			file: (section as IJupyterBookSectionV1).external ? undefined : section.url.replace(/\\/g, '/'),
 			url: (section as IJupyterBookSectionV1).external ? section.url : undefined,
 			sections: section.sections,
 			expand_sections: section.expand_sections,
@@ -43,7 +43,7 @@ export function convertFrom(version: string, section: JupyterBookSection): Jupyt
 	} else {
 		return Object.assign(section, {
 			title: section.title,
-			file: (section as IJupyterBookSectionV2).file,
+			file: (section as IJupyterBookSectionV2).file.replace(/\\/g, '/'),
 			url: section.url,
 			sections: section.sections,
 			expand_sections: section.expand_sections,
@@ -65,7 +65,7 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 		if (section.sections && section.sections.length > 0) {
 			let temp: JupyterBookSection = {};
 			temp.title = section.title;
-			temp.url = section.url ? section.url : section.file;
+			temp.url = section.url ? section.url : section.file.replace(/\\/g, '/');
 			temp.expand_sections = section.expand_sections;
 			temp.not_numbered = section.not_numbered;
 			temp.search = section.search;
@@ -81,7 +81,7 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 		} else {
 			let newSection: JupyterBookSection = {};
 			newSection.title = section.title;
-			newSection.url = section.url ? section.url : section.file;
+			newSection.url = section.url ? section.url : section.file.replace(/\\/g, '/');
 			newSection.sections = section.sections;
 			newSection.not_numbered = section.not_numbered;
 			newSection.expand_sections = section.expand_sections;
@@ -96,7 +96,13 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 		if (section.sections && section.sections.length > 0) {
 			let temp: JupyterBookSection = {};
 			temp.title = section.title;
-			temp.file = section.url ? section.url : section.file;
+			temp.file = section.file;
+			temp.expand_sections = section.expand_sections;
+			temp.header = section.header;
+			temp.numbered = section.numbered;
+			temp.part = section.part;
+			temp.chapters = section.chapters;
+			temp.url = section.url;
 			temp.sections = [];
 			for (let s of section.sections) {
 				const child = this.convertTo(version, s);
@@ -106,11 +112,14 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 		} else {
 			let newSection: JupyterBookSection = {};
 			newSection.title = section.title;
-			newSection.file = section.url ? section.url : section.file;
+			newSection.file = section.file;
 			newSection.sections = section.sections;
 			newSection.expand_sections = section.expand_sections;
 			newSection.header = section.header;
-			newSection.url = section.external ? section.url : undefined;
+			newSection.numbered = section.numbered;
+			newSection.part = section.part;
+			newSection.chapters = section.chapters;
+			newSection.url = section.url;
 			return newSection;
 		}
 	}

@@ -180,7 +180,7 @@ export class BookTocManager implements IBookTocManager {
 	*/
 	private buildTOC(version: BookVersion, section: JupyterBookSection, findSection: JupyterBookSection, addSection: JupyterBookSection): JupyterBookSection {
 		// condition to find the section to be modified
-		if (section.title === findSection.title && (section.file && path.normalize(section.file) === path.normalize(findSection.file) || section.url && path.normalize(section.url) === path.normalize(findSection.file))) {
+		if (section.title === findSection.title && (section.file && section.file === findSection.file || section.url && section.url === findSection.file)) {
 			if (addSection) {
 				//if addSection is not undefined, then we added to the table of contents.
 				section.sections !== undefined && section.sections.length > 0 ? section.sections.push(addSection) : section.sections = [addSection];
@@ -360,7 +360,7 @@ export class BookTocManager implements IBookTocManager {
 			}
 			else {
 				//since there's not a target section, we just append the section at the end of the file
-				if (element.rootContentPath !== targetBook.rootContentPath) {
+				if (this.targetBookContentPath !== this.sourceBookContentPath) {
 					this.tableofContents = targetBook.sections.map(section => convertTo(targetBook.version, section));
 				}
 				this.tableofContents.push(this.newSection);
@@ -379,7 +379,9 @@ export class BookTocManager implements IBookTocManager {
 				await vscode.commands.executeCommand('notebook.command.closeNotebook', element);
 			}
 			if (!targetSection) {
-				this.tableofContents = targetBook.sections.map(section => convertTo(targetBook.version, section));
+				if (this.targetBookContentPath !== this.sourceBookContentPath) {
+					this.tableofContents = targetBook.sections.map(section => convertTo(targetBook.version, section));
+				}
 				this.tableofContents.push(this.newSection);
 				await fs.writeFile(targetBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
 			} else {
