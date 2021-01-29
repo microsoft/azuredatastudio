@@ -17,6 +17,11 @@ export interface IBookTocManager {
 	recovery(): Promise<void>
 }
 
+export interface quickPickResults {
+	quickPickSection?: vscode.QuickPickItem,
+	book?: BookTreeItem
+}
+
 const allowedFileExtensions: string[] = ['.md', '.ipynb'];
 const initMarkdown: string[] = ['index.md', 'introduction.md', 'intro.md', 'readme.md'];
 
@@ -222,28 +227,28 @@ export class BookTocManager implements IBookTocManager {
 		for (const elem of files) {
 			let fileName = undefined;
 			try {
-				await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.ipynb'), { overwrite: false });
-				this._movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.ipynb'));
+				await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'), { overwrite: false });
+				this._movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'));
 			} catch (error) {
 				if (error.code === 'EEXIST') {
-					fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.ipynb'));
+					fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'));
 				}
 				else if (error.code !== 'ENOENT') {
 					throw (error);
 				}
 			}
 			try {
-				await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.md'), { overwrite: false });
-				this._movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.ipynb'));
+				await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'), { overwrite: false });
+				this._movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'));
 			} catch (error) {
 				if (error.code === 'EEXIST') {
-					fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, dirName, elem.file).concat('.md'));
+					fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'));
 				}
 				else if (error.code !== 'ENOENT') {
 					throw (error);
 				}
 			}
-			elem.file = fileName === undefined ? path.join(dirName, elem.file) : path.join(dirName, path.parse(fileName).name);
+			elem.file = fileName === undefined ? elem.file : path.parse(fileName).name;
 			elem.sections = elem.sections ? await this.traverseSections(elem.sections, dirName) : undefined;
 			movedSections.push(elem);
 		}
@@ -263,7 +268,7 @@ export class BookTocManager implements IBookTocManager {
 		this.newSection.title = section.title;
 		const uri = path.sep.concat(path.relative(section.rootContentPath, section.book.contentPath));
 		const dirName = targetSection ? path.dirname(targetSection.file) : '';
-		let moveFile = targetSection ? path.join(path.dirname(targetSection.file), path.parse(uri).dir, path.parse(uri).name) : path.join(path.parse(uri).dir, path.parse(uri).name);
+		let moveFile = path.join(path.parse(uri).dir, path.parse(uri).name);
 		let fileName = undefined;
 		try {
 			await fs.move(section.book.contentPath, path.join(this.targetBookContentPath, moveFile).concat(path.parse(uri).ext), { overwrite: false });
@@ -277,7 +282,8 @@ export class BookTocManager implements IBookTocManager {
 			}
 		}
 		fileName = fileName === undefined ? path.parse(uri).name : path.parse(fileName).name;
-		this.newSection.file = targetSection ? path.join(path.dirname(targetSection.file), path.parse(uri).dir, fileName) : path.join(path.parse(uri).dir, fileName);
+		//this.newSection.file = targetSection ? path.join(path.dirname(targetSection.file), path.parse(uri).dir, fileName) : path.join(path.parse(uri).dir, fileName);
+		this.newSection.file = path.join(path.parse(uri).dir, fileName);
 		if (section.sections) {
 			const files = section.sections as JupyterBookSection[];
 			const movedSections = await this.traverseSections(files, dirName);
@@ -310,7 +316,6 @@ export class BookTocManager implements IBookTocManager {
 				fileName = await this.renameFile(notebook.book.contentPath, path.join(rootPath, notebookPath.base));
 			}
 			else {
-				await this.recovery();
 				throw (error);
 			}
 		}
@@ -370,4 +375,13 @@ export class BookTocManager implements IBookTocManager {
 		}
 		this.newSection = {};
 	}
+
+	public get movedFiles(): Map<string, string> {
+		return this._movedFiles;
+	}
+
+	public get originalToc(): Map<string, JupyterBookSection[]> {
+		return this._tocFiles;
+	}
+
 }
