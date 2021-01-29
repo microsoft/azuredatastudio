@@ -34,6 +34,8 @@ export class PostgresDashboard extends Dashboard {
 		const computeAndStoragePage = new PostgresComputeAndStoragePage(modelView, this._postgresModel);
 		// TODO: Removed properties page while investigating bug where refreshed values don't appear in UI
 		// const propertiesPage = new PostgresPropertiesPage(modelView, this._controllerModel, this._postgresModel);
+		// TODO: Removed parameters page while investigating bug where UI freezes dealing with large declarative table of components
+		// const parametersPage = new PostgresParametersPage(modelView, this._postgresModel);
 		const diagnoseAndSolveProblemsPage = new PostgresDiagnoseAndSolveProblemsPage(modelView, this._context, this._postgresModel);
 		const supportRequestPage = new PostgresSupportRequestPage(modelView, this._controllerModel, this._postgresModel);
 
