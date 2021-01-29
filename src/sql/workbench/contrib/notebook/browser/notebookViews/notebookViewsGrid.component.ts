@@ -2,9 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
-import 'vs/css!./notebookViewsGrid';
-import { Component, OnInit, ViewChildren, QueryList, Input, Inject, forwardRef, ChangeDetectorRef } from '@angular/core';
+import 'vs/css!./cellToolbar';
+import { Component, OnInit, ViewChildren, QueryList, Input, Inject, forwardRef, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCard.component';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
@@ -16,7 +15,11 @@ import { CellChangeEvent, INotebookViewCell } from 'sql/workbench/services/noteb
 
 @Component({
 	selector: 'notebook-views-grid-component',
-	templateUrl: decodeURI(require.toUrl('./notebookViewsGrid.component.html'))
+	templateUrl: decodeURI(require.toUrl('./notebookViewsGrid.component.html')),
+	encapsulation: ViewEncapsulation.None,
+	styleUrls: [
+		'../../../../../node_modules/gridstack/dist/gridstack.css'
+	]
 })
 export class NotebookViewsGridComponent implements OnInit {
 	@Input() cells: ICellModel[];
