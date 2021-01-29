@@ -39,8 +39,12 @@ export class BookTocManager implements IBookTocManager {
 	private targetBookContentPath: string;
 	private _sourceBook: BookModel;
 
-	constructor(sourceBook?: BookModel) {
+	constructor(targetBook?: BookModel, sourceBook?: BookModel) {
 		this._sourceBook = sourceBook;
+		this.newSection = {};
+		this.tableofContents = [];
+		this.sourceBookContentPath = sourceBook?.bookItems[0].rootContentPath;
+		this.targetBookContentPath = targetBook?.bookItems[0].rootContentPath;
 	}
 
 	async getAllFiles(toc: JupyterBookSection[], directory: string, filesInDir: string[], rootDirectory: string): Promise<JupyterBookSection[]> {
@@ -176,7 +180,7 @@ export class BookTocManager implements IBookTocManager {
 	*/
 	private buildTOC(version: BookVersion, section: JupyterBookSection, findSection: JupyterBookSection, addSection: JupyterBookSection): JupyterBookSection {
 		// condition to find the section to be modified
-		if (section.title === findSection.title && (section.file && section.file === findSection.file || section.url && section.url === findSection.file)) {
+		if (section.title === findSection.title && (section.file && path.normalize(section.file) === path.normalize(findSection.file) || section.url && path.normalize(section.url) === path.normalize(findSection.file))) {
 			if (addSection) {
 				//if addSection is not undefined, then we added to the table of contents.
 				section.sections !== undefined && section.sections.length > 0 ? section.sections.push(addSection) : section.sections = [addSection];
@@ -264,8 +268,6 @@ export class BookTocManager implements IBookTocManager {
 	 * @param book The target book.
 	*/
 	async addSection(section: BookTreeItem, book: BookTreeItem): Promise<void> {
-		this.sourceBookContentPath = section.rootContentPath;
-		this.targetBookContentPath = book.rootContentPath;
 		this.newSection.title = section.title;
 		const uri = path.sep.concat(path.relative(section.rootContentPath, section.book.contentPath));
 		let moveFile = path.join(path.parse(uri).dir, path.parse(uri).name);
@@ -344,7 +346,7 @@ export class BookTocManager implements IBookTocManager {
 	public async updateBook(element: BookTreeItem, targetBook: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
 		const targetBookVersion = targetBook.book.version === BookVersion.v1 ? BookVersion.v1 : BookVersion.v2;
 		if (element.contextValue === 'section') {
-			await this.addSection(element, targetBook, targetSection);
+			await this.addSection(element, targetBook);
 			const elementVersion = element.book.version === BookVersion.v1 ? BookVersion.v1 : BookVersion.v2;
 			// modify the sourceBook toc and remove the section
 			const findSection: JupyterBookSection = { file: element.book.page.file, title: element.book.page.title };
@@ -363,7 +365,7 @@ export class BookTocManager implements IBookTocManager {
 			}
 		}
 		else if (element.contextValue === 'savedNotebook') {
-			await this.addNotebook(element, targetBook, targetSection);
+			await this.addNotebook(element, targetBook);
 			if (element.book.tableOfContents.sections) {
 				const elementVersion = element.book.version === BookVersion.v1 ? BookVersion.v1 : BookVersion.v2;
 				// the notebook is part of a book so we need to modify its toc as well
@@ -381,7 +383,6 @@ export class BookTocManager implements IBookTocManager {
 				await this.updateTOC(targetBookVersion, targetBook.tableOfContentsPath, targetSection, this.newSection);
 			}
 		}
-		this.newSection = {};
 	}
 
 	public get movedFiles(): Map<string, string> {
