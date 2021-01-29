@@ -56,7 +56,7 @@ export class ResourceTypeService implements IResourceTypeService {
 					resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
 					resourceType.getOkButtonText = (selectedOptions) => { return this.getOkButtonText(resourceType, selectedOptions); };
 					resourceType.getAgreementInfo = (selectedOptions) => { return this.getAgreementInfo(resourceType, selectedOptions); };
-					this.getResourceSubTypes(filterByPlatform, resourceType);
+					this.getResourceSubTypes(resourceType);
 					this._resourceTypes.push(resourceType);
 				});
 
@@ -125,7 +125,7 @@ export class ResourceTypeService implements IResourceTypeService {
 		}
 	}
 
-	private getResourceSubTypes(filterByPlatform: boolean = true, resourceType: ResourceType): void {
+	private getResourceSubTypes(resourceType: ResourceType): void {
 		const resourceSubTypes: ResourceSubType[] = [];
 		vscode.extensions.all.forEach((extension) => {
 			const extensionResourceSubTypes = extension.packageJSON.contributes?.resourceDeploymentSubTypes as ResourceSubType[];
@@ -155,7 +155,6 @@ export class ResourceTypeService implements IResourceTypeService {
 					}
 				}
 			});
-
 		});
 	}
 
