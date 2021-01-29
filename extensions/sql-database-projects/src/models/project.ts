@@ -15,7 +15,7 @@ import { Uri, window } from 'vscode';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
-import { TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 /**
  * Class representing a Project, and providing functions for operating on it
@@ -196,7 +196,7 @@ export class Project {
 			return;
 		}
 
-		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, 'updateProjectForRoundtrip');
+		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectForRoundtrip);
 
 		if (!this.importedTargets.includes(constants.NetCoreTargets)) {
 			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
@@ -391,7 +391,7 @@ export class Project {
 
 			await this.serializeToProjFile(this.projFileXmlDoc);
 
-			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, 'changePlatformType')
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.changePlatformType)
 				.withAdditionalProperties({
 					from: this.getProjectTargetVersion(),
 					to: compatLevel
@@ -865,7 +865,7 @@ export class Project {
 			}
 		}
 
-		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, 'updateSystemDatabaseReferencesInProjFile')
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateSystemDatabaseReferencesInProjFile)
 			.withAdditionalMeasurements({ referencesCount: this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length })
 			.send();
 	}

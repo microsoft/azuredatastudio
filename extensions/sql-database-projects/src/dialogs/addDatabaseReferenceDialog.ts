@@ -14,7 +14,7 @@ import { cssStyles } from '../common/uiConstants';
 import { IconPathHelper } from '../common/iconHelper';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Deferred } from '../common/promise';
-import { TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 export enum ReferenceType {
 	project,
@@ -158,7 +158,7 @@ export class AddDatabaseReferenceDialog {
 			};
 		}
 
-		TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, 'addDatabaseReference')
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
 			.withAdditionalProperties({ referenceType: this.currentReferenceType!.toString() })
 			.send();
 

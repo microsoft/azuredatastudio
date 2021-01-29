@@ -30,7 +30,7 @@ import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialo
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
-import { TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 /**
  * Controller for managing lifecycle of projects
@@ -57,7 +57,9 @@ export class ProjectsController {
 	 * @param projectGuid
 	 */
 	public async createNewProject(creationParams: NewProjectParams): Promise<string> {
-		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, 'createNewProject').withAdditionalProperties({ template: creationParams.projectTypeId }).send();
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.createNewProject)
+			.withAdditionalProperties({ template: creationParams.projectTypeId })
+			.send();
 
 		if (creationParams.projectGuid && !UUID.isUUID(creationParams.projectGuid)) {
 			throw new Error(`Specified GUID is invalid: '${creationParams.projectGuid}'`);
@@ -119,13 +121,13 @@ export class ProjectsController {
 		try {
 			await this.netCoreTool.runDotnetCommand(options);
 
-			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, 'buildSucceeded')
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.build)
 				.withAdditionalMeasurements({ duration: new Date().getMilliseconds() - startTime.getMilliseconds() })
 				.send();
 
 			return project.dacpacOutputPath;
 		} catch (err) {
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, 'buildFailed')
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.build)
 				.withAdditionalProperties({ error: utils.getErrorMessage(err) })
 				.withAdditionalMeasurements({ duration: new Date().getMilliseconds() - startTime.getMilliseconds() })
 				.send();
@@ -167,10 +169,12 @@ export class ProjectsController {
 
 		const buildEndTime = new Date().getMilliseconds();
 		telemetryMeasures.buildDuration = buildEndTime - buildStartTime;
+		telemetryProps.buildSucceeded = (dacpacPath !== '').toString();
 
 		if (!dacpacPath) {
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, 'publishProjectBuildFailure')
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
 				.withAdditionalProperties(telemetryProps)
+				.withAdditionalMeasurements(telemetryMeasures)
 				.send();
 
 			return undefined; // buildProject() handles displaying the error
@@ -201,7 +205,7 @@ export class ProjectsController {
 			telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
 			telemetryProps.errorMessage = utils.getErrorMessage(err);
 
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, `publishProjectFailure`)
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
 				.withAdditionalProperties(telemetryProps)
 				.send();
 
@@ -212,7 +216,7 @@ export class ProjectsController {
 		telemetryProps.actionDuration = (actionEndTime - actionStartTime).toString();
 		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
 
-		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, `publishProject${telemetryProps.action}Complete`)
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
 			.withAdditionalProperties(telemetryProps)
 			.send();
 
@@ -231,8 +235,6 @@ export class ProjectsController {
 	}
 
 	public async schemaCompare(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
-		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, 'projectSchemaCompareStarted');
-
 		try {
 			// check if schema compare extension is installed
 			if (vscode.extensions.getExtension(constants.schemaCompareExtensionId)) {
@@ -241,7 +243,7 @@ export class ProjectsController {
 
 				// check that dacpac exists
 				if (await utils.exists(dacpacPath)) {
-					TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, 'projectSchemaCompareCommandInvoked');
+					TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked);
 					await vscode.commands.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
 				} else {
 					throw new Error(constants.buildFailedCannotStartSchemaCompare);
@@ -250,7 +252,7 @@ export class ProjectsController {
 				throw new Error(constants.schemaCompareNotInstalled);
 			}
 		} catch (err) {
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, 'projectSchemaCompareCommandInvoked')
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked)
 				.withAdditionalProperties({ errorMessage: utils.getErrorMessage(err) })
 				.send();
 
@@ -339,7 +341,7 @@ export class ProjectsController {
 		try {
 			const newEntry = await project.addScriptItem(relativeFilePath, newFileText, itemType.type);
 
-			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, 'itemAddedFromTree')
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree)
 				.withAdditionalProperties(telemetryProps)
 				.withAdditionalMeasurements(telemetryMeasurements)
 				.send();
@@ -349,7 +351,7 @@ export class ProjectsController {
 		} catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, 'itemAddedFromTreeFailed')
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree)
 				.withAdditionalProperties(telemetryProps)
 				.withAdditionalMeasurements(telemetryMeasurements)
 				.send();
@@ -363,10 +365,10 @@ export class ProjectsController {
 		const fileEntry = this.getFileProjectEntry(project, node);
 
 		if (fileEntry) {
-			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, 'excludeFromProject');
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
 			await project.exclude(fileEntry);
 		} else {
-			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectTree, 'excludeFromProjectFailed');
+			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
 			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, node.uri.path));
 		}
 
@@ -411,13 +413,13 @@ export class ProjectsController {
 		}
 
 		if (success) {
-			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, 'deleteObjectFromProject')
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.deleteObjectFromProject)
 				.withAdditionalProperties({ objectType: node.constructor.name })
 				.send();
 
 			this.refreshProjectsTree(context);
 		} else {
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, 'deleteObjectFromProject')
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.deleteObjectFromProject)
 				.withAdditionalProperties({ objectType: node.constructor.name })
 				.send();
 
@@ -468,7 +470,7 @@ export class ProjectsController {
 		try {
 			await vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(project.projectFilePath));
 
-			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, 'editProjectFile');
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.editProjectFile);
 
 			const projFileWatcher: vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher(project.projectFilePath);
 			this.projFileWatchers.set(project.projectFilePath, projFileWatcher);
@@ -617,7 +619,7 @@ export class ProjectsController {
 			vscode.window.showErrorMessage(result.errorMessage);
 		}
 
-		TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, 'streamingJobValidationRun')
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.runStreamingJobValidation)
 			.withAdditionalProperties(telemetryProps)
 			.withAdditionalMeasurements({ duration: duration })
 			.send();

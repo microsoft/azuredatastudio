@@ -17,3 +17,20 @@ export enum TelemetryViews {
 	PublishDialog = 'PublishDialog',
 	ProjectTree = 'ProjectTree'
 }
+
+export enum TelemetryActions {
+	createNewProject = 'createNewProject',
+	addDatabaseReference = 'addDatabaseReference',
+	runStreamingJobValidation = 'runStreamingJobValidation',
+	generateScriptClicked = 'generateScriptClicked',
+	deleteObjectFromProject = 'deleteObjectFromProject',
+	editProjectFile = 'editProjectFile',
+	addItemFromTree = 'addItemFromTree',
+	excludeFromProject = 'excludeFromProject',
+	projectSchemaCompareCommandInvoked = 'projectSchemaCompareCommandInvoked',
+	publishProject = 'publishProject',
+	build = 'build',
+	updateProjectForRoundtrip = 'updateProjectForRoundtrip',
+	changePlatformType = 'changePlatformType',
+	updateSystemDatabaseReferencesInProjFile = 'updateSystemDatabaseReferencesInProjFile'
+}

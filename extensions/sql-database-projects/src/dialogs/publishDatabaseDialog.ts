@@ -15,7 +15,7 @@ import { DeploymentOptions, SchemaObjectType } from '../../../mssql/src/mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
 import { getConnectionName } from './utils';
-import { TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -197,7 +197,7 @@ export class PublishDatabaseDialog {
 	}
 
 	public async generateScriptClick(): Promise<void> {
-		TelemetryReporter.sendActionEvent(TelemetryViews.PublishDialog, 'generateScriptClicked');
+		TelemetryReporter.sendActionEvent(TelemetryViews.PublishDialog, TelemetryActions.generateScriptClicked);
 
 		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
 		const settings: IGenerateScriptSettings = {
