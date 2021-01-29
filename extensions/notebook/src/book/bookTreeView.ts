@@ -18,7 +18,7 @@ import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
 import { debounce, getPinnedNotebooks } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
-import { BookTocManager, IBookTocManager } from './bookTocManager';
+import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { getContentPath } from './bookVersionHandler';
 
 interface BookSearchResults {
@@ -146,7 +146,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		await this.bookTocManager.createBook(bookPath, contentPath);
 	}
 
-	async editBook(movingElement: BookTreeItem): Promise<void> {
+	async getSelectionQuicPick(movingElement: BookTreeItem): Promise<quickPickResults> {
 		let bookOptions: vscode.QuickPickItem[] = [];
 		let pickedSection: vscode.QuickPickItem;
 		this.books.forEach(book => {
@@ -158,78 +158,78 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			canPickMany: false,
 			placeHolder: loc.labelBookFolder
 		});
-		try {
-			if (pickedBook && movingElement) {
-				const updateBook = this.books.find(book => book.bookPath === pickedBook.detail).bookItems[0];
-				if (updateBook) {
-					let bookSections = updateBook.sections;
-					while (bookSections?.length > 0) {
-						bookOptions = [{ label: loc.labelAddToLevel, detail: pickedSection ? pickedSection.detail : '' }];
-						bookSections.forEach(section => {
-							if (section.sections) {
-								bookOptions.push({ label: section.title ? section.title : section.file, detail: section.file });
-							}
+
+		if (pickedBook && movingElement) {
+			const updateBook = this.books.find(book => book.bookPath === pickedBook.detail).bookItems[0];
+			if (updateBook) {
+				let bookSections = updateBook.sections;
+				while (bookSections?.length > 0) {
+					bookOptions = [{ label: loc.labelAddToLevel, detail: pickedSection ? pickedSection.detail : '' }];
+					bookSections.forEach(section => {
+						if (section.sections) {
+							bookOptions.push({ label: section.title ? section.title : section.file, detail: section.file });
+						}
+					});
+					bookSections = [];
+					if (bookOptions.length > 1) {
+						pickedSection = await vscode.window.showQuickPick(bookOptions, {
+							canPickMany: false,
+							placeHolder: loc.labelBookSection
 						});
-						bookSections = [];
-						if (bookOptions.length > 1) {
-							pickedSection = await vscode.window.showQuickPick(bookOptions, {
-								canPickMany: false,
-								placeHolder: loc.labelBookSection
-							});
 
-							if (pickedSection && pickedSection.label === loc.labelAddToLevel) {
-								break;
-							}
-							else if (pickedSection && pickedSection.detail) {
-								if (updateBook.root === movingElement.root && pickedSection.detail === movingElement.uri) {
-									pickedSection = undefined;
-								} else {
-									bookSections = updateBook.findChildSection(pickedSection.detail).sections;
-								}
+						if (pickedSection && pickedSection.label === loc.labelAddToLevel) {
+							break;
+						}
+						else if (pickedSection && pickedSection.detail) {
+							if (updateBook.root === movingElement.root && pickedSection.detail === movingElement.uri) {
+								pickedSection = undefined;
+							} else {
+								bookSections = updateBook.findChildSection(pickedSection.detail).sections;
 							}
 						}
-					}
-					if (pickedSection) {
-						const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
-						if (movingElement.tableOfContents.sections) {
-							if (movingElement.contextValue === 'savedNotebook') {
-								let sourceBook = this.books.find(book => book.getNotebook(path.normalize(movingElement.book.contentPath)));
-								movingElement.tableOfContents.sections = sourceBook.bookItems[0].sections;
-							}
-						}
-						const sourceBook = this.books.find(book => book.bookPath === movingElement.book.root);
-						const targetBook = this.books.find(book => book.bookPath === updateBook.book.root);
-						// remove watch on toc file from both books.
-						if (sourceBook) {
-							fs.unwatchFile(movingElement.tableOfContentsPath);
-						}
-
-						this.bookTocManager.updateBook(movingElement, updateBook, targetSection)
-							.catch(async (e) => {
-								await this.bookTocManager.recovery();
-								vscode.window.showErrorMessage(loc.editBookError(updateBook.book.contentPath, e instanceof Error ? e.message : e));
-							})
-							.then(() => {
-								this.fireBookRefresh(targetBook);
-								if (sourceBook) {
-									// refresh source book model to pick up latest changes
-									this.fireBookRefresh(sourceBook);
-								}
-							})
-							.finally(() => {
-								// even if it fails, we still need to watch the toc file again.
-								if (sourceBook) {
-									this.setFileWatcher(sourceBook);
-								}
-								this.setFileWatcher(targetBook);
-
-							});
 					}
 				}
 			}
+			return { quickPickSection: pickedSection, book: updateBook };
 		}
-		catch (e) {
-			vscode.window.showErrorMessage(loc.selectBookError(e instanceof Error ? e.message : e));
+		return undefined;
+	}
+
+	async editBook(movingElement: BookTreeItem): Promise<void> {
+		const selectionResults = await this.getSelectionQuicPick(movingElement);
+		const pickedSection = selectionResults.quickPickSection;
+		const updateBook = selectionResults.book;
+		if (pickedSection && updateBook) {
+			const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
+			if (movingElement.tableOfContents.sections) {
+				if (movingElement.contextValue === 'savedNotebook') {
+					let sourceBook = this.books.find(book => book.getNotebook(path.normalize(movingElement.book.contentPath)));
+					movingElement.tableOfContents.sections = sourceBook?.bookItems[0].sections;
+				}
+			}
+			const sourceBook = this.books.find(book => book.bookPath === movingElement.book.root);
+			const targetBook = this.books.find(book => book.bookPath === updateBook.book.root);
+			// remove watch on toc file from both books.
+			if (sourceBook) {
+				fs.unwatchFile(movingElement.tableOfContentsPath);
+			}
+			try {
+				await this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
+			} catch (e) {
+				await this.bookTocManager.recovery();
+				vscode.window.showErrorMessage(loc.editBookError(updateBook.book.contentPath, e instanceof Error ? e.message : e));
+			} finally {
+				this.fireBookRefresh(targetBook);
+				if (sourceBook) {
+					// refresh source book model to pick up latest changes
+					this.fireBookRefresh(sourceBook);
+				}
+				// even if it fails, we still need to watch the toc file again.
+				if (sourceBook) {
+					this.setFileWatcher(sourceBook);
+				}
+				this.setFileWatcher(targetBook);
+			}
 		}
 	}
 
