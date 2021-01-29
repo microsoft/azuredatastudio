@@ -417,7 +417,7 @@ export class ProjectsController {
 
 			this.refreshProjectsTree(context);
 		} else {
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, 'deleteObjectFromProjectFailed')
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, 'deleteObjectFromProject')
 				.withAdditionalProperties({ objectType: node.constructor.name })
 				.send();
 
