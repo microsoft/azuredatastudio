@@ -86,7 +86,7 @@
     }
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^1.1.1",
+    "@microsoft/ads-extension-telemetry": "^1.1.2",
     "htmlparser2": "^3.10.1",
     "vscode-nls": "^4.0.0"
   },

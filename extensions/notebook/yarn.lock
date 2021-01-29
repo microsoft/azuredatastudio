@@ -221,6 +221,13 @@
     "@phosphor/disposable" "^1.1.2"
     "@phosphor/signaling" "^1.2.2"
 
+"@microsoft/ads-extension-telemetry@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-1.1.2.tgz#ca6df0593f16d7b050fc2e95fa09532c6fd7bff7"
+  integrity sha512-1kWmJhGTkwJV13K/Zk/GH2Cp6fVSHNAgpSE8xnAAtLOadd+dSuosnI5Y2eXfwhNj2CdjQNaFvSsJ5sg03J/kNg==
+  dependencies:
+    vscode-extension-telemetry "^0.1.6"
+
 "@nodelib/fs.scandir@2.1.3":
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.3.tgz#3a582bdb53804c6ba6d146579c46e52130cf4a3b"
@@ -444,13 +451,6 @@ adm-zip@^0.4.14:
   resolved "https://registry.yarnpkg.com/adm-zip/-/adm-zip-0.4.14.tgz#2cf312bcc9f8875df835b0f6040bd89be0a727a9"
   integrity sha512-/9aQCnQHF+0IiCl0qhXoK7qs//SwYE7zX8lsr/DNk1BRAHYxeLZPL4pguwK29gUEqasYQjqPtEpDRSWEkdHn9g==
 
-ads-extension-telemetry@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/ads-extension-telemetry/-/ads-extension-telemetry-1.0.0.tgz#840b363a6ad958447819b9bc59fdad3e49de31a9"
-  integrity sha512-ouxZVECe4tsO0ek0dLdnAZEz1Lrytv1uLbbGZhRbZsHITsUYNjnkKnA471uWh0Dj80s+orvv49/j3/tNBDP/SQ==
-  dependencies:
-    vscode-extension-telemetry "0.1.2"
-
 ajv@^6.5.5:
   version "6.9.1"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.9.1.tgz#a4d3683d74abc5670e75f0b16520f70a20ea8dc1"
@@ -489,15 +489,15 @@ append-transform@^2.0.0:
   dependencies:
     default-require-extensions "^3.0.0"
 
-applicationinsights@1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/applicationinsights/-/applicationinsights-1.4.0.tgz#e17e436427b6e273291055181e29832cca978644"
-  integrity sha512-TV8MYb0Kw9uE2cdu4V/UvTKdOABkX2+Fga9iDz0zqV7FLrNXfmAugWZmmdTx4JoynYkln3d5CUHY3oVSUEbfFw==
+applicationinsights@1.7.4:
+  version "1.7.4"
+  resolved "https://registry.yarnpkg.com/applicationinsights/-/applicationinsights-1.7.4.tgz#e7d96435594d893b00cf49f70a5927105dbb8749"
+  integrity sha512-XFLsNlcanpjFhHNvVWEfcm6hr7lu9znnb6Le1Lk5RE03YUV9X2B2n2MfM4kJZRrUdV+C0hdHxvWyv+vWoLfY7A==
   dependencies:
     cls-hooked "^4.2.2"
     continuation-local-storage "^3.2.1"
     diagnostic-channel "0.2.0"
-    diagnostic-channel-publishers "^0.3.2"
+    diagnostic-channel-publishers "^0.3.3"
 
 asn1@~0.2.3:
   version "0.2.4"
@@ -748,7 +748,7 @@ delayed-stream@~1.0.0:
   resolved "https://registry.yarnpkg.com/delayed-stream/-/delayed-stream-1.0.0.tgz#df3ae199acadfb7d440aaae0b29e2272b24ec619"
   integrity sha1-3zrhmayt+31ECqrgsp4icrJOxhk=
 
-diagnostic-channel-publishers@^0.3.2:
+diagnostic-channel-publishers@^0.3.3:
   version "0.3.5"
   resolved "https://registry.yarnpkg.com/diagnostic-channel-publishers/-/diagnostic-channel-publishers-0.3.5.tgz#a84a05fd6cc1d7619fdd17791c17e540119a7536"
   integrity sha512-AOIjw4T7Nxl0G2BoBPhkQ6i7T4bUd9+xvdYizwvG7vVAM1dvr+SDrcUudlmzwH0kbEwdR2V1EcnKT0wAeYLQNQ==
@@ -1784,12 +1784,12 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vscode-extension-telemetry@0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/vscode-extension-telemetry/-/vscode-extension-telemetry-0.1.2.tgz#049207f5453930888ff68ca925b07bab08f2c955"
-  integrity sha512-FSbaZKlIH3VKvBJsKw7v5bESWHXzltji2rtjaJeJglpQH4tfClzwHMzlMXUZGiblV++djEzb1gW8mb5E+wxFsg==
+vscode-extension-telemetry@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/vscode-extension-telemetry/-/vscode-extension-telemetry-0.1.6.tgz#048b70c93243413036a8315cda493b8e7342980c"
+  integrity sha512-rbzSg7k4NnsCdF4Lz0gI4jl3JLXR0hnlmfFgsY8CSDYhXgdoIxcre8jw5rjkobY0xhSDhbG7xCjP8zxskySJ/g==
   dependencies:
-    applicationinsights "1.4.0"
+    applicationinsights "1.7.4"
 
 vscode-jsonrpc@^4.0.0:
   version "4.0.0"
