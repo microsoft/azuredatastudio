@@ -32,7 +32,7 @@ export class OpenExistingDialog extends DialogBase {
 		super(constants.OpenExistingDialogTitle, 'OpenProject');
 
 		// dialog launched from Welcome message button (only visible when no current workspace) vs. "add project" button
-		TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, TelemetryActions.OpenWorkspaceProjectDialogLaunched)
+		TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, TelemetryActions.OpenExistingDialogLaunched)
 			.withAdditionalProperties({ isWorkspaceOpen: (vscode.workspace.workspaceFile !== undefined).toString() })
 			.send();
 	}
