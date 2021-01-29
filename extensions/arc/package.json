@@ -895,7 +895,7 @@
     ],
     "resourceDeploymentSubTypes": [
       {
-        "name": "azure-sql-mi",
+        "resourceName": "azure-sql-mi",
         "options": [
           {
             "name": "mi-type",

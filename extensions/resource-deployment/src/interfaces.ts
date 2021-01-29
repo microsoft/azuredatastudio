@@ -32,7 +32,7 @@ export interface ResourceSubType {
 	/**
 	 * The name should match the name in Resource Type
 	 */
-	name: string;
+	resourceName: string;
 	/**
 	 * The option name should have a matching name in ResourceType.options
 	 */
