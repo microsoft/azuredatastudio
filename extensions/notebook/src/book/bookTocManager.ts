@@ -352,7 +352,7 @@ export class BookTocManager implements IBookTocManager {
 			await this.addSection(element, targetBook);
 			const elementVersion = element.book.version === BookVersion.v1 ? BookVersion.v1 : BookVersion.v2;
 			// modify the sourceBook toc and remove the section
-			const findSection: JupyterBookSection = { file: element.book.page.file, title: element.book.page.title };
+			const findSection: JupyterBookSection = { file: element.book.page.file?.replace(/\\/g, '/'), title: element.book.page.title };
 			await this.updateTOC(elementVersion, element.tableOfContentsPath, findSection, undefined);
 			if (targetSection) {
 				// adding new section to the target book toc file
@@ -372,7 +372,7 @@ export class BookTocManager implements IBookTocManager {
 			if (element.book.tableOfContents.sections) {
 				const elementVersion = element.book.version === BookVersion.v1 ? BookVersion.v1 : BookVersion.v2;
 				// the notebook is part of a book so we need to modify its toc as well
-				const findSection = { file: element.book.page.file, title: element.book.page.title };
+				const findSection = { file: element.book.page.file?.replace(/\\/g, '/'), title: element.book.page.title };
 				await this.updateTOC(elementVersion, element.tableOfContentsPath, findSection, undefined);
 			} else {
 				// close the standalone notebook, so it doesn't throw an error when we move the notebook to new location.
