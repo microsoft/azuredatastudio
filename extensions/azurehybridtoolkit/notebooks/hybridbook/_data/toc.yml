@@ -8,13 +8,6 @@
 - title: Search
   search: true
 
-- title: ADP
-  url: /ADP/readme
-  not_numbered: true
-  expand_sections: false
-  sections:
-  - title: ADP Control
-    url: ADP/ADPControl
 - title: Assessment
   url: /Assessments/readme
   not_numbered: true
