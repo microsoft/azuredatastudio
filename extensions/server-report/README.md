@@ -8,7 +8,7 @@ Welcome to **Server Reports** for Azure Data Studio! Server Reports give useful 
 * Backup Growth Trend
 * Wait counts
 
-<img src="https://github.com/Microsoft/azuredatastudio/raw/main/samples/serverReports/images/server_reports.png" alt="Server Reports" style="width:480px;"/>
+<img src="https://github.com/Microsoft/azuredatastudio/raw/main/extensions/server-report/images/server_reports.png" alt="Server Reports" style="width:480px;"/>
 
 This extension is inspired by SQL Server Management Studio (SSMS)'s reports. We will continually add more useful server insights and tasks.
 
@@ -17,7 +17,7 @@ This extension is also useful as a sample dashboard extension. It demonstrates b
 
 See the [Server Reports Extension Project] in the Azure Data Studio repository on Github for the extension source code.
 
-[Server Reports Extension Project]:https://github.com/Microsoft/azuredatastudio/tree/main/samples/serverReports
+[Server Reports Extension Project]:https://github.com/Microsoft/azuredatastudio/tree/main/extensions/server-report
 [extension authoring guide]:https://github.com/Microsoft/azuredatastudio/wiki/Getting-started-with-Extensibility
 
 
