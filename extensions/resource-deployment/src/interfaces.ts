@@ -30,7 +30,7 @@ export interface ResourceType {
 
 export interface ResourceSubType {
 	/**
-	 * The name should match the name in Resource Type
+	 * The name of the Resource Type this subtype is extending
 	 */
 	resourceName: string;
 	/**
