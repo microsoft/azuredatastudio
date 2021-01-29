@@ -90,7 +90,7 @@ export interface IJupyterBookSectionV1 {
 	/**
 	 * If the section shouldn't have a number in the sidebar
 	 */
-	not_numbered?: string;
+	not_numbered?: boolean;
 	/**
 	 * If you'd like the sections of this chapter to always be expanded in the sidebar.
 	 */

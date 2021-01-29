@@ -47,7 +47,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._extensionContext = extensionContext;
 		this.books = [];
 		this.bookPinManager = new BookPinManager();
-		this.bookTocManager = new BookTocManager();
 		this.viewId = view;
 		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.prompter = new CodeAdapter();
@@ -209,6 +208,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 			const sourceBook = this.books.find(book => book.bookPath === movingElement.book.root);
 			const targetBook = this.books.find(book => book.bookPath === updateBook.book.root);
+			this.bookTocManager = new BookTocManager(sourceBook);
 			// remove watch on toc file from both books.
 			if (sourceBook) {
 				fs.unwatchFile(movingElement.tableOfContentsPath);

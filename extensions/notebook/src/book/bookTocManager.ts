@@ -10,6 +10,7 @@ import { JupyterBookSection } from '../contracts/content';
 import { BookVersion, convertTo } from './bookVersionHandler';
 import * as vscode from 'vscode';
 import * as loc from '../common/localizedConstants';
+import { BookModel } from './bookModel';
 
 export interface IBookTocManager {
 	updateBook(element: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
@@ -36,8 +37,10 @@ export class BookTocManager implements IBookTocManager {
 	private _tocFiles = new Map<string, JupyterBookSection[]>();
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
+	private _sourceBook: BookModel;
 
-	constructor() {
+	constructor(sourceBook?: BookModel) {
+		this._sourceBook = sourceBook;
 	}
 
 	async getAllFiles(toc: JupyterBookSection[], directory: string, filesInDir: string[], rootDirectory: string): Promise<JupyterBookSection[]> {
@@ -220,9 +223,8 @@ export class BookTocManager implements IBookTocManager {
 	 * When moving a section, we need to modify every file path that it's within the section. Since sections is a tree like structure, we need to modify each of the file paths
 	 * and move the files individually. The overwrite option is set to false to prevent any issues with duplicated file names.
 	 * @param files Files in the section.
-	 * @param dirName The directory path of the target section that will be appended to the target book's root.
 	*/
-	async traverseSections(files: JupyterBookSection[], dirName: string): Promise<JupyterBookSection[]> {
+	async traverseSections(files: JupyterBookSection[]): Promise<JupyterBookSection[]> {
 		let movedSections: JupyterBookSection[] = [];
 		for (const elem of files) {
 			let fileName = undefined;
@@ -249,7 +251,7 @@ export class BookTocManager implements IBookTocManager {
 				}
 			}
 			elem.file = fileName === undefined ? elem.file : path.parse(fileName).name;
-			elem.sections = elem.sections ? await this.traverseSections(elem.sections, dirName) : undefined;
+			elem.sections = elem.sections ? await this.traverseSections(elem.sections) : undefined;
 			movedSections.push(elem);
 		}
 		return movedSections;
@@ -260,14 +262,12 @@ export class BookTocManager implements IBookTocManager {
 	 * notebook's path. The overwrite option is set to false to prevent any issues with duplicated file names.
 	 * @param section The section that's been moved.
 	 * @param book The target book.
-	 * @param targetSection The target book's section that'll be modified.
 	*/
-	async addSection(section: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
+	async addSection(section: BookTreeItem, book: BookTreeItem): Promise<void> {
 		this.sourceBookContentPath = section.rootContentPath;
 		this.targetBookContentPath = book.rootContentPath;
 		this.newSection.title = section.title;
 		const uri = path.sep.concat(path.relative(section.rootContentPath, section.book.contentPath));
-		const dirName = targetSection ? path.dirname(targetSection.file) : '';
 		let moveFile = path.join(path.parse(uri).dir, path.parse(uri).name);
 		let fileName = undefined;
 		try {
@@ -282,11 +282,15 @@ export class BookTocManager implements IBookTocManager {
 			}
 		}
 		fileName = fileName === undefined ? path.parse(uri).name : path.parse(fileName).name;
-		//this.newSection.file = targetSection ? path.join(path.dirname(targetSection.file), path.parse(uri).dir, fileName) : path.join(path.parse(uri).dir, fileName);
+
+		if (this._sourceBook) {
+			const sectionTOC = this._sourceBook.bookItems[0].findChildSection(section.uri);
+			this.newSection = sectionTOC;
+		}
 		this.newSection.file = path.join(path.parse(uri).dir, fileName);
 		if (section.sections) {
 			const files = section.sections as JupyterBookSection[];
-			const movedSections = await this.traverseSections(files, dirName);
+			const movedSections = await this.traverseSections(files);
 			this.newSection.sections = movedSections;
 			this.cleanUp(path.dirname(section.book.contentPath));
 		}
@@ -302,11 +306,9 @@ export class BookTocManager implements IBookTocManager {
 	 * notebook's path. The overwrite option is set to false to prevent any issues with duplicated file names.
 	 * @param element Notebook, Markdown File, or section that will be added to the book.
 	 * @param targetBook Book that will be modified.
-	 * @param targetSection Book section that'll be modified.
 	*/
-	async addNotebook(notebook: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
-		//the book's contentPath contains the first file of the section, we get the dirname to identify the section's root path
-		const rootPath = targetSection ? path.join(book.rootContentPath, path.dirname(targetSection.file)) : book.rootContentPath;
+	async addNotebook(notebook: BookTreeItem, book: BookTreeItem): Promise<void> {
+		const rootPath = book.rootContentPath;
 		const notebookPath = path.parse(notebook.book.contentPath);
 		let fileName = undefined;
 		try {
@@ -319,8 +321,14 @@ export class BookTocManager implements IBookTocManager {
 				throw (error);
 			}
 		}
+
+		if (this._sourceBook) {
+			const sectionTOC = this._sourceBook.bookItems[0].findChildSection(notebook.uri);
+			this.newSection = sectionTOC;
+		}
 		fileName = fileName === undefined ? notebookPath.name : path.parse(fileName).name;
-		this.newSection = { file: targetSection ? path.join(path.dirname(targetSection.file), fileName) : path.sep.concat(fileName), title: notebook.book.title };
+		this.newSection.file = path.sep.concat(fileName);
+		this.newSection.title = notebook.book.title;
 		if (book.version === BookVersion.v1) {
 			// here we only convert if is v1 because we are already using the v2 notation for every book that we read.
 			this.newSection = convertTo(book.version, this.newSection);

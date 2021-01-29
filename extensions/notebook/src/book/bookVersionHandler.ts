@@ -37,7 +37,8 @@ export function convertFrom(version: string, section: JupyterBookSection): Jupyt
 			search: (section as IJupyterBookSectionV1).search,
 			divider: (section as IJupyterBookSectionV1).divider,
 			header: (section as IJupyterBookSectionV1).header,
-			external: (section as IJupyterBookSectionV1).external
+			external: (section as IJupyterBookSectionV1).external,
+			not_numbered: (section as IJupyterBookSectionV1).not_numbered
 		});
 	} else {
 		return Object.assign(section, {
@@ -45,7 +46,11 @@ export function convertFrom(version: string, section: JupyterBookSection): Jupyt
 			file: (section as IJupyterBookSectionV2).file,
 			url: section.url,
 			sections: section.sections,
-			expand_sections: section.expand_sections
+			expand_sections: section.expand_sections,
+			numbered: (section as IJupyterBookSectionV2).numbered,
+			header: (section as IJupyterBookSectionV2).header,
+			chapters: (section as IJupyterBookSectionV2).chapters,
+			part: (section as IJupyterBookSectionV2).part
 		});
 	}
 }
@@ -61,6 +66,12 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 			let temp: JupyterBookSection = {};
 			temp.title = section.title;
 			temp.url = section.url ? section.url : section.file;
+			temp.expand_sections = section.expand_sections;
+			temp.not_numbered = section.not_numbered;
+			temp.search = section.search;
+			temp.divider = section.divider;
+			temp.header = section.header;
+			temp.external = section.external;
 			temp.sections = [];
 			for (let s of section.sections) {
 				const child = this.convertTo(version, s);
@@ -72,6 +83,7 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 			newSection.title = section.title;
 			newSection.url = section.url ? section.url : section.file;
 			newSection.sections = section.sections;
+			newSection.not_numbered = section.not_numbered;
 			newSection.expand_sections = section.expand_sections;
 			newSection.search = section.search;
 			newSection.divider = section.divider;
