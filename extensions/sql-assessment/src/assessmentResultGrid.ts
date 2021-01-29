@@ -46,14 +46,14 @@ export class AssessmentResultGrid implements vscode.Disposable {
 					dark: extensionContext.asAbsolutePath('resources/dark/database.svg'),
 					light: extensionContext.asAbsolutePath('resources/light/database.svg')
 				},
-				ariaLabel: localize('databaseIconLabel', "Database Icon")
+				title: localize('databaseIconLabel', "Database")
 			},
 			[azdata.sqlAssessment.SqlAssessmentTargetType.Server]: {
 				icon: {
 					dark: extensionContext.asAbsolutePath('resources/dark/server.svg'),
 					light: extensionContext.asAbsolutePath('resources/light/server.svg')
 				},
-				ariaLabel: localize('serverIconLabel', "Server Icon")
+				title: localize('serverIconLabel', "Server")
 			}
 		};
 

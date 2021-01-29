@@ -98,7 +98,7 @@ const indentationFilter = [
 	// {{SQL CARBON EDIT}}
 	'!**/*.gif',
 	'!build/actions/**/*.js',
-	'!**/*.{xlf,docx,sql,vsix,bacpac,ipynb,jpg}',
+	'!**/*.{xlf,lcl,docx,sql,vsix,bacpac,ipynb,jpg}',
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/admin-tool-ext-win/ssmsmin/**',

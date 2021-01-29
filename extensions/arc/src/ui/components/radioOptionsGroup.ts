@@ -84,4 +84,8 @@ export class RadioOptionsGroup implements IReadOnly {
 		this._divContainer.items.forEach(r => r.enabled = value);
 		this._divContainer.enabled = value;
 	}
+
+	get items(): azdata.Component[] {
+		return this._divContainer.items;
+	}
 }

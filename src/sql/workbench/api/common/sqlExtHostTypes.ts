@@ -177,7 +177,8 @@ export enum ModelComponentTypes {
 	ListView,
 	TabbedPanel,
 	Separator,
-	PropertiesContainer
+	PropertiesContainer,
+	InfoBox
 }
 
 export enum ModelViewAction {
@@ -278,6 +279,7 @@ export interface IModelViewWizardPageDetails {
 	enabled: boolean;
 	customButtons: number[];
 	description: string;
+	pageName?: string;
 }
 
 export interface IModelViewWizardDetails {
@@ -411,7 +413,8 @@ export enum AzureResource {
 	AzureKeyVault = 3,
 	Graph = 4,
 	MicrosoftResourceManagement = 5,
-	AzureDevOps = 6
+	AzureDevOps = 6,
+	MsGraph = 7
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
@@ -812,7 +815,8 @@ export enum ColumnType {
 	text = 0,
 	checkBox = 1,
 	button = 2,
-	icon = 3
+	icon = 3,
+	hyperlink = 4
 }
 
 export enum ActionOnCellCheckboxCheck {

@@ -22,6 +22,7 @@ const successMessage = `[I 14:00:38.811 NotebookApp] The Jupyter Notebook is run
 [I 14:00:38.812 NotebookApp] http://localhost:8891/?token=...
 [I 14:00:38.812 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
 `;
+const expectedPort = '8891';
 
 describe('Jupyter server instance', function (): void {
 	let expectedPath = 'mydir/notebook.ipynb';
@@ -54,17 +55,15 @@ describe('Jupyter server instance', function (): void {
 
 	it('Should create config and data directories on configure', async function (): Promise<void> {
 		// Given a server instance
-		let mkdirStub = sinon.stub(utils,'mkDir').withArgs(sinon.match.any,sinon.match.any).returns(Promise.resolve());
-		let copyStub = sinon.stub(fs,'copy').returns();
-		let pathStub = sinon.stub(utils,'exists').withArgs(sinon.match.any).returns(Promise.resolve(false));
+		let ensureDirSyncStub = sinon.stub(utils,'ensureDirSync').withArgs(sinon.match.any,sinon.match.any).returns();
+		let copyStub = sinon.stub(fs,'copySync').returns();
 
 		// When I run configure
 		await serverInstance.configure();
 
 		// Then I expect a folder to have been created with config and data subdirs
-		sinon.assert.callCount(mkdirStub,5);
+		sinon.assert.callCount(ensureDirSyncStub,5);
 		sinon.assert.callCount(copyStub,3);
-		sinon.assert.callCount(pathStub,1);
 	});
 
 	it('Should have URI info after start', async function (): Promise<void> {
@@ -89,6 +88,7 @@ describe('Jupyter server instance', function (): void {
 		let hostAndPort = serverInstance.uri.authority.split(':');
 		// verify port was set as expected
 		should(hostAndPort[1]).length(4);
+		should(hostAndPort[1]).equal(expectedPort);
 
 		// And I expect it to be started
 		should(serverInstance.isStarted).be.true();
@@ -150,8 +150,8 @@ describe('Jupyter server instance', function (): void {
 
 	it('Should remove directory on close', async function (): Promise<void> {
 		// Given configure and startup are done
-		sinon.stub(utils,'mkDir').withArgs(sinon.match.any,sinon.match.any).returns(Promise.resolve());
-		sinon.stub(fs,'copy').returns();
+		sinon.stub(utils,'ensureDirSync').withArgs(sinon.match.any,sinon.match.any).returns();
+		sinon.stub(fs,'copySync').returns();
 
 		let process = setupSpawn({
 			sdtout: (listener: (msg: string) => void) => { },

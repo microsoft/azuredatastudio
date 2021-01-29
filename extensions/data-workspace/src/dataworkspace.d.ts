@@ -20,9 +20,10 @@ declare module 'dataworkspace' {
 
 		/**
 		 * Add projects to the workspace
-		 * @param projectFiles Uris of project files to add
+		 * @param projectFiles Uris of project files to add,
+		 * @param workspaceFilePath workspace file to create if no workspace is open
 		 */
-		addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void>;
+		addProjectsToWorkspace(projectFiles: vscode.Uri[], workspaceFilePath?: vscode.Uri): Promise<void>;
 
 		/**
 		 * Change focus to Projects view
@@ -68,6 +69,11 @@ declare module 'dataworkspace' {
 		 * Gets the supported project types
 		 */
 		readonly supportedProjectTypes: IProjectType[];
+
+		/**
+		 * Gets the extension ID for the project provider
+		 */
+		readonly providerExtensionId: string;
 	}
 
 	/**

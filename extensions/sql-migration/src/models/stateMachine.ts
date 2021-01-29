@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { SKURecommendations } from './externalContract';
+import { azureResource } from 'azureResource';
 
 export enum State {
 	INIT,
@@ -65,7 +66,7 @@ export interface DatabaseBackupModel {
 	azureSecurityToken: string;
 }
 export interface Model {
-	readonly sourceConnection: azdata.connection.Connection;
+	readonly sourceConnectionId: string;
 	readonly currentState: State;
 	gatheringInformationError: string | undefined;
 	skuRecommendations: SKURecommendations | undefined;
@@ -86,10 +87,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined;
 	private _azureAccount!: azdata.Account;
 	private _databaseBackup!: DatabaseBackupModel;
+	private _migrationController!: azureResource.MigrationController | undefined;
 
 	constructor(
 		private readonly _extensionContext: vscode.ExtensionContext,
-		private readonly _sourceConnection: azdata.connection.Connection,
+		private readonly _sourceConnectionId: string,
 		public readonly migrationService: mssql.ISqlMigrationService
 	) {
 		this._currentState = State.INIT;
@@ -112,8 +114,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._databaseBackup = dbBackup;
 	}
 
-	public get sourceConnection(): azdata.connection.Connection {
-		return this._sourceConnection;
+	public get sourceConnectionId(): string {
+		return this._sourceConnectionId;
 	}
 
 	public get currentState(): State {
@@ -154,6 +156,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public get stateChangeEvent(): vscode.Event<StateChangeEvent> {
 		return this._stateChangeEventEmitter.event;
+	}
+
+	public set migrationController(controller: azureResource.MigrationController | undefined) {
+		this._migrationController = controller;
+	}
+
+	public get migrationController(): azureResource.MigrationController | undefined {
+		return this._migrationController;
 	}
 
 	dispose() {

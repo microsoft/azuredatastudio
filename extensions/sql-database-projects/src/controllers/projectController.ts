@@ -32,7 +32,7 @@ import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTree
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 
 /**
- * Controller for managing project lifecycle
+ * Controller for managing lifecycle of projects
  */
 export class ProjectsController {
 	private netCoreTool: NetCoreTool;
@@ -658,7 +658,7 @@ export class ProjectsController {
 
 				// add project to workspace
 				workspaceApi.showProjectsView();
-				await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
+				await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)], model.newWorkspaceFilePath);
 			}
 		}
 		catch (err) {

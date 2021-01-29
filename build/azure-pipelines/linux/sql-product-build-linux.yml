@@ -45,7 +45,7 @@ steps:
       password $(github-distro-mixin-password)
       EOF
 
-      git config user.email "andresse@microsoft.com"
+      git config user.email "sqltools@service.microsoft.com"
       git config user.name "AzureDataStudio"
     displayName: Prepare tooling
 
@@ -149,11 +149,17 @@ steps:
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
 
-  - script: |
+  - bash: |
       set -e
       mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
       cd /tmp
-      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/logs-linux-x64.tar.gz adsuser*
+      for folder in adsuser*/
+      do
+      folder=${folder%/}
+      # Only archive directories we want for debugging purposes
+      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
+      done
+
     displayName: Archive Logs
     continueOnError: true
     condition: succeededOrFailed()
@@ -226,7 +232,7 @@ steps:
       testResultsFiles: '*.xml'
       searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
     continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+    condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'

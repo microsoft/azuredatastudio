@@ -86,7 +86,7 @@ describe('File config page', function () {
 
 	it('checking if all components are initialized properly', async function () {
 
-		await new Promise(function (resolve) {
+		await new Promise<void>(function (resolve) {
 			page.registerContent(async (view) => {
 				fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
 				pages.set(1, fileConfigPage);
@@ -143,7 +143,6 @@ describe('File config page', function () {
 				providerName: 'PGSQL',
 				connectionId: 'testConnection3Id',
 				options: {
-					user: undefined, // setting it undefined to check if function return user as 'default
 					server: 'testcon3server',
 					database: 'testdb3'
 				}
@@ -156,7 +155,7 @@ describe('File config page', function () {
 			providerName: 'MSSQL',
 			connectionId: 'testConnection2Id',
 			options: {
-				// default database. This datatabe will be the first value in the database dropdown
+				// default database. This database will be the first value in the database dropdown
 				database: 'testdb2',
 				user: 'testcon2user',
 				server: 'testcon2server'
@@ -230,16 +229,16 @@ describe('File config page', function () {
 			{ displayName: 'schema3', name: 'schema3' }
 		];
 
-		let mockQueryProvider = TypeMoq.Mock.ofType(TestQueryProvider);
-		sinon.stub(azdata.dataprotocol, 'getProvider').returns(mockQueryProvider.object);
-		mockQueryProvider.setup(x => x.runQueryAndReturn(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => { return schemaQueryResult; });
+		const testQueryProvider = new TestQueryProvider();
+		sinon.stub(azdata.dataprotocol, 'getProvider').returns(testQueryProvider);
+		sinon.stub(testQueryProvider, 'runQueryAndReturn').resolves(schemaQueryResult);
 
-		await new Promise(function (resolve) {
+		await new Promise<void>(function (resolve) {
 			page.registerContent(async (view) => {
 				fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
 				pages.set(1, fileConfigPage);
 				await fileConfigPage.start();
-				await fileConfigPage.setupNavigationValidator();
+				fileConfigPage.setupNavigationValidator();
 				resolve();
 			});
 			wizard.generateScriptButton.hidden = true;
@@ -251,11 +250,11 @@ describe('File config page', function () {
 
 		await fileConfigPage.onPageEnter();
 
-		should.deepEqual(fileConfigPage.serverDropdown.value, expectedConnectionValues[0]);
-		should.deepEqual(fileConfigPage.serverDropdown.values, expectedConnectionValues);
-		should.deepEqual(fileConfigPage.databaseDropdown.value, expectedDatabaseDropdownValues[0]);
-		should.deepEqual(fileConfigPage.databaseDropdown.values, expectedDatabaseDropdownValues);
-		should.deepEqual(fileConfigPage.schemaDropdown.value, expectedSchemaValues[0]);
-		should.deepEqual(fileConfigPage.schemaDropdown.values, expectedSchemaValues);
+		should.deepEqual(fileConfigPage.serverDropdown.value, expectedConnectionValues[0], 'Server dropdown value was incorrect');
+		should.deepEqual(fileConfigPage.serverDropdown.values, expectedConnectionValues, 'Server dropdown values were incorrect');
+		should.deepEqual(fileConfigPage.databaseDropdown.value, expectedDatabaseDropdownValues[0], 'Database dropdown value was incorrect');
+		should.deepEqual(fileConfigPage.databaseDropdown.values, expectedDatabaseDropdownValues, 'Database dropdown values were incorrect');
+		should.deepEqual(fileConfigPage.schemaDropdown.value, expectedSchemaValues[0], 'Schema dropdown value was incorrect');
+		should.deepEqual(fileConfigPage.schemaDropdown.values, expectedSchemaValues, 'Schema dropdown values were incorrect');
 	});
 });

@@ -9,6 +9,7 @@ text-cell-component {
 text-cell-component .notebook-text {
 	display: flex;
 	outline: none;
+	min-height: 50px;
 }
 text-cell-component code-component {
 	flex-direction: column;
@@ -17,11 +18,14 @@ text-cell-component .notebook-preview {
 	flex-direction: column;
 	padding-left: 8px;
 	padding-right: 8px;
-	padding-top: 14px;
-	padding-bottom: 14px;
 	user-select: none;
 	width: 100%;
 	outline: none;
+	padding-top: 14px;
+}
+text-cell-component .notebook-preview > *:first-child {
+	margin-top: 0;
+	padding-top: 0;
 }
 text-cell-component .show-markdown.show-preview code-component {
 	width: 50%
@@ -32,8 +36,6 @@ text-cell-component .show-markdown .notebook-preview {
 	border-style: solid;
 	border-top-width: 0;
 	width: 50%;
-	padding-top: 0px;
-	padding-bottom: 0px;
 }
 .notebook-preview.actionselect {
 	user-select: text;
@@ -72,7 +74,6 @@ text-cell-component thead {
 text-cell-component td,
 text-cell-component th,
 text-cell-component tr {
-	text-align: left;
 	vertical-align: middle;
 	padding: 0.5em 0.5em;
 	line-height: normal;

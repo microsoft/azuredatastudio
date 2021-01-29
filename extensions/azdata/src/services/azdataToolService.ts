@@ -18,9 +18,7 @@ export class AzdataToolService {
 	}
 
 	/**
-	* Sets the localAzdata that was last saved
-	*
-	* @param memento The memento that stores the localAzdata object
+	* Sets the localAzdata object to be used for azdata operations
 	*/
 	set localAzdata(azdata: IAzdataTool | undefined) {
 		this._localAzdata = azdata;

@@ -15,6 +15,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 export class ScriptSelectAction extends Action {
 	public static ID = 'selectTop';
 	public static LABEL = nls.localize('scriptSelect', "Select Top 1000");
+	public static KUSTOLABEL = nls.localize('scriptKustoSelect', "Take 10");
 
 	constructor(
 		id: string, label: string,

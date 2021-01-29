@@ -5,8 +5,12 @@
 
 import 'mocha';
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as should from 'should';
 import * as sinon from 'sinon';
+import * as TypeMoq from 'typemoq';
+import * as loc from '../localizedConstants';
+import * as utils from '../utils';
 import { DataTierApplicationWizard, Operation } from '../wizard/dataTierApplicationWizard';
 import { DacFxDataModel } from '../wizard/api/models';
 import { DacFxTestService, deployOperationId, extractOperationId, importOperationId, exportOperationId, generateDeployPlan } from './testDacFxService';
@@ -53,11 +57,118 @@ describe('Dacfx wizard with connection', function (): void {
 
 	it('Should call all service methods correctly', async () => {
 		wizard.model.server = connectionProfileMock;
+		wizard.model.potentialDataLoss = true;
+		wizard.model.upgradeExisting = true;
+
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber());
 
 		await validateServiceCalls(wizard, Operation.deploy, deployOperationId);
 		await validateServiceCalls(wizard, Operation.extract, extractOperationId);
 		await validateServiceCalls(wizard, Operation.import, importOperationId);
 		await validateServiceCalls(wizard, Operation.export, exportOperationId);
+	});
+
+	it('executeOperation should show error message if deploy fails', async () => {
+		let service = TypeMoq.Mock.ofInstance(new DacFxTestService());
+		service.setup(x => x.deployDacpac(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(x => Promise.resolve({
+			errorMessage: 'error1',
+			success: false,
+			operationId: ''
+		}));
+
+		let wizard = new DataTierApplicationWizard(service.object);
+		wizard.model = <DacFxDataModel>{};
+		wizard.model.server = connectionProfileMock;
+		wizard.model.potentialDataLoss = true;
+		wizard.model.upgradeExisting = true;
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber());
+		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
+		wizard.selectedOperation = Operation.deploy;
+		await wizard.executeOperation();
+		should(showErrorMessageStub.calledOnce).be.true();
+		should.equal(showErrorMessageStub.getCall(0).args[0], loc.operationErrorMessage(loc.deploy, 'error1'));
+	});
+
+	it('executeOperation should show error message if export fails', async () => {
+		let service = TypeMoq.Mock.ofInstance(new DacFxTestService());
+		service.setup(x => x.exportBacpac(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(x => Promise.resolve({
+			errorMessage: 'error1',
+			success: false,
+			operationId: ''
+		}));
+
+		let wizard = new DataTierApplicationWizard(service.object);
+		wizard.model = <DacFxDataModel>{};
+		wizard.model.server = connectionProfileMock;
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber());
+		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
+		wizard.selectedOperation = Operation.export;
+		await wizard.executeOperation();
+		should(showErrorMessageStub.calledOnce).be.true();
+		should.equal(showErrorMessageStub.getCall(0).args[0], loc.operationErrorMessage(loc.exportText, 'error1'));
+	});
+
+	it('executeOperation should show error message if extract fails', async () => {
+		let service = TypeMoq.Mock.ofInstance(new DacFxTestService());
+		service.setup(x => x.extractDacpac(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(x => Promise.resolve({
+			errorMessage: 'error1',
+			success: false,
+			operationId: ''
+		}));
+
+		let wizard = new DataTierApplicationWizard(service.object);
+		wizard.model = <DacFxDataModel>{};
+		wizard.model.server = connectionProfileMock;
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber());
+		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
+		wizard.selectedOperation = Operation.extract;
+		await wizard.executeOperation();
+		should(showErrorMessageStub.calledOnce).be.true();
+		should.equal(showErrorMessageStub.getCall(0).args[0], loc.operationErrorMessage(loc.extract, 'error1'));
+	});
+
+	it('Should show error message if generateDeployScript fails', async () => {
+		let service = TypeMoq.Mock.ofInstance(new DacFxTestService());
+		service.setup(x => x.generateDeployScript(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(x => Promise.resolve({
+			errorMessage: 'error1',
+			success: false,
+			operationId: ''
+		}));
+
+		let wizard = new DataTierApplicationWizard(service.object);
+		wizard.model = <DacFxDataModel>{};
+		wizard.model.server = connectionProfileMock;
+		wizard.model.potentialDataLoss = true;
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber());
+		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
+		await wizard.generateDeployScript();
+		should(showErrorMessageStub.calledOnce).be.true();
+		should.equal(showErrorMessageStub.getCall(0).args[0], loc.generateDeployErrorMessage('error1'));
+	});
+
+	it('executeOperation should show error message if import fails', async () => {
+		let service = TypeMoq.Mock.ofInstance(new DacFxTestService());
+		service.setup(x => x.importBacpac(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(x => Promise.resolve({
+			errorMessage: 'error1',
+			success: false,
+			operationId: ''
+		}));
+
+		let wizard = new DataTierApplicationWizard(service.object);
+		wizard.model = <DacFxDataModel>{};
+		wizard.model.server = connectionProfileMock;
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber());
+		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
+		wizard.selectedOperation = Operation.import;
+		await wizard.executeOperation();
+		should(showErrorMessageStub.calledOnce).be.true();
+		should.equal(showErrorMessageStub.getCall(0).args[0], loc.operationErrorMessage(loc.importText, 'error1'));
 	});
 
 	it('Should call deploy plan generator correctly', async () => {

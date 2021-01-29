@@ -19,7 +19,7 @@ import { ResourceTypePage } from './resourceTypePage';
 import { NotebookWizardModel } from './notebookWizard/notebookWizardModel';
 import { DeployAzureSQLDBWizardModel } from './deployAzureSQLDBWizard/deployAzureSQLDBWizardModel';
 import { ToolsAndEulaPage } from './toolsAndEulaSettingsPage';
-import { ResourceTypeService } from '../services/resourceTypeService';
+import { OptionValuesFilter, ResourceTypeService } from '../services/resourceTypeService';
 import { PageLessDeploymentModel } from './pageLessDeploymentModel';
 
 export class ResourceTypeWizard {
@@ -58,7 +58,8 @@ export class ResourceTypeWizard {
 		public notebookService: INotebookService,
 		public toolsService: IToolsService,
 		public platformService: IPlatformService,
-		public resourceTypeService: ResourceTypeService) {
+		public resourceTypeService: ResourceTypeService,
+		private _optionValuesFilter?: OptionValuesFilter) {
 		/**
 		 * Setting the first provider from the first value of the dropdowns.
 		 * If there are no options (dropdowns) then the resource type has only one provider which is set as default here.
@@ -93,6 +94,7 @@ export class ResourceTypeWizard {
 		}));
 
 		this.toDispose.push(this.wizardObject.doneButton.onClick(async () => {
+			// TODO - Don't close this when the button is clicked, set up a page validator instead
 			await this._model.onOk();
 			this.dispose();
 		}));
@@ -144,7 +146,7 @@ export class ResourceTypeWizard {
 	}
 
 	public setPages(pages: ResourceTypePage[]) {
-		pages.unshift(new ToolsAndEulaPage(this));
+		pages.unshift(new ToolsAndEulaPage(this, this._optionValuesFilter));
 		this.wizardObject!.pages = pages.map(p => p.pageObject);
 		this.pages = pages;
 		this.pages.forEach((page) => {
