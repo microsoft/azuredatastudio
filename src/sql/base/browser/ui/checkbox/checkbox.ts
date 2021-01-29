@@ -9,6 +9,7 @@ import { Color } from 'vs/base/common/color';
 import { Event, Emitter } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Widget } from 'vs/base/browser/ui/widget';
+import { generateUuid } from 'vs/base/common/uuid';
 
 export interface ICheckboxOptions {
 	label: string;
@@ -16,6 +17,7 @@ export interface ICheckboxOptions {
 	checked?: boolean;
 	onChange?: (val: boolean) => void;
 	ariaLabel?: string;
+	displayCheckmark?: boolean;
 }
 
 export interface ICheckboxStyles {
@@ -23,8 +25,11 @@ export interface ICheckboxStyles {
 }
 
 export class Checkbox extends Widget {
+	public readonly id: string;
+
 	private _el: HTMLInputElement;
-	private _label: HTMLSpanElement;
+	private _label: HTMLLabelElement;
+	private _displayCheckmark: boolean;
 	private disabledCheckboxForeground?: Color;
 
 	private _onChange = new Emitter<boolean>();
@@ -33,7 +38,9 @@ export class Checkbox extends Widget {
 	constructor(container: HTMLElement, opts: ICheckboxOptions) {
 		super();
 
+		this.id = generateUuid();
 		this._el = document.createElement('input');
+		this._el.id = this.id;
 		this._el.type = 'checkbox';
 		this._el.style.verticalAlign = 'middle';
 
@@ -55,8 +62,11 @@ export class Checkbox extends Widget {
 			}
 		});
 
-		this._label = document.createElement('span');
+		this._label = document.createElement('label');
 		this._label.style.verticalAlign = 'middle';
+		this._label.htmlFor = this.id;
+
+		this._displayCheckmark = opts.displayCheckmark || true;
 
 		this.label = opts.label;
 		this.enabled = opts.enabled || true;
@@ -71,7 +81,7 @@ export class Checkbox extends Widget {
 	}
 
 	public set label(val: string) {
-		this._label.innerText = val;
+		this._label.innerHTML = val;
 		// Default the aria label to the label if one wasn't specifically set by the user
 		if (!this.ariaLabel) {
 			this.ariaLabel = val;
@@ -134,6 +144,11 @@ export class Checkbox extends Widget {
 	public style(styles: ICheckboxStyles): void {
 		this.disabledCheckboxForeground = styles.disabledCheckboxForeground;
 		this.updateStyle();
+
+		if (this._displayCheckmark) {
+			this._el.style.display = 'flex';
+			this._el.style.webkitAppearance = 'none';
+		}
 	}
 
 	private updateStyle(): void {
