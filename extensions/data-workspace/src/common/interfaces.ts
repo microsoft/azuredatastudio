@@ -14,7 +14,7 @@ export interface IProjectProviderRegistry {
 	 * Registers a new project provider
 	 * @param provider The project provider
 	 */
-	registerProvider(provider: IProjectProvider): vscode.Disposable;
+	registerProvider(provider: IProjectProvider, providerId: string): vscode.Disposable;
 
 	/**
 	 * Clear the providers

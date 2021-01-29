@@ -105,8 +105,7 @@ export class ProjectsController {
 	public async buildProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<string> {
 		const project: Project = this.getProjectFromContext(context);
 
-		const date = new Date();
-		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, 'buildStarted').send();
+		const startTime = new Date();
 
 		// Check mssql extension for project dlls (tracking issue #10273)
 		await this.buildHelper.createBuildDirFolder();
@@ -121,14 +120,14 @@ export class ProjectsController {
 			await this.netCoreTool.runDotnetCommand(options);
 
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, 'buildSucceeded')
-				.withAdditionalMeasurements({ duration: new Date().getMilliseconds() - date.getMilliseconds() })
+				.withAdditionalMeasurements({ duration: new Date().getMilliseconds() - startTime.getMilliseconds() })
 				.send();
 
 			return project.dacpacOutputPath;
 		} catch (err) {
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, 'buildFailed')
 				.withAdditionalProperties({ error: utils.getErrorMessage(err) })
-				.withAdditionalMeasurements({ duration: new Date().getMilliseconds() - date.getMilliseconds() })
+				.withAdditionalMeasurements({ duration: new Date().getMilliseconds() - startTime.getMilliseconds() })
 				.send();
 
 			vscode.window.showErrorMessage(constants.projBuildFailed(utils.getErrorMessage(err)));
@@ -161,12 +160,13 @@ export class ProjectsController {
 
 	public async publishProjectCallback(project: Project, settings: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
 		const telemetryProps: Record<string, string> = {};
+		const telemetryMeasures: Record<string, number> = {};
 		const buildStartTime = new Date().getMilliseconds();
 
 		const dacpacPath = await this.buildProject(project);
 
 		const buildEndTime = new Date().getMilliseconds();
-		telemetryProps.buildDuration = (buildEndTime - buildStartTime).toString();
+		telemetryMeasures.buildDuration = buildEndTime - buildStartTime;
 
 		if (!dacpacPath) {
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, 'publishProjectBuildFailure')
@@ -201,7 +201,7 @@ export class ProjectsController {
 			telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
 			telemetryProps.errorMessage = utils.getErrorMessage(err);
 
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, `publishProject${telemetryProps.action}Failure`)
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, `publishProjectFailure`)
 				.withAdditionalProperties(telemetryProps)
 				.send();
 
@@ -366,7 +366,7 @@ export class ProjectsController {
 			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, 'excludeFromProject');
 			await project.exclude(fileEntry);
 		} else {
-			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectTree, 'exludeFromProjectFailed');
+			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectTree, 'excludeFromProjectFailed');
 			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, node.uri.path));
 		}
 

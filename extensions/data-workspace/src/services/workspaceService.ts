@@ -290,7 +290,7 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 
 		if (extension.isActive && extension.exports && !ProjectProviderRegistry.providers.includes(extension.exports)) {
-			ProjectProviderRegistry.registerProvider(extension.exports);
+			ProjectProviderRegistry.registerProvider(extension.exports, extension.id);
 		}
 	}
 

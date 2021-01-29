@@ -13,7 +13,7 @@ export const ProjectProviderRegistry: IProjectProviderRegistry = new class imple
 	private _providerFileExtensionMapping: { [key: string]: IProjectProvider } = {};
 	private _providerProjectTypeMapping: { [key: string]: IProjectProvider } = {};
 
-	registerProvider(provider: IProjectProvider): vscode.Disposable {
+	registerProvider(provider: IProjectProvider, providerId: string): vscode.Disposable {
 		this.validateProvider(provider);
 		this._providers.push(provider);
 		provider.supportedProjectTypes.forEach(projectType => {
@@ -23,7 +23,7 @@ export const ProjectProviderRegistry: IProjectProviderRegistry = new class imple
 
 		TelemetryReporter.createActionEvent(TelemetryViews.ProviderRegistration, 'ProviderRegistered')
 			.withAdditionalProperties({
-				providerId: provider.providerExtensionId,
+				providerId: providerId,
 				extensions: provider.supportedProjectTypes.map(p => p.projectFileExtension).sort().join(', ')
 			})
 			.send();
