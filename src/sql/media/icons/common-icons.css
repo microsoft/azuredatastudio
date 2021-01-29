@@ -33,6 +33,19 @@
 	background: url("database_inverse.svg") center center no-repeat;
 }
 
+.vs-dark .codicon.icon-dashboard-view,
+.hc-black .codicon.icon-dashboard-view,
+.vs .codicon.icon-dashboard-view {
+	background: url("dashboard_view.svg") center center no-repeat;
+}
+
+.vs-dark .codicon.icon-dashboard-view::before,
+.hc-black .codicon.icon-dashboard-view::before,
+.vs .codicon.icon-dashboard-view::before {
+	-webkit-mask-image: url("dashboard_view.svg");
+	mask-image: url("dashboard_view.svg");
+}
+
 .vs .codicon.error,
 .vs-dark .codicon.error,
 .hc-black .codicon.error {
@@ -201,6 +214,15 @@
 .vs-dark .codicon.new-query,
 .hc-black .codicon.new-query {
 	background: url("newquery.svg") center center no-repeat;
+}
+
+.vs .codicon.icon-notebook-view {
+	background: url("notebook_view.svg") center center no-repeat;
+}
+
+.vs .codicon.icon-notebook-view::before {
+	-webkit-mask-image: url("notebook_view.svg");
+	mask-image: url("notebook_view.svg");
 }
 
 .vs .codicon.info,
@@ -395,6 +417,12 @@ Includes non-masked style declarations. */
 	mask-image: url("toolbar-image.svg");
 }
 
+.codicon.masked-icon.settings::before {
+	background-image: none;
+	-webkit-mask-image: url('settings.svg');
+	mask-image: url('settings.svg');
+}
+
 .codicon.masked-icon.split-toggle-on::before {
 	-webkit-mask-image: url("toolbar-preview-toggle-on.svg");
 	mask-image: url("toolbar-preview-toggle-on.svg");
@@ -549,6 +577,11 @@ Includes non-masked style declarations. */
 .masked-pseudo.start-outline:before {
 	-webkit-mask-image: url("start-outline.svg");
 	mask-image: url("start-outline.svg");
+}
+
+.masked-pseudo.stop:before {
+	-webkit-mask-image: url("stop_cell_solidanimation_inverse.svg");
+	mask-image: url("stop_cell_solidanimation_inverse.svg");
 }
 
 .masked-pseudo.code:before {
