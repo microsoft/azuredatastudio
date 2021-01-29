@@ -37,6 +37,8 @@ import { NotebookViewComponent } from 'sql/workbench/contrib/notebook/browser/no
 import { NotebookViewsCodeCellComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component';
 import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCard.component';
 import { NotebookViewsGridComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsGrid.component';
+import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
+import { ViewCellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/viewCellToolbar.component';
 
 const outputComponentRegistry = Registry.as<ICellComponentRegistry>(OutputComponentExtensions.CellComponentContributions);
 
@@ -53,9 +55,11 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			LoadingSpinner,
 			CodeComponent,
 			CodeCellComponent,
+			TextCellComponent,
 			CellToolbarComponent,
 			MarkdownToolbarComponent,
 			PlaceholderCellComponent,
+			ViewCellToolbarComponent,
 			NotebookComponent,
 			NotebookEditorComponent,
 			NotebookViewComponent,
@@ -71,8 +75,8 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			...outputComponents
 		],
 		entryComponents: [
-			NotebookComponent,
 			NotebookEditorComponent,
+			TextCellComponent,
 			...outputComponents
 		],
 		imports: [
