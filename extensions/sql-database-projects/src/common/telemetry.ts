@@ -14,7 +14,7 @@ export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, pack
 
 export enum TelemetryViews {
 	ProjectController = 'ProjectController',
-	PublishDialog = 'PublishDialog',
+	SqlProjectPublishDialog = 'SqlProjectPublishDialog',
 	ProjectTree = 'ProjectTree'
 }
 

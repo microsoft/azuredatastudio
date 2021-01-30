@@ -192,11 +192,11 @@ export class ProjectsController {
 
 		try {
 			if ((<IPublishSettings>settings).upgradeExisting) {
-				telemetryProps.action = 'deploy';
+				telemetryProps.publishAction = 'deploy';
 				result = await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdata.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
 			}
 			else {
-				telemetryProps.action = 'generateScript';
+				telemetryProps.publishAction = 'generateScript';
 				result = await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdata.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
 			}
 		} catch (err) {
@@ -252,8 +252,15 @@ export class ProjectsController {
 				throw new Error(constants.schemaCompareNotInstalled);
 			}
 		} catch (err) {
+			const props: Record<string, string> = {};
+			const message = utils.getErrorMessage(err);
+
+			if (message === constants.buildFailedCannotStartSchemaCompare || message === constants.schemaCompareNotInstalled) {
+				props.errorMessage = message;
+			}
+
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked)
-				.withAdditionalProperties({ errorMessage: utils.getErrorMessage(err) })
+				.withAdditionalProperties(props)
 				.send();
 
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));

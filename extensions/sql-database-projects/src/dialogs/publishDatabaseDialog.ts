@@ -50,7 +50,7 @@ export class PublishDatabaseDialog {
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
 	constructor(private project: Project) {
-		this.dialog = azdata.window.createModelViewDialog(constants.publishDialogName, 'publishDialog');
+		this.dialog = azdata.window.createModelViewDialog(constants.publishDialogName, 'sqlProjectPublishDialog');
 		this.publishTab = azdata.window.createTab(constants.publishDialogName);
 	}
 
@@ -197,7 +197,7 @@ export class PublishDatabaseDialog {
 	}
 
 	public async generateScriptClick(): Promise<void> {
-		TelemetryReporter.sendActionEvent(TelemetryViews.PublishDialog, TelemetryActions.generateScriptClicked);
+		TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.generateScriptClicked);
 
 		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
 		const settings: IGenerateScriptSettings = {
