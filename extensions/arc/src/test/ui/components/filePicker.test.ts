@@ -43,16 +43,6 @@ describe('filePicker', function (): void {
 		it('component getter', () => {
 			should(filePicker.component()).not.be.undefined();
 		});
-		[true, false].forEach(testValue => {
-			it(`Test readOnly with testValue: ${testValue}`, () => {
-				filePicker.readOnly = testValue;
-				filePicker.readOnly!.should.equal(testValue);
-			});
-			it(`Test enabled with testValue: ${testValue}`, () => {
-				filePicker.enabled = testValue;
-				filePicker.enabled!.should.equal(testValue);
-			});
-		});
 	});
 });
 
