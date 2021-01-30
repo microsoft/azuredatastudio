@@ -581,7 +581,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (cell) {
 			let index = this.findCellIndex(cell);
 			if (index > -1) {
-				cell.cellType = cell.cellType === CellTypes.Markdown ? CellTypes.Code : CellTypes.Markdown;
+				// If cell is a markdown cell, transform into code cell (and vice versa)
+				if (cell.cellType === CellTypes.Markdown) {
+					cell.cellType = CellTypes.Code;
+					// Ensure override language is reset
+					cell.setOverrideLanguage('');
+				} else {
+					cell.cellType = CellTypes.Markdown;
+				}
 				this._onCellTypeChanged.fire(cell);
 				this._contentChangedEmitter.fire({
 					changeType: NotebookChangeType.CellsModified,
