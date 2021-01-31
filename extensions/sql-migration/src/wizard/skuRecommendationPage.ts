@@ -115,6 +115,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		//TODO: Need to take assessment result and insert here
 		//*** What service do I need to call to get the assessment results?
+		if (this.migrationStateModel.assessmentResults) {
+
+		}
 		this.igComponent!.component.value = CONGRATULATIONS;
 		// either: SKU_RECOMMENDATION_ALL_SUCCESSFUL or SKU_RECOMMENDATION_SOME_SUCCESSFUL or SKU_RECOMMENDATION_NONE_SUCCESSFUL
 		this.detailsComponent!.component.value = SKU_RECOMMENDATION_SOME_SUCCESSFUL(1, 1);

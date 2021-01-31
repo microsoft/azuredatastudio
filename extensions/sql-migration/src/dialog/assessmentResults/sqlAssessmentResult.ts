@@ -3,10 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
+import { MigrationStateModel } from '../../models/stateMachine';
 
 import { AssessmentDialogComponent } from './model/assessmentDialogComponent';
 
 export class SqlAssessmentResult extends AssessmentDialogComponent {
+
+	private _model: MigrationStateModel;
+
+	constructor(model: MigrationStateModel) {
+		super();
+		this._model = model;
+	}
 	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
 
 		const topContainer = this.createTopContainer(view);
