@@ -110,6 +110,8 @@ export class AssessmentResultsDialog {
 			let dbIssues = dbMap.get(element.targetName);
 			if (dbIssues) {
 				dbMap.set(element.targetName, dbIssues.concat([issues]));
+			} else {
+				dbMap.set(element.targetName, [issues]);
 			}
 		});
 

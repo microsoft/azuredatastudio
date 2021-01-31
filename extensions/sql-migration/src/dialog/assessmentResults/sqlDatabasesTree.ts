@@ -80,7 +80,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			}
 		);
 
-		if (this._assessmentData.keys.length > 1) {
+		if (this._assessmentData.size > 0) {
 
 			this._assessmentData.forEach((value, key) => {
 				this.databaseTable.component().dataValues?.push(
