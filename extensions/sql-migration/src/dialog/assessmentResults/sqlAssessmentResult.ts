@@ -156,6 +156,10 @@ export class SqlAssessmentResult extends AssessmentDialogComponent {
 			}
 		);
 
+		if (this._model.assessmentResults) {
+			// fill in table fields
+		}
+
 		impactedObjects.component().onRowSelected(({ row }) => {
 			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected, need some kind of dictionary
 		});

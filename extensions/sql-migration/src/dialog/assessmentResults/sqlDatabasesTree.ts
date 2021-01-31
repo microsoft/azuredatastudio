@@ -192,6 +192,10 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			}
 		);
 
+		if (this._model.assessmentResults) {
+			// fill in table fields
+		}
+
 		this.databaseTable.component().onRowSelected(({ row }) => {
 			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected
 			// deselect instance table

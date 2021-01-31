@@ -17,7 +17,7 @@ export class AssessmentResultsDialog {
 
 	private _isOpen: boolean = false;
 	private dialog: azdata.window.Dialog | undefined;
-	private _model: MigrationStateModel;
+	// private _model: MigrationStateModel;
 
 	// Dialog Name for Telemetry
 	public dialogName: string | undefined;
@@ -28,7 +28,7 @@ export class AssessmentResultsDialog {
 
 	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string) {
 		this._tree = new SqlDatabaseTree(model);
-		this._model = model;
+		// this._model = model;
 		// this._list = new SqlAssessmentResultList();
 		this._result = new SqlAssessmentResult(model);
 	}
