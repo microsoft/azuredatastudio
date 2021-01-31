@@ -12,7 +12,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private databaseTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
 	private _assessmentData: Map<string, Issues[]>;
 
-	private _title!: azdata.TextComponent;
+	// private _title!: azdata.TextComponent;
 	private _recommendation!: azdata.TextComponent;
 
 	constructor(assessmentData: Map<string, Issues[]>) {
@@ -114,7 +114,10 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected
 			// deselect instance table
 			//TODO: change values here
-			this._recommendation.value = `Assessment Results (${map.get(row)} issues found)`;
+			const issues = map.get(row);
+			if (issues) {
+				this._recommendation.value = `Assessment Results (${issues.length} issues found)`;
+			}
 
 			// }
 		});
@@ -228,7 +231,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 
 	private createTopContainer(view: azdata.ModelView): azdata.FlexContainer {
-		this._title = this.createTitleComponent(view);
+		const title = this.createTitleComponent(view);
 		const impact = this.createPlatformComponent(view);
 		const recommendation = this.createRecommendationComponent(view);
 		const assessmentResults = this.createAssessmentResultsTitle(view);
@@ -497,7 +500,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private createAssessmentResultsTitle(view: azdata.ModelView): azdata.TextComponent {
 		this._recommendation = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			title: 'Recommendation', // TODO localize
-			value: '', // TODO: Get this string from the actual results
+			value: 'Assessment Results', // TODO: Get this string from the actual results
 			CSSStyles: {
 				'font-size': '14px',
 				'font-weight': 'bold',
@@ -505,9 +508,9 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				'margin-block-start': '0px',
 				'margin-block-end': '0px'
 			}
-		});
+		}).component();
 
-		return recommendation.component();
+		return this._recommendation;
 	}
 
 
