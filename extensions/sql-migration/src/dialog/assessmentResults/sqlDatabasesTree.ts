@@ -76,123 +76,42 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					}
 				],
 				dataValues: [
-					[
-						{
-							value: false,
-							style: styleLeft
-						},
-						{
-							value: 'DB1',
-							style: styleLeft
-						},
-						{
-							value: 1,
-							style: styleRight
-						}
-					],
-					[
-						{
-							value: true,
-							style: styleLeft
-						},
-						{
-							value: 'DB2',
-							style: styleLeft
-						},
-						{
-							value: 2,
-							style: styleRight
-						}
-					],
-					[
-						{
-							value: false,
-							style: styleLeft
-						},
-						{
-							value: 'DB3',
-							style: styleLeft
-						},
-						{
-							value: 1,
-							style: styleRight
-						}
-					],
-					[
-						{
-							value: true,
-							style: styleLeft
-						},
-						{
-							value: 'DB4',
-							style: styleLeft
-						},
-						{
-							value: 2,
-							style: styleRight
-						}
-					],
-					[
-						{
-							value: false,
-							style: styleLeft
-						},
-						{
-							value: 'DB5',
-							style: styleLeft
-						},
-						{
-							value: 1,
-							style: styleRight
-						}
-					],
-					[
-						{
-							value: true,
-							style: styleLeft
-						},
-						{
-							value: 'DB6',
-							style: styleLeft
-						},
-						{
-							value: 2,
-							style: styleRight
-						}
-					],
-					[
-						{
-							value: false,
-							style: styleLeft
-						},
-						{
-							value: 'DB7',
-							style: styleLeft
-						},
-						{
-							value: 1,
-							style: styleRight
-						}
-					],
-					[
-						{
-							value: true,
-							style: styleLeft
-						},
-						{
-							value: 'DB8',
-							style: styleLeft
-						},
-						{
-							value: 2,
-							style: styleRight
-						}
-					]
 				]
 			}
 		);
 
-		if (this._model.assessmentResults) {
+		if (this._model.assessmentResults!.length > 1) {
+			// fill in table fields
+			// need to create a dictionary with targetname and count issues
+			let dict = new Map<string, number>();
+			this._model.assessmentResults?.forEach((element) => {
+				let entry = dict.get(element.targetName);
+				if (entry) {
+					dict.set(element.targetName, entry + 1);
+				} else {
+					dict.set(element.targetName, 1);
+				}
+			});
+
+			dict.forEach((element) => {
+				this.databaseTable.component().dataValues?.push(
+					[
+						{
+							value: false,
+							style: styleLeft
+						},
+						{
+							value: element,
+							style: styleLeft
+						},
+						{
+							value: 1,
+							style: styleRight
+						}
+					]
+
+				);
+			});
 			// fill in table fields
 		}
 
