@@ -6,6 +6,10 @@ import * as azdata from 'azdata';
 import { Issues } from './assessmentResultsDialog';
 import { AssessmentDialogComponent } from './model/assessmentDialogComponent';
 
+type DbIssues = {
+	name: string,
+	issues: Issues[]
+};
 export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 	private instanceTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
@@ -14,6 +18,9 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 	// private _title!: azdata.TextComponent;
 	private _recommendation!: azdata.TextComponent;
+	private _dbName!: azdata.TextComponent;
+	private _recommendationText!: azdata.TextComponent;
+	private _assessmentResultsTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
 
 	constructor(assessmentData: Map<string, Issues[]>) {
 		super();
@@ -38,7 +45,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 	private createDatabaseComponent(view: azdata.ModelView): azdata.DivContainer {
 
-		let map = new Map<number, Issues[]>();
+		let mapRowIssue = new Map<number, DbIssues>();
 		const styleLeft: azdata.CssStyles = {
 			'border': 'none',
 			'text-align': 'left !important'
@@ -104,7 +111,11 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					]
 
 				);
-				map.set(rowNumber, value);
+				let dbIssues = {
+					name: key,
+					issues: value
+				};
+				mapRowIssue.set(rowNumber, dbIssues);
 				rowNumber = rowNumber + 1;
 			});
 			// fill in table fields
@@ -114,9 +125,22 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected
 			// deselect instance table
 			//TODO: change values here
-			const issues = map.get(row);
-			if (issues) {
-				this._recommendation.value = `Assessment Results (${issues.length} issues found)`;
+			const rowInfo = mapRowIssue.get(row);
+			if (rowInfo) {
+				this._dbName.value = rowInfo.name;
+				this._recommendation.value = `Assessment Results (${rowInfo.issues.length} issues found)`;
+				rowInfo.issues.forEach((issue) => {
+					this.databaseTable.component().dataValues?.push(
+						[
+							{
+								value: issue.description
+							}
+
+						]
+					);
+				});
+				// this._assessmentResultsTable.component().dataValues
+
 			}
 
 			// }
@@ -428,8 +452,8 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				'margin-block-end': '0px'
 			}
 		}).component();
-		const recommendationText = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: 'Review impacted objects section to see all jobs using PowerShell job step and evaluate if the job step or the impacted object can be removed. ',
+		this._recommendationText = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: '',
 			CSSStyles: {
 				'font-size': '12px',
 				'width': '250px'
@@ -485,16 +509,16 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	}
 
 	private createRecommendationComponent(view: azdata.ModelView): azdata.TextComponent {
-		const recommendation = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		this._dbName = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			title: 'Recommendation', // TODO localize
 			value: 'SQL Server 1', // TODO: Get this string from the actual results
 			CSSStyles: {
 				'font-size': '14px',
 				'font-weight': 'bold'
 			}
-		});
+		}).component();
 
-		return recommendation.component();
+		return this._dbName;
 	}
 
 	private createAssessmentResultsTitle(view: azdata.ModelView): azdata.TextComponent {
@@ -525,7 +549,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			'text-align': 'left'
 		};
 
-		const impactedObjects = view.modelBuilder.declarativeTable().withProps(
+		this._assessmentResultsTable = view.modelBuilder.declarativeTable().withProps(
 			{
 				selectEffect: true,
 				width: '100%',
@@ -540,24 +564,14 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					}
 				],
 				dataValues: [
-					[
-						{
-							value: 'DB1 Assessment results'
-						}
-					],
-					[
-						{
-							value: 'DB2 Assessment results'
-						}
-					]
 				]
 			}
 		);
 
-		impactedObjects.component().onRowSelected(({ row }) => {
+		this._assessmentResultsTable.component().onRowSelected(({ row }) => {
 			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected, need some kind of dictionary
 		});
 
-		return impactedObjects.component();
+		return this._assessmentResultsTable.component();
 	}
 }
