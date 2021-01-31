@@ -8,8 +8,14 @@ import { MigrationStateModel } from '../../models/stateMachine';
 import { SqlDatabaseTree } from './sqlDatabasesTree';
 // import { SqlAssessmentResultList } from './sqlAssessmentResultsList';
 import { SqlAssessmentResult } from './sqlAssessmentResult';
+import { SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
 
-
+export type Issues = {
+	description: string,
+	recommendation: string,
+	moreInfo: string,
+	impactedObjects: SqlMigrationImpactedObjectInfo[];
+};
 export class AssessmentResultsDialog {
 
 	private static readonly OkButtonText: string = 'OK';
@@ -17,7 +23,7 @@ export class AssessmentResultsDialog {
 
 	private _isOpen: boolean = false;
 	private dialog: azdata.window.Dialog | undefined;
-	// private _model: MigrationStateModel;
+	private _model: MigrationStateModel;
 
 	// Dialog Name for Telemetry
 	public dialogName: string | undefined;
@@ -27,10 +33,11 @@ export class AssessmentResultsDialog {
 	private _result: SqlAssessmentResult;
 
 	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string) {
-		this._tree = new SqlDatabaseTree(model);
-		// this._model = model;
+		this._model = model;
+		let assessmentData = this.parseData(this._model);
+		this._tree = new SqlDatabaseTree(assessmentData);
 		// this._list = new SqlAssessmentResultList();
-		this._result = new SqlAssessmentResult(model);
+		this._result = new SqlAssessmentResult(assessmentData);
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
@@ -82,6 +89,31 @@ export class AssessmentResultsDialog {
 
 			await Promise.all(dialogSetupPromises);
 		}
+	}
+
+
+	private parseData(model: MigrationStateModel): Map<string, Issues[]> {
+		// if there are multiple issues for the same DB, need to consolidate
+		// map DB name -> Assessment result items (issues)
+		// map assessment result items to description, recommendation, more info & impacted objects
+
+		let dbMap = new Map<string, Issues[]>();
+
+		model.assessmentResults?.forEach((element) => {
+			let issues: Issues;
+			issues = {
+				description: element.description,
+				recommendation: element.message,
+				moreInfo: element.helpLink,
+				impactedObjects: element.impactedObjects
+			};
+			let dbIssues = dbMap.get(element.targetName);
+			if (dbIssues) {
+				dbMap.set(element.targetName, dbIssues.concat([issues]));
+			}
+		});
+
+		return dbMap;
 	}
 
 	protected async execute() {

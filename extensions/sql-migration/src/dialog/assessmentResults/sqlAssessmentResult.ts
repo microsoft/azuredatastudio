@@ -3,17 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { MigrationStateModel } from '../../models/stateMachine';
+import { Issues } from './assessmentResultsDialog';
 
 import { AssessmentDialogComponent } from './model/assessmentDialogComponent';
 
 export class SqlAssessmentResult extends AssessmentDialogComponent {
 
-	private _model: MigrationStateModel;
+	private _assessmentData: Map<string, Issues[]>;
 
-	constructor(model: MigrationStateModel) {
+	constructor(assessmentData: Map<string, Issues[]>) {
 		super();
-		this._model = model;
+		this._assessmentData = assessmentData;
 	}
 	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
 
@@ -156,7 +156,7 @@ export class SqlAssessmentResult extends AssessmentDialogComponent {
 			}
 		);
 
-		if (this._model.assessmentResults) {
+		if (this._assessmentData) {
 			// fill in table fields
 		}
 

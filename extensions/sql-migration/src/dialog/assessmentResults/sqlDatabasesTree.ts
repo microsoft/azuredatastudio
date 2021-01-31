@@ -3,18 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { MigrationStateModel } from '../../models/stateMachine';
+import { Issues } from './assessmentResultsDialog';
 import { AssessmentDialogComponent } from './model/assessmentDialogComponent';
 
 export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 	private instanceTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
 	private databaseTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
-	private _model: MigrationStateModel;
+	private _assessmentData: Map<string, Issues[]>;
 
-	constructor(model: MigrationStateModel) {
+	constructor(assessmentData: Map<string, Issues[]>) {
 		super();
-		this._model = model;
+		this._assessmentData = assessmentData;
 	}
 
 	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
@@ -80,20 +80,9 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			}
 		);
 
-		if (this._model.assessmentResults!.length > 1) {
-			// fill in table fields
-			// need to create a dictionary with targetname and count issues
-			let dict = new Map<string, number>();
-			this._model.assessmentResults?.forEach((element) => {
-				let entry = dict.get(element.targetName);
-				if (entry) {
-					dict.set(element.targetName, entry + 1);
-				} else {
-					dict.set(element.targetName, 1);
-				}
-			});
+		if (this._assessmentData.keys.length > 1) {
 
-			dict.forEach((element) => {
+			this._assessmentData.forEach((value, key) => {
 				this.databaseTable.component().dataValues?.push(
 					[
 						{
@@ -101,11 +90,11 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 							style: styleLeft
 						},
 						{
-							value: element,
+							value: key,
 							style: styleLeft
 						},
 						{
-							value: 1,
+							value: value.length,
 							style: styleRight
 						}
 					]
