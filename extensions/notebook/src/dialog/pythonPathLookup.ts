@@ -19,8 +19,8 @@ export interface PythonCommand {
 }
 
 export class PythonPathLookup {
-	private _condaLocations: string[];
-	private _pythonCommands: PythonCommand[];
+	private readonly _condaLocations: string[];
+	private readonly _pythonCommands: PythonCommand[];
 	constructor() {
 		if (process.platform !== constants.winPlatform) {
 			let userFolder = process.env['HOME'];
