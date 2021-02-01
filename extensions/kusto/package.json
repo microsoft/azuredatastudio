@@ -291,10 +291,6 @@
             {
               "displayName": "%kusto.connectionOptions.authType.categoryValues.azureMFA%",
               "name": "AzureMFA"
-            },
-            {
-              "displayName": "%kusto.connectionOptions.authType.categoryValues.dstsAuth%",
-              "name": "dstsAuth"
             }
           ],
           "isRequired": true,
