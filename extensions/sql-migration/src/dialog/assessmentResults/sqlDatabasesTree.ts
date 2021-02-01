@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
+import { SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
 import { Issues } from './assessmentResultsDialog';
 import { AssessmentDialogComponent } from './model/assessmentDialogComponent';
 
@@ -14,13 +15,23 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 	private instanceTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
 	private databaseTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
+	private _databaseTableRow!: number;
+	private _assessmentResultsTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
+	private _assessmentResultsTableRow!: number;
+	private _impactedObjectsTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
 	private _assessmentData: Map<string, Issues[]>;
 
 	// private _title!: azdata.TextComponent;
 	private _recommendation!: azdata.TextComponent;
 	private _dbName!: azdata.TextComponent;
 	private _recommendationText!: azdata.TextComponent;
-	private _assessmentResultsTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
+	private _descriptionText!: azdata.TextComponent;
+	private _issues!: Issues;
+	private _impactedObjects!: SqlMigrationImpactedObjectInfo[];
+	private _objectDetailsType!: azdata.TextComponent;
+	private _objectDetailsName!: azdata.TextComponent;
+	private _objectDetailsSample!: azdata.TextComponent;
+	// private _recommendationMap!: Map<string, Issues[]>;
 
 	constructor(assessmentData: Map<string, Issues[]>) {
 		super();
@@ -122,7 +133,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		}
 
 		this.databaseTable.component().onRowSelected(({ row }) => {
-			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected
+			this._databaseTableRow = row; //TODO: Put data for each row so it can be displayed as each DB entry is selected
 			// deselect instance table
 			//TODO: change values here
 			const rowInfo = mapRowIssue.get(row);
@@ -132,6 +143,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				this._recommendation.value = `Assessment Results (${rowInfo.issues.length} issues found)`;
 				// Need some kind of refresh method for declarative tables
 				let dataValues: string[][] = [];
+				// this._recommendationMap = new Map<string, Issues[]>();
 				rowInfo.issues.forEach(async (issue) => {
 					dataValues.push([
 						issue.description
@@ -341,7 +353,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			'text-align': 'left'
 		};
 
-		const impactedObjects = view.modelBuilder.declarativeTable().withProps(
+		this._impactedObjectsTable = view.modelBuilder.declarativeTable().withProps(
 			{
 				selectEffect: true,
 				width: '100%',
@@ -376,12 +388,17 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			}
 		);
 
-		if (this._assessmentData) {
-			// fill in table fields
-		}
 
-		impactedObjects.component().onRowSelected(({ row }) => {
-			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected, need some kind of dictionary
+		this._impactedObjectsTable.component().onRowSelected(({ row }) => {
+			if (this._dbName.value) {
+				this._issues = this._assessmentData.get(this._dbName.value)![row];
+				this._impactedObjects = this._issues.impactedObjects;
+			}
+			this._objectDetailsType.value = `Type: ${this._impactedObjects[row].objectType}`;
+			this._objectDetailsName.value = `Name: ${this._impactedObjects[row].name}`;
+			this._objectDetailsSample.value = this._impactedObjects[row].impactDetail;
+
+
 		});
 
 
@@ -396,8 +413,8 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			}
 		}).component();
 
-		const objectDetailsType = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: 'Type: Agent Job',
+		this._objectDetailsType = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: 'Type:',
 			CSSStyles: {
 				'font-size': '14px',
 				'margin-block-start': '0px',
@@ -405,8 +422,8 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			}
 		}).component();
 
-		const objectDetailsName = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: 'Name: Process Monthly Usage',
+		this._objectDetailsName = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: 'Name:',
 			CSSStyles: {
 				'font-size': '14px',
 				'margin-block-start': '0px',
@@ -414,8 +431,8 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			}
 		}).component();
 
-		const objectDetailsSample = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: 'Sample Powershell Job',
+		this._objectDetailsSample = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: 'Sample',
 			CSSStyles: {
 				'font-size': '14px',
 				'margin-block-start': '0px',
@@ -423,7 +440,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			}
 		}).component();
 
-		const container = view.modelBuilder.flexContainer().withItems([impactedObjectsTitle, impactedObjects.component(), objectDetailsTitle, objectDetailsType, objectDetailsName, objectDetailsSample]).withLayout({
+		const container = view.modelBuilder.flexContainer().withItems([impactedObjectsTitle, this._impactedObjectsTable.component(), objectDetailsTitle, this._objectDetailsType, this._objectDetailsName, this._objectDetailsSample]).withLayout({
 			flexFlow: 'column'
 		}).component();
 
@@ -439,7 +456,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				'margin-block-end': '0px'
 			}
 		}).component();
-		const descriptionText = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		this._descriptionText = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: 'It is a job step that runs a PowerShell scripts.',
 			CSSStyles: {
 				'font-size': '12px'
@@ -463,7 +480,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		}).component();
 
 
-		const container = view.modelBuilder.flexContainer().withItems([descriptionTitle, descriptionText, recommendationTitle, this._recommendationText]).withLayout({
+		const container = view.modelBuilder.flexContainer().withItems([descriptionTitle, this._descriptionText, recommendationTitle, this._recommendationText]).withLayout({
 			flexFlow: 'column'
 		}).component();
 
@@ -582,6 +599,28 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 		this._assessmentResultsTable.component().onRowSelected(({ row }) => {
 			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected, need some kind of dictionary
+			this._assessmentResultsTableRow = row;
+			this._descriptionText.value = this._assessmentResultsTable.component().data![row][0];
+			if (this._dbName.value) {
+				this._issues = this._assessmentData.get(this._dbName.value)![row];
+				this._impactedObjects = this._issues.impactedObjects;
+				let data: { value: string; }[][] = [];
+				this._impactedObjects.forEach(async (impactedObject) => {
+					data.push([
+						{
+							value: impactedObject.objectType
+						},
+						{
+							value: impactedObject.name
+						}
+
+					]);
+				});
+
+				this._impactedObjectsTable.component().updateProperties({
+					dataValues: data
+				});
+			}
 		});
 
 		return this._assessmentResultsTable.component();
