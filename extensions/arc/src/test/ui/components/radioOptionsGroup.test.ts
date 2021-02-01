@@ -61,17 +61,6 @@ describe('radioOptionsGroup', function (): void {
 		it(`component getter`, () => {
 			should(radioOptionsGroup.component()).not.be.undefined();
 		});
-
-		[true, false].forEach(testValue => {
-			it(`Test readOnly with testValue: ${testValue}`, () => {
-				radioOptionsGroup.readOnly = testValue;
-				radioOptionsGroup.readOnly!.should.equal(testValue);
-			});
-			it(`Test enabled with testValue: ${testValue}`, () => {
-				radioOptionsGroup.enabled = testValue;
-				radioOptionsGroup.enabled!.should.equal(testValue);
-			});
-		});
 	});
 });
 

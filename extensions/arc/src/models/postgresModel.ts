@@ -144,22 +144,34 @@ export class PostgresModel extends ResourceModel {
 		if (!engineSettings) {
 			throw new Error('Could not fetch engine settings');
 		}
+
+		const skippedEngineSettings: String[] = [
+			'archive_command', 'archive_timeout', 'log_directory', 'log_file_mode', 'log_filename', 'restore_command',
+			'shared_preload_libraries', 'synchronous_commit', 'ssl', 'unix_socket_permissions', 'wal_level'
+		];
+
+		this._engineSettings = [];
+
 		engineSettings.rows.forEach(row => {
 			let rowValues = row.map(c => c.displayValue);
-			let result: EngineSettingsModel = {
-				parameterName: rowValues.shift(),
-				value: rowValues.shift(),
-				description: rowValues.shift(),
-				min: rowValues.shift(),
-				max: rowValues.shift(),
-				options: rowValues.shift(),
-				type: rowValues.shift()
-			};
+			let name = rowValues.shift();
+			if (!skippedEngineSettings.includes(name!)) {
+				let result: EngineSettingsModel = {
+					parameterName: name,
+					value: rowValues.shift(),
+					description: rowValues.shift(),
+					min: rowValues.shift(),
+					max: rowValues.shift(),
+					options: rowValues.shift(),
+					type: rowValues.shift()
+				};
 
-			this._engineSettings.push(result);
+				this._engineSettings.push(result);
+			}
 		});
 
 		this.engineSettingsLastUpdated = new Date();
+		this._onEngineSettingsUpdated.fire(this._engineSettings);
 	}
 
 	protected createConnectionProfile(): azdata.IConnectionProfile {

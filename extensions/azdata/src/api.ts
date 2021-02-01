@@ -12,7 +12,7 @@ import * as constants from './constants';
 import * as loc from './localizedConstants';
 import { AzdataToolService } from './services/azdataToolService';
 
-function throwIfNoAzdataOrEulaNotAccepted(azdata: IAzdataTool | undefined, eulaAccepted: boolean): asserts azdata {
+export function throwIfNoAzdataOrEulaNotAccepted(azdata: IAzdataTool | undefined, eulaAccepted: boolean): asserts azdata {
 	throwIfNoAzdata(azdata);
 	if (!eulaAccepted) {
 		Logger.log(loc.eulaNotAccepted);

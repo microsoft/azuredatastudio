@@ -18,17 +18,35 @@ export interface ResourceType {
 	icon: { light: string; dark: string } | string;
 	options: ResourceTypeOption[];
 	providers: DeploymentProvider[];
-	agreement?: AgreementInfo;
+	agreements?: AgreementInfo[];
 	displayIndex?: number;
 	okButtonText?: OkButtonTextValue[];
 	getOkButtonText(selectedOptions: { option: string, value: string }[]): string | undefined;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
+	getAgreementInfo(selectedOptions: { option: string, value: string }[]): AgreementInfo | undefined;
+	getHelpText(selectedOption: { option: string, value: string }[]): string | undefined;
 	tags?: string[];
+}
+
+export interface ResourceSubType {
+	/**
+	 * The name should match the name in Resource Type
+	 */
+	name: string;
+	/**
+	 * The option name should have a matching name in ResourceType.options
+	 */
+	options: ResourceTypeOption[];
+	tags?: string[];
+	provider: DeploymentProvider;
+	okButtonText?: OkButtonTextValue;
+	agreement?: AgreementInfo;
 }
 
 export interface AgreementInfo {
 	template: string;
 	links: azdata.LinkArea[];
+	when: string;
 }
 
 export interface ResourceTypeOption {

@@ -13,6 +13,8 @@ A list of terms and their definitions can be found below
 * **Azure Region** - Azure data centers are separated by geography into regions in order to ensure low-latency and security
 * **Azure Resource Group** - a logical container of Azure resources for management of Azure resources within it 
 * **Azure SQL Database** - an Azure based version of SQL database offered as a PaaS 
+* **Azure SQL Managed Instance** - a PaaS Azure offer for SQL Server that is ran on Azure infrastructure. Microsoft will manage the complexities of the infrastructure for the user
+* **Azure SQL Virtual Machine (VM)** - a IaaS Azure offer for SQL Server that is ran on Azure infrastructure. Microsoft will manage the complexities of the infrastructure for the user
 * **Azure Storage Account** - provides a unique namespace in Azure which forms the basis for addressing objects in Azure Storage
 * **Azure Storage SKU** - a *stock keeping unit* or SKU is a product unit designation that distinguishes between the product and other products based on its attributes such as manufacturer, description, and product type. (see <a href="appendices.md">Appendices</a> for a list of Storage SKU types) 
 * **Azure Subscription** - associates a user with Azure resources created by that user
@@ -25,13 +27,13 @@ A list of terms and their definitions can be found below
 * **Juptyer Project** - a non-profit, OSS project that supports interactive data science computing across all programming languages
 * **Markdown** - lightweight markup language with text formatting widely used in web documents
 * **Microsoft PowerShell** - a task automation and configuration management framework. ADS Notebooks feature a PowerShell kernel in order to interface with the PS environment. PS is often used by systems engineers and admins. 
+* **Offline Migration** - moving data between environments in a manner that is disruptive to the operation of the database, usually when a system is able to tolerate the downtime required as a trade-off for simplicity
 * **OSS** - *open source software* is a decentralized software development model that encourages open collaboration and sharing.   
 * **PaaS** - *Platform-as-a-Service* is a cloud service that allows the use of an application without the complexity of building and maintaining the hardware infrastructure required by the application
-* **Point-to-Site VPN** - a VPN solution that allows a secure connection from an individual client computer to a remote network on the VPN. 
+* **Point-to-Site (P2S) VPN** - a VPN solution that allows a secure connection from an individual client computer to a remote network on the VPN. 
 * **Python** - an interpreted high level OSS programming language often used by data scientists 
-* **Site-to-Site VPN** - a VPN connection created between two sites, usually over the public Internet or a WAN connection. Normally requires a network adminstrator to setup and configure. 
+* **Site-to-Site (S2S) VPN** - a VPN connection created between two sites, usually over the public Internet or a WAN connection. Normally requires a network adminstrator to setup and configure. 
 * **SQL Assessment API** - evaluates a SQL instance configuration for best practices
 * **SQL Virtual Machine** - an IaaS Azure offer that provisions and manages virtual machine with SQL Server installed
-* **SQL Managed Instance** - a PaaS Azure offer for SQL Server that is ran on Azure infrastructure. Microsoft will manage the complexities of the infrastructure for the user  
 * **SMO** - SQL Management Objects are "objects designed for programmatic management of Microsoft SQL Server" ([Microsoft](https://docs.microsoft.com/en-us/sql/relational-databases/server-management-objects-smo/overview-smo))
 * **VPN** - a *virtual private network* is a collection of computing resources that organizes and extends a private network configuration over the public Internet, normally using some kind of encryption for security and privacy. 
