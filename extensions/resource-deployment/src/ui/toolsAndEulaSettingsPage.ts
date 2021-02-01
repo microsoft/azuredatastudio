@@ -13,6 +13,7 @@ import { IToolsService } from '../services/toolsService';
 import { getErrorMessage } from '../common/utils';
 import { ResourceTypePage } from './resourceTypePage';
 import { ResourceTypeWizard } from './resourceTypeWizard';
+import { OptionValuesFilter as OptionValuesFilter } from '../services/resourceTypeService';
 
 const localize = nls.loadMessageBundle();
 
@@ -41,7 +42,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		return this.wizard.toolsService;
 	}
 
-	constructor(wizard: ResourceTypeWizard) {
+	constructor(wizard: ResourceTypeWizard, private optionValuesFilter?: OptionValuesFilter) {
 		super(localize('notebookWizard.toolsAndEulaPageTitle', "Deployment pre-requisites"), '', wizard);
 		this._resourceType = wizard.resourceType;
 	}
@@ -164,7 +165,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			);
 			return view.initializeModel(this.form!.withLayout({ width: '100%' }).component()).then(() => {
 				this._agreementContainer.clearItems();
-				if (this._resourceType.agreement) {
+				if (this._resourceType.agreements) {
 					const agreementTitle = this.view.modelBuilder.text().withProps({
 						value: localize('resourceDeployment.AgreementTitle', "Accept terms of use"),
 						CSSStyles: {
@@ -173,7 +174,6 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 						}
 					}).component();
 					this._agreementContainer.addItem(agreementTitle);
-					this._agreementContainer.addItem(this.createAgreementCheckbox(this._resourceType.agreement));
 				} else {
 					this.form.removeFormItem({
 						component: this._agreementContainer
@@ -193,18 +193,24 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					}).component();
 					this._optionsContainer.addItem(optionsTitle);
 					this._resourceType.options.forEach((option, index) => {
+						let optionValues = option.values;
+						const optionValueFilter = this.optionValuesFilter?.[this._resourceType.name]?.[option.name];
+						if (optionValueFilter) {
+							optionValues = optionValues.filter(optionValue => optionValueFilter.includes(optionValue.name));
+						}
 						const optionLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 							value: option.displayName,
 						}).component();
 						optionLabel.width = '150px';
 
-						const optionSelectedValue = (this.wizard.toolsEulaPagePresets) ? this.wizard.toolsEulaPagePresets[index] : option.values[0];
+						const optionSelectedValue = (this.wizard.toolsEulaPagePresets) ? this.wizard.toolsEulaPagePresets[index] : optionValues[0];
 						const optionSelectBox = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
-							values: option.values,
+							values: optionValues,
 							value: optionSelectedValue,
 							width: '300px',
 							ariaLabel: option.displayName
 						}).component();
+
 
 						resourceTypeOptions.push(optionSelectedValue);
 
@@ -217,6 +223,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 						}));
 
 						this._optionDropDownMap.set(option.name, optionSelectBox);
+						this.wizard.provider = this.getCurrentProvider();
 						const row = this.view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 						this._optionsContainer.addItem(row);
 					});
@@ -227,6 +234,9 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					});
 				}
 
+				if (this._resourceType.agreements) {
+					this._agreementContainer.addItem(this.createAgreementCheckbox());
+				}
 				this.updateOkButtonText();
 				this.updateToolsDisplayTable();
 			});
@@ -235,7 +245,8 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	}
 
 
-	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
+	private createAgreementCheckbox(): azdata.FlexContainer {
+		const agreementInfo = this._resourceType.getAgreementInfo(this.getSelectedOptions())!;
 		this._agreementCheckBox = this.view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
 			ariaLabel: this.getAgreementDisplayText(agreementInfo),
 			required: true
@@ -275,26 +286,24 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	}
 
 	private getCurrentProvider(): DeploymentProvider {
-		const options: { option: string, value: string }[] = [];
 
-		this._optionDropDownMap.forEach((selectBox, option) => {
-			let selectedValue: azdata.CategoryValue = selectBox.value as azdata.CategoryValue;
-			options.push({ option: option, value: selectedValue.name });
-		});
+		const options = this.getSelectedOptions();
 
 		this.resourceProvider = this._resourceType.getProvider(options)!;
 		return this._resourceType.getProvider(options)!;
 	}
 
 	private getCurrentOkText(): string {
-		const options: { option: string, value: string }[] = [];
+		return this._resourceType.getOkButtonText(this.getSelectedOptions())!;
+	}
 
+	private getSelectedOptions(): { option: string, value: string }[] {
+		const options: { option: string, value: string }[] = [];
 		this._optionDropDownMap.forEach((selectBox, option) => {
 			let selectedValue: azdata.CategoryValue = selectBox.value as azdata.CategoryValue;
 			options.push({ option: option, value: selectedValue.name });
 		});
-
-		return this._resourceType.getOkButtonText(options)!;
+		return options;
 	}
 
 	private updateOkButtonText(): void {

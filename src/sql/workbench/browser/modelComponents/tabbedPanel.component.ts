@@ -83,7 +83,7 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 
 	get tabs(): Tab[] {
 		if (this.items.length > this._itemIndexToProcess) {
-			let currentGroup: string | undefined = this.items.length === 1 ? undefined : this.items[this._itemIndexToProcess - 1].config.group;
+			let currentGroup: string | undefined = this.items.length === 1 ? undefined : this.items[this._itemIndexToProcess - 1]?.config.group;
 			for (let i = this._itemIndexToProcess; i < this.items.length; i++) {
 				const item = this.items[i];
 				if (item.config.group !== currentGroup) {

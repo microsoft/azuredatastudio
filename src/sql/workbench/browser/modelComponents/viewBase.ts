@@ -103,6 +103,11 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	}
 
 	addToContainer(containerId: string, items: { itemConfig: IItemConfig, index?: number }[], initial?: boolean): void {
+		if (items.length === 0) {
+			// If we don't have any items save ourselves the time and just exit early. This can happen when
+			// an item is defined since we may have components definitions which have empty itemConfigs
+			return;
+		}
 		const itemNames = items.map(item => item.itemConfig.componentShape.id).join(',');
 		this.logService.debug(`Queueing action to add components ${itemNames} to container ${containerId}`);
 		// Do not return the promise as this should be non-blocking

@@ -418,7 +418,7 @@ export class CreateMigrationControllerDialog {
 		const region = (this.migrationControllerRegionDropdown.value as azdata.CategoryValue).name;
 		const controllerStatus = await getMigrationController(this.migrationStateModel.azureAccount, subscription, resourceGroup, region, this.migrationStateModel.migrationController!.name);
 		if (controllerStatus) {
-			const state = controllerStatus.properties.integrationRunTimeState;
+			const state = controllerStatus.properties.integrationRuntimeState;
 
 			if (state === 'Online') {
 				this._connectionStatus.value = constants.CONTRLLER_READY(this.migrationStateModel.migrationController!.name, os.hostname());
