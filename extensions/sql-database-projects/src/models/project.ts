@@ -15,6 +15,7 @@ import { Uri, window } from 'vscode';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 /**
  * Class representing a Project, and providing functions for operating on it
@@ -194,6 +195,8 @@ export class Project {
 		if (this.importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences()) {
 			return;
 		}
+
+		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectForRoundtrip);
 
 		if (!this.importedTargets.includes(constants.NetCoreTargets)) {
 			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
@@ -387,6 +390,13 @@ export class Project {
 			}
 
 			await this.serializeToProjFile(this.projFileXmlDoc);
+
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.changePlatformType)
+				.withAdditionalProperties({
+					from: this.getProjectTargetVersion(),
+					to: compatLevel
+				})
+				.send();
 		}
 	}
 
@@ -854,6 +864,10 @@ export class Project {
 				await this.addSystemDatabaseReference({ databaseName: databaseVariableName, systemDb: systemDb, suppressMissingDependenciesErrors: suppressMissingDependences });
 			}
 		}
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateSystemDatabaseReferencesInProjFile)
+			.withAdditionalMeasurements({ referencesCount: this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length })
+			.send();
 	}
 
 	private async addToProjFile(entry: ProjectEntry, xmlTag?: string, attributes?: Map<string, string>): Promise<void> {

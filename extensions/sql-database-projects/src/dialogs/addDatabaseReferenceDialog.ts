@@ -14,6 +14,7 @@ import { cssStyles } from '../common/uiConstants';
 import { IconPathHelper } from '../common/iconHelper';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Deferred } from '../common/promise';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 export enum ReferenceType {
 	project,
@@ -51,7 +52,7 @@ export class AddDatabaseReferenceDialog {
 	public addReference: ((proj: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings) => any) | undefined;
 
 	constructor(private project: Project) {
-		this.dialog = azdata.window.createModelViewDialog(constants.addDatabaseReferenceDialogName);
+		this.dialog = azdata.window.createModelViewDialog(constants.addDatabaseReferenceDialogName, 'addDatabaseReferencesDialog');
 		this.addDatabaseReferenceTab = azdata.window.createTab(constants.addDatabaseReferenceDialogName);
 	}
 
@@ -156,6 +157,10 @@ export class AddDatabaseReferenceDialog {
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 		}
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
+			.withAdditionalProperties({ referenceType: this.currentReferenceType!.toString() })
+			.send();
 
 		await this.addReference!(this.project, referenceSettings);
 
