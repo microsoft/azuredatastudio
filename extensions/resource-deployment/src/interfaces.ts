@@ -30,9 +30,9 @@ export interface ResourceType {
 
 export interface ResourceSubType {
 	/**
-	 * The name should match the name in Resource Type
+	 * The name of the Resource Type this subtype is extending
 	 */
-	name: string;
+	resourceName: string;
 	/**
 	 * The option name should have a matching name in ResourceType.options
 	 */

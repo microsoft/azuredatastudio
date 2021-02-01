@@ -2,14 +2,14 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.25.0"
+    "azdata": ">=1.26.0"
   },
   "activationEvents": [
     "onCommand:arc.connectToController",
@@ -895,7 +895,7 @@
     ],
     "resourceDeploymentSubTypes": [
       {
-        "name": "azure-sql-mi",
+        "resourceName": "azure-sql-mi",
         "options": [
           {
             "name": "mi-type",
