@@ -570,7 +570,7 @@ suite('notebook model', function (): void {
 
 		model.convertCellType(secondCell);
 		assert.equal(secondCell.cellType, CellTypes.Code, 'Failed to convert second cell type');
-		assert.equal(secondCell.language, 'sql', 'Language should be sql again for first cell');
+		assert.equal(secondCell.language, 'sql', 'Language should be sql again for second cell');
 		assert.deepEqual(newCell, secondCell);
 	});
 
