@@ -234,7 +234,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					});
 				}
 
-				if (this._agreementContainer) {
+				if (this._resourceType.agreements) {
 					this._agreementContainer.addItem(this.createAgreementCheckbox());
 				}
 				this.updateOkButtonText();
