@@ -35,6 +35,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _subscriptionDropdownValues: azdata.CategoryValue[] = [];
 	private _subscriptionMap: Map<string, Subscription> = new Map();
 	private view: azdata.ModelView | undefined;
+	private assessmentLink!: azdata.HyperlinkComponent;
 
 	private async initialState(view: azdata.ModelView) {
 		this.igComponent = this.createStatusComponent(view); // The first component giving basic information
@@ -65,20 +66,20 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			flexFlow: 'column'
 		}).component();
 
-		const assessmentLink = view.modelBuilder.hyperlink()
-			.withProperties<azdata.HyperlinkComponentProperties>({
-				label: 'View Assessment Results',
-				url: ''
-			}).component();
-		assessmentLink.onDidClick(async () => {
-			let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog');
-			await dialog.openDialog();
-		});
+		// this.assessmentLink = view.modelBuilder.hyperlink()
+		// 	.withProperties<azdata.HyperlinkComponentProperties>({
+		// 		label: 'View Assessment Results',
+		// 		url: ''
+		// 	}).component();
+		// this.assessmentLink.onDidClick(async () => {
+		// 	let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog');
+		// 	await dialog.openDialog();
+		// });
 
-		const assessmentFormLink = {
-			title: '',
-			component: assessmentLink,
-		};
+		// const assessmentFormLink = {
+		// 	title: '',
+		// 	component: assessmentLink,
+		// };
 
 		this.view = view;
 		const formContainer = view.modelBuilder.formContainer().withFormItems(
@@ -90,7 +91,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				{
 					component: targetContainer
 				},
-				assessmentFormLink
 			]
 		);
 
@@ -193,6 +193,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				id: product.name,
 				icon: imagePath,
 				descriptions
+			});
+			rbg.component().onLinkClick(async () => {
+				let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog');
+				await dialog.openDialog();
 			});
 		});
 
