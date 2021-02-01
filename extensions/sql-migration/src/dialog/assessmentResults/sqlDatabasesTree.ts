@@ -31,6 +31,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private _objectDetailsType!: azdata.TextComponent;
 	private _objectDetailsName!: azdata.TextComponent;
 	private _objectDetailsSample!: azdata.TextComponent;
+	private _moreInfo!: azdata.TextComponent;
 	// private _recommendationMap!: Map<string, Issues[]>;
 
 	constructor(assessmentData: Map<string, Issues[]>) {
@@ -391,10 +392,9 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 		this._impactedObjectsTable.component().onRowSelected(({ row }) => {
 			if (this._dbName.value) {
-				this._issues = this._assessmentData.get(this._dbName.value)![row];
 				this._impactedObjects = this._issues.impactedObjects;
 			}
-			this._objectDetailsType.value = `Type: ${this._impactedObjects[row].objectType}`;
+			this._objectDetailsType.value = `Type: ${this._impactedObjects[row].objectType!}`;
 			this._objectDetailsName.value = `Name: ${this._impactedObjects[row].name}`;
 			this._objectDetailsSample.value = this._impactedObjects[row].impactDetail;
 
@@ -478,9 +478,24 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				'width': '250px'
 			}
 		}).component();
+		const moreInfo = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: 'More Info',
+			CSSStyles: {
+				'font-size': '14px',
+				'margin-block-start': '0px',
+				'margin-block-end': '0px'
+			}
+		}).component();
+		this._moreInfo = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: '',
+			CSSStyles: {
+				'font-size': '12px',
+				'width': '250px'
+			}
+		}).component();
 
 
-		const container = view.modelBuilder.flexContainer().withItems([descriptionTitle, this._descriptionText, recommendationTitle, this._recommendationText]).withLayout({
+		const container = view.modelBuilder.flexContainer().withItems([descriptionTitle, this._descriptionText, recommendationTitle, this._recommendationText, moreInfo, this._moreInfo]).withLayout({
 			flexFlow: 'column'
 		}).component();
 
@@ -601,8 +616,10 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected, need some kind of dictionary
 			this._assessmentResultsTableRow = row;
 			this._descriptionText.value = this._assessmentResultsTable.component().data![row][0];
+
 			if (this._dbName.value) {
 				this._issues = this._assessmentData.get(this._dbName.value)![row];
+				this._moreInfo.value = this._issues.moreInfo;
 				this._impactedObjects = this._issues.impactedObjects;
 				let data: { value: string; }[][] = [];
 				this._impactedObjects.forEach(async (impactedObject) => {
