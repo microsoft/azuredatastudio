@@ -127,21 +127,20 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			//TODO: change values here
 			const rowInfo = mapRowIssue.get(row);
 			if (rowInfo) {
+				this._assessmentResultsTable.component().dataValues = [];
 				this._dbName.value = rowInfo.name;
 				this._recommendation.value = `Assessment Results (${rowInfo.issues.length} issues found)`;
 				// Need some kind of refresh method for declarative tables
 				rowInfo.issues.forEach((issue) => {
-					this._assessmentResultsTable.component().dataValues?.push(
-						[
-							{
-								value: issue.description
-							}
-
-						]
-					);
+					this._assessmentResultsTable.component().updateProperties({
+						dataValues:
+							[
+								{
+									value: issue.description
+								}
+							]
+					});
 				});
-
-				this._assessmentResultsTable.component();
 
 			}
 
