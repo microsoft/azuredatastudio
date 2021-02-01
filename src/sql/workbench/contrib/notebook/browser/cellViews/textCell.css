@@ -41,21 +41,6 @@ text-cell-component code-component .monaco-editor .inputarea.ime-input {
 	background-color: transparent;
 }
 
-.vs .notebook-preview .rangeHighlight {
-	background-color: yellow;
-}
-
-.vs-dark .notebook-preview .rangeHighlight {
-	background-color: yellow;
-}
-
-.vs .notebook-preview .rangeSpecifcHighlight {
-	background-color: orange;
-}
-
-.vs-dark .notebook-preview .rangeSpecifcHighlight {
-	background-color: orange;
-}
 
 text-cell-component table {
 	border-collapse: collapse;

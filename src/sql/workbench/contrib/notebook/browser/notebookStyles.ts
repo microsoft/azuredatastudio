@@ -8,7 +8,7 @@ import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/
 import { SIDE_BAR_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
-import { cellBorder, notebookToolbarIcon, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder, notebookToolbarSelectBackground, splitBorder, notebookCellTagBackground, notebookCellTagForeground } from 'sql/platform/theme/common/colorRegistry';
+import { cellBorder, notebookToolbarIcon, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder, notebookToolbarSelectBackground, splitBorder, notebookCellTagBackground, notebookCellTagForeground, notebookFindMatchHighlight, notebookFindRangeHighlight } from 'sql/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
@@ -241,6 +241,16 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		const notebookCellTagForegroundColor = theme.getColor(notebookCellTagForeground);
 		if (notebookCellTagBackgroundColor && notebookCellTagForegroundColor) {
 			collector.addRule(`code-component .parameter span { background-color: ${notebookCellTagBackgroundColor}; color: ${notebookCellTagForegroundColor}`);
+		}
+
+		// Notebook Find colors
+		const notebookFindMatchHighlightColor = theme.getColor(notebookFindMatchHighlight);
+		const notebookFindRangeHighlightColor = theme.getColor(notebookFindRangeHighlight);
+		if (notebookFindMatchHighlightColor) {
+			collector.addRule(`.notebook-preview .rangeHighlight { background-color: ${notebookFindMatchHighlightColor};}`);
+		}
+		if (notebookFindRangeHighlightColor) {
+			collector.addRule(`.notebook-preview .rangeSpecificHighlight { background-color: ${notebookFindRangeHighlightColor}!important;}`);
 		}
 	});
 }

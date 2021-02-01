@@ -32,7 +32,8 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
-
+const findHighlightClass = 'rangeHighlight';
+const findRangeSpecificClass = 'rangeSpecificHighlight';
 @Component({
 	selector: TEXT_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./textCell.component.html'))
@@ -371,7 +372,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					if (findModel?.findMatches?.length > 0) {
 						let searchString = findModel.findExpression;
 						markDoc.mark(searchString, {
-							className: 'rangeHighlight'
+							className: findHighlightClass
 						});
 						elementContainingText.scrollIntoView({ behavior: 'smooth' });
 					}
@@ -380,7 +381,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
 					length: range.endColumn - range.startColumn
 				}], {
-					className: 'rangeSpecifcHighlight'
+					className: findRangeSpecificClass
 				});
 				elementContainingText.scrollIntoView({ behavior: 'smooth' });
 			}
@@ -393,8 +394,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			let elements = this.getHtmlElements();
 			let elementContainingText = elements[range.startLineNumber - 1];
 			let mark = new Mark(elementContainingText);
-			markDoc.unmark({ acrossElements: true, className: 'rangeHighlight' });
-			mark.unmark({ acrossElements: true, className: 'rangeSpecifcHighlight' });
+			markDoc.unmark({ acrossElements: true, className: findHighlightClass });
+			mark.unmark({ acrossElements: true, className: findRangeSpecificClass });
 		}
 	}
 
