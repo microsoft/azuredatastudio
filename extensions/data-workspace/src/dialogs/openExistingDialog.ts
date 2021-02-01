@@ -11,7 +11,7 @@ import * as constants from '../common/constants';
 import { IWorkspaceService } from '../common/interfaces';
 import { fileExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
-import { calculateRelativity, TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { calculateRelativity, TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 export class OpenExistingDialog extends DialogBase {
 	public _targetTypeRadioCardGroup: azdata.RadioCardGroupComponent | undefined;
@@ -32,7 +32,7 @@ export class OpenExistingDialog extends DialogBase {
 		super(constants.OpenExistingDialogTitle, 'OpenProject');
 
 		// dialog launched from Welcome message button (only visible when no current workspace) vs. "add project" button
-		TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, 'OpenWorkspaceProjectDialogLaunched')
+		TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, TelemetryActions.OpenExistingDialogLaunched)
 			.withAdditionalProperties({ isWorkspaceOpen: (vscode.workspace.workspaceFile !== undefined).toString() })
 			.send();
 	}
@@ -69,7 +69,7 @@ export class OpenExistingDialog extends DialogBase {
 		try {
 			if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
 				// capture that workspace was selected, also if there's already an open workspace that's being replaced
-				TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, 'OpeningWorkspace')
+				TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, TelemetryActions.OpeningWorkspace)
 					.withAdditionalProperties({ hasWorkspaceOpen: (vscode.workspace.workspaceFile !== undefined).toString() })
 					.send();
 
@@ -91,7 +91,7 @@ export class OpenExistingDialog extends DialogBase {
 					addProjectsPromise = this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._filePathTextBox!.value!)], vscode.Uri.file(this.workspaceInputBox!.value!));
 				}
 
-				TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, 'OpeningProject')
+				TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, TelemetryActions.OpeningProject)
 					.withAdditionalProperties(telemetryProps)
 					.send();
 

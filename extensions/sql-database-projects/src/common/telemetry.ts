@@ -5,11 +5,32 @@
 
 import AdsTelemetryReporter from '@microsoft/ads-extension-telemetry';
 
-import { GetPackageInfo } from './utils';
+import { getPackageInfo } from './utils';
 
-const packageInfo = GetPackageInfo()!;
+const packageInfo = getPackageInfo()!;
 
 export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 
+
 export enum TelemetryViews {
+	ProjectController = 'ProjectController',
+	SqlProjectPublishDialog = 'SqlProjectPublishDialog',
+	ProjectTree = 'ProjectTree'
+}
+
+export enum TelemetryActions {
+	createNewProject = 'createNewProject',
+	addDatabaseReference = 'addDatabaseReference',
+	runStreamingJobValidation = 'runStreamingJobValidation',
+	generateScriptClicked = 'generateScriptClicked',
+	deleteObjectFromProject = 'deleteObjectFromProject',
+	editProjectFile = 'editProjectFile',
+	addItemFromTree = 'addItemFromTree',
+	excludeFromProject = 'excludeFromProject',
+	projectSchemaCompareCommandInvoked = 'projectSchemaCompareCommandInvoked',
+	publishProject = 'publishProject',
+	build = 'build',
+	updateProjectForRoundtrip = 'updateProjectForRoundtrip',
+	changePlatformType = 'changePlatformType',
+	updateSystemDatabaseReferencesInProjFile = 'updateSystemDatabaseReferencesInProjFile'
 }

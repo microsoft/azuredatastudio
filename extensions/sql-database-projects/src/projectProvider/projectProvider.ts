@@ -11,10 +11,8 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { Project } from '../models/project';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
-import { GetPackageInfo } from '../common/utils';
 
 export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvider {
-
 	constructor(private projectController: ProjectsController) {
 
 	}
@@ -76,6 +74,4 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 
 		return vscode.Uri.file(projectFile);
 	}
-
-	get providerExtensionId(): string { return GetPackageInfo()!.fullName; }
 }
