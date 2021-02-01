@@ -219,8 +219,7 @@ describe('PythonPathLookup', function () {
 	it('getInfoForPath - Return undefined string on error', async () => {
 		sinon.stub(utils, 'executeBufferedCommand').rejects('Planned test failure.');
 
-		let pythonFolder = 'testPath/Python38';
-		let pathInfoPromise = pathLookup.getInfoForPath(`${pythonFolder}/python`);
+		let pathInfoPromise = pathLookup.getInfoForPath('testPath/Python38/python');
 		let result = await should(pathInfoPromise).not.be.rejected();
 		should(result).be.undefined();
 	});
@@ -228,8 +227,7 @@ describe('PythonPathLookup', function () {
 	it('getInfoForPath - Return undefined if commands return no data', async () => {
 		sinon.stub(utils, 'executeBufferedCommand').resolves('');
 
-		let pythonFolder = 'testPath/Python38';
-		let pathInfoPromise = pathLookup.getInfoForPath(`${pythonFolder}/python`);
+		let pathInfoPromise = pathLookup.getInfoForPath('testPath/Python38/python');
 		let result = await should(pathInfoPromise).not.be.rejected();
 		should(result).be.undefined();
 	});
