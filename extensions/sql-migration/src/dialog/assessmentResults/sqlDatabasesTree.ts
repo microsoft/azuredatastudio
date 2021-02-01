@@ -129,8 +129,9 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			if (rowInfo) {
 				this._dbName.value = rowInfo.name;
 				this._recommendation.value = `Assessment Results (${rowInfo.issues.length} issues found)`;
+				// Need some kind of refresh method for declarative tables
 				rowInfo.issues.forEach((issue) => {
-					this.databaseTable.component().dataValues?.push(
+					this._assessmentResultsTable.component().dataValues?.push(
 						[
 							{
 								value: issue.description
@@ -139,7 +140,8 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 						]
 					);
 				});
-				// this._assessmentResultsTable.component().dataValues
+
+				this._assessmentResultsTable.component();
 
 			}
 
@@ -461,7 +463,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		}).component();
 
 
-		const container = view.modelBuilder.flexContainer().withItems([descriptionTitle, descriptionText, recommendationTitle, recommendationText]).withLayout({
+		const container = view.modelBuilder.flexContainer().withItems([descriptionTitle, descriptionText, recommendationTitle, this._recommendationText]).withLayout({
 			flexFlow: 'column'
 		}).component();
 
@@ -564,6 +566,16 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					}
 				],
 				dataValues: [
+					[
+						{
+							value: 'DB1 Assessment results'
+						}
+					],
+					[
+						{
+							value: 'DB2 Assessment results'
+						}
+					]
 				]
 			}
 		);
