@@ -131,15 +131,16 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				this._dbName.value = rowInfo.name;
 				this._recommendation.value = `Assessment Results (${rowInfo.issues.length} issues found)`;
 				// Need some kind of refresh method for declarative tables
-				rowInfo.issues.forEach((issue) => {
-					this._assessmentResultsTable.component().updateProperties({
-						dataValues:
-							[
-								{
-									value: issue.description
-								}
-							]
-					});
+				let dataValues: string[][] = [];
+				rowInfo.issues.forEach(async (issue) => {
+					dataValues.push([
+						issue.description
+					]);
+
+				});
+
+				this._assessmentResultsTable.component().updateProperties({
+					data: dataValues
 				});
 
 			}
