@@ -289,7 +289,7 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
 }
 
 /**
- * Make a HTTP request to Azure REST apis.
+ * Make an HTTP request to Azure REST apis.
  */
 export async function makeHttpRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, serviceUrl: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors: boolean = false): Promise<AzureRestResponse> {
 	const result: AzureRestResponse = { response: {}, errors: [] };

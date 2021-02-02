@@ -90,7 +90,7 @@ declare module 'azurecore' {
 		 * @param serviceUrl The endpoint for the service. See https://docs.microsoft.com/en-us/rest/api/?view=Azure
 		 * @param requestType Http request method. Currently GET, PUT, POST and DELETE methods are supported.
 		 * @param requestBody Optional request body to be used in PUT and POST requests.
-		 * @param ignoreErrors When this flag is set the method will not throw any runtime or service errors and will return the error in errors array.
+		 * @param ignoreErrors When this flag is set the method will not throw any runtime or service errors and will return the errors in errors array.
 		 */
 		makeAzureRestRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, serviceUrl: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors?: boolean): Promise<AzureRestResponse>;
 		/**
