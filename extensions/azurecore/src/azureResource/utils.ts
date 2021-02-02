@@ -291,7 +291,7 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
 /**
  * Make an HTTP request to Azure REST apis.
  */
-export async function makeHttpRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, serviceUrl: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors: boolean = false, overrideHost: boolean = false): Promise<AzureRestResponse> {
+export async function makeHttpRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors: boolean = false, host?: string): Promise<AzureRestResponse> {
 	const result: AzureRestResponse = { response: {}, errors: [] };
 
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
@@ -340,24 +340,26 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 		validateStatus: () => true // Never throw
 	};
 
-	if (!overrideHost) {
-		serviceUrl = `https://management.azure.com${serviceUrl}`;
+	let requestUrl: string;
+	if (host) {
+		requestUrl = `${host}${path}`;
+	} else {
+		requestUrl = `https://management.azure.com${path}`;
 	}
 
 	let response;
-
 	switch (requestType) {
 		case HttpRequestMethod.GET:
-			response = await axios.get(serviceUrl, config);
+			response = await axios.get(requestUrl, config);
 			break;
 		case HttpRequestMethod.POST:
-			response = await axios.post(serviceUrl, requestBody, config);
+			response = await axios.post(requestUrl, requestBody, config);
 			break;
 		case HttpRequestMethod.PUT:
-			response = await axios.put(serviceUrl, requestBody, config);
+			response = await axios.put(requestUrl, requestBody, config);
 			break;
 		case HttpRequestMethod.DELETE:
-			response = await axios.delete(serviceUrl, config);
+			response = await axios.delete(requestUrl, config);
 			break;
 	}
 
