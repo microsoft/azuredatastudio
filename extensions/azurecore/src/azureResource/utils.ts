@@ -341,7 +341,7 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 	};
 
 	if (!overrideHost) {
-		serviceUrl += `https://management.azure.com${serviceUrl}`;
+		serviceUrl = `https://management.azure.com${serviceUrl}`;
 	}
 
 	let response;
