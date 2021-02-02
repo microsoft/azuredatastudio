@@ -271,6 +271,14 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	infoBox(): azdata.ComponentBuilder<azdata.InfoBoxComponent, azdata.InfoBoxComponentProperties> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.InfoBoxComponent, azdata.InfoBoxComponentProperties> = this.getComponentBuilder(new InfoBoxComponentWrapper(this._proxy, this._handle, id), id);
+
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	getComponentBuilder<T extends azdata.Component, TPropertyBag extends azdata.ComponentProperties>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T, TPropertyBag> {
 		let componentBuilder: ComponentBuilderImpl<T, TPropertyBag> = new ComponentBuilderImpl<T, TPropertyBag>(component);
 		this._componentBuilders.set(id, componentBuilder);
@@ -699,9 +707,12 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public addItems(items: Array<azdata.Component>, itemLayout?: any): void {
-		for (let item of items) {
-			this.addItem(item, itemLayout);
-		}
+		const itemConfigs = items.map(item => {
+			return {
+				itemConfig: this.createAndAddItemConfig(item, itemLayout).toIItemConfig()
+			};
+		});
+		this._proxy.$addToContainer(this._handle, this.id, itemConfigs).then(undefined, (err) => this.handleError(err));
 	}
 
 	public removeItemAt(index: number): boolean {
@@ -727,11 +738,22 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public addItem(item: azdata.Component, itemLayout?: any, index?: number): void {
-		let itemImpl = item as ComponentWrapper;
+		const config = this.createAndAddItemConfig(item, itemLayout, index);
+		this._proxy.$addToContainer(this._handle, this.id, [{ itemConfig: config.toIItemConfig(), index }]).then(undefined, (err) => this.handleError(err));
+	}
+
+	/**
+	 * Creates the internal item config for the component and adds it to the list of child configs for this component.
+	 * @param item The child component to add
+	 * @param itemLayout The optional layout to apply to the child component
+	 * @param index The optional index to insert the child component at
+	 */
+	private createAndAddItemConfig(item: azdata.Component, itemLayout?: any, index?: number): InternalItemConfig {
+		const itemImpl = item as ComponentWrapper;
 		if (!itemImpl) {
 			throw new Error(nls.localize('unknownComponentType', "Unknown component type. Must use ModelBuilder to create objects"));
 		}
-		let config = new InternalItemConfig(itemImpl, itemLayout);
+		const config = new InternalItemConfig(itemImpl, itemLayout);
 		if (index !== undefined && index >= 0 && index <= this.items.length) {
 			this.itemConfigs.splice(index, 0, config);
 		} else if (!index) {
@@ -739,7 +761,7 @@ class ComponentWrapper implements azdata.Component {
 		} else {
 			throw new Error(nls.localize('invalidIndex', "The index {0} is invalid.", index));
 		}
-		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig(), index).then(undefined, (err) => this.handleError(err));
+		return config;
 	}
 
 	public setLayout(layout: any): Thenable<void> {
@@ -1583,14 +1605,16 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		// data property though since the caller would still expect that to contain
 		// the Component objects they created
 		const properties = assign({}, this.properties);
+		const componentsToAdd: ComponentWrapper[] = [];
 		if (properties.data?.length > 0) {
+
 			properties.data = properties.data.map((row: any[]) => row.map(cell => {
 				if (cell instanceof ComponentWrapper) {
 					// First ensure that we register the component using addItem
 					// such that it gets added to the ModelStore. We don't want to
 					// make the table component an actual container since that exposes
 					// a lot of functionality we don't need.
-					this.addItem(cell);
+					componentsToAdd.push(cell);
 					return cell.id;
 				}
 				return cell;
@@ -1603,13 +1627,14 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 						// such that it gets added to the ModelStore. We don't want to
 						// make the table component an actual container since that exposes
 						// a lot of functionality we don't need.
-						this.addItem(cell.value);
+						componentsToAdd.push(cell.value);
 						return { value: cell.value.id, ariaLabel: cell.ariaLabel, style: cell.style };
 					}
 					return cell;
 				}));
 			}
 		}
+		this.addItems(componentsToAdd);
 		return properties;
 	}
 }
@@ -1981,6 +2006,37 @@ class PropertiesContainerComponentWrapper extends ComponentWrapper implements az
 	}
 	public set loading(v: boolean) {
 		this.setProperty('loading', v);
+	}
+}
+
+class InfoBoxComponentWrapper extends ComponentWrapper implements azdata.InfoBoxComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.InfoBox, id);
+		this.properties = {};
+	}
+
+	public get style(): azdata.InfoBoxStyle {
+		return this.properties['style'];
+	}
+
+	public set style(v: azdata.InfoBoxStyle) {
+		this.setProperty('style', v);
+	}
+
+	public get text(): string {
+		return this.properties['text'];
+	}
+
+	public set text(v: string) {
+		this.setProperty('text', v);
+	}
+
+	public get announceText(): boolean {
+		return this.properties['announceText'];
+	}
+
+	public set announceText(v: boolean) {
+		this.setProperty('announceText', v);
 	}
 }
 

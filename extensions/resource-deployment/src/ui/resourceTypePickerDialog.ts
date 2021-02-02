@@ -6,7 +6,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { ResourceType } from '../interfaces';
-import { IResourceTypeService } from '../services/resourceTypeService';
+import { IResourceTypeService, OptionValuesFilter } from '../services/resourceTypeService';
 import * as loc from './../localizedConstants';
 import { DialogBase } from './dialogBase';
 import * as constants from '../constants';
@@ -27,7 +27,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 	constructor(
 		private resourceTypeService: IResourceTypeService,
 		defaultResourceType: ResourceType,
-		private _resourceTypeNameFilters?: string[]) {
+		private _resourceTypeNameFilters?: string[],
+		private _optionValuesFilter?: OptionValuesFilter) {
 		super(loc.resourceTypePickerDialogTitle, 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = defaultResourceType;
 		this._dialogObject.okButton.label = loc.select;
@@ -188,7 +189,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	protected async onComplete(): Promise<void> {
-		this.resourceTypeService.startDeployment(this._selectedResourceType);
+		this.resourceTypeService.startDeployment(this._selectedResourceType, this._optionValuesFilter);
 	}
 
 	private getAllResourceTags(): string[] {

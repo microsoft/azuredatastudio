@@ -330,6 +330,7 @@ declare module 'azdata' {
 		tabbedPanel(): TabbedPanelComponentBuilder;
 		separator(): ComponentBuilder<SeparatorComponent, SeparatorComponentProperties>;
 		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent, PropertiesContainerComponentProperties>;
+		infoBox(): ComponentBuilder<InfoBoxComponent, InfoBoxComponentProperties>;
 	}
 
 	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
@@ -602,6 +603,32 @@ declare module 'azdata' {
 		 * The properties to display
 		 */
 		propertyItems?: PropertiesContainerItem[];
+	}
+
+	/**
+	 * Component to display text with an icon representing the severity
+	 */
+	export interface InfoBoxComponent extends Component, InfoBoxComponentProperties {
+	}
+
+	export type InfoBoxStyle = 'information' | 'warning' | 'error' | 'success';
+
+	/**
+	 * Properties for configuring a InfoBoxComponent
+	 */
+	export interface InfoBoxComponentProperties extends ComponentProperties {
+		/**
+		 * The style of the InfoBox
+		 */
+		style: InfoBoxStyle;
+		/**
+		 * The display text of the InfoBox
+		 */
+		text: string;
+		/**
+		 * Controls whether the text should be announced by the screen reader. Default value is false.
+		 */
+		announceText?: boolean;
 	}
 
 	export namespace nb {

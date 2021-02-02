@@ -82,12 +82,34 @@ export async function getBlobContainers(account: azdata.Account, subscription: S
 	return blobContainers!;
 }
 
-export async function getMigrationControllers(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string): Promise<azureResource.MigrationController[]> {
+export async function getMigrationController(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<azureResource.MigrationController> {
 	const api = await getAzureCoreAPI();
-	let result = await api.getMigrationControllers(account, subscription, resourceGroupName, regionName, true);
-	let controllers = result.controllers;
-	sortResourceArrayByName(controllers);
-	return controllers!;
+	let result = await api.getMigrationController(account, subscription, resourceGroupName, regionName, controllerName, true);
+	return result.controller!;
+}
+
+export async function createMigrationController(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<azureResource.MigrationController> {
+	const api = await getAzureCoreAPI();
+	let result = await api.createMigrationController(account, subscription, resourceGroupName, regionName, controllerName, true);
+	return result.controller!;
+}
+
+export async function getMigrationControllerAuthKeys(accounts: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<azurecore.GetMigrationControllerAuthKeysResult> {
+	const api = await getAzureCoreAPI();
+	let result = await api.getMigrationControllerAuthKeys(accounts, subscription, resourceGroupName, regionName, controllerName, true);
+	return result;
+}
+
+/**
+ * For now only east us euap is supported. Actual API calls will be added in the public release.
+ */
+export function getMigrationControllerRegions(): azdata.CategoryValue[] {
+	return [
+		{
+			displayName: 'East US EUAP',
+			name: 'eastus2euap'
+		}
+	];
 }
 
 type SortableAzureResources = AzureProduct | azureResource.FileShare | azureResource.BlobContainer | azureResource.MigrationController | azureResource.AzureResourceSubscription;

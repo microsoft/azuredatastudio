@@ -75,7 +75,9 @@ declare module 'azurecore' {
 		getStorageAccounts(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetStorageAccountResult>;
 		getBlobContainers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<GetBlobContainersResult>;
 		getFileShares(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<GetFileSharesResult>;
-		getMigrationControllers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, regionName: string, ignoreErrors?: boolean): Promise<GetMigrationControllersResult>;
+		getMigrationController(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, regionName: string, controllerName: string, ignoreErrors?: boolean): Promise<GetMigrationControllerResult>;
+		createMigrationController(account:azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, regionName: string, controllerName: string, ignoreErrors?:boolean): Promise<CreateMigrationControllerResult>;
+		getMigrationControllerAuthKeys(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, regionName: string, controllerName: string, ignoreErrors?: boolean): Promise<GetMigrationControllerAuthKeysResult>;
 
 		/**
 		 * Converts a region value (@see AzureRegion) into the localized Display Name
@@ -95,8 +97,10 @@ declare module 'azurecore' {
 	export type GetStorageAccountResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };
 	export type GetBlobContainersResult = { blobContainers: azureResource.BlobContainer[], errors: Error[] };
 	export type GetFileSharesResult = { fileShares: azureResource.FileShare[], errors: Error[] };
-	export type GetMigrationControllersResult = { controllers: azureResource.MigrationController[], errors: Error[] };
+	export type GetMigrationControllerResult = { controller: azureResource.MigrationController | undefined, errors: Error[] };
+	export type CreateMigrationControllerResult = { controller: azureResource.MigrationController | undefined, errors: Error[] };
+	export type GetMigrationControllerAuthKeysResult = { keyName1: string, keyName2: string, errors: Error[] };
 
 	export type ResourceQueryResult<T extends azureResource.AzureGraphResource> = { resources: T[], errors: Error[] };
-	export type HttpGetRequestResult = { response: any, errors: Error[] };
+	export type HttpRequestResult = { response: any, errors: Error[] };
 }

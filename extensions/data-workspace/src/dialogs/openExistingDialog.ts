@@ -11,6 +11,7 @@ import * as constants from '../common/constants';
 import { IWorkspaceService } from '../common/interfaces';
 import { fileExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
+import { calculateRelativity, TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 export class OpenExistingDialog extends DialogBase {
 	public _targetTypeRadioCardGroup: azdata.RadioCardGroupComponent | undefined;
@@ -29,6 +30,11 @@ export class OpenExistingDialog extends DialogBase {
 
 	constructor(private workspaceService: IWorkspaceService, private extensionContext: vscode.ExtensionContext) {
 		super(constants.OpenExistingDialogTitle, 'OpenProject');
+
+		// dialog launched from Welcome message button (only visible when no current workspace) vs. "add project" button
+		TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, TelemetryActions.OpenExistingDialogLaunched)
+			.withAdditionalProperties({ isWorkspaceOpen: (vscode.workspace.workspaceFile !== undefined).toString() })
+			.send();
 	}
 
 	async validate(): Promise<boolean> {
@@ -62,12 +68,34 @@ export class OpenExistingDialog extends DialogBase {
 	async onComplete(): Promise<void> {
 		try {
 			if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
+				// capture that workspace was selected, also if there's already an open workspace that's being replaced
+				TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, TelemetryActions.OpeningWorkspace)
+					.withAdditionalProperties({ hasWorkspaceOpen: (vscode.workspace.workspaceFile !== undefined).toString() })
+					.send();
+
 				await this.workspaceService.enterWorkspace(vscode.Uri.file(this._filePathTextBox!.value!));
 			} else {
+				// save datapoint now because it'll get set to new value during validateWorkspace()
+				const telemetryProps: any = { hasWorkspaceOpen: (vscode.workspace.workspaceFile !== undefined).toString() };
+
 				const validateWorkspace = await this.workspaceService.validateWorkspace();
+				let addProjectsPromise: Promise<void>;
+
 				if (validateWorkspace) {
-					await this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._filePathTextBox!.value!)], vscode.Uri.file(this.workspaceInputBox!.value!));
+					telemetryProps.workspaceProjectRelativity = calculateRelativity(this._filePathTextBox!.value!, this.workspaceInputBox!.value!);
+					telemetryProps.cancelled = 'false';
+					addProjectsPromise = this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._filePathTextBox!.value!)], vscode.Uri.file(this.workspaceInputBox!.value!));
+				} else {
+					telemetryProps.workspaceProjectRelativity = 'none';
+					telemetryProps.cancelled = 'true';
+					addProjectsPromise = this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._filePathTextBox!.value!)], vscode.Uri.file(this.workspaceInputBox!.value!));
 				}
+
+				TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, TelemetryActions.OpeningProject)
+					.withAdditionalProperties(telemetryProps)
+					.send();
+
+				await addProjectsPromise;
 			}
 		}
 		catch (err) {

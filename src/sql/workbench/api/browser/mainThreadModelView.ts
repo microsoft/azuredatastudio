@@ -51,9 +51,9 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 		return this.execModelViewAction(handle, (modelView) => modelView.clearContainer(componentId));
 	}
 
-	$addToContainer(handle: number, containerId: string, item: IItemConfig, index?: number): Thenable<void> {
+	$addToContainer(handle: number, containerId: string, items: { itemConfig: IItemConfig, index?: number }[]): Thenable<void> {
 		return this.execModelViewAction(handle,
-			(modelView) => modelView.addToContainer(containerId, item, index));
+			(modelView) => modelView.addToContainer(containerId, items));
 	}
 
 	$removeFromContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void> {

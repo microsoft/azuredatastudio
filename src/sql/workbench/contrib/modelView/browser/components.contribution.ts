@@ -35,6 +35,7 @@ import SeparatorComponent from 'sql/workbench/browser/modelComponents/separator.
 import { ModelComponentTypes } from 'sql/platform/dashboard/browser/interfaces';
 import PropertiesContainerComponent from 'sql/workbench/browser/modelComponents/propertiesContainer.component';
 import ListViewComponent from 'sql/workbench/browser/modelComponents/listView.component';
+import InfoBoxComponent from 'sql/workbench/browser/modelComponents/infoBox.component';
 
 export const DIV_CONTAINER = 'div-container';
 registerComponentType(DIV_CONTAINER, ModelComponentTypes.DivContainer, DivContainer);
@@ -126,3 +127,6 @@ registerComponentType(SEPARATOR_COMPONENT, ModelComponentTypes.Separator, Separa
 
 export const PROPERTIESCONTAINER_COMPONENT = 'propertiescontainer-component';
 registerComponentType(PROPERTIESCONTAINER_COMPONENT, ModelComponentTypes.PropertiesContainer, PropertiesContainerComponent);
+
+export const INFOBOX_COMPONENT = 'infobox-component';
+registerComponentType(INFOBOX_COMPONENT, ModelComponentTypes.InfoBox, InfoBoxComponent);

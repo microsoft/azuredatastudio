@@ -18,7 +18,7 @@ import { ImportConfigPage } from './pages/importConfigPage';
 import { DacFxDataModel } from './api/models';
 import { BasePage } from './api/basePage';
 import { TelemetryReporter, TelemetryViews } from '../telemetry';
-import { TelemetryEventMeasures, TelemetryEventProperties } from 'ads-extension-telemetry';
+import { TelemetryEventMeasures, TelemetryEventProperties } from '@microsoft/ads-extension-telemetry';
 
 const msSqlProvider = 'MSSQL';
 class Page {
