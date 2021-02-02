@@ -348,6 +348,11 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 		validateStatus: () => true // Never throw
 	};
 
+	// Adding '/' if path does not begin with it.
+	if (path.indexOf('/') !== 0) {
+		path = `/${path}`;
+	}
+
 	let requestUrl: string;
 	if (host) {
 		requestUrl = `${host}${path}`;
