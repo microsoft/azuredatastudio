@@ -376,7 +376,7 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 			break;
 	}
 
-	if (response.status >= 400) {
+	if (response.status >= 300) {
 		let errorMessage: string[] = [];
 		errorMessage.push(response.status.toString());
 		errorMessage.push(response.statusText);
