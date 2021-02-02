@@ -66,6 +66,13 @@ declare module 'azurecore' {
 		westus2 = 'westus2',
 	}
 
+	export const enum HttpRequestMethod {
+		GET,
+		PUT,
+		POST,
+		DELETE
+	}
+
 	export interface IExtension {
 		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean, selectedOnly?: boolean): Promise<GetSubscriptionsResult>;
 		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<GetResourceGroupsResult>;
@@ -75,10 +82,17 @@ declare module 'azurecore' {
 		getStorageAccounts(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetStorageAccountResult>;
 		getBlobContainers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<GetBlobContainersResult>;
 		getFileShares(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<GetFileSharesResult>;
-		getMigrationController(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, regionName: string, controllerName: string, ignoreErrors?: boolean): Promise<GetMigrationControllerResult>;
-		createMigrationController(account:azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, regionName: string, controllerName: string, ignoreErrors?:boolean): Promise<CreateMigrationControllerResult>;
-		getMigrationControllerAuthKeys(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, regionName: string, controllerName: string, ignoreErrors?: boolean): Promise<GetMigrationControllerAuthKeysResult>;
-
+		/**
+		 * Makes Azure REST requests to create, retireve, update or delete access to azure service's resources.
+		 * For reference to different service URLs, See https://docs.microsoft.com/en-us/rest/api/?view=Azure
+		 * @param account The azure account used to acquire access token
+		 * @param subscription The subscription under azure account where the service will perform operations.
+		 * @param serviceUrl The endpoint for the service. See https://docs.microsoft.com/en-us/rest/api/?view=Azure
+		 * @param requestType Http request method. Currently GET, PUT, POST and DELETE methods are supported.
+		 * @param requestBody Optional request body to be used in PUT and POST requests.
+		 * @param ignoreErrors When this flag is set the method will not throw any runtime or service errors and will return the error in errors array.
+		 */
+		makeAzureRestRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, serviceUrl: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors?: boolean): Promise<AzureRestResponse>;
 		/**
 		 * Converts a region value (@see AzureRegion) into the localized Display Name
 		 * @param region The region value
@@ -97,10 +111,6 @@ declare module 'azurecore' {
 	export type GetStorageAccountResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };
 	export type GetBlobContainersResult = { blobContainers: azureResource.BlobContainer[], errors: Error[] };
 	export type GetFileSharesResult = { fileShares: azureResource.FileShare[], errors: Error[] };
-	export type GetMigrationControllerResult = { controller: azureResource.MigrationController | undefined, errors: Error[] };
-	export type CreateMigrationControllerResult = { controller: azureResource.MigrationController | undefined, errors: Error[] };
-	export type GetMigrationControllerAuthKeysResult = { keyName1: string, keyName2: string, errors: Error[] };
-
 	export type ResourceQueryResult<T extends azureResource.AzureGraphResource> = { resources: T[], errors: Error[] };
-	export type HttpRequestResult = { response: any, errors: Error[] };
+	export type AzureRestResponse = { response: any, errors: Error[] };
 }

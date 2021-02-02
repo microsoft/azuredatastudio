@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { SKURecommendations } from './externalContract';
-import { azureResource } from 'azureResource';
+import { MigrationController } from '../sqlmigration';
 
 export enum State {
 	INIT,
@@ -87,7 +87,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined;
 	private _azureAccount!: azdata.Account;
 	private _databaseBackup!: DatabaseBackupModel;
-	private _migrationController!: azureResource.MigrationController | undefined;
+	private _migrationController!: MigrationController | undefined;
 
 	constructor(
 		private readonly _extensionContext: vscode.ExtensionContext,
@@ -158,11 +158,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._stateChangeEventEmitter.event;
 	}
 
-	public set migrationController(controller: azureResource.MigrationController | undefined) {
+	public set migrationController(controller: MigrationController | undefined) {
 		this._migrationController = controller;
 	}
 
-	public get migrationController(): azureResource.MigrationController | undefined {
+	public get migrationController(): MigrationController | undefined {
 		return this._migrationController;
 	}
 

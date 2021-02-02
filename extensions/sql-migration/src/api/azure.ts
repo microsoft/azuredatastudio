@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import { azureResource } from 'azureResource';
+import { GetMigrationControllerAuthKeysResult, MigrationController } from '../sqlmigration';
 
 async function getAzureCoreAPI(): Promise<azurecore.IExtension> {
 	const api = (await vscode.extensions.getExtension(azurecore.extension.name)?.activate()) as azurecore.IExtension;
@@ -82,22 +83,41 @@ export async function getBlobContainers(account: azdata.Account, subscription: S
 	return blobContainers!;
 }
 
-export async function getMigrationController(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<azureResource.MigrationController> {
+export async function getMigrationController(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<MigrationController> {
 	const api = await getAzureCoreAPI();
-	let result = await api.getMigrationController(account, subscription, resourceGroupName, regionName, controllerName, true);
-	return result.controller!;
+	const serviceUrl = `https://${regionName}.management.azure.com/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/Controllers/${controllerName}?api-version=2020-09-01-preview`;
+	const response = await api.makeAzureRestRequest(account, subscription, serviceUrl, azurecore.HttpRequestMethod.GET, undefined, true);
+	if (response.errors.length > 0) {
+		throw response.errors;
+	}
+
+	return response.response.data;
 }
 
-export async function createMigrationController(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<azureResource.MigrationController> {
+export async function createMigrationController(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<MigrationController> {
 	const api = await getAzureCoreAPI();
-	let result = await api.createMigrationController(account, subscription, resourceGroupName, regionName, controllerName, true);
-	return result.controller!;
+	const serviceUrl = `https://${regionName}.management.azure.com/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/Controllers/${controllerName}?api-version=2020-09-01-preview`;
+	const requestBody = {
+		'location': regionName
+	};
+	const response = await api.makeAzureRestRequest(account, subscription, serviceUrl, azurecore.HttpRequestMethod.PUT, requestBody, true);
+	if (response.errors.length > 0) {
+		throw response.errors;
+	}
+	return response.response.data;
 }
 
-export async function getMigrationControllerAuthKeys(accounts: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<azurecore.GetMigrationControllerAuthKeysResult> {
+export async function getMigrationControllerAuthKeys(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<GetMigrationControllerAuthKeysResult> {
 	const api = await getAzureCoreAPI();
-	let result = await api.getMigrationControllerAuthKeys(accounts, subscription, resourceGroupName, regionName, controllerName, true);
-	return result;
+	const serviceUrl = `https://${regionName}.management.azure.com/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/Controllers/${controllerName}/ListAuthKeys?api-version=2020-09-01-preview`;
+	const response = await api.makeAzureRestRequest(account, subscription, serviceUrl, azurecore.HttpRequestMethod.POST, undefined, true);
+	if (response.errors.length > 0) {
+		throw response.errors;
+	}
+	return {
+		keyName1: response?.response?.data?.keyName1 ?? '',
+		keyName2: response?.response?.data?.keyName2 ?? ''
+	};
 }
 
 /**
@@ -112,7 +132,7 @@ export function getMigrationControllerRegions(): azdata.CategoryValue[] {
 	];
 }
 
-type SortableAzureResources = AzureProduct | azureResource.FileShare | azureResource.BlobContainer | azureResource.MigrationController | azureResource.AzureResourceSubscription;
+type SortableAzureResources = AzureProduct | azureResource.FileShare | azureResource.BlobContainer | azureResource.AzureResourceSubscription;
 function sortResourceArrayByName(resourceArray: SortableAzureResources[]): void {
 	if (!resourceArray) {
 		return;
