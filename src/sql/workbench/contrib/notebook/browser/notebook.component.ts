@@ -52,6 +52,7 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
+import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -69,6 +70,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	@ViewChildren(CellToolbarComponent) private cellToolbar: QueryList<CellToolbarComponent>;
 
 	@Input() _model: NotebookModel;
+	@Input() _views: NotebookViewsExtension;
 
 	protected _actionBar: Taskbar;
 	protected isLoading: boolean;
@@ -129,6 +131,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	public get model(): NotebookModel | null {
 		return this._model;
+	}
+
+	public get views(): NotebookViewsExtension | null {
+		return this._views;
 	}
 
 	public get activeCellId(): string {

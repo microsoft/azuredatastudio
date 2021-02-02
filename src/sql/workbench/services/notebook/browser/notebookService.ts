@@ -18,6 +18,7 @@ import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootst
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { Range } from 'vs/editor/common/core/range';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
+import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 
 export const SERVICE_ID = 'sqlNotebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -205,6 +206,7 @@ export interface INotebookEditor {
 	readonly cellEditors: ICellEditorProvider[];
 	readonly modelReady: Promise<INotebookModel>;
 	readonly model: INotebookModel | null;
+	readonly views: NotebookViewsExtension | null;
 	isDirty(): boolean;
 	isActive(): boolean;
 	isVisible(): boolean;
