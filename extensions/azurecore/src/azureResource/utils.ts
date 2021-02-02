@@ -291,7 +291,7 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
 /**
  * Make an HTTP request to Azure REST apis.
  */
-export async function makeHttpRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, serviceUrl: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors: boolean = false): Promise<AzureRestResponse> {
+export async function makeHttpRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, serviceUrl: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors: boolean = false, overrideHost: boolean = false): Promise<AzureRestResponse> {
 	const result: AzureRestResponse = { response: {}, errors: [] };
 
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
@@ -340,6 +340,10 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 		validateStatus: () => true // Never throw
 	};
 
+	if (!overrideHost) {
+		serviceUrl += `https://management.azure.com${serviceUrl}`;
+	}
+
 	let response;
 
 	switch (requestType) {
@@ -377,7 +381,7 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 }
 
 export async function getBlobContainers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetBlobContainersResult> {
-	const apiEndpoint = `https://management.azure.com/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/blobServices/default/containers?api-version=2019-06-01`;
+	const apiEndpoint = `/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/blobServices/default/containers?api-version=2019-06-01`;
 	const response = await makeHttpRequest(account, subscription, apiEndpoint, HttpRequestMethod.GET, undefined, ignoreErrors);
 	return {
 		blobContainers: response?.response?.data?.value ?? [],
@@ -386,7 +390,7 @@ export async function getBlobContainers(account: azdata.Account, subscription: a
 }
 
 export async function getFileShares(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetFileSharesResult> {
-	const apiEndpoint = `https://management.azure.com/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/fileServices/default/shares?api-version=2019-06-01`;
+	const apiEndpoint = `/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/fileServices/default/shares?api-version=2019-06-01`;
 	const response = await makeHttpRequest(account, subscription, apiEndpoint, HttpRequestMethod.GET, undefined, ignoreErrors);
 	return {
 		fileShares: response?.response?.data?.value ?? [],
