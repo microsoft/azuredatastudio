@@ -19,7 +19,7 @@ loader.config({
 	nodeRequire: require,
 	nodeMain: __filename,
 	'vs/nls': nlsConfig,
-	amdModulesPattern: /^vs\//,
+	amdModulesPattern: /^(vs|sql)\//,
 	recordStats: true
 });
 
