@@ -391,8 +391,8 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 }
 
 export async function getBlobContainers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetBlobContainersResult> {
-	const apiEndpoint = `/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/blobServices/default/containers?api-version=2019-06-01`;
-	const response = await makeHttpRequest(account, subscription, apiEndpoint, HttpRequestMethod.GET, undefined, ignoreErrors);
+	const path = `/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/blobServices/default/containers?api-version=2019-06-01`;
+	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors);
 	return {
 		blobContainers: response?.response?.data?.value ?? [],
 		errors: response.errors ? response.errors : []
@@ -400,8 +400,8 @@ export async function getBlobContainers(account: azdata.Account, subscription: a
 }
 
 export async function getFileShares(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetFileSharesResult> {
-	const apiEndpoint = `/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/fileServices/default/shares?api-version=2019-06-01`;
-	const response = await makeHttpRequest(account, subscription, apiEndpoint, HttpRequestMethod.GET, undefined, ignoreErrors);
+	const path = `/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/fileServices/default/shares?api-version=2019-06-01`;
+	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors);
 	return {
 		fileShares: response?.response?.data?.value ?? [],
 		errors: response.errors ? response.errors : []
