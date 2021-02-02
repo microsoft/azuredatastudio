@@ -91,7 +91,7 @@ declare module 'azurecore' {
 		 * @param requestType Http request method. Currently GET, PUT, POST and DELETE methods are supported.
 		 * @param requestBody Optional request body to be used in PUT and POST requests.
 		 * @param ignoreErrors When this flag is set the method will not throw any runtime or service errors and will return the errors in errors array.
-		 * @param host Use this to override the host. The default host is https://management.azure.com'
+		 * @param host Use this to override the host. The default host is https://management.azure.com
 		 */
 		makeAzureRestRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors?: boolean, host?: string): Promise<AzureRestResponse>;
 		/**

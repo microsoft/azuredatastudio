@@ -88,7 +88,7 @@ export async function getMigrationController(account: azdata.Account, subscripti
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/Controllers/${controllerName}?api-version=2020-09-01-preview`;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 	if (response.errors.length > 0) {
-		throw response.errors;
+		throw response.errors.toString();
 	}
 
 	return response.response.data;
@@ -103,7 +103,7 @@ export async function createMigrationController(account: azdata.Account, subscri
 	};
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.PUT, requestBody, true, host);
 	if (response.errors.length > 0) {
-		throw response.errors;
+		throw response.errors.toString();
 	}
 	return response.response.data;
 }
@@ -114,7 +114,7 @@ export async function getMigrationControllerAuthKeys(account: azdata.Account, su
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/Controllers/${controllerName}/ListAuthKeys?api-version=2020-09-01-preview`;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, undefined, true, host);
 	if (response.errors.length > 0) {
-		throw response.errors;
+		throw response.errors.toString();
 	}
 	return {
 		keyName1: response?.response?.data?.keyName1 ?? '',

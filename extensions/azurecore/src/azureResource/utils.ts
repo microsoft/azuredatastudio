@@ -297,7 +297,7 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
  * @param requestType Http request method. Currently GET, PUT, POST and DELETE methods are supported.
  * @param requestBody Optional request body to be used in PUT and POST requests.
  * @param ignoreErrors When this flag is set the method will not throw any runtime or service errors and will return the errors in errors array.
- * @param host Use this to override the host. The default host is https://management.azure.com'
+ * @param host Use this to override the host. The default host is https://management.azure.com
  */
 export async function makeHttpRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors: boolean = false, host: string = 'https://management.azure.com'): Promise<AzureRestResponse> {
 	const result: AzureRestResponse = { response: {}, errors: [] };
@@ -376,7 +376,7 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 			break;
 	}
 
-	if (response.status >= 300) {
+	if (response.status <= 200 || response.status >= 299) {
 		let errorMessage: string[] = [];
 		errorMessage.push(response.status.toString());
 		errorMessage.push(response.statusText);
