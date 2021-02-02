@@ -234,6 +234,19 @@ configurationRegistry.registerConfiguration({
 	}
 });
 
+configurationRegistry.registerConfiguration({
+	'id': 'notebookViews',
+	'title': 'Notebook Views',
+	'type': 'object',
+	'properties': {
+		'notebookViews.enabled': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('notebookViews.enabled', "(Preview) enable notebook views")
+		}
+	}
+});
+
 /* *************** Output components *************** */
 // Note: most existing types use the same component to render. In order to
 // preserve correct rank order, we register it once for each different rank of

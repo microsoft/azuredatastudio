@@ -406,7 +406,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			dropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
 
 			let viewsDropdownContainer;
-			if (true) { //if (this._configurationService.getValue<boolean>(NOTEBOOK_VIEWS_ENABLED_PROPERTY)) {
+			if (this._configurationService.getValue<boolean>('notebookViews.enabled')) {
 				let viewsContainer = document.createElement('li');
 				let viewsActionsProvider = new NotebookViewsOptions(viewsContainer, this.contextViewService, this.modelReady, this.notebookService, this.instantiationService);
 				let viewsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.OpenViews', localize('views', "Views"), 'notebook-button masked-pseudo code');
