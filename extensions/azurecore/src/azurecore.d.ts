@@ -84,10 +84,10 @@ declare module 'azurecore' {
 		getFileShares(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<GetFileSharesResult>;
 		/**
 		 * Makes Azure REST requests to create, retrieve, update or delete access to azure service's resources.
-		 * For reference to different service URLs, See https://docs.microsoft.com/en-us/rest/api/?view=Azure
+		 * For reference to different service URLs, See https://docs.microsoft.com/rest/api/?view=Azure
 		 * @param account The azure account used to acquire access token
 		 * @param subscription The subscription under azure account where the service will perform operations.
-		 * @param path The path for the service starting from '/subscription/..'. See https://docs.microsoft.com/en-us/rest/api/azure/.
+		 * @param path The path for the service starting from '/subscription/..'. See https://docs.microsoft.com/rest/api/azure/.
 		 * @param requestType Http request method. Currently GET, PUT, POST and DELETE methods are supported.
 		 * @param requestBody Optional request body to be used in PUT and POST requests.
 		 * @param ignoreErrors When this flag is set the method will not throw any runtime or service errors and will return the errors in errors array.
