@@ -83,7 +83,7 @@ declare module 'azurecore' {
 		getBlobContainers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<GetBlobContainersResult>;
 		getFileShares(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<GetFileSharesResult>;
 		/**
-		 * Makes Azure REST requests to create, retireve, update or delete access to azure service's resources.
+		 * Makes Azure REST requests to create, retrieve, update or delete access to azure service's resources.
 		 * For reference to different service URLs, See https://docs.microsoft.com/en-us/rest/api/?view=Azure
 		 * @param account The azure account used to acquire access token
 		 * @param subscription The subscription under azure account where the service will perform operations.

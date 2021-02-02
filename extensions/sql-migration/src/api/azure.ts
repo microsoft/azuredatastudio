@@ -97,11 +97,11 @@ export async function getMigrationController(account: azdata.Account, subscripti
 export async function createMigrationController(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<MigrationController> {
 	const api = await getAzureCoreAPI();
 	const host = `https://${regionName}.management.azure.com`;
-	const serviceUrl = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/Controllers/${controllerName}?api-version=2020-09-01-preview`;
+	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/Controllers/${controllerName}?api-version=2020-09-01-preview`;
 	const requestBody = {
 		'location': regionName
 	};
-	const response = await api.makeAzureRestRequest(account, subscription, serviceUrl, azurecore.HttpRequestMethod.PUT, requestBody, true, host);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.PUT, requestBody, true, host);
 	if (response.errors.length > 0) {
 		throw response.errors;
 	}
@@ -111,8 +111,8 @@ export async function createMigrationController(account: azdata.Account, subscri
 export async function getMigrationControllerAuthKeys(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<GetMigrationControllerAuthKeysResult> {
 	const api = await getAzureCoreAPI();
 	const host = `https://${regionName}.management.azure.com`;
-	const serviceUrl = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/Controllers/${controllerName}/ListAuthKeys?api-version=2020-09-01-preview`;
-	const response = await api.makeAzureRestRequest(account, subscription, serviceUrl, azurecore.HttpRequestMethod.POST, undefined, true, host);
+	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/Controllers/${controllerName}/ListAuthKeys?api-version=2020-09-01-preview`;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, undefined, true, host);
 	if (response.errors.length > 0) {
 		throw response.errors;
 	}

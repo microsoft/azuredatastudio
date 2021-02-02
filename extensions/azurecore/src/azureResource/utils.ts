@@ -289,9 +289,17 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
 }
 
 /**
- * Make an HTTP request to Azure REST apis.
+ * Makes Azure REST requests to create, retireve, update or delete access to azure service's resources.
+ * For reference to different service URLs, See https://docs.microsoft.com/en-us/rest/api/?view=Azure
+ * @param account The azure account used to acquire access token
+ * @param subscription The subscription under azure account where the service will perform operations.
+ * @param path The path for the service starting from '/subscription/..'. See https://docs.microsoft.com/en-us/rest/api/azure/.
+ * @param requestType Http request method. Currently GET, PUT, POST and DELETE methods are supported.
+ * @param requestBody Optional request body to be used in PUT and POST requests.
+ * @param ignoreErrors When this flag is set the method will not throw any runtime or service errors and will return the errors in errors array.
+ * @param host Use this to override the host. The default host is https://management.azure.com'
  */
-export async function makeHttpRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors: boolean = false, host?: string): Promise<AzureRestResponse> {
+export async function makeHttpRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors: boolean = false, host: string = 'https://management.azure.com'): Promise<AzureRestResponse> {
 	const result: AzureRestResponse = { response: {}, errors: [] };
 
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {

@@ -202,7 +202,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			requestType: azurecore.HttpRequestMethod,
 			requestBody: any,
 			ignoreErrors: boolean,
-			host: string): Promise<azurecore.AzureRestResponse> {
+			host: string = 'https://management.azure.com'): Promise<azurecore.AzureRestResponse> {
 			return azureResourceUtils.makeHttpRequest(account, subscription, path, requestType, requestBody, ignoreErrors, host);
 		},
 		getRegionDisplayName: utils.getRegionDisplayName,
