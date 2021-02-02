@@ -37,11 +37,15 @@
 	min-height: 21px;
 }
 
+.notebookEditor .editor-toolbar .actions-container .action-item .codicon.masked-pseudo {
+	padding-right: 18px;
+}
+
 .notebookEditor .editor-toolbar .actions-container .action-item .codicon {
 	display: inline-block;
 	text-align: center;
 	cursor: pointer;
-	padding: 0 18px;
+	padding: 0 0 0 18px;
 	background-size: 13px;
 	font-size: 13px;
 	height: 21px;
@@ -55,7 +59,7 @@
 .notebookEditor .in-preview .actions-container .action-item .codicon:before {
 	display: flex;
 	height: 100%;
-	padding-right: 0px;
+	padding-right: 0;
 	background-size: contain;
 }
 

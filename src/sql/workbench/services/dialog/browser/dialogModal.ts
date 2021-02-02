@@ -58,6 +58,10 @@ export class DialogModal extends Modal {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
+		if (this._modalOptions.renderFooter === true || this._modalOptions.renderFooter === undefined) {
+			this._modalOptions.renderFooter = true;
+		}
+
 		if (this._modalOptions.renderFooter && this.backButton) {
 			this.backButton.onDidClick(() => this.cancel());
 			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });

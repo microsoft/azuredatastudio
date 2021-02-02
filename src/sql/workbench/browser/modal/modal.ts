@@ -216,8 +216,6 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
 		}
 
-		this.positionDialog();
-
 		if (typeof this._modalOptions.width === 'number') {
 			this._modalDialog.style.width = `${this._modalOptions.width}px`;
 		} else {
@@ -447,7 +445,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Shows the modal and attaches key listeners
 	 */
 	protected show() {
-		//this.positionDialog();
+		this.positionDialog();
 		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
 		this._modalShowingContext.get()!.push(this._staticKey);
 		DOM.append(this.layoutService.container, this._bodyContainer!);
