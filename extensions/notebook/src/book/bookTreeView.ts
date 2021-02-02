@@ -149,7 +149,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.CreateBook).send();
 	}
 
-	async getSelectionQuicPick(movingElement: BookTreeItem): Promise<quickPickResults> {
+	async getSelectionQuickPick(movingElement: BookTreeItem): Promise<quickPickResults> {
 		let bookOptions: vscode.QuickPickItem[] = [];
 		let pickedSection: vscode.QuickPickItem;
 		this.books.forEach(book => {
@@ -199,7 +199,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async editBook(movingElement: BookTreeItem): Promise<void> {
-		const selectionResults = await this.getSelectionQuicPick(movingElement);
+		const selectionResults = await this.getSelectionQuickPick(movingElement);
 		const pickedSection = selectionResults.quickPickSection;
 		const updateBook = selectionResults.book;
 		if (pickedSection && updateBook) {

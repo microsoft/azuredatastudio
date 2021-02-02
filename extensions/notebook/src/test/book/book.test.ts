@@ -232,14 +232,14 @@ describe('BooksTreeViewTests', function () {
 
 			});
 
-			// it('getParent should return when element is a valid child notebook', async () => {
-			// 	let parent = await bookTreeViewProvider.getParent();
-			// 	should(parent).be.undefined();
+			it.skip('getParent should return when element is a valid child notebook', async () => {
+				let parent = await bookTreeViewProvider.getParent();
+				should(parent).be.undefined();
 
-			// 	parent = await bookTreeViewProvider.getParent(notebook2);
-			// 	should(parent).not.be.undefined();
-			// 	equalBookItems(parent, expectedNotebook1);
-			// });
+				parent = await bookTreeViewProvider.getParent(notebook2);
+				should(parent).not.be.undefined();
+				equalBookItems(parent, expectedNotebook1);
+			});
 
 			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');

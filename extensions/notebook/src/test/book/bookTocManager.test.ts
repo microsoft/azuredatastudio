@@ -2,10 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 import * as should from 'should';
 import * as path from 'path';
-import { BookTocManager, hasSections } from '../../book/bookTocManager';
+import { BookTocManager, hasSections, quickPickResults } from '../../book/bookTocManager';
 import { BookTreeItem, BookTreeItemFormat, BookTreeItemType } from '../../book/bookTreeItem';
 import * as sinon from 'sinon';
 import { IJupyterBookSectionV1, IJupyterBookSectionV2, JupyterBookSection } from '../../contracts/content';
@@ -15,6 +14,13 @@ import * as uuid from 'uuid';
 import { exists } from '../../common/utils';
 import * as rimraf from 'rimraf';
 import { promisify } from 'util';
+import { BookModel } from '../../book/bookModel';
+import { MockExtensionContext } from '../common/stubs';
+import { BookVersion } from '../../book/bookVersionHandler';
+import { BookTreeViewProvider } from '../../book/bookTreeView';
+import { NavigationProviders } from '../../common/constants';
+import * as loc from '../../common/localizedConstants';
+
 
 export function equalTOC(actualToc: IJupyterBookSectionV2[], expectedToc: IJupyterBookSectionV2[]): boolean {
 	for (let [i, section] of actualToc.entries()) {
@@ -105,15 +111,18 @@ describe('BookTocManagerTests', function () {
 	});
 
 	describe('EditingBooks', () => {
+		let bookTocManager: BookTocManager;
+		let sourceBookModel: BookModel;
+		let targetBookModel: BookModel;
 		let targetBook: BookTreeItem;
 		let sectionC: BookTreeItem;
 		let sectionA: BookTreeItem;
 		let sectionB: BookTreeItem;
 		let notebook: BookTreeItem;
+		let duplicatedNotebook: BookTreeItem;
 		let sourceBookFolderPath: string = path.join(os.tmpdir(), uuid.v4(), 'sourceBook');
 		let targetBookFolderPath: string = path.join(os.tmpdir(), uuid.v4(), 'targetBook');
-		let bookTocManager: BookTocManager;
-
+		let duplicatedNotebookPath: string = path.join(os.tmpdir(), uuid.v4(), 'duplicatedNotebook');
 		let runs = [
 			{
 				it: 'using the jupyter-book legacy version < 0.7.0',
@@ -376,12 +385,39 @@ describe('BookTocManagerTests', function () {
 						}
 					};
 
+					let duplicatedNbTreeItemFormat: BookTreeItemFormat = {
+						title: 'Duplicated Notebook',
+						contentPath: path.join(duplicatedNotebookPath, 'notebook5.ipynb'),
+						root: duplicatedNotebookPath,
+						tableOfContents: {
+							sections: [
+								{
+									'title': 'Notebook 5',
+									'file': path.join(path.sep, 'notebook5')
+								}
+							]
+						},
+						isUntitled: undefined,
+						treeItemCollapsibleState: undefined,
+						type: BookTreeItemType.Notebook,
+						version: run.version,
+						page: {
+							sections: [
+								{
+									'title': 'Notebook 5',
+									'file': path.join(path.sep, 'notebook5')
+								}
+							]
+						}
+					};
+
 					targetBook = new BookTreeItem(targetBookTreeItemFormat, undefined);
 					sectionC = new BookTreeItem(sectionCTreeItemFormat, undefined);
 					sectionA = new BookTreeItem(sectionATreeItemFormat, undefined);
 					sectionB = new BookTreeItem(sectionBTreeItemFormat, undefined);
 					notebook = new BookTreeItem(notebookTreeItemFormat, undefined);
-					bookTocManager = new BookTocManager();
+					duplicatedNotebook = new BookTreeItem(duplicatedNbTreeItemFormat, undefined);
+
 
 					sectionC.uri = path.join('sectionC', 'readme');
 					sectionA.uri = path.join('sectionA', 'readme');
@@ -392,11 +428,13 @@ describe('BookTocManagerTests', function () {
 					sectionB.contextValue = 'section';
 					sectionC.contextValue = 'section';
 					notebook.contextValue = 'savedNotebook';
+					duplicatedNotebook.contextValue = 'savedNotebook';
 
 					sectionC.tableOfContentsPath = run.targetBook.tocPath;
 					sectionA.tableOfContentsPath = run.sourceBook.tocPath;
 					sectionB.tableOfContentsPath = run.sourceBook.tocPath;
 					notebook.tableOfContentsPath = run.sourceBook.tocPath;
+					duplicatedNotebook.tableOfContentsPath = run.sourceBook.tocPath;
 
 					sectionA.sections = run.sectionA.sectionFormat;
 					sectionB.sections = run.sectionB.sectionFormat;
@@ -407,11 +445,13 @@ describe('BookTocManagerTests', function () {
 							'file': path.join(path.sep, 'notebook5')
 						}
 					];
+					duplicatedNotebook.sections = notebook.sections;
 
 					await fs.promises.mkdir(run.targetBook.bookContentFolderPath, { recursive: true });
 					await fs.promises.mkdir(run.sectionA.contentPath, { recursive: true });
 					await fs.promises.mkdir(run.sectionB.contentPath, { recursive: true });
 					await fs.promises.mkdir(run.sectionC.contentPath, { recursive: true });
+					await fs.promises.mkdir(duplicatedNotebookPath, { recursive: true });
 
 					await fs.writeFile(run.sectionA.notebook1, '');
 					await fs.writeFile(run.sectionA.notebook2, '');
@@ -419,6 +459,7 @@ describe('BookTocManagerTests', function () {
 					await fs.writeFile(run.sectionB.notebook4, '');
 					await fs.writeFile(run.sectionC.notebook6, '');
 					await fs.writeFile(run.notebook5.contentPath, '');
+					await fs.writeFile(duplicatedNotebook.book.contentPath, '');
 					await fs.writeFile(path.join(run.targetBook.rootBookFolderPath, '_config.yml'), 'title: Target Book');
 					await fs.writeFile(path.join(run.sourceBook.rootBookFolderPath, '_config.yml'), 'title: Source Book');
 
@@ -432,35 +473,98 @@ describe('BookTocManagerTests', function () {
 					await fs.writeFile(run.targetBook.tocPath, '- title: Welcome\n  file: /readme\n- title: Section C\n  file: /sectionC/readme\n  sections:\n  - title: Notebook6\n    file: /sectionC/notebook6');
 					// source book
 					await fs.writeFile(run.sourceBook.tocPath, '- title: Notebook 5\n  file: /notebook5\n- title: Section A\n  file: /sectionA/readme\n  sections:\n  - title: Notebook1\n    file: /sectionA/notebook1\n  - title: Notebook2\n    file: /sectionA/notebook2');
+
+					const mockExtensionContext = new MockExtensionContext();
+
+					sourceBookModel = new BookModel(run.sourceBook.rootBookFolderPath, false, false, mockExtensionContext);
+					targetBookModel = new BookModel(run.targetBook.rootBookFolderPath, false, false, mockExtensionContext);
+					// create book model mock objects
+					sinon.stub(sourceBookModel, 'bookItems').value([sectionA]);
+					sinon.stub(targetBookModel, 'bookItems').value([targetBook]);
 				});
 
 
-				// it('Add section to book', async () => {
-				// 	await bookTocManager.updateBook(sectionA, targetBook, undefined);
-				// 	const listFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionA'));
-				// 	const listSourceFiles = await fs.promises.readdir(path.join(run.sourceBook.bookContentFolderPath));
-				// 	should(JSON.stringify(listSourceFiles).includes('sectionA')).be.false('The source book files should not contain the section A files');
-				// 	should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['notebook1.ipynb', 'notebook2.ipynb', 'readme.md']), 'The files of the section should be moved to the target book folder');
-				// });
+				it('Add section to book', async () => {
+					bookTocManager = new BookTocManager(targetBookModel, sourceBookModel);
+					await bookTocManager.updateBook(sectionA, targetBook, undefined);
+					const listFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionA'));
+					const listSourceFiles = await fs.promises.readdir(path.join(run.sourceBook.bookContentFolderPath));
+					should(JSON.stringify(listSourceFiles).includes('sectionA')).be.false('The source book files should not contain the section A files');
+					should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['notebook1.ipynb', 'notebook2.ipynb', 'readme.md']), 'The files of the section should be moved to the target book folder');
+				});
 
-				// it('Add section to section', async () => {
-				// 	await bookTocManager.updateBook(sectionB, sectionC, {
-				// 		'title': 'Notebook 6',
-				// 		'file': path.join(path.sep, 'sectionC', 'notebook6')
-				// 	});
-				// 	const sectionCFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionC'));
-				// 	const sectionBFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionC', 'sectionB'));
-				// 	should(JSON.stringify(sectionCFiles)).be.equal(JSON.stringify(['notebook6.ipynb', 'readme.md', 'sectionB']), 'sectionB has been moved to the targetBook under sectionC directory');
-				// 	should(JSON.stringify(sectionBFiles)).be.equal(JSON.stringify(['notebook3.ipynb', 'notebook4.ipynb', 'readme.md']), ' Verify that the files on sectionB had been moved to the targetBook');
-				// });
+				it('Add section to section', async () => {
+					bookTocManager = new BookTocManager(targetBookModel, sourceBookModel);
+					await bookTocManager.updateBook(sectionB, sectionC, {
+						'title': 'Notebook 6',
+						'file': path.join(path.sep, 'sectionC', 'notebook6')
+					});
+					const sectionCFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionC'));
+					const sectionBFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionB'));
+					should(JSON.stringify(sectionCFiles)).be.equal(JSON.stringify(['notebook6.ipynb', 'readme.md']), 'sectionB has been moved under target book content directory');
+					should(JSON.stringify(sectionBFiles)).be.equal(JSON.stringify(['notebook3.ipynb', 'notebook4.ipynb', 'readme.md']), ' Verify that the files on sectionB had been moved to the targetBook');
+				});
 
-				it('Add notebook to book', async() => {
+				it('Add notebook to book', async () => {
+					bookTocManager = new BookTocManager(targetBookModel);
 					await bookTocManager.updateBook(notebook, targetBook);
 					const listFiles = await fs.promises.readdir(run.targetBook.bookContentFolderPath);
 					should(JSON.stringify(listFiles).includes('notebook5.ipynb')).be.true('Notebook 5 should be under the target book content folder');
 				});
 
+				it('Add duplicated notebook to book', async () => {
+					bookTocManager = new BookTocManager(targetBookModel);
+					await bookTocManager.updateBook(notebook, targetBook);
+					await bookTocManager.updateBook(duplicatedNotebook, targetBook);
+					const listFiles = await fs.promises.readdir(run.targetBook.bookContentFolderPath);
+					if (run.version === BookVersion.v1) {
+						should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['notebook5 - 2.ipynb', 'notebook5.ipynb', 'sectionC']), 'Should modify the name of the file');
+					} else {
+						should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['_config.yml', '_toc.yml', 'notebook5 - 2.ipynb', 'notebook5.ipynb', 'sectionC']), 'Should modify the name of the file');
+					}
+				});
+
+				it('Recovery method is called after error', async () => {
+					const mockExtensionContext = new MockExtensionContext();
+					const recoverySpy = sinon.spy(BookTocManager.prototype, 'recovery');
+					sinon.stub(BookTocManager.prototype, 'updateBook').throws(new Error('Unexpected error.'));
+					const bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
+					const results: quickPickResults = {
+						book: targetBook,
+						quickPickSection: {
+							label: loc.labelAddToLevel,
+							description: undefined
+						}
+					}
+					bookTocManager = new BookTocManager(targetBookModel);
+					sinon.stub(bookTreeViewProvider, 'getSelectionQuickPick').returns(Promise.resolve(results));
+					try {
+						await bookTreeViewProvider.editBook(notebook);
+					} catch (error) {
+						should(recoverySpy.calledOnce).be.true('If unexpected error then recovery method is called.');
+					}
+				});
+
+				it('Clean up folder with files didnt move', async () => {
+					bookTocManager = new BookTocManager(targetBookModel);
+					bookTocManager.movedFiles.set(notebook.book.contentPath, 'movedtest');
+					await fs.writeFile(path.join(run.sourceBook.bookContentFolderPath, 'test.ipynb'), '');
+					await bookTocManager.cleanUp(path.dirname(notebook.book.contentPath));
+					const listFiles = await fs.promises.readdir(path.dirname(notebook.book.contentPath));
+					should(JSON.stringify(listFiles).includes('test.ipynb')).be.true('Notebook test.ipynb should not be removed');
+				});
+
+				it('Clean up folder when there is an empty folder within the modified directory', async () => {
+					await fs.promises.mkdir(path.join(run.sourceBook.bookContentFolderPath, 'test'));
+					bookTocManager.modifiedDir.add(path.join(run.sourceBook.bookContentFolderPath, 'test'));
+					bookTocManager.movedFiles.set(notebook.book.contentPath, 'movedtest');
+					await bookTocManager.cleanUp(path.dirname(notebook.book.contentPath));
+					const listFiles = await fs.promises.readdir(run.sourceBook.bookContentFolderPath);
+					should(JSON.stringify(listFiles).includes('test')).be.true('Empty directories within the moving element directory are not deleted');
+				});
+
 				afterEach(async function (): Promise<void> {
+					sinon.restore();
 					if (await exists(sourceBookFolderPath)) {
 						await promisify(rimraf)(sourceBookFolderPath);
 					}

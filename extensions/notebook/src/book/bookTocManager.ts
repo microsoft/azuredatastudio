@@ -32,8 +32,9 @@ export function hasSections(node: JupyterBookSection): boolean {
 
 export class BookTocManager implements IBookTocManager {
 	public tableofContents: JupyterBookSection[];
-	public newSection: JupyterBookSection = {};
+	public newSection: JupyterBookSection;
 	private _movedFiles = new Map<string, string>();
+	private _modifiedDirectory = new Set<string>();
 	private _tocFiles = new Map<string, JupyterBookSection[]>();
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
@@ -130,14 +131,14 @@ export class BookTocManager implements IBookTocManager {
 
 	async cleanUp(directory: string): Promise<void> {
 		let contents = await fs.readdir(directory);
-		if (contents.length === 0) {
+		if (contents.length === 0 && this._modifiedDirectory.has(directory)) {
 			// remove empty folders
 			await fs.rmdir(directory);
 		} else {
 			contents.forEach(async (content) => {
 				if ((await fs.stat(path.join(directory, content))).isFile) {
 					//check if the file is in the moved files
-					let isCopy = this._movedFiles.get(content);
+					let isCopy = this._movedFiles.get(path.join(directory, content));
 					if (isCopy) {
 						// the file could not be renamed, so a copy was created.
 						await fs.unlink(path.join(directory, content));
@@ -271,7 +272,6 @@ export class BookTocManager implements IBookTocManager {
 	 * @param book The target book.
 	*/
 	async addSection(section: BookTreeItem, book: BookTreeItem): Promise<void> {
-		this.newSection.title = section.title;
 		const uri = path.sep.concat(path.relative(section.rootContentPath, section.book.contentPath));
 		let moveFile = path.join(path.parse(uri).dir, path.parse(uri).name);
 		let fileName = undefined;
@@ -290,13 +290,17 @@ export class BookTocManager implements IBookTocManager {
 
 		if (this._sourceBook) {
 			const sectionTOC = this._sourceBook.bookItems[0].findChildSection(section.uri);
-			this.newSection = sectionTOC;
+			if (sectionTOC) {
+				this.newSection = sectionTOC;
+			}
 		}
+		this.newSection.title = section.title;
 		this.newSection.file = path.join(path.parse(uri).dir, fileName);
 		if (section.sections) {
 			const files = section.sections as JupyterBookSection[];
 			const movedSections = await this.traverseSections(files);
 			this.newSection.sections = movedSections;
+			this._modifiedDirectory.add(path.dirname(section.book.contentPath));
 			this.cleanUp(path.dirname(section.book.contentPath));
 		}
 
@@ -396,6 +400,22 @@ export class BookTocManager implements IBookTocManager {
 
 	public get originalToc(): Map<string, JupyterBookSection[]> {
 		return this._tocFiles;
+	}
+
+	public get modifiedDir(): Set<string> {
+		return this._modifiedDirectory;
+	}
+
+	public set movedFiles(files: Map<string, string>) {
+		this._movedFiles = files;
+	}
+
+	public set originalToc(files: Map<string, JupyterBookSection[]>) {
+		this._tocFiles = files;
+	}
+
+	public set modifiedDir(files: Set<string>) {
+		this._modifiedDirectory = files;
 	}
 
 }
