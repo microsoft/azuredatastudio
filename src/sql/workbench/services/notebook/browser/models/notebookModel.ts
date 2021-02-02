@@ -434,7 +434,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	private loadContentMetadata(metadata: nb.INotebookMetadata): void {
+	private loadContentMetadata(metadata: nb.INotebookMetadataInternal): void {
 		this._savedKernelInfo = metadata.kernelspec;
 		this._defaultLanguageInfo = metadata.language_info;
 		// If language info was serialized in the notebook, attempt to use that to decrease time
