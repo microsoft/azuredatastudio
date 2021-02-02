@@ -129,12 +129,11 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 			console.log(`Unexpected error getting Knox username for SQL Cluster connection: ${err}`);
 			throw err;
 		}
-	} else {
-		clusterController = await getClusterController(controllerEndpoint.endpoint, clusterConnInfo);
 	}
 
 	let hadoopEndpointIndex = endpoints.findIndex(ep => ep.name.toLowerCase() === constants.hadoopEndpointNameGateway.toLowerCase());
 	if (hadoopEndpointIndex < 0) {
+		clusterController = await getClusterController(controllerEndpoint.endpoint, clusterConnInfo);
 		endpoints = (await clusterController.getEndPoints()).endPoints;
 		hadoopEndpointIndex = endpoints.findIndex(ep => ep.name.toLowerCase() === constants.hadoopEndpointNameGateway.toLowerCase());
 	}
