@@ -155,7 +155,7 @@ export class InsertCellsModal extends Modal {
 	private createOptions(container: HTMLElement): void {
 		const activeView = this._context.getActiveView();
 		const cellsAvailableToInsert = activeView.hiddenCells;
-		cellsAvailableToInsert.forEach((cell) => {
+		cellsAvailableToInsert.forEach(async (cell) => {
 			const optionWidget = this.createCheckBoxHelper(
 				container,
 				'<div class="loading-spinner-container"><div class="loading-spinner codicon in-progress"></div></div>',//cell.renderedOutputTextContent[0]?.substr(0, 20) ?? localize("insertCellsModal.untitled", "Untitled Cell : {0}", cell.cellGuid),
@@ -163,17 +163,14 @@ export class InsertCellsModal extends Modal {
 				() => this.onOptionChecked(cell.cellGuid)
 			);
 
-			this.generateScreenshot(cell).then((img) => {
-				const wrapper = DOM.$<HTMLDivElement>('div.thumnail-wrapper');
+			const img = await this.generateScreenshot(cell);
+			const wrapper = DOM.$<HTMLDivElement>('div.thumnail-wrapper');
+			const thumbnail = DOM.$<HTMLImageElement>('img.thumbnail');
 
-				const thumbnail = DOM.$<HTMLImageElement>('img.thumbnail');
-				thumbnail.src = img;
-				thumbnail.style.maxWidth = '100%';
-
-				DOM.append(wrapper, thumbnail);
-
-				optionWidget.label = wrapper.outerHTML;
-			});
+			thumbnail.src = img;
+			thumbnail.style.maxWidth = '100%';
+			DOM.append(wrapper, thumbnail);
+			optionWidget.label = wrapper.outerHTML;
 
 			this._optionsMap[cell.cellGuid] = optionWidget;
 		});
@@ -259,7 +256,7 @@ export class InsertCellsModal extends Modal {
 		}
 	}
 
-	public async generateScreenshot(cell: ICellModel) {
+	public async generateScreenshot(cell: ICellModel): Promise<any> {
 		let componentFactory = this._componentFactoryResolver.resolveComponentFactory(TextCellComponent);
 		let component = this._containerRef.createComponent(componentFactory);
 
