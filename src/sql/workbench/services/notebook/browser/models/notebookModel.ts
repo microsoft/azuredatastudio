@@ -48,6 +48,15 @@ export class ErrorInfo {
 	}
 }
 
+type NotebookMetadataKeys = Required<nb.INotebookMetadata>;
+const expectedMetadataKeys: NotebookMetadataKeys = {
+	kernelspec: null,
+	language_info: null,
+	tags: null,
+	connection_name: null,
+	multi_connection_mode: null
+};
+
 const saveConnectionNameConfigName = 'notebook.saveConnectionName';
 const injectedParametersMsg = localize('injectedParametersMsg', '# Injected-Parameters\n');
 
@@ -79,7 +88,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _savedConnectionName: string | undefined;
 	private readonly _nbformat: number = nbversion.MAJOR_VERSION;
 	private readonly _nbformatMinor: number = nbversion.MINOR_VERSION;
-	private readonly expectedMetadataKeys = ['kernelspec', 'language_info', 'tags', 'connection_name', 'multi_connection'];
 	private _activeConnection: ConnectionProfile | undefined;
 	private _activeCell: ICellModel | undefined;
 	private _providerId: string;
@@ -457,7 +465,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		Object.keys(metadata).forEach(key => {
 			// If custom metadata is defined, add to the _existingMetadata object
-			if (this.expectedMetadataKeys.indexOf(key) < 0) {
+			if (!Object.keys(expectedMetadataKeys).includes(key)) {
 				this._existingMetadata[key] = metadata[key];
 			}
 		});

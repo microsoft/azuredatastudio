@@ -73,9 +73,6 @@ declare module 'azdata' {
 			data: any;
 		}
 
-		/**
-		 * Note: Update expectedMetadataKeys field in NotebookModel when updating this interface.
-		 */
 		export interface INotebookMetadata {
 			connection_name?: string;
 			multi_connection_mode?: boolean;
