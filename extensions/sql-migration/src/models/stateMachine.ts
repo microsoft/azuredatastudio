@@ -6,8 +6,8 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
+import { MigrationController } from '../api/azure';
 import { SKURecommendations } from './externalContract';
-import { MigrationController } from '../sqlmigration';
 
 export enum State {
 	INIT,

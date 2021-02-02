@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import { azureResource } from 'azureResource';
-import { GetMigrationControllerAuthKeysResult, MigrationController } from '../sqlmigration';
 
 async function getAzureCoreAPI(): Promise<azurecore.IExtension> {
 	const api = (await vscode.extensions.getExtension(azurecore.extension.name)?.activate()) as azurecore.IExtension;
@@ -146,4 +145,30 @@ function sortResourceArrayByName(resourceArray: SortableAzureResources[]): void 
 		}
 		return 0;
 	});
+}
+
+export interface MigrationControllerProperties {
+	name: string;
+	subscriptionId: string;
+	resourceGroup: string;
+	location: string;
+	provisioningState: string;
+	integrationRuntimeState?: string;
+	isProvisioned?: boolean;
+}
+
+export interface MigrationController {
+	properties: MigrationControllerProperties;
+	location: string;
+	id: string;
+	name: string;
+	error: {
+		code: string,
+		message: string
+	}
+}
+
+export interface GetMigrationControllerAuthKeysResult {
+	keyName1: string,
+	keyName2: string
 }
