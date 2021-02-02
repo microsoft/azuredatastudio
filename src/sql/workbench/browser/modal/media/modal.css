@@ -17,6 +17,12 @@
 	border-style: solid;
 	border-width: 1px;
 }
+.modal.callout-dialog .modal-dialog {
+	width: 452px;
+}
+.modal.callout-dialog.compact .modal-dialog {
+	width: 288px;
+}
 
 .modal:not(.flyout-dialog):not(.callout-dialog) .modal-dialog {
 	margin: auto;
@@ -32,10 +38,6 @@
 	box-shadow: 0px 3px 8px rgba(var(--foreground));
 	max-height: 300px;
 	position: absolute;
-	width: 452px;
-}
-.modal.callout-dialog.compact .modal-dialog {
-	width: 288px;
 }
 
 .modal.callout-dialog .modal-content .insert-image .flex-container {
@@ -92,11 +94,11 @@
 }
 .arrow.from-left:before {
 	background-color: var(--bodybackground);
-	height: 2em;
-	right: -1em;
-	top: 2em;
+	height: 26px;
+	right: -13px;
+	top: 26px;
 	transform: rotate(-135deg);
-	width: 2em;
+	width: 26px;
 }
 
 .hc-black .arrow:before {

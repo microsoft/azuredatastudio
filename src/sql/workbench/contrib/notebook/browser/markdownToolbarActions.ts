@@ -16,7 +16,7 @@ import { Selection } from 'vs/editor/common/core/selection';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
-import { CalloutDialog, ICalloutType } from 'sql/workbench/browser/modal/calloutDialog';
+import { CalloutDialog, CalloutType } from 'sql/workbench/browser/modal/calloutDialog';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class TransformMarkdownAction extends Action {
@@ -165,18 +165,18 @@ export class MarkdownTextTransformer {
 	 * @param calloutStyle Style of callout passed in to determine which callout is rendered
 	 */
 	private async createCallout(type: MarkdownButtonType, triggerElement: HTMLElement): Promise<string> {
-		const posX = triggerElement.getBoundingClientRect().left;
-		const posY = triggerElement.getBoundingClientRect().top;
+		const triggerPosX = triggerElement.getBoundingClientRect().left;
+		const triggerPosY = triggerElement.getBoundingClientRect().top;
+		const triggerHeight = triggerElement.offsetHeight;
+		const triggerWidth = triggerElement.offsetWidth;
 
-		let calloutString: unknown = type === MarkdownButtonType.IMAGE_PREVIEW ? 'IMAGE' : 'LINK';
-		let calloutType = (calloutString as ICalloutType);
+		const calloutType: CalloutType = type === MarkdownButtonType.IMAGE_PREVIEW ? 'IMAGE' : 'LINK';
 
 		let title = type === MarkdownButtonType.IMAGE_PREVIEW ? this.insertImageHeading : this.insertLinkHeading;
 
 		if (!this._callout) {
-			// Offset for Mac clients
-			const dialogXYOffset = { xOffset: 22, yOffset: 24 };
-			this._callout = this._instantiationService.createInstance(CalloutDialog, calloutType, title, posX, posY, dialogXYOffset);
+			const triggerProperties = { xPos: triggerPosX, yPos: triggerPosY, width: triggerWidth, height: triggerHeight };
+			this._callout = this._instantiationService.createInstance(CalloutDialog, calloutType, title, triggerProperties);
 			this._callout.render();
 		}
 		let calloutOptions = await this._callout.open();

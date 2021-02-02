@@ -414,14 +414,14 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 					return extHostModalDialogs.createDialog(name);
 				},
 				// the 'width' parameter used to be boolean type named 'isWide', the optional boolean type for 'width' parameter is added for backward compatibility support of 'isWide' parameter.
-				createModelViewDialog(title: string, dialogName?: string, width?: boolean | sqlExtHostTypes.DialogWidth, dialogStyle?: sqlExtHostTypes.DialogStyle, dialogPosition?: sqlExtHostTypes.DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogXYOffset?: sqlExtHostTypes.IDialogXYOffset): azdata.window.Dialog {
+				createModelViewDialog(title: string, dialogName?: string, width?: boolean | sqlExtHostTypes.DialogWidth, dialogStyle?: sqlExtHostTypes.DialogStyle, dialogPosition?: sqlExtHostTypes.DialogPosition, renderHeader?: boolean, renderFooter?: boolean, triggerProperties?: sqlExtHostTypes.ITriggerProperties): azdata.window.Dialog {
 					let dialogWidth: azdata.window.DialogWidth;
 					if (typeof width === 'boolean') {
 						dialogWidth = width === true ? 'wide' : 'narrow';
 					} else {
 						dialogWidth = width;
 					}
-					return extHostModelViewDialog.createDialog(title, dialogName, extension, dialogWidth, dialogStyle, dialogPosition, renderHeader, renderFooter, dialogXYOffset);
+					return extHostModelViewDialog.createDialog(title, dialogName, extension, dialogWidth, dialogStyle, dialogPosition, renderHeader, renderFooter, triggerProperties);
 				},
 				createTab(title: string): azdata.window.DialogTab {
 					return extHostModelViewDialog.createTab(title, extension);

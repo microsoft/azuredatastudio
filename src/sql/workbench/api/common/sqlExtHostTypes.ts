@@ -261,7 +261,7 @@ export interface IModelViewDialogDetails {
 	dialogPosition: DialogPosition;
 	renderHeader: boolean;
 	renderFooter: boolean;
-	dialogXYOffset: IDialogXYOffset;
+	triggerProperties: ITriggerProperties;
 }
 
 export interface IModelViewTabDetails {
@@ -307,9 +307,11 @@ export type DialogStyle = 'normal' | 'flyout' | 'callout' | 'calloutCompact';
 
 export type DialogPosition = 'left' | 'below' | undefined;
 
-export interface IDialogXYOffset {
-	xOffset: number;
-	yOffset: number;
+export interface ITriggerProperties {
+	xPos: number,
+	yPos: number,
+	width: number,
+	height: number
 }
 
 export enum MessageLevel {

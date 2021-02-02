@@ -626,29 +626,35 @@ declare module 'azdata' {
 
 		export interface Dialog {
 			/**
-			 * Width of the dialog
+			 * Width of the dialog.
+			 * Default is 'narrrow'.
 			 */
 			width?: DialogWidth;
 			/**
-			 * Dialog style type: normal, flyout, callout and calloutCompact
+			 * Dialog style type: normal, flyout, callout and calloutCompact.
+			 * Default is 'flyout'.
 			 */
 			dialogStyle?: DialogStyle;
 			/**
 			 * Dialog position type: left, below and undefined.
+			 * Default is undefined.
 			 */
 			dialogPosition?: DialogPosition;
 			/**
-			 * Render Dialog header
+			 * Specify whether or not to render the Dialog header.
+			 * Default is true.
 			 */
 			renderHeader?: boolean;
 			/**
-			 * Render Dialog footer
+			 * Specify whether or not to render the Dialog footer.
+			 * Default is true.
 			 */
 			renderFooter?: boolean;
 			/**
-			 * x/y values used for positioning Dialog when displayed as a callout
+			 * Position and dimensions of element clicked to open dialog.
+			 * Default is undefined.
 			 */
-			dialogXYOffset?: IDialogXYOffset;
+			triggerProperties?: ITriggerProperties;
 		}
 
 		export interface Wizard {
@@ -668,9 +674,11 @@ declare module 'azdata' {
 
 		export type DialogPosition = 'left' | 'below' | undefined;
 
-		export interface IDialogXYOffset {
-			xOffset: number;
-			yOffset: number;
+		export interface ITriggerProperties {
+			xPos: number,
+			yPos: number,
+			width: number,
+			height: number
 		}
 
 		/**
@@ -682,9 +690,9 @@ declare module 'azdata' {
 		 * @param dialogPosition Defines the dialog position, default is null
 		 * @param renderHeader Render Dialog header
 		 * @param renderFooter Render Dialog footer
-		 * @param dialogXYOffset Custom offset for positioning callout
+		 * @param triggerProperties position and dimensions of element clicked to open dialog
 		 */
-		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogXYOffset?: IDialogXYOffset): Dialog;
+		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, triggerProperties?: ITriggerProperties): Dialog;
 
 		/**
 		 * Create a wizard with the given title and width

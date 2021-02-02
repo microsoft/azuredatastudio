@@ -116,7 +116,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 			dialogPosition: 'left',
 			renderHeader: true,
 			renderFooter: true,
-			dialogXYOffset: { xOffset: 20, yOffset: 20 },
+			triggerProperties: { xPos: 1200, yPos: 100, width: 20, height: 20 },
 			content: [tab1Handle, tab2Handle],
 			okButton: okButtonHandle,
 			cancelButton: cancelButtonHandle,

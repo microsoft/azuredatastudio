@@ -141,7 +141,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			undefined,
 			this._actionBar.actionRunner,
 			undefined,
-			'notebook-button masked-pseudo-after dropdown-arrow',
+			'masked-pseudo-after dropdown-arrow',
 			this.optionParagraph,
 			undefined
 		);

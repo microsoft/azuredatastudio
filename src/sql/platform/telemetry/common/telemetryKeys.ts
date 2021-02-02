@@ -45,7 +45,7 @@ export const FireWallRule = 'FirewallRule';
 export const AutoOAuth = 'AutoOAuth';
 export const AddNewDashboardTab = 'AddNewDashboardTab';
 export const ProfilerFilter = 'ProfilerFilter';
-export const NotebookCallout = 'NotebookCallout';
+export const CalloutDialog = 'CalloutDialog';
 
 // SQL Agent Events:
 

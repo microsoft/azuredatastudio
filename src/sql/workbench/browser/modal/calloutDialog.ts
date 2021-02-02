@@ -8,7 +8,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as DOM from 'vs/base/browser/dom';
 import * as styler from 'vs/platform/theme/common/styler';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
-import { IDialogXYOffset, Modal } from 'sql/workbench/browser/modal/modal';
+import { ITriggerProperties, Modal } from 'sql/workbench/browser/modal/modal';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -27,17 +27,17 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
 
-export type ICalloutType = 'IMAGE' | 'LINK';
+export type CalloutType = 'IMAGE' | 'LINK';
 
 export interface ICalloutDialogOptions {
 	insertTitle?: string,
-	calloutType?: ICalloutType,
+	calloutType?: CalloutType,
 	insertMarkup?: string,
 	imagePath?: string,
 	embedImage?: boolean
 }
 export class CalloutDialog extends Modal {
-	private _calloutType: ICalloutType;
+	private _calloutType: CalloutType;
 	private _selectionComplete: Deferred<ICalloutDialogOptions>;
 	private _insertButton: Button;
 	private _cancelButton: Button;
@@ -45,7 +45,7 @@ export class CalloutDialog extends Modal {
 	private _linkTextLabel: HTMLElement;
 	private _linkTextInputBox: InputBox;
 	private _linkAddressLabel: HTMLElement;
-	private _linkAddressInputBox: InputBox;
+	private _linkUrlInputBox: InputBox;
 	// Image
 	private _imageLocationLabel: HTMLElement;
 	private _imageLocalRadioButton: RadioButton;
@@ -74,25 +74,23 @@ export class CalloutDialog extends Modal {
 	private readonly embedImageLabel = localize('callout.embedImageLabel', "Attach image to notebook");
 
 	constructor(
-		calloutType: ICalloutType,
+		calloutType: CalloutType,
 		title: string,
-		posX: number,
-		posY: number,
-		dialogXYOffset: IDialogXYOffset,
+		triggerProperties: ITriggerProperties,
 		@IPathService private readonly _pathService: IPathService,
 		@IFileDialogService private readonly _fileDialogService: IFileDialogService,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IContextViewService private contextViewService: IContextViewService,
+		@IContextViewService private _contextViewService: IContextViewService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(
 			title,
-			TelemetryKeys.NotebookCallout,
+			TelemetryKeys.CalloutDialog,
 			telemetryService,
 			layoutService,
 			clipboardService,
@@ -103,9 +101,7 @@ export class CalloutDialog extends Modal {
 			{
 				dialogStyle: 'callout',
 				dialogPosition: 'below',
-				positionX: posX,
-				positionY: posY,
-				dialogXYOffset: dialogXYOffset
+				triggerProperties: triggerProperties
 			});
 
 		this._selectionComplete = new Deferred<ICalloutDialogOptions>();
@@ -166,9 +162,9 @@ export class CalloutDialog extends Modal {
 			enabled: true,
 			checked: false
 		});
-		this._imageLocalRadioButton.value = 'local';
+		this._imageLocalRadioButton.value = localize('local', "Local");
 		this._imageLocalRadioButton.name = 'group1';
-		this._imageRemoteRadioButton.value = 'remote';
+		this._imageRemoteRadioButton.value = localize('remote', "Remote");
 		this._imageRemoteRadioButton.name = 'group1';
 		DOM.append(locationRow, radioButtonGroup);
 
@@ -185,13 +181,13 @@ export class CalloutDialog extends Modal {
 		let inputContainer = DOM.$('.flex-container');
 		this._imageUrlInputBox = new InputBox(
 			inputContainer,
-			this.contextViewService,
+			this._contextViewService,
 			{
 				placeholder: this.pathPlaceholder,
 				ariaLabel: this.pathInputLabel
 			});
 		let browseButtonContainer = DOM.$('.button-icon');
-		this._imageBrowseButton = DOM.$('a.notebook-button.codicon.masked-icon.browse-local');
+		this._imageBrowseButton = DOM.$('a.codicon.masked-icon.browse-local');
 		this._imageBrowseButton.title = this.browseAltText;
 		DOM.append(inputContainer, browseButtonContainer);
 		DOM.append(browseButtonContainer, this._imageBrowseButton);
@@ -243,7 +239,7 @@ export class CalloutDialog extends Modal {
 		const linkTextInputContainer = DOM.$('.input-field');
 		this._linkTextInputBox = new InputBox(
 			linkTextInputContainer,
-			this.contextViewService,
+			this._contextViewService,
 			{
 				placeholder: this.linkTextPlaceholder,
 				ariaLabel: this.linkTextLabel
@@ -257,9 +253,9 @@ export class CalloutDialog extends Modal {
 		DOM.append(linkAddressRow, this._linkAddressLabel);
 
 		const linkAddressInputContainer = DOM.$('.input-field');
-		this._linkAddressInputBox = new InputBox(
+		this._linkUrlInputBox = new InputBox(
 			linkAddressInputContainer,
-			this.contextViewService,
+			this._contextViewService,
 			{
 				placeholder: this.linkAddressPlaceholder,
 				ariaLabel: this.linkAddressLabel
@@ -273,12 +269,11 @@ export class CalloutDialog extends Modal {
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
 		if (this._calloutType === 'IMAGE') {
 			this._register(styler.attachInputBoxStyler(this._imageUrlInputBox, this._themeService));
-			this._register(styler.attachButtonStyler(this._imageEmbedCheckbox, this._themeService));
 			this._register(styler.attachCheckboxStyler(this._imageEmbedCheckbox, this._themeService));
 		}
 		if (this._calloutType === 'LINK') {
 			this._register(styler.attachInputBoxStyler(this._linkTextInputBox, this._themeService));
-			this._register(styler.attachInputBoxStyler(this._linkAddressInputBox, this._themeService));
+			this._register(styler.attachInputBoxStyler(this._linkUrlInputBox, this._themeService));
 		}
 	}
 
@@ -296,9 +291,10 @@ export class CalloutDialog extends Modal {
 		}
 		if (this._calloutType === 'LINK') {
 			this._selectionComplete.resolve({
-				insertMarkup: `[${this._linkTextInputBox.value}](${this._linkAddressInputBox.value})`,
+				insertMarkup: `<a href="${this._linkUrlInputBox.value}">${this._linkTextInputBox.value}</a>`,
 			});
 		}
+		this.dispose();
 	}
 
 	public cancel() {
