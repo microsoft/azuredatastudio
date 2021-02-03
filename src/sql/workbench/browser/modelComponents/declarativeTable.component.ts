@@ -36,6 +36,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	@Input() modelStore: IModelStore;
 
 	private _data: azdata.DeclarativeTableCellValue[][] = [];
+	private _filteredRowIndexes: number[] | undefined = undefined;
 	private columns: azdata.DeclarativeTableColumn[] = [];
 	private _selectedRow: number;
 
@@ -311,11 +312,9 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		}
 	}
 
-	private _filteredIndexes: number[] | undefined = undefined;
-
 	public doAction(action: string, ...args: any[]): void {
 		if (action === ModelViewAction.Filter) {
-			this._filteredIndexes = args[0];
+			this._filteredRowIndexes = args[0];
 		}
 		this._changeRef.detectChanges();
 	}
@@ -325,9 +324,17 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	 * @param row The row to check
 	 */
 	public isFiltered(row: number): boolean {
-		if (this._filteredIndexes === undefined) {
+		if (this._filteredRowIndexes === undefined) {
 			return false;
 		}
-		return this._filteredIndexes.includes(row) ? false : true;
+		return this._filteredRowIndexes.includes(row) ? false : true;
+	}
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth(),
+			'height': this.getHeight()
+		});
+
 	}
 }

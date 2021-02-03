@@ -32,7 +32,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	template: `
-	<div *ngIf="_title">
+	<div [ngStyle]="CSSStyles" *ngIf="_title">
 		<div class="modelview-diff-editor-title modelview-diff-editor-title-background">
 			{{_title}}
 		</div>

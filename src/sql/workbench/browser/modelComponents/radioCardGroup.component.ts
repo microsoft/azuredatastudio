@@ -225,4 +225,11 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 	public onCardBlur(cardId: string): void {
 		this.focusedCardId = undefined;
 	}
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth(),
+			'height': this.getHeight()
+		});
+	}
 }
