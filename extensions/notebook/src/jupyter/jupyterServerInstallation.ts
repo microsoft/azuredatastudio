@@ -69,18 +69,18 @@ export interface IJupyterServerInstallation {
 	pythonInstallationPath: string;
 }
 
-export const jupyterPkg: PythonPkgDetails = {
+export const requiredJupyterPkg: PythonPkgDetails = {
 	name: 'jupyter',
 	version: '1.0.0'
 };
 
-export const powershellPkg: PythonPkgDetails = {
+export const requiredPowershellPkg: PythonPkgDetails = {
 	name: 'powershell-kernel',
 	version: '0.1.4'
 };
 
-export const sparkPackages: PythonPkgDetails[] = [
-	jupyterPkg,
+export const requiredSparkPackages: PythonPkgDetails[] = [
+	requiredJupyterPkg,
 	{
 		name: 'cryptography',
 		version: '3.2.1',
@@ -138,13 +138,13 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this._kernelSetupCache = new Map<string, boolean>();
 		this._requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
 
-		this._requiredKernelPackages.set(constants.python3DisplayName, [jupyterPkg]);
-		this._requiredKernelPackages.set(constants.powershellDisplayName, [jupyterPkg, powershellPkg]);
-		this._requiredKernelPackages.set(constants.pysparkDisplayName, sparkPackages);
-		this._requiredKernelPackages.set(constants.sparkScalaDisplayName, sparkPackages);
-		this._requiredKernelPackages.set(constants.sparkRDisplayName, sparkPackages);
+		this._requiredKernelPackages.set(constants.python3DisplayName, [requiredJupyterPkg]);
+		this._requiredKernelPackages.set(constants.powershellDisplayName, [requiredJupyterPkg, requiredPowershellPkg]);
+		this._requiredKernelPackages.set(constants.pysparkDisplayName, requiredSparkPackages);
+		this._requiredKernelPackages.set(constants.sparkScalaDisplayName, requiredSparkPackages);
+		this._requiredKernelPackages.set(constants.sparkRDisplayName, requiredSparkPackages);
 
-		let allPackages = sparkPackages.concat(powershellPkg);
+		let allPackages = requiredSparkPackages.concat(requiredPowershellPkg);
 		this._requiredKernelPackages.set(constants.allKernelsName, allPackages);
 
 		this._requiredPackagesSet = new Set<string>();

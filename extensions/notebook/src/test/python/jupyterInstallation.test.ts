@@ -11,7 +11,7 @@ import * as uuid from 'uuid';
 import * as fs from 'fs-extra';
 import * as request from 'request';
 import * as utils from '../../common/utils';
-import { jupyterPkg, JupyterServerInstallation, powershellPkg, PythonInstallSettings, PythonPkgDetails, sparkPackages } from '../../jupyter/jupyterServerInstallation';
+import { requiredJupyterPkg, JupyterServerInstallation, requiredPowershellPkg, PythonInstallSettings, PythonPkgDetails, requiredSparkPackages } from '../../jupyter/jupyterServerInstallation';
 import { powershellDisplayName, pysparkDisplayName, python3DisplayName, sparkRDisplayName, sparkScalaDisplayName, winPlatform } from '../../common/constants';
 
 describe('Jupyter Server Installation', function () {
@@ -217,23 +217,23 @@ describe('Jupyter Server Installation', function () {
 
 	it('Get required packages test - Python 3 kernel', async function() {
 		let packages = installation.getRequiredPackagesForKernel(python3DisplayName);
-		should(packages).be.deepEqual([jupyterPkg]);
+		should(packages).be.deepEqual([requiredJupyterPkg]);
 	});
 
 	it('Get required packages test - Powershell kernel', async function() {
 		let packages = installation.getRequiredPackagesForKernel(powershellDisplayName);
-		should(packages).be.deepEqual([jupyterPkg, powershellPkg]);
+		should(packages).be.deepEqual([requiredJupyterPkg, requiredPowershellPkg]);
 	});
 
 	it('Get required packages test - Spark kernels', async function() {
 		let packages = installation.getRequiredPackagesForKernel(pysparkDisplayName);
-		should(packages).be.deepEqual(sparkPackages, 'Unexpected packages for PySpark kernel.');
+		should(packages).be.deepEqual(requiredSparkPackages, 'Unexpected packages for PySpark kernel.');
 
 		packages = installation.getRequiredPackagesForKernel(sparkScalaDisplayName);
-		should(packages).be.deepEqual(sparkPackages, 'Unexpected packages for Spark Scala kernel.');
+		should(packages).be.deepEqual(requiredSparkPackages, 'Unexpected packages for Spark Scala kernel.');
 
 		packages = installation.getRequiredPackagesForKernel(sparkRDisplayName);
-		should(packages).be.deepEqual(sparkPackages, 'Unexpected packages for Spark R kernel.');
+		should(packages).be.deepEqual(requiredSparkPackages, 'Unexpected packages for Spark R kernel.');
 	});
 
 	it('Install python test - Run install while Python is already running', async function() {
