@@ -9,7 +9,7 @@ import * as DOM from 'vs/base/browser/dom';
 import * as styler from 'vs/platform/theme/common/styler';
 import * as strings from 'vs/base/common/strings';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
-import { ITriggerProperties, Modal } from 'sql/workbench/browser/modal/modal';
+import { IDialogProperties, Modal } from 'sql/workbench/browser/modal/modal';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -78,7 +78,7 @@ export class CalloutDialog extends Modal {
 	constructor(
 		calloutType: CalloutType,
 		title: string,
-		triggerProperties: ITriggerProperties,
+		dialogProperties: IDialogProperties,
 		@IPathService private readonly _pathService: IPathService,
 		@IFileDialogService private readonly _fileDialogService: IFileDialogService,
 		@IThemeService themeService: IThemeService,
@@ -103,7 +103,7 @@ export class CalloutDialog extends Modal {
 			{
 				dialogStyle: 'callout',
 				dialogPosition: 'below',
-				triggerProperties: triggerProperties
+				dialogProperties: dialogProperties
 			});
 
 		this._selectionComplete = new Deferred<ICalloutDialogOptions>();

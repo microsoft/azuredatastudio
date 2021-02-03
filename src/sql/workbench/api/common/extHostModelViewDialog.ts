@@ -13,7 +13,7 @@ import * as azdata from 'azdata';
 
 import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape, ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { TabOrientation, DialogWidth, DialogStyle, DialogPosition, ITriggerProperties } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { TabOrientation, DialogWidth, DialogStyle, DialogPosition, IDialogProperties } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', "Done");
 const CANCEL_LABEL = nls.localize('dialogCancelLabel', "Cancel");
@@ -131,7 +131,7 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 	private _dialogPosition: DialogPosition;
 	private _renderHeader: boolean;
 	private _renderFooter: boolean;
-	private _triggerProperties: ITriggerProperties;
+	private _dialogProperties: IDialogProperties;
 
 	constructor(extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape,
@@ -178,12 +178,12 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 		this._renderFooter = value;
 	}
 
-	public get triggerProperties(): ITriggerProperties {
-		return this._triggerProperties;
+	public get dialogProperties(): IDialogProperties {
+		return this._dialogProperties;
 	}
 
-	public set triggerProperties(value: ITriggerProperties) {
-		this._triggerProperties = value;
+	public set dialogProperties(value: IDialogProperties) {
+		this._dialogProperties = value;
 	}
 
 	public get width(): azdata.window.DialogWidth {
@@ -714,7 +714,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		let dialogPosition: DialogPosition;
 		let renderHeader: boolean;
 		let renderFooter: boolean;
-		let triggerProperties: ITriggerProperties;
+		let dialogProperties: IDialogProperties;
 		let handle = this.getHandle(dialog);
 		let tabs = dialog.content;
 
@@ -730,8 +730,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		if (dialog.renderFooter) {
 			renderFooter = dialog.renderFooter;
 		}
-		if (dialog.triggerProperties) {
-			triggerProperties = dialog.triggerProperties;
+		if (dialog.dialogProperties) {
+			dialogProperties = dialog.dialogProperties;
 		}
 		if (tabs && typeof tabs !== 'string') {
 			tabs.forEach(tab => this.updateTabContent(tab));
@@ -763,7 +763,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			dialogPosition: dialogPosition,
 			renderHeader: renderHeader,
 			renderFooter: renderFooter,
-			triggerProperties: triggerProperties,
+			dialogProperties: dialogProperties,
 			okButton: this.getHandle(dialog.okButton),
 			cancelButton: this.getHandle(dialog.cancelButton),
 			content: dialog.content && typeof dialog.content !== 'string' ? dialog.content.map(tab => this.getHandle(tab)) : dialog.content as string,
@@ -796,7 +796,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._onClickCallbacks.set(handle, callback);
 	}
 
-	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, triggerProperties?: ITriggerProperties): azdata.window.Dialog {
+	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogProperties?: IDialogProperties): azdata.window.Dialog {
 
 		let dialog = new DialogImpl(this, this._extHostModelView, this._extHostTaskManagement, extension);
 
@@ -809,8 +809,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		if (dialogPosition) {
 			dialog.dialogPosition = dialogPosition;
 		}
-		if (triggerProperties) {
-			dialog.triggerProperties = triggerProperties;
+		if (dialogProperties) {
+			dialog.dialogProperties = dialogProperties;
 		}
 		dialog.renderHeader = renderHeader;
 		dialog.renderFooter = renderFooter;

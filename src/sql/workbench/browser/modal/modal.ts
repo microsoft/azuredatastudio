@@ -62,7 +62,7 @@ export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 export type DialogStyle = 'normal' | 'flyout' | 'callout' | 'calloutCompact';
 export type DialogPosition = 'left' | 'below';
 
-export interface ITriggerProperties {
+export interface IDialogProperties {
 	xPos: number,
 	yPos: number,
 	width: number,
@@ -83,7 +83,7 @@ export interface IModalOptions {
 	spinnerTitle?: string;
 	renderHeader?: boolean;
 	renderFooter?: boolean;
-	triggerProperties?: ITriggerProperties;
+	dialogProperties?: IDialogProperties;
 }
 
 const defaultOptions: IModalOptions = {
@@ -99,7 +99,7 @@ const defaultOptions: IModalOptions = {
 	hasSpinner: false,
 	renderHeader: true,
 	renderFooter: true,
-	triggerProperties: undefined
+	dialogProperties: undefined
 };
 
 /**
@@ -422,9 +422,9 @@ export abstract class Modal extends Disposable implements IThemable {
 			const modalPxWidth: number = this._modalOptions.dialogStyle === 'callout' ? calloutWidth : calloutCompactWidth;
 
 			if (this._modalOptions.dialogPosition === 'below') {
-				if (this._modalOptions.triggerProperties) {
-					this._modalDialog.style.left = `${this._modalOptions.triggerProperties.xPos - this._modalOptions.triggerProperties.width}px`;
-					this._modalDialog.style.top = `${this._modalOptions.triggerProperties.yPos + (this._modalOptions.triggerProperties.height)}px`;
+				if (this._modalOptions.dialogProperties) {
+					this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - this._modalOptions.dialogProperties.width}px`;
+					this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos + (this._modalOptions.dialogProperties.height)}px`;
 				} else {
 					this._modalDialog.style.left = `${this._modalOptions.positionX}px`;
 					this._modalDialog.style.top = `${this._modalOptions.positionY}px`;
@@ -432,9 +432,9 @@ export abstract class Modal extends Disposable implements IThemable {
 			}
 
 			if (this._modalOptions.dialogPosition === 'left') {
-				if (this._modalOptions.triggerProperties) {
-					this._modalDialog.style.left = `${this._modalOptions.positionX - (modalPxWidth + this._modalOptions.triggerProperties.width)}px`;
-					this._modalDialog.style.top = `${this._modalOptions.positionY - this._modalOptions.triggerProperties.height * 2}px`;
+				if (this._modalOptions.dialogProperties) {
+					this._modalDialog.style.left = `${this._modalOptions.positionX - (modalPxWidth + this._modalOptions.dialogProperties.width)}px`;
+					this._modalDialog.style.top = `${this._modalOptions.positionY - this._modalOptions.dialogProperties.height * 2}px`;
 				} else {
 					this._modalDialog.style.left = `${this._modalOptions.positionX - (modalPxWidth)}px`;
 					this._modalDialog.style.top = `${this._modalOptions.positionY}px`;

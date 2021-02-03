@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
-import { DialogMessage, DialogWidth, DialogStyle, DialogPosition, ITriggerProperties } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { DialogMessage, DialogWidth, DialogStyle, DialogPosition, IDialogProperties } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ModelViewPane {
 	private _valid: boolean = true;
@@ -47,7 +47,7 @@ export class Dialog extends ModelViewPane {
 	public dialogPosition: DialogPosition;
 	public renderHeader: boolean;
 	public renderFooter: boolean;
-	public triggerProperties: ITriggerProperties;
+	public dialogProperties: IDialogProperties;
 	public okButton: DialogButton = new DialogButton(Dialog.DONE_BUTTON_LABEL, true);
 	public cancelButton: DialogButton = new DialogButton(Dialog.CANCEL_BUTTON_LABEL, true);
 	public customButtons: DialogButton[] = [];
@@ -56,7 +56,7 @@ export class Dialog extends ModelViewPane {
 	private _message: DialogMessage | undefined;
 	private _closeValidator: CloseValidator | undefined;
 
-	constructor(public title: string, public width: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, triggerProperties?: ITriggerProperties, content?: string | DialogTab[]) {
+	constructor(public title: string, public width: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogProperties?: IDialogProperties, content?: string | DialogTab[]) {
 		super();
 		if (content) {
 			this.content = content;
@@ -73,8 +73,8 @@ export class Dialog extends ModelViewPane {
 		if (renderFooter) {
 			this.renderFooter = renderFooter;
 		}
-		if (triggerProperties) {
-			this.triggerProperties = triggerProperties;
+		if (dialogProperties) {
+			this.dialogProperties = dialogProperties;
 		}
 	}
 

@@ -79,7 +79,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		options.dialogPosition = dialog.dialogPosition;
 		options.renderHeader = dialog.renderHeader;
 		options.renderFooter = dialog.renderFooter;
-		options.triggerProperties = dialog.triggerProperties;
+		options.dialogProperties = dialog.dialogProperties;
 		this._dialogService.showDialog(dialog, dialogName, options);
 		return Promise.resolve();
 	}
@@ -93,7 +93,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	public $setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void> {
 		let dialog = this._dialogs.get(handle);
 		if (!dialog) {
-			dialog = new Dialog(details.title, details.width, details.dialogStyle, details.dialogPosition, details.renderHeader, details.renderFooter, details.triggerProperties);
+			dialog = new Dialog(details.title, details.width, details.dialogStyle, details.dialogPosition, details.renderHeader, details.renderFooter, details.dialogProperties);
 
 			/**
 			 * Only peform actions on footer if it is shown.

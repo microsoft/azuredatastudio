@@ -680,10 +680,10 @@ declare module 'azdata' {
 			 */
 			renderFooter?: boolean;
 			/**
-			 * Position and dimensions of element clicked to open dialog.
+			 * Positional data prior to opening of dialog.
 			 * Default is undefined.
 			 */
-			triggerProperties?: ITriggerProperties;
+			dialogProperties?: IDialogProperties;
 		}
 
 		export interface Wizard {
@@ -710,7 +710,7 @@ declare module 'azdata' {
 
 		export type DialogPosition = 'left' | 'below';
 
-		export interface ITriggerProperties {
+		export interface IDialogProperties {
 			xPos: number,
 			yPos: number,
 			width: number,
@@ -726,9 +726,9 @@ declare module 'azdata' {
 		 * @param dialogPosition Defines the dialog position, default is undefined
 		 * @param renderHeader Specify whether or not to render the Dialog header, default is true.
 		 * @param renderFooter Specify whether or not to render the Dialog footer, default is true.
-		 * @param triggerProperties position and dimensions of element clicked to open dialog, default is undefined.
+		 * @param dialogProperties Positional data prior to opening of dialog, default is undefined.
 		 */
-		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, triggerProperties?: ITriggerProperties): Dialog;
+		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogProperties?: IDialogProperties): Dialog;
 
 		/**
 		 * Create a wizard with the given title and width

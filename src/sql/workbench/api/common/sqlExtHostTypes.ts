@@ -262,7 +262,7 @@ export interface IModelViewDialogDetails {
 	dialogPosition: DialogPosition;
 	renderHeader: boolean;
 	renderFooter: boolean;
-	triggerProperties: ITriggerProperties;
+	dialogProperties: IDialogProperties;
 }
 
 export interface IModelViewTabDetails {
@@ -309,7 +309,7 @@ export type DialogStyle = 'normal' | 'flyout' | 'callout' | 'calloutCompact';
 
 export type DialogPosition = 'left' | 'below';
 
-export interface ITriggerProperties {
+export interface IDialogProperties {
 	xPos: number,
 	yPos: number,
 	width: number,

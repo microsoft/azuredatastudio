@@ -213,8 +213,8 @@ export class MarkdownTextTransformer {
 		let title = type === MarkdownButtonType.IMAGE_PREVIEW ? this.insertImageHeading : this.insertLinkHeading;
 
 		if (!this._callout) {
-			const triggerProperties = { xPos: triggerPosX, yPos: triggerPosY, width: triggerWidth, height: triggerHeight };
-			this._callout = this._instantiationService.createInstance(CalloutDialog, calloutType, title, triggerProperties);
+			const dialogProperties = { xPos: triggerPosX, yPos: triggerPosY, width: triggerWidth, height: triggerHeight };
+			this._callout = this._instantiationService.createInstance(CalloutDialog, calloutType, title, dialogProperties);
 			this._callout.render();
 		}
 		let calloutOptions = await this._callout.open();

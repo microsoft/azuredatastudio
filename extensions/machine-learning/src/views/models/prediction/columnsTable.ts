@@ -400,8 +400,8 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 		return warningButton;
 	}
 
-	public openWarningCalloutDialog(dialogHeading: string, dialogName?: string, calloutMessageText?: string, calloutMessageLinkText?: string, calloutMessageLinkUrl?: string, triggerProperties?: azdata.window.ITriggerProperties): void {
-		let dialog = azdata.window.createModelViewDialog(dialogHeading, dialogName, 'narrow', 'calloutCompact', 'left', true, false, triggerProperties);
+	public openWarningCalloutDialog(dialogHeading: string, dialogName?: string, calloutMessageText?: string, calloutMessageLinkText?: string, calloutMessageLinkUrl?: string, dialogProperties?: azdata.window.IDialogProperties): void {
+		let dialog = azdata.window.createModelViewDialog(dialogHeading, dialogName, 'narrow', 'calloutCompact', 'left', true, false, dialogProperties);
 		let warningTab: azdata.window.DialogTab = azdata.window.createTab('warning');
 		warningTab.registerContent(async view => {
 			let warningContentContainer = view.modelBuilder.divContainer().withProperties({
