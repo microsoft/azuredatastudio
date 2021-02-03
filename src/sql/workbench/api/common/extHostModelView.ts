@@ -1585,6 +1585,10 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		this.setProperty('selectEffect', v);
 	}
 
+	public setFilter(rowIndexes: number[]): void {
+		this._proxy.$doAction(this._handle, this._id, ModelViewAction.Filter, rowIndexes);
+	}
+
 	public toComponentShape(): IComponentShape {
 		// Overridden to ensure we send the correct properties mapping.
 		return <IComponentShape>{
