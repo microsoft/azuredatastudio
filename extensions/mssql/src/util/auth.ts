@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as kerberos from 'ads-kerberos2';
+import * as kerberos from 'ads-kerberos';
 import * as vscode from 'vscode';
 
 export enum AuthType {

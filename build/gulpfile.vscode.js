@@ -225,12 +225,10 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		const root = path.resolve(path.join(__dirname, '..'));
 		const dependenciesSrc = _.flatten(productionDependencies.map(d => path.relative(root, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`]));
 
+		// {{SQL CARBON EDIT}} - fix runtime module load break
 		const deps = gulp.src(dependenciesSrc, { base: '.', dot: true })
-			.pipe(filter(['**', '!**/package-lock.json', '!**/yarn.lock', '!**/*.js.map']))
+			.pipe(filter(['**', '!**/package-lock.json']))
 			.pipe(util.cleanNodeModules(path.join(__dirname, '.moduleignore')))
-			.pipe(jsFilter)
-			.pipe(util.rewriteSourceMappingURL(sourceMappingURLBase))
-			.pipe(jsFilter.restore)
 			.pipe(createAsar(path.join(process.cwd(), 'node_modules'), ['**/*.node', '**/vscode-ripgrep/bin/*', '**/node-pty/build/Release/*', '**/*.wasm'], 'node_modules.asar'));
 
 		let all = es.merge(

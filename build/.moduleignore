@@ -1,6 +1,4 @@
-# cleanup rules for node modules, .gitignore style
-
-# native node modules
+# cleanup rules for native node modules, .gitignore style
 
 nan/**
 */node_modules/nan/**
@@ -48,7 +46,6 @@ spdlog/build/**
 spdlog/deps/**
 spdlog/src/**
 spdlog/test/**
-spdlog/*.yml
 !spdlog/build/Release/*.node
 
 jschardet/dist/**
@@ -75,10 +72,33 @@ node-pty/build/**
 node-pty/src/**
 node-pty/tools/**
 node-pty/deps/**
-node-pty/scripts/**
 !node-pty/build/Release/*.exe
 !node-pty/build/Release/*.dll
 !node-pty/build/Release/*.node
+
+# START SQL Modules
+
+@angular/**/src/**
+@angular/**/testing/**
+
+angular2-grid/components/**
+angular2-grid/directives/**
+angular2-grid/interfaces/**
+angular2-grid/modules/**
+
+angular2-slickgrid/.vscode/**
+angular2-slickgrid/components/**
+angular2-slickgrid/examples/**
+
+jquery-ui/external/**
+jquery-ui/demos/**
+
+slickgrid/node_modules/**
+slickgrid/examples/**
+
+kerberos/build/**
+
+# END SQL Modules
 
 vscode-nsfw/binding.gyp
 vscode-nsfw/build/**
@@ -97,54 +117,8 @@ vsda/README.md
 vsda/targets
 !vsda/build/Release/vsda.node
 
-vscode-encrypt/build/**
-vscode-encrypt/src/**
-vscode-encrypt/vendor/**
-vscode-encrypt/.gitignore
-vscode-encrypt/binding.gyp
-vscode-encrypt/README.md
-!vscode-encrypt/build/Release/vscode-encrypt-native.node
-
 vscode-windows-ca-certs/**/*
 !vscode-windows-ca-certs/package.json
 !vscode-windows-ca-certs/**/*.node
 
 node-addon-api/**/*
-
-# other node modules
-
-**/docs/**
-**/example/**
-**/examples/**
-**/test/**
-**/tests/**
-
-**/History.md
-**/CHANGELOG.md
-**/README.md
-**/readme.md
-**/readme.markdown
-
-**/*.ts
-!typescript/**/*.d.ts
-
-jschardet/dist/**
-
-es6-promise/lib/**
-
-vscode-textmate/webpack.config.js
-
-zone.js/dist/**
-!zone.js/dist/zone-node.js
-
-# https://github.com/xtermjs/xterm.js/issues/3137
-xterm/src/**
-xterm/tsconfig.all.json
-
-# https://github.com/xtermjs/xterm.js/issues/3138
-xterm-addon-*/src/**
-xterm-addon-*/fixtures/**
-xterm-addon-*/out/**
-xterm-addon-*/out-test/**
-
-
