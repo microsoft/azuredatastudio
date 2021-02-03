@@ -401,7 +401,6 @@ export class PostgresParametersPage extends DashboardPage {
 		// Container to hold input component and information bubble
 		const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 
-
 		if (engineSetting.type === 'enum') {
 			// If type is enum, component should be drop down menu
 			let options = engineSetting.options?.slice(1, -1).split(',');
@@ -478,9 +477,6 @@ export class PostgresParametersPage extends DashboardPage {
 				})
 			);
 		} else {
-			// Child components to be added to container
-			let components: Array<azdata.Component> = [];
-
 			// If type is real or interger, component should be inputbox set to inputType of number. Max and min values also set.
 			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
 				required: true,
@@ -492,7 +488,7 @@ export class PostgresParametersPage extends DashboardPage {
 				value: engineSetting.value,
 				width: '150px'
 			}).component();
-			components.push(valueBox);
+			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
 
 			this.disposables.push(
 				valueBox.onTextChanged(() => {
@@ -509,12 +505,10 @@ export class PostgresParametersPage extends DashboardPage {
 				iconPath: IconPathHelper.information,
 				width: '15px',
 				height: '15px',
-				enabled: false
+				enabled: false,
+				title: loc.allowedValue(loc.rangeSetting(engineSetting.min!, engineSetting.max!))
 			}).component();
-
-			information.updateProperty('title', loc.allowedValue(loc.rangeSetting(engineSetting.min!, engineSetting.max!)));
-			components.push(information);
-			valueContainer.addItems(components);
+			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
 		}
 
 		// Can reset individual parameter
