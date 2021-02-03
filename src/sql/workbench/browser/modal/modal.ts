@@ -202,6 +202,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 *
 	 */
 	public render() {
+		let top: number;
 		let builderClass = '.modal.fade';
 		builderClass += this._modalOptions.dialogStyle === 'flyout' ? '.flyout-dialog'
 			: this._modalOptions.dialogStyle === 'callout' ? '.callout-dialog'
@@ -209,7 +210,12 @@ export abstract class Modal extends Disposable implements IThemable {
 					: '';
 
 		this._bodyContainer = DOM.$(`${builderClass}`, { role: 'dialog', 'aria-label': this._title });
-		const top = this.layoutService.offset?.top ?? 0;
+
+		if (this._modalOptions.dialogStyle === 'callout' || this._modalOptions.dialogStyle === 'calloutCompact') {
+			top = 0;
+		} else {
+			top = this.layoutService.offset?.top ?? 0;
+		}
 		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
 
