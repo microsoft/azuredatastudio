@@ -44,7 +44,7 @@ export interface PythonInstallSettings {
 }
 export interface IJupyterServerInstallation {
 	/**
-	 * Installs the specified packages using pip
+	 * Installs the specified packages using conda
 	 * @param packages The list of packages to install
 	 * @param useMinVersionDefault Whether we install each package as a min version (>=) or exact version (==) by default
 	 */
