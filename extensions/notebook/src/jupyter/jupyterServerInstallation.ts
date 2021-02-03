@@ -68,6 +68,33 @@ export interface IJupyterServerInstallation {
 	pythonExecutable: string;
 	pythonInstallationPath: string;
 }
+
+export const jupyterPkg: PythonPkgDetails = {
+	name: 'jupyter',
+	version: '1.0.0'
+};
+
+export const powershellPkg: PythonPkgDetails = {
+	name: 'powershell-kernel',
+	version: '0.1.4'
+};
+
+export const sparkPackages: PythonPkgDetails[] = [
+	jupyterPkg,
+	{
+		name: 'cryptography',
+		version: '3.2.1',
+		installExactVersion: true
+	},
+	{
+		name: 'sparkmagic',
+		version: '0.12.9'
+	}, {
+		name: 'pandas',
+		version: '0.24.2'
+	}
+];
+
 export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public extensionPath: string;
 	public pythonBinPath: string;
@@ -111,33 +138,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this._kernelSetupCache = new Map<string, boolean>();
 		this._requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
 
-		let jupyterPkg = {
-			name: 'jupyter',
-			version: '1.0.0'
-		};
 		this._requiredKernelPackages.set(constants.python3DisplayName, [jupyterPkg]);
-
-		let powershellPkg = {
-			name: 'powershell-kernel',
-			version: '0.1.4'
-		};
 		this._requiredKernelPackages.set(constants.powershellDisplayName, [jupyterPkg, powershellPkg]);
-
-		let sparkPackages: PythonPkgDetails[] = [
-			jupyterPkg,
-			{
-				name: 'cryptography',
-				version: '3.2.1',
-				installExactVersion: true
-			},
-			{
-				name: 'sparkmagic',
-				version: '0.12.9'
-			}, {
-				name: 'pandas',
-				version: '0.24.2'
-			}
-		];
 		this._requiredKernelPackages.set(constants.pysparkDisplayName, sparkPackages);
 		this._requiredKernelPackages.set(constants.sparkScalaDisplayName, sparkPackages);
 		this._requiredKernelPackages.set(constants.sparkRDisplayName, sparkPackages);
