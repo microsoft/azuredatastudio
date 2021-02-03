@@ -103,7 +103,8 @@ const defaultOptions: IModalOptions = {
 };
 
 /**
- * Max pixel width of standard and compact callouts. Values comes from imported CSS.
+ * Pixel width of standard and compact callouts.
+ * Values come from modal.css, imported at top of this file.
  */
 const calloutWidth: number = 452;
 const calloutCompactWidth: number = 288;
@@ -631,8 +632,8 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Return background color of header and footer
 	 */
-	protected get headerAndFooterBackground(): string | null {
-		return this._dialogHeaderAndFooterBackground ? this._dialogHeaderAndFooterBackground.toString() : null;
+	protected get headerAndFooterBackground(): string | undefined {
+		return this._dialogHeaderAndFooterBackground ? this._dialogHeaderAndFooterBackground.toString() : undefined;
 	}
 
 	/**
@@ -680,12 +681,16 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	private applyStyles(): void {
-		const foreground = this._dialogForeground.toString();
-		const border = this._dialogBorder.toString();
-		const headerAndFooterBackground = this._dialogHeaderAndFooterBackground.toString();
-		const bodyBackground = this._dialogBodyBackground.toString();
+		const foreground = this._dialogForeground ? this._dialogForeground.toString() : '';
+		const border = this._dialogBorder ? this._dialogBorder.toString() : '';
+		const headerAndFooterBackground = this._dialogHeaderAndFooterBackground ? this._dialogHeaderAndFooterBackground.toString() : '';
+		const bodyBackground = this._dialogBodyBackground ? this._dialogBodyBackground.toString() : '';
 		const calloutStyle: CSSStyleDeclaration = this._modalDialog.style;
-		const foregroundRgb: Color = Color.Format.CSS.parseHex(foreground);
+
+		let foregroundRgb: Color;
+		if (!foreground === undefined) {
+			foregroundRgb = Color.Format.CSS.parseHex(foreground);
+		}
 
 		if (this._closeButtonInHeader) {
 			this._closeButtonInHeader.style.color = foreground;
@@ -698,12 +703,14 @@ export abstract class Modal extends Disposable implements IThemable {
 
 			calloutStyle.setProperty('--border', `${border}`);
 			calloutStyle.setProperty('--bodybackground', `${bodyBackground}`);
-			calloutStyle.setProperty('--foreground', `
-				${foregroundRgb.rgba.r},
-				${foregroundRgb.rgba.g},
-				${foregroundRgb.rgba.b},
-				0.08
-			`);
+			if (!foreground === undefined) {
+				calloutStyle.setProperty('--foreground', `
+					${foregroundRgb.rgba.r},
+					${foregroundRgb.rgba.g},
+					${foregroundRgb.rgba.b},
+					0.08
+				`);
+			}
 		}
 
 		if (this._modalHeaderSection) {
