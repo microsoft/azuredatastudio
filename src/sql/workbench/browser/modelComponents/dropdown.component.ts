@@ -28,7 +28,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 	selector: 'modelview-dropdown',
 	template: `
 
-	<div [style.width]="getWidth()">
+	<div [ngStyle]="CSSStyles">
 		<div [style.display]="getLoadingDisplay()" style="width: 100%; position: relative">
 			<div class="modelview-loadingComponent-spinner" style="position:absolute; right: 0px; margin-right: 5px; height:15px; z-index:1" #spinnerElement></div>
 			<div [style.display]="getLoadingDisplay()" #loadingBox style="width: 100%;"></div>
@@ -285,5 +285,11 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 
 	public getStatusText(): string {
 		return this.loading ? this.loadingText : this.loadingCompletedText;
+	}
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth()
+		});
 	}
 }

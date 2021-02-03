@@ -18,7 +18,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 @Component({
 	selector: 'modelview-image',
 	template: `
-		<div #imageContainer [title]="title" [style.width]="getWidth()" [style.height]="getHeight()" [style.background-size]="getImageSize()">`
+		<div #imageContainer [ngStyle]="CSSStyles" [title]="title">`
 })
 export default class ImageComponent extends ComponentWithIconBase<azdata.ImageComponentProperties> implements ITitledComponent, IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
@@ -68,5 +68,13 @@ export default class ImageComponent extends ComponentWithIconBase<azdata.ImageCo
 	 */
 	public getImageSize(): string {
 		return `${this.getIconWidth()} ${this.getIconHeight()}`;
+	}
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'background-size': this.getImageSize(),
+			'width': this.getWidth(),
+			'height': this.getHeight()
+		});
 	}
 }

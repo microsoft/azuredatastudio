@@ -43,7 +43,7 @@ class Root implements ITreeComponentItem {
 @Component({
 	selector: 'modelview-tree',
 	template: `
-		<div #input style="width: 100%;height:100%"></div>
+		<div #input [ngStyle]="CSSStyles"></div>
 	`
 })
 export default class TreeComponent extends ComponentBase<azdata.TreeProperties> implements IComponent, OnDestroy, AfterViewInit {
@@ -168,5 +168,12 @@ export default class TreeComponent extends ComponentBase<azdata.TreeProperties> 
 
 	public set withCheckbox(newValue: boolean) {
 		this.setPropertyFromUI<boolean>((properties, value) => { properties.withCheckbox = value; }, newValue);
+	}
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': '100%',
+			'height': '100%'
+		});
 	}
 }

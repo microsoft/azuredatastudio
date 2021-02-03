@@ -310,4 +310,11 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 			});
 		}
 	}
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth(),
+			'height': this.getHeight()
+		});
+	}
 }
