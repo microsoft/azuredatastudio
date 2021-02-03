@@ -266,7 +266,7 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 		this._register(addDisposableListener(domNode, EventType.KEY_DOWN, (e: KeyboardEvent) => listener(new StandardKeyboardEvent(e))));
 	}
 
-	public mergeCss(...styles: azdata.CssStyles[]): azdata.CssStyles {
+	protected mergeCss(...styles: azdata.CssStyles[]): azdata.CssStyles {
 		const x = styles.reduce((previous, current) => {
 			if (current) {
 				return Object.assign(previous, current);
