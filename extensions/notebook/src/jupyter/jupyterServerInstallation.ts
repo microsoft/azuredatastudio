@@ -123,12 +123,12 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		};
 		this._requiredKernelPackages.set(constants.powershellDisplayName, [jupyterPkg, powershellPkg]);
 
-		let sparkPackages = [
+		let sparkPackages: PythonPkgDetails[] = [
 			jupyterPkg,
 			{
 				name: 'cryptography',
 				version: '3.2.1',
-				useExactVersion: true
+				installExactVersion: true
 			},
 			{
 				name: 'sparkmagic',
