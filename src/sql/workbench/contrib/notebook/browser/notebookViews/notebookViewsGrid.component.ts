@@ -17,9 +17,6 @@ import { CellChangeEvent, INotebookViewCell } from 'sql/workbench/services/noteb
 	selector: 'notebook-views-grid-component',
 	templateUrl: decodeURI(require.toUrl('./notebookViewsGrid.component.html')),
 	encapsulation: ViewEncapsulation.None,
-	styleUrls: [
-		'../../../../../node_modules/gridstack/dist/gridstack.css'
-	]
 })
 export class NotebookViewsGridComponent implements OnInit {
 	@Input() cells: ICellModel[];
