@@ -107,6 +107,7 @@ export function createViewContext(): ViewTestContext {
 	let declarativeTable: () => azdata.DeclarativeTableComponent = () => Object.assign({}, componentBase, {
 		onDataChanged: undefined!,
 		onRowSelected: undefined!,
+		setFilter: undefined!,
 		data: [],
 		columns: []
 	});
