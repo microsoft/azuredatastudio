@@ -654,6 +654,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
+	/**
+	 * Optional method on the vscode interface.
+	 * Implementing getParent, due to reveal method in extHostTreeView.ts
+	 * throwing error if it is not implemented.
+	 */
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
 		// Remove it for perf issues.
 		return undefined;

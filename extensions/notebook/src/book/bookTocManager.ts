@@ -139,8 +139,9 @@ export class BookTocManager implements IBookTocManager {
 				if ((await fs.stat(path.join(directory, content))).isFile) {
 					//check if the file is in the moved files
 					let isCopy = this._movedFiles.get(path.join(directory, content));
-					if (isCopy) {
+					if (isCopy && this._movedFiles.get(path.join(directory, content)) !== path.join(directory, content)) {
 						// the file could not be renamed, so a copy was created.
+						// remove file only if the new path and old path are different
 						await fs.unlink(path.join(directory, content));
 					}
 				} else if ((await fs.stat(path.join(directory, content))).isDirectory) {
@@ -256,7 +257,7 @@ export class BookTocManager implements IBookTocManager {
 						throw (error);
 					}
 				}
-				elem.file = fileName === undefined ? elem.file : path.parse(fileName).name;
+				elem.file = fileName === undefined ? elem.file : path.join(path.dirname(elem.file), path.parse(fileName).name);
 				elem.sections = elem.sections ? await this.traverseSections(elem.sections) : undefined;
 			}
 
@@ -295,7 +296,7 @@ export class BookTocManager implements IBookTocManager {
 			}
 		}
 		this.newSection.title = section.title;
-		this.newSection.file = path.join(path.parse(uri).dir, fileName);
+		this.newSection.file = path.join(path.parse(uri).dir, fileName)?.replace(/\\/g, '/');
 		if (section.sections) {
 			const files = section.sections as JupyterBookSection[];
 			const movedSections = await this.traverseSections(files);
@@ -373,7 +374,7 @@ export class BookTocManager implements IBookTocManager {
 		}
 		else if (element.contextValue === 'savedNotebook') {
 			await this.addNotebook(element, targetBook);
-			if (element.book.tableOfContents.sections) {
+			if (element.tableOfContentsPath) {
 				const elementVersion = element.book.version === BookVersion.v1 ? BookVersion.v1 : BookVersion.v2;
 				// the notebook is part of a book so we need to modify its toc as well
 				const findSection = { file: element.book.page.file?.replace(/\\/g, '/'), title: element.book.page.title };
