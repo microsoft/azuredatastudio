@@ -82,7 +82,8 @@ export class BookTreeItem extends vscode.TreeItem {
 			}
 			this._rootContentPath = getContentPath(this.book.version, this.book.root, '');
 			this.tooltip = this.book.type === BookTreeItemType.Book ? this._rootContentPath : this.book.contentPath;
-			this.resourceUri = vscode.Uri.file(this.book.root);
+			//this.resourceUri = this.book.type === BookTreeItemType.Book ? vscode.Uri.file(this._rootContentPath) : vscode.Uri.file(this.book.contentPath);
+			this.resourceUri = this.book.type === BookTreeItemType.Book ? vscode.Uri.file(this.book.root) : vscode.Uri.file(this.book.contentPath);
 		}
 	}
 
