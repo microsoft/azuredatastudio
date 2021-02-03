@@ -71,6 +71,7 @@ export class DeleteViewAction extends Action {
 				const confirmDelete = await this.confirmDelete(activeView);
 				if (confirmDelete) {
 					this._notebookViews.removeView(activeView.guid);
+					this._notebookViews.notebook.viewMode = ViewMode.Notebook;
 				}
 			} else {
 				this.notificationService.error(localize('viewsUnableToRemove', "Unable to remove view"));

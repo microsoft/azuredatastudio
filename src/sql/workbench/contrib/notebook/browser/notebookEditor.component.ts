@@ -193,7 +193,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 	}
 
 	private handleViewDeleted() {
-		this.viewMode = this.defaultViewMode;
+		this.viewMode = this.model?.viewMode;
 		this.detectChanges();
 	}
 
