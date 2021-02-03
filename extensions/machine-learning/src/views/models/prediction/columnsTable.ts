@@ -10,10 +10,11 @@ import { ApiWrapper } from '../../../common/apiWrapper';
 import { IDataComponent } from '../../interfaces';
 import { PredictColumn, DatabaseTable, TableColumn } from '../../../prediction/interfaces';
 import { ModelParameter, ModelParameters } from '../../../modelManagement/interfaces';
-export interface WarningButtonDimensions {
-	height: number,
-	width: number
-}
+
+export const _warningButtonDimensions = {
+	height: 16,
+	width: 16
+};
 
 /**
  * View to render azure models in a table
@@ -22,7 +23,6 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 	private _table: azdata.DeclarativeTableComponent | undefined;
 	private _parameters: PredictColumn[] = [];
 	private _loader: azdata.LoadingComponent;
-	private _warningButtonDimensions: WarningButtonDimensions = { height: 16, width: 16 };
 
 	/**
 	 * Creates a view to render azure models in a table
@@ -213,8 +213,8 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				let warningButtonProperties = {
 					xPos: 0,
 					yPos: 0,
-					width: this._warningButtonDimensions.width,
-					height: this._warningButtonDimensions.height
+					width: _warningButtonDimensions.width,
+					height: _warningButtonDimensions.height
 				};
 				this.openWarningCalloutDialog(constants.columnDataTypeMismatchWarningHeading, 'output-table-row-dialog', constants.outputColumnDataTypeNotSupportedWarning, constants.learnMoreLink, constants.mlExtDocLink, warningButtonProperties);
 			});
@@ -312,8 +312,8 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				let warningButtonProperties = {
 					xPos: 0,
 					yPos: 0,
-					width: this._warningButtonDimensions.width,
-					height: this._warningButtonDimensions.height
+					width: _warningButtonDimensions.width,
+					height: _warningButtonDimensions.height
 				};
 				this.openWarningCalloutDialog(constants.columnDataTypeMismatchWarningHeading, 'input-table-row-dialog', constants.columnDataTypeMismatchWarning, constants.learnMoreLink, constants.mlExtDocLink, warningButtonProperties);
 			});
@@ -385,15 +385,15 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 
 	private createWarningButton(): azdata.ButtonComponent {
 		const warningButton = this._modelBuilder.button().withProperties({
-			width: `${this._warningButtonDimensions.width}px`,
-			height: `${this._warningButtonDimensions.height}px`,
+			width: `${_warningButtonDimensions.width}px`,
+			height: `${_warningButtonDimensions.height}px`,
 			title: constants.columnDataTypeMismatchWarningHelper,
 			iconPath: {
 				dark: this.asAbsolutePath('images/warning.svg'),
 				light: this.asAbsolutePath('images/warning.svg'),
 			},
-			iconHeight: `${this._warningButtonDimensions.height}px`,
-			iconWidth: `${this._warningButtonDimensions.width}px`
+			iconHeight: `${_warningButtonDimensions.height}px`,
+			iconWidth: `${_warningButtonDimensions.width}px`
 		}).component();
 
 		return warningButton;

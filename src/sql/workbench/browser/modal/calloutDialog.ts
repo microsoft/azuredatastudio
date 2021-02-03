@@ -7,6 +7,7 @@ import { URI } from 'vs/base/common/uri';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as DOM from 'vs/base/browser/dom';
 import * as styler from 'vs/platform/theme/common/styler';
+import * as strings from 'vs/base/common/strings';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { ITriggerProperties, Modal } from 'sql/workbench/browser/modal/modal';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -49,6 +50,7 @@ export class CalloutDialog extends Modal {
 	// Image
 	private _imageLocationLabel: HTMLElement;
 	private _imageLocalRadioButton: RadioButton;
+	private _editorImageLocationGroup: string = 'editorImageLocationGroup';
 	private _imageRemoteRadioButton: RadioButton;
 	private _imageUrlLabel: HTMLElement;
 	private _imageUrlInputBox: InputBox;
@@ -163,9 +165,9 @@ export class CalloutDialog extends Modal {
 			checked: false
 		});
 		this._imageLocalRadioButton.value = localize('local', "Local");
-		this._imageLocalRadioButton.name = 'group1';
+		this._imageLocalRadioButton.name = this._editorImageLocationGroup;
 		this._imageRemoteRadioButton.value = localize('remote', "Remote");
-		this._imageRemoteRadioButton.name = 'group1';
+		this._imageRemoteRadioButton.name = this._editorImageLocationGroup;
 		DOM.append(locationRow, radioButtonGroup);
 
 		let pathRow = DOM.$('.row');
@@ -284,14 +286,14 @@ export class CalloutDialog extends Modal {
 		this.hide();
 		if (this._calloutType === 'IMAGE') {
 			this._selectionComplete.resolve({
-				insertMarkup: `<img src="${this._imageUrlInputBox.value}">`,
+				insertMarkup: `<img src="${strings.escape(this._imageUrlInputBox.value)}">`,
 				imagePath: this._imageUrlInputBox.value,
 				embedImage: this._imageEmbedCheckbox.checked
 			});
 		}
 		if (this._calloutType === 'LINK') {
 			this._selectionComplete.resolve({
-				insertMarkup: `<a href="${this._linkUrlInputBox.value}">${this._linkTextInputBox.value}</a>`,
+				insertMarkup: `<a href="${strings.escape(this._linkUrlInputBox.value)}">${strings.escape(this._linkTextInputBox.value)}</a>`,
 			});
 		}
 		this.dispose();
@@ -312,7 +314,7 @@ export class CalloutDialog extends Modal {
 		return userHomeUri.path;
 	}
 
-	private async handleBrowse(): Promise<URI | void> {
+	private async handleBrowse(): Promise<URI | undefined> {
 		let options: IOpenDialogOptions = {
 			openLabel: undefined,
 			canSelectFiles: true,
@@ -321,9 +323,11 @@ export class CalloutDialog extends Modal {
 			defaultUri: URI.file(await this.getUserHome()),
 			title: undefined
 		};
-		let imgeUri: URI[] = await this._fileDialogService.showOpenDialog(options);
-		if (imgeUri.length > 0) {
-			return imgeUri[0];
+		let imageUri: URI[] = await this._fileDialogService.showOpenDialog(options);
+		if (imageUri.length > 0) {
+			return imageUri[0];
+		} else {
+			return undefined;
 		}
 	}
 }

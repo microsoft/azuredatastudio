@@ -60,7 +60,7 @@ export interface IModalDialogStyles {
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 export type DialogStyle = 'normal' | 'flyout' | 'callout' | 'calloutCompact';
-export type DialogPosition = 'left' | 'below' | undefined;
+export type DialogPosition = 'left' | 'below';
 
 export interface ITriggerProperties {
 	xPos: number,
@@ -102,6 +102,9 @@ const defaultOptions: IModalOptions = {
 	triggerProperties: undefined
 };
 
+/**
+ * Max pixel width of standard and compact callouts. Values comes from imported CSS.
+ */
 const calloutWidth: number = 452;
 const calloutCompactWidth: number = 288;
 

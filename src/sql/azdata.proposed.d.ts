@@ -672,7 +672,7 @@ declare module 'azdata' {
 
 		export type DialogStyle = 'normal' | 'flyout' | 'callout' | 'calloutCompact';
 
-		export type DialogPosition = 'left' | 'below' | undefined;
+		export type DialogPosition = 'left' | 'below';
 
 		export interface ITriggerProperties {
 			xPos: number,
@@ -683,14 +683,14 @@ declare module 'azdata' {
 
 		/**
 		 * Create a dialog with the given title
-		 * @param title The title of the dialog, displayed at the top
-		 * @param dialogName the name of the dialog
-		 * @param width width of the dialog, default is 'wide'
-		 * @param dialogStyle Defines the dialog style, default is 'Flyout'
-		 * @param dialogPosition Defines the dialog position, default is null
-		 * @param renderHeader Render Dialog header
-		 * @param renderFooter Render Dialog footer
-		 * @param triggerProperties position and dimensions of element clicked to open dialog
+		 * @param title Title of the dialog, displayed at the top.
+		 * @param dialogName Name of the dialog.
+		 * @param width Width of the dialog, default is 'narrow'.
+		 * @param dialogStyle Defines the dialog style, default is 'flyout'.
+		 * @param dialogPosition Defines the dialog position, default is undefined
+		 * @param renderHeader Specify whether or not to render the Dialog header, default is true.
+		 * @param renderFooter Specify whether or not to render the Dialog footer, default is true.
+		 * @param triggerProperties position and dimensions of element clicked to open dialog, default is undefined.
 		 */
 		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, triggerProperties?: ITriggerProperties): Dialog;
 

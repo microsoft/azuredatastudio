@@ -61,7 +61,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	constructor(
 		@Inject(INotebookService) private _notebookService: INotebookService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
-		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
+		@Inject(IContextMenuService) private _contextMenuService: IContextMenuService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
@@ -137,7 +137,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		let dropdownMenuActionViewItem = new DropdownMenuActionViewItem(
 			headingDropdown,
 			[heading1, heading2, heading3, paragraph],
-			this.contextMenuService,
+			this._contextMenuService,
 			undefined,
 			this._actionBar.actionRunner,
 			undefined,
