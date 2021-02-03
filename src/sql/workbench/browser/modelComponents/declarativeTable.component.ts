@@ -321,13 +321,13 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	/**
 	 * Checks whether a given row is filtered (not visible)
-	 * @param row The row to check
+	 * @param rowIndex The row to check
 	 */
-	public isFiltered(row: number): boolean {
+	public isFiltered(rowIndex: number): boolean {
 		if (this._filteredRowIndexes === undefined) {
 			return false;
 		}
-		return this._filteredRowIndexes.includes(row) ? false : true;
+		return this._filteredRowIndexes.includes(rowIndex) ? false : true;
 	}
 
 	public get CSSStyles(): azdata.CssStyles {
