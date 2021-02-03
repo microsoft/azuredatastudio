@@ -48,13 +48,17 @@ export class ErrorInfo {
 	}
 }
 
+interface INotebookMetadataInternal extends nb.INotebookMetadata {
+	azdata_notebook_guid?: string;
+}
+
 type NotebookMetadataKeys = Required<nb.INotebookMetadata>;
 const expectedMetadataKeys: NotebookMetadataKeys = {
-	kernelspec: null,
-	language_info: null,
-	tags: null,
-	connection_name: null,
-	multi_connection_mode: null
+	kernelspec: undefined,
+	language_info: undefined,
+	tags: undefined,
+	connection_name: undefined,
+	multi_connection_mode: undefined
 };
 
 const saveConnectionNameConfigName = 'notebook.saveConnectionName';
@@ -442,7 +446,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	private loadContentMetadata(metadata: nb.INotebookMetadataInternal): void {
+	private loadContentMetadata(metadata: INotebookMetadataInternal): void {
 		this._savedKernelInfo = metadata.kernelspec;
 		this._defaultLanguageInfo = metadata.language_info;
 		// If language info was serialized in the notebook, attempt to use that to decrease time
