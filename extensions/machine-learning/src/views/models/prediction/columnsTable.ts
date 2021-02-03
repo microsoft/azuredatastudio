@@ -287,17 +287,18 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			if (columns.length > 0 && columns[0].columnName !== constants.selectColumnTitle) {
 				values = [{ displayName: constants.selectColumnTitle, name: '' }].concat(values);
 			}
-			let nameInput = this._modelBuilder.dropDown().withProperties({
-				values: values,
-				width: this.componentMaxLength
-			}).component();
+
 			const name = modelParameter.name;
 			let column = values.find(x => x.name.toLocaleUpperCase() === modelParameter.name.toLocaleUpperCase());
 			if (!column) {
 				column = values.length > 0 ? values[0] : undefined;
 			}
 			const currentColumn = columns.find(x => x.columnName === column?.name);
-			nameInput.value = column;
+			let nameInput = this._modelBuilder.dropDown().withProperties({
+				values: values,
+				value: column,
+				width: this.componentMaxLength
+			}).component();
 
 			if (column) {
 				this._parameters.push({ columnName: column.name, paramName: name, paramType: modelParameter.type, maxLength: currentColumn?.maxLength });

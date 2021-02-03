@@ -6,6 +6,7 @@
 declare module 'azurecore' {
 	import * as azdata from 'azdata';
 	import { azureResource } from 'azureResource';
+
 	/**
 	 * Covers defining what the azurecore extension exports to other extensions
 	 *
@@ -66,8 +67,18 @@ declare module 'azurecore' {
 	}
 
 	export interface IExtension {
-		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean, selectedOnly?: boolean): Thenable<GetSubscriptionsResult>;
-		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Thenable<GetResourceGroupsResult>;
+		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean, selectedOnly?: boolean): Promise<GetSubscriptionsResult>;
+		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<GetResourceGroupsResult>;
+		getSqlManagedInstances(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlManagedInstancesResult>;
+		getSqlServers(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlServersResult>;
+		getSqlVMServers(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlVMServersResult>;
+		getStorageAccounts(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetStorageAccountResult>;
+		getBlobContainers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<GetBlobContainersResult>;
+		getFileShares(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<GetFileSharesResult>;
+		getMigrationController(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, regionName: string, controllerName: string, ignoreErrors?: boolean): Promise<GetMigrationControllerResult>;
+		createMigrationController(account:azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, regionName: string, controllerName: string, ignoreErrors?:boolean): Promise<CreateMigrationControllerResult>;
+		getMigrationControllerAuthKeys(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, regionName: string, controllerName: string, ignoreErrors?: boolean): Promise<GetMigrationControllerAuthKeysResult>;
+
 		/**
 		 * Converts a region value (@see AzureRegion) into the localized Display Name
 		 * @param region The region value
@@ -80,6 +91,16 @@ declare module 'azurecore' {
 
 	export type GetSubscriptionsResult = { subscriptions: azureResource.AzureResourceSubscription[], errors: Error[] };
 	export type GetResourceGroupsResult = { resourceGroups: azureResource.AzureResourceResourceGroup[], errors: Error[] };
+	export type GetSqlManagedInstancesResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };
+	export type GetSqlServersResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };
+	export type GetSqlVMServersResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };
+	export type GetStorageAccountResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };
+	export type GetBlobContainersResult = { blobContainers: azureResource.BlobContainer[], errors: Error[] };
+	export type GetFileSharesResult = { fileShares: azureResource.FileShare[], errors: Error[] };
+	export type GetMigrationControllerResult = { controller: azureResource.MigrationController | undefined, errors: Error[] };
+	export type CreateMigrationControllerResult = { controller: azureResource.MigrationController | undefined, errors: Error[] };
+	export type GetMigrationControllerAuthKeysResult = { keyName1: string, keyName2: string, errors: Error[] };
 
 	export type ResourceQueryResult<T extends azureResource.AzureGraphResource> = { resources: T[], errors: Error[] };
+	export type HttpRequestResult = { response: any, errors: Error[] };
 }

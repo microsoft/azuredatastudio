@@ -36,7 +36,7 @@ describe('import extension modify Column Page', function () {
 
 	it('checking if all components are initialized properly', async function () {
 
-		await new Promise(function (resolve) {
+		await new Promise<void>(function (resolve) {
 			page.registerContent(async (view) => {
 				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
 				pages.set(1, modifyColumnsPage);
@@ -81,7 +81,7 @@ describe('import extension modify Column Page', function () {
 
 		mockImportModel.object.proseColumns = testProseColumns;
 
-		await new Promise(function (resolve) {
+		await new Promise<void>(function (resolve) {
 			page.registerContent(async (view) => {
 				modifyColumnsPage = new ModifyColumnsPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
 				pages.set(1, modifyColumnsPage);

@@ -177,7 +177,7 @@ export class WizardPage extends DialogTab {
 	private _onUpdate: Emitter<void> = new Emitter<void>();
 	public readonly onUpdate: Event<void> = this._onUpdate.event;
 
-	constructor(public title: string, content?: string) {
+	constructor(public title: string, content?: string, public pageName?: string) {
 		super(title, content);
 	}
 

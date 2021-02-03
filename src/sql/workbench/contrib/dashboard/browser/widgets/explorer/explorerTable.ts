@@ -6,6 +6,7 @@
 import { Router } from '@angular/router';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
+import { IconCellValue } from 'sql/base/browser/ui/table/plugins/tableColumn';
 import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
@@ -33,7 +34,7 @@ import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 const ShowActionsText: string = nls.localize('dashboard.explorer.actions', "Show Actions");
-const IconClassProperty: string = 'iconClass';
+const NameWithIconProperty: string = 'NameWithIcon';
 export const ConnectionProfilePropertyName: string = 'connection_profile';
 
 /**
@@ -171,7 +172,10 @@ export class ExplorerTable extends Disposable {
 		this._view.clear();
 		this._view.clearFilter();
 		items.forEach(item => {
-			item[IconClassProperty] = this._explorerView.getIconClass(item);
+			item[NameWithIconProperty] = <IconCellValue>{
+				iconCssClass: this._explorerView.getIconClass(item),
+				title: item[NameProperty]
+			};
 		});
 		this._view.push(items);
 	}
@@ -190,9 +194,8 @@ export class ExplorerTable extends Disposable {
 			if (property.value === NameProperty) {
 				const nameColumn = new TextWithIconColumn({
 					id: property.value,
-					iconCssClassField: IconClassProperty,
 					width: columnWidth,
-					field: property.value,
+					field: NameWithIconProperty,
 					name: property.displayName
 				});
 				return nameColumn.definition;

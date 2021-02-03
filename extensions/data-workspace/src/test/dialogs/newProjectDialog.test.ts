@@ -15,6 +15,10 @@ import { WorkspaceService } from '../../services/workspaceService';
 import { testProjectType } from '../testUtils';
 
 suite('New Project Dialog', function (): void {
+	this.afterEach(() => {
+		sinon.restore();
+	});
+
 	test('Should validate project location', async function (): Promise<void> {
 		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();
 		workspaceServiceMock.setup(x => x.getAllProjectTypes()).returns(() => Promise.resolve([testProjectType]));
@@ -24,7 +28,8 @@ suite('New Project Dialog', function (): void {
 
 		dialog.model.name = 'TestProject';
 		dialog.model.location = '';
-		should.equal(await dialog.validate(), false, 'Validation should fail becausee the parent directory does not exist');
+		dialog.workspaceInputBox!.value = 'test.code-workspace';
+		should.equal(await dialog.validate(), false, 'Validation should fail because the parent directory does not exist');
 
 		// create a folder with the same name
 		const folderPath = path.join(os.tmpdir(), dialog.model.name);
@@ -36,6 +41,7 @@ suite('New Project Dialog', function (): void {
 		dialog.model.name = `TestProject_${new Date().getTime()}`;
 		should.equal(await dialog.validate(), true, 'Validation should pass because name is unique and parent directory exists');
 	});
+
 
 	test('Should validate workspace in onComplete', async function (): Promise<void> {
 		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();

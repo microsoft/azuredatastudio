@@ -18,17 +18,35 @@ export interface ResourceType {
 	icon: { light: string; dark: string } | string;
 	options: ResourceTypeOption[];
 	providers: DeploymentProvider[];
-	agreement?: AgreementInfo;
+	agreements?: AgreementInfo[];
 	displayIndex?: number;
 	okButtonText?: OkButtonTextValue[];
 	getOkButtonText(selectedOptions: { option: string, value: string }[]): string | undefined;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
+	getAgreementInfo(selectedOptions: { option: string, value: string }[]): AgreementInfo | undefined;
+	getHelpText(selectedOption: { option: string, value: string }[]): string | undefined;
 	tags?: string[];
+}
+
+export interface ResourceSubType {
+	/**
+	 * The name of the Resource Type this subtype is extending
+	 */
+	resourceName: string;
+	/**
+	 * The option name should have a matching name in ResourceType.options
+	 */
+	options: ResourceTypeOption[];
+	tags?: string[];
+	provider: DeploymentProvider;
+	okButtonText?: OkButtonTextValue;
+	agreement?: AgreementInfo;
 }
 
 export interface AgreementInfo {
 	template: string;
 	links: azdata.LinkArea[];
+	when: string;
 }
 
 export interface ResourceTypeOption {
@@ -244,6 +262,8 @@ export type ComponentCSSStyles = {
 
 export interface IOptionsSource {
 	provider?: IOptionsSourceProvider
+	loadingText?: string,
+	loadingCompletedText?: string,
 	readonly variableNames?: { [index: string]: string; };
 	readonly providerId: string;
 }
@@ -259,6 +279,11 @@ export interface OptionsInfo {
 export interface DynamicEnablementInfo {
 	target: string,
 	value: string
+}
+
+export interface ValueProviderInfo {
+	providerId: string,
+	triggerField: string
 }
 
 export interface FieldInfoBase {
@@ -307,9 +332,8 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	editable?: boolean; // for editable drop-down,
 	enabled?: boolean | DynamicEnablementInfo;
 	isEvaluated?: boolean;
-	valueLookup?: string; // for fetching dropdown options
-	validationLookup?: string // for fetching text field validations
 	validations?: ValidationInfo[];
+	valueProvider?: ValueProviderInfo;
 }
 
 export interface KubeClusterContextFieldInfo extends FieldInfo {

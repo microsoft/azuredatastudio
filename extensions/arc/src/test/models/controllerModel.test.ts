@@ -12,6 +12,7 @@ import * as TypeMoq from 'typemoq';
 import { v4 as uuid } from 'uuid';
 import * as vscode from 'vscode';
 import * as loc from '../../localizedConstants';
+import * as kubeUtils from '../../common/kubeUtils';
 import { UserCancelledError } from '../../common/api';
 import { ControllerModel } from '../../models/controllerModel';
 import { ConnectToControllerDialog } from '../../ui/dialogs/connectControllerDialog';
@@ -34,13 +35,15 @@ describe('ControllerModel', function (): void {
 
 		beforeEach(function (): void {
 			sinon.stub(ConnectToControllerDialog.prototype, 'showDialog');
+			sinon.stub(kubeUtils, 'getKubeConfigClusterContexts').resolves([{ name: 'currentCluster', isCurrentContext: true }]);
+			sinon.stub(vscode.window, 'showErrorMessage').resolves(<any>loc.yes);
 		});
 
 		it('Rejected with expected error when user cancels', async function (): Promise<void> {
 			// Returning an undefined model here indicates that the dialog closed without clicking "Ok" - usually through the user clicking "Cancel"
 			sinon.stub(ConnectToControllerDialog.prototype, 'waitForClose').returns(Promise.resolve(undefined));
-			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
-			await should(model.azdataLogin()).be.rejectedWith(new UserCancelledError(loc.userCancelledError));
+			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
+			await should(model.acquireAzdataSession()).be.rejectedWith(new UserCancelledError(loc.userCancelledError));
 		});
 
 		it('Reads password from cred store', async function (): Promise<void> {
@@ -55,17 +58,17 @@ describe('ControllerModel', function (): void {
 
 			const azdataExtApiMock = TypeMoq.Mock.ofType<azdataExt.IExtension>();
 			const azdataMock = TypeMoq.Mock.ofType<azdataExt.IAzdataApi>();
-			azdataMock.setup(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => <any>Promise.resolve(undefined));
+			azdataMock.setup(x => x.acquireSession(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => <any>Promise.resolve(undefined));
 			azdataExtApiMock.setup(x => x.azdata).returns(() => azdataMock.object);
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: azdataExtApiMock.object });
-			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
+			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
 
-			await model.azdataLogin();
-			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password), TypeMoq.Times.once());
+			await model.acquireAzdataSession();
+			azdataMock.verify(x => x.acquireSession(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password, TypeMoq.It.isAny()), TypeMoq.Times.once());
 		});
 
 		it('Prompt for password when not in cred store', async function (): Promise<void> {
-			const password = 'password123';
+			const password = 'password123'; // [SuppressMessage("Microsoft.Security", "CS001:SecretInline", Justification="Stub value for testing")]
 
 			// Set up cred store to return empty password
 			const credProviderMock = TypeMoq.Mock.ofType<azdata.CredentialProvider>();
@@ -76,22 +79,22 @@ describe('ControllerModel', function (): void {
 
 			const azdataExtApiMock = TypeMoq.Mock.ofType<azdataExt.IExtension>();
 			const azdataMock = TypeMoq.Mock.ofType<azdataExt.IAzdataApi>();
-			azdataMock.setup(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => <any>Promise.resolve(undefined));
+			azdataMock.setup(x => x.acquireSession(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => <any>Promise.resolve(undefined));
 			azdataExtApiMock.setup(x => x.azdata).returns(() => azdataMock.object);
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: azdataExtApiMock.object });
 
 			// Set up dialog to return new model with our password
-			const newModel = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, password);
+			const newModel = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, password);
 			sinon.stub(ConnectToControllerDialog.prototype, 'waitForClose').returns(Promise.resolve({ controllerModel: newModel, password: password }));
 
-			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
+			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
 
-			await model.azdataLogin();
-			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password), TypeMoq.Times.once());
+			await model.acquireAzdataSession();
+			azdataMock.verify(x => x.acquireSession(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password, TypeMoq.It.isAny()), TypeMoq.Times.once());
 		});
 
 		it('Prompt for password when rememberPassword is true but prompt reconnect is true', async function (): Promise<void> {
-			const password = 'password123';
+			const password = 'password123'; // [SuppressMessage("Microsoft.Security", "CS001:SecretInline", Justification="Stub value for testing")]
 			// Set up cred store to return a password to start with
 			const credProviderMock = TypeMoq.Mock.ofType<azdata.CredentialProvider>();
 			credProviderMock.setup(x => x.readCredential(TypeMoq.It.isAny())).returns(() => Promise.resolve({ credentialId: 'id', password: 'originalPassword' }));
@@ -101,23 +104,23 @@ describe('ControllerModel', function (): void {
 
 			const azdataExtApiMock = TypeMoq.Mock.ofType<azdataExt.IExtension>();
 			const azdataMock = TypeMoq.Mock.ofType<azdataExt.IAzdataApi>();
-			azdataMock.setup(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => <any>Promise.resolve(undefined));
+			azdataMock.setup(x => x.acquireSession(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => <any>Promise.resolve(undefined));
 			azdataExtApiMock.setup(x => x.azdata).returns(() => azdataMock.object);
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: azdataExtApiMock.object });
 
 			// Set up dialog to return new model with our new password from the reprompt
-			const newModel = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, password);
+			const newModel = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, password);
 			const waitForCloseStub = sinon.stub(ConnectToControllerDialog.prototype, 'waitForClose').returns(Promise.resolve({ controllerModel: newModel, password: password }));
 
-			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
+			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] });
 
-			await model.azdataLogin(true);
+			await model.acquireAzdataSession(true);
 			should(waitForCloseStub.called).be.true('waitForClose should have been called');
-			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password), TypeMoq.Times.once());
+			azdataMock.verify(x => x.acquireSession(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password, TypeMoq.It.isAny()), TypeMoq.Times.once());
 		});
 
 		it('Prompt for password when we already have a password but prompt reconnect is true', async function (): Promise<void> {
-			const password = 'password123';
+			const password = 'password123'; // [SuppressMessage("Microsoft.Security", "CS001:SecretInline", Justification="Stub value for testing")]
 			// Set up cred store to return a password to start with
 			const credProviderMock = TypeMoq.Mock.ofType<azdata.CredentialProvider>();
 			credProviderMock.setup(x => x.readCredential(TypeMoq.It.isAny())).returns(() => Promise.resolve({ credentialId: 'id', password: 'originalPassword' }));
@@ -127,20 +130,20 @@ describe('ControllerModel', function (): void {
 
 			const azdataExtApiMock = TypeMoq.Mock.ofType<azdataExt.IExtension>();
 			const azdataMock = TypeMoq.Mock.ofType<azdataExt.IAzdataApi>();
-			azdataMock.setup(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => <any>Promise.resolve(undefined));
+			azdataMock.setup(x => x.acquireSession(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => <any>Promise.resolve(undefined));
 			azdataExtApiMock.setup(x => x.azdata).returns(() => azdataMock.object);
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: azdataExtApiMock.object });
 
 			// Set up dialog to return new model with our new password from the reprompt
-			const newModel = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, password);
+			const newModel = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, password);
 			const waitForCloseStub = sinon.stub(ConnectToControllerDialog.prototype, 'waitForClose').returns(Promise.resolve({ controllerModel: newModel, password: password }));
 
 			// Set up original model with a password
-			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, 'originalPassword');
+			const model = new ControllerModel(new AzureArcTreeDataProvider(mockExtensionContext.object), { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', username: 'admin', name: 'arc', rememberPassword: true, resources: [] }, 'originalPassword');
 
-			await model.azdataLogin(true);
+			await model.acquireAzdataSession(true);
 			should(waitForCloseStub.called).be.true('waitForClose should have been called');
-			azdataMock.verify(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password), TypeMoq.Times.once());
+			azdataMock.verify(x => x.acquireSession(TypeMoq.It.isAny(), TypeMoq.It.isAny(), password, TypeMoq.It.isAny()), TypeMoq.Times.once());
 		});
 
 		it('Model values are updated correctly when modified during reconnect', async function (): Promise<void> {
@@ -155,7 +158,7 @@ describe('ControllerModel', function (): void {
 
 			const azdataExtApiMock = TypeMoq.Mock.ofType<azdataExt.IExtension>();
 			const azdataMock = TypeMoq.Mock.ofType<azdataExt.IAzdataApi>();
-			azdataMock.setup(x => x.login(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => <any>Promise.resolve(undefined));
+			azdataMock.setup(x => x.acquireSession(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => <any>Promise.resolve(undefined));
 			azdataExtApiMock.setup(x => x.azdata).returns(() => azdataMock.object);
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: azdataExtApiMock.object });
 
@@ -166,6 +169,8 @@ describe('ControllerModel', function (): void {
 				{
 					id: uuid(),
 					url: '127.0.0.1',
+					kubeConfigFilePath: '/path/to/.kube/config',
+					kubeClusterContext: 'currentCluster',
 					username: 'admin',
 					name: 'arc',
 					rememberPassword: false,
@@ -178,6 +183,8 @@ describe('ControllerModel', function (): void {
 			const newInfo: ControllerInfo = {
 				id: model.info.id, // The ID stays the same since we're just re-entering information for the same model
 				url: 'newUrl',
+				kubeConfigFilePath: '/path/to/.kube/config',
+				kubeClusterContext: 'currentCluster',
 				username: 'newUser',
 				name: 'newName',
 				rememberPassword: true,
@@ -192,10 +199,11 @@ describe('ControllerModel', function (): void {
 			const waitForCloseStub = sinon.stub(ConnectToControllerDialog.prototype, 'waitForClose').returns(Promise.resolve(
 				{ controllerModel: newModel, password: newPassword }));
 
-			await model.azdataLogin(true);
+			await model.acquireAzdataSession(true);
 			should(waitForCloseStub.called).be.true('waitForClose should have been called');
 			should((await treeDataProvider.getChildren()).length).equal(1, 'Tree Data provider should still only have 1 node');
 			should(model.info).deepEqual(newInfo, 'Model info should have been updated');
+
 		});
 
 	});

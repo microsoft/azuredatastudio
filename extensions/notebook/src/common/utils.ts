@@ -22,13 +22,13 @@ export function getLivyUrl(serverName: string, port: string): string {
 	return this.getKnoxUrl(serverName, port) + '/default/livy/v1/';
 }
 
-export async function mkDir(dirPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
-	if (!await fs.pathExists(dirPath)) {
-		if (outputChannel) {
-			outputChannel.appendLine(localize('mkdirOutputMsg', "... Creating {0}", dirPath));
-		}
-		await fs.ensureDir(dirPath);
-	}
+export async function ensureDir(dirPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
+	outputChannel?.appendLine(localize('ensureDirOutputMsg', "... Ensuring {0} exists", dirPath));
+	await fs.ensureDir(dirPath);
+}
+export function ensureDirSync(dirPath: string, outputChannel?: vscode.OutputChannel): void {
+	outputChannel?.appendLine(localize('ensureDirOutputMsg', "... Ensuring {0} exists", dirPath));
+	fs.ensureDirSync(dirPath);
 }
 
 export function getErrorMessage(error: Error | string): string {
@@ -262,7 +262,7 @@ export function getIgnoreSslVerificationConfigSetting(): boolean {
 		const config = vscode.workspace.getConfiguration(bdcConfigSectionName);
 		return config.get<boolean>(ignoreSslConfigName, true);
 	} catch (error) {
-		console.error(`Unexpected error retrieving ${bdcConfigSectionName}.${ignoreSslConfigName} setting : ${error}`);
+		console.error('Unexpected error retrieving ${bdcConfigSectionName}.${ignoreSslConfigName} setting : ', error);
 	}
 	return true;
 }
@@ -378,12 +378,13 @@ function hasWorkspaceFolders(): boolean {
 	return workspaceFolders && workspaceFolders.length > 0;
 }
 
-export function setPinnedBookPathsInConfig(pinnedNotebookPaths: IBookNotebook[]) {
+export async function setPinnedBookPathsInConfig(pinnedNotebookPaths: IBookNotebook[]): Promise<void> {
 	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
 	let storeInWorspace: boolean = hasWorkspaceFolders();
 
-	config.update(pinnedBooksConfigKey, pinnedNotebookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
+	await config.update(pinnedBooksConfigKey, pinnedNotebookPaths, storeInWorspace ? false : vscode.ConfigurationTarget.Global);
 }
+
 
 export interface IBookNotebook {
 	bookPath?: string;

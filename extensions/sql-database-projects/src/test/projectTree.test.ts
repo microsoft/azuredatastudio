@@ -13,7 +13,7 @@ import { FolderNode, FileNode, sortFileFolderNodes } from '../models/tree/fileFo
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { DatabaseProjectItemType } from '../common/constants';
 
-describe.skip('Project Tree tests', function (): void {
+describe('Project Tree tests', function (): void {
 	it('Should correctly order tree nodes by type, then by name', function (): void {
 		const root = os.platform() === 'win32' ? 'Z:\\' : '/';
 
@@ -68,26 +68,24 @@ describe.skip('Project Tree tests', function (): void {
 
 		const tree = new ProjectRootTreeItem(proj);
 		should(tree.children.map(x => x.uri.path)).deepEqual([
-			'/TestProj.sqlproj/Data Sources',
-			'/TestProj.sqlproj/Database References',
-			'/TestProj.sqlproj/duplicateFolder',
-			'/TestProj.sqlproj/someFolder',
-			'/TestProj.sqlproj/duplicate.sql']);
+			'/TestProj/Database References',
+			'/TestProj/duplicateFolder',
+			'/TestProj/someFolder',
+			'/TestProj/duplicate.sql']);
 
-		should(tree.children.find(x => x.uri.path === '/TestProj.sqlproj/someFolder')?.children.map(y => y.uri.path)).deepEqual([
-			'/TestProj.sqlproj/someFolder/aNestedFolder',
-			'/TestProj.sqlproj/someFolder/bNestedFolder',
-			'/TestProj.sqlproj/someFolder/aNestedTest.sql',
-			'/TestProj.sqlproj/someFolder/bNestedTest.sql']);
+		should(tree.children.find(x => x.uri.path === '/TestProj/someFolder')?.children.map(y => y.uri.path)).deepEqual([
+			'/TestProj/someFolder/aNestedFolder',
+			'/TestProj/someFolder/bNestedFolder',
+			'/TestProj/someFolder/aNestedTest.sql',
+			'/TestProj/someFolder/bNestedTest.sql']);
 
 		should(tree.children.map(x => x.treeItem.contextValue)).deepEqual([
-			DatabaseProjectItemType.dataSourceRoot,
 			DatabaseProjectItemType.referencesRoot,
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.file]);
 
-		should(tree.children.find(x => x.uri.path === '/TestProj.sqlproj/someFolder')?.children.map(y => y.treeItem.contextValue)).deepEqual([
+		should(tree.children.find(x => x.uri.path === '/TestProj/someFolder')?.children.map(y => y.treeItem.contextValue)).deepEqual([
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.file,
@@ -106,19 +104,18 @@ describe.skip('Project Tree tests', function (): void {
 
 		const tree = new ProjectRootTreeItem(proj);
 		should(tree.children.map(x => x.uri.path)).deepEqual([
-			'/TestProj.sqlproj/Data Sources',
-			'/TestProj.sqlproj/Database References',
-			'/TestProj.sqlproj/someFolder1']);
+			'/TestProj/Database References',
+			'/TestProj/someFolder1']);
 
 		// Why are we only matching names - https://github.com/microsoft/azuredatastudio/issues/11026
-		should(tree.children.find(x => x.uri.path === '/TestProj.sqlproj/someFolder1')?.children.map(y => path.basename(y.uri.path))).deepEqual([
+		should(tree.children.find(x => x.uri.path === '/TestProj/someFolder1')?.children.map(y => path.basename(y.uri.path))).deepEqual([
 			'MyNestedFolder1',
 			'MyNestedFolder2',
 			'MyFile2.sql']);
 	});
 
 	it('Should be able to parse and include relative paths outside project folder', function (): void {
-		const root = os.platform() === 'win32' ? 'Z:\\Level1\\Level2\\' : '/Root/Level1/Level2';
+		const root = os.platform() === 'win32' ? 'Z:\\Level1\\Level2\\' : '/Root/Level1/Level2/';
 		const proj = new Project(vscode.Uri.file(`${root}TestProj.sqlproj`).fsPath);
 
 		// nested entries before explicit top-level folder entry
@@ -129,9 +126,8 @@ describe.skip('Project Tree tests', function (): void {
 
 		const tree = new ProjectRootTreeItem(proj);
 		should(tree.children.map(x => x.uri.path)).deepEqual([
-			'/TestProj.sqlproj/Data Sources',
-			'/TestProj.sqlproj/Database References',
-			'/TestProj.sqlproj/MyFile1.sql',
-			'/TestProj.sqlproj/MyFile2.sql']);
+			'/TestProj/Database References',
+			'/TestProj/MyFile1.sql',
+			'/TestProj/MyFile2.sql']);
 	});
 });

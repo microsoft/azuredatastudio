@@ -12,7 +12,7 @@ import * as os from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as assert from 'assert';
-import { getStandaloneServer } from './testConfig';
+import { getStandaloneServer, TestServerProfile } from './testConfig';
 import { promisify } from 'util';
 
 let schemaCompareService: mssql.ISchemaCompareService;
@@ -25,7 +25,7 @@ const SERVER_CONNECTION_TIMEOUT: number = 3000;
 const retryCount = 24; // 2 minutes
 const folderPath = path.join(os.tmpdir(), 'SchemaCompareTest');
 
-suite('Schema compare integration test suite', () => {
+suite('Schema compare integration test suite @DacFx@', () => {
 	suiteSetup(async function () {
 		let attempts: number = 20;
 		while (attempts > 0) {
@@ -39,7 +39,8 @@ suite('Schema compare integration test suite', () => {
 		dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).dacFx;
 		console.log(`Start schema compare tests`);
 	});
-	test('Schema compare dacpac to dacpac comparison and scmp @UNSTABLE@', async function () {
+	test('Schema compare dacpac to dacpac comparison and scmp', async function () {
+		this.timeout(5 * 60 * 1000);
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 		const now = new Date();
 		const operationId = 'testOperationId_' + now.getTime().toString();
@@ -82,16 +83,9 @@ suite('Schema compare integration test suite', () => {
 		assert(openScmpResult.targetEndpointInfo.packageFilePath === target.packageFilePath, `Expected: target packageFilePath to be ${target.packageFilePath}, Actual: ${openScmpResult.targetEndpointInfo.packageFilePath}`);
 	});
 	test('Schema compare database to database comparison, script generation, and scmp @UNSTABLE@', async function () {
+		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
-		await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
-
-		let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
-		assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
-
-		let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
-		assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
-
-		const ownerUri = await azdata.connection.getUriForConnection(nodes[index].connectionId);
+		const ownerUri = await getConnectionUri(server);
 		const now = new Date();
 
 		const operationId = 'testOperationId_' + now.getTime().toString();
@@ -161,16 +155,9 @@ suite('Schema compare integration test suite', () => {
 		}
 	});
 	test('Schema compare dacpac to database comparison, script generation, and scmp @UNSTABLE@', async function () {
+		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
-		await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
-
-		let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
-		assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
-
-		let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
-		assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
-
-		const ownerUri = await azdata.connection.getUriForConnection(nodes[index].connectionId);
+		const ownerUri = await getConnectionUri(server);
 		const now = new Date();
 		const operationId = 'testOperationId_' + now.getTime().toString();
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
@@ -227,7 +214,8 @@ suite('Schema compare integration test suite', () => {
 			await utils.tryDeleteDB(server, targetDB, ownerUri);
 		}
 	});
-	test('Schema compare dacpac to dacpac comparison with include exclude @UNSTABLE@', async function () {
+	test('Schema compare dacpac to dacpac comparison with include exclude', async function () {
+		this.timeout(5 * 60 * 1000);
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 		const operationId = 'testOperationId_' + new Date().getTime().toString();
 
@@ -283,6 +271,17 @@ suite('Schema compare integration test suite', () => {
 		assertIncludeExcludeResult(excludeResult3, true, 0, 0);
 	});
 });
+
+async function getConnectionUri(server: TestServerProfile): Promise<string> {
+
+	// Connext to server
+	let connectionId = await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
+	assert(connectionId, `Failed to connect to "${server.serverName}"`);
+
+	// Get connection uri
+	const ownerUri = await azdata.connection.getUriForConnection(connectionId);
+	return ownerUri;
+}
 
 function assertIncludeExcludeResult(result: mssql.SchemaCompareIncludeExcludeResult, expectedSuccess: boolean, expectedBlockingDependenciesLength: number, expectedAffectedDependenciesLength: number): void {
 	assert(result.success === expectedSuccess, `Operation success should have been ${expectedSuccess}. Actual: ${result.success}`);

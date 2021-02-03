@@ -1,0 +1,11 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.slick-plugin-icon {
+	padding-left: 26px;
+	background-size: 16px !important;
+	background-position: 5px 50% !important;
+	background-repeat: no-repeat;
+}

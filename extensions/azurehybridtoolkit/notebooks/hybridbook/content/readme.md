@@ -2,17 +2,19 @@
 ## Chapters
 * [Prerequisites and Initial Setup](prereqs.ipynb) - Notebook installation of required modules.
 
-* [Assessments](Assessments/readme.md) - Notebooks that contain examples to determine whether a given database or SQL Server instance is ready to migrate by utilizing SQL Assessments. SQL instances are scanned based on a "best practices" set of rules. 
+* [ADP](ADP/readme.md) - manage ADP Orchestrator import/export requests onto an SQL Server.
+
+* [Assessments](Assessments/readme.md) - Notebooks that contain examples to determine whether a given database or SQL Server instance is ready to migrate by utilizing SQL Assessments. SQL instances are scanned based on a "best practices" set of rules.
 
 * [Networking](networking/readme.md) - Setup secure Point-to-Site (P2S) or Site-to-Site (S2S) network connectivity to Microsoft Azure using a Virtual Private Network (VPN). This notebook serves as a building block for other notebooks as communicating securely between on-premise and Azure is essential for many tasks.
 
 * [Provisioning](provisioning/readme.md) - Creating and communicating with SQL Resources in Microsoft Azure. Includes common tasks such as creating SQL Virtual Machines or SQL Managed Instances in the cloud.
 
-* [Data Portability](data-portability/readme.md) - Install a custom Azure function to facilitate importing and exporting cloud resources. The solution uses parallel tasks in Azure Batch to perform data storage work. Azure Batch is a process that runs large-scale parallel and high-performance computing jobs efficiently in Azure. 
+* [Data Portability](data-portability/readme.md) - Install a custom Azure function to facilitate importing and exporting cloud resources. The solution uses parallel tasks in Azure Batch to perform data storage work. Azure Batch is a process that runs large-scale parallel and high-performance computing jobs efficiently in Azure.
 
 * [High Availability and Disaster Recovery](hadr/readme.md) - Notebooks to leverage Azure SQL for business continuity in a hybrid cloud environment.
 
-* [Offline Migration](offline-migration/readme.md) - Notebooks to perform various migrations.
+* [Offline Migration](offline-migration/readme.md) - Notebooks to manage SQL migration tasks to the cloud
 
 * [Glossary](glossary.md) - set of defined terms.
 
@@ -20,14 +22,14 @@
 
 ## About
 
-The **Azure SQL Hybrid Cloud Toolkit** is a [Jupyter Book](https://jupyterbook.org/intro.html) extension of [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/download-azure-data-studio) (ADS) designed to help [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) and ADS users deploy, migrate and configure for a hybrid cloud environment. The toolkit was designed with and intended to be executed within ADS. This is to ensure the best possible user experience for those without vast knowledge of Azure services while adhering closely to the software _best practices_ standards required by experienced cloud users. 
+The **Azure SQL Hybrid Cloud Toolkit** is a [Jupyter Book](https://jupyterbook.org/intro.html) extension of [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/download-azure-data-studio) (ADS) designed to help [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) and ADS users deploy, migrate and configure for a hybrid cloud environment. The toolkit was designed with and intended to be executed within ADS. This is to ensure the best possible user experience for those without vast knowledge of Azure services while adhering closely to the software _best practices_ standards required by experienced cloud users.
 
 ## Goals and Methodology
 The toolkit better positions a customer with regards to planning, migrating, and thriving in a hybrid cloud environment by:
 
 * Providing SQL'zure users with reliable free software and content that is well-written and executable
 * Greatly simplifying the integration of Azure Data services into an existing environment
-* Positioning Azure to be the natural cloud services choice with a low-friction experience 
+* Positioning Azure to be the natural cloud services choice with a low-friction experience
 * Notebooks are executable by a normal user (unless otherwise specificed) on minimal hardware
 * Most notebooks require some configuration. If so, the proper configurations should be clearly located towards the top of the notebook or cell, whichever is most appropriate
 * By design, Notebooks are written to be executed from top-to-bottom. Therefore, each notebook has a specific task to perform and should focus only on that task. It may contain several cells to execute but it will adhere to the one-task per notebook paradigm

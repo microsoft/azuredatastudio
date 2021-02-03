@@ -12,7 +12,7 @@ import { DeploymentType, NotebookWizardDeploymentProvider, NotebookWizardInfo } 
 import { IPlatformService } from '../../services/platformService';
 import { NotebookWizardAutoSummaryPage } from './notebookWizardAutoSummaryPage';
 import { NotebookWizardPage } from './notebookWizardPage';
-import { ErrorType, ErrorWithType } from 'resource-deployment';
+import { isUserCancelledError } from '../../common/utils';
 
 export class NotebookWizardModel extends ResourceTypeModel {
 	private _inputComponents: InputComponents = {};
@@ -68,11 +68,13 @@ export class NotebookWizardModel extends ResourceTypeModel {
 			try {
 				notebook = await this.prepareNotebookAndEnvironment();
 			} catch (e) {
-				const isUserCancelled = e instanceof Error && 'type' in e && (<ErrorWithType>e).type === ErrorType.userCancelled;
-				// user cancellation is a normal scenario, we just bail out of the wizard without actually opening the notebook, so rethrow for any other case
-				if (!isUserCancelled) {
-					throw e;
+				// If there was a user prompt while preparing the Notebook environment (such as prompting for password) and the user
+				// cancelled out of that then we shouldn't display an error since that's a normal case but should still keep the Wizard
+				// open so they can make any changes they want and try again without needing to re-enter the information again.
+				if (isUserCancelledError(e)) {
+					return false;
 				}
+				throw e;
 			}
 			if (notebook) { // open the notebook if it was successfully prepared
 				await this.openNotebook(notebook);

@@ -13,6 +13,11 @@ export interface KubeClusterContext {
 	isCurrentContext: boolean;
 }
 
+/**
+ * returns the cluster context defined in the {@see configFile}
+ *
+ * @param configFile
+ */
 export function getKubeConfigClusterContexts(configFile: string): Promise<KubeClusterContext[]> {
 	const config: any = yamljs.load(configFile);
 	const rawContexts = <any[]>config['contexts'];
@@ -33,6 +38,38 @@ export function getKubeConfigClusterContexts(configFile: string): Promise<KubeCl
 	return Promise.resolve(contexts);
 }
 
+/**
+ * searches for {@see previousClusterContext} in the array of {@see clusterContexts}.
+ * if {@see previousClusterContext} was truthy and it was found in {@see clusterContexts}
+ * 		then it returns {@see previousClusterContext}
+ * 		else it returns the current cluster context from {@see clusterContexts} unless throwIfNotFound was set on input in which case an error is thrown instead.
+ * else it returns the current cluster context from {@see clusterContexts}
+ *
+ *
+ * @param clusterContexts
+ * @param previousClusterContext
+ * @param throwIfNotFound
+ */
+export function getCurrentClusterContext(clusterContexts: KubeClusterContext[], previousClusterContext?: string, throwIfNotFound: boolean = false): string {
+	if (previousClusterContext) {
+		if (clusterContexts.find(c => c.name === previousClusterContext)) { // if previous cluster context value is found in clusters then return that value
+			return previousClusterContext;
+		} else {
+			if (throwIfNotFound) {
+				throw new Error(loc.clusterContextNotFound(previousClusterContext));
+			}
+		}
+	}
+
+	// if not previousClusterContext or throwIfNotFound was false when previousCLusterContext was not found in the clusterContexts
+	const currentClusterContext = clusterContexts.find(c => c.isCurrentContext)?.name;
+	throwUnless(currentClusterContext !== undefined, loc.noCurrentClusterContext);
+	return currentClusterContext;
+}
+
+/**
+ * returns the default kube config file path
+ */
 export function getDefaultKubeConfigPath(): string {
 	return path.join(os.homedir(), '.kube', 'config');
 }

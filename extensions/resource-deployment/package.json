@@ -71,7 +71,10 @@
         "description": "%resource-type-sql-image-description%",
         "platforms": "*",
         "icon": "./images/sql_server_container.svg",
-        "tags": ["On-premises", "SQL Server"],
+        "tags": [
+          "On-premises",
+          "SQL Server"
+        ],
         "options": [
           {
             "name": "version",
@@ -200,7 +203,11 @@
         "description": "%resource-type-sql-bdc-description%",
         "platforms": "*",
         "icon": "./images/sql_bdc.svg",
-        "tags": ["On-premises", "SQL Server"],
+        "tags": [
+          "On-premises",
+          "SQL Server",
+          "Cloud"
+        ],
         "options": [
           {
             "name": "version",
@@ -255,7 +262,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.2.4"
+                "version": "20.2.6"
               }
             ],
             "when": "target=new-aks&&version=bdc2019"
@@ -272,7 +279,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.2.4"
+                "version": "20.2.6"
               }
             ],
             "when": "target=existing-aks&&version=bdc2019"
@@ -289,7 +296,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.2.4"
+                "version": "20.2.6"
               }
             ],
             "when": "target=existing-kubeadm&&version=bdc2019"
@@ -306,7 +313,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.2.4"
+                "version": "20.2.6"
               }
             ],
             "when": "target=existing-aro&&version=bdc2019"
@@ -323,29 +330,32 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.2.4"
+                "version": "20.2.6"
               }
             ],
             "when": "target=existing-openshift&&version=bdc2019"
           }
         ],
-        "agreement": {
-          "template": "%bdc-agreement%",
-          "links": [
-            {
-              "text": "%microsoft-privacy-statement%",
-              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
-            },
-            {
-              "text": "%bdc-agreement-bdc-eula%",
-              "url": "https://go.microsoft.com/fwlink/?LinkId=2002534"
-            },
-            {
-              "text": "%bdc-agreement-azdata-eula%",
-              "url": "https://aka.ms/eula-azdata-en"
-            }
-          ]
-        }
+        "agreements": [
+          {
+            "template": "%bdc-agreement%",
+            "links": [
+              {
+                "text": "%microsoft-privacy-statement%",
+                "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+              },
+              {
+                "text": "%bdc-agreement-bdc-eula%",
+                "url": "https://go.microsoft.com/fwlink/?LinkId=2002534"
+              },
+              {
+                "text": "%bdc-agreement-azdata-eula%",
+                "url": "https://aka.ms/eula-azdata-en"
+              }
+            ],
+            "when": "true"
+          }
+        ]
       },
       {
         "name": "sql-windows-setup",
@@ -359,7 +369,10 @@
           "light": "./images/sql_server_on_windows.svg",
           "dark": "./images/sql_server_on_windows_inverse.svg"
         },
-        "tags": ["On-premises", "SQL Server"],
+        "tags": [
+          "On-premises",
+          "SQL Server"
+        ],
         "options": [
           {
             "name": "version",
@@ -391,11 +404,15 @@
       },
       {
         "name": "sql-azure-setup",
+        "displayIndex": 4,
         "displayName": "%azure-sqldb-display-name%",
         "description": "%azure-sqldb-description%",
         "platforms": "*",
         "icon": "./images/azure-sql-db.svg",
-        "tags": ["SQL Server", "Cloud"],
+        "tags": [
+          "SQL Server",
+          "Cloud"
+        ],
         "okButtonText": [
           {
             "value": "%azure-sqldb-notebook-ok-button-text%",
@@ -432,7 +449,7 @@
         ],
         "providers": [
           {
-            "azureSQLDBWizard":{
+            "azureSQLDBWizard": {
               "notebook": "./notebooks/azuredb/create-sqldb.ipynb"
             },
             "requiredTools": [
@@ -453,31 +470,38 @@
             "when": "resource-type=database-server"
           }
         ],
-        "agreement": {
-          "template": "%azure-sqldb-agreement%",
-          "links": [
-            {
-              "text": "%microsoft-privacy-statement%",
-              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
-            },
-            {
-              "text": "%azure-sqldb-agreement-sqldb-eula%",
-              "url": "https://azure.microsoft.com/support/legal/"
-            },
-            {
-              "text": "%azure-sqldb-agreement-azdata-eula%",
-              "url": "https://aka.ms/eula-azdata-en"
-            }
-          ]
-        }
+        "agreements": [
+          {
+            "template": "%azure-sqldb-agreement%",
+            "links": [
+              {
+                "text": "%microsoft-privacy-statement%",
+                "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+              },
+              {
+                "text": "%azure-sqldb-agreement-sqldb-eula%",
+                "url": "https://azure.microsoft.com/support/legal/"
+              },
+              {
+                "text": "%azure-sqldb-agreement-azdata-eula%",
+                "url": "https://aka.ms/eula-azdata-en"
+              }
+            ],
+            "when": "true"
+          }
+        ]
       },
       {
         "name": "azure-sql-vm",
+        "displayIndex": 5,
         "displayName": "%azure-sqlvm-display-name%",
         "description": "%azure-sqlvm-description%",
         "platforms": "*",
         "icon": "./images/azure-sql-vm.svg",
-        "tags": ["SQL Server", "Cloud"],
+        "tags": [
+          "SQL Server",
+          "Cloud"
+        ],
         "providers": [
           {
             "azureSQLVMWizard": {
@@ -491,23 +515,79 @@
             "when": true
           }
         ],
-        "agreement": {
-          "template": "%azure-sqlvm-agreement%",
-          "links": [
-            {
-              "text": "%microsoft-privacy-statement%",
-              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
-            },
-            {
-              "text": "%azure-sqlvm-agreement-sqlvm-eula%",
-              "url": "https://azure.microsoft.com/support/legal/"
-            },
-            {
-              "text": "%azure-sqlvm-agreement-azdata-eula%",
-              "url": "https://aka.ms/eula-azdata-en"
-            }
-          ]
-        }
+        "agreements": [
+          {
+            "template": "%azure-sqlvm-agreement%",
+            "links": [
+              {
+                "text": "%microsoft-privacy-statement%",
+                "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+              },
+              {
+                "text": "%azure-sqlvm-agreement-sqlvm-eula%",
+                "url": "https://azure.microsoft.com/support/legal/"
+              },
+              {
+                "text": "%azure-sqlvm-agreement-azdata-eula%",
+                "url": "https://aka.ms/eula-azdata-en"
+              }
+            ],
+            "when": "true"
+          }
+        ]
+      },
+      {
+        "name": "azure-sql-mi",
+        "displayIndex": 6,
+        "displayName": "%azure-sql-mi-display-name%",
+        "description": "%azure-sql-mi-display-description%",
+        "platforms": "*",
+        "icon": "./images/managed-instance.svg",
+        "tags": [
+          "SQL Server",
+          "Cloud"
+        ],
+        "providers": [
+          {
+            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLManagedInstance",
+            "requiredTools": [],
+            "when": "mi-type=azure-sql-mi"
+          }
+        ],
+        "okButtonText": [
+          {
+            "value": "%azure-sql-mi-okButton-text%",
+            "when": "mi-type=azure-sql-mi"
+          }
+        ],
+        "options": [
+          {
+            "name": "mi-type",
+            "displayName": "%azure-sql-mi-resource-type-option-label%",
+            "values": [
+              {
+                "name": "azure-sql-mi",
+                "displayName": "%azure-sql-mi-display-name%"
+              }
+            ]
+          }
+        ],
+        "agreements": [
+          {
+            "template": "%azure-sql-mi-agreement%",
+            "links": [
+              {
+                "text": "%microsoft-privacy-statement%",
+                "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+              },
+              {
+                "text": "%azure-sql-mi-agreement-eula%",
+                "url": "https://azure.microsoft.com/support/legal/"
+              }
+            ],
+            "when": "mi-type=azure-sql-mi"
+          }
+        ]
       }
     ]
   },
@@ -524,6 +604,7 @@
     "@types/semver": "^7.3.1",
     "@types/sinon": "^9.0.8",
     "@types/yamljs": "0.2.30",
+    "azdata-test": "^1.1.1",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",

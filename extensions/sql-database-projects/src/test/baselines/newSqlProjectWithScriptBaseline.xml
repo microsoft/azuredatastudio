@@ -61,7 +61,7 @@
   <ItemGroup>
     <Folder Include="Properties" />
   </ItemGroup>
-  <Target Name="AfterClean">
+  <Target Name="BeforeBuild">
     <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />
   </Target>
   <ItemGroup>

@@ -4,16 +4,21 @@ SQL Assessment for Azure Data Studio provides a mechanism to evaluate the config
 
 - Assess a SQL Server or Azure SQL Managed Instance and its databases with built-in rules (Invoke Assessment)
 - Get a list of all built-in rules applicable to an instance and its databases (View applicable rules)
-- Export assessment results and list of applicable rules as script to further store it in a SQL table
+- Export assessment results and the list of applicable rules as a script to store it in a SQL table (Export as script)
+- Create HTML reports on assessments results (Create HTML Report)
 
-![SqlAssessmentPic](https://user-images.githubusercontent.com/61055430/87181263-ad121280-c2ea-11ea-9361-19fa6d3c1ea1.png)
+![SqlAssessmentPic](https://user-images.githubusercontent.com/61055430/102236901-1aaf1400-3f05-11eb-9ffd-da9ab9b5d146.png)
+
 
 ### How do I start SQL Assessment?
-SQL Assessment adds its own tab on the main dashboard – you will find it in the General section after installing the extension. Pick the tab and click “Invoke Assessment” to assess the current SQL Server instance and all its databases. Once the results on the grid, you can use the filtering and sorting features of the column headers to display them your own way. Click “Export as Script” to get the results in an insert-into-table format on a new tab.
 
-If the dashboard is opened for a database, the “Invoke Assessment” button runs an assessment for this database only.
-
-Some assessment rules are for particular SQL Server configurations and some for others. The same is true for database rules. For example, there are rules that are applicable only to SQL Server 2016 or the tempdb database. “View applicable rules” button displays those assessment rules that this current object, either a server or database, will be checked by, when you click “Invoke Assessment.”
+After you install the SQL Assessment extension, open the list with your servers, right-click a server or database that you want to assess and select **Manage**. Then, in the **General** section, select **SQL Assessment**.
+On the **Assessment** tab, click **Invoke Assessment** to perform assessment of the selected SQL Server or SQL Database. Once the results are available, you can use the filtering and sorting features.
+Click **Export as Script** to get the results in an insert-into-table format. You can also click **Create HTML Report** to save the assessment results as an HTML file.
+Some assessment rules are intended for particular SQL Server configurations and some for others. The same is true for database rules. For example, there are rules that are applicable only to SQL Server 2016 or the tempdb database.
+The **View applicable rules** button displays the assessment rules that are used to perform assessment of your servers and databases after you click **Invoke Assessment**.
+To view information about SQL Server and SQL Assessment API, click **Info**.
+Assessment session results can be reviewed on the **History** tab.
 
 ## Code of Conduct
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.

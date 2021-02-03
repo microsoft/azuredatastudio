@@ -16,11 +16,9 @@ import { IServerInstance } from './common';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
-import * as ports from '../common/ports';
 
 const NotebookConfigFilename = 'jupyter_notebook_config.py';
 const CustomJsFilename = 'custom.js';
-const defaultPort = 8888;
 
 type MessageListener = (data: string | Buffer) => void;
 type ErrorListener = (err: any) => void;
@@ -85,6 +83,7 @@ export class PerFolderServerInstance implements IServerInstance {
 
 	private _systemJupyterDir: string;
 	private _port: string;
+	private _token: string;
 	private _uri: vscode.Uri;
 	private _isStarted: boolean = false;
 	private _isStopping: boolean = false;
@@ -143,34 +142,34 @@ export class PerFolderServerInstance implements IServerInstance {
 	}
 
 	private async configureJupyter(): Promise<void> {
-		await this.createInstanceFolders();
+		this.createInstanceFolders();
 		let resourcesFolder = path.join(this.options.install.extensionPath, 'resources', constants.jupyterConfigRootFolder);
-		await this.copyInstanceConfig(resourcesFolder);
-		await this.CopyCustomJs(resourcesFolder);
+		this.copyInstanceConfig(resourcesFolder);
+		this.copyCustomJs(resourcesFolder);
 		await this.copyKernelsToSystemJupyterDirs();
 	}
 
-	private async createInstanceFolders(): Promise<void> {
+	private createInstanceFolders(): void {
 		this.baseDir = path.join(this.getSystemJupyterHomeDir(), 'instances', `${UUID.generateUuid()}`);
 		this.instanceConfigRoot = path.join(this.baseDir, 'config');
 		this.instanceDataRoot = path.join(this.baseDir, 'data');
-		await utils.mkDir(this.baseDir, this.options.install.outputChannel);
-		await utils.mkDir(this.instanceConfigRoot, this.options.install.outputChannel);
-		await utils.mkDir(this.instanceDataRoot, this.options.install.outputChannel);
+		utils.ensureDirSync(this.baseDir, this.options.install.outputChannel);
+		utils.ensureDirSync(this.instanceConfigRoot, this.options.install.outputChannel);
+		utils.ensureDirSync(this.instanceDataRoot, this.options.install.outputChannel);
 	}
 
-	private async copyInstanceConfig(resourcesFolder: string): Promise<void> {
+	private copyInstanceConfig(resourcesFolder: string): void {
 		let configSource = path.join(resourcesFolder, NotebookConfigFilename);
 		let configDest = path.join(this.instanceConfigRoot, NotebookConfigFilename);
-		await fs.copy(configSource, configDest);
+		fs.copySync(configSource, configDest);
 	}
 
-	private async CopyCustomJs(resourcesFolder: string): Promise<void> {
+	private copyCustomJs(resourcesFolder: string): void {
 		let customPath = path.join(this.instanceConfigRoot, 'custom');
-		await utils.mkDir(customPath, this.options.install.outputChannel);
+		utils.ensureDirSync(customPath, this.options.install.outputChannel);
 		let customSource = path.join(resourcesFolder, CustomJsFilename);
 		let customDest = path.join(customPath, CustomJsFilename);
-		await fs.copy(customSource, customDest);
+		fs.copySync(customSource, customDest);
 	}
 
 	private async copyKernelsToSystemJupyterDirs(): Promise<void> {
@@ -181,10 +180,8 @@ export class PerFolderServerInstance implements IServerInstance {
 			kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
 		}
 		this._systemJupyterDir = path.join(this.getSystemJupyterHomeDir(), 'kernels');
-		if (!(await utils.exists(this._systemJupyterDir))) {
-			await utils.mkDir(this._systemJupyterDir, this.options.install.outputChannel);
-		}
-		await fs.copy(kernelsExtensionSource, this._systemJupyterDir);
+		utils.ensureDirSync(this._systemJupyterDir, this.options.install.outputChannel);
+		fs.copySync(kernelsExtensionSource, this._systemJupyterDir);
 		if (this.options.install.runningOnSaw) {
 			await this.options.install.updateKernelSpecPaths(this._systemJupyterDir);
 		}
@@ -211,12 +208,8 @@ export class PerFolderServerInstance implements IServerInstance {
 			return;
 		}
 		let notebookDirectory = this.getNotebookDirectory();
-		// Find a port in a given range. If run into trouble, try another port inside the given range
-		let port = await ports.strictFindFreePort(new ports.StrictPortFindOptions(defaultPort, defaultPort + 1000));
-		let token = await utils.getRandomToken();
-		this._uri = vscode.Uri.parse(`http://localhost:${port}/?token=${token}`);
-		this._port = port.toString();
-		let startCommand = `"${this.options.install.pythonExecutable}" "${this.notebookScriptPath}" --no-browser --no-mathjax --notebook-dir "${notebookDirectory}" --port=${port} --NotebookApp.token=${token}`;
+		this._token = await utils.getRandomToken();
+		let startCommand = `"${this.options.install.pythonExecutable}" "${this.notebookScriptPath}" --no-browser --no-mathjax --notebook-dir "${notebookDirectory}" --NotebookApp.token=${this._token}`;
 		this.notifyStarting(this.options.install, startCommand);
 
 		// Execute the command
@@ -242,14 +235,11 @@ export class PerFolderServerInstance implements IServerInstance {
 			let handleStdout = (data: string | Buffer) => { install.outputChannel.appendLine(data.toString()); };
 			let handleStdErr = (data: string | Buffer) => {
 				// For some reason, URL info is sent on StdErr
-				let [url, port] = this.matchUrlAndPort(data);
-				if (url) {
-					// For now, will verify port matches
-					if (url.authority !== this._uri.authority
-						|| url.query !== this._uri.query) {
-						this._uri = url;
-						this._port = port;
-					}
+				let port: string = this.getPort(data);
+				if (port) {
+					let url: vscode.Uri = vscode.Uri.parse(`http://localhost:${port}/?token=${this._token}`);
+					this._uri = url;
+					this._port = port;
 					this.notifyStarted(install, url.toString(true));
 					this._isStarted = true;
 
@@ -279,7 +269,7 @@ export class PerFolderServerInstance implements IServerInstance {
 	}
 
 	private handleConnectionError(error: Error): void {
-		let action = this.errorHandler.handleError(error);
+		let action = this.errorHandler.handleError();
 		if (action === ErrorAction.Shutdown) {
 			this.notify(this.options.install, localize('jupyterError', "Error sent from Jupyter: {0}", utils.getErrorMessage(error)));
 			this.stop();
@@ -300,7 +290,7 @@ export class PerFolderServerInstance implements IServerInstance {
 		return path.dirname(this.options.documentPath);
 	}
 
-	private matchUrlAndPort(data: string | Buffer): [vscode.Uri, string] {
+	private getPort(data: string | Buffer): string | undefined {
 		// regex: Looks for the successful startup log message like:
 		//        [C 12:08:51.947 NotebookApp]
 		//
@@ -308,18 +298,8 @@ export class PerFolderServerInstance implements IServerInstance {
 		//             to login with a token:
 		//                http://localhost:8888/?token=f5ee846e9bd61c3a8d835ecd9b965591511a331417b997b7
 		let dataString = data.toString();
-		let urlMatch = dataString.match(/\[C[\s\S]+ {8}(.+:(\d+)\/.*)$/m);
-		if (urlMatch) {
-			// Legacy case: manually parse token info if no token/port were passed
-			return [vscode.Uri.parse(urlMatch[1]), urlMatch[2]];
-		} else if (this._uri && dataString.match(/jupyter notebook .*is running at:/im)) {
-			// Default case: detect the notebook started message, indicating our preferred port and token were used
-			//
-			// Newer versions of the notebook package include a version number (e.g. 1.2.3) as part of the "notebook running"
-			// message, thus the regex above.
-			return [this._uri, this._port];
-		}
-		return [undefined, undefined];
+		let match = dataString.match(/.+:(\d+)\/.*$/m);
+		return match && match[1] ? match[1] : undefined;
 	}
 
 	private notifyStarted(install: JupyterServerInstallation, jupyterUri: string): void {
@@ -365,7 +345,7 @@ export class PerFolderServerInstance implements IServerInstance {
 class ErrorHandler {
 	private numErrors: number = 0;
 
-	public handleError(error: Error): ErrorAction {
+	public handleError(): ErrorAction {
 		this.numErrors++;
 		return this.numErrors > 3 ? ErrorAction.Shutdown : ErrorAction.Continue;
 	}

@@ -2,14 +2,14 @@
   "name": "azdata",
   "displayName": "%azdata.displayName%",
   "description": "%azdata.description%",
-  "version": "0.4.2",
+  "version": "0.5.1",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.25.0"
+    "azdata": ">=1.26.0"
   },
   "activationEvents": [
     "*"

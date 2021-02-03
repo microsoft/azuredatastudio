@@ -86,7 +86,7 @@ export default () => `
 								<div class="flex list-header-container">
 									<i class="icon-document themed-icon"></i>
 									<span class="list-header">${escape(localize('welcomePage.name', "Name"))}</span>
-									<span class="list-header-last-opened">${escape(localize('welcomePage.lastOpened', "Last Opened"))}</span>
+									<span class="list-header-last-opened">${escape(localize('welcomePage.location', "Location"))}</span>
 								</div>
 								<ul class="list">
 									<!-- Filled programmatically -->

@@ -304,7 +304,7 @@ export class FirewallRuleDialog extends Modal {
 		this.onAccountSelectionChange(this._accountPickerService.selectedAccount);
 		this._fromRangeinputBox!.setPlaceHolder(this.viewModel!.defaultFromSubnetIPRange ?? '');
 		this._toRangeinputBox!.setPlaceHolder(this.viewModel!.defaultToSubnetIPRange ?? '');
-		this._IPAddressElement!.innerText = '(' + this.viewModel.defaultIPAddress ?? '' + ')';
+		this._IPAddressElement!.innerText = `(${this.viewModel.defaultIPAddress ?? ''})`;
 
 		this.show();
 	}

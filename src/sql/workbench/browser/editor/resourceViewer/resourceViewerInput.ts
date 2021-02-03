@@ -44,8 +44,7 @@ export class ResourceViewerInput extends EditorInput {
 		this.actionsColumn = new ButtonColumn<azdata.DataGridItem>({
 			id: 'actions',
 			iconCssClass: 'toggle-more',
-			title: nls.localize('resourceViewer.showActions', "Show Actions"),
-			sortable: false
+			title: nls.localize('resourceViewer.showActions', "Show Actions")
 		});
 		this.refresh().catch(err => onUnexpectedError(err));
 	}

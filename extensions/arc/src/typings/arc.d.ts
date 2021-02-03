@@ -23,6 +23,10 @@ declare module 'arc' {
 		userName?: string
 	};
 
+	export type PGResourceInfo = ResourceInfo & {
+		userName?: string
+	};
+
 	export type ResourceInfo = {
 		name: string,
 		resourceType: ResourceType | string,
@@ -31,6 +35,8 @@ declare module 'arc' {
 
 	export type ControllerInfo = {
 		id: string,
+		kubeConfigFilePath: string,
+		kubeClusterContext: string
 		url: string,
 		name: string,
 		username: string,

@@ -474,7 +474,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		}));
 
 		this.layout(DOM.getTotalHeight(this._modalBodySection!));
-		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ModalDialogOpened)
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.ModalDialogOpened)
 			.withAdditionalProperties({ name: this._name })
 			.send();
 	}
@@ -487,14 +487,15 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Hides the modal and removes key listeners
 	 */
-	protected hide(reason?: string) {
+	protected hide(reason?: string, currentPageName?: string): void {
 		this._modalShowingContext.get()!.pop();
 		this._bodyContainer!.remove();
 		this.disposableStore.clear();
-		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ModalDialogClosed)
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.ModalDialogClosed)
 			.withAdditionalProperties({
 				name: this._name,
-				reason: reason
+				reason: reason,
+				currentPageName: currentPageName
 			})
 			.send();
 		this.restoreKeyboardFocus();

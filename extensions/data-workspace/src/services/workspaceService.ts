@@ -8,9 +8,11 @@ import * as vscode from 'vscode';
 import * as dataworkspace from 'dataworkspace';
 import * as path from 'path';
 import * as constants from '../common/constants';
+import * as glob from 'fast-glob';
 import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
+import { TelemetryReporter, TelemetryViews, calculateRelativity, TelemetryActions } from '../common/telemetry';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
@@ -40,17 +42,16 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	/**
-	 * Creates a new workspace in the same folder as the project. Because the extension host gets restared when
+	 * Creates a new workspace in the same folder as the project. Because the extension host gets restarted when
 	 * a new workspace is created and opened, the project needs to be saved as the temp project that will be loaded
 	 * when the extension gets restarted
 	 * @param projectFileFsPath project to add to the workspace
 	 */
-	async CreateNewWorkspaceForProject(projectFileFsPath: string): Promise<void> {
+	async CreateNewWorkspaceForProject(projectFileFsPath: string, workspaceFile: vscode.Uri | undefined): Promise<void> {
 		// save temp project
 		await this._context.globalState.update(TempProject, [projectFileFsPath]);
 
-		// create a new workspace - the workspace file will be created in the same folder as the project
-		const workspaceFile = vscode.Uri.file(path.join(path.dirname(projectFileFsPath), `${path.parse(projectFileFsPath).name}.code-workspace`));
+		// create a new workspace
 		const projectFolder = vscode.Uri.file(path.dirname(projectFileFsPath));
 		await azdata.workspace.createWorkspace(projectFolder, workspaceFile);
 	}
@@ -95,14 +96,14 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 	}
 
-	async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
+	async addProjectsToWorkspace(projectFiles: vscode.Uri[], workspaceFilePath?: vscode.Uri): Promise<void> {
 		if (!projectFiles || projectFiles.length === 0) {
 			return;
 		}
 
 		// a workspace needs to be open to add projects
 		if (!vscode.workspace.workspaceFile) {
-			await this.CreateNewWorkspaceForProject(projectFiles[0].fsPath);
+			await this.CreateNewWorkspaceForProject(projectFiles[0].fsPath, workspaceFilePath);
 
 			// this won't get hit since the extension host will get restarted, but helps with testing
 			return;
@@ -116,12 +117,20 @@ export class WorkspaceService implements IWorkspaceService {
 				currentProjects.push(projectFile);
 				newProjectFileAdded = true;
 
+				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectAddedToWorkspace)
+					.withAdditionalProperties({
+						workspaceProjectRelativity: calculateRelativity(projectFile.fsPath),
+						projectType: path.extname(projectFile.fsPath)
+					}).send();
+
 				// if the relativePath and the original path is the same, that means the project file is not under
 				// any workspace folders, we should add the parent folder of the project file to the workspace
 				const relativePath = vscode.workspace.asRelativePath(projectFile, false);
 				if (vscode.Uri.file(relativePath).fsPath === projectFile.fsPath) {
 					newWorkspaceFolders.push(path.dirname(projectFile.path));
 				}
+			} else {
+				vscode.window.showInformationMessage(constants.ProjectAlreadyOpened(projectFile.fsPath));
 			}
 		}
 
@@ -150,6 +159,65 @@ export class WorkspaceService implements IWorkspaceService {
 		return vscode.workspace.workspaceFile ? this.getWorkspaceConfigurationValue<string[]>(ProjectsConfigurationName).map(project => this.toUri(project)) : [];
 	}
 
+	/**
+	 * Check for projects that are in the workspace folders but have not been added to the workspace through the dialog or by editing the .code-workspace file
+	 */
+	async checkForProjectsNotAddedToWorkspace(): Promise<void> {
+		const config = vscode.workspace.getConfiguration(constants.projectsConfigurationKey);
+
+		// only check if the user hasn't selected not to show this prompt again
+		if (!config[constants.showNotAddedProjectsMessageKey]) {
+			return;
+		}
+
+		// look for any projects that haven't been added to the workspace
+		const projectsInWorkspace = this.getProjectsInWorkspace();
+		const workspaceFolders = vscode.workspace.workspaceFolders;
+
+		if (!workspaceFolders) {
+			return;
+		}
+
+		for (const folder of workspaceFolders) {
+			const results = await this.getAllProjectsInWorkspaceFolder(folder);
+
+			let containsNotAddedProject = false;
+			for (const projFile of results) {
+				// if any of the found projects aren't already in the workspace's projects, we can stop checking and show the info message
+				if (!projectsInWorkspace.find(p => p.fsPath === projFile)) {
+					containsNotAddedProject = true;
+					break;
+				}
+			}
+
+			if (containsNotAddedProject) {
+				const result = await vscode.window.showInformationMessage(constants.WorkspaceContainsNotAddedProjects, constants.LaunchOpenExisitingDialog, constants.DoNotShowAgain);
+				if (result === constants.LaunchOpenExisitingDialog) {
+					// open settings
+					await vscode.commands.executeCommand('projects.openExisting');
+				} else if (result === constants.DoNotShowAgain) {
+					await config.update(constants.showNotAddedProjectsMessageKey, false, true);
+				}
+
+				return;
+			}
+		}
+	}
+
+	async getAllProjectsInWorkspaceFolder(folder: vscode.WorkspaceFolder): Promise<string[]> {
+		// get the unique supported project extensions
+		const supportedProjectExtensions = [...new Set((await this.getAllProjectTypes()).map(p => { return p.projectFileExtension; }))];
+
+		// path needs to use forward slashes for glob to work
+		const escapedPath = glob.escapePath(folder.uri.fsPath.replace(/\\/g, '/'));
+
+		// can filter for multiple file extensions using folder/**/*.{sqlproj,csproj} format, but this notation doesn't work if there's only one extension
+		// so the filter needs to be in the format folder/**/*.sqlproj if there's only one supported projectextension
+		const projFilter = supportedProjectExtensions.length > 1 ? path.posix.join(escapedPath, '**', `*.{${supportedProjectExtensions.toString()}}`) : path.posix.join(escapedPath, '**', `*.${supportedProjectExtensions[0]}`);
+
+		return await glob(projFilter);
+	}
+
 	async getProjectProvider(projectFile: vscode.Uri): Promise<dataworkspace.IProjectProvider | undefined> {
 		const projectType = path.extname(projectFile.path).replace(/\./g, '');
 		let provider = ProjectProviderRegistry.getProviderByProjectExtension(projectType);
@@ -165,17 +233,23 @@ export class WorkspaceService implements IWorkspaceService {
 			const projectIdx = currentProjects.findIndex((p: vscode.Uri) => p.fsPath === projectFile.fsPath);
 			if (projectIdx !== -1) {
 				currentProjects.splice(projectIdx, 1);
+
+				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectRemovedFromWorkspace)
+					.withAdditionalProperties({
+						projectType: path.extname(projectFile.fsPath)
+					}).send();
+
 				await this.setWorkspaceConfigurationValue(ProjectsConfigurationName, currentProjects.map(project => this.toRelativePath(project)));
 				this._onDidWorkspaceProjectsChange.fire();
 			}
 		}
 	}
 
-	async createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri> {
+	async createProject(name: string, location: vscode.Uri, projectTypeId: string, workspaceFile?: vscode.Uri): Promise<vscode.Uri> {
 		const provider = ProjectProviderRegistry.getProviderByProjectType(projectTypeId);
 		if (provider) {
 			const projectFile = await provider.createProject(name, location, projectTypeId);
-			this.addProjectsToWorkspace([projectFile]);
+			this.addProjectsToWorkspace([projectFile], workspaceFile);
 			this._onDidWorkspaceProjectsChange.fire();
 			return projectFile;
 		} else {
@@ -216,7 +290,7 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 
 		if (extension.isActive && extension.exports && !ProjectProviderRegistry.providers.includes(extension.exports)) {
-			ProjectProviderRegistry.registerProvider(extension.exports);
+			ProjectProviderRegistry.registerProvider(extension.exports, extension.id);
 		}
 	}
 

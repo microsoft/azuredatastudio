@@ -143,6 +143,7 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 		@IEditorService private _editorService: IEditorService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
+		@INotificationService private readonly notificationService: INotificationService
 	) {
 		super(id, label);
 	}
@@ -157,17 +158,16 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 				let resultSummary = queryRunner.batchSets[0].resultSetSummaries[i];
 				let result = await queryRunner.getQueryRows(0, resultSummary.rowCount, resultSummary.batchId, resultSummary.id);
 				let tableHeaders = resultSummary.columnInfo.map((col, i) => (col.columnName));
-				let htmlTableHeaders = resultSummary.columnInfo.map((col, i) => (`<th style="border:solid black 1.0pt; whiteSpace:nowrap">${escape(col.columnName)}</th>`));
+				let htmlTableHeaders = `<thead><tr style="background-color:DarkGray">${resultSummary.columnInfo.map((col, i) => (`<th style="border:1.0pt solid black;padding:3pt;font-size:9pt;font-weight: bold;">${escape(col.columnName)}</th>`)).join('')}</tr></thead>`;
 				let copyString = '\n';
-				let htmlCopyString = '<tr>';
+				let htmlCopyString = '';
 
 				for (let rowEntry of result.rows) {
+					htmlCopyString = htmlCopyString + '<tr>';
 					for (let colIdx = 0; colIdx < rowEntry.length; colIdx++) {
 						let value = rowEntry[colIdx].displayValue;
-						if (value) {
-							copyString = `${copyString}${value}\t`;
-							htmlCopyString = `${htmlCopyString}<td style="border:solid black 1.0pt;white-space:nowrap">${escape(value)}</td>`;
-						}
+						copyString = `${copyString}${value}\t`;
+						htmlCopyString = `${htmlCopyString}<td style="border:1.0pt solid black;padding:3pt;font-size:9pt;">${escape(value)}</td>`;
 					}
 					// Removes the tab seperator from the end of a row
 					copyString = copyString.slice(0, -1 * '\t'.length) + '\n';
@@ -176,8 +176,8 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 
 				allResults = `${allResults}${tableHeaders.join('\t')}${copyString}\n`;
 				allHtmlResults = `${allHtmlResults}<div><br/><br/>
-				<table cellPadding="5" cellSpacing="1" style="border:1;border-color:Black;font-family:Segoe UI;font-size:12px;border-collapse:collapse">
-				<tr style="background-color:DarkGray">${htmlTableHeaders.join('')}</tr>${htmlCopyString}
+				<table cellPadding="5" cellSpacing="1" style="border:1;border-color:Black;font-family:Segoe UI;font-size:9pt;border-collapse:collapse">
+				${htmlTableHeaders}${htmlCopyString}
 				</table></div>`;
 			}
 		}
@@ -193,10 +193,15 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 
 			let data = {
 				text: `${queryText}\n\n${allResults.text}`,
-				html: `${escape(queryText).replace(/\r\n|\n|\r/gm, '<br />')}${allResults.html}`
+				html: `<div style="font-family: Consolas, 'Courier New', monospace;font-weight: normal;font-size: 10pt;">${escape(queryText).replace(/\r\n|\n|\r/gm, '<br/>')}</div>${allResults.html}`
 			};
 
 			await this._clipboardService.write(data);
+
+			this.notificationService.notify({
+				severity: Severity.Info,
+				message: nls.localize('queryActions.queryResultsCopySuccess', "Successfully copied query and results.")
+			});
 		}
 	}
 }
@@ -298,6 +303,32 @@ export class ToggleQueryResultsKeyboardAction extends Action {
 			editor.toggleResultsEditorVisibility();
 		}
 		return Promise.resolve(null);
+	}
+}
+
+
+
+/**
+ * Toggle the focus between query editor and results pane
+ */
+export class ToggleFocusBetweenQueryEditorAndResultsAction extends Action {
+	public static ID = 'ToggleFocusBetweenQueryEditorAndResultsAction';
+	public static LABEL = nls.localize('ToggleFocusBetweenQueryEditorAndResultsAction', "Toggle Focus Between Query And Results");
+
+	constructor(
+		id: string,
+		label: string,
+		@IEditorService private _editorService: IEditorService
+	) {
+		super(id, label);
+		this.enabled = true;
+	}
+
+	public async run(): Promise<void> {
+		const editor = this._editorService.activeEditorPane;
+		if (editor instanceof QueryEditor) {
+			editor.toggleFocusBetweenQueryEditorAndResults();
+		}
 	}
 }
 

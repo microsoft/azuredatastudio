@@ -99,12 +99,12 @@ rules['table'] = {
 		// Ensure there are no blank lines
 		content = content.replace('\n\n', '\n');
 		// if the headings are empty, add border line and headings to keep table format
-		if (node.tHead.innerText === '') {
+		if (node.tHead?.innerText === '') {
 			let emptyHeader = '\n\n|';
 			let border = '\n|';
 			for (let i = 0; i < node.rows[0].childNodes.length; i++) {
 				emptyHeader += '  |';
-				border += ' --- |'
+				border += ' --- |';
 			}
 			return emptyHeader + border + content + '\n\n';
 		}

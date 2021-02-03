@@ -17,12 +17,9 @@ export class RadioOptionsGroup {
 	private _loadingBuilder: azdata.LoadingComponentBuilder;
 	private _currentRadioOption!: azdata.RadioButtonComponent;
 
-	constructor(private _view: azdata.ModelView, private _onNewDisposableCreated: (disposable: vscode.Disposable) => void, private _groupName: string = `RadioOptionsGroup${RadioOptionsGroup.id++}`) {
-		const divBuilder = this._view.modelBuilder.divContainer();
-		const divBuilderWithProperties = divBuilder.withProperties<azdata.DivContainerProperties>({ clickable: false });
-		this._divContainer = divBuilderWithProperties.component();
-		const loadingComponentBuilder = this._view.modelBuilder.loadingComponent();
-		this._loadingBuilder = loadingComponentBuilder.withItem(this._divContainer);
+	constructor(private _modelBuilder: azdata.ModelBuilder, private _onNewDisposableCreated: (disposable: vscode.Disposable) => void, private _groupName: string = `RadioOptionsGroup${RadioOptionsGroup.id++}`) {
+		this._divContainer = this._modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
+		this._loadingBuilder = this._modelBuilder.loadingComponent().withItem(this._divContainer);
 	}
 
 	public component(): azdata.LoadingComponent {
@@ -37,7 +34,7 @@ export class RadioOptionsGroup {
 			const options = optionsInfo.values!;
 			let defaultValue: string = optionsInfo.defaultValue!;
 			options.forEach((option: string) => {
-				const radioOption = this._view!.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
+				const radioOption = this._modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
 					label: option,
 					checked: option === defaultValue,
 					name: this._groupName,
@@ -60,7 +57,7 @@ export class RadioOptionsGroup {
 			});
 		}
 		catch (e) {
-			const errorLabel = this._view!.modelBuilder.text().withProperties({ value: getErrorMessage(e), CSSStyles: { 'color': 'Red' } }).component();
+			const errorLabel = this._modelBuilder.text().withProperties({ value: getErrorMessage(e), CSSStyles: { 'color': 'Red' } }).component();
 			this._divContainer.addItem(errorLabel);
 		}
 		this.component().loading = false;
@@ -68,5 +65,9 @@ export class RadioOptionsGroup {
 
 	get value(): string | undefined {
 		return this._currentRadioOption?.value;
+	}
+
+	get items(): azdata.Component[] {
+		return this._divContainer.items;
 	}
 }

@@ -129,12 +129,16 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
+							let session: azdataExt.AzdataSession | undefined = undefined;
 							try {
+								session = await this._miaaModel.controllerModel.acquireAzdataSession();
 								await this._azdataApi.azdata.arc.sql.mi.edit(
-									this._miaaModel.info.name, this.saveArgs);
+									this._miaaModel.info.name, this.saveArgs, this._miaaModel.controllerModel.azdataAdditionalEnvVars, session);
 							} catch (err) {
 								this.saveButton!.enabled = true;
 								throw err;
+							} finally {
+								session?.dispose();
 							}
 
 							await this._miaaModel.refresh();
@@ -179,7 +183,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.coresLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 1,
-			validationErrorMessage: loc.coresValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
@@ -197,7 +200,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.coresRequestBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 1,
-			validationErrorMessage: loc.coresValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
@@ -318,6 +320,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
+		this.coresRequestBox!.validationErrorMessage = loc.validationMin(this.coresRequestBox!.min!);
 		this.coresRequestBox!.placeHolder = currentCPUSize;
 		this.coresRequestBox!.value = '';
 		this.saveArgs.coresRequest = undefined;
@@ -328,6 +331,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
+		this.coresLimitBox!.validationErrorMessage = loc.validationMin(this.coresLimitBox!.min!);
 		this.coresLimitBox!.placeHolder = currentCPUSize;
 		this.coresLimitBox!.value = '';
 		this.saveArgs.coresLimit = undefined;

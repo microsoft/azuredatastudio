@@ -12,6 +12,10 @@
         {
             "file": "build\\actions\\AutoMerge\\dist\\index.js",
             "_justification": "False positive from webpacked code"
+        },
+        {
+          "file": ".devcontainer\\devcontainer.json",
+          "_justification": "Local development environment - not used in production"
         }
     ]
 }

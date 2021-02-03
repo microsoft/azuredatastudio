@@ -11,10 +11,9 @@ import * as constants from '../common/constants';
 import { IWorkspaceService } from '../common/interfaces';
 import { fileExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
+import { calculateRelativity, TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 export class OpenExistingDialog extends DialogBase {
-	public _projectFile: string = '';
-	public _workspaceFile: string = '';
 	public _targetTypeRadioCardGroup: azdata.RadioCardGroupComponent | undefined;
 	public _filePathTextBox: azdata.InputBoxComponent | undefined;
 	public formBuilder: azdata.FormBuilder | undefined;
@@ -31,23 +30,24 @@ export class OpenExistingDialog extends DialogBase {
 
 	constructor(private workspaceService: IWorkspaceService, private extensionContext: vscode.ExtensionContext) {
 		super(constants.OpenExistingDialogTitle, 'OpenProject');
+
+		// dialog launched from Welcome message button (only visible when no current workspace) vs. "add project" button
+		TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, TelemetryActions.OpenExistingDialogLaunched)
+			.withAdditionalProperties({ isWorkspaceOpen: (vscode.workspace.workspaceFile !== undefined).toString() })
+			.send();
 	}
 
 	async validate(): Promise<boolean> {
 		try {
 			// the selected location should be an existing directory
 			if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Project) {
-				const fileExists = await fileExist(this._projectFile);
-				if (!fileExists) {
-					this.showErrorMessage(constants.ProjectFileNotExistError(this._projectFile));
-					return false;
+				await this.validateFile(this._filePathTextBox!.value!, constants.Project.toLowerCase());
+
+				if (this.workspaceInputBox!.enabled) {
+					await this.validateNewWorkspace(false);
 				}
 			} else if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
-				const fileExists = await fileExist(this._workspaceFile);
-				if (!fileExists) {
-					this.showErrorMessage(constants.WorkspaceFileNotExistError(this._workspaceFile));
-					return false;
-				}
+				await this.validateFile(this._filePathTextBox!.value!, constants.Workspace.toLowerCase());
 			}
 
 			return true;
@@ -58,15 +58,44 @@ export class OpenExistingDialog extends DialogBase {
 		}
 	}
 
+	public async validateFile(file: string, fileType: string): Promise<void> {
+		const fileExists = await fileExist(file);
+		if (!fileExists) {
+			throw new Error(constants.FileNotExistError(fileType, file));
+		}
+	}
+
 	async onComplete(): Promise<void> {
 		try {
 			if (this._targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
-				await this.workspaceService.enterWorkspace(vscode.Uri.file(this._workspaceFile));
+				// capture that workspace was selected, also if there's already an open workspace that's being replaced
+				TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, TelemetryActions.OpeningWorkspace)
+					.withAdditionalProperties({ hasWorkspaceOpen: (vscode.workspace.workspaceFile !== undefined).toString() })
+					.send();
+
+				await this.workspaceService.enterWorkspace(vscode.Uri.file(this._filePathTextBox!.value!));
 			} else {
+				// save datapoint now because it'll get set to new value during validateWorkspace()
+				const telemetryProps: any = { hasWorkspaceOpen: (vscode.workspace.workspaceFile !== undefined).toString() };
+
 				const validateWorkspace = await this.workspaceService.validateWorkspace();
+				let addProjectsPromise: Promise<void>;
+
 				if (validateWorkspace) {
-					await this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._projectFile)]);
+					telemetryProps.workspaceProjectRelativity = calculateRelativity(this._filePathTextBox!.value!, this.workspaceInputBox!.value!);
+					telemetryProps.cancelled = 'false';
+					addProjectsPromise = this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._filePathTextBox!.value!)], vscode.Uri.file(this.workspaceInputBox!.value!));
+				} else {
+					telemetryProps.workspaceProjectRelativity = 'none';
+					telemetryProps.cancelled = 'true';
+					addProjectsPromise = this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this._filePathTextBox!.value!)], vscode.Uri.file(this.workspaceInputBox!.value!));
 				}
+
+				TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, TelemetryActions.OpeningProject)
+					.withAdditionalProperties(telemetryProps)
+					.send();
+
+				await addProjectsPromise;
 			}
 		}
 		catch (err) {
@@ -108,9 +137,8 @@ export class OpenExistingDialog extends DialogBase {
 			width: constants.DefaultInputWidth
 		}).component();
 		this.register(this._filePathTextBox.onTextChanged(() => {
-			this._projectFile = this._filePathTextBox!.value!;
-			this._filePathTextBox!.updateProperty('title', this._projectFile);
-			this.updateWorkspaceInputbox(path.dirname(this._projectFile), path.basename(this._projectFile, path.extname(this._projectFile)));
+			this._filePathTextBox!.updateProperty('title', this._filePathTextBox!.value!);
+			this.updateWorkspaceInputbox(path.dirname(this._filePathTextBox!.value!), path.basename(this._filePathTextBox!.value!, path.extname(this._filePathTextBox!.value!)));
 		}));
 
 		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -130,15 +158,19 @@ export class OpenExistingDialog extends DialogBase {
 		this.register(this._targetTypeRadioCardGroup.onSelectionChanged(({ cardId }) => {
 			if (cardId === constants.Project) {
 				this._filePathTextBox!.placeHolder = constants.ProjectFilePlaceholder;
-				this.formBuilder?.addFormItem(this.workspaceFormComponent!);
+				this.formBuilder?.addFormItem(this.workspaceDescriptionFormComponent!);
+				this.formBuilder?.addFormItem(this.workspaceInputFormComponent!);
 			} else if (cardId === constants.Workspace) {
 				this._filePathTextBox!.placeHolder = constants.WorkspacePlaceholder;
-				this.formBuilder?.removeFormItem(this.workspaceFormComponent!);
+				this.formBuilder?.removeFormItem(this.workspaceDescriptionFormComponent!);
+				this.formBuilder?.removeFormItem(this.workspaceInputFormComponent!);
 			}
 
 			// clear selected file textbox
 			this._filePathTextBox!.value = '';
 		}));
+
+		this.createWorkspaceContainer(view);
 
 		this.formBuilder = view.modelBuilder.formContainer().withFormItems([
 			{
@@ -150,14 +182,15 @@ export class OpenExistingDialog extends DialogBase {
 				required: true,
 				component: this.createHorizontalContainer(view, [this._filePathTextBox, browseFolderButton])
 			},
-			this.createWorkspaceContainer(view)
+			this.workspaceDescriptionFormComponent!,
+			this.workspaceInputFormComponent!
 		]);
 		await view.initializeModel(this.formBuilder?.component());
 		this.initDialogComplete?.resolve();
 	}
 
 	public async workspaceBrowse(): Promise<void> {
-		const filters: { [name: string]: string[] } = { [constants.Workspace]: [constants.WorkspaceFileExtension] };
+		const filters: { [name: string]: string[] } = { [constants.Workspace]: [constants.WorkspaceFileExtension.substring(1)] }; // filter already adds a period before the extension
 		const fileUris = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
 			canSelectFolders: false,
@@ -172,7 +205,6 @@ export class OpenExistingDialog extends DialogBase {
 
 		const workspaceFilePath = fileUris[0].fsPath;
 		this._filePathTextBox!.value = workspaceFilePath;
-		this._workspaceFile = workspaceFilePath;
 	}
 
 	public async projectBrowse(): Promise<void> {
@@ -197,6 +229,5 @@ export class OpenExistingDialog extends DialogBase {
 
 		const projectFilePath = fileUris[0].fsPath;
 		this._filePathTextBox!.value = projectFilePath;
-		this._projectFile = projectFilePath;
 	}
 }

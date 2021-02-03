@@ -369,7 +369,8 @@ class WizardPageImpl extends ModelViewPanelImpl implements azdata.window.WizardP
 	constructor(public title: string,
 		extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape,
-		extension: IExtensionDescription) {
+		extension: IExtensionDescription,
+		public pageName?: string) {
 		super('modelViewWizardPage', extHostModelViewDialog, extHostModelView, extension);
 	}
 
@@ -852,8 +853,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._pageInfoChangedCallbacks.set(handle, callback);
 	}
 
-	public createWizardPage(title: string, extension?: IExtensionDescription): azdata.window.WizardPage {
-		let page = new WizardPageImpl(title, this, this._extHostModelView, extension);
+	public createWizardPage(title: string, extension?: IExtensionDescription, pageName?: string): azdata.window.WizardPage {
+		let page = new WizardPageImpl(title, this, this._extHostModelView, extension, pageName);
 		page.handle = this.getHandle(page);
 		return page;
 	}
@@ -875,7 +876,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			customButtons: page.customButtons ? page.customButtons.map(button => this.getHandle(button)) : undefined,
 			enabled: page.enabled,
 			title: page.title,
-			description: page.description
+			description: page.description,
+			pageName: page.pageName
 		});
 	}
 

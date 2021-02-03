@@ -65,7 +65,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 
 	// register option source(s)
 	const rdApi = <rd.IExtension>vscode.extensions.getExtension(rd.extension.name)?.exports;
-	rdApi.registerOptionsSourceProvider(new ArcControllerConfigProfilesOptionsSource(azdataApi));
+	context.subscriptions.push(rdApi.registerOptionsSourceProvider(new ArcControllerConfigProfilesOptionsSource(azdataApi)));
 
 	return azdataApi;
 }

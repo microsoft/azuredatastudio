@@ -157,7 +157,9 @@ export default class TreeComponent extends ComponentBase<azdata.TreeProperties> 
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this._treeRenderer.options.withCheckbox = this.withCheckbox;
+		if (this._treeRenderer) {
+			this._treeRenderer.options.withCheckbox = this.withCheckbox;
+		}
 	}
 
 	public get withCheckbox(): boolean {

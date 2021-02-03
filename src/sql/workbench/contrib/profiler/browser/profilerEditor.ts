@@ -272,13 +272,14 @@ export class ProfilerEditor extends EditorPane {
 			{ action: this._stopAction },
 			{ action: this._pauseAction },
 			{ element: Taskbar.createTaskbarSeparator() },
+			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) },
+			{ element: Taskbar.createTaskbarSeparator() },
 			{ action: this._filterAction },
 			{ action: this._clearFilterAction },
 			{ element: Taskbar.createTaskbarSeparator() },
 			{ element: this._createTextElement(nls.localize('profiler.viewSelectLabel', "Select View:")) },
 			{ element: viewTemplateContainer },
-			{ action: this._autoscrollAction },
-			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) }
+			{ action: this._autoscrollAction }
 		]);
 	}
 

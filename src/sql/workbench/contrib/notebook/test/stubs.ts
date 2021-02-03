@@ -5,7 +5,7 @@
 
 import { nb, IConnectionProfile } from 'azdata';
 import * as vsEvent from 'vs/base/common/event';
-import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, ISingleNotebookEditOperation, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, ISingleNotebookEditOperation, MoveDirection, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider, INotebookParams, INotebookSection, ICellEditorProvider, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
@@ -92,6 +92,18 @@ export class NotebookModelStub implements INotebookModel {
 		throw new Error('Method not implemented.');
 	}
 	findCellIndex(cellModel: ICellModel): number {
+		throw new Error('Method not implemented.');
+	}
+	get viewMode() {
+		throw new Error('Method not implemented.');
+	}
+	set viewMode(mode: ViewMode) {
+		throw new Error('Method not implemented.');
+	}
+	setMetaValue(key: string, value: any) {
+		throw new Error('Method not implemented.');
+	}
+	getMetaValue(key: string) {
 		throw new Error('Method not implemented.');
 	}
 	addCell(cellType: CellType, index?: number): void {
@@ -439,6 +451,7 @@ export class FutureStub implements nb.IFuture {
 
 export class NotebookComponentStub implements INotebookEditor {
 	cellEditors: ICellEditorProvider[];
+	viewMode: string;
 	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
 		throw new Error('Method not implemented.');
 	}
@@ -651,6 +664,7 @@ export class NotebookEditorStub implements INotebookEditor {
 	cellEditors: CellEditorProviderStub[];
 	modelReady: Promise<INotebookModel>;
 	model: INotebookModel;
+	viewMode: string;
 	isDirty(): boolean {
 		throw new Error('Method not implemented.');
 	}

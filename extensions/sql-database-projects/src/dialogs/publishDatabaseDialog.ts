@@ -15,6 +15,7 @@ import { DeploymentOptions, SchemaObjectType } from '../../../mssql/src/mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
 import { getConnectionName } from './utils';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -40,6 +41,7 @@ export class PublishDatabaseDialog {
 	private connectionIsDataSource: boolean | undefined;
 	private sqlCmdVars: Record<string, string> | undefined;
 	private deploymentOptions: DeploymentOptions | undefined;
+	private profileUsed: boolean = false;
 
 	private toDispose: vscode.Disposable[] = [];
 
@@ -48,7 +50,7 @@ export class PublishDatabaseDialog {
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
 	constructor(private project: Project) {
-		this.dialog = azdata.window.createModelViewDialog(constants.publishDialogName);
+		this.dialog = azdata.window.createModelViewDialog(constants.publishDialogName, 'sqlProjectPublishDialog');
 		this.publishTab = azdata.window.createTab(constants.publishDialogName);
 	}
 
@@ -179,13 +181,13 @@ export class PublishDatabaseDialog {
 	}
 
 	public async publishClick(): Promise<void> {
-		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
 		const settings: IPublishSettings = {
 			databaseName: this.getTargetDatabaseName(),
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
-			sqlCmdVariables: sqlCmdVars,
-			deploymentOptions: await this.getDeploymentOptions()
+			sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
+			deploymentOptions: await this.getDeploymentOptions(),
+			profileUsed: this.profileUsed
 		};
 
 		azdata.window.closeDialog(this.dialog);
@@ -195,12 +197,15 @@ export class PublishDatabaseDialog {
 	}
 
 	public async generateScriptClick(): Promise<void> {
+		TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.generateScriptClicked);
+
 		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
 		const settings: IGenerateScriptSettings = {
 			databaseName: this.getTargetDatabaseName(),
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars,
-			deploymentOptions: await this.getDeploymentOptions()
+			deploymentOptions: await this.getDeploymentOptions(),
+			profileUsed: this.profileUsed
 		};
 
 		azdata.window.closeDialog(this.dialog);
@@ -212,7 +217,7 @@ export class PublishDatabaseDialog {
 		this.dispose();
 	}
 
-	private async getDeploymentOptions(): Promise<DeploymentOptions> {
+	public async getDeploymentOptions(): Promise<DeploymentOptions> {
 		// eventually, database options will be configurable in this dialog
 		// but for now, just send the default DacFx deployment options if no options were loaded from a publish profile
 		if (!this.deploymentOptions) {
@@ -230,7 +235,7 @@ export class PublishDatabaseDialog {
 		return this.deploymentOptions;
 	}
 
-	private getSqlCmdVariablesForPublish(): Record<string, string> {
+	public getSqlCmdVariablesForPublish(): Record<string, string> {
 		// get SQLCMD variables from table
 		let sqlCmdVariables = { ...this.sqlCmdVars };
 		return sqlCmdVariables;
@@ -289,7 +294,7 @@ export class PublishDatabaseDialog {
 			value: '',
 			ariaLabel: constants.targetConnectionLabel,
 			placeHolder: constants.selectConnection,
-			width: cssStyles.textboxWidth,
+			width: cssStyles.publishDialogTextboxWidth,
 			enabled: false
 		}).component();
 
@@ -353,12 +358,12 @@ export class PublishDatabaseDialog {
 		this.loadProfileTextBox = view.modelBuilder.inputBox().withProperties({
 			placeHolder: constants.loadProfilePlaceholderText,
 			ariaLabel: constants.profile,
-			width: cssStyles.textboxWidth
+			width: cssStyles.publishDialogTextboxWidth
 		}).component();
 
 		const profileLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.profile,
-			width: cssStyles.labelWidth
+			width: cssStyles.publishDialogLabelWidth
 		}).component();
 
 		const profileRow = view.modelBuilder.flexContainer().withItems([profileLabel, this.loadProfileTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
@@ -374,7 +379,7 @@ export class PublishDatabaseDialog {
 		const serverLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.server,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth
+			width: cssStyles.publishDialogLabelWidth
 		}).component();
 
 		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, this.targetConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
@@ -389,7 +394,7 @@ export class PublishDatabaseDialog {
 			value: this.getDefaultDatabaseName(),
 			ariaLabel: constants.databaseNameLabel,
 			required: true,
-			width: cssStyles.textboxWidth,
+			width: cssStyles.publishDialogTextboxWidth,
 			editable: true,
 			fireOnTextChange: true
 		}).component();
@@ -401,7 +406,7 @@ export class PublishDatabaseDialog {
 		const databaseLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: constants.databaseNameLabel,
 			requiredIndicator: true,
-			width: cssStyles.labelWidth
+			width: cssStyles.publishDialogLabelWidth
 		}).component();
 
 		const databaseRow = view.modelBuilder.flexContainer().withItems([databaseLabel, <azdata.DropDownComponent>this.targetDatabaseDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();

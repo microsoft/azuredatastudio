@@ -147,7 +147,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 		this.disposables.push(
 			newInstance.onDidClick(async () => {
-				await vscode.commands.executeCommand('azdata.resource.deploy', 'arc.sql', ['arc.sql', 'arc.postgres']);
+				await vscode.commands.executeCommand('azdata.resource.deploy', 'azure-sql-mi', ['azure-sql-mi', 'arc.postgres'], { 'azure-sql-mi': { 'mi-type': ['arc-mi'] } });
 			}));
 
 		// Refresh
@@ -179,7 +179,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 				const config = this._controllerModel.controllerConfig;
 				if (config) {
 					await vscode.env.openExternal(vscode.Uri.parse(
-						`https://portal.azure.com/#resource/subscriptions/${config.spec.settings.azure.subscription}/resourceGroups/${config.spec.settings.azure.resourceGroup}/providers/Microsoft.AzureData/${ResourceType.dataControllers}/${config.metadata.name}`));
+						`https://portal.azure.com/#resource/subscriptions/${config.spec.settings.azure.subscription}/resourceGroups/${config.spec.settings.azure.resourceGroup}/providers/Microsoft.AzureArcData/${ResourceType.dataControllers}/${config.metadata.name}`));
 				} else {
 					vscode.window.showErrorMessage(loc.couldNotFindControllerRegistration);
 				}

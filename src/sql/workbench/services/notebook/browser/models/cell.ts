@@ -28,10 +28,16 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
+
+export interface QueryResultId {
+	batchId: number;
+	id: number;
+}
 
 export class CellModel extends Disposable implements ICellModel {
 	public id: string;
@@ -43,6 +49,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _cellGuid: string;
 	private _future: FutureInternal;
 	private _outputs: nb.ICellOutput[] = [];
+	private _outputsIdMap: Map<nb.ICellOutput, QueryResultId> = new Map<nb.ICellOutput, QueryResultId>();
 	private _renderedOutputTextContent: string[] = [];
 	private _isEditMode: boolean;
 	private _onOutputsChanged = new Emitter<IOutputChangedEvent>();
@@ -78,7 +85,8 @@ export class CellModel extends Disposable implements ICellModel {
 		private _options: ICellModelOptions,
 		@optional(INotebookService) private _notebookService?: INotebookService,
 		@optional(ICommandService) private _commandService?: ICommandService,
-		@optional(IConfigurationService) private _configurationService?: IConfigurationService
+		@optional(IConfigurationService) private _configurationService?: IConfigurationService,
+		@optional(IAdsTelemetryService) private _telemetryService?: IAdsTelemetryService,
 	) {
 		super();
 		this.id = `${modelId++}`;
@@ -121,6 +129,15 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get onCellModeChanged(): Event<boolean> {
 		return this._onCellModeChanged.event;
+	}
+
+	public set metadata(data: any) {
+		this._metadata = data;
+		this.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
+	}
+
+	public get metadata(): any {
+		return this._metadata;
 	}
 
 	public get isEditMode(): boolean {
@@ -238,6 +255,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this._cellType = type;
 			// Regardless, get rid of outputs; this matches Jupyter behavior
 			this._outputs = [];
+			this._outputsIdMap.clear();
 		}
 	}
 
@@ -468,6 +486,9 @@ export class CellModel extends Disposable implements ICellModel {
 			if (!kernel) {
 				return false;
 			}
+			this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunCell)
+				.withAdditionalProperties({ cell_language: kernel.name })
+				.send();
 			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
 			// This matches the same behavior as JupyterLab
 			if (this.future && this.future.inProgress) {
@@ -515,6 +536,7 @@ export class CellModel extends Disposable implements ICellModel {
 							try {
 								// Need to reset outputs here (kernels do this on their own)
 								this._outputs = [];
+								this._outputsIdMap.clear();
 								let commandExecuted = this._commandService?.executeCommand(result.commandId, result.args);
 								// This will ensure that the run button turns into a stop button
 								this.fireExecutionStateChanged();
@@ -608,6 +630,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public clearOutputs(): void {
 		this._outputs = [];
+		this._outputsIdMap.clear();
 		this.fireOutputsChanged();
 
 		this.executionCount = undefined;
@@ -632,6 +655,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get outputs(): Array<nb.ICellOutput> {
 		return this._outputs;
+	}
+
+	public getOutputId(output: nb.ICellOutput): QueryResultId | undefined {
+		return this._outputsIdMap.get(output);
 	}
 
 	public get renderedOutputTextContent(): string[] {
@@ -662,16 +689,18 @@ export class CellModel extends Disposable implements ICellModel {
 				// Check if the table already exists
 				for (let i = 0; i < this._outputs.length; i++) {
 					if (this._outputs[i].output_type === 'execute_result') {
-						let resultSet: ResultSetSummary = this._outputs[i].metadata.resultSet;
-						let newResultSet: ResultSetSummary = output.metadata.resultSet;
-						if (resultSet.batchId === newResultSet.batchId && resultSet.id === newResultSet.id) {
+						let currentOutputId: QueryResultId = this._outputsIdMap.get(this._outputs[i]);
+						if (currentOutputId.batchId === (<QueryResultId>msg.metadata).batchId
+							&& currentOutputId.id === (<QueryResultId>msg.metadata).id) {
 							// If it does, update output with data resource and html table
 							(<nb.IExecuteResult>this._outputs[i]).data = (<nb.IExecuteResult>output).data;
-							this._outputs[i].metadata = output.metadata;
 							added = true;
 							break;
 						}
 					}
+				}
+				if (!added) {
+					this._outputsIdMap.set(output, { batchId: (<QueryResultId>msg.metadata).batchId, id: (<QueryResultId>msg.metadata).id });
 				}
 				break;
 			case 'execute_result_update':
@@ -689,6 +718,10 @@ export class CellModel extends Disposable implements ICellModel {
 				if (this._outputs.length > 0) {
 					for (let i = 0; i < this._outputs.length; i++) {
 						if (this._outputs[i].output_type === 'execute_result') {
+							// Deletes transient node in the serialized JSON
+							// "Optional transient data introduced in 5.1. Information not to be persisted to a notebook or other documents."
+							// (https://jupyter-client.readthedocs.io/en/stable/messaging.html)
+							delete output['transient'];
 							this._outputs.splice(i, 0, this.rewriteOutputUrls(output));
 							this.fireOutputsChanged();
 							added = true;

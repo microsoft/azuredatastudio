@@ -2,7 +2,7 @@
   "name": "schema-compare",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
@@ -82,18 +82,20 @@
     }
   },
   "dependencies": {
-    "ads-extension-telemetry": "^1.0.0",
+    "@microsoft/ads-extension-telemetry": "^1.1.2",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",
+    "@types/sinon": "^9.0.4",
     "@types/node": "^12.11.7",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
-    "vscodetestcover": "^1.1.0"
+    "vscodetestcover": "^1.1.0",
+    "sinon": "^9.0.2"
   },
   "__metadata": {
     "id": "37",

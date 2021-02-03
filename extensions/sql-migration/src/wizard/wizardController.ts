@@ -10,17 +10,21 @@ import { SourceConfigurationPage } from './sourceConfigurationPage';
 import { WIZARD_TITLE } from '../models/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SKURecommendationPage } from './skuRecommendationPage';
-import { SubscriptionSelectionPage } from './subscriptionSelectionPage';
+// import { SubscriptionSelectionPage } from './subscriptionSelectionPage';
+import { DatabaseBackupPage } from './databaseBackupPage';
+import { AccountsSelectionPage } from './accountsSelectionPage';
+import { IntergrationRuntimePage } from './integrationRuntimePage';
+import { TempTargetSelectionPage } from './tempTargetSelectionPage';
 
 export class WizardController {
 	constructor(private readonly extensionContext: vscode.ExtensionContext) {
 
 	}
 
-	public async openWizard(profile: azdata.connection.Connection): Promise<void> {
+	public async openWizard(connectionId: string): Promise<void> {
 		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 		if (api) {
-			const stateModel = new MigrationStateModel(this.extensionContext, profile, api.sqlMigration);
+			const stateModel = new MigrationStateModel(this.extensionContext, connectionId, api.sqlMigration);
 			this.extensionContext.subscriptions.push(stateModel);
 			this.createWizard(stateModel);
 		}
@@ -30,12 +34,24 @@ export class WizardController {
 		const wizard = azdata.window.createWizard(WIZARD_TITLE, 'wide');
 		wizard.generateScriptButton.enabled = false;
 		wizard.generateScriptButton.hidden = true;
-
+		// Disabling unused pages
 		const sourceConfigurationPage = new SourceConfigurationPage(wizard, stateModel);
 		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
-		const subscriptionSelectionPage = new SubscriptionSelectionPage(wizard, stateModel);
+		// const subscriptionSelectionPage = new SubscriptionSelectionPage(wizard, stateModel);
+		const azureAccountsPage = new AccountsSelectionPage(wizard, stateModel);
+		const tempTargetSelectionPage = new TempTargetSelectionPage(wizard, stateModel);
+		const databaseBackupPage = new DatabaseBackupPage(wizard, stateModel);
+		const integrationRuntimePage = new IntergrationRuntimePage(wizard, stateModel);
 
-		const pages: MigrationWizardPage[] = [sourceConfigurationPage, skuRecommendationPage, subscriptionSelectionPage];
+		const pages: MigrationWizardPage[] = [
+			// subscriptionSelectionPage,
+			azureAccountsPage,
+			tempTargetSelectionPage,
+			sourceConfigurationPage,
+			skuRecommendationPage,
+			databaseBackupPage,
+			integrationRuntimePage
+		];
 
 		wizard.pages = pages.map(p => p.getwizardPage());
 

@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import * as should from 'should';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
-import { ApiWrapper } from '../common/apiWrapper';
 
 export interface ButtonState {
 	compareButtonState: boolean;
@@ -24,10 +24,10 @@ export interface ButtonState {
 export class SchemaCompareMainWindowTest extends SchemaCompareMainWindow {
 
 	constructor(
-		apiWrapper: ApiWrapper,
 		schemaCompareService: mssql.ISchemaCompareService,
-		extensionContext: vscode.ExtensionContext) {
-		super(apiWrapper, schemaCompareService, extensionContext);
+		extensionContext: vscode.ExtensionContext,
+		view: azdata.ModelView) {
+		super(schemaCompareService, extensionContext, view);
 	}
 
 	// only for test

@@ -65,7 +65,6 @@ export class InstalledPackagesTab {
 				}
 				catch (err) {
 					this.dialog.showErrorMessage(utils.getErrorMessage(err));
-
 				}
 
 			});
@@ -85,12 +84,11 @@ export class InstalledPackagesTab {
 							value: localize('managePackages.newPkgVersionColumn', "Version"),
 							type: azdata.ColumnType.text
 						},
+						<azdata.ButtonColumn>
 						{
 							value: localize('managePackages.deleteColumn', "Delete"),
 							type: azdata.ColumnType.button,
-							options: {
-								icon: IconPathHelper.delete
-							}
+							icon: IconPathHelper.delete
 						}
 					],
 					data: [[]],
@@ -228,7 +226,7 @@ export class InstalledPackagesTab {
 		let packageCount: number;
 		if (pythonPackages) {
 			packageCount = pythonPackages.length;
-			packageData = pythonPackages.map(pkg => [pkg.name, pkg.version]);
+			packageData = pythonPackages.map(pkg => [pkg.name, pkg.version, undefined]);
 		} else {
 			packageCount = 0;
 		}

@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
-import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, MoveDirection, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
@@ -49,6 +49,7 @@ export class ErrorInfo {
 }
 
 const saveConnectionNameConfigName = 'notebook.saveConnectionName';
+const injectedParametersMsg = localize('injectedParametersMsg', '# Injected-Parameters\n');
 
 export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsChangedEmitter = new Emitter<void>();
@@ -56,6 +57,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	private _kernelsChangedEmitter = new Emitter<nb.IKernel>();
 	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
+	private _viewModeChangedEmitter = new Emitter<ViewMode>();
 	private _layoutChanged = new Emitter<void>();
 	private _inErrorState: boolean = false;
 	private _activeClientSession: IClientSession | undefined;
@@ -71,6 +73,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _tags: string[] | undefined;
 	private _existingMetadata: nb.INotebookMetadata = {};
 	private _language: string = '';
+	private _viewMode: ViewMode = ViewMode.Notebook;
 	private _onErrorEmitter = new Emitter<INotification>();
 	private _savedKernelInfo: nb.IKernelSpec | undefined;
 	private _savedConnectionName: string | undefined;
@@ -274,6 +277,41 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		});
 	}
 
+	public get viewModeChanged(): Event<ViewMode> {
+		return this._viewModeChangedEmitter.event;
+	}
+
+	public get viewMode() {
+		return this._viewMode;
+	}
+
+	/**
+	 * Add custom metadata values to the notebook
+	 */
+	public setMetaValue(key: string, value: any) {
+		this._existingMetadata[key] = value;
+		let changeInfo: NotebookContentChange = {
+			changeType: NotebookChangeType.MetadataChanged,
+			isDirty: true,
+			cells: [],
+		};
+		this._contentChangedEmitter.fire(changeInfo);
+	}
+
+	/**
+	 * Get a custom metadata value from the notebook
+	 */
+	public getMetaValue(key: string): any {
+		return this._existingMetadata[key];
+	}
+
+	public set viewMode(mode: ViewMode) {
+		if (mode !== this._viewMode) {
+			this._viewMode = mode;
+			this._viewModeChangedEmitter.fire(mode);
+		}
+	}
+
 	/**
 	 * Indicates the server has finished loading. It may have failed to load in
 	 * which case the view will be in an error state.
@@ -363,9 +401,20 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						}
 					});
 				}
+				// Modify Notebook URI Params format from URI query to string space delimited format
+				let notebookUriParams: string = this.notebookUri.query;
+				notebookUriParams = notebookUriParams.replace(/&/g, '\n').replace(/=/g, ' = ');
+				// Get parameter cell and index to place new notebookUri parameters accordingly
+				let parameterCellIndex = 0;
+				let hasParameterCell = false;
+				let hasInjectedCell = false;
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => {
 						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
+						if (cellModel.isParameter) {
+							parameterCellIndex = contents.cells.indexOf(c);
+							hasParameterCell = true;
+						}
 						/*
 						In a parameterized notebook there will be an injected parameter cell.
 						Papermill originally inserts the injected parameter with the comment "# Parameters"
@@ -373,12 +422,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						So to make it clear we edit the injected parameters comment to indicate it is the Injected-Parameters cell.
 						*/
 						if (cellModel.isInjectedParameter) {
+							hasInjectedCell = true;
 							cellModel.source = cellModel.source.slice(1);
-							cellModel.source = ['# Injected-Parameters\n'].concat(cellModel.source);
+							cellModel.source = [injectedParametersMsg].concat(cellModel.source);
 						}
 						this.trackMarkdownTelemetry(<nb.ICellContents>c, cellModel);
 						return cellModel;
 					});
+				}
+				// Only add new parameter cell if notebookUri Parameters are found
+				if (notebookUriParams) {
+					this.addUriParameterCell(notebookUriParams, hasParameterCell, parameterCellIndex, hasInjectedCell);
 				}
 			}
 
@@ -394,6 +448,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			throw error;
 		}
 	}
+
 	public async requestModelLoad(): Promise<void> {
 		try {
 			this.setDefaultKernelAndProviderId();
@@ -450,6 +505,33 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return cell;
 	}
 
+	/**
+	 * Adds Parameters cell based on Notebook URI parameters
+	 * @param notebookUriParams contains the parameters from Notebook URI
+	 * @param hasParameterCell notebook contains a parameter cell
+	 * @param parameterCellIndex index of the parameter cell in notebook
+	 * @param hasInjectedCell notebook contains a injected parameter cell
+	 */
+	private addUriParameterCell(notebookUriParams: string, hasParameterCell: boolean, parameterCellIndex: number, hasInjectedCell: boolean): void {
+		let uriParamsIndex = parameterCellIndex;
+		// Set new uri parameters as a Injected Parameters cell after original parameter cell
+		if (hasParameterCell) {
+			uriParamsIndex = parameterCellIndex + 1;
+			// Set the uri parameters after the injected parameter cell
+			if (hasInjectedCell) {
+				uriParamsIndex = uriParamsIndex + 1;
+			}
+			this.addCell('code', uriParamsIndex);
+			this.cells[uriParamsIndex].isInjectedParameter = true;
+			this.cells[uriParamsIndex].source = [injectedParametersMsg].concat(notebookUriParams);
+		} else {
+			// Set new parameters as the parameters cell as the first cell in the notebook
+			this.addCell('code', uriParamsIndex);
+			this.cells[uriParamsIndex].isParameter = true;
+			this.cells[uriParamsIndex].source = [notebookUriParams];
+		}
+	}
+
 	moveCell(cell: ICellModel, direction: MoveDirection): void {
 		if (this.inErrorState) {
 			return;
@@ -499,6 +581,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (cell) {
 			let index = this.findCellIndex(cell);
 			if (index > -1) {
+				// Ensure override language is reset
+				cell.setOverrideLanguage('');
 				cell.cellType = cell.cellType === CellTypes.Markdown ? CellTypes.Code : CellTypes.Markdown;
 				this._onCellTypeChanged.fire(cell);
 				this._contentChangedEmitter.fire({

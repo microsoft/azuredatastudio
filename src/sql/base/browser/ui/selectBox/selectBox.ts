@@ -16,6 +16,7 @@ import { renderFormattedText, renderText, FormattedTextRenderOptions } from 'vs/
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { SelectBoxList } from 'vs/base/browser/ui/selectBox/selectBoxCustom';
+import { Event, Emitter } from 'vs/base/common/event';
 
 const $ = dom.$;
 
@@ -51,6 +52,7 @@ export class SelectBox extends vsSelectBox {
 	private disabledSelectBorder?: Color;
 	private contextViewProvider: IContextViewProvider;
 	private message?: IMessage;
+	private _onDidSelect: Emitter<ISelectData>;
 
 	private inputValidationInfoBorder?: Color;
 	private inputValidationInfoBackground?: Color;
@@ -68,6 +70,7 @@ export class SelectBox extends vsSelectBox {
 		let optionItems: SelectOptionItemSQL[] = SelectBox.createOptions(options);
 		super(optionItems, 0, contextViewProvider, undefined, selectBoxOptions);
 
+		this._onDidSelect = new Emitter<ISelectData>();
 		this._optionsDictionary = new Map<string, number>();
 		this.populateOptionsDictionary(optionItems);
 		this._dialogOptions = optionItems;
@@ -77,8 +80,9 @@ export class SelectBox extends vsSelectBox {
 		}
 
 		this._selectedOption = selectedOption;
-		this._register(this.onDidSelect(newSelect => {
+		this._register(super.onDidSelect(newSelect => {
 			this.onSelect(newSelect);
+			this._onDidSelect.fire(newSelect);
 		}));
 
 		this.enabledSelectBackground = this.selectBackground;
@@ -119,6 +123,14 @@ export class SelectBox extends vsSelectBox {
 				}
 			});
 		}
+	}
+
+	public get onDidSelect(): Event<ISelectData> {
+		// We override the onDidSelect event here because the base onDidSelect event isn't fired when
+		// selecting an element via select - which means that we'll miss out on a selection made that way.
+		// So we expose our own event that's fired either when the base onDidSelect is called or when we
+		// manually select an item
+		return this._onDidSelect.event;
 	}
 
 	public onSelect(newInput: ISelectData) {
@@ -185,10 +197,18 @@ export class SelectBox extends vsSelectBox {
 	}
 
 	public select(index: number): void {
+		let selectedOptionIndex = this._optionsDictionary.get(this._selectedOption);
+		if (selectedOptionIndex === index) { // Not generating an event if the same value is selected.
+			return;
+		}
 		super.select(index);
 		if (this._dialogOptions !== undefined) {
 			this._selectedOption = this._dialogOptions[index]?.value;
 		}
+		this._onDidSelect.fire({
+			selected: this._selectedOption,
+			index: index
+		});
 	}
 
 

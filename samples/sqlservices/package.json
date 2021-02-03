@@ -87,9 +87,7 @@
   "scripts": {
     "build": "gulp build",
     "compile": "gulp compile",
-    "watch": "gulp watch",
-    "typings": "gulp copytypings",
-    "postinstall": "node ./node_modules/vscode/bin/install && node ./node_modules/azdata/bin/install && gulp copytypings"
+    "watch": "gulp watch"
   },
   "dependencies": {
     "fs-extra": "^5.0.0",
@@ -98,7 +96,8 @@
   },
   "devDependencies": {
     "@types/node": "^7.0.43",
-    "azdata": "^1.0.0",
+    "@types/azdata": "^1.0.0",
+    "@types/vscode": "^1.0.0",
     "braces": "^2.3.2",
     "child-process-promise": "^2.2.1",
     "del": "^3.0.0",
@@ -108,10 +107,9 @@
     "gulp-tslint": "^6.0.2",
     "gulp-typescript": "^3.2.4",
     "tslint": "^3.14.0",
-    "typescript": "^2.6.1",
+    "typescript": "^4.1.0-dev.20200824",
     "url-parse": "^1.4.4",
-    "vsce": "^1.57.1",
-    "vscode": "^1.1.30"
+    "vsce": "^1.57.1"
   },
   "repository": {
     "type": "git",

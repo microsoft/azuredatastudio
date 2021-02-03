@@ -6,7 +6,6 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
-import { LoadingComponentProperties } from 'azdata';
 
 declare module 'azdata' {
 	/**
@@ -72,10 +71,6 @@ declare module 'azdata' {
 			output_type: string;
 			resultSet: ResultSetSummary;
 			data: any;
-		}
-
-		export interface ICellOutputMetadata {
-			resultSet?: ResultSetSummary;
 		}
 
 		export interface INotebookMetadata {
@@ -279,6 +274,13 @@ declare module 'azdata' {
 		showLinkIcon?: boolean;
 	}
 
+	export interface RadioButtonComponent {
+		/**
+		 * An event called when the value of radio button changes
+		 */
+		onDidChangeCheckedState: vscode.Event<boolean>;
+	}
+
 	export interface DeclarativeTableColumn {
 		headerCssStyles?: CssStyles;
 		rowCssStyles?: CssStyles;
@@ -328,6 +330,7 @@ declare module 'azdata' {
 		tabbedPanel(): TabbedPanelComponentBuilder;
 		separator(): ComponentBuilder<SeparatorComponent, SeparatorComponentProperties>;
 		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent, PropertiesContainerComponentProperties>;
+		infoBox(): ComponentBuilder<InfoBoxComponent, InfoBoxComponentProperties>;
 	}
 
 	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
@@ -548,7 +551,7 @@ declare module 'azdata' {
 	}
 
 	/**
-	 * Builder for TabbedPannelComponent
+	 * Builder for TabbedPanelComponent
 	 */
 	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties> {
 		/**
@@ -600,6 +603,32 @@ declare module 'azdata' {
 		 * The properties to display
 		 */
 		propertyItems?: PropertiesContainerItem[];
+	}
+
+	/**
+	 * Component to display text with an icon representing the severity
+	 */
+	export interface InfoBoxComponent extends Component, InfoBoxComponentProperties {
+	}
+
+	export type InfoBoxStyle = 'information' | 'warning' | 'error' | 'success';
+
+	/**
+	 * Properties for configuring a InfoBoxComponent
+	 */
+	export interface InfoBoxComponentProperties extends ComponentProperties {
+		/**
+		 * The style of the InfoBox
+		 */
+		style: InfoBoxStyle;
+		/**
+		 * The display text of the InfoBox
+		 */
+		text: string;
+		/**
+		 * Controls whether the text should be announced by the screen reader. Default value is false.
+		 */
+		announceText?: boolean;
 	}
 
 	export namespace nb {
@@ -668,6 +697,13 @@ declare module 'azdata' {
 			width?: DialogWidth;
 		}
 
+		export interface WizardPage extends ModelViewPanel {
+			/**
+			 * An optional name for the page. If provided it will be used for telemetry
+			 */
+			pageName?: string;
+		}
+
 		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
 		export type DialogStyle = 'normal' | 'flyout' | 'callout' | 'calloutCompact';
@@ -701,6 +737,13 @@ declare module 'azdata' {
 		 * @param width The width of the wizard, default value is 'narrow'
 		 */
 		export function createWizard(title: string, name?: string, width?: DialogWidth): Wizard;
+
+		/**
+		 * Create a wizard page with the given title, for inclusion in a wizard
+		 * @param title The title of the page
+		 * @param pageName The optional page name parameter will be used for telemetry
+		 */
+		export function createWizardPage(title: string, pageName?: string): WizardPage;
 	}
 
 	export namespace workspace {
@@ -883,24 +926,86 @@ declare module 'azdata' {
 
 	export interface TableComponent {
 		/**
-		 * Append data to an exsiting table data.
+		 * Append data to an existing table data.
 		 */
-		appendData(data: any[][]);
+		appendData(data: any[][]): void;
 	}
 
 	export interface IconColumnCellValue {
+		/**
+		 * The icon to be displayed.
+		 */
 		icon: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
-		ariaLabel: string;
+		/**
+		 * The title of the icon.
+		 */
+		title: string;
+	}
+
+	export interface ButtonColumnCellValue {
+		/**
+		 * The icon to be displayed.
+		 */
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		/**
+		 * The title of the button.
+		 */
+		title?: string;
+	}
+
+	export interface HyperlinkColumnCellValue {
+		/**
+		 * The icon to be displayed.
+		 */
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		/**
+		 * The title of the hyperlink.
+		 */
+		title?: string;
+
+		/**
+		 * The url to open.
+		 */
+		url?: string;
 	}
 
 	export enum ColumnType {
-		icon = 3
+		icon = 3,
+		hyperlink = 4
 	}
 
 	export interface TableColumn {
 		/**
-		* The text to display on the column heading. 'value' property will be used, if not specified
-		**/
+		 * The text to display on the column heading. 'value' property will be used, if not specified
+		 */
 		name?: string;
+	}
+
+	export interface IconColumnOptions {
+		/**
+		 * The icon to use for all the cells in this column.
+		 */
+		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+	}
+
+	export interface ButtonColumn extends IconColumnOptions, TableColumn {
+		/**
+		 * Whether to show the text, default value is false.
+		 */
+		showText?: boolean;
+	}
+
+	export interface HyperlinkColumn extends IconColumnOptions, TableColumn {
+	}
+
+	export interface CheckboxColumn extends TableColumn {
+		action: ActionOnCellCheckboxCheck;
+	}
+
+	export enum AzureResource {
+		/**
+		 * Microsoft Graph
+		 */
+		MsGraph = 7
 	}
 }

@@ -335,7 +335,7 @@ class WelcomePage extends Disposable {
 			}
 			const workspacesToShow = workspaces.slice(0, 5);
 			clearNode(ul);
-			await this.mapListEntries(workspacesToShow, fileService, container, ul);
+			await this.mapListEntries(workspacesToShow, container, ul);
 		}).then(undefined, onUnexpectedError);
 		this.addExtensionList(container, '.extension-list');
 		this.addExtensionPack(container, '.extensionPack');
@@ -469,21 +469,16 @@ class WelcomePage extends Disposable {
 		}, 3000);
 	}
 
-	private async createListEntries(container: HTMLElement, fileService: IFileService, fullPath: URI, windowOpenable: IWindowOpenable, relativePath: string): Promise<HTMLElement[]> {
+	private async createListEntries(container: HTMLElement, fullPath: string, windowOpenable: IWindowOpenable): Promise<HTMLElement[]> {
 		let result: HTMLElement[] = [];
-		const value = await fileService.resolve(fullPath);
-		let date = new Date(value.mtime);
-		let mtime: Date = date;
-		const options = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-		const lastOpened: string = mtime.toLocaleDateString(undefined, options);
-		const { name, parentPath } = splitName(relativePath);
+		const { name, parentPath } = splitName(fullPath);
 		const li = document.createElement('li');
 		const icon = document.createElement('i');
 		const a = document.createElement('a');
 		const span = document.createElement('span');
-		icon.title = relativePath;
+		icon.title = fullPath;
 		a.innerText = name;
-		a.title = relativePath;
+		a.title = fullPath;
 		a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
 		a.setAttribute('role', 'button');
 		a.href = 'javascript:void(0)';
@@ -503,8 +498,8 @@ class WelcomePage extends Disposable {
 		li.appendChild(a);
 		span.classList.add('path');
 		span.classList.add('detail');
-		span.innerText = lastOpened;
-		span.title = relativePath;
+		span.innerText = parentPath;
+		span.title = parentPath;
 		li.appendChild(span);
 		const ul = container.querySelector('.list');
 		ul.appendChild(li);
@@ -512,22 +507,20 @@ class WelcomePage extends Disposable {
 		return result;
 	}
 
-	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService: IFileService, container: HTMLElement, ul: HTMLElement): Promise<HTMLElement[]> {
+	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], container: HTMLElement, ul: HTMLElement): Promise<HTMLElement[]> {
 		const result: HTMLElement[] = [];
 		for (let i = 0; i < recents.length; i++) {
 			const recent = recents[i];
-			let relativePath: string;
-			let fullPath: URI;
+			let fullPath: string;
 			let windowOpenable: IWindowOpenable;
 			if (isRecentFolder(recent)) {
 				windowOpenable = { folderUri: recent.folderUri };
-				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
-				fullPath = recent.folderUri;
+				fullPath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
 			} else {
-				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
+				fullPath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
 				windowOpenable = { workspaceUri: recent.workspace.configPath };
 			}
-			const elements = await this.createListEntries(container, fileService, fullPath, windowOpenable, relativePath);
+			const elements = await this.createListEntries(container, fullPath, windowOpenable);
 			result.push(...elements);
 		}
 		return result;

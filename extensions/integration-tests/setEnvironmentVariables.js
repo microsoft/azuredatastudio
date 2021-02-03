@@ -57,7 +57,7 @@ if (!LAUNCH_OPTION) {
  * Below are the environment variable values that are not saved in AKV and might vary by machine
  */
 
-// Pyton for Notebooks
+// Python for Notebooks
 // This environment variable is required by notebook tests.
 // How to install it:
 // Open ADS and run command 'Configure Python for Notebooks' command and install it to the default folder,
@@ -73,7 +73,7 @@ const NOTEBOOK_PYTHON_INSTALL_PATH = path.join(os.homedir(), 'azuredatastudio-py
 
 // Environment variable value validation
 if (!fs.existsSync(NOTEBOOK_PYTHON_INSTALL_PATH)) {
-	const message = 'the specified Pyton install path does not exist.'
+	const message = 'the specified Python install path does not exist.'
 		+ os.EOL
 		+ 'if you have installed it, please update the NOTEBOOK_PYTHON_INSTALL_PATH variable in this script,'
 		+ os.EOL

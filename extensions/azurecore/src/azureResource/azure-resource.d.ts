@@ -8,6 +8,10 @@ declare module 'azureResource' {
 	import { DataProvider, Account, TreeItem } from 'azdata';
 	export namespace azureResource {
 
+		/**
+		 * AzureCore core extension supports following resource types of Azure Resource Graph.
+		 * To add more resources, please refer this guide: https://docs.microsoft.com/en-us/azure/governance/resource-graph/reference/supported-tables-resources
+		 */
 		export const enum AzureResourceType {
 			resourceGroup = 'microsoft.resources/subscriptions/resourcegroups',
 			sqlServer = 'microsoft.sql/servers',
@@ -18,7 +22,8 @@ declare module 'azureResource' {
 			kustoClusters = 'microsoft.kusto/clusters',
 			azureArcPostgresServer = 'microsoft.azuredata/postgresinstances',
 			postgresServer = 'microsoft.dbforpostgresql/servers',
-			azureArcService = 'microsoft.azuredata/datacontrollers'
+			azureArcService = 'microsoft.azuredata/datacontrollers',
+			storageAccount = 'microsoft.storage/storageaccounts',
 		}
 
 		export interface IAzureResourceProvider extends DataProvider {
@@ -75,7 +80,29 @@ declare module 'azureResource' {
 			fullName: string;
 			defaultDatabaseName: string;
 		}
+		export interface BlobContainer extends AzureResource { }
 
+		export interface FileShare extends AzureResource { }
 
+		export interface MigrationControllerProperties {
+			name: string;
+			subscriptionId: string;
+			resourceGroup: string;
+			location: string;
+			provisioningState: string;
+			integrationRuntimeState?: string;
+			isProvisioned?: boolean;
+		}
+
+		export interface MigrationController {
+			properties: MigrationControllerProperties;
+			location: string;
+			id: string;
+			name: string;
+			error: {
+				code: string,
+				message: string
+			}
+		}
 	}
 }

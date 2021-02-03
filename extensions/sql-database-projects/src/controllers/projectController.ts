@@ -30,15 +30,15 @@ import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialo
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 /**
- * Controller for managing project lifecycle
+ * Controller for managing lifecycle of projects
  */
 export class ProjectsController {
 	private netCoreTool: NetCoreTool;
 	private buildHelper: BuildHelper;
 
-	projects: Project[] = [];
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
 	constructor() {
@@ -56,39 +56,38 @@ export class ProjectsController {
 	 * @param folderUri
 	 * @param projectGuid
 	 */
-	public async createNewProject(newProjName: string, folderUri: vscode.Uri, makeOwnFolder: boolean, projectGuid?: string): Promise<string> {
-		if (projectGuid && !UUID.isUUID(projectGuid)) {
-			throw new Error(`Specified GUID is invalid: '${projectGuid}'`);
+	public async createNewProject(creationParams: NewProjectParams): Promise<string> {
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.createNewProject)
+			.withAdditionalProperties({ template: creationParams.projectTypeId })
+			.send();
+
+		if (creationParams.projectGuid && !UUID.isUUID(creationParams.projectGuid)) {
+			throw new Error(`Specified GUID is invalid: '${creationParams.projectGuid}'`);
 		}
 
 		const macroDict: Record<string, string> = {
-			'PROJECT_NAME': newProjName,
-			'PROJECT_GUID': projectGuid ?? UUID.generateUuid().toUpperCase()
+			'PROJECT_NAME': creationParams.newProjName,
+			'PROJECT_GUID': creationParams.projectGuid ?? UUID.generateUuid().toUpperCase()
 		};
 
-		let newProjFileContents = this.macroExpansion(templates.newSqlProjectTemplate, macroDict);
+		let newProjFileContents = templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
 
-		let newProjFileName = newProjName;
+		let newProjFileName = creationParams.newProjName;
 
 		if (!newProjFileName.toLowerCase().endsWith(constants.sqlprojExtension)) {
 			newProjFileName += constants.sqlprojExtension;
 		}
 
-		const newProjFilePath = makeOwnFolder ? path.join(folderUri.fsPath, path.parse(newProjFileName).name, newProjFileName) : path.join(folderUri.fsPath, newProjFileName);
+		const newProjFilePath = path.join(creationParams.folderUri.fsPath, path.parse(newProjFileName).name, newProjFileName);
 
-		let fileExists = false;
-		try {
-			await fs.access(newProjFilePath);
-			fileExists = true;
-		}
-		catch { } // file doesn't already exist
-
-		if (fileExists) {
+		if (await utils.exists(newProjFilePath)) {
 			throw new Error(constants.projectAlreadyExists(newProjFileName, path.parse(newProjFilePath).dir));
 		}
 
 		await fs.mkdir(path.dirname(newProjFilePath), { recursive: true });
 		await fs.writeFile(newProjFilePath, newProjFileContents);
+
+		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
 
 		return newProjFilePath;
 	}
@@ -108,6 +107,8 @@ export class ProjectsController {
 	public async buildProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<string> {
 		const project: Project = this.getProjectFromContext(context);
 
+		const startTime = new Date();
+
 		// Check mssql extension for project dlls (tracking issue #10273)
 		await this.buildHelper.createBuildDirFolder();
 
@@ -116,12 +117,21 @@ export class ProjectsController {
 			workingDirectory: project.projectFolderPath,
 			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath)
 		};
+
 		try {
 			await this.netCoreTool.runDotnetCommand(options);
 
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.build)
+				.withAdditionalMeasurements({ duration: new Date().getMilliseconds() - startTime.getMilliseconds() })
+				.send();
+
 			return project.dacpacOutputPath;
-		}
-		catch (err) {
+		} catch (err) {
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.build)
+				.withAdditionalProperties({ error: utils.getErrorMessage(err) })
+				.withAdditionalMeasurements({ duration: new Date().getMilliseconds() - startTime.getMilliseconds() })
+				.send();
+
 			vscode.window.showErrorMessage(constants.projBuildFailed(utils.getErrorMessage(err)));
 			return '';
 		}
@@ -151,9 +161,22 @@ export class ProjectsController {
 	}
 
 	public async publishProjectCallback(project: Project, settings: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
+		const telemetryProps: Record<string, string> = {};
+		const telemetryMeasures: Record<string, number> = {};
+		const buildStartTime = new Date().getMilliseconds();
+
 		const dacpacPath = await this.buildProject(project);
 
+		const buildEndTime = new Date().getMilliseconds();
+		telemetryMeasures.buildDuration = buildEndTime - buildStartTime;
+		telemetryProps.buildSucceeded = (dacpacPath !== '').toString();
+
 		if (!dacpacPath) {
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
+				.withAdditionalProperties(telemetryProps)
+				.withAdditionalMeasurements(telemetryMeasures)
+				.send();
+
 			return undefined; // buildProject() handles displaying the error
 		}
 
@@ -163,12 +186,41 @@ export class ProjectsController {
 
 		const dacFxService = await this.getDaxFxService();
 
-		if ((<IPublishSettings>settings).upgradeExisting) {
-			return await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdata.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
+		let result: mssql.DacFxResult;
+		telemetryProps.profileUsed = (settings.profileUsed ?? false).toString();
+		const actionStartTime = new Date().getMilliseconds();
+
+		try {
+			if ((<IPublishSettings>settings).upgradeExisting) {
+				telemetryProps.publishAction = 'deploy';
+				result = await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdata.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
+			}
+			else {
+				telemetryProps.publishAction = 'generateScript';
+				result = await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdata.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
+			}
+		} catch (err) {
+			const actionEndTime = new Date().getMilliseconds();
+			telemetryProps.actionDuration = (actionEndTime - actionStartTime).toString();
+			telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
+			telemetryProps.errorMessage = utils.getErrorMessage(err);
+
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
+				.withAdditionalProperties(telemetryProps)
+				.send();
+
+			throw err;
 		}
-		else {
-			return await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdata.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
-		}
+
+		const actionEndTime = new Date().getMilliseconds();
+		telemetryProps.actionDuration = (actionEndTime - actionStartTime).toString();
+		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
+			.withAdditionalProperties(telemetryProps)
+			.send();
+
+		return result;
 	}
 
 	public async readPublishProfileCallback(profileUri: vscode.Uri): Promise<PublishProfile> {
@@ -176,27 +228,42 @@ export class ProjectsController {
 			const dacFxService = await this.getDaxFxService();
 			const profile = await load(profileUri, dacFxService);
 			return profile;
-		}
-		catch (e) {
+		} catch (e) {
 			vscode.window.showErrorMessage(constants.profileReadError);
 			throw e;
 		}
 	}
 
 	public async schemaCompare(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
-		// check if schema compare extension is installed
-		if (vscode.extensions.getExtension(constants.schemaCompareExtensionId)) {
-			// build project
-			const dacpacPath = await this.buildProject(treeNode);
+		try {
+			// check if schema compare extension is installed
+			if (vscode.extensions.getExtension(constants.schemaCompareExtensionId)) {
+				// build project
+				const dacpacPath = await this.buildProject(treeNode);
 
-			// check that dacpac exists
-			if (await utils.exists(dacpacPath)) {
-				await vscode.commands.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
+				// check that dacpac exists
+				if (await utils.exists(dacpacPath)) {
+					TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked);
+					await vscode.commands.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
+				} else {
+					throw new Error(constants.buildFailedCannotStartSchemaCompare);
+				}
 			} else {
-				vscode.window.showErrorMessage(constants.buildFailedCannotStartSchemaCompare);
+				throw new Error(constants.schemaCompareNotInstalled);
 			}
-		} else {
-			vscode.window.showErrorMessage(constants.schemaCompareNotInstalled);
+		} catch (err) {
+			const props: Record<string, string> = {};
+			const message = utils.getErrorMessage(err);
+
+			if (message === constants.buildFailedCannotStartSchemaCompare || message === constants.schemaCompareNotInstalled) {
+				props.errorMessage = message;
+			}
+
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked)
+				.withAdditionalProperties(props)
+				.send();
+
+			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
 
@@ -256,7 +323,7 @@ export class ProjectsController {
 			}
 		}
 
-		const itemType = templates.projectScriptTypeMap()[itemTypeName.toLocaleLowerCase()];
+		const itemType = templates.get(itemTypeName);
 		const absolutePathToParent = path.join(project.projectFolderPath, relativePath);
 		let itemObjectName = await this.promptForNewObjectName(itemType, project, absolutePathToParent, constants.sqlFileExtension);
 
@@ -266,24 +333,35 @@ export class ProjectsController {
 			return; // user cancelled
 		}
 
-		const newFileText = this.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
+		const newFileText = templates.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
 		const relativeFilePath = path.join(relativePath, itemObjectName + constants.sqlFileExtension);
 
+		const telemetryProps: Record<string, string> = { itemType: itemType.type };
+		const telemetryMeasurements: Record<string, number> = {};
+
+		if (itemType.type === templates.preDeployScript) {
+			telemetryMeasurements.numPredeployScripts = project.preDeployScripts.length;
+		} else if (itemType.type === templates.postDeployScript) {
+			telemetryMeasurements.numPostdeployScripts = project.postDeployScripts.length;
+		}
+
 		try {
-			// check if file already exists
-			const absoluteFilePath = path.join(project.projectFolderPath, relativeFilePath);
-			const fileExists = await utils.exists(absoluteFilePath);
-
-			if (fileExists) {
-				throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
-			}
-
 			const newEntry = await project.addScriptItem(relativeFilePath, newFileText, itemType.type);
+
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree)
+				.withAdditionalProperties(telemetryProps)
+				.withAdditionalMeasurements(telemetryMeasurements)
+				.send();
 
 			await vscode.commands.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
 			treeDataProvider?.notifyTreeDataChanged();
 		} catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree)
+				.withAdditionalProperties(telemetryProps)
+				.withAdditionalMeasurements(telemetryMeasurements)
+				.send();
 		}
 	}
 
@@ -294,8 +372,10 @@ export class ProjectsController {
 		const fileEntry = this.getFileProjectEntry(project, node);
 
 		if (fileEntry) {
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
 			await project.exclude(fileEntry);
 		} else {
+			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
 			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, node.uri.path));
 		}
 
@@ -340,8 +420,16 @@ export class ProjectsController {
 		}
 
 		if (success) {
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.deleteObjectFromProject)
+				.withAdditionalProperties({ objectType: node.constructor.name })
+				.send();
+
 			this.refreshProjectsTree(context);
 		} else {
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.deleteObjectFromProject)
+				.withAdditionalProperties({ objectType: node.constructor.name })
+				.send();
+
 			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.uri.path));
 		}
 	}
@@ -388,6 +476,9 @@ export class ProjectsController {
 
 		try {
 			await vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(project.projectFilePath));
+
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.editProjectFile);
+
 			const projFileWatcher: vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher(project.projectFilePath);
 			this.projFileWatchers.set(project.projectFilePath, projFileWatcher);
 
@@ -460,6 +551,12 @@ export class ProjectsController {
 		return addDatabaseReferenceDialog;
 	}
 
+	/**
+	 * Adds a database reference to a project, after selections have been made in the dialog
+	 * @param project project to which to add the database reference
+	 * @param settings settings for the database reference
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
 	public async addDatabaseReferenceCallback(project: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings, context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		try {
 			if ((<IProjectReferenceSettings>settings).projectName !== undefined) {
@@ -494,19 +591,33 @@ export class ProjectsController {
 		}
 	}
 
+	/**
+	 * Validates the contents of an external streaming job's query against the last-built dacpac.
+	 * If no dacpac exists at the output path, one will be built first.
+	 * @param node a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
 	public async validateExternalStreamingJob(node: dataworkspace.WorkspaceTreeItem): Promise<mssql.ValidateStreamingJobResult> {
 		const project: Project = this.getProjectFromContext(node);
 
 		let dacpacPath: string = project.dacpacOutputPath;
+		const preExistingDacpac = await utils.exists(dacpacPath);
 
-		if (!await utils.exists(dacpacPath)) {
+		const telemetryProps: Record<string, string> = { preExistingDacpac: preExistingDacpac.toString() };
+
+
+		if (!preExistingDacpac) {
 			dacpacPath = await this.buildProject(project);
 		}
 
 		const streamingJobDefinition: string = (await fs.readFile(node.element.fileSystemUri.fsPath)).toString();
 
 		const dacFxService = await this.getDaxFxService();
+		const actionStartTime = new Date().getMilliseconds();
+
 		const result: mssql.ValidateStreamingJobResult = await dacFxService.validateStreamingJob(dacpacPath, streamingJobDefinition);
+
+		const duration = new Date().getMilliseconds() - actionStartTime;
+		telemetryProps.success = result.success.toString();
 
 		if (result.success) {
 			vscode.window.showInformationMessage(constants.externalStreamingJobValidationPassed);
@@ -514,6 +625,11 @@ export class ProjectsController {
 		else {
 			vscode.window.showErrorMessage(result.errorMessage);
 		}
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.runStreamingJobValidation)
+			.withAdditionalProperties(telemetryProps)
+			.withAdditionalMeasurements({ duration: duration })
+			.send();
 
 		return result;
 	}
@@ -547,6 +663,29 @@ export class ProjectsController {
 		}
 	}
 
+	private async addTemplateFiles(newProjFilePath: string, projectTypeId: string): Promise<void> {
+		if (projectTypeId === constants.emptySqlDatabaseProjectTypeId || newProjFilePath === '') {
+			return;
+		}
+
+		if (projectTypeId === constants.edgeSqlDatabaseProjectTypeId) {
+			const project = await Project.openProject(newProjFilePath);
+
+			await this.createFileFromTemplate(project, templates.get(templates.table), 'DataTable.sql', { 'OBJECT_NAME': 'DataTable' });
+			await this.createFileFromTemplate(project, templates.get(templates.dataSource), 'EdgeHubInputDataSource.sql', { 'OBJECT_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'edgehub://' });
+			await this.createFileFromTemplate(project, templates.get(templates.dataSource), 'SqlOutputDataSource.sql', { 'OBJECT_NAME': 'SqlOutputDataSource', 'LOCATION': 'sqlserver://tcp:.,1433' });
+			await this.createFileFromTemplate(project, templates.get(templates.fileFormat), 'StreamFileFormat.sql', { 'OBJECT_NAME': 'StreamFileFormat' });
+			await this.createFileFromTemplate(project, templates.get(templates.externalStream), 'EdgeHubInputStream.sql', { 'OBJECT_NAME': 'EdgeHubInputStream', 'DATA_SOURCE_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'input', 'OPTIONS': ',\n\tFILE_FORMAT = StreamFileFormat' });
+			await this.createFileFromTemplate(project, templates.get(templates.externalStream), 'SqlOutputStream.sql', { 'OBJECT_NAME': 'SqlOutputStream', 'DATA_SOURCE_NAME': 'SqlOutputDataSource', 'LOCATION': 'TSQLStreaming.dbo.DataTable', 'OPTIONS': '' });
+			await this.createFileFromTemplate(project, templates.get(templates.externalStreamingJob), 'EdgeStreamingJob.sql', { 'OBJECT_NAME': 'EdgeStreamingJob' });
+		}
+	}
+
+	private async createFileFromTemplate(project: Project, itemType: templates.ProjectScriptType, relativePath: string, expansionMacros: Record<string, string>): Promise<void> {
+		const newFileText = templates.macroExpansion(itemType.templateScript, expansionMacros);
+		await project.addScriptItem(relativePath, newFileText, itemType.type);
+	}
+
 	private getProjectFromContext(context: Project | BaseProjectTreeItem | dataworkspace.WorkspaceTreeItem): Project {
 		if ('element' in context) {
 			return context.element.root.project;
@@ -570,21 +709,7 @@ export class ProjectsController {
 		return (ext.exports as mssql.IExtension).dacFx;
 	}
 
-	private macroExpansion(template: string, macroDict: Record<string, string>): string {
-		const macroIndicator = '@@';
-		let output = template;
 
-		for (const macro in macroDict) {
-			// check if value contains the macroIndicator, which could break expansion for successive macros
-			if (macroDict[macro].includes(macroIndicator)) {
-				throw new Error(`Macro value ${macroDict[macro]} is invalid because it contains ${macroIndicator}`);
-			}
-
-			output = output.replace(new RegExp(macroIndicator + macro + macroIndicator, 'g'), macroDict[macro]);
-		}
-
-		return output;
-	}
 
 	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: Project, folderPath: string, fileExtension?: string): Promise<string | undefined> {
 		const suggestedName = itemType.friendlyName.replace(/\s+/g, '');
@@ -630,23 +755,30 @@ export class ProjectsController {
 		try {
 			const workspaceApi = utils.getDataWorkspaceExtensionApi();
 
-			const newProjFolderUri = model.filePath;
+			const validateWorkspace = await workspaceApi.validateWorkspace();
+			if (validateWorkspace) {
+				const newProjFolderUri = model.filePath;
 
-			const newProjFilePath = await this.createNewProject(model.projName, vscode.Uri.file(newProjFolderUri), true);
-			model.filePath = path.dirname(newProjFilePath);
-			this.setFilePath(model);
+				const newProjFilePath = await this.createNewProject({
+					newProjName: model.projName,
+					folderUri: vscode.Uri.file(newProjFolderUri),
+					projectTypeId: constants.emptySqlDatabaseProjectTypeId
+				});
 
-			const project = await Project.openProject(newProjFilePath);
-			await this.createProjectFromDatabaseApiCall(model); // Call ExtractAPI in DacFx Service
-			let fileFolderList: string[] = model.extractTarget === mssql.ExtractTarget.file ? [model.filePath] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
+				model.filePath = path.dirname(newProjFilePath);
+				this.setFilePath(model);
 
-			await project.addToProject(fileFolderList); // Add generated file structure to the project
+				const project = await Project.openProject(newProjFilePath);
+				await this.createProjectFromDatabaseApiCall(model); // Call ExtractAPI in DacFx Service
+				let fileFolderList: string[] = model.extractTarget === mssql.ExtractTarget.file ? [model.filePath] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
 
-			// add project to workspace
-			workspaceApi.showProjectsView();
-			await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
-		}
-		catch (err) {
+				await project.addToProject(fileFolderList); // Add generated file structure to the project
+
+				// add project to workspace
+				workspaceApi.showProjectsView();
+				await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)], model.newWorkspaceFilePath);
+			}
+		} catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
@@ -717,4 +849,11 @@ export class ProjectsController {
 	}
 
 	//#endregion
+}
+
+export interface NewProjectParams {
+	newProjName: string;
+	folderUri: vscode.Uri;
+	projectTypeId: string;
+	projectGuid?: string;
 }

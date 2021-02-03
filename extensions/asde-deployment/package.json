@@ -2,7 +2,7 @@
   "name": "asde-deployment",
   "displayName": "%extension-displayName%",
   "description": "%extension-description%",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -338,11 +338,13 @@
                           "confirmationRequired": true,
                           "confirmationLabel": "%vm_password_confirm%",
                           "required": true,
-                          "validations" : [{
-                            "type": "regex_match",
-                            "regex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])[A-Za-z\\d\\W_]{12,123}$",
-                            "description": "%vm_password_validation_error_message%"
-                          }]
+                          "validations": [
+                            {
+                              "type": "regex_match",
+                              "regex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])[A-Za-z\\d\\W_]{12,123}$",
+                              "description": "%vm_password_validation_error_message%"
+                            }
+                          ]
                         }
                       ]
                     },
@@ -580,19 +582,22 @@
             "when": "type=azure-multi-device"
           }
         ],
-        "agreement": {
-          "template": "%edge-agreement%",
-          "links": [
-            {
-              "text": "%microsoft-privacy-statement%",
-              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
-            },
-            {
-              "text": "%edge-eula%",
-              "url": "https://go.microsoft.com/fwlink/?linkid=2128283"
-            }
-          ]
-        }
+        "agreements": [
+          {
+            "template": "%edge-agreement%",
+            "links": [
+              {
+                "text": "%microsoft-privacy-statement%",
+                "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+              },
+              {
+                "text": "%edge-eula%",
+                "url": "https://go.microsoft.com/fwlink/?linkid=2128283"
+              }
+            ],
+            "when": "true"
+          }
+        ]
       }
     ]
   },

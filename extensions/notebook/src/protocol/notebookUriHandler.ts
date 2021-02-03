@@ -8,7 +8,6 @@ import * as azdata from 'azdata';
 
 import * as request from 'request';
 import * as path from 'path';
-import * as querystring from 'querystring';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 import { IQuestion, QuestionTypes } from '../prompts/question';
@@ -33,15 +32,42 @@ export class NotebookUriHandler implements vscode.UriHandler {
 				vscode.window.showErrorMessage(localize('notebook.unsupportedAction', "Action {0} is not supported for this handler", uri.path));
 		}
 	}
-
+	/**
+	 * Our Azure Data Studio URIs follow the standard URI format, and we currently only support https and http URI schemes
+	 * azuredatastudio://microsoft.notebook/open?url=https://
+	 * azuredatastudio://microsoft.notebook/open?url=http://
+	 *
+	 * Example of URI (encoded):
+	 * azuredatastudio://microsoft.notebook/open?url=https%3A%2F%2Fraw.githubusercontent.com%2FVasuBhog%2FAzureDataStudio-Notebooks%2Fmain%2FDemo_Parameterization%2FInput.ipynb
+	 *
+	 * We also support parameters added to the URI for parameterization scenarios
+	 *
+	 * Parameters via the URI are formatted by adding the parameters after the .ipynb with a
+	 * query '?' and use '&' to distinguish a new parameter
+	 *
+	 * Example of Parameters query:
+	 * ...Input.ipynb?x=1&y=2'
+	 *
+	 * Encoded URI with parameters:
+	 * azuredatastudio://microsoft.notebook/open?url=https%3A%2F%2Fraw.githubusercontent.com%2FVasuBhog%2FAzureDataStudio-Notebooks%2Fmain%2FDemo_Parameterization%2FInput.ipynb%3Fx%3D1%26y%3D2
+	 * Decoded URI with parameters:
+	 * azuredatastudio://microsoft.notebook/open?url=https://raw.githubusercontent.com/VasuBhog/AzureDataStudio-Notebooks/main/Demo_Parameterization/Input.ipynb?x=1&y=2
+	 */
 	private open(uri: vscode.Uri): Promise<void> {
-		const data = querystring.parse(uri.query);
+		let data: string;
+		// We ensure that the URI is formatted properly
+		let urlIndex = uri.query.indexOf('url=');
+		if (urlIndex >= 0) {
+			// Querystring can not be used as it incorrectly turns parameters attached
+			// to the URI query into key/value pairs and would then fail to open the URI
+			data = uri.query.substr(urlIndex + 4);
+		}
 
-		if (!data.url) {
+		if (!data) {
 			console.warn('Failed to open URI:', uri);
 		}
 
-		return this.openNotebook(data.url);
+		return this.openNotebook(data);
 	}
 
 	private async openNotebook(url: string | string[]): Promise<void> {
@@ -70,7 +96,8 @@ export class NotebookUriHandler implements vscode.UriHandler {
 			}
 
 			let contents = await this.download(url);
-			let untitledUri = this.getUntitledUri(path.basename(uri.fsPath));
+			let untitledUriPath = this.getUntitledUriPath(path.basename(uri.fsPath));
+			let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: untitledUriPath });
 			if (path.extname(uri.fsPath) === '.ipynb') {
 				await azdata.nb.showNotebookDocument(untitledUri, {
 					initialContent: contents,
@@ -112,7 +139,7 @@ export class NotebookUriHandler implements vscode.UriHandler {
 		});
 	}
 
-	private getUntitledUri(originalTitle: string): vscode.Uri {
+	private getUntitledUriPath(originalTitle: string): string {
 		let title = originalTitle;
 		let nextVal = 0;
 		let ext = path.extname(title);
@@ -126,6 +153,6 @@ export class NotebookUriHandler implements vscode.UriHandler {
 			}
 			nextVal++;
 		}
-		return vscode.Uri.parse(`untitled:${title}`);
+		return title;
 	}
 }

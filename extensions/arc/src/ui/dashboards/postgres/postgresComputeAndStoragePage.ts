@@ -76,7 +76,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component();
 
 		const workerNodeslink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-			label: loc.addingWokerNodes,
+			label: loc.addingWorkerNodes,
 			url: 'https://docs.microsoft.com/azure/azure-arc/data/scale-up-down-postgresql-hyperscale-server-group-using-cli',
 			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
@@ -155,14 +155,23 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
+							let session: azdataExt.AzdataSession | undefined = undefined;
 							try {
+								session = await this._postgresModel.controllerModel.acquireAzdataSession();
 								await this._azdataApi.azdata.arc.postgres.server.edit(
-									this._postgresModel.info.name, this.saveArgs);
+									this._postgresModel.info.name,
+									this.saveArgs,
+									this._postgresModel.engineVersion,
+									this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+									session
+								);
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since
 								// the edit wasn't successfully applied
 								this.saveButton!.enabled = true;
 								throw err;
+							} finally {
+								session?.dispose();
 							}
 							await this._postgresModel.refresh();
 						}
@@ -225,7 +234,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.coresLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 1,
-			validationErrorMessage: loc.coresValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
@@ -243,7 +251,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.coresRequestBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 1,
-			validationErrorMessage: loc.coresValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
@@ -334,8 +341,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		const information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			iconPath: IconPathHelper.information,
 			title: loc.workerNodesInformation,
-			width: '12px',
-			height: '12px',
+			width: '15px',
+			height: '15px',
 			enabled: false
 		}).component();
 
@@ -427,8 +434,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		const information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			iconPath: IconPathHelper.information,
 			title: loc.postgresConfigurationInformation,
-			width: '12px',
-			height: '12px',
+			width: '15px',
+			height: '15px',
 			enabled: false
 		}).component();
 
@@ -448,6 +455,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
+		this.coresRequestBox!.validationErrorMessage = loc.validationMin(this.coresRequestBox!.min!);
 		this.coresRequestBox!.placeHolder = currentCPUSize;
 		this.coresRequestBox!.value = '';
 		this.saveArgs.coresRequest = undefined;
@@ -458,6 +466,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
+		this.coresLimitBox!.validationErrorMessage = loc.validationMin(this.coresLimitBox!.min!);
 		this.coresLimitBox!.placeHolder = currentCPUSize;
 		this.coresLimitBox!.value = '';
 		this.saveArgs.coresLimit = undefined;

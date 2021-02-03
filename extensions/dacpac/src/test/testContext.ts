@@ -88,6 +88,7 @@ export function createViewContext(): ViewTestContext {
 			label: '',
 			checked: false,
 			onDidClick: onClick.event,
+			onDidChangeCheckedState: onValueChanged.event
 		});
 		return button;
 	};
@@ -311,7 +312,8 @@ export function createViewContext(): ViewTestContext {
 			hyperlink: () => undefined!,
 			tabbedPanel: undefined!,
 			separator: undefined!,
-			propertiesContainer: undefined!
+			propertiesContainer: undefined!,
+			infoBox: undefined!
 		}
 	};
 	return {

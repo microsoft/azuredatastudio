@@ -9,9 +9,15 @@
 
 const withDefaults = require('../shared.webpack.config');
 
+const externals = {
+	'applicationinsights-native-metrics': 'commonjs applicationinsights-native-metrics',
+	'@opentelemetry/tracing': 'commonjs @opentelemetry/tracing'
+};
+
 module.exports = withDefaults({
 	context: __dirname,
 	entry: {
 		main: './src/main.ts'
-	}
+	},
+	externals: externals
 });
