@@ -43,7 +43,12 @@ export interface PythonInstallSettings {
 	packageUpgradeOnly?: boolean;
 }
 export interface IJupyterServerInstallation {
-	installCondaPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
+	/**
+	 * Installs the specified packages using pip
+	 * @param packages The list of packages to install
+	 * @param useMinVersionDefault Whether we install each package as a min version (>=) or exact version (==) by default
+	 */
+	installCondaPackages(packages: PythonPkgDetails[], useMinVersionDefault: boolean): Promise<void>;
 	configurePackagePaths(): Promise<void>;
 	startInstallProcess(forceInstall: boolean, installSettings?: PythonInstallSettings): Promise<void>;
 	getInstalledPipPackages(): Promise<PythonPkgDetails[]>;
@@ -53,7 +58,12 @@ export interface IJupyterServerInstallation {
 	getCondaExePath(): string;
 	executeBufferedCommand(command: string): Promise<string>;
 	executeStreamedCommand(command: string): Promise<void>;
-	installPipPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
+	/**
+	 * Installs the specified packages using pip
+	 * @param packages The list of packages to install
+	 * @param useMinVersionDefault Whether we install each package as a min version (>=) or exact version (==) by default
+	 */
+	installPipPackages(packages: PythonPkgDetails[], useMinVersionDefault: boolean): Promise<void>;
 	uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void>;
 	pythonExecutable: string;
 	pythonInstallationPath: string;
@@ -116,12 +126,18 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let sparkPackages = [
 			jupyterPkg,
 			{
+				name: 'cryptography',
+				version: '3.2.1',
+				useExactVersion: true
+			},
+			{
 				name: 'sparkmagic',
 				version: '0.12.9'
 			}, {
 				name: 'pandas',
 				version: '0.24.2'
-			}];
+			}
+		];
 		this._requiredKernelPackages.set(constants.pysparkDisplayName, sparkPackages);
 		this._requiredKernelPackages.set(constants.sparkScalaDisplayName, sparkPackages);
 		this._requiredKernelPackages.set(constants.sparkRDisplayName, sparkPackages);
@@ -517,13 +533,16 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 	}
 
-	public installPipPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void> {
+	public installPipPackages(packages: PythonPkgDetails[], useMinVersionDefault: boolean): Promise<void> {
 		if (!packages || packages.length === 0) {
 			return Promise.resolve();
 		}
 
-		let versionSpecifier = useMinVersion ? '>=' : '==';
-		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
+		let versionSpecifierDefault = useMinVersionDefault ? '>=' : '==';
+		let packagesStr = packages.map(pkg => {
+			const pkgVersionSpecifier = pkg.installExactVersion ? '==' : versionSpecifierDefault;
+			return `"${pkg.name}${pkgVersionSpecifier}${pkg.version}"`;
+		}).join(' ');
 		let cmd = `"${this.pythonExecutable}" -m pip install --user ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
@@ -566,13 +585,16 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 	}
 
-	public installCondaPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void> {
+	public installCondaPackages(packages: PythonPkgDetails[], useMinVersionDefault: boolean): Promise<void> {
 		if (!packages || packages.length === 0) {
 			return Promise.resolve();
 		}
 
-		let versionSpecifier = useMinVersion ? '>=' : '==';
-		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
+		let versionSpecifierDefault = useMinVersionDefault ? '>=' : '==';
+		let packagesStr = packages.map(pkg => {
+			const pkgVersionSpecifier = pkg.installExactVersion ? '==' : versionSpecifierDefault;
+			return `"${pkg.name}${pkgVersionSpecifier}${pkg.version}"`;
+		}).join(' ');
 		let condaExe = this.getCondaExePath();
 		let cmd = `"${condaExe}" install -c conda-forge -y ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
@@ -736,6 +758,10 @@ export interface PythonPkgDetails {
 	name: string;
 	version: string;
 	channel?: string;
+	/**
+	 * Whether to always install the exact version of the package (==)
+	 */
+	installExactVersion?: boolean
 }
 
 export interface PipPackageOverview {
