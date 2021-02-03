@@ -15,7 +15,7 @@ import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBa
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { equals as arrayEquals } from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 
@@ -309,5 +309,25 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 				}
 			});
 		}
+	}
+
+	private _filteredIndexes: number[] | undefined = undefined;
+
+	public doAction(action: string, ...args: any[]): void {
+		if (action === ModelViewAction.Filter) {
+			this._filteredIndexes = args[0];
+		}
+		this._changeRef.detectChanges();
+	}
+
+	/**
+	 * Checks whether a given row is filtered (not visible)
+	 * @param row The row to check
+	 */
+	public isFiltered(row: number): boolean {
+		if (this._filteredIndexes === undefined) {
+			return false;
+		}
+		return this._filteredIndexes.includes(row) ? false : true;
 	}
 }
