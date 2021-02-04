@@ -26,8 +26,9 @@ export abstract class DashboardPage extends InitializingComponent {
 			title: this.title,
 			id: this.id,
 			icon: this.icon,
-			content: this.container,
-			toolbar: this.toolbarContainer
+			// Get toolbar first since things in the container might depend on these being created
+			toolbar: this.toolbarContainer,
+			content: this.container
 		};
 	}
 
