@@ -112,7 +112,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 		dialogDetails = {
 			title: 'dialog1',
 			width: 'narrow',
-			dialogStyle: 'calloutCompact',
+			dialogStyle: 'callout',
 			dialogPosition: 'left',
 			renderHeader: true,
 			renderFooter: true,

@@ -744,7 +744,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		/**
 		 * Only peform actions on footer if it is shown.
 		 */
-		if (dialog.renderFooter === undefined || dialog.renderFooter) {
+		if (dialog.renderFooter !== false) {
 			this.updateButton(dialog.okButton);
 			this.updateButton(dialog.cancelButton);
 		}

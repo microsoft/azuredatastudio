@@ -58,7 +58,7 @@ export class DialogModal extends Modal {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
-		if (this._modalOptions.renderFooter === true || this._modalOptions.renderFooter === undefined) {
+		if (this._modalOptions.renderFooter !== false) {
 			this._modalOptions.renderFooter = true;
 		}
 

@@ -18,6 +18,7 @@ import { Position } from 'vs/editor/common/core/position';
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
 import { CalloutDialog, CalloutType } from 'sql/workbench/browser/modal/calloutDialog';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class TransformMarkdownAction extends Action {
 
@@ -207,6 +208,10 @@ export class MarkdownTextTransformer {
 		const triggerPosY = triggerElement.getBoundingClientRect().top;
 		const triggerHeight = triggerElement.offsetHeight;
 		const triggerWidth = triggerElement.offsetWidth;
+		/**
+		 * Width value here reflects designs for Notebook callouts.
+		 */
+		const width: DialogWidth = 452;
 
 		const calloutType: CalloutType = type === MarkdownButtonType.IMAGE_PREVIEW ? 'IMAGE' : 'LINK';
 
@@ -214,7 +219,7 @@ export class MarkdownTextTransformer {
 
 		if (!this._callout) {
 			const dialogProperties = { xPos: triggerPosX, yPos: triggerPosY, width: triggerWidth, height: triggerHeight };
-			this._callout = this._instantiationService.createInstance(CalloutDialog, calloutType, title, dialogProperties);
+			this._callout = this._instantiationService.createInstance(CalloutDialog, calloutType, title, width, dialogProperties);
 			this._callout.render();
 		}
 		let calloutOptions = await this._callout.open();

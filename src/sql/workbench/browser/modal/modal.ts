@@ -59,7 +59,7 @@ export interface IModalDialogStyles {
 }
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
-export type DialogStyle = 'normal' | 'flyout' | 'callout' | 'calloutCompact';
+export type DialogStyle = 'normal' | 'flyout' | 'callout';
 export type DialogPosition = 'left' | 'below';
 
 export interface IDialogProperties {
@@ -101,13 +101,6 @@ const defaultOptions: IModalOptions = {
 	renderFooter: true,
 	dialogProperties: undefined
 };
-
-/**
- * Pixel width of standard and compact callouts.
- * Values come from modal.css, imported at top of this file.
- */
-const calloutWidth: number = 452;
-const calloutCompactWidth: number = 288;
 
 const tabbableElementsQuerySelector = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]';
 
@@ -206,12 +199,11 @@ export abstract class Modal extends Disposable implements IThemable {
 		let builderClass = '.modal.fade';
 		builderClass += this._modalOptions.dialogStyle === 'flyout' ? '.flyout-dialog'
 			: this._modalOptions.dialogStyle === 'callout' ? '.callout-dialog'
-				: this._modalOptions.dialogStyle === 'calloutCompact' ? '.callout-dialog.compact'
-					: '';
+				: '';
 
 		this._bodyContainer = DOM.$(`${builderClass}`, { role: 'dialog', 'aria-label': this._title });
 
-		if (this._modalOptions.dialogStyle === 'callout' || this._modalOptions.dialogStyle === 'calloutCompact') {
+		if (this._modalOptions.dialogStyle === 'callout') {
 			top = 0;
 		} else {
 			top = this.layoutService.offset?.top ?? 0;
@@ -219,8 +211,8 @@ export abstract class Modal extends Disposable implements IThemable {
 		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
 
-		if (this._modalOptions.dialogStyle === 'callout' || this._modalOptions.dialogStyle === 'calloutCompact') {
-			let arrowClass = `.arrow.from-${this._modalOptions.dialogPosition}`;
+		if (this._modalOptions.dialogStyle === 'callout') {
+			let arrowClass = `.callout-arrow.from-${this._modalOptions.dialogPosition}`;
 			this._modalContent = DOM.append(this._modalDialog, DOM.$(`.modal-content${arrowClass}`));
 		} else {
 			this._modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
@@ -232,7 +224,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalDialog.classList.add(`${this._modalOptions.width}-dialog`);
 		}
 
-		if (this._modalOptions.dialogStyle === 'callout' || this._modalOptions.dialogStyle === 'calloutCompact') {
+		if (this._modalOptions.dialogStyle === 'callout') {
 			this._register(DOM.addDisposableListener(this._bodyContainer, DOM.EventType.CLICK, (e) => this.handleClickOffModal(e)));
 		}
 
@@ -292,7 +284,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		this._modalBodySection = DOM.append(this._modalContent, DOM.$(`.${modalBodyClass}`));
 		this.renderBody(this._modalBodySection);
 
-		if (this._modalOptions.renderFooter || this._modalOptions.renderFooter === undefined) {
+		if (this._modalOptions.renderFooter !== false) {
 			if (!this._modalOptions.isAngular) {
 				this._modalFooterSection = DOM.append(this._modalContent, DOM.$('.modal-footer'));
 				if (this._modalOptions.hasSpinner) {
@@ -425,8 +417,11 @@ export abstract class Modal extends Disposable implements IThemable {
 		 * In the case of 'below', dialog will be positioned beneath the trigger and arrow aligned with trigger.
 		 * In the case of 'left', dialog will be positioned left of the trigger and arrow aligned with trigger.
 		 */
-		if (this._modalOptions.dialogStyle === 'callout' || this._modalOptions.dialogStyle === 'calloutCompact') {
-			const modalPxWidth: number = this._modalOptions.dialogStyle === 'callout' ? calloutWidth : calloutCompactWidth;
+		if (this._modalOptions.dialogStyle === 'callout') {
+			let dialogWidth;
+			if (typeof this._modalOptions.width === 'number') {
+				dialogWidth = this._modalOptions.width;
+			}
 
 			if (this._modalOptions.dialogPosition === 'below') {
 				if (this._modalOptions.dialogProperties) {
@@ -440,14 +435,14 @@ export abstract class Modal extends Disposable implements IThemable {
 
 			if (this._modalOptions.dialogPosition === 'left') {
 				if (this._modalOptions.dialogProperties) {
-					this._modalDialog.style.left = `${this._modalOptions.positionX - (modalPxWidth + this._modalOptions.dialogProperties.width)}px`;
+					this._modalDialog.style.left = `${this._modalOptions.positionX - (dialogWidth + this._modalOptions.dialogProperties.width)}px`;
 					this._modalDialog.style.top = `${this._modalOptions.positionY - this._modalOptions.dialogProperties.height * 2}px`;
 				} else {
-					this._modalDialog.style.left = `${this._modalOptions.positionX - (modalPxWidth)}px`;
+					this._modalDialog.style.left = `${this._modalOptions.positionX - (dialogWidth)}px`;
 					this._modalDialog.style.top = `${this._modalOptions.positionY}px`;
 				}
 			}
-			this._modalDialog.style.width = `${modalPxWidth}px`;
+			this._modalDialog.style.width = `${dialogWidth}px`;
 		}
 	}
 
@@ -675,7 +670,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		this._dialogForeground = styles.dialogForeground ? styles.dialogForeground : this._themeService.getColorTheme().getColor(editorWidgetForeground);
 		this._dialogBorder = styles.dialogBorder ? styles.dialogBorder : this._themeService.getColorTheme().getColor(notebookToolbarLines);
 
-		if (this._modalOptions.dialogStyle === 'callout' || this._modalOptions.dialogStyle === 'calloutCompact') {
+		if (this._modalOptions.dialogStyle === 'callout') {
 			this._dialogHeaderAndFooterBackground = styles.dialogBodyBackground ? styles.dialogBodyBackground : this._themeService.getColorTheme().getColor(SIDE_BAR_BACKGROUND);
 		} else {
 			this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground ? styles.dialogHeaderAndFooterBackground : this._themeService.getColorTheme().getColor(SIDE_BAR_BACKGROUND);
@@ -694,7 +689,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		const calloutStyle: CSSStyleDeclaration = this._modalDialog.style;
 
 		let foregroundRgb: Color;
-		if (!foreground === undefined) {
+		if (foreground !== undefined) {
 			foregroundRgb = Color.Format.CSS.parseHex(foreground);
 		}
 
@@ -709,7 +704,7 @@ export abstract class Modal extends Disposable implements IThemable {
 
 			calloutStyle.setProperty('--border', `${border}`);
 			calloutStyle.setProperty('--bodybackground', `${bodyBackground}`);
-			if (!foreground === undefined) {
+			if (foreground !== undefined) {
 				calloutStyle.setProperty('--foreground', `
 					${foregroundRgb.rgba.r},
 					${foregroundRgb.rgba.g},
@@ -721,7 +716,7 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		if (this._modalHeaderSection) {
 			this._modalHeaderSection.style.backgroundColor = headerAndFooterBackground;
-			if (!(this._modalOptions.dialogStyle === 'callout' || this._modalOptions.dialogStyle === 'calloutCompact')) {
+			if (!(this._modalOptions.dialogStyle === 'callout')) {
 				this._modalHeaderSection.style.borderBottomWidth = border ? '1px' : '';
 				this._modalHeaderSection.style.borderBottomStyle = border ? 'solid' : '';
 			}

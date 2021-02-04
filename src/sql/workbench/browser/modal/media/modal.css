@@ -17,12 +17,6 @@
 	border-style: solid;
 	border-width: 1px;
 }
-.modal.callout-dialog .modal-dialog {
-	width: 452px;
-}
-.modal.callout-dialog.compact .modal-dialog {
-	width: 288px;
-}
 
 .modal:not(.flyout-dialog):not(.callout-dialog) .modal-dialog {
 	margin: auto;
@@ -71,7 +65,7 @@
 }
 
 /* Correct the arrow appearance for HC theme */
-.arrow:before {
+.callout-arrow:before {
 	border-width: 1px;
 	border-style: solid;
 	border-color:
@@ -86,13 +80,13 @@
 	position: absolute;
 	width: 0;
 }
-.arrow.from-below:before {
+.callout-arrow.from-below:before {
 	border-width: 0.5em;
 	left: 2em;
 	top: -0.2em;
 	transform: rotate(135deg);
 }
-.arrow.from-left:before {
+.callout-arrow.from-left:before {
 	background-color: var(--bodybackground);
 	height: 26px;
 	right: -13px;
@@ -101,7 +95,7 @@
 	width: 26px;
 }
 
-.hc-black .arrow:before {
+.hc-black .callout-arrow:before {
 	background-color: var(--bodybackground);
 	border-color:
 		transparent
@@ -113,10 +107,10 @@
 	height: 0.8em;
 	width: 0.8em;
 }
-.hc-black .arrow.from-below:before {
+.hc-black .callout-arrow.from-below:before {
 	top: -0.4em;
 }
-.hc-black .arrow.from-left:before {
+.hc-black .callout-arrow.from-left:before {
 	height: 2em;
 	right: -1.2em;
 	width: 2em;
@@ -246,7 +240,7 @@
 }
 
 .modal .modal-footer {
-	border-top: 1px solid #e1e1e1;
+	border-top: 1px solid #E1E1E1;
 	display: flex;
 }
 
@@ -291,20 +285,20 @@
 
 .vs .modal.flyout-dialog .dialog-message.error,
 .vs-dark .modal.flyout-dialog .dialog-message.error {
-	background-color: #b62e00 !important;
-	color: #ffffff !important;
+	background-color: #B62E00 !important;
+	color: #FFFFFF !important;
 }
 
 .vs .modal.flyout-dialog .dialog-message.warning,
 .vs-dark .modal.flyout-dialog .dialog-message.warning {
-	background-color: #f9e385 !important;
-	color: #4a4a4a !important;
+	background-color: #F9E385 !important;
+	color: #4A4A4A !important;
 }
 
 .vs .modal.flyout-dialog .dialog-message.info,
 .vs-dark .modal.flyout-dialog .dialog-message.info {
-	background-color: #096cc9 !important;
-	color: #ffffff !important;
+	background-color: #096CC9 !important;
+	color: #FFFFFF !important;
 }
 
 .modal.flyout-dialog .dialog-message-header {
@@ -342,7 +336,7 @@
 
 .modal.flyout-dialog .dialog-message.info .dialog-message-button > a:focus,
 .modal.flyout-dialog .dialog-message.error .dialog-message-button > a:focus {
-	outline-color: #ffffff;
+	outline-color: #FFFFFF;
 }
 
 .modal.flyout-dialog .dialog-message.warning .dialog-message-button > a:focus {

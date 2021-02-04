@@ -305,7 +305,7 @@ export interface IModelViewWizardDetails {
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
-export type DialogStyle = 'normal' | 'flyout' | 'callout' | 'calloutCompact';
+export type DialogStyle = 'normal' | 'flyout' | 'callout';
 
 export type DialogPosition = 'left' | 'below';
 

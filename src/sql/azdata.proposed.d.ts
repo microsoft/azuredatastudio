@@ -660,7 +660,7 @@ declare module 'azdata' {
 			 */
 			width?: DialogWidth;
 			/**
-			 * Dialog style type: normal, flyout, callout and calloutCompact.
+			 * Dialog style type: normal, flyout, callout.
 			 * Default is 'flyout'.
 			 */
 			dialogStyle?: DialogStyle;
@@ -706,10 +706,21 @@ declare module 'azdata' {
 
 		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
-		export type DialogStyle = 'normal' | 'flyout' | 'callout' | 'calloutCompact';
+		/**
+		 * These dialog styles affect how the dialog dispalys in the application.
+		 * normal: Positioned top and centered.
+		 * flyout (default): Existing panel appearance - positioned full screen height, opens from the right side of the application.
+		 * callout: Opens below or beside button clicked, contains footer section with buttons.
+		 */
+		export type DialogStyle = 'normal' | 'flyout' | 'callout';
 
 		export type DialogPosition = 'left' | 'below';
 
+		/**
+		 * These are positional data prior to opening of dialog.
+		 * They are needed for positioning relative to the button which triggers the opening of the dialog.
+		 * Default is undefined.
+		 */
 		export interface IDialogProperties {
 			xPos: number,
 			yPos: number,

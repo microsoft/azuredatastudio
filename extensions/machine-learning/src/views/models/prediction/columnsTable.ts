@@ -11,7 +11,7 @@ import { IDataComponent } from '../../interfaces';
 import { PredictColumn, DatabaseTable, TableColumn } from '../../../prediction/interfaces';
 import { ModelParameter, ModelParameters } from '../../../modelManagement/interfaces';
 
-export const _warningButtonDimensions = {
+const WarningButtonDimensions = {
 	height: 16,
 	width: 16
 };
@@ -213,8 +213,8 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				let warningButtonProperties = {
 					xPos: 0,
 					yPos: 0,
-					width: _warningButtonDimensions.width,
-					height: _warningButtonDimensions.height
+					width: WarningButtonDimensions.width,
+					height: WarningButtonDimensions.height
 				};
 				this.openWarningCalloutDialog(constants.columnDataTypeMismatchWarningHeading, 'output-table-row-dialog', constants.outputColumnDataTypeNotSupportedWarning, constants.learnMoreLink, constants.mlExtDocLink, warningButtonProperties);
 			});
@@ -313,8 +313,8 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				let warningButtonProperties = {
 					xPos: 0,
 					yPos: 0,
-					width: _warningButtonDimensions.width,
-					height: _warningButtonDimensions.height
+					width: WarningButtonDimensions.width,
+					height: WarningButtonDimensions.height
 				};
 				this.openWarningCalloutDialog(constants.columnDataTypeMismatchWarningHeading, 'input-table-row-dialog', constants.columnDataTypeMismatchWarning, constants.learnMoreLink, constants.mlExtDocLink, warningButtonProperties);
 			});
@@ -386,28 +386,29 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 
 	private createWarningButton(): azdata.ButtonComponent {
 		const warningButton = this._modelBuilder.button().withProperties({
-			width: `${_warningButtonDimensions.width}px`,
-			height: `${_warningButtonDimensions.height}px`,
+			width: `${WarningButtonDimensions.width}px`,
+			height: `${WarningButtonDimensions.height}px`,
 			title: constants.columnDataTypeMismatchWarningHelper,
 			iconPath: {
 				dark: this.asAbsolutePath('images/warning.svg'),
 				light: this.asAbsolutePath('images/warning.svg'),
 			},
-			iconHeight: `${_warningButtonDimensions.height}px`,
-			iconWidth: `${_warningButtonDimensions.width}px`
+			iconHeight: `${WarningButtonDimensions.height}px`,
+			iconWidth: `${WarningButtonDimensions.width}px`
 		}).component();
 
 		return warningButton;
 	}
 
 	public openWarningCalloutDialog(dialogHeading: string, dialogName?: string, calloutMessageText?: string, calloutMessageLinkText?: string, calloutMessageLinkUrl?: string, dialogProperties?: azdata.window.IDialogProperties): void {
-		let dialog = azdata.window.createModelViewDialog(dialogHeading, dialogName, 'narrow', 'calloutCompact', 'left', true, false, dialogProperties);
-		let warningTab: azdata.window.DialogTab = azdata.window.createTab('warning');
+		/**
+		 * Here a specific value is assigned to dialogWidth. This meets design guidelines.
+		 */
+		const dialog = azdata.window.createModelViewDialog(dialogHeading, dialogName, 288, 'callout', 'left', true, false, dialogProperties);
+		const warningTab: azdata.window.DialogTab = azdata.window.createTab('warning');
 		warningTab.registerContent(async view => {
-			let warningContentContainer = view.modelBuilder.divContainer().withProperties({
-				CSSStyles: {}
-			}).component();
-			let messageTextComponent = view.modelBuilder.text().withProperties({
+			const warningContentContainer = view.modelBuilder.divContainer().withProperties({}).component();
+			const messageTextComponent = view.modelBuilder.text().withProperties({
 				value: calloutMessageText,
 				CSSStyles: {
 					'font-size': '12px',

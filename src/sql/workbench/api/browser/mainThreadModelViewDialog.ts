@@ -98,11 +98,9 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			/**
 			 * Only peform actions on footer if it is shown.
 			 */
-			if (details.renderFooter === true || details.renderFooter === undefined) {
-				let okButton = this.getButton(details.okButton);
-				let cancelButton = this.getButton(details.cancelButton);
-				dialog.okButton = okButton;
-				dialog.cancelButton = cancelButton;
+			if (details.renderFooter !== false) {
+				dialog.okButton = this.getButton(details.okButton);
+				dialog.cancelButton = this.getButton(details.cancelButton);
 			}
 
 			dialog.onValidityChanged(valid => this._proxy.$onPanelValidityChanged(handle, valid));
