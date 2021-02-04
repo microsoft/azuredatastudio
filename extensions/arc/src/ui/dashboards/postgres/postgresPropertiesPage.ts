@@ -50,6 +50,7 @@ export class PostgresPropertiesPage extends DashboardPage {
 		}).component());
 
 		this.keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, this.getProperties());
+		this.keyValueContainer.container.updateCssStyles({ 'max-width': '750px' });
 		this.disposables.push(this.keyValueContainer);
 
 		this.loading = this.modelView.modelBuilder.loadingComponent()
