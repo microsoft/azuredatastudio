@@ -34,6 +34,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IExtensionApiFactory as vsIApiFactory, createApiFactoryAndRegisterActors as vsApiFactory } from 'vs/workbench/api/common/extHost.api.impl';
 import { IExtHostCommands } from 'vs/workbench/api/common/extHostCommands';
 import { ExtHostWorkspace } from 'sql/workbench/api/common/extHostWorkspace';
+import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitDataService';
 
 export interface IAzdataExtensionApiFactory {
 	(extension: IExtensionDescription): typeof azdata;
@@ -68,6 +69,7 @@ export interface IAdsExtensionApiFactory {
  * This method instantiates and returns the extension API surface
  */
 export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionApiFactory {
+	const initData = accessor.get(IExtHostInitDataService);
 	const uriTransformer = accessor.get(IURITransformerService);
 	const rpcProtocol = accessor.get(IExtHostRpcService);
 	const extHostLogService = accessor.get(ILogService);
@@ -545,6 +547,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			};
 
 			return {
+				version: initData.version,
 				accounts,
 				ButtonType: sqlExtHostTypes.ButtonType,
 				connection,
