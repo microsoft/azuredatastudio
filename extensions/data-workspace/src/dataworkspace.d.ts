@@ -69,6 +69,18 @@ declare module 'dataworkspace' {
 		 * Gets the supported project types
 		 */
 		readonly supportedProjectTypes: IProjectType[];
+
+		/**
+		 * Gets the project actions to be placed on the dashboard toolbar
+		 */
+		getProjectToolbarActions(): IProjectAction[];
+
+		/**
+		 * Perform the desired action from the tooldbar
+		 * @param treeNode The treeItem in a project's hierarchy, to be used to obtain a Project
+		 * @param actionId the action to perform
+		 */
+		performAction(treeItem: WorkspaceTreeItem, actionId: string): Promise<void>;
 	}
 
 	/**
@@ -114,5 +126,22 @@ declare module 'dataworkspace' {
 		 * Gets the raw element returned by the tree data provider
 		 */
 		element: any;
+	}
+
+	export interface IProjectAction {
+		/**
+		 * id of the project action
+		 */
+		readonly id: string;
+
+		/**
+		 * display name of the project action
+		 */
+		readonly displayName: string;
+
+		/**
+		 * icon path of the project action
+		 */
+		readonly icon?: string | vscode.Uri | { light: string | vscode.Uri, dark: string | vscode.Uri };
 	}
 }

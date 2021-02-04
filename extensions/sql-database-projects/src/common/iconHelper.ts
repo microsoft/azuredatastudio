@@ -29,6 +29,11 @@ export class IconPathHelper {
 
 	public static folder: IconPath;
 
+	public static add: IconPath;
+	public static build: IconPath;
+	public static publish: IconPath;
+	public static schemaCompare: IconPath;
+
 	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
 		IconPathHelper.extensionContext = extensionContext;
 
@@ -48,6 +53,11 @@ export class IconPathHelper {
 		IconPathHelper.connect = IconPathHelper.makeIcon('connect', true);
 
 		IconPathHelper.folder = IconPathHelper.makeIcon('folder');
+
+		IconPathHelper.add = IconPathHelper.makeIcon('add', true);
+		IconPathHelper.build = IconPathHelper.makeIcon('build', true);
+		IconPathHelper.publish = IconPathHelper.makeIcon('publish', true);
+		IconPathHelper.schemaCompare = IconPathHelper.makeIcon('schemaCompare', true);
 	}
 
 	private static makeIcon(name: string, sameIcon: boolean = false) {

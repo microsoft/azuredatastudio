@@ -7,7 +7,7 @@ import 'mocha';
 import * as vscode from 'vscode';
 import * as should from 'should';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
-import { IProjectProvider, IProjectType } from 'dataworkspace';
+import { IProjectProvider, IProjectType, IProjectAction, WorkspaceTreeItem } from 'dataworkspace';
 
 export class MockTreeDataProvider implements vscode.TreeDataProvider<any>{
 	onDidChangeTreeData?: vscode.Event<any> | undefined;
@@ -31,6 +31,36 @@ export function createProjectProvider(projectTypes: IProjectType[]): IProjectPro
 		},
 		createProject: (name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri> => {
 			return Promise.resolve(location);
+		},
+		getProjectToolbarActions: (): IProjectAction[] => {
+			return [{
+				id: '',
+				displayName: 'Add',
+				icon: ''
+			},
+			{
+				id: '',
+				displayName: 'Schema Compare',
+				icon: ''
+			},
+			{
+				id: '',
+				displayName: 'Build',
+				icon: ''
+			},
+			{
+				id: '',
+				displayName: 'Publish',
+				icon: ''
+			},
+			{
+				id: '',
+				displayName: 'Target Version',
+				icon: ''
+			} ];
+		},
+		performAction: (treeItem: WorkspaceTreeItem, actionId: string): Promise<void> => {
+			return Promise.resolve();
 		}
 	};
 	return projectProvider;

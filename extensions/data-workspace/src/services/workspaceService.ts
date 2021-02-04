@@ -318,4 +318,24 @@ export class WorkspaceService implements IWorkspaceService {
 		const fullPath = path.join(path.dirname(vscode.workspace.workspaceFile!.path!), relativePath);
 		return vscode.Uri.file(fullPath);
 	}
+
+	/**
+	 * Gets the project actions to be placed on the dashboard toolbar
+	 * @param provider The project provider
+	 */
+	getProjectToolbarActions(provider: dataworkspace.IProjectProvider): dataworkspace.IProjectAction[] {
+		const projectAction = provider.getProjectToolbarActions();
+		return projectAction;
+	}
+
+	/**
+	 * Perform the desired action from the tooldbar
+	 * @param provider The project provider
+	 * @param treeNode The treeItem in a project's hierarchy, to be used to obtain a Project
+	 * @param actionId the action to perform
+	 */
+	async performAction(provider: dataworkspace.IProjectProvider, treeItem: dataworkspace.WorkspaceTreeItem, actionId: string): Promise<void> {
+		await provider.performAction(treeItem, actionId);
+		return Promise.resolve();
+	}
 }

@@ -74,4 +74,54 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 
 		return vscode.Uri.file(projectFile);
 	}
+
+	/**
+	 * Gets the supported project types
+	 */
+	getProjectToolbarActions(): dataworkspace.IProjectAction[] {
+		return [{
+			id: constants.addItemActionTypeId,
+			displayName: constants.addItemActionTypeDisplayName,
+			icon: IconPathHelper.add
+		},
+		{
+			id: constants.schemaCompareActionTypeId,
+			displayName: constants.schemaCompareActionTypeDisplayName,
+			icon: IconPathHelper.schemaCompare
+		},
+		{
+			id: constants.buildActionTypeId,
+			displayName: constants.buildActionTypeDisplayName,
+			icon: IconPathHelper.build
+		},
+		{
+			id: constants.publishActionTypeId,
+			displayName: constants.publishActionTypeDisplayName,
+			icon: IconPathHelper.publish
+		},
+		{
+			id: constants.targetPlatformActionTypeId,
+			displayName: constants.targetPlatformActionTypeDisplayName
+		}];
+	}
+
+	/**
+	 * Perform the desired action from the tooldbar
+	 * @param treeNode The treeItem in a project's hierarchy, to be used to obtain a Project
+	 * @param actionId the action to perform
+	 */
+	async performAction(treeItem: dataworkspace.WorkspaceTreeItem, actionId: string): Promise<void> {
+		if (actionId === constants.addItemActionTypeId) {
+			await this.projectController.addItemPromptFromNode(treeItem);
+		} else if (actionId === constants.schemaCompareActionTypeId) {
+			await this.projectController.schemaCompare(treeItem);
+		} else if (actionId === constants.buildActionTypeId) {
+			await this.projectController.buildProject(treeItem);
+		} else if (actionId === constants.publishActionTypeId) {
+			await this.projectController.publishProject(treeItem);
+		} else if (actionId === constants.targetPlatformActionTypeId) {
+			await this.projectController.changeTargetPlatform(treeItem);
+		}
+		return Promise.resolve();
+	}
 }
