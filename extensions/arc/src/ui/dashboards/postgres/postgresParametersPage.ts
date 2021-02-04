@@ -420,8 +420,7 @@ export class PostgresParametersPage extends DashboardPage {
 			let valueBox = this.modelView.modelBuilder.dropDown().withProps({
 				values: values,
 				value: engineSetting.value,
-				width: '150px',
-				CSSStyles: { 'height': '40px' }
+				width: '150px'
 			}).component();
 			valueContainer.addItem(valueBox);
 
@@ -496,6 +495,7 @@ export class PostgresParametersPage extends DashboardPage {
 				value: engineSetting.value,
 				width: '150px'
 			}).component();
+
 			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
 
 			this.disposables.push(
