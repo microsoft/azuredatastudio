@@ -587,6 +587,18 @@
             ],
             "when": "mi-type=azure-sql-mi"
           }
+        ],
+        "helpTexts": [
+          {
+            "template": "%azure-sql-mi-help-text%",
+            "links": [
+              {
+                "text": "%azure-sql-mi-help-text-learn-more%",
+                "url": "https://docs.microsoft.com/azure/azure-sql/managed-instance/sql-managed-instance-paas-overview"
+              }
+            ],
+            "when": "mi-type=azure-sql-mi"
+          }
         ]
       }
     ]

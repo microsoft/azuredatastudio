@@ -26,6 +26,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 	private _toolsLoadingComponent!: azdata.LoadingComponent;
 	private _agreementContainer!: azdata.DivContainer;
+	private _helpTextContainer!: azdata.DivContainer;
 	private _agreementCheckBox!: azdata.CheckBoxComponent;
 	private _installToolButton!: azdata.ButtonComponent;
 	private _installationInProgress: boolean = false;
@@ -94,6 +95,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			const tableWidth = 1060;
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
+			this._helpTextContainer = view.modelBuilder.divContainer().component();
 			const toolColumn: azdata.TableColumn = {
 				value: loc.toolText,
 				width: 105
@@ -149,6 +151,8 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			this.form = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
+						component: this._helpTextContainer,
+					}, {
 						component: this._optionsContainer,
 					}, {
 						component: this._agreementContainer,
@@ -237,6 +241,9 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 				if (this._resourceType.agreements) {
 					this._agreementContainer.addItem(this.createAgreementCheckbox());
 				}
+				if (this._resourceType.helpTexts) {
+					this._helpTextContainer.addItem(this.createHelpText());
+				}
 				this.updateOkButtonText();
 				this.updateToolsDisplayTable();
 			});
@@ -257,6 +264,15 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			requiredIndicator: true
 		}).component();
 		return createFlexContainer(this.view, [this._agreementCheckBox, text]);
+	}
+
+	private createHelpText(): azdata.FlexContainer {
+		const helpText = this._resourceType.getHelpText(this.getSelectedOptions())!;
+		const helpTextComponent = this.view.modelBuilder.text().withProps({
+			value: helpText.template,
+			links: helpText.links,
+		}).component();
+		return createFlexContainer(this.view, [helpTextComponent]);
 	}
 
 	private getAgreementDisplayText(agreementInfo: AgreementInfo): string {
