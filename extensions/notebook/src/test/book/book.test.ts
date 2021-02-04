@@ -653,7 +653,7 @@ describe('BooksTreeViewTests', function () {
 				it('should show error if notebook or markdown file is missing', async function (): Promise<void> {
 					let books: BookTreeItem[] = bookTreeViewProvider.currentBook.bookItems;
 					let children = await bookTreeViewProvider.currentBook.getSections({ sections: [] }, books[0].sections, rootFolderPath, books[0].book);
-					should(bookTreeViewProvider.currentBook.errorMessage).equal('Missing file : Notebook1 from '.concat(bookTreeViewProvider.currentBook.bookPath));
+					should(bookTreeViewProvider.currentBook.errorMessage).equal('Missing file : Notebook1 from '.concat(bookTreeViewProvider.currentBook.bookItems[0].title));
 					// rest of book should be detected correctly even with a missing file
 					equalBookItems(children[0], expectedNotebook2);
 				});
@@ -798,11 +798,12 @@ describe('BooksTreeViewTests', function () {
 				});
 
 				it('openNotebookFolder without folderPath should prompt for folder path and invoke loadNotebooksInFolder', async () => {
-					sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file(rootFolderPath)]));
+					const uri = vscode.Uri.file(rootFolderPath);
+					sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([uri]));
 					let loadNotebooksSpy = sinon.spy(bookTreeViewProvider, 'loadNotebooksInFolder');
 					await bookTreeViewProvider.openNotebookFolder();
 
-					should(loadNotebooksSpy.calledWith(rootFolderPath)).be.true('openNotebookFolder should have called loadNotebooksInFolder passing the folderPath');
+					should(loadNotebooksSpy.calledWith(uri.fsPath)).be.true('openNotebookFolder should have called loadNotebooksInFolder passing the folderPath');
 				});
 
 				it('openNotebookFolder with folderPath shouldn\'t prompt for folder path but invoke loadNotebooksInFolder with the provided folderPath', async () => {
