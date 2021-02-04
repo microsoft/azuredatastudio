@@ -216,7 +216,7 @@ describe('BooksTreeViewTests', function () {
 				should(isTrusted).equal(false, 'Notebook should not be trusted by default');
 
 				bookTreeViewProvider.trustBook(bookTreeViewProvider.currentBook.bookItems[0]);
-				isTrusted = bookTrustManager.isNotebookTrustedByDefault(vscode.Uri.file(notebook1Path).fsPath);
+				isTrusted = bookTrustManager.isNotebookTrustedByDefault(notebook1Path);
 				should(isTrusted).equal(true, 'Failed to set trust on trustBook');
 
 			});
@@ -242,7 +242,7 @@ describe('BooksTreeViewTests', function () {
 			});
 
 			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
-				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
+				let notebook1Path = vscode.Uri.file(path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb')).fsPath;
 				let currentSelection = await bookTreeViewProvider.findAndExpandParentNode(notebook1Path);
 				equalBookItems(currentSelection, expectedNotebook1);
 			});
