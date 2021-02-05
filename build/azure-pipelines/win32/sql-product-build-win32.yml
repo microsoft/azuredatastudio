@@ -55,7 +55,7 @@ steps:
       git merge $(node -p "require('./package.json').distro")
     displayName: Merge distro
 
-  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
     displayName: Restore Cache - Node Modules
     inputs:
       keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
