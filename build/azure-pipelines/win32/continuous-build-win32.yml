@@ -13,7 +13,7 @@ steps:
     addToPath: true
 
 - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
-  displayName: Restore Cache - Node Modules
+  displayName: Restore Cache - Node Modules # {{SQL CARBON EDIT}}
   inputs:
     keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
     targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
@@ -27,7 +27,7 @@ steps:
   condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
 - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
-  displayName: Save Cache - Node Modules
+  displayName: Save Cache - Node Modules # {{SQL CARBON EDIT}}
   inputs:
     keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
     targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
