@@ -139,20 +139,21 @@ export class BookTocManager implements IBookTocManager {
 			await fs.rmdir(directory);
 		} else {
 			contents.forEach(async (content) => {
-				if ((await fs.stat(path.join(directory, content))).isFile) {
+				let filePath = path.join(directory, content);
+				if ((await fs.stat(filePath)).isFile) {
 					//check if the file is in the moved files
-					let newPath = this._movedFiles.get(path.join(directory, content));
+					let newPath = this._movedFiles.get(filePath);
 					if (newPath) {
 						let exists = await fs.pathExists(newPath);
 						// if the file exists in the new path and if the the new path and old path are different
 						// then we can remove it
-						if (exists && newPath !== path.join(directory, content)) {
+						if (exists && newPath !== filePath) {
 							// the file could not be renamed, so a copy was created.
-							await fs.unlink(path.join(directory, content));
+							await fs.unlink(filePath);
 						}
 					}
-				} else if ((await fs.stat(path.join(directory, content))).isDirectory) {
-					await this.cleanUp(path.join(directory, content));
+				} else if ((await fs.stat(filePath)).isDirectory) {
+					await this.cleanUp(filePath);
 				}
 			});
 		}
