@@ -254,6 +254,7 @@ export class BookModel {
 					notebooks.push(markdown);
 				} else {
 					this._errorMessage = loc.missingFileError(sections[i].title, book.title);
+					vscode.window.showErrorMessage(this._errorMessage);
 				}
 			}
 		}
