@@ -7,6 +7,7 @@ import * as colors from './colors';
 
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
+import * as sqlcr from 'sql/platform/theme/common/colorRegistry';
 import { attachStyler, IColorMapping, IStyleOverrides } from 'vs/platform/theme/common/styler';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IThemable } from 'vs/base/common/styler';
@@ -305,4 +306,22 @@ export function attachCheckboxStyler(widget: IThemable, themeService: IThemeServ
 	return attachStyler(themeService, {
 		disabledCheckboxForeground: (style && style.disabledCheckboxForeground) || colors.disabledCheckboxForeground
 	}, widget);
+}
+
+export interface IInfoBoxStyleOverrides {
+	informationBackground: cr.ColorIdentifier,
+	warningBackground: cr.ColorIdentifier,
+	errorBackground: cr.ColorIdentifier,
+	successBackground: cr.ColorIdentifier
+}
+
+export const defaultInfoBoxStyles: IInfoBoxStyleOverrides = {
+	informationBackground: sqlcr.InfoBoxInformationBackground,
+	warningBackground: sqlcr.InfoBoxWarningBackground,
+	errorBackground: sqlcr.InfoBoxErrorBackground,
+	successBackground: sqlcr.InfoBoxSuccessBackground
+};
+
+export function attachInfoBoxStyler(widget: IThemable, themeService: IThemeService, style?: IInfoBoxStyleOverrides): IDisposable {
+	return attachStyler(themeService, { ...defaultInfoBoxStyles, ...style }, widget);
 }

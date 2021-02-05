@@ -86,11 +86,11 @@ export interface IJupyterBookSectionV1 {
 	/**
 	 * Contains a list of more entries that make up the chapter's/section's sub-sections
 	 */
-	sections?: IJupyterBookSectionV1[];
+	sections?: JupyterBookSection[];
 	/**
 	 * If the section shouldn't have a number in the sidebar
 	 */
-	not_numbered?: string;
+	not_numbered?: boolean;
 	/**
 	 * If you'd like the sections of this chapter to always be expanded in the sidebar.
 	 */
@@ -113,7 +113,7 @@ export interface IJupyterBookSectionV1 {
 	/**
 	 * Will insert a header with no link in the sidebar
 	 */
-	header?: boolean;
+	header?: string;
 }
 
 /**
@@ -134,7 +134,7 @@ export interface IJupyterBookSectionV2 {
 	/**
 	 * Contains a list of more entries that make up the chapter's/section's sub-sections
 	 */
-	sections?: IJupyterBookSectionV2[];
+	sections?: JupyterBookSection[];
 	/**
 	 * If the section shouldn't have a number in the sidebar
 	 */
@@ -147,8 +147,23 @@ export interface IJupyterBookSectionV2 {
 	 * External link
 	 */
 	url?: string;
+
+	// Below are some special values that trigger specific behavior:
+
+	/**
+	 * Will insert a header with no link in the sidebar
+	 */
+	header?: string;
+	/**
+	 * If a book is divided into groups then part is the title of the group
+	 */
+	part?: string;
+	/**
+	 * the equivalent of sections in a group.
+	*/
+	chapters?: string[];
+
 }
 
-// type that supports new and old version
-export type JupyterBookSection = IJupyterBookSectionV1 | IJupyterBookSectionV2;
+export interface JupyterBookSection extends IJupyterBookSectionV1, IJupyterBookSectionV2 { }
 

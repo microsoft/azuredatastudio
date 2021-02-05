@@ -31,13 +31,13 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 	<div *ngIf="this.buttonType !== 'Informational'; then thenBlock else elseBlock"></div>
 	<ng-template #thenBlock>
 		<label for={{this.label}}>
-			<div #input style="width: 100%">
+			<div #input [ngStyle]="CSSStyles">
 				<input #fileInput *ngIf="this.isFile === true" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
 			</div>
 		</label>
 	</ng-template>
 	<ng-template #elseBlock>
-		<div #infoButton style="width: 100%;"></div>
+		<div #infoButton [ngStyle]="CSSStyles"></div>
 	</ng-template>
 	`
 })

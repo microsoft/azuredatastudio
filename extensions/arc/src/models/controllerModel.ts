@@ -8,7 +8,6 @@ import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import { UserCancelledError } from '../common/api';
 import { getCurrentClusterContext, getKubeConfigClusterContexts } from '../common/kubeUtils';
-import { Deferred } from '../common/promise';
 import * as loc from '../localizedConstants';
 import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
@@ -24,7 +23,6 @@ export class ControllerModel {
 	private _endpoints: azdataExt.DcEndpointListResult[] = [];
 	private _registrations: Registration[] = [];
 	private _controllerConfig: azdataExt.DcConfigShowResult | undefined = undefined;
-	private static _refreshInProgress: Deferred<void> | undefined = undefined;
 
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.DcConfigShowResult | undefined>();
 	private readonly _onEndpointsUpdated = new vscode.EventEmitter<azdataExt.DcEndpointListResult[]>();
@@ -118,12 +116,6 @@ export class ControllerModel {
 		}
 	}
 	public async refresh(showErrors: boolean = true, promptReconnect: boolean = false): Promise<void> {
-		//wait for any previous refresh that might be in progress to finish
-		if (ControllerModel._refreshInProgress) {
-			await ControllerModel._refreshInProgress;
-		}
-		// create a new in progress promise object
-		ControllerModel._refreshInProgress = new Deferred<void>();
 		const session = await this.acquireAzdataSession(promptReconnect);
 		const newRegistrations: Registration[] = [];
 		try {
@@ -183,8 +175,6 @@ export class ControllerModel {
 			]);
 		} finally {
 			session.dispose();
-			ControllerModel._refreshInProgress.resolve();
-			ControllerModel._refreshInProgress = undefined;
 		}
 	}
 

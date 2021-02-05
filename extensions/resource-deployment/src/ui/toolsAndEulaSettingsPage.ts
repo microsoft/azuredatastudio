@@ -6,13 +6,14 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
-import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ResourceTypeOptionValue, ToolRequirementInfo, ToolStatus } from '../interfaces';
+import { AgreementInfo, DeploymentProvider, HelpText, ITool, ResourceType, ResourceTypeOptionValue, ToolRequirementInfo, ToolStatus } from '../interfaces';
 import { createFlexContainer } from './modelViewUtils';
 import * as loc from '../localizedConstants';
 import { IToolsService } from '../services/toolsService';
 import { getErrorMessage } from '../common/utils';
 import { ResourceTypePage } from './resourceTypePage';
 import { ResourceTypeWizard } from './resourceTypeWizard';
+import { OptionValuesFilter as OptionValuesFilter } from '../services/resourceTypeService';
 
 const localize = nls.loadMessageBundle();
 
@@ -25,6 +26,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 	private _toolsLoadingComponent!: azdata.LoadingComponent;
 	private _agreementContainer!: azdata.DivContainer;
+	private _helpTextContainer!: azdata.DivContainer;
 	private _agreementCheckBox!: azdata.CheckBoxComponent;
 	private _installToolButton!: azdata.ButtonComponent;
 	private _installationInProgress: boolean = false;
@@ -41,7 +43,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		return this.wizard.toolsService;
 	}
 
-	constructor(wizard: ResourceTypeWizard) {
+	constructor(wizard: ResourceTypeWizard, private optionValuesFilter?: OptionValuesFilter) {
 		super(localize('notebookWizard.toolsAndEulaPageTitle', "Deployment pre-requisites"), '', wizard);
 		this._resourceType = wizard.resourceType;
 	}
@@ -93,6 +95,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			const tableWidth = 1060;
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
+			this._helpTextContainer = view.modelBuilder.divContainer().component();
 			const toolColumn: azdata.TableColumn = {
 				value: loc.toolText,
 				width: 105
@@ -148,6 +151,8 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			this.form = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
+						component: this._helpTextContainer,
+					}, {
 						component: this._optionsContainer,
 					}, {
 						component: this._agreementContainer,
@@ -164,7 +169,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			);
 			return view.initializeModel(this.form!.withLayout({ width: '100%' }).component()).then(() => {
 				this._agreementContainer.clearItems();
-				if (this._resourceType.agreement) {
+				if (this._resourceType.agreements) {
 					const agreementTitle = this.view.modelBuilder.text().withProps({
 						value: localize('resourceDeployment.AgreementTitle', "Accept terms of use"),
 						CSSStyles: {
@@ -173,7 +178,6 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 						}
 					}).component();
 					this._agreementContainer.addItem(agreementTitle);
-					this._agreementContainer.addItem(this.createAgreementCheckbox(this._resourceType.agreement));
 				} else {
 					this.form.removeFormItem({
 						component: this._agreementContainer
@@ -193,18 +197,24 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					}).component();
 					this._optionsContainer.addItem(optionsTitle);
 					this._resourceType.options.forEach((option, index) => {
+						let optionValues = option.values;
+						const optionValueFilter = this.optionValuesFilter?.[this._resourceType.name]?.[option.name];
+						if (optionValueFilter) {
+							optionValues = optionValues.filter(optionValue => optionValueFilter.includes(optionValue.name));
+						}
 						const optionLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 							value: option.displayName,
 						}).component();
 						optionLabel.width = '150px';
 
-						const optionSelectedValue = (this.wizard.toolsEulaPagePresets) ? this.wizard.toolsEulaPagePresets[index] : option.values[0];
+						const optionSelectedValue = (this.wizard.toolsEulaPagePresets) ? this.wizard.toolsEulaPagePresets[index] : optionValues[0];
 						const optionSelectBox = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
-							values: option.values,
+							values: optionValues,
 							value: optionSelectedValue,
 							width: '300px',
 							ariaLabel: option.displayName
 						}).component();
+
 
 						resourceTypeOptions.push(optionSelectedValue);
 
@@ -217,6 +227,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 						}));
 
 						this._optionDropDownMap.set(option.name, optionSelectBox);
+						this.wizard.provider = this.getCurrentProvider();
 						const row = this.view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 						this._optionsContainer.addItem(row);
 					});
@@ -225,6 +236,16 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					this.form.removeFormItem({
 						component: this._optionsContainer
 					});
+				}
+
+				const agreementInfo = this._resourceType.getAgreementInfo(this.getSelectedOptions());
+				if (agreementInfo) {
+					this._agreementContainer.addItem(this.createAgreementCheckbox(agreementInfo));
+				}
+
+				const helpText = this._resourceType.getHelpText(this.getSelectedOptions());
+				if (helpText) {
+					this._helpTextContainer.addItem(this.createHelpText(helpText));
 				}
 
 				this.updateOkButtonText();
@@ -248,12 +269,20 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		return createFlexContainer(this.view, [this._agreementCheckBox, text]);
 	}
 
+	private createHelpText(helpText: HelpText): azdata.FlexContainer {
+		const helpTextComponent = this.view.modelBuilder.text().withProps({
+			value: helpText.template,
+			links: helpText.links,
+		}).component();
+		return createFlexContainer(this.view, [helpTextComponent]);
+	}
+
 	private getAgreementDisplayText(agreementInfo: AgreementInfo): string {
 		// the agreement template will have {index} as placeholder for hyperlinks
 		// this method will get the display text after replacing the placeholders
 		let text = agreementInfo.template;
-		for (let i: number = 0; i < agreementInfo.links.length; i++) {
-			text = text.replace(`{${i}}`, agreementInfo.links[i].text);
+		for (let i: number = 0; i < agreementInfo.links!.length; i++) {
+			text = text.replace(`{${i}}`, agreementInfo.links![i].text);
 		}
 		return text;
 	}
@@ -275,26 +304,24 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	}
 
 	private getCurrentProvider(): DeploymentProvider {
-		const options: { option: string, value: string }[] = [];
 
-		this._optionDropDownMap.forEach((selectBox, option) => {
-			let selectedValue: azdata.CategoryValue = selectBox.value as azdata.CategoryValue;
-			options.push({ option: option, value: selectedValue.name });
-		});
+		const options = this.getSelectedOptions();
 
 		this.resourceProvider = this._resourceType.getProvider(options)!;
 		return this._resourceType.getProvider(options)!;
 	}
 
 	private getCurrentOkText(): string {
-		const options: { option: string, value: string }[] = [];
+		return this._resourceType.getOkButtonText(this.getSelectedOptions())!;
+	}
 
+	private getSelectedOptions(): { option: string, value: string }[] {
+		const options: { option: string, value: string }[] = [];
 		this._optionDropDownMap.forEach((selectBox, option) => {
 			let selectedValue: azdata.CategoryValue = selectBox.value as azdata.CategoryValue;
 			options.push({ option: option, value: selectedValue.name });
 		});
-
-		return this._resourceType.getOkButtonText(options)!;
+		return options;
 	}
 
 	private updateOkButtonText(): void {

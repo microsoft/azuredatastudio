@@ -44,12 +44,11 @@ let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
 		cell_type: CellTypes.Code,
 		source: ['insert into t1 values (c1, c2)'],
-		metadata: { language: 'python' },
+		metadata: { language: 'sql' },
 		execution_count: 1
 	}, {
 		cell_type: CellTypes.Markdown,
 		source: ['I am *markdown*'],
-		metadata: { language: 'python' },
 		execution_count: 1
 	}],
 	metadata: {
@@ -57,6 +56,9 @@ let expectedNotebookContent: nb.INotebookContents = {
 			name: 'mssql',
 			language: 'sql',
 			display_name: 'SQL'
+		},
+		language_info: {
+			name: 'sql'
 		}
 	},
 	nbformat: 4,
@@ -542,6 +544,34 @@ suite('notebook model', function (): void {
 		model.cells[0].metadata = { 'test-field': 'test-value' };
 		assert(!isUndefinedOrNull(notebookContentChange));
 		assert.equal(notebookContentChange.changeType, NotebookChangeType.CellMetadataUpdated, 'notebookContentChange changeType should indicate ');
+	});
+
+	test('Should set cell language correctly after cell type conversion', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		let newCell: ICellModel;
+		model.onCellTypeChanged(c => newCell = c);
+
+		let firstCell = model.cells[0];
+		let secondCell = model.cells[1];
+
+		assert.equal(firstCell.cellType, CellTypes.Code, 'Initial cell type for first cell should be code');
+		assert.equal(firstCell.language, 'sql', 'Initial language should be sql for first cell');
+
+		model.convertCellType(firstCell);
+		assert.equal(firstCell.cellType, CellTypes.Markdown, 'Failed to convert cell type after conversion');
+		assert.equal(firstCell.language, 'markdown', 'Language should be markdown for text cells');
+		assert.deepEqual(newCell, firstCell);
+
+		model.convertCellType(secondCell);
+		assert.equal(secondCell.cellType, CellTypes.Code, 'Failed to convert second cell type');
+		assert.equal(secondCell.language, 'sql', 'Language should be sql again for second cell');
+		assert.deepEqual(newCell, secondCell);
 	});
 
 	test('Should load contents but then go to error state if client session startup fails', async function (): Promise<void> {

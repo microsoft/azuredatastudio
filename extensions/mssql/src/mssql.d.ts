@@ -221,6 +221,9 @@ export interface DeploymentOptions {
 	excludeObjectTypes: SchemaObjectType[];
 }
 
+/**
+ * Values from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs
+ */
 export const enum SchemaObjectType {
 	Aggregates = 0,
 	ApplicationRoles = 1,
@@ -288,7 +291,9 @@ export const enum SchemaObjectType {
 	ServerAuditSpecifications = 63,
 	ServerRoleMembership = 64,
 	ServerRoles = 65,
-	ServerTriggers = 66
+	ServerTriggers = 66,
+	ExternalStreams = 67,
+	ExternalStreamingJobs = 68
 }
 
 export interface SchemaCompareObjectId {

@@ -48,5 +48,6 @@
 	"title.openNotebookFolder": "Open Notebooks in Folder",
 	"title.openRemoteJupyterBook": "Add Remote Jupyter Book",
 	"title.pinNotebook": "Pin Notebook",
-	"title.unpinNotebook": "Unpin Notebook"
+	"title.unpinNotebook": "Unpin Notebook",
+	"title.moveTo": "Move to ..."
 }

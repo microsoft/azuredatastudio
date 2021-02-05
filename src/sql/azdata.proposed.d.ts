@@ -300,6 +300,11 @@ declare module 'azdata' {
 
 	export interface DeclarativeTableComponent extends Component, DeclarativeTableProperties {
 		onRowSelected: vscode.Event<DeclarativeTableRowSelectedEvent>;
+		/**
+		 * Sets the filter currently applied to this table - only rows with index in the given array will be visible. undefined
+		 * will clear the filter
+		 */
+		setFilter(rowIndexes: number[] | undefined): void;
 	}
 
 	/*
@@ -330,6 +335,7 @@ declare module 'azdata' {
 		tabbedPanel(): TabbedPanelComponentBuilder;
 		separator(): ComponentBuilder<SeparatorComponent, SeparatorComponentProperties>;
 		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent, PropertiesContainerComponentProperties>;
+		infoBox(): ComponentBuilder<InfoBoxComponent, InfoBoxComponentProperties>;
 	}
 
 	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
@@ -604,6 +610,32 @@ declare module 'azdata' {
 		propertyItems?: PropertiesContainerItem[];
 	}
 
+	/**
+	 * Component to display text with an icon representing the severity
+	 */
+	export interface InfoBoxComponent extends Component, InfoBoxComponentProperties {
+	}
+
+	export type InfoBoxStyle = 'information' | 'warning' | 'error' | 'success';
+
+	/**
+	 * Properties for configuring a InfoBoxComponent
+	 */
+	export interface InfoBoxComponentProperties extends ComponentProperties {
+		/**
+		 * The style of the InfoBox
+		 */
+		style: InfoBoxStyle;
+		/**
+		 * The display text of the InfoBox
+		 */
+		text: string;
+		/**
+		 * Controls whether the text should be announced by the screen reader. Default value is false.
+		 */
+		announceText?: boolean;
+	}
+
 	export namespace nb {
 		/**
 		 * An event that is emitted when the active Notebook editor is changed.
@@ -644,6 +676,13 @@ declare module 'azdata' {
 			width?: DialogWidth;
 		}
 
+		export interface WizardPage extends ModelViewPanel {
+			/**
+			 * An optional name for the page. If provided it will be used for telemetry
+			 */
+			pageName?: string;
+		}
+
 		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
 		/**
@@ -661,6 +700,13 @@ declare module 'azdata' {
 		 * @param width The width of the wizard, default value is 'narrow'
 		 */
 		export function createWizard(title: string, name?: string, width?: DialogWidth): Wizard;
+
+		/**
+		 * Create a wizard page with the given title, for inclusion in a wizard
+		 * @param title The title of the page
+		 * @param pageName The optional page name parameter will be used for telemetry
+		 */
+		export function createWizardPage(title: string, pageName?: string): WizardPage;
 	}
 
 	export namespace workspace {

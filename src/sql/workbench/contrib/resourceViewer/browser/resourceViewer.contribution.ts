@@ -55,7 +55,7 @@ class ResourceViewerContributor implements IWorkbenchContribution {
 		@IProductService readonly productService: IProductService
 	) {
 		// Only show for insiders and dev
-		if (['insiders', ''].includes(productService.quality ?? '') && configurationService.getValue('workbench.enablePreviewFeatures')) {
+		if (['insider', ''].includes(productService.quality ?? '') && configurationService.getValue('workbench.enablePreviewFeatures')) {
 			registerResourceViewerContainer();
 		}
 	}

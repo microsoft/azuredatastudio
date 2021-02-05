@@ -83,7 +83,5 @@ declare module 'azureResource' {
 		export interface BlobContainer extends AzureResource { }
 
 		export interface FileShare extends AzureResource { }
-
-		export interface MigrationController extends AzureResource { }
 	}
 }

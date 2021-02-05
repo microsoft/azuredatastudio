@@ -2,22 +2,22 @@
 # yarn lockfile v1
 
 
-ads-extension-telemetry@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/ads-extension-telemetry/-/ads-extension-telemetry-1.0.0.tgz#840b363a6ad958447819b9bc59fdad3e49de31a9"
-  integrity sha512-ouxZVECe4tsO0ek0dLdnAZEz1Lrytv1uLbbGZhRbZsHITsUYNjnkKnA471uWh0Dj80s+orvv49/j3/tNBDP/SQ==
+"@microsoft/ads-extension-telemetry@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-1.1.3.tgz#54160eefa21f2a536622b0617f3c3f2018cf9c87"
+  integrity sha512-+h6hM9oOA6Zj/N0nCGPzRgydR0YHiHpNJoNlv6a/ziWXO3RYSbQX+3U/PpT3gEA6+8RwByf6RVICo7uIGBy1LQ==
   dependencies:
-    vscode-extension-telemetry "0.1.2"
+    vscode-extension-telemetry "^0.1.6"
 
-applicationinsights@1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/applicationinsights/-/applicationinsights-1.4.0.tgz#e17e436427b6e273291055181e29832cca978644"
-  integrity sha512-TV8MYb0Kw9uE2cdu4V/UvTKdOABkX2+Fga9iDz0zqV7FLrNXfmAugWZmmdTx4JoynYkln3d5CUHY3oVSUEbfFw==
+applicationinsights@1.7.4:
+  version "1.7.4"
+  resolved "https://registry.yarnpkg.com/applicationinsights/-/applicationinsights-1.7.4.tgz#e7d96435594d893b00cf49f70a5927105dbb8749"
+  integrity sha512-XFLsNlcanpjFhHNvVWEfcm6hr7lu9znnb6Le1Lk5RE03YUV9X2B2n2MfM4kJZRrUdV+C0hdHxvWyv+vWoLfY7A==
   dependencies:
     cls-hooked "^4.2.2"
     continuation-local-storage "^3.2.1"
     diagnostic-channel "0.2.0"
-    diagnostic-channel-publishers "^0.3.2"
+    diagnostic-channel-publishers "^0.3.3"
 
 async-hook-jl@^1.7.6:
   version "1.7.6"
@@ -51,7 +51,7 @@ continuation-local-storage@^3.2.1:
     async-listener "^0.6.0"
     emitter-listener "^1.1.1"
 
-diagnostic-channel-publishers@^0.3.2:
+diagnostic-channel-publishers@^0.3.3:
   version "0.3.5"
   resolved "https://registry.yarnpkg.com/diagnostic-channel-publishers/-/diagnostic-channel-publishers-0.3.5.tgz#a84a05fd6cc1d7619fdd17791c17e540119a7536"
   integrity sha512-AOIjw4T7Nxl0G2BoBPhkQ6i7T4bUd9+xvdYizwvG7vVAM1dvr+SDrcUudlmzwH0kbEwdR2V1EcnKT0wAeYLQNQ==
@@ -90,12 +90,12 @@ stack-chain@^1.3.7:
   resolved "https://registry.yarnpkg.com/stack-chain/-/stack-chain-1.3.7.tgz#d192c9ff4ea6a22c94c4dd459171e3f00cea1285"
   integrity sha1-0ZLJ/06moiyUxN1FkXHj8AzqEoU=
 
-vscode-extension-telemetry@0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/vscode-extension-telemetry/-/vscode-extension-telemetry-0.1.2.tgz#049207f5453930888ff68ca925b07bab08f2c955"
-  integrity sha512-FSbaZKlIH3VKvBJsKw7v5bESWHXzltji2rtjaJeJglpQH4tfClzwHMzlMXUZGiblV++djEzb1gW8mb5E+wxFsg==
+vscode-extension-telemetry@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/vscode-extension-telemetry/-/vscode-extension-telemetry-0.1.6.tgz#048b70c93243413036a8315cda493b8e7342980c"
+  integrity sha512-rbzSg7k4NnsCdF4Lz0gI4jl3JLXR0hnlmfFgsY8CSDYhXgdoIxcre8jw5rjkobY0xhSDhbG7xCjP8zxskySJ/g==
   dependencies:
-    applicationinsights "1.4.0"
+    applicationinsights "1.7.4"
 
 vscode-jsonrpc@^5.0.1:
   version "5.0.1"
