@@ -213,7 +213,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			const sourceBook = this.books.find(book => book.bookPath === movingElement.book.root);
 			const targetBook = this.books.find(book => book.bookPath === updateBook.book.root);
 			this.bookTocManager = new BookTocManager(targetBook, sourceBook);
-			// remove watch on toc file from both books.
+			// remove watch on toc file from source book.
 			if (sourceBook) {
 				fs.unwatchFile(sourceBook.tableOfContentsPath);
 			}
@@ -232,7 +232,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				if (sourceBook) {
 					this.setFileWatcher(sourceBook);
 				}
-				this.setFileWatcher(targetBook);
 			}
 		} else {
 			if (!pickedSection && updateBook) {
