@@ -32,6 +32,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { values } from 'vs/base/common/collections';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { isUUID } from 'vs/base/common/uuid';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -460,8 +461,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		//Telemetry of loading notebook
 		if (metadata.azdata_notebook_guid && metadata.azdata_notebook_guid.length === 36) {
 			//Verify if it is actual GUID and then send it to the telemetry
-			let regex = new RegExp('(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}');
-			if (regex.test(metadata.azdata_notebook_guid)) {
+			if (isUUID(metadata.azdata_notebook_guid)) {
 				this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.Open)
 					.withAdditionalProperties({ azdata_notebook_guid: metadata.azdata_notebook_guid })
 					.send();
