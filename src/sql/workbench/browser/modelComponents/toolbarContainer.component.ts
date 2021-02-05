@@ -34,7 +34,7 @@ export class ToolbarItem {
 @Component({
 	selector: 'modelview-toolbarContainer',
 	template: `
-		<div #container *ngIf="items" [class]="toolbarClass" >
+		<div #container *ngIf="items" [class]="toolbarClass" [ngStyle]="CSSStyles">
 			<ng-container *ngFor="let item of items">
 			<div class="modelview-toolbar-item" [style.paddingTop]="paddingTop">
 				<div *ngIf="shouldShowTitle(item)" class="modelview-toolbar-title" >
