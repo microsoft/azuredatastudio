@@ -154,6 +154,9 @@ export class ResourceTypeService implements IResourceTypeService {
 					if (resourceSubType.agreement) {
 						resourceType.agreements?.push(resourceSubType.agreement!);
 					}
+					if (resourceSubType.helpText) {
+						resourceType.helpTexts.push(resourceSubType.helpText);
+					}
 				}
 			});
 		});

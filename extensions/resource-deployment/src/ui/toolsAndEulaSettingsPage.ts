@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
-import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ResourceTypeOptionValue, ToolRequirementInfo, ToolStatus } from '../interfaces';
+import { AgreementInfo, DeploymentProvider, HelpText, ITool, ResourceType, ResourceTypeOptionValue, ToolRequirementInfo, ToolStatus } from '../interfaces';
 import { createFlexContainer } from './modelViewUtils';
 import * as loc from '../localizedConstants';
 import { IToolsService } from '../services/toolsService';
@@ -238,12 +238,16 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					});
 				}
 
-				if (this._resourceType.agreements) {
-					this._agreementContainer.addItem(this.createAgreementCheckbox());
+				const agreementInfo = this._resourceType.getAgreementInfo(this.getSelectedOptions());
+				if (agreementInfo) {
+					this._agreementContainer.addItem(this.createAgreementCheckbox(agreementInfo));
 				}
-				if (this._resourceType.helpTexts) {
-					this._helpTextContainer.addItem(this.createHelpText());
+
+				const helpText = this._resourceType.getHelpText(this.getSelectedOptions());
+				if (helpText) {
+					this._helpTextContainer.addItem(this.createHelpText(helpText));
 				}
+
 				this.updateOkButtonText();
 				this.updateToolsDisplayTable();
 			});
@@ -252,8 +256,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	}
 
 
-	private createAgreementCheckbox(): azdata.FlexContainer {
-		const agreementInfo = this._resourceType.getAgreementInfo(this.getSelectedOptions())!;
+	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
 		this._agreementCheckBox = this.view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
 			ariaLabel: this.getAgreementDisplayText(agreementInfo),
 			required: true
@@ -266,8 +269,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		return createFlexContainer(this.view, [this._agreementCheckBox, text]);
 	}
 
-	private createHelpText(): azdata.FlexContainer {
-		const helpText = this._resourceType.getHelpText(this.getSelectedOptions())!;
+	private createHelpText(helpText: HelpText): azdata.FlexContainer {
 		const helpTextComponent = this.view.modelBuilder.text().withProps({
 			value: helpText.template,
 			links: helpText.links,
