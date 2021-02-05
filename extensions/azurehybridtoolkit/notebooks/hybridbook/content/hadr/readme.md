@@ -11,5 +11,4 @@ Notebooks to help with HADR tasks in a Hybrid Cloud environment.
 
 ### Availability Group Configuration:
 - [Create Failover Cluster](configure-failover.ipynb)
-- [Add Additional Nodes to Cluster](add-to-cluster.ipynb)
 - [Create Availability Group](configure-ag.ipynb)
