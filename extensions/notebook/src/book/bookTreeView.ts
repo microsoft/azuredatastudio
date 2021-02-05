@@ -217,7 +217,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (sourceBook) {
 				fs.unwatchFile(sourceBook.tableOfContentsPath);
 			}
-			fs.unwatchFile(targetBook.tableOfContentsPath);
 			try {
 				await this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
 			} catch (e) {
