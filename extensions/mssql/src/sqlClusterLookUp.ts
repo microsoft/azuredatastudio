@@ -107,6 +107,12 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 		options: {}
 	};
 
+	// We need to populate some extra information here in order to be able to browse the HDFS nodes.
+	// First - if the auth type isn't integrated auth then we need to try and find the username to connect
+	// to the knox endpoint with.
+	// Next we need the knox endpoint - if we didn't get that from the SQL instance (because the user didn't have permissions
+	// to see the full DMV usually) then we need to connect to the controller to fetch the full list of endpoints and get it
+	// that way.
 	let clusterController: bdc.IClusterController | undefined = undefined;
 	let authType = clusterConnInfo.options[constants.authenticationTypePropName] = sqlConnInfo.options[constants.authenticationTypePropName];
 	const controllerEndpoint = endpoints.find(ep => ep.name.toLowerCase() === 'controller');
