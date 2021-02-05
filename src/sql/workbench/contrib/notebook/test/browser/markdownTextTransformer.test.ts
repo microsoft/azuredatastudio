@@ -32,6 +32,7 @@ import { IEditor } from 'vs/editor/common/editorCommon';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { Range } from 'vs/editor/common/core/range';
 import { IProductService } from 'vs/platform/product/common/productService';
+import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 
 suite('MarkdownTextTransformer', () => {
 	let markdownTextTransformer: MarkdownTextTransformer;
@@ -70,8 +71,9 @@ suite('MarkdownTextTransformer', () => {
 			instantiationService.get(IProductService)
 		);
 		mockNotebookService = TypeMoq.Mock.ofInstance(notebookService);
+		let mockConnectionManagementService: TypeMoq.Mock<ConnectionManagementService> = TypeMoq.Mock.ofType(ConnectionManagementService);
 
-		cellModel = new CellModel(undefined, undefined, mockNotebookService.object);
+		cellModel = new CellModel(undefined, undefined, mockConnectionManagementService.object, mockNotebookService.object);
 		notebookEditor = new NotebookEditorStub({ cellGuid: cellModel.cellGuid, instantiationService: instantiationService });
 		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel, notebookEditor);
 		mockNotebookService.setup(s => s.findNotebookEditor(TypeMoq.It.isAny())).returns(() => notebookEditor);

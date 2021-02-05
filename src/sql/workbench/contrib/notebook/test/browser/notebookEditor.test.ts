@@ -59,6 +59,7 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { IHostColorSchemeService } from 'vs/workbench/services/themes/common/hostColorSchemeService';
 import { ColorScheme } from 'vs/platform/theme/common/theme';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
+import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 
 class NotebookModelStub extends stubs.NotebookModelStub {
 	public contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -455,7 +456,8 @@ suite('Test class NotebookEditor:', () => {
 		});
 		untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
 		const notebookModel = <NotebookModelStub>await notebookEditor.getNotebookModel();
-		notebookModel['_cells'] = [new CellModel({ cell_type: 'code', source: '' }, { isTrusted: true, notebook: notebookModel })];
+		let mockConnectionManagementService: TypeMoq.Mock<ConnectionManagementService> = TypeMoq.Mock.ofType(ConnectionManagementService);
+		notebookModel['_cells'] = [new CellModel({ cell_type: 'code', source: '' }, { isTrusted: true, notebook: notebookModel }, mockConnectionManagementService.object)];
 		notebookEditor['registerModelChanges']();
 		notebookModel.cells[0]['_onCellModeChanged'].fire(true); //fire cellModeChanged event on the first sell of our test notebookModel
 		notebookModel.contentChangedEmitter.fire({ changeType: NotebookChangeType.Saved });

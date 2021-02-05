@@ -307,10 +307,9 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean, connectionProfileId?: string, cellUri?: string): nb.IFuture {
 		let canRun: boolean = true;
 		let code = this.getCodeWithoutCellMagic(content);
-		let queryRunner: QueryRunner;
+		let queryRunner: QueryRunner | undefined;
 
-		// Cell has a connection different from notebook connection
-		if (connectionProfileId) {
+		if (connectionProfileId) { // multi-connection mode
 			queryRunner = this._queryRunners.get(connectionProfileId);
 		} else {
 			queryRunner = this._queryRunner;
@@ -327,7 +326,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			let connection = connectionProfileId ? this._connections.get(connectionProfileId) : this._currentConnection;
 			let connectionProfile = connectionProfileId ? this._connectionProfiles.get(connectionProfileId) : this._currentConnectionProfile;
 			if (connection && connectionProfile) {
-				if (connectionProfileId) {
+				if (connectionProfileId) { // multi-connection mode
 					let queryRunnerUri: string = 'queryRunner-' + cellUri;
 					queryRunner = this._instantiationService.createInstance(QueryRunner, queryRunnerUri);
 					this._queryRunners.set(connectionProfileId, queryRunner);
@@ -343,7 +342,6 @@ class SqlKernel extends Disposable implements nb.IKernel {
 						queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 					}).catch(err => onUnexpectedError(err));
 				}
-
 			} else {
 				canRun = false;
 			}
@@ -387,10 +385,13 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		return Promise.resolve(response as nb.ICompleteReplyMsg);
 	}
 
+	/**
+	 * Cancel queries for all query runners
+	 */
 	interrupt(): Thenable<void> {
-		// TODO: figure out what to do with the QueryCancelResult
-		let runners = [...this._queryRunners.values()];
+		let runners: QueryRunner[] = [...this._queryRunners.values()];
 		runners.push(this._queryRunner);
+		// TODO: figure out what to do with the QueryCancelResult
 		return Promise.all(runners.map(queryRunner => queryRunner.cancelQuery())).then();
 	}
 
@@ -432,11 +433,13 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		// TODO issue #2746 should ideally show a warning inside the dialog if have no data
 	}
 
+	/**
+	 * Disconnect all query runners
+	 */
 	public async disconnect(): Promise<void> {
-		let connectionPaths: string[] = [this._connectionPath];
-		for (let queryRunner of this._queryRunners.values()) {
-			connectionPaths.push(queryRunner.uri);
-		}
+		let runners: QueryRunner[] = [...this._queryRunners.values()];
+		let connectionPaths: string[] = runners.map(runner => runner.uri);
+		connectionPaths.push(this._connectionPath);
 		for (let path in connectionPaths) {
 			if (this._connectionManagementService.isConnected(path)) {
 				try {
@@ -446,7 +449,6 @@ class SqlKernel extends Disposable implements nb.IKernel {
 				}
 			}
 		}
-		return;
 	}
 }
 

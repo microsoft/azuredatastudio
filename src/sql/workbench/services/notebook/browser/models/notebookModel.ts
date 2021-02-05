@@ -390,7 +390,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._cells = [];
 			if (contents) {
 				this._defaultLanguageInfo = contents.metadata?.language_info;
-				this._multiConnectionMode = contents.metadata?.multiConnectionMode;
+				this._multiConnectionMode = !!contents.metadata?.multiConnectionMode;
 				// If language info was serialized in the notebook, attempt to use that to decrease time
 				// required until colorization occurs
 				if (this._defaultLanguageInfo) {
@@ -971,14 +971,18 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (isMultiConnection) {
 			this._cells.forEach(c => {
 				if (c.cellType === CellTypes.Code) {
-					c.changeContext(this._activeConnection?.connectionName, this._activeConnection);
+					if (!this._activeConnection && this._savedConnectionName) {
+						c.changeContext(this._savedConnectionName);
+					} else {
+						c.changeContext(this._activeConnection?.connectionName, this._activeConnection);
+					}
 				}
 			});
 			this._activeConnection = undefined;
 		} else {
 			this._cells.forEach(c => {
 				if (c.cellType === CellTypes.Code) {
-					c.changeContext(undefined);
+					c.changeContext('');
 				}
 			});
 		}

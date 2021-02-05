@@ -300,7 +300,9 @@ export class ClientSession implements IClientSession {
 
 	public async addConnection(connection: IConnectionProfile): Promise<void> {
 		// Only supporting multi-connection for SQL kernel for now
-		await (<SqlSession>this._session).addConnection(connection);
+		if (this._defaultKernel.name === 'SQL') {
+			await (<SqlSession>this._session).addConnection(connection);
+		}
 	}
 
 	/**

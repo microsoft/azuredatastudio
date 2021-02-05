@@ -61,7 +61,6 @@ export class CellModel extends Disposable implements ICellModel {
 	private _hover: boolean;
 	private _executionCount: number | undefined;
 	private _cellUri: URI;
-	private _connectionManagementService: IConnectionManagementService;
 	private _stdInHandler: nb.MessageHandler<nb.IStdinMessage>;
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
@@ -89,6 +88,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@optional(INotebookService) private _notebookService?: INotebookService,
 		@optional(ICommandService) private _commandService?: ICommandService,
 		@optional(IConfigurationService) private _configurationService?: IConfigurationService
@@ -316,31 +316,31 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._activeConnection;
 	}
 
+	public updateActiveConnection(connection: ConnectionProfile) {
+		this._activeConnection = connection;
+		this._savedConnectionName = connection?.connectionName;
+	}
+
 	public async changeContext(connectionName: string, newConnection?: ConnectionProfile): Promise<void> {
 		// Remove cell's connection
 		if (!connectionName) {
-			this.activeConnection = undefined;
+			this.updateActiveConnection(undefined);
 			this._contextsChangedEmitter.fire();
 		} else {
 			// Set new connection for cell
 			let connection;
 			if (!newConnection) {
-				let connection = this.getConnectionProfileFromName(connectionName);
+				connection = this.getConnectionProfileFromName(connectionName);
 				if (!connection) {
 					// TODO: show connection dialog for alias that doesn't have a connection?
 				}
 			} else {
 				connection = newConnection;
 			}
-			this.activeConnection = connection;
+			this.updateActiveConnection(connection);
 			this.notebookModel.clientSession.addConnection(connection);
 			this._contextsChangedEmitter.fire();
 		}
-	}
-
-	public set activeConnection(connection: ConnectionProfile) {
-		this._activeConnection = connection;
-		this._savedConnectionName = connection?.connectionName;
 	}
 
 	public get cellGuid(): string {
@@ -515,16 +515,13 @@ export class CellModel extends Disposable implements ICellModel {
 		return CellExecutionState.Hidden;
 	}
 
-	public async runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean> {
+	public async runCell(notificationService?: INotificationService): Promise<boolean> {
 		try {
 			if (!this.active && this !== this.notebookModel.activeCell) {
 				this.notebookModel.updateActiveCell(this);
 				this.active = true;
 			}
 
-			if (connectionManagementService) {
-				this._connectionManagementService = connectionManagementService;
-			}
 			if (this.cellType !== CellTypes.Code) {
 				// TODO should change hidden state to false if we add support
 				// for this property

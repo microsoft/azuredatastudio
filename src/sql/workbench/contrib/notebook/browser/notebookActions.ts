@@ -443,7 +443,11 @@ export class AttachToDropdown extends SelectBox {
 				connections.push(msgChangeConnection);
 			}
 			connections.push(msgPerCell);
-			this.setOptions(connections, 0);
+			if (model.multiConnectionMode) {
+				this.setOptions(connections, connections.length - 1);
+			} else {
+				this.setOptions(connections, 0);
+			}
 			this.enable();
 
 			if (this.model.kernelAliases.includes(currentKernel) && this.model.selectedKernelDisplayName !== currentKernel) {

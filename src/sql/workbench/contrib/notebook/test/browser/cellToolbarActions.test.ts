@@ -30,6 +30,7 @@ import { nb } from 'azdata';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 
 suite('CellToolbarActions', function (): void {
 	suite('removeDuplicatedAndStartingSeparators', function (): void {
@@ -148,7 +149,8 @@ suite('CellToolbarActions', function (): void {
 		});
 
 		test('No notebook model passed in', async function (): Promise<void> {
-			let cellModel = new CellModel({ cell_type: 'code', source: '' }, { isTrusted: true, notebook: undefined });
+			let mockConnectionManagementService: TypeMoq.Mock<ConnectionManagementService> = TypeMoq.Mock.ofType(ConnectionManagementService);
+			let cellModel = new CellModel({ cell_type: 'code', source: '' }, { isTrusted: true, notebook: undefined }, mockConnectionManagementService.object);
 			await convertCellAction.doRun({ cell: cellModel, model: undefined });
 			assert.equal(cellModel.cellType, 'code', 'Cell type should not be affected');
 		});
