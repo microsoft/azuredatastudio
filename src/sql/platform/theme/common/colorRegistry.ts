@@ -70,6 +70,6 @@ export const notebookCellTagBackground = registerColor('notebook.notebookCellTag
 export const notebookCellTagForeground = registerColor('notebook.notebookCellTagForeground', { light: '#FFFFFF', dark: '#FFFFFF', hc: '#FFFFFF' }, nls.localize('notebook.notebookCellTagForeground', "Tag foreground color."));
 
 // Notebook: Find
-export const notebookFindMatchHighlight = registerColor('notebook.findMatchHighlightBackground', { light: '#EA5C0055', dark: '#EA5C0055', hc: null }, nls.localize('notebookFindMatchHighlight', "Color of the other search matches. The color must not be opaque so as not to hide underlying decorations."), true);
+export const notebookFindMatchHighlight = registerColor('notebook.findMatchHighlightBackground', { light: '#FFFF00', dark: '#FFFF00', hc: null }, nls.localize('notebookFindMatchHighlight', "Color of the other search matches. The color must not be opaque so as not to hide underlying decorations."), true);
 export const notebookFindRangeHighlight = registerColor('notebook.findRangeHighlightBackground', { dark: '#FFA500', light: '#FFA500', hc: null }, nls.localize('notebookFindRangeHighlight', "Color of the range limiting the search. The color must not be opaque so as not to hide underlying decorations."), true);
 

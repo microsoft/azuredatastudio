@@ -240,7 +240,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		const notebookCellTagBackgroundColor = theme.getColor(notebookCellTagBackground);
 		const notebookCellTagForegroundColor = theme.getColor(notebookCellTagForeground);
 		if (notebookCellTagBackgroundColor && notebookCellTagForegroundColor) {
-			collector.addRule(`code-component .parameter span { background-color: ${notebookCellTagBackgroundColor}; color: ${notebookCellTagForegroundColor}`);
+			collector.addRule(`code-component .parameter span { background-color: ${notebookCellTagBackgroundColor}; color: ${notebookCellTagForegroundColor};}`);
 		}
 
 		// Notebook Find colors
