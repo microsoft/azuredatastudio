@@ -33,9 +33,9 @@ export function hasSections(node: JupyterBookSection): boolean {
 export class BookTocManager implements IBookTocManager {
 	public tableofContents: JupyterBookSection[];
 	public newSection: JupyterBookSection;
-	private _movedFiles = new Map<string, string>();
-	private _modifiedDirectory = new Set<string>();
-	private _tocFiles = new Map<string, JupyterBookSection[]>();
+	private _movedFiles: Map<string, string>;
+	private _modifiedDirectory: Set<string>;
+	private _tocFiles: Map<string, JupyterBookSection[]>;
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
 	private _sourceBook: BookModel;
@@ -44,6 +44,9 @@ export class BookTocManager implements IBookTocManager {
 		this._sourceBook = sourceBook;
 		this.newSection = {};
 		this.tableofContents = [];
+		this._movedFiles = new Map<string, string>();
+		this._modifiedDirectory = new Set<string>();
+		this._tocFiles = new Map<string, JupyterBookSection[]>();
 		this.sourceBookContentPath = sourceBook?.bookItems[0].rootContentPath;
 		this.targetBookContentPath = targetBook?.bookItems[0].rootContentPath;
 	}
@@ -138,11 +141,15 @@ export class BookTocManager implements IBookTocManager {
 			contents.forEach(async (content) => {
 				if ((await fs.stat(path.join(directory, content))).isFile) {
 					//check if the file is in the moved files
-					let isCopy = this._movedFiles.get(path.join(directory, content));
-					if (isCopy && this._movedFiles.get(path.join(directory, content)) !== path.join(directory, content)) {
-						// the file could not be renamed, so a copy was created.
-						// remove file only if the new path and old path are different
-						await fs.unlink(path.join(directory, content));
+					let newPath = this._movedFiles.get(path.join(directory, content));
+					if (newPath) {
+						let exists = await fs.pathExists(newPath);
+						// if the file exists in the new path and if the the new path and old path are different
+						// then we can remove it
+						if (exists && newPath !== path.join(directory, content)) {
+							// the file could not be renamed, so a copy was created.
+							await fs.unlink(path.join(directory, content));
+						}
 					}
 				} else if ((await fs.stat(path.join(directory, content))).isDirectory) {
 					await this.cleanUp(path.join(directory, content));

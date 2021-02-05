@@ -233,10 +233,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					this.setFileWatcher(sourceBook);
 				}
 			}
-		} else {
-			if (!pickedSection && updateBook) {
-				vscode.window.showInformationMessage(loc.noSectionBookError(updateBook.title));
-			}
 		}
 	}
 

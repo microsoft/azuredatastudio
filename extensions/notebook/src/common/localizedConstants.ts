@@ -49,7 +49,6 @@ export function closeBookError(resource: string, error: string): string { return
 export function duplicateFileError(title: string, path: string, newPath: string): string { return localize('duplicateFileError', "File {0} already exists in the destination folder {1} \n The file has been renamed to {2} to prevent data loss.", title, path, newPath); }
 export function editBookError(path: string, error: string): string { return localize('editBookError', "Error while editing book {0}: {1}", path, error); }
 export function selectBookError(error: string): string { return localize('selectBookError', "Error while selecting a book or a section to edit: {0}", error); }
-export function noSectionBookError(book: string): string { return localize('noSectionBookError', "{0} does not have sections to edit", book); }
 
 // Remote Book dialog constants
 export const url = localize('url', "URL");
