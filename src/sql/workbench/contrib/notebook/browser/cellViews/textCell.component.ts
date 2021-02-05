@@ -361,23 +361,23 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private addDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
-			let markOutput = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
+			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
 			let elements = this.getHtmlElements();
 			if (elements?.length >= range.startLineNumber) {
 				let elementContainingText = elements[range.startLineNumber - 1];
-				let mark = new Mark(elementContainingText); // to highlight the current item of them all.
+				let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
 				let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
 				if (editor) {
 					let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
 					if (findModel?.findMatches?.length > 0) {
 						let searchString = findModel.findExpression;
-						markOutput.mark(searchString, {
+						markAllOccurances.mark(searchString, {
 							className: findHighlightClass
 						});
 						elementContainingText.scrollIntoView({ behavior: 'smooth' });
 					}
 				}
-				mark.markRanges([{
+				markCurrent.markRanges([{
 					start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
 					length: range.endColumn - range.startColumn
 				}], {
@@ -390,12 +390,12 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private removeDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
-			let markOutput = new Mark(this.output.nativeElement);
+			let markAllOccurances = new Mark(this.output.nativeElement);
 			let elements = this.getHtmlElements();
 			let elementContainingText = elements[range.startLineNumber - 1];
-			let mark = new Mark(elementContainingText);
-			markOutput.unmark({ acrossElements: true, className: findHighlightClass });
-			mark.unmark({ acrossElements: true, className: findRangeSpecificClass });
+			let markCurrent = new Mark(elementContainingText);
+			markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
+			markCurrent.unmark({ acrossElements: true, className: findRangeSpecificClass });
 		}
 	}
 
