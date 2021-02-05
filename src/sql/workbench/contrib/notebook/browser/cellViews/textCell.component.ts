@@ -361,17 +361,17 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private addDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
-			let markDoc = new Mark(this.output.nativeElement);
+			let markOutput = new Mark(this.output.nativeElement); //to highlight all occurances in the element.
 			let elements = this.getHtmlElements();
 			if (elements?.length >= range.startLineNumber) {
 				let elementContainingText = elements[range.startLineNumber - 1];
-				let mark = new Mark(elementContainingText);
+				let mark = new Mark(elementContainingText); //to highlight the current item of them all.
 				let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
 				if (editor) {
 					let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
 					if (findModel?.findMatches?.length > 0) {
 						let searchString = findModel.findExpression;
-						markDoc.mark(searchString, {
+						markOutput.mark(searchString, {
 							className: findHighlightClass
 						});
 						elementContainingText.scrollIntoView({ behavior: 'smooth' });
@@ -390,11 +390,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private removeDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
-			let markDoc = new Mark(this.output.nativeElement);
+			let markOutput = new Mark(this.output.nativeElement);
 			let elements = this.getHtmlElements();
 			let elementContainingText = elements[range.startLineNumber - 1];
 			let mark = new Mark(elementContainingText);
-			markDoc.unmark({ acrossElements: true, className: findHighlightClass });
+			markOutput.unmark({ acrossElements: true, className: findHighlightClass });
 			mark.unmark({ acrossElements: true, className: findRangeSpecificClass });
 		}
 	}
