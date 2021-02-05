@@ -25,7 +25,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	fileSystemUri: vscode.Uri;
 
 	constructor(project: Project) {
-		super(vscode.Uri.parse(project.projectFilePath), undefined);
+		super(vscode.Uri.file(project.projectFilePath), undefined);
 
 		this.project = project;
 		this.fileSystemUri = vscode.Uri.file(project.projectFilePath);
