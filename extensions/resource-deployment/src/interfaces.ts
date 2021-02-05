@@ -47,14 +47,14 @@ export interface ResourceSubType {
 
 export interface HelpText {
 	template: string;
-	links: azdata.LinkArea[];
-	when: string;
+	links?: azdata.LinkArea[];
+	when?: string;
 }
 
 export interface AgreementInfo {
 	template: string;
-	links: azdata.LinkArea[];
-	when: string;
+	links?: azdata.LinkArea[];
+	when?: string;
 }
 
 export interface ResourceTypeOption {

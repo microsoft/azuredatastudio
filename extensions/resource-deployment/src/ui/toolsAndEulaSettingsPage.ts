@@ -281,8 +281,8 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		// the agreement template will have {index} as placeholder for hyperlinks
 		// this method will get the display text after replacing the placeholders
 		let text = agreementInfo.template;
-		for (let i: number = 0; i < agreementInfo.links.length; i++) {
-			text = text.replace(`{${i}}`, agreementInfo.links[i].text);
+		for (let i: number = 0; i < agreementInfo.links!.length; i++) {
+			text = text.replace(`{${i}}`, agreementInfo.links![i].text);
 		}
 		return text;
 	}

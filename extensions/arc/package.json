@@ -1106,7 +1106,7 @@
           "links": [
             {
               "text": "%arc.agreement.sql.help.text.learn.more%",
-              "url": "https://go.microsoft.com/fwlink/?linkid=2141849&clcid=0x409"
+              "url": "https://go.microsoft.com/fwlink/?linkid=2141849"
             }
           ],
           "when": "mi-type=arc-mi"
