@@ -9,7 +9,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption, ResourceSubType, AgreementInfo } from '../interfaces';
+import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption, ResourceSubType, AgreementInfo, HelpText } from '../interfaces';
 import { AzdataService } from './azdataService';
 import { KubeService } from './kubeService';
 import { INotebookService } from './notebookService';
@@ -56,6 +56,7 @@ export class ResourceTypeService implements IResourceTypeService {
 					resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
 					resourceType.getOkButtonText = (selectedOptions) => { return this.getOkButtonText(resourceType, selectedOptions); };
 					resourceType.getAgreementInfo = (selectedOptions) => { return this.getAgreementInfo(resourceType, selectedOptions); };
+					resourceType.getHelpText = (selectedOptions) => { return this.getHelpText(resourceType, selectedOptions); };
 					this.getResourceSubTypes(resourceType);
 					this._resourceTypes.push(resourceType);
 				});
@@ -152,6 +153,9 @@ export class ResourceTypeService implements IResourceTypeService {
 					}
 					if (resourceSubType.agreement) {
 						resourceType.agreements?.push(resourceSubType.agreement!);
+					}
+					if (resourceSubType.helpText) {
+						resourceType.helpTexts.push(resourceSubType.helpText);
 					}
 				}
 			});
@@ -299,6 +303,17 @@ export class ResourceTypeService implements IResourceTypeService {
 	private getAgreementInfo(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): AgreementInfo | undefined {
 		if (resourceType.agreements) {
 			for (const possibleOption of resourceType.agreements) {
+				if (processWhenClause(possibleOption.when, selectedOptions)) {
+					return possibleOption;
+				}
+			}
+		}
+		return undefined;
+	}
+
+	private getHelpText(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): HelpText | undefined {
+		if (resourceType.helpTexts) {
+			for (const possibleOption of resourceType.helpTexts) {
 				if (processWhenClause(possibleOption.when, selectedOptions)) {
 					return possibleOption;
 				}
