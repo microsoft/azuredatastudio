@@ -216,7 +216,7 @@ describe('BooksTreeViewTests', function () {
 				should(isTrusted).equal(false, 'Notebook should not be trusted by default');
 
 				bookTreeViewProvider.trustBook(bookTreeViewProvider.currentBook.bookItems[0]);
-				isTrusted = bookTrustManager.isNotebookTrustedByDefault(notebook1Path);
+				isTrusted = bookTrustManager.isNotebookTrustedByDefault(vscode.Uri.file(notebook1Path).fsPath);
 				should(isTrusted).equal(true, 'Failed to set trust on trustBook');
 
 			});
