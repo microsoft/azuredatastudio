@@ -230,7 +230,6 @@ export class Button extends Disposable {
 
 			this._element.style.color = foreground;
 			this._element.style.backgroundColor = background;
-
 			this._element.style.borderWidth = border ? '1px' : '';
 			this._element.style.borderStyle = border ? 'solid' : '';
 			this._element.style.borderColor = border;

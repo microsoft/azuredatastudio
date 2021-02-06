@@ -680,7 +680,10 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			tabs.forEach(tab => this.updateTabContent(tab));
 		}
 		if (dialog.customButtons) {
-			dialog.customButtons.forEach(button => this.updateButton(button));
+			dialog.customButtons.forEach(button => {
+				button.secondary = true;
+				this.updateButton(button);
+			});
 		}
 		this.updateButton(dialog.okButton);
 		this.updateButton(dialog.cancelButton);
@@ -808,7 +811,10 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this.updateButton(wizard.doneButton);
 		this.updateButton(wizard.nextButton);
 		if (wizard.customButtons) {
-			wizard.customButtons.forEach(button => this.updateButton(button));
+			wizard.customButtons.forEach(button => {
+				button.secondary = true;
+				this.updateButton(button);
+			});
 		}
 		return this._proxy.$setWizardDetails(handle, {
 			title: wizard.title,

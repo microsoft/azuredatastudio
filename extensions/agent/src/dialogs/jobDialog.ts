@@ -498,12 +498,10 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			this.pickScheduleButton = view.modelBuilder.button().withProps({
 				label: this.PickScheduleButtonString,
-				width: 80,
 				secondary: true
 			}).component();
 			this.removeScheduleButton = view.modelBuilder.button().withProps({
 				label: this.RemoveScheduleButtonString,
-				width: 100,
 				secondary: true
 			}).component();
 			this.pickScheduleButton.onDidClick(() => {
