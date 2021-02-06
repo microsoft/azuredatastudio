@@ -28,7 +28,7 @@ import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionRecomm
 import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lifecycle';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
-import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { tileBorder, gradientOne, gradientTwo, gradientBackground, extensionPackHeaderShadow, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, tileBoxShadow, hoverShadow } from 'sql/platform/theme/common/colorRegistry';
 import { registerColor, foreground, textLinkActiveForeground, descriptionForeground, activeContrastBorder, buttonForeground, menuBorder, menuForeground, editorWidgetBorder, selectBackground, buttonHoverBackground, selectBorder, iconForeground, textLinkForeground, inputBackground, focusBorder, listFocusBackground, listFocusForeground, buttonSecondaryBackground, buttonSecondaryBorder, buttonDisabledForeground, buttonDisabledBackground, buttonSecondaryForeground, buttonSecondaryHoverBackground } from 'vs/platform/theme/common/colorRegistry';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
@@ -52,6 +52,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ICommandAction, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
@@ -247,7 +248,8 @@ class WelcomePage extends Disposable {
 		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
 		@ICommandService private readonly commandService: ICommandService,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
-		@IContextKeyService private readonly contextKeyService: IContextKeyService) {
+		@IContextKeyService private readonly contextKeyService: IContextKeyService,
+		@IThemeService private themeService: IThemeService) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
 		const recentlyOpened = this.workspacesService.getRecentlyOpened();
@@ -569,6 +571,7 @@ class WelcomePage extends Disposable {
 			extensionPacks.forEach((extension) => {
 				const installText = localize('welcomePage.install', "Install");
 				let dropdownBtn = this._register(new Button(btnContainer));
+				this._register(attachButtonStyler(dropdownBtn, this.themeService));
 				dropdownBtn.label = installText;
 				const classes = ['btn'];
 				const getDropdownBtn = container.querySelector('.extensionPack .monaco-button:first-of-type') as HTMLAnchorElement;
@@ -598,6 +601,7 @@ class WelcomePage extends Disposable {
 				installedButton.label = installedText;
 				installedButton.enabled = false;
 				const getInstalledButton = container.querySelector('.extensionPack .monaco-button:nth-of-type(2)') as HTMLAnchorElement;
+				this._register(attachButtonStyler(installedButton, this.themeService));
 
 				getInstalledButton.innerText = localize('welcomePage.installed', "Installed");
 				getInstalledButton.title = extension.isKeymap ? localize('welcomePage.installedKeymap', "{0} keymap is already installed", extension.name) : localize('welcomePage.installedExtensionPack', "{0} support is already installed", extension.name);
