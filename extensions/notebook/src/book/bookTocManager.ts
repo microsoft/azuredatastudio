@@ -140,7 +140,8 @@ export class BookTocManager implements IBookTocManager {
 		} else {
 			contents.forEach(async (content) => {
 				let filePath = path.join(directory, content);
-				if ((await fs.stat(filePath)).isFile) {
+				let fileStat = await fs.stat(filePath);
+				if (fileStat.isFile) {
 					//check if the file is in the moved files
 					let newPath = this._movedFiles.get(filePath);
 					if (newPath) {
@@ -152,7 +153,7 @@ export class BookTocManager implements IBookTocManager {
 							await fs.unlink(filePath);
 						}
 					}
-				} else if ((await fs.stat(filePath)).isDirectory) {
+				} else if (fileStat.isDirectory) {
 					await this.cleanUp(filePath);
 				}
 			});
@@ -360,12 +361,12 @@ export class BookTocManager implements IBookTocManager {
 	 * @param targetSection Book section that'll be modified.
 	*/
 	public async updateBook(element: BookTreeItem, targetBook: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
-		const targetBookVersion = targetBook.book.version === BookVersion.v1 ? BookVersion.v1 : BookVersion.v2;
+		const targetBookVersion = targetBook.book.version as BookVersion;
 		if (element.contextValue === 'section') {
 			// modify the sourceBook toc and remove the section
 			const findSection: JupyterBookSection = { file: element.book.page.file?.replace(/\\/g, '/'), title: element.book.page.title };
 			await this.addSection(element, targetBook);
-			const elementVersion = element.book.version === BookVersion.v1 ? BookVersion.v1 : BookVersion.v2;
+			const elementVersion = element.book.version as BookVersion;
 			await this.updateTOC(elementVersion, element.tableOfContentsPath, findSection, undefined);
 			if (targetSection) {
 				// adding new section to the target book toc file
@@ -385,7 +386,7 @@ export class BookTocManager implements IBookTocManager {
 			const findSection = { file: element.book.page?.file?.replace(/\\/g, '/'), title: element.book.page?.title };
 			await this.addNotebook(element, targetBook);
 			if (element.tableOfContentsPath) {
-				const elementVersion = element.book.version === BookVersion.v1 ? BookVersion.v1 : BookVersion.v2;
+				const elementVersion = element.book.version as BookVersion;
 				await this.updateTOC(elementVersion, element.tableOfContentsPath, findSection, undefined);
 			} else {
 				// close the standalone notebook, so it doesn't throw an error when we move the notebook to new location.
@@ -426,5 +427,4 @@ export class BookTocManager implements IBookTocManager {
 	public set modifiedDir(files: Set<string>) {
 		this._modifiedDirectory = files;
 	}
-
 }
