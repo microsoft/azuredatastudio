@@ -346,7 +346,7 @@ export class BookTocManager implements IBookTocManager {
 			this.newSection = sectionTOC;
 		}
 		fileName = fileName === undefined ? notebookPath.name : path.parse(fileName).name;
-		this.newSection.file = path.sep.concat(fileName);
+		this.newSection.file = path.sep.concat(fileName).replace(/\\/g, '/');
 		this.newSection.title = notebook.book.title;
 		if (book.version === BookVersion.v1) {
 			// here we only convert if is v1 because we are already using the v2 notation for every book that we read.
