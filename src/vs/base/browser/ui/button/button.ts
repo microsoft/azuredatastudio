@@ -202,11 +202,11 @@ export class Button extends Disposable {
 	// {{SQL CARBON EDIT}} - custom applyStyles
 	applyStyles(): void {
 		if (this._element) {
-			let background, foreground, border;
+			let background, foreground, border, fontWeight, fontSize;
 			if (this.hasIcon) {
-				background = 'transparent';
-				foreground = 'transparent';
-				border = 'transparent';
+				background = border = 'transparent';
+				foreground = this.buttonSecondaryForeground;
+				fontWeight = fontSize = 'inherit';
 			} else {
 				if (this.enabled) {
 					if (this.options.secondary) {
@@ -224,6 +224,8 @@ export class Button extends Disposable {
 					background = this.buttonDisabledBackground;
 					border = this.buttonDisabledBorder;
 				}
+				fontWeight = '600';
+				fontSize = '12px';
 			}
 
 			this._element.style.color = foreground;
@@ -233,8 +235,8 @@ export class Button extends Disposable {
 			this._element.style.borderStyle = border ? 'solid' : '';
 			this._element.style.borderColor = border;
 			this._element.style.opacity = this.hasIcon ? '' : '1';
-			this._element.style.fontWeight = '600';
-			this._element.style.fontSize = '12px';
+			this._element.style.fontWeight = fontWeight;
+			this._element.style.fontSize = fontSize;
 		}
 	}
 	// {{SQL CARBON EDIT}} - end custom applyStyles
