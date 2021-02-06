@@ -28,7 +28,7 @@ export class FilePicker {
 			}).component();
 
 		this.filePickerButton = modelBuilder.button()
-			.withProps({
+			.withProperties<azdata.ButtonProperties>({
 				label: loc.browse,
 				width: buttonWidth,
 				secondary: true
