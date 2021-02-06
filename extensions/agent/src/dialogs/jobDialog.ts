@@ -59,6 +59,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 	// Schedules tab strings
 	private readonly SchedulesTopLabelString: string = localize('jobDialog.schedulesaLabel', "Schedules list");
 	private readonly PickScheduleButtonString: string = localize('jobDialog.pickSchedule', "Pick Schedule");
+	private readonly RemoveScheduleButtonString: string = localize('jobDialog.removeSchedule', "Remove Schedule");
 
 	// Alerts tab strings
 	private readonly AlertsTopLabelString: string = localize('jobDialog.alertsList', "Alerts list");
@@ -241,26 +242,29 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.startStepDropdown.values = this.startStepDropdownValues;
 
 			this.moveStepUpButton = view.modelBuilder.button()
-				.withProperties({
+				.withProps({
 					label: this.MoveStepUpButtonString,
 					title: this.MoveStepUpButtonString,
-					width: 120
+					width: 120,
+					secondary: true
 				}).component();
 
 			this.moveStepDownButton = view.modelBuilder.button()
-				.withProperties({
+				.withProps({
 					label: this.MoveStepDownButtonString,
 					title: this.MoveStepDownButtonString,
-					width: 120
+					width: 120,
+					secondary: true
 				}).component();
 
 			this.moveStepUpButton.enabled = false;
 			this.moveStepDownButton.enabled = false;
 
-			this.newStepButton = view.modelBuilder.button().withProperties({
+			this.newStepButton = view.modelBuilder.button().withProps({
 				label: this.NewStepButtonString,
 				title: this.NewStepButtonString,
-				width: 140
+				width: 140,
+				secondary: true
 			}).component();
 
 			this.newStepButton.onDidClick((e) => {
@@ -285,16 +289,18 @@ export class JobDialog extends AgentDialog<JobData>  {
 				}
 			});
 
-			this.editStepButton = view.modelBuilder.button().withProperties({
+			this.editStepButton = view.modelBuilder.button().withProps({
 				label: this.EditStepButtonString,
 				title: this.EditStepButtonString,
-				width: 140
+				width: 140,
+				secondary: true
 			}).component();
 
-			this.deleteStepButton = view.modelBuilder.button().withProperties({
+			this.deleteStepButton = view.modelBuilder.button().withProps({
 				label: this.DeleteStepButtonString,
 				title: this.DeleteStepButtonString,
-				width: 140
+				width: 140,
+				secondary: true
 			}).component();
 
 			this.stepsTable.enabled = false;
@@ -443,9 +449,10 @@ export class JobDialog extends AgentDialog<JobData>  {
 					width: 400
 				}).component();
 
-			this.newAlertButton = view.modelBuilder.button().withProperties({
+			this.newAlertButton = view.modelBuilder.button().withProps({
 				label: this.NewAlertButtonString,
-				width: 80
+				width: 80,
+				secondary: true
 			}).component();
 
 			let alertDialog = new AlertDialog(this.model.ownerUri, this.model, null, true);
@@ -489,13 +496,15 @@ export class JobDialog extends AgentDialog<JobData>  {
 					width: 420
 				}).component();
 
-			this.pickScheduleButton = view.modelBuilder.button().withProperties({
+			this.pickScheduleButton = view.modelBuilder.button().withProps({
 				label: this.PickScheduleButtonString,
-				width: 80
+				width: 80,
+				secondary: true
 			}).component();
-			this.removeScheduleButton = view.modelBuilder.button().withProperties({
-				label: 'Remove schedule',
-				width: 100
+			this.removeScheduleButton = view.modelBuilder.button().withProps({
+				label: this.RemoveScheduleButtonString,
+				width: 100,
+				secondary: true
 			}).component();
 			this.pickScheduleButton.onDidClick(() => {
 				let pickScheduleDialog = new PickScheduleDialog(this.model.ownerUri, this.model.name);

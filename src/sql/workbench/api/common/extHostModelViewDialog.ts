@@ -134,7 +134,7 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 		extension: IExtensionDescription) {
 		super('modelViewDialog', extHostModelViewDialog, extHostModelView, extension);
 		this.okButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
-		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL);
+		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL, 'right', true);
 		this._operationHandler = new BackgroundOperationHandler('dialog', extHostTaskManagement);
 		this.okButton.onClick(() => {
 			this._operationHandler.createOperation();
@@ -219,6 +219,7 @@ class ButtonImpl implements azdata.window.Button {
 	private _hidden: boolean;
 	private _focused: boolean;
 	private _position: azdata.window.DialogButtonPosition;
+	private _secondary: boolean;
 
 	private _onClick = new Emitter<void>();
 	public onClick = this._onClick.event;
@@ -262,6 +263,15 @@ class ButtonImpl implements azdata.window.Button {
 
 	public set position(value: azdata.window.DialogButtonPosition) {
 		this._position = value;
+		this._extHostModelViewDialog.updateButton(this);
+	}
+
+	public get secondary(): boolean {
+		return this._secondary;
+	}
+
+	public set secondary(value: boolean) {
+		this._secondary = value;
 		this._extHostModelViewDialog.updateButton(this);
 	}
 
@@ -386,10 +396,10 @@ class WizardImpl implements azdata.window.Wizard {
 
 	constructor(public title: string, public name: string, private _extHostModelViewDialog: ExtHostModelViewDialog, extHostTaskManagement: ExtHostBackgroundTaskManagementShape) {
 		this.doneButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
-		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL);
-		this.generateScriptButton = this._extHostModelViewDialog.createButton(GENERATE_SCRIPT_LABEL);
+		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL, 'right', true);
+		this.generateScriptButton = this._extHostModelViewDialog.createButton(GENERATE_SCRIPT_LABEL, 'right', true);
 		this.nextButton = this._extHostModelViewDialog.createButton(NEXT_LABEL);
-		this.backButton = this._extHostModelViewDialog.createButton(PREVIOUS_LABEL);
+		this.backButton = this._extHostModelViewDialog.createButton(PREVIOUS_LABEL, 'right', true);
 		this._extHostModelViewDialog.registerWizardPageInfoChangedCallback(this, info => this.handlePageInfoChanged(info));
 		this._currentPage = 0;
 		this.onPageChanged(info => this._currentPage = info.newPage);
@@ -708,7 +718,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			enabled: button.enabled,
 			hidden: button.hidden,
 			focused: button.focused,
-			position: button.position
+			position: button.position,
+			secondary: button.secondary
 		});
 	}
 
@@ -735,12 +746,13 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return tab;
 	}
 
-	public createButton(label: string, position: azdata.window.DialogButtonPosition = 'right'): azdata.window.Button {
+	public createButton(label: string, position: azdata.window.DialogButtonPosition = 'right', secondary: boolean = false): azdata.window.Button {
 		let button = new ButtonImpl(this);
 		this.getHandle(button);
 		this.registerOnClickCallback(button, button.getOnClickCallback());
 		button.label = label;
 		button.position = position;
+		button.secondary = secondary;
 		return button;
 	}
 

@@ -707,6 +707,13 @@ declare module 'azdata' {
 		 * @param pageName The optional page name parameter will be used for telemetry
 		 */
 		export function createWizardPage(title: string, pageName?: string): WizardPage;
+
+		export interface Button {
+			/**
+			 * Specifies whether this is a secondary button. Default is false.
+			 */
+			secondary?: boolean;
+		}
 	}
 
 	export namespace workspace {
@@ -852,6 +859,10 @@ declare module 'azdata' {
 		* Description text to display inside button element.
 		*/
 		description?: string;
+		/**
+		 * Specifies whether this is a secondary button. Default value is false.
+		 */
+		secondary?: boolean;
 	}
 
 	export enum ButtonType {

@@ -29,8 +29,8 @@ import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lif
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { buttonSecondaryBackground, buttonSecondaryBorder, buttonSecondary, buttonSecondaryHoverColor, tileBorder, disabledButton, disabledButtonBackground, gradientOne, gradientTwo, gradientBackground, extensionPackHeaderShadow, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, tileBoxShadow, hoverShadow } from 'sql/platform/theme/common/colorRegistry';
-import { registerColor, foreground, textLinkActiveForeground, descriptionForeground, activeContrastBorder, buttonForeground, menuBorder, menuForeground, editorWidgetBorder, selectBackground, buttonHoverBackground, selectBorder, iconForeground, textLinkForeground, inputBackground, focusBorder, listFocusBackground, listFocusForeground } from 'vs/platform/theme/common/colorRegistry';
+import { tileBorder, gradientOne, gradientTwo, gradientBackground, extensionPackHeaderShadow, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, tileBoxShadow, hoverShadow } from 'sql/platform/theme/common/colorRegistry';
+import { registerColor, foreground, textLinkActiveForeground, descriptionForeground, activeContrastBorder, buttonForeground, menuBorder, menuForeground, editorWidgetBorder, selectBackground, buttonHoverBackground, selectBorder, iconForeground, textLinkForeground, inputBackground, focusBorder, listFocusBackground, listFocusForeground, buttonSecondaryBackground, buttonSecondaryBorder, buttonDisabledForeground, buttonDisabledBackground, buttonSecondaryForeground, buttonSecondaryHoverBackground } from 'vs/platform/theme/common/colorRegistry';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IEditorInputFactory, EditorInput } from 'vs/workbench/common/editor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -874,7 +874,7 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonHoverBackgroundColor = theme.getColor(buttonHoverBackground);
 	if (buttonHoverBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary:hover { background: ${buttonHoverBackgroundColor}}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary:hover { background-color: ${buttonHoverBackgroundColor}}`);
 	}
 	const buttonSecondaryBackgroundColor = theme.getColor(buttonSecondaryBackground);
 	if (buttonSecondaryBackgroundColor) {
@@ -884,13 +884,13 @@ registerThemingParticipant((theme, collector) => {
 	if (buttonSecondaryBorderColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary .monaco-button{ border: 1px solid ${buttonSecondaryBorderColor}}`);
 	}
-	const buttonSecondaryColor = theme.getColor(buttonSecondary);
+	const buttonSecondaryColor = theme.getColor(buttonSecondaryForeground);
 	if (buttonSecondaryColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { color: ${buttonSecondaryColor} !important}`);
 	}
-	const buttonSecondaryHover = theme.getColor(buttonSecondaryHoverColor);
+	const buttonSecondaryHover = theme.getColor(buttonSecondaryHoverBackground);
 	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary:hover:not(.disabled) { color: ${buttonSecondaryHover};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary:hover:not(.disabled) { background-color: ${buttonSecondaryHover};}`);
 	}
 	const selectBackgroundColor = theme.getColor(selectBackground);
 	if (selectBackgroundColor) {
@@ -933,11 +933,11 @@ registerThemingParticipant((theme, collector) => {
 	if (descriptionColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .detail { color: ${descriptionColor}; }`);
 	}
-	const disabledButtonColor = theme.getColor(disabledButton);
+	const disabledButtonColor = theme.getColor(buttonDisabledForeground);
 	if (disabledButtonColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .btn:disabled { color: ${disabledButtonColor}; }`);
 	}
-	const disabledButtonBackgroundColor = theme.getColor(disabledButtonBackground);
+	const disabledButtonBackgroundColor = theme.getColor(buttonDisabledBackground);
 	if (disabledButtonColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .btn:disabled { background: ${disabledButtonBackgroundColor}; }`);
 	}

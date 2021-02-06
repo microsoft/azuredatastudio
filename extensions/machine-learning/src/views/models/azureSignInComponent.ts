@@ -22,9 +22,10 @@ export class AzureSignInComponent extends ModelViewBase {
 	 */
 	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);
-		this._signInButton = this._modelBuilder.button().withProperties({
+		this._signInButton = this._modelBuilder.button().withProps({
 			width: componentWidth,
 			label: constants.azureSignIn,
+			secondary: true
 		}).component();
 		this._signInButton.onDidClick(() => {
 			this.sendRequest(SignInToAzureEventName);

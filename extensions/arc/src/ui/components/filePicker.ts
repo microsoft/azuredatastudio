@@ -28,9 +28,10 @@ export class FilePicker {
 			}).component();
 
 		this.filePickerButton = modelBuilder.button()
-			.withProperties<azdata.ButtonProperties>({
+			.withProps({
 				label: loc.browse,
-				width: buttonWidth
+				width: buttonWidth,
+				secondary: true
 			}).component();
 		onNewDisposableCreated(this.filePickerButton.onDidClick(async () => {
 			const fileUris = await vscode.window.showOpenDialog({

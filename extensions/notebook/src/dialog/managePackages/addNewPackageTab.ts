@@ -39,9 +39,10 @@ export class AddNewPackageTab {
 			});
 
 			this.packagesSearchButton = view.modelBuilder.button()
-				.withProperties<azdata.ButtonProperties>({
+				.withProps({
 					label: localize('managePackages.searchButtonLabel', "Search"),
-					width: '200px'
+					width: '200px',
+					secondary: true
 				}).component();
 			this.packagesSearchButton.onDidClick(async () => {
 				await this.loadNewPackageInfo();
@@ -64,7 +65,8 @@ export class AddNewPackageTab {
 
 			this.packageInstallButton = view.modelBuilder.button().withProperties({
 				label: localize('managePackages.installButtonText', "Install"),
-				width: '200px'
+				width: '200px',
+				secondary: true
 			}).component();
 			this.packageInstallButton.onDidClick(async () => {
 				await this.doPackageInstall();

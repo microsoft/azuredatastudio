@@ -227,13 +227,23 @@ export const simpleCheckboxBackground = registerColor('checkbox.background', { d
 export const simpleCheckboxForeground = registerColor('checkbox.foreground', { dark: selectForeground, light: selectForeground, hc: selectForeground }, nls.localize('checkbox.foreground', "Foreground color of checkbox widget."));
 export const simpleCheckboxBorder = registerColor('checkbox.border', { dark: selectBorder, light: selectBorder, hc: selectBorder }, nls.localize('checkbox.border', "Border color of checkbox widget."));
 
-export const buttonForeground = registerColor('button.foreground', { dark: Color.white, light: Color.white, hc: Color.white }, nls.localize('buttonForeground', "Button foreground color."));
-export const buttonBackground = registerColor('button.background', { dark: '#0078D4', light: '#007ACC', hc: '#0078D4' }, nls.localize('buttonBackground', "Button background color."));
-export const buttonHoverBackground = registerColor('button.hoverBackground', { dark: lighten(buttonBackground, 0.2), light: darken(buttonBackground, 0.2), hc: null }, nls.localize('buttonHoverBackground', "Button background color when hovering."));
+// {{SQL CARBON EDIT}} - ADS custom button styles
+// Existing VSCode button colors, reuse the color ids with modified color values
+export const buttonForeground = registerColor('button.foreground', { dark: '#111111', light: Color.white, hc: Color.white }, nls.localize('buttonForeground', "Button foreground color."));
+export const buttonBackground = registerColor('button.background', { dark: '#4894FE', light: '#0078D4', hc: null }, nls.localize('buttonBackground', "Button background color."));
+export const buttonHoverBackground = registerColor('button.hoverBackground', { dark: '#6CA9FE', light: '#106EBE', hc: null }, nls.localize('buttonHoverBackground', "Button background color when hovering."));
 
-export const buttonSecondaryForeground = registerColor('button.secondaryForeground', { dark: Color.white, light: Color.white, hc: Color.white }, nls.localize('buttonSecondaryForeground', "Secondary button foreground color."));
-export const buttonSecondaryBackground = registerColor('button.secondaryBackground', { dark: '#3A3D41', light: '#5F6A79', hc: null }, nls.localize('buttonSecondaryBackground', "Secondary button background color."));
-export const buttonSecondaryHoverBackground = registerColor('button.secondaryHoverBackground', { dark: lighten(buttonSecondaryBackground, 0.2), light: darken(buttonSecondaryBackground, 0.2), hc: null }, nls.localize('buttonSecondaryHoverBackground', "Secondary button background color when hovering."));
+export const buttonSecondaryForeground = registerColor('button.secondaryForeground', { dark: '#4894FE', light: '#323130', hc: Color.white }, nls.localize('buttonSecondaryForeground', "Secondary button foreground color."));
+export const buttonSecondaryBackground = registerColor('button.secondaryBackground', { dark: '#212121', light: Color.white, hc: null }, nls.localize('buttonSecondaryBackground', "Secondary button background color."));
+export const buttonSecondaryHoverBackground = registerColor('button.secondaryHoverBackground', { dark: new Color(new RGBA(127, 127, 127, 0.1)), light: '#F3F2F1', hc: null }, nls.localize('buttonSecondaryHoverBackground', "Secondary button background color when hovering."));
+
+// new button colors introduced by ADS
+export const buttonBorder = registerColor('button.border', { dark: '#4894FE', light: '#0078D4', hc: contrastBorder }, nls.localize('button.border', "Primary button border color."));
+export const buttonSecondaryBorder = registerColor('button.secondaryBorder', { dark: '#4894FE', light: '#8A8886', hc: contrastBorder }, nls.localize('button.secondaryBorder', "Secondary button border color."));
+export const buttonDisabledBorder = registerColor('button.disabledBorder', { dark: new Color(new RGBA(127, 127, 127, 0.1)), light: '#F3F2F1', hc: '#00FF00' }, nls.localize('button.secondaryBorder', "Secondary button border color."));
+export const buttonDisabledForeground = registerColor('button.disabledForeground', { dark: new Color(new RGBA(127, 127, 127, 0.7)), light: '#A19F9D', hc: '#00FF00' }, nls.localize('button.disabledForeground', "Disabled button foreground color."));
+export const buttonDisabledBackground = registerColor('button.disabledBackground', { dark: new Color(new RGBA(127, 127, 127, 0.1)), light: '#F3F2F1', hc: Color.black }, nls.localize('button.disabledBackground', "Disablbed button background color."));
+// {{SQL CARBON EDIT}} - end of ADS custom button styles
 
 export const badgeBackground = registerColor('badge.background', { dark: '#4D4D4D', light: '#C4C4C4', hc: Color.black }, nls.localize('badgeBackground', "Badge background color. Badges are small information labels, e.g. for search results count."));
 export const badgeForeground = registerColor('badge.foreground', { dark: Color.white, light: '#333', hc: Color.white }, nls.localize('badgeForeground', "Badge foreground color. Badges are small information labels, e.g. for search results count."));
