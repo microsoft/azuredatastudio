@@ -199,6 +199,7 @@ export function validationMin(min: number): string { return localize('arc.valida
 // Errors
 export const connectionRequired = localize('arc.connectionRequired', "A connection is required to show all properties. Click refresh to re-enter connection information");
 export const pgConnectionRequired = localize('arc.pgConnectionRequired', "A connection is required to show and set database engine settings.");
+export const miaaConnectionRequired = localize('arc.miaaConnectionRequired', "A connection is required to list the databases on this instance.");
 export const couldNotFindControllerRegistration = localize('arc.couldNotFindControllerRegistration', "Could not find controller registration.");
 export function outOfRange(min: string, max: string): string { return localize('arc.outOfRange', "The number must be in range {0} - {1}", min, max); }
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
