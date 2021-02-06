@@ -35,6 +35,7 @@ const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python in
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 function msgPackageRetrievalFailed(errorMessage: string): string { return localize('msgPackageRetrievalFailed', "Encountered an error when trying to retrieve list of installed packages: {0}", errorMessage); }
+function msgGetPythonUserDirFailed(errorMessage: string): string { return localize('msgGetPythonUserDirFailed', "Encountered an error when getting Python user path: {0}", errorMessage); }
 
 export interface PythonInstallSettings {
 	installPath: string;
@@ -705,24 +706,28 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	private async getPythonUserDir(pythonExecutable: string): Promise<string> {
-		let sitePath: string;
-		if (process.platform === constants.winPlatform) {
-			sitePath = 'USER_SITE';
-		} else {
-			sitePath = 'USER_BASE';
-		}
-		let cmd = `"${pythonExecutable}" -c "import site;print(site.${sitePath})"`;
-
-		let packagesDir = await utils.executeBufferedCommand(cmd, {});
-		if (packagesDir && packagesDir.length > 0) {
-			packagesDir = packagesDir.trim();
+		try {
+			let sitePath: string;
 			if (process.platform === constants.winPlatform) {
-				packagesDir = path.resolve(path.join(packagesDir, '..', 'Scripts'));
+				sitePath = 'USER_SITE';
 			} else {
-				packagesDir = path.join(packagesDir, 'bin');
+				sitePath = 'USER_BASE';
 			}
+			let cmd = `"${pythonExecutable}" -c "import site;print(site.${sitePath})"`;
 
-			return packagesDir;
+			let packagesDir = await utils.executeBufferedCommand(cmd, {});
+			if (packagesDir && packagesDir.length > 0) {
+				packagesDir = packagesDir.trim();
+				if (process.platform === constants.winPlatform) {
+					packagesDir = path.resolve(path.join(packagesDir, '..', 'Scripts'));
+				} else {
+					packagesDir = path.join(packagesDir, 'bin');
+				}
+
+				return packagesDir;
+			}
+		} catch (err) {
+			this.outputChannel.appendLine(msgGetPythonUserDirFailed(utils.getErrorMessage(err)));
 		}
 
 		return undefined;
