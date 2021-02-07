@@ -7,10 +7,15 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { WizardController } from './wizard/wizardController';
 import { AssessmentResultsDialog } from './dialog/assessmentResults/assessmentResultsDialog';
+import { MigrationNotebookInfo, NotebookPathHelper } from './contants';
+import { promises as fs } from 'fs';
+import * as loc from './models/strings';
+
 
 class SQLMigration {
 
 	constructor(private readonly context: vscode.ExtensionContext) {
+		NotebookPathHelper.setExtensionContext(context);
 	}
 
 	async start(): Promise<void> {
@@ -37,6 +42,29 @@ class SQLMigration {
 			vscode.commands.registerCommand('sqlmigration.testDialog', async () => {
 				let dialog = new AssessmentResultsDialog('ownerUri', undefined!, 'Assessment Dialog');
 				await dialog.openDialog();
+			}),
+
+			vscode.commands.registerCommand('sqlmigration.openNotebooks', async () => {
+				const input = vscode.window.createQuickPick<MigrationNotebookInfo>();
+				input.placeholder = loc.NOTEBOOK_QUICK_PICK_PLACEHOLDER;
+
+				input.items = NotebookPathHelper.getAllMigrationNotebooks();
+
+				input.onDidAccept(async (e) => {
+					const selectedNotebook = input.selectedItems[0];
+					try {
+						azdata.nb.showNotebookDocument(vscode.Uri.parse(`untitled: ${selectedNotebook.label}`), {
+							preview: false,
+							initialContent: (await fs.readFile(selectedNotebook.notebookPath)).toString(),
+							initialDirtyState: false
+						});
+					} catch (e) {
+						console.log(e);
+					}
+					input.hide();
+				});
+
+				input.show();
 			})
 		];
 
