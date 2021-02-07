@@ -80,28 +80,25 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 */
 	getProjectToolbarActions(): dataworkspace.IProjectAction[] {
 		return [{
-			id: constants.addItemActionTypeId,
-			displayName: constants.addItemActionTypeDisplayName,
+			id: constants.addItemAction,
 			icon: IconPathHelper.add
 		},
 		{
-			id: constants.schemaCompareActionTypeId,
-			displayName: constants.schemaCompareActionTypeDisplayName,
+			id: constants.schemaCompareAction,
 			icon: IconPathHelper.schemaCompare
 		},
 		{
-			id: constants.buildActionTypeId,
-			displayName: constants.buildActionTypeDisplayName,
+			id: constants.buildAction,
 			icon: IconPathHelper.build
 		},
 		{
-			id: constants.publishActionTypeId,
-			displayName: constants.publishActionTypeDisplayName,
-			icon: IconPathHelper.publish
+			id: constants.publishAction,
+			icon: IconPathHelper.publish,
+			toolbarSeparatorAfter: true
 		},
 		{
-			id: constants.targetPlatformActionTypeId,
-			displayName: constants.targetPlatformActionTypeDisplayName
+			id: constants.targetPlatformAction,
+			icon: IconPathHelper.targetPlatform
 		}];
 	}
 
@@ -111,15 +108,15 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * @param actionId the action to perform
 	 */
 	async performAction(treeItem: dataworkspace.WorkspaceTreeItem, actionId: string): Promise<void> {
-		if (actionId === constants.addItemActionTypeId) {
+		if (actionId === constants.addItemAction) {
 			await this.projectController.addItemPromptFromNode(treeItem);
-		} else if (actionId === constants.schemaCompareActionTypeId) {
+		} else if (actionId === constants.schemaCompareAction) {
 			await this.projectController.schemaCompare(treeItem);
-		} else if (actionId === constants.buildActionTypeId) {
+		} else if (actionId === constants.buildAction) {
 			await this.projectController.buildProject(treeItem);
-		} else if (actionId === constants.publishActionTypeId) {
+		} else if (actionId === constants.publishAction) {
 			await this.projectController.publishProject(treeItem);
-		} else if (actionId === constants.targetPlatformActionTypeId) {
+		} else if (actionId === constants.targetPlatformAction) {
 			await this.projectController.changeTargetPlatform(treeItem);
 		}
 		return Promise.resolve();

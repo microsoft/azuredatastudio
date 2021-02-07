@@ -132,8 +132,8 @@
         },
         {
           "command": "projects.manageProject",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
-          "group": "1_dbProjectsFirst@0"
+          "when": "view == dataworkspace.views.main",
+          "group": "0_projectsFirst@1"
         }
       ]
     },

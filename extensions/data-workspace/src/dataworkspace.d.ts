@@ -130,18 +130,18 @@ declare module 'dataworkspace' {
 
 	export interface IProjectAction {
 		/**
-		 * id of the project action
+		 * id and display name of the project action
 		 */
 		readonly id: string;
-
-		/**
-		 * display name of the project action
-		 */
-		readonly displayName: string;
 
 		/**
 		 * icon path of the project action
 		 */
 		readonly icon?: string | vscode.Uri | { light: string | vscode.Uri, dark: string | vscode.Uri };
+
+		/**
+		 * boolean to specify if a toolbar separator should be added after this action
+		 */
+		readonly toolbarSeparatorAfter?: boolean;
 	}
 }

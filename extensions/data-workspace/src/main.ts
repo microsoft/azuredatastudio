@@ -53,8 +53,8 @@ export function activate(context: vscode.ExtensionContext): Promise<IExtension> 
 		await workspaceService.removeProject(vscode.Uri.file(treeItem.element.project.projectFilePath));
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('projects.manageProject', async (treeItem: WorkspaceTreeItem) => {
-		const dialog = new ProjectDashboard(workspaceService, treeItem);
-		await dialog.showDashboard();
+		const dashboard = new ProjectDashboard(workspaceService, treeItem);
+		await dashboard.showDashboard();
 	}));
 
 	IconPathHelper.setExtensionContext(context);

@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import { IWorkspaceService } from '../common/interfaces';
+
 export class ProjectDashboard {
 
 	private dashboard: azdata.window.ModelViewDashboard | undefined;
@@ -20,10 +21,9 @@ export class ProjectDashboard {
 
 	public async showDashboard(): Promise<void> {
 		const project = this.treeItem.element.project;
-		const projectTypeId = project.projectFilePath;
-		this.projectProvider = await this.workspaceService.getProjectProvider(vscode.Uri.file(projectTypeId));
+		this.projectProvider = await this.workspaceService.getProjectProvider(vscode.Uri.file(project.projectFilePath));
 		if (!this.projectProvider) {
-			throw new Error(constants.ProviderNotFoundForProjectTypeError(projectTypeId));
+			throw new Error(constants.ProviderNotFoundForProjectTypeError(project.projectFilePath));
 		}
 
 		await this.createDashboard(project.projectFileName);
@@ -31,7 +31,7 @@ export class ProjectDashboard {
 	}
 
 	private async createDashboard(title: string): Promise<void> {
-		this.dashboard = azdata.window.createModelViewDashboard(title, undefined, { alwaysShowTabs: false });
+		this.dashboard = azdata.window.createModelViewDashboard(title, 'ProjectDashboard', { alwaysShowTabs: false });
 		this.dashboard.registerTabs(async (modelView: azdata.ModelView) => {
 			this.modelView = modelView;
 
@@ -47,24 +47,25 @@ export class ProjectDashboard {
 		});
 	}
 
-	private async createToolbarContainer(): Promise<azdata.ToolbarContainer> {
-		const projectActions = await this.workspaceService.getProjectToolbarActions(this.projectProvider!);
+	private createToolbarContainer(): azdata.ToolbarContainer {
+		const projectActions = this.projectProvider!.getProjectToolbarActions();
 
 		// Add actions as buttons
-		const buttons: azdata.ToolbarComponent[] | { component: azdata.ButtonComponent; }[] = [];
+		const buttons: azdata.ToolbarComponent[] = [];
 
 		projectActions.forEach(projectAction => {
 			let button = this.modelView!.modelBuilder.button()
 				.withProperties<azdata.ButtonProperties>({
-					label: projectAction.displayName,
-					iconPath: projectAction.icon
+					label: projectAction.id,
+					iconPath: projectAction.icon,
+					height: '20px'
 				}).component();
 
 			button.onDidClick(async () => {
-				await this.workspaceService.performAction(this.projectProvider!, this.treeItem, projectAction.id);
+				await this.projectProvider!.performAction(this.treeItem, projectAction.id);
 			});
 
-			buttons.push({ component: button });
+			buttons.push({ component: button, toolbarSeparatorAfter: projectAction.toolbarSeparatorAfter ? projectAction.toolbarSeparatorAfter : false });
 		});
 
 		return this.modelView!.modelBuilder.toolbarContainer()

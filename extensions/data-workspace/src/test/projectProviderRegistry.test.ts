@@ -34,29 +34,19 @@ export function createProjectProvider(projectTypes: IProjectType[]): IProjectPro
 		},
 		getProjectToolbarActions: (): IProjectAction[] => {
 			return [{
-				id: '',
-				displayName: 'Add',
-				icon: ''
+				id: 'Add'
 			},
 			{
-				id: '',
-				displayName: 'Schema Compare',
-				icon: ''
+				id: 'Schema Compare'
 			},
 			{
-				id: '',
-				displayName: 'Build',
-				icon: ''
+				id: 'Build'
 			},
 			{
-				id: '',
-				displayName: 'Publish',
-				icon: ''
+				id: 'Publish'
 			},
 			{
-				id: '',
-				displayName: 'Target Version',
-				icon: ''
+				id: 'Target Version'
 			} ];
 		},
 		performAction: (treeItem: WorkspaceTreeItem, actionId: string): Promise<void> => {

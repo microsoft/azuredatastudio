@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { IProjectProvider, IProjectType, IProjectAction, WorkspaceTreeItem } from 'dataworkspace';
+import { IProjectProvider, IProjectType, } from 'dataworkspace';
 
 /**
  * Defines the project provider registry
@@ -97,18 +97,4 @@ export interface IWorkspaceService {
 	 * Shows confirmation message that the extension host will be restarted and current workspace/file will be closed. If confirmed, the specified workspace will be entered.
 	 */
 	enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
-
-	/**
-	 * Gets the project actions to be placed on the dashboard toolbar
-	 * @param provider The project provider
-	 */
-	getProjectToolbarActions(provider: IProjectProvider): IProjectAction[];
-
-	/**
-	 * Perform the desired action from the tooldbar
-	 * @param provider The project provider
-	 * @param treeNode The treeItem in a project's hierarchy, to be used to obtain a Project
-	 * @param actionId the action to perform
-	 */
-	performAction(provider: IProjectProvider, treeItem: WorkspaceTreeItem, actionId: string): Promise<void>;
 }
