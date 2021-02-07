@@ -9,7 +9,7 @@
 	line-height: 1.4em;
 	white-space: nowrap;
 	flex-wrap: wrap;
-	padding: 3px 0px;
+	padding: 8px 0px;
 }
 
 .modelview-toolbar-container.toolbar-horizontal {
@@ -22,6 +22,12 @@
 
 .modelview-toolbar-container.toolbar-vertical {
 	flex-direction: column;
+}
+
+.modelview-toolbar-container.toolbar-horizontal .taskbarSeparator {
+	min-width: 1px;
+	border-width: 0 0 0 1px;
+	margin: 0px 6px;
 }
 
 .modelview-toolbar-container .modelview-toolbar-item {
