@@ -10,7 +10,7 @@ import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ICommandService, ICommandEvent } from 'vs/platform/commands/common/commands';
-import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { TelemetryAction, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 export class SqlTelemetryContribution extends Disposable implements IWorkbenchContribution {
 
@@ -35,7 +35,7 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 						// Events from src\vs\editor\contrib\wordOperations\wordOperations.ts
 						!e.commandId.startsWith('cursor') &&
 						!e.commandId.startsWith('_vscode_delegate')) {
-						telemetryService.sendActionEvent(TelemetryView.Shell, 'adsCommandExecuted', e.commandId);
+						telemetryService.sendActionEvent(TelemetryView.Shell, TelemetryAction.adsCommandExecuted, e.commandId);
 					}
 				}));
 	}
