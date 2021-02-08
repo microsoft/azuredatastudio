@@ -130,6 +130,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _dialogBorder?: Color;
 	private _dialogHeaderAndFooterBackground?: Color;
 	private _dialogBodyBackground?: Color;
+	private _footerBorderTopColor?: Color;
 
 	private _modalDialog?: HTMLElement;
 	private _modalContent?: HTMLElement;
@@ -669,27 +670,25 @@ export abstract class Modal extends Disposable implements IThemable {
 	public style(styles: IModalDialogStyles): void {
 		this._dialogForeground = styles.dialogForeground ? styles.dialogForeground : this._themeService.getColorTheme().getColor(editorWidgetForeground);
 		this._dialogBorder = styles.dialogBorder ? styles.dialogBorder : this._themeService.getColorTheme().getColor(notebookToolbarLines);
-
 		if (this._modalOptions.dialogStyle === 'callout') {
 			this._dialogHeaderAndFooterBackground = styles.dialogBodyBackground ? styles.dialogBodyBackground : this._themeService.getColorTheme().getColor(SIDE_BAR_BACKGROUND);
 		} else {
 			this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground ? styles.dialogHeaderAndFooterBackground : this._themeService.getColorTheme().getColor(SIDE_BAR_BACKGROUND);
 		}
-
 		this._dialogBodyBackground = styles.dialogBodyBackground ? styles.dialogBodyBackground : this._themeService.getColorTheme().getColor(editorBackground);
-
+		this._footerBorderTopColor = styles.footerBorderTopColor ? styles.footerBorderTopColor : this._themeService.getColorTheme().getColor(notebookToolbarLines);
 		this.applyStyles();
 	}
 
 	private applyStyles(): void {
-		const foreground = this._dialogForeground ? this._dialogForeground.toString() : '#FFFFFF00';
+		const foreground = this._dialogForeground ? this._dialogForeground.toString() : '';
 		const border = this._dialogBorder ? this._dialogBorder.toString() : '';
 		const headerAndFooterBackground = this._dialogHeaderAndFooterBackground ? this._dialogHeaderAndFooterBackground.toString() : '';
 		const bodyBackground = this._dialogBodyBackground ? this._dialogBodyBackground.toString() : '';
 		const calloutStyle: CSSStyleDeclaration = this._modalDialog.style;
+		const footerTopBorderColor = this._footerBorderTopColor ? this._footerBorderTopColor.toString() : '';
 
-		let foregroundRgb: Color;
-		foregroundRgb = Color.Format.CSS.parseHex(foreground);
+		const foregroundRgb: Color = Color.Format.CSS.parseHex(foreground);
 
 		if (this._closeButtonInHeader) {
 			this._closeButtonInHeader.style.color = foreground;
@@ -702,12 +701,14 @@ export abstract class Modal extends Disposable implements IThemable {
 
 			calloutStyle.setProperty('--border', `${border}`);
 			calloutStyle.setProperty('--bodybackground', `${bodyBackground}`);
-			calloutStyle.setProperty('--foreground', `
+			if (foregroundRgb) {
+				calloutStyle.setProperty('--foreground', `
 				${foregroundRgb.rgba.r},
 				${foregroundRgb.rgba.g},
 				${foregroundRgb.rgba.b},
 				0.08
 			`);
+			}
 		}
 
 		if (this._modalHeaderSection) {
@@ -734,7 +735,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalFooterSection.style.backgroundColor = headerAndFooterBackground;
 			this._modalFooterSection.style.borderTopWidth = border ? '1px' : '';
 			this._modalFooterSection.style.borderTopStyle = border ? 'solid' : '';
-			this._modalFooterSection.style.borderTopColor = border;
+			this._modalFooterSection.style.borderTopColor = footerTopBorderColor;
 		}
 	}
 
