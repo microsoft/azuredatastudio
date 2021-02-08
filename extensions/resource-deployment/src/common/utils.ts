@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as path from 'path';
+import { ErrorType, ErrorWithType } from 'resource-deployment';
 import { ToolsInstallPath } from '../constants';
 import { ITool, NoteBookEnvironmentVariablePrefix } from '../interfaces';
 
@@ -10,6 +11,10 @@ export function getErrorMessage(error: any): string {
 	return (error instanceof Error)
 		? (typeof error.message === 'string' ? error.message : '')
 		: typeof error === 'string' ? error : `${JSON.stringify(error, undefined, '\t')}`;
+}
+
+export function isUserCancelledError(err: any): boolean {
+	return err instanceof Error && 'type' in err && (<ErrorWithType>err).type === ErrorType.userCancelled;
 }
 
 export function getDateTimeString(): string {

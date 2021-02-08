@@ -10,7 +10,7 @@ import * as path from 'path';
 import { IOptionsSourceProvider } from 'resource-deployment';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { getDateTimeString, getErrorMessage, throwUnless } from '../common/utils';
+import { getDateTimeString, getErrorMessage, isUserCancelledError, throwUnless } from '../common/utils';
 import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, instanceOfDynamicEnablementInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
@@ -667,12 +667,16 @@ async function configureOptionsSourceSubfields(context: FieldContext, optionsSou
 			try {
 				return await optionsSourceProvider.getVariableValue!(variableKey, value);
 			} catch (e) {
-				disableControlButtons(context.container);
-				context.container.message = {
-					text: getErrorMessage(e),
-					description: '',
-					level: azdata.window.MessageLevel.Error
-				};
+				if (!isUserCancelledError(e)) {
+					// User cancelled is a normal scenario so we shouldn't disable anything in that case
+					// so that the user can retry if they want to
+					disableControlButtons(context.container);
+					context.container.message = {
+						text: getErrorMessage(e),
+						description: '',
+						level: azdata.window.MessageLevel.Error
+					};
+				}
 				throw e;
 			}
 		},
