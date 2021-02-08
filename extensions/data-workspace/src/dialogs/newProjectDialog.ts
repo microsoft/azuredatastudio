@@ -13,7 +13,7 @@ import { IProjectType } from 'dataworkspace';
 import { directoryExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
 import { defaultProjectSaveLocation } from '../common/projectLocationHelper';
-import { TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 class NewProjectDialogModel {
 	projectTypeId: string = '';
@@ -28,7 +28,7 @@ export class NewProjectDialog extends DialogBase {
 		super(constants.NewProjectDialogTitle, 'NewProject');
 
 		// dialog launched from Welcome message button (only visible when no current workspace) vs. "add project" button
-		TelemetryReporter.createActionEvent(TelemetryViews.NewProjectDialog, 'NewProjectDialogLaunched')
+		TelemetryReporter.createActionEvent(TelemetryViews.NewProjectDialog, TelemetryActions.NewProjectDialogLaunched)
 			.withAdditionalProperties({ isWorkspaceOpen: (vscode.workspace.workspaceFile !== undefined).toString() })
 			.send();
 	}
@@ -66,7 +66,7 @@ export class NewProjectDialog extends DialogBase {
 		try {
 			const validateWorkspace = await this.workspaceService.validateWorkspace();
 
-			TelemetryReporter.createActionEvent(TelemetryViews.NewProjectDialog, 'NewProjectDialogCompleted')
+			TelemetryReporter.createActionEvent(TelemetryViews.NewProjectDialog, TelemetryActions.NewProjectDialogCompleted)
 				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId, workspaceValidationPassed: validateWorkspace.toString() })
 				.send();
 
@@ -76,7 +76,7 @@ export class NewProjectDialog extends DialogBase {
 		}
 		catch (err) {
 
-			TelemetryReporter.createActionEvent(TelemetryViews.NewProjectDialog, 'NewProjectDialogErrorThrown')
+			TelemetryReporter.createErrorEvent(TelemetryViews.NewProjectDialog, TelemetryActions.NewProjectDialogCompleted)
 				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId, error: err?.message ? err.message : err })
 				.send();
 
