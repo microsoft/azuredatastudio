@@ -373,14 +373,14 @@ export class PostgresParametersPage extends DashboardPage {
 		if (!this.searchBox!.value) {
 			this.parametersTable.setFilter(undefined);
 		} else {
-			this.filterParameters(this.searchBox!.value);
+			this.filterParameters(this.searchBox!.value.toUpperCase());
 		}
 	}
 
 	private filterParameters(search: string): void {
 		const filteredRowIndexes: number[] = [];
 		this.parametersTable.data?.forEach((row, index) => {
-			if (row[0]?.search(search) !== -1 || row[2]?.search(search) !== -1) {
+			if (row[0].toUpperCase()?.search(search) !== -1 || row[2].toUpperCase()?.search(search) !== -1) {
 				filteredRowIndexes.push(index);
 			}
 		});
