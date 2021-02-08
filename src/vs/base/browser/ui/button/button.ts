@@ -237,6 +237,7 @@ export class Button extends Disposable {
 			this._element.style.opacity = this.hasIcon ? '' : '1';
 			this._element.style.fontWeight = fontWeight;
 			this._element.style.fontSize = fontSize;
+			this._element.style.borderRadius = '2px';
 		}
 	}
 	// {{SQL CARBON EDIT}} - end custom applyStyles
