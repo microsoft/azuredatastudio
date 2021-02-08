@@ -19,7 +19,6 @@ import * as constants from '../constants';
 export default class MainController extends ControllerBase {
 	private autoRefreshState: boolean = false;
 
-	public apiWrapper;
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	/**
 	 * Deactivates the extension
@@ -47,11 +46,11 @@ export default class MainController extends ControllerBase {
 		let connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(connection.providerName, azdata.DataProviderType.ConnectionProvider);
 		connectionProvider.changeDatabase(connectionUri, 'tempdb');
 		let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connection.providerName, azdata.DataProviderType.QueryProvider);
-		let sqlContent: string = await promises.readFile(path.join(__dirname, '..', 'sql', fileName), {encoding: 'utf8'});
+		let sqlContent: string = await promises.readFile(path.join(__dirname, '..', 'sql', fileName), { encoding: 'utf8' });
 		let seResult = await queryProvider.runQueryAndReturn(connectionUri, sqlContent);
 		if (seResult.rowCount > 0 && seResult.rows[0][0].displayValue === '0') {
-			vscode.window.showInformationMessage( ( fileName === 'startEvent.sql' ) ? constants.XEventsStarted : constants.XEventsStopped );
-			this.autoRefreshState = ( fileName === 'startEvent.sql' ) ? true : false;
+			vscode.window.showInformationMessage((fileName === 'startEvent.sql') ? constants.XEventsStarted : constants.XEventsStopped);
+			this.autoRefreshState = (fileName === 'startEvent.sql') ? true : false;
 			vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'type-of-contention', connection.id, this.autoRefreshState);
 			vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'metadata-contention', connection.id, this.autoRefreshState);
 			vscode.commands.executeCommand('azdata.widget.setAutoRefreshState', 'allocation-contention', connection.id, this.autoRefreshState);
