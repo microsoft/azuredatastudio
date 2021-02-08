@@ -348,12 +348,7 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		podStatus?.forEach(p => {
 			// If a condition of the pod has a status of False, pod is not Ready
-			let status = loc.ready;
-			p.conditions.forEach(c => {
-				if (c.status === 'False') {
-					status = loc.notReady;
-				}
-			});
+			const status = p.conditions.find(c => c.status === 'False') ? loc.notReady : loc.ready;
 
 			const podLabelContainer = this.modelView.modelBuilder.flexContainer().withProps({
 				CSSStyles: { 'alignItems': 'center', 'height': '15px' }
