@@ -7,22 +7,31 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles } from '../../../constants';
+import { IconPathHelper, cssStyles, iconSize } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
 import { promptAndConfirmPassword, promptForInstanceDeletion } from '../../../common/utils';
 import { ResourceType } from 'arc';
 
+export type PodStatusModel = {
+	podName: azdata.Component,
+	type: string,
+	status: string
+};
+
 export class PostgresOverviewPage extends DashboardPage {
 
 	private propertiesLoading!: azdata.LoadingComponent;
+	private serverGroupNodesLoading!: azdata.LoadingComponent;
 	private kibanaLoading!: azdata.LoadingComponent;
 	private grafanaLoading!: azdata.LoadingComponent;
 
 	private properties!: azdata.PropertiesContainerComponent;
 	private kibanaLink!: azdata.HyperlinkComponent;
 	private grafanaLink!: azdata.HyperlinkComponent;
+
+	private podStatusTable!: azdata.DeclarativeTableComponent;
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
@@ -132,8 +141,59 @@ export class PostgresOverviewPage extends DashboardPage {
 				[loc.kibanaDashboard, this.kibanaLoading, loc.kibanaDashboardDescription],
 				[loc.grafanaDashboard, this.grafanaLoading, loc.grafanaDashboardDescription]]
 		}).component();
-
 		content.addItem(endpointsTable);
+
+		// Server Group Nodes
+		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: loc.serverGroupNodes,
+			CSSStyles: titleCSS
+		}).component());
+
+		this.podStatusTable = this.modelView.modelBuilder.declarativeTable().withProps({
+			width: '100%',
+			columns: [
+				{
+					displayName: loc.name,
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: true,
+					width: '35%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: {
+						...cssStyles.tableRow,
+						'overflow': 'hidden',
+						'text-overflow': 'ellipsis',
+						'white-space': 'nowrap',
+						'max-width': '0'
+					}
+				},
+				{
+					displayName: loc.type,
+					valueType: azdata.DeclarativeDataType.string,
+					isReadOnly: true,
+					width: '35%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				},
+				{
+					displayName: loc.status,
+					valueType: azdata.DeclarativeDataType.string,
+					isReadOnly: true,
+					width: '30%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				}
+			],
+			data: []
+		}).component();
+
+		this.serverGroupNodesLoading = this.modelView.modelBuilder.loadingComponent()
+			.withItem(this.podStatusTable)
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._postgresModel.configLastUpdated
+			}).component();
+
+		content.addItem(this.serverGroupNodesLoading, { CSSStyles: cssStyles.text });
+
 		this.initialized = true;
 		return root;
 	}
@@ -223,6 +283,7 @@ export class PostgresOverviewPage extends DashboardPage {
 				refreshButton.enabled = false;
 				try {
 					this.propertiesLoading!.loading = true;
+					this.serverGroupNodesLoading!.loading = true;
 					this.kibanaLoading!.loading = true;
 					this.grafanaLoading!.loading = true;
 
@@ -281,6 +342,58 @@ export class PostgresOverviewPage extends DashboardPage {
 		];
 	}
 
+	private getPodStatus(): PodStatusModel[] {
+		let podModels: PodStatusModel[] = [];
+		const podStatus = this._postgresModel.config?.status.podsStatus;
+
+		podStatus?.forEach(p => {
+			let status = loc.ready;
+			p.conditions.forEach(c => {
+				if (c.type === 'False') {
+					status = loc.notReady;
+				}
+			});
+
+			const podLabelContainer = this.modelView.modelBuilder.flexContainer().withProps({
+				CSSStyles: { 'alignItems': 'center', 'height': '15px' }
+			}).component();
+
+			const imageComponent = this.modelView.modelBuilder.image().withProps({
+				iconPath: IconPathHelper.postgres,
+				width: iconSize,
+				height: iconSize,
+				iconHeight: '15px',
+				iconWidth: '15px'
+			}).component();
+
+			let podLabel = this.modelView.modelBuilder.text().withProps({
+				value: p.name,
+			}).component();
+
+			if (p.role.toUpperCase() === loc.worker.toUpperCase()) {
+				podLabelContainer.addItem(imageComponent, { CSSStyles: { 'margin-left': '15px', 'margin-right': '0px' } });
+				podLabelContainer.addItem(podLabel);
+				let pod: PodStatusModel = {
+					podName: podLabelContainer,
+					type: loc.worker,
+					status: status
+				};
+				podModels.push(pod);
+			} else {
+				podLabelContainer.addItem(imageComponent, { CSSStyles: { 'margin-right': '0px', 'height': '15px' } });
+				podLabelContainer.addItem(podLabel);
+				let pod: PodStatusModel = {
+					podName: podLabelContainer,
+					type: loc.coordinator,
+					status: status
+				};
+				podModels.unshift(pod);
+			}
+		});
+
+		return podModels;
+	}
+
 	private refreshDashboardLinks(): void {
 		if (this._postgresModel.config) {
 			const kibanaUrl = this._postgresModel.config.status.logSearchDashboard ?? '';
@@ -295,6 +408,13 @@ export class PostgresOverviewPage extends DashboardPage {
 		}
 	}
 
+	private refreshServerNodes(): void {
+		if (this._postgresModel.config) {
+			this.podStatusTable.data = this.getPodStatus().map(p => [p.podName, p.type, p.status]);
+			this.serverGroupNodesLoading.loading = false;
+		}
+	}
+
 	private handleRegistrationsUpdated() {
 		this.properties!.propertyItems = this.getProperties();
 		this.propertiesLoading!.loading = false;
@@ -304,5 +424,6 @@ export class PostgresOverviewPage extends DashboardPage {
 		this.properties!.propertyItems = this.getProperties();
 		this.propertiesLoading!.loading = false;
 		this.refreshDashboardLinks();
+		this.refreshServerNodes();
 	}
 }
