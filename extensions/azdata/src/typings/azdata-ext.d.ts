@@ -230,8 +230,8 @@ declare module 'azdata-ext' {
 					status: string, // "True"
 					type: string // "Ready"
 				}[],
-				readyPods: string, // "3/3",
-				state: string // "Ready"
+				name: string, // "pg-instancew-0",
+				role: string // "worker"
 			}[]
 		}
 	}

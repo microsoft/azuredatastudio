@@ -347,9 +347,10 @@ export class PostgresOverviewPage extends DashboardPage {
 		const podStatus = this._postgresModel.config?.status.podsStatus;
 
 		podStatus?.forEach(p => {
+			// If a condition of the pod has a status of False, pod is not Ready
 			let status = loc.ready;
 			p.conditions.forEach(c => {
-				if (c.type === 'False') {
+				if (c.status === 'False') {
 					status = loc.notReady;
 				}
 			});
@@ -380,7 +381,7 @@ export class PostgresOverviewPage extends DashboardPage {
 				};
 				podModels.push(pod);
 			} else {
-				podLabelContainer.addItem(imageComponent, { CSSStyles: { 'margin-right': '0px', 'height': '15px' } });
+				podLabelContainer.addItem(imageComponent, { CSSStyles: { 'margin-right': '0px' } });
 				podLabelContainer.addItem(podLabel);
 				let pod: PodStatusModel = {
 					podName: podLabelContainer,
