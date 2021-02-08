@@ -176,6 +176,7 @@ export class Button extends Disposable {
 	}
 
 	/**
+	// {{SQL CARBON EDIT}} -- removed 'private' access modifier @todo anthonydresser 4/12/19 things needs investigation whether we need this
 	applyStyles(): void {
 		if (this._element) {
 			let background, foreground;
