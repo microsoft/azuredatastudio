@@ -18,7 +18,6 @@ import { UserCancelledError } from '../../../common/api';
 
 export class MiaaDashboardOverviewPage extends DashboardPage {
 
-	private _rootContainer!: azdata.FlexContainer;
 	private _propertiesLoading!: azdata.LoadingComponent;
 	private _kibanaLoading!: azdata.LoadingComponent;
 	private _grafanaLoading!: azdata.LoadingComponent;
@@ -153,17 +152,17 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		this._databasesTableLoading.component = this._databasesTable;
 
 		// Assemble the container
-		this._rootContainer = this.modelView.modelBuilder.flexContainer()
+		const rootContainer = this.modelView.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withProperties({ CSSStyles: { 'margin': '18px' } })
 			.component();
 
 		// Properties
-		this._rootContainer.addItem(this._propertiesLoading, { CSSStyles: cssStyles.text });
+		rootContainer.addItem(this._propertiesLoading, { CSSStyles: cssStyles.text });
 
 		// Service endpoints
 		const titleCSS = { ...cssStyles.title, 'margin-block-start': '2em', 'margin-block-end': '0' };
-		this._rootContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.serviceEndpoints, CSSStyles: titleCSS }).component());
+		rootContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.serviceEndpoints, CSSStyles: titleCSS }).component());
 
 		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
@@ -204,10 +203,10 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				[loc.grafanaDashboard, this._grafanaLoading, loc.grafanaDashboardDescription]]
 		}).component();
 
-		this._rootContainer.addItem(endpointsTable);
+		rootContainer.addItem(endpointsTable);
 
 		// Databases
-		this._rootContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.databases, CSSStyles: titleCSS }).component());
+		rootContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.databases, CSSStyles: titleCSS }).component());
 		this.disposables.push(
 			this._connectToServerButton!.onDidClick(async () => {
 				this._connectToServerButton!.enabled = false;
@@ -219,11 +218,11 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				}
 			})
 		);
-		this._rootContainer.addItem(this._databasesContainer);
-		this._rootContainer.addItem(this._databasesMessage);
+		rootContainer.addItem(this._databasesContainer);
+		rootContainer.addItem(this._databasesMessage);
 
 		this.initialized = true;
-		return this._rootContainer;
+		return rootContainer;
 	}
 
 	public get toolbarContainer(): azdata.ToolbarContainer {
