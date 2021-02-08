@@ -7,7 +7,7 @@ import 'vs/css!./media/insightsDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { attachButtonStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/workbench/services/insights/browser/insightsDialogService';
@@ -49,6 +49,7 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInsightsConfigDetails } from 'sql/platform/extensions/common/extensions';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -389,7 +390,7 @@ export class InsightsDialogView extends Modal {
 						}
 						let context = this.topInsightContext(resource);
 						this._commandService.executeCommand(action, context).catch(err => onUnexpectedError(err));
-					}, 'left');
+					}, 'left', true);
 					button.enabled = false;
 					this._taskButtonDisposables.push(button);
 					this._taskButtonDisposables.push(attachButtonStyler(button, this._themeService));

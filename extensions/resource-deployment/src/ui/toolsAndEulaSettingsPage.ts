@@ -142,6 +142,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					'display': 'none',
 				},
 				width: '100px',
+				secondary: true
 			}).component();
 
 			this.wizard.registerDisposable(this._installToolButton.onDidClick(() => {

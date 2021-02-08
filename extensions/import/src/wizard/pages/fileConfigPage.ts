@@ -245,6 +245,7 @@ export class FileConfigPage extends ImportPage {
 
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: constants.browseFilesText,
+			secondary: true
 		}).component();
 
 		this.fileButton.onDidClick(async (click) => {
