@@ -403,7 +403,7 @@ export class CreateProjectFromDatabaseDialog {
 		} else {
 			// have browse button to help select where the workspace file should be created
 			const workspaceInput = view.modelBuilder.flexContainer().withItems([this.workspaceInputBox], { CSSStyles: { 'margin-right': '10px', 'margin-bottom': '10px', 'width': '100%' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-			workspaceInput.addItem(browseFolderButton, { CSSStyles: { 'margin-top': '-10px' } });
+			workspaceInput.insertItem(browseFolderButton, 1, { CSSStyles: { 'margin-top': '-10px' } });
 			workspaceContainerRow = view.modelBuilder.flexContainer().withItems([workspaceLabel, workspaceInput], { flex: '0 0 auto', CSSStyles: { 'margin-top': '0px' } }).withLayout({ flexFlow: 'column' }).component();
 		}
 
