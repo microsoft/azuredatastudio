@@ -34,7 +34,7 @@ import { IFileService } from 'vs/platform/files/common/files';
 
 @Component({
 	template: `
-	<div *ngIf="_title">
+	<div [ngStyle]="CSSStyles" *ngIf="_title">
 		<div class="modelview-diff-editor-title modelview-diff-editor-title-background">
 			{{_title}}
 		</div>

@@ -20,7 +20,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 @Component({
 	selector: 'modelview-fileBrowserTree',
 	template: `
-		<div #fileBrowserTree [style.width]="getWidth()" [style.height]="getHeight()"></div>
+		<div #fileBrowserTree [ngStyle]="CSSStyles"></div>
 	`
 })
 export default class FileBrowserTreeComponent extends ComponentBase<azdata.FileBrowserTreeProperties> implements IComponent, OnDestroy, AfterViewInit {
@@ -120,5 +120,12 @@ export default class FileBrowserTreeComponent extends ComponentBase<azdata.FileB
 
 	public set ownerUri(newValue: string) {
 		this.setPropertyFromUI<string>((props, value) => props.ownerUri = value, newValue);
+	}
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth(),
+			'height': this.getHeight()
+		});
 	}
 }

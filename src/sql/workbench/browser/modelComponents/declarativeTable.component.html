@@ -1,5 +1,4 @@
-<table role="grid" #container *ngIf="columns" class="declarative-table" [style.height]="getHeight()"
-	[style.width]="getWidth()" [attr.aria-label]="ariaLabel">
+<table role="grid" #container *ngIf="columns" class="declarative-table" [attr.aria-label]="ariaLabel" [ngStyle]="CSSStyles">
 	<thead role="rowgroup">
 		<tr role="row">
 			<ng-container *ngFor="let column of columns; let c = index;">

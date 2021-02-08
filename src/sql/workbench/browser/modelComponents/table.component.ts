@@ -55,7 +55,7 @@ type TableCellDataType = string | CssIconCellValue | ButtonCellValue | Hyperlink
 @Component({
 	selector: 'modelview-table',
 	template: `
-		<div #table style="height:100%;" [style.font-size]="fontSize" [style.width]="width"></div>
+		<div #table [ngStyle]="CSSStyles"></div>
 	`
 })
 export default class TableComponent extends ComponentBase<azdata.TableComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
@@ -620,5 +620,13 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			}
 			this._table.grid.getActiveCellNode().focus();
 		}
+	}
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth(),
+			'height': '100%',
+			'font-size': this.fontSize
+		});
 	}
 }
