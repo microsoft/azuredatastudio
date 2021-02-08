@@ -682,16 +682,14 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	private applyStyles(): void {
-		const foreground = this._dialogForeground ? this._dialogForeground.toString() : '';
+		const foreground = this._dialogForeground ? this._dialogForeground.toString() : '#FFFFFF00';
 		const border = this._dialogBorder ? this._dialogBorder.toString() : '';
 		const headerAndFooterBackground = this._dialogHeaderAndFooterBackground ? this._dialogHeaderAndFooterBackground.toString() : '';
 		const bodyBackground = this._dialogBodyBackground ? this._dialogBodyBackground.toString() : '';
 		const calloutStyle: CSSStyleDeclaration = this._modalDialog.style;
 
 		let foregroundRgb: Color;
-		if (foreground !== undefined) {
-			foregroundRgb = Color.Format.CSS.parseHex(foreground);
-		}
+		foregroundRgb = Color.Format.CSS.parseHex(foreground);
 
 		if (this._closeButtonInHeader) {
 			this._closeButtonInHeader.style.color = foreground;
@@ -704,14 +702,12 @@ export abstract class Modal extends Disposable implements IThemable {
 
 			calloutStyle.setProperty('--border', `${border}`);
 			calloutStyle.setProperty('--bodybackground', `${bodyBackground}`);
-			if (foreground !== undefined) {
-				calloutStyle.setProperty('--foreground', `
-					${foregroundRgb.rgba.r},
-					${foregroundRgb.rgba.g},
-					${foregroundRgb.rgba.b},
-					0.08
-				`);
-			}
+			calloutStyle.setProperty('--foreground', `
+				${foregroundRgb.rgba.r},
+				${foregroundRgb.rgba.g},
+				${foregroundRgb.rgba.b},
+				0.08
+			`);
 		}
 
 		if (this._modalHeaderSection) {
