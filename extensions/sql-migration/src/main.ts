@@ -59,7 +59,7 @@ class SQLMigration {
 							initialDirtyState: false
 						});
 					} catch (e) {
-						console.log(e);
+						vscode.window.showErrorMessage(e.toString());
 					}
 					input.hide();
 				});
