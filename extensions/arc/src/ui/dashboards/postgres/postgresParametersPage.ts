@@ -11,6 +11,7 @@ import { UserCancelledError } from '../../../common/api';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { EngineSettingsModel, PostgresModel } from '../../../models/postgresModel';
+import { debounce } from '../../../common/utils';
 
 export type ParametersModel = {
 	parameterName: string,
@@ -358,13 +359,18 @@ export class PostgresParametersPage extends DashboardPage {
 
 		this.disposables.push(
 			this.searchBox.onTextChanged(() => {
-				if (!this.searchBox!.value) {
-					this.parametersTable.data = this._parameters.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
-				} else {
-					this.filterParameters(this.searchBox!.value);
-				}
+				this.onSearchFilter();
 			})
 		);
+	}
+
+	@debounce(500)
+	private onSearchFilter(): void {
+		if (!this.searchBox!.value) {
+			this.parametersTable.data = this._parameters.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
+		} else {
+			this.filterParameters(this.searchBox!.value);
+		}
 	}
 
 	private filterParameters(search: string): void {
@@ -375,7 +381,7 @@ export class PostgresParametersPage extends DashboardPage {
 
 	private handleOnTextChanged(component: azdata.InputBoxComponent, currentValue: string | undefined): boolean {
 		if (!component.valid) {
-			// If invalid value retun false and enable discard button
+			// If invalid value return false and enable discard button
 			this.discardButton!.enabled = true;
 			return false;
 		} else if (component.value === currentValue) {
