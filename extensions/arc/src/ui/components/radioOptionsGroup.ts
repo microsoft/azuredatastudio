@@ -5,14 +5,13 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { getErrorMessage } from '../../common/utils';
-import { IReadOnly } from '../dialogs/connectControllerDialog';
 
 export interface RadioOptionsInfo {
 	values?: string[],
 	defaultValue: string
 }
 
-export class RadioOptionsGroup implements IReadOnly {
+export class RadioOptionsGroup {
 	static id: number = 1;
 	private _divContainer!: azdata.DivContainer;
 	private _loadingBuilder: azdata.LoadingComponentBuilder;
@@ -66,23 +65,6 @@ export class RadioOptionsGroup implements IReadOnly {
 
 	get value(): string | undefined {
 		return this._currentRadioOption?.value;
-	}
-
-	get readOnly(): boolean {
-		return this.enabled;
-	}
-
-	set readOnly(value: boolean) {
-		this.enabled = value;
-	}
-
-	get enabled(): boolean {
-		return !!this._divContainer.enabled && this._divContainer.items.every(r => r.enabled);
-	}
-
-	set enabled(value: boolean) {
-		this._divContainer.items.forEach(r => r.enabled = value);
-		this._divContainer.enabled = value;
 	}
 
 	get items(): azdata.Component[] {

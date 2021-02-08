@@ -6,14 +6,13 @@ import * as azdata from 'azdata';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as loc from '../../localizedConstants';
-import { IReadOnly } from '../dialogs/connectControllerDialog';
 
 export interface RadioOptionsInfo {
 	values?: string[],
 	defaultValue: string
 }
 
-export class FilePicker implements IReadOnly {
+export class FilePicker {
 	private _flexContainer: azdata.FlexContainer;
 	public readonly filePathInputBox: azdata.InputBoxComponent;
 	public readonly filePickerButton: azdata.ButtonComponent;
@@ -64,21 +63,8 @@ export class FilePicker implements IReadOnly {
 		return this.filePathInputBox?.value;
 	}
 
-	get readOnly(): boolean {
-		return this.enabled;
-	}
-
-	set readOnly(value: boolean) {
-		this.enabled = value;
-	}
-
-	get enabled(): boolean {
-		return !!this._flexContainer.enabled && this._flexContainer.items.every(r => r.enabled);
-	}
-
-	set enabled(value: boolean) {
-		this._flexContainer.items.forEach(r => r.enabled = value);
-		this._flexContainer.enabled = value;
+	get items(): azdata.Component[] {
+		return this._flexContainer.items;
 	}
 }
 
