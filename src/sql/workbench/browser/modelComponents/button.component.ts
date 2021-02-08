@@ -23,6 +23,7 @@ import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } fro
 import { convertSize } from 'sql/base/browser/dom';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 @Component({
 	selector: 'modelview-button',
@@ -30,23 +31,23 @@ import { ILogService } from 'vs/platform/log/common/log';
 	<div *ngIf="this.buttonType !== 'Informational'; then thenBlock else elseBlock"></div>
 	<ng-template #thenBlock>
 		<label for={{this.label}}>
-			<div #input style="width: 100%">
+			<div #input [ngStyle]="CSSStyles">
 				<input #fileInput *ngIf="this.isFile === true" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
 			</div>
 		</label>
 	</ng-template>
 	<ng-template #elseBlock>
-		<div #infoButton style="width: 100%;"></div>
+		<div #infoButton [ngStyle]="CSSStyles"></div>
 	</ng-template>
 	`
 })
-
 export default class ButtonComponent extends ComponentWithIconBase<azdata.ButtonProperties> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _button: Button | InfoButton;
 	public fileType: string = '.sql';
 	private _currentButtonType?: azdata.ButtonType = undefined;
+	private _buttonStyler: IDisposable | undefined = undefined;
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	@ViewChild('fileInput', { read: ElementRef }) private _fileInputContainer: ElementRef;
@@ -89,9 +90,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		}
 
 		this._register(this._button);
-		this._register(attachButtonStyler(this._button, this.themeService, {
-			buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_TITLE_FOREGROUND
-		}));
+		this.updateStyler();
 		this._register(this._button.onDidClick(e => {
 			if (this._fileInputContainer) {
 				const self = this;
@@ -119,6 +118,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 			}
 		}));
 	}
+
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		if (this._currentButtonType !== this.buttonType) {
@@ -178,17 +178,36 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 			if (!this._iconClass) {
 				super.updateIcon();
 				this._button.icon = this._iconClass + ' icon';
-				// Styling for icon button
-				this._register(attachButtonStyler(this._button, this.themeService, {
-					buttonBackground: Color.transparent.toString(),
-					buttonHoverBackground: Color.transparent.toString(),
-					buttonFocusOutline: focusBorder,
-					buttonForeground: foreground
-				}));
+				this.updateStyler();
 			} else {
 				super.updateIcon();
 			}
+		} else {
+			this.updateStyler();
 		}
+	}
+
+	/**
+	 * Updates the styler for this button based on whether it has an icon or not
+	 */
+	private updateStyler(): void {
+		this._buttonStyler?.dispose();
+		if (this.iconPath) {
+			this._buttonStyler = this._register(attachButtonStyler(this._button, this.themeService, {
+				buttonBackground: Color.transparent.toString(),
+				buttonHoverBackground: Color.transparent.toString(),
+				buttonFocusOutline: focusBorder,
+				buttonForeground: foreground
+			}));
+		} else {
+			this._buttonStyler = this._register(attachButtonStyler(this._button, this.themeService, {
+				buttonBackground: SIDE_BAR_BACKGROUND,
+				buttonHoverBackground: SIDE_BAR_BACKGROUND,
+				buttonForeground: SIDE_BAR_TITLE_FOREGROUND
+			}));
+		}
+
+
 	}
 
 	protected get defaultIconHeight(): number {

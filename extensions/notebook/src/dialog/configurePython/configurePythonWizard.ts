@@ -5,7 +5,6 @@
 
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import { BasePage } from './basePage';
 import { ConfigurePathPage } from './configurePathPage';
 import { PickPackagesPage } from './pickPackagesPage';
@@ -13,7 +12,7 @@ import { JupyterServerInstallation, PythonPkgDetails, PythonInstallSettings } fr
 import * as utils from '../../common/utils';
 import { promises as fs } from 'fs';
 import { Deferred } from '../../common/promise';
-import { PythonPathInfo, PythonPathLookup } from '../pythonPathLookup';
+import { PythonPathLookup } from '../pythonPathLookup';
 
 const localize = nls.loadMessageBundle();
 
@@ -21,9 +20,10 @@ export interface ConfigurePythonModel {
 	kernelName: string;
 	pythonLocation: string;
 	useExistingPython: boolean;
-	pythonPathsPromise: Promise<PythonPathInfo[]>;
+	pythonPathLookup: PythonPathLookup;
 	packagesToInstall: PythonPkgDetails[];
 	installation: JupyterServerInstallation;
+	packageUpgradeOnly: boolean;
 }
 
 export class ConfigurePythonWizard {
@@ -35,11 +35,9 @@ export class ConfigurePythonWizard {
 	private model: ConfigurePythonModel;
 
 	private _setupComplete: Deferred<void>;
-	private pythonPathsPromise: Promise<PythonPathInfo[]>;
 
-	constructor(private jupyterInstallation: JupyterServerInstallation, private readonly _outputChannel: vscode.OutputChannel) {
+	constructor(private jupyterInstallation: JupyterServerInstallation) {
 		this._setupComplete = new Deferred<void>();
-		this.pythonPathsPromise = (new PythonPathLookup(this._outputChannel)).getSuggestions();
 	}
 
 	public get wizard(): azdata.window.Wizard {
@@ -53,7 +51,7 @@ export class ConfigurePythonWizard {
 	public async start(kernelName?: string, rejectOnCancel?: boolean): Promise<void> {
 		this.model = <ConfigurePythonModel>{
 			kernelName: kernelName,
-			pythonPathsPromise: this.pythonPathsPromise,
+			pythonPathLookup: new PythonPathLookup(),
 			installation: this.jupyterInstallation,
 			pythonLocation: JupyterServerInstallation.getPythonPathSetting(),
 			useExistingPython: JupyterServerInstallation.getExistingPythonSetting()
@@ -167,7 +165,8 @@ export class ConfigurePythonWizard {
 		let installSettings: PythonInstallSettings = {
 			installPath: pythonLocation,
 			existingPython: useExistingPython,
-			packages: this.model.packagesToInstall
+			packages: this.model.packagesToInstall,
+			packageUpgradeOnly: this.model.packageUpgradeOnly
 		};
 		this.jupyterInstallation.startInstallProcess(false, installSettings)
 			.then(() => {

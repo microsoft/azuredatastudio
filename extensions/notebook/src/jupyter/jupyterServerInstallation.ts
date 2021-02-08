@@ -40,9 +40,15 @@ export interface PythonInstallSettings {
 	installPath: string;
 	existingPython: boolean;
 	packages: PythonPkgDetails[];
+	packageUpgradeOnly?: boolean;
 }
 export interface IJupyterServerInstallation {
-	installCondaPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
+	/**
+	 * Installs the specified packages using conda
+	 * @param packages The list of packages to install
+	 * @param useMinVersionDefault Whether we install each package as a min version (>=) or exact version (==) by default
+	 */
+	installCondaPackages(packages: PythonPkgDetails[], useMinVersionDefault: boolean): Promise<void>;
 	configurePackagePaths(): Promise<void>;
 	startInstallProcess(forceInstall: boolean, installSettings?: PythonInstallSettings): Promise<void>;
 	getInstalledPipPackages(): Promise<PythonPkgDetails[]>;
@@ -52,11 +58,43 @@ export interface IJupyterServerInstallation {
 	getCondaExePath(): string;
 	executeBufferedCommand(command: string): Promise<string>;
 	executeStreamedCommand(command: string): Promise<void>;
-	installPipPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
+	/**
+	 * Installs the specified packages using pip
+	 * @param packages The list of packages to install
+	 * @param useMinVersionDefault Whether we install each package as a min version (>=) or exact version (==) by default
+	 */
+	installPipPackages(packages: PythonPkgDetails[], useMinVersionDefault: boolean): Promise<void>;
 	uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void>;
 	pythonExecutable: string;
 	pythonInstallationPath: string;
 }
+
+export const requiredJupyterPkg: PythonPkgDetails = {
+	name: 'jupyter',
+	version: '1.0.0'
+};
+
+export const requiredPowershellPkg: PythonPkgDetails = {
+	name: 'powershell-kernel',
+	version: '0.1.4'
+};
+
+export const requiredSparkPackages: PythonPkgDetails[] = [
+	requiredJupyterPkg,
+	{
+		name: 'cryptography',
+		version: '3.2.1',
+		installExactVersion: true
+	},
+	{
+		name: 'sparkmagic',
+		version: '0.12.9'
+	}, {
+		name: 'pandas',
+		version: '0.24.2'
+	}
+];
+
 export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public extensionPath: string;
 	public pythonBinPath: string;
@@ -100,32 +138,13 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this._kernelSetupCache = new Map<string, boolean>();
 		this._requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
 
-		let jupyterPkg = {
-			name: 'jupyter',
-			version: '1.0.0'
-		};
-		this._requiredKernelPackages.set(constants.python3DisplayName, [jupyterPkg]);
+		this._requiredKernelPackages.set(constants.python3DisplayName, [requiredJupyterPkg]);
+		this._requiredKernelPackages.set(constants.powershellDisplayName, [requiredJupyterPkg, requiredPowershellPkg]);
+		this._requiredKernelPackages.set(constants.pysparkDisplayName, requiredSparkPackages);
+		this._requiredKernelPackages.set(constants.sparkScalaDisplayName, requiredSparkPackages);
+		this._requiredKernelPackages.set(constants.sparkRDisplayName, requiredSparkPackages);
 
-		let powershellPkg = {
-			name: 'powershell-kernel',
-			version: '0.1.4'
-		};
-		this._requiredKernelPackages.set(constants.powershellDisplayName, [jupyterPkg, powershellPkg]);
-
-		let sparkPackages = [
-			jupyterPkg,
-			{
-				name: 'sparkmagic',
-				version: '0.12.9'
-			}, {
-				name: 'pandas',
-				version: '0.24.2'
-			}];
-		this._requiredKernelPackages.set(constants.pysparkDisplayName, sparkPackages);
-		this._requiredKernelPackages.set(constants.sparkScalaDisplayName, sparkPackages);
-		this._requiredKernelPackages.set(constants.sparkRDisplayName, sparkPackages);
-
-		let allPackages = sparkPackages.concat(powershellPkg);
+		let allPackages = requiredSparkPackages.concat(requiredPowershellPkg);
 		this._requiredKernelPackages.set(constants.allKernelsName, allPackages);
 
 		this._requiredPackagesSet = new Set<string>();
@@ -372,9 +391,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		// Check if Python is running before attempting to overwrite the installation.
-		// This step is skipped when using an existing installation, since we only add
-		// extra packages in that case and don't modify the install itself.
-		if (!installSettings.existingPython) {
+		// This step is skipped when using an existing installation or when upgrading
+		// packages, since those cases wouldn't overwrite the installation.
+		if (!installSettings.existingPython && !installSettings.packageUpgradeOnly) {
 			let pythonExePath = JupyterServerInstallation.getPythonExePath(installSettings.installPath, false);
 			let isPythonRunning = await this.isPythonRunning(pythonExePath);
 			if (isPythonRunning) {
@@ -435,7 +454,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled();
 		let areRequiredPackagesInstalled = await this.areRequiredPackagesInstalled(kernelDisplayName);
 		if (!isPythonInstalled || !areRequiredPackagesInstalled) {
-			let pythonWizard = new ConfigurePythonWizard(this, this.outputChannel);
+			let pythonWizard = new ConfigurePythonWizard(this);
 			await pythonWizard.start(kernelDisplayName, true);
 			return pythonWizard.setupComplete.then(() => {
 				this._kernelSetupCache.set(kernelDisplayName, true);
@@ -516,13 +535,16 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 	}
 
-	public installPipPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void> {
+	public installPipPackages(packages: PythonPkgDetails[], useMinVersionDefault: boolean): Promise<void> {
 		if (!packages || packages.length === 0) {
 			return Promise.resolve();
 		}
 
-		let versionSpecifier = useMinVersion ? '>=' : '==';
-		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
+		let versionSpecifierDefault = useMinVersionDefault ? '>=' : '==';
+		let packagesStr = packages.map(pkg => {
+			const pkgVersionSpecifier = pkg.installExactVersion ? '==' : versionSpecifierDefault;
+			return `"${pkg.name}${pkgVersionSpecifier}${pkg.version}"`;
+		}).join(' ');
 		let cmd = `"${this.pythonExecutable}" -m pip install --user ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
@@ -565,13 +587,16 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 	}
 
-	public installCondaPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void> {
+	public installCondaPackages(packages: PythonPkgDetails[], useMinVersionDefault: boolean): Promise<void> {
 		if (!packages || packages.length === 0) {
 			return Promise.resolve();
 		}
 
-		let versionSpecifier = useMinVersion ? '>=' : '==';
-		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
+		let versionSpecifierDefault = useMinVersionDefault ? '>=' : '==';
+		let packagesStr = packages.map(pkg => {
+			const pkgVersionSpecifier = pkg.installExactVersion ? '==' : versionSpecifierDefault;
+			return `"${pkg.name}${pkgVersionSpecifier}${pkg.version}"`;
+		}).join(' ');
 		let condaExe = this.getCondaExePath();
 		let cmd = `"${condaExe}" install -c conda-forge -y ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
@@ -735,6 +760,10 @@ export interface PythonPkgDetails {
 	name: string;
 	version: string;
 	channel?: string;
+	/**
+	 * Whether to always install the exact version of the package (==)
+	 */
+	installExactVersion?: boolean
 }
 
 export interface PipPackageOverview {

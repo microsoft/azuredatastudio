@@ -36,7 +36,7 @@ export class CreateProjectFromDatabaseDialog {
 	public createProjectFromDatabaseCallback: ((model: ImportDataModel) => any) | undefined;
 
 	constructor(private profile: azdata.IConnectionProfile | undefined) {
-		this.dialog = azdata.window.createModelViewDialog(constants.createProjectFromDatabaseDialogName);
+		this.dialog = azdata.window.createModelViewDialog(constants.createProjectFromDatabaseDialogName, 'createProjectFromDatabaseDialog');
 		this.createProjectFromDatabaseTab = azdata.window.createTab(constants.createProjectFromDatabaseDialogName);
 		this.dialog.registerCloseValidator(async () => {
 			return this.validate();
@@ -161,9 +161,7 @@ export class CreateProjectFromDatabaseDialog {
 		this.sourceDatabaseDropDown = view.modelBuilder.dropDown().withProperties({
 			ariaLabel: constants.databaseNameLabel,
 			required: true,
-			width: cssStyles.createProjectFromDatabaseTextboxWidth,
-			editable: true,
-			fireOnTextChange: true
+			width: cssStyles.createProjectFromDatabaseTextboxWidth
 		}).component();
 
 		this.sourceDatabaseDropDown.onValueChanged(() => {

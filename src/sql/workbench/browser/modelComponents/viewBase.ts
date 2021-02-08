@@ -68,9 +68,14 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		this.setLayout(component.id, component.layout, true);
 		this.registerEvent(component.id, true);
 		if (component.itemConfigs) {
-			for (let item of component.itemConfigs) {
-				this.addToContainer(component.id, item, undefined, true);
-			}
+			const items = component.itemConfigs.map(itemConfig => {
+				return {
+					itemConfig,
+					index: undefined,
+					initial: true
+				};
+			});
+			this.addToContainer(component.id, items);
 		}
 
 		return descriptor;
@@ -97,17 +102,31 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		});
 	}
 
-	addToContainer(containerId: string, itemConfig: IItemConfig, index?: number, initial: boolean = false): void {
-		this.logService.debug(`Queueing action to add component ${itemConfig.componentShape.id} to container ${containerId}`);
+	addToContainer(containerId: string, items: { itemConfig: IItemConfig, index?: number }[], initial?: boolean): void {
+		if (items.length === 0) {
+			// If we don't have any items save ourselves the time and just exit early. This can happen when
+			// an item is defined since we may have components definitions which have empty itemConfigs
+			return;
+		}
+		const itemNames = items.map(item => item.itemConfig.componentShape.id).join(',');
+		this.logService.debug(`Queueing action to add components ${itemNames} to container ${containerId}`);
 		// Do not return the promise as this should be non-blocking
 		this.queueAction(containerId, (component) => {
 			if (!component.addToContainer) {
-				this.logService.warn(`Container ${containerId} is trying to add component ${itemConfig.componentShape.id} but does not implement addToContainer!`);
+				this.logService.warn(`Container ${containerId} is trying to add components ${itemNames} but does not implement addToContainer!`);
 				return;
 			}
-			this.logService.debug(`Adding component ${itemConfig.componentShape.id} to container ${containerId}`);
-			let childDescriptor = this.defineComponent(itemConfig.componentShape);
-			component.addToContainer(childDescriptor, itemConfig.config, index);
+			this.logService.debug(`Adding components ${itemNames} to container ${containerId}`);
+			const itemConfigs = items.map(item => {
+				const componentDescriptor = this.defineComponent(item.itemConfig.componentShape);
+				return {
+					componentDescriptor,
+					config: item.itemConfig.config,
+					index: item.index
+				};
+			});
+
+			component.addToContainer(itemConfigs);
 		}, initial);
 	}
 

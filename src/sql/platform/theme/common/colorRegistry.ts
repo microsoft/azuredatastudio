@@ -68,3 +68,14 @@ export const codeEditorToolbarBackground = registerColor('notebook.codeEditorToo
 export const codeEditorToolbarBorder = registerColor('notebook.codeEditorToolbarBorder', { light: '#C8C6C4', dark: '#333333', hc: '#000000' }, nls.localize('notebook.codeEditorToolbarBorder', "Notebook: Code editor toolbar right border"));
 export const notebookCellTagBackground = registerColor('notebook.notebookCellTagBackground', { light: '#0078D4', dark: '#0078D4', hc: '#0078D4' }, nls.localize('notebook.notebookCellTagBackground', "Tag background color."));
 export const notebookCellTagForeground = registerColor('notebook.notebookCellTagForeground', { light: '#FFFFFF', dark: '#FFFFFF', hc: '#FFFFFF' }, nls.localize('notebook.notebookCellTagForeground', "Tag foreground color."));
+
+// Notebook: Find
+export const notebookFindMatchHighlight = registerColor('notebook.findMatchHighlightBackground', { light: '#FFFF00', dark: '#FFFF00', hc: null }, nls.localize('notebookFindMatchHighlight', "Color of the other search matches. The color must not be opaque so as not to hide underlying decorations."), true);
+export const notebookFindRangeHighlight = registerColor('notebook.findRangeHighlightBackground', { dark: '#FFA500', light: '#FFA500', hc: null }, nls.localize('notebookFindRangeHighlight', "Color of the range limiting the search. The color must not be opaque so as not to hide underlying decorations."), true);
+
+// Info Box
+export const InfoBoxInformationBackground = registerColor('infoBox.infomationBackground', { light: '#F0F6FF', dark: '#001433', hc: '#000000' }, nls.localize('infoBox.infomationBackground', "InfoBox: The background color when the notification type is information."));
+export const InfoBoxWarningBackground = registerColor('infoBox.warningBackground', { light: '#FFF8F0', dark: '#331B00', hc: '#000000' }, nls.localize('infoBox.warningBackground', "InfoBox: The background color when the notification type is warning."));
+export const InfoBoxErrorBackground = registerColor('infoBox.errorBackground', { light: '#FEF0F1', dark: '#300306', hc: '#000000' }, nls.localize('infoBox.errorBackground', "InfoBox: The background color when the notification type is error."));
+export const InfoBoxSuccessBackground = registerColor('infoBox.successBackground', { light: '#F8FFF0', dark: '#1B3300', hc: '#000000' }, nls.localize('infoBox.successBackground', "InfoBox: The background color when the notification type is success."));
+

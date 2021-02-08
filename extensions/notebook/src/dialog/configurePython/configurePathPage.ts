@@ -8,7 +8,6 @@ import * as azdata from 'azdata';
 import { BasePage } from './basePage';
 import * as nls from 'vscode-nls';
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
-import { PythonPathInfo } from '../pythonPathLookup';
 import * as utils from '../../common/utils';
 
 const localize = nls.loadMessageBundle();
@@ -152,6 +151,9 @@ export class ConfigurePathPage extends BasePage {
 
 			this.model.pythonLocation = pythonLocation;
 			this.model.useExistingPython = !!this.existingInstallButton.checked;
+			this.model.packageUpgradeOnly = false;
+		} else {
+			this.model.packageUpgradeOnly = true;
 		}
 		return true;
 	}
@@ -160,10 +162,9 @@ export class ConfigurePathPage extends BasePage {
 		this.instance.wizard.nextButton.enabled = false;
 		this.pythonDropdownLoader.loading = true;
 		try {
-			let pythonPaths: PythonPathInfo[];
 			let dropdownValues: azdata.CategoryValue[];
 			if (useExistingPython) {
-				pythonPaths = await this.model.pythonPathsPromise;
+				let pythonPaths = await this.model.pythonPathLookup.getSuggestions();
 				if (pythonPaths && pythonPaths.length > 0) {
 					dropdownValues = pythonPaths.map(path => {
 						return {

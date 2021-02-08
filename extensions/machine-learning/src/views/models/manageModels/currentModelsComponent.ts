@@ -206,8 +206,10 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 
 	private async onTableSelected(): Promise<void> {
 		if (this._tableSelectionComponent?.data) {
-			this.importTable = this._tableSelectionComponent?.data;
-			await this.storeImportConfigTable();
+			if (this._tableSelectionComponent?.isDataValid) {
+				this.importTable = this._tableSelectionComponent?.data;
+				await this.storeImportConfigTable();
+			}
 			if (this._dataTable) {
 				await this._dataTable.refresh();
 				if (this._emptyModelsComponent) {

@@ -8,6 +8,9 @@ import * as azurecore from 'azurecore';
 import { azureResource } from 'azureResource';
 
 export class AzurecoreApiStub implements azurecore.IExtension {
+	makeAzureRestRequest(_account: azdata.Account, _subscription: azureResource.AzureResourceSubscription, _serviceUrl: string, _requestType: azurecore.HttpRequestMethod, _requestBody?: any, _ignoreErrors?: boolean): Promise<azurecore.AzureRestResponse> {
+		throw new Error('Method not implemented.');
+	}
 	getFileShares(_account: azdata.Account, _subscription: azureResource.AzureResourceSubscription, _storageAccount: azureResource.AzureGraphResource, _ignoreErrors?: boolean): Promise<azurecore.GetFileSharesResult> {
 		throw new Error('Method not implemented.');
 	}

@@ -71,10 +71,11 @@ export class MiaaModel extends ResourceModel {
 			return this._refreshPromise.promise;
 		}
 		this._refreshPromise = new Deferred();
+		let session: azdataExt.AzdataSession | undefined = undefined;
 		try {
-			await this.controllerModel.azdataLogin();
+			session = await this.controllerModel.acquireAzdataSession();
 			try {
-				const result = await this._azdataApi.azdata.arc.sql.mi.show(this.info.name);
+				const result = await this._azdataApi.azdata.arc.sql.mi.show(this.info.name, this.controllerModel.azdataAdditionalEnvVars, session);
 				this._config = result.result;
 				this.configLastUpdated = new Date();
 				this._onConfigUpdated.fire(this._config);
@@ -114,6 +115,7 @@ export class MiaaModel extends ResourceModel {
 			this._refreshPromise.reject(err);
 			throw err;
 		} finally {
+			session?.dispose();
 			this._refreshPromise = undefined;
 		}
 	}
