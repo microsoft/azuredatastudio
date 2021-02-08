@@ -90,7 +90,7 @@ declare module 'azureResource' {
 			resourceGroup: string;
 			location: string;
 			provisioningState: string;
-			integrationRunTimeState?: string;
+			integrationRuntimeState?: string;
 			isProvisioned?: boolean;
 		}
 
