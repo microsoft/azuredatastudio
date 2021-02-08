@@ -64,8 +64,18 @@ export class ResourceTypeWizard {
 		 * Setting the first provider from the first value of the dropdowns.
 		 * If there are no options (dropdowns) then the resource type has only one provider which is set as default here.
 		 */
+		let filteredOptions = resourceType.options;
+		const optionsFilter = this._optionValuesFilter?.[this.resourceType.name];
+		if (optionsFilter) {
+			filteredOptions.forEach(option => {
+				const optionValuesFilter = optionsFilter[option.name];
+				if (optionValuesFilter) {
+					option.values = option.values.filter(optionValue => optionValuesFilter.includes(optionValue.name));
+				}
+			});
+		}
 		if (resourceType.options) {
-			this.provider = this.resourceType.getProvider(resourceType.options.map(option => { return { option: option.name, value: option.values[0].name }; }))!;
+			this.provider = this.resourceType.getProvider(filteredOptions.map(option => { return { option: option.name, value: option.values[0].name }; }))!;
 		} else {
 			this.provider = this.resourceType.providers[0];
 		}
