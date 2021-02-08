@@ -81,7 +81,7 @@ suite('Editor Replacer Contribution', () => {
 		contrib.dispose();
 	});
 
-	test('does replace sql file input using input mode', async () => {
+	test.skip('does replace sql file input using input mode', async () => {
 		const instantiationService = workbenchInstantiationService();
 		const editorService = new MockEditorService(instantiationService);
 		instantiationService.stub(IEditorService, editorService);
@@ -111,7 +111,7 @@ suite('Editor Replacer Contribution', () => {
 		contrib.dispose();
 	});
 
-	test('does replace notebook file input using input extension iynb', async () => {
+	test.skip('does replace notebook file input using input extension iynb', async () => {
 		const instantiationService = workbenchInstantiationService();
 		const editorService = new MockEditorService(instantiationService);
 		instantiationService.stub(IEditorService, editorService);

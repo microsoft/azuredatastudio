@@ -145,7 +145,7 @@ suite('Insights Utils tests', function () {
 		}
 	});
 
-	test('resolveQueryFilePath throws with workspaceRoot var and empty workspace', async () => {
+	test.skip('resolveQueryFilePath throws with workspaceRoot var and empty workspace', async () => {
 		const tokenizedPath = path.join('${workspaceRoot}', 'test.sql');
 		// Create mock context service with an empty workspace
 		const contextService = new TestContextService(
@@ -180,7 +180,7 @@ suite('Insights Utils tests', function () {
 		}
 	});
 
-	test('resolveQueryFilePath resolves path correctly with env var and empty workspace', async () => {
+	test.skip('resolveQueryFilePath resolves path correctly with env var and empty workspace', async () => {
 		const contextService = new TestContextService(
 			new Workspace('TestWorkspace',
 				undefined, undefined, undefined));
