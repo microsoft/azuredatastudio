@@ -346,11 +346,6 @@ export interface INotebookModel {
 	trustedMode: boolean;
 
 	/**
-	 * The connection mode of the notebook
-	 */
-	multiConnectionMode: boolean;
-
-	/**
 	 * Current notebook provider id
 	 */
 	providerId: string;

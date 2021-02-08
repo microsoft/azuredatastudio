@@ -410,6 +410,7 @@ export class CellAttachToDropdown extends SelectBox {
 	public updateModel(model: ICellModel): void {
 		this.cellModel = model as CellModel;
 		this.notebookModel = model.notebookModel as NotebookModel;
+		this.handleConnectionModeChanged(this.notebookModel.multiConnectionMode);
 		this._register(this.cellModel.contextsChanged(() => {
 			this.handleContextsChanged();
 		}));
@@ -472,7 +473,7 @@ export class CellAttachToDropdown extends SelectBox {
 				connections.push(msgChangeConnection);
 			}
 			this.setOptions(connections, 0);
-			this.enable();
+			// this.enable();
 
 			if (this.notebookModel.kernelAliases.includes(currentKernel) && this.notebookModel.selectedKernelDisplayName !== currentKernel) {
 				this.notebookModel.changeKernel(currentKernel);

@@ -81,7 +81,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _trustedMode: boolean;
 	private _onActiveCellChanged = new Emitter<ICellModel | undefined>();
 	private _onCellTypeChanged = new Emitter<ICellModel>();
-	private _multiConnectionMode: boolean = false;
 	private _onConnectionModeChanged = new Emitter<boolean>();
 
 	private _cells: ICellModel[] | undefined;
@@ -236,7 +235,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public set multiConnectionMode(isMultiConnection: boolean) {
+		this.updateCellConnections(isMultiConnection);
 		this._multiConnectionMode = isMultiConnection;
+		this._onConnectionModeChanged.fire(isMultiConnection);
 	}
 
 	public get specs(): nb.IAllKernels | undefined {
@@ -304,16 +305,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get onConnectionModeChanged(): Event<boolean> {
 		return this._onConnectionModeChanged.event;
-	}
-
-	public get multiConnectionMode(): boolean {
-		return this._multiConnectionMode;
-	}
-
-	public set multiConnectionMode(isMultiConnection: boolean) {
-		this.updateCellConnections(isMultiConnection);
-		this._multiConnectionMode = isMultiConnection;
-		this._onConnectionModeChanged.fire(isMultiConnection);
 	}
 
 	public get viewModeChanged(): Event<ViewMode> {

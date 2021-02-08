@@ -464,6 +464,7 @@ export class AttachToDropdown extends SelectBox {
 			let index = this.values.findIndex(connection => connection === msgPerCell);
 			this.select(index);
 		} else {
+			this.model.multiConnectionMode = false;
 			this.model.changeContext(this.value, connection, hideErrorMessage).catch(err => this._notificationService.error(getErrorMessage(err)));
 		}
 	}

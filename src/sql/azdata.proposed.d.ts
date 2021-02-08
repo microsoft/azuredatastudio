@@ -82,11 +82,6 @@ declare module 'azdata' {
 			connection_name?: string;
 		}
 
-		export interface INotebookMetadata {
-			connectionName?: string;
-			multiConnectionMode?: boolean;
-		}
-
 		export interface ICellMetadata {
 			connection_name?: string;
 		}
