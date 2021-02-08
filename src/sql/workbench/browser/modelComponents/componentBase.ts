@@ -289,32 +289,34 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 	}
 
 	/// IComponent container-related implementation
-	public addToContainer(componentDescriptor: IComponentDescriptor, config: any, index?: number): void {
-		this.logService.debug(`Adding component ${componentDescriptor.id} to container ${this.descriptor.id}`);
-		if (!componentDescriptor) {
-			return;
-		}
-		if (this.items.some(item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type)) {
-			return;
-		}
-		if (index !== undefined && index !== null && index >= 0 && index <= this.items.length) {
-			this.items.splice(index, 0, new ItemDescriptor(componentDescriptor, config));
-		} else if (!index) {
-			this.items.push(new ItemDescriptor(componentDescriptor, config));
-		} else {
-			throw new Error(nls.localize('invalidIndex', "The index {0} is invalid.", index));
-		}
+	public addToContainer(items: { componentDescriptor: IComponentDescriptor, config: any, index?: number }[]): void {
+		items.forEach(newItem => {
+			this.logService.debug(`Adding component ${newItem.componentDescriptor.id} to container ${this.descriptor.id}`);
+			if (!newItem.componentDescriptor) {
+				return;
+			}
+			if (this.items.some(item => item.descriptor.id === newItem.componentDescriptor.id && item.descriptor.type === newItem.componentDescriptor.type)) {
+				return;
+			}
+			if (newItem.index !== undefined && newItem.index !== null && newItem.index >= 0 && newItem.index <= this.items.length) {
+				this.items.splice(newItem.index, 0, new ItemDescriptor(newItem.componentDescriptor, newItem.config));
+			} else if (!newItem.index) {
+				this.items.push(new ItemDescriptor(newItem.componentDescriptor, newItem.config));
+			} else {
+				throw new Error(nls.localize('invalidIndex', "The index {0} is invalid.", newItem.index));
+			}
 
-		this.logService.debug(`Queueing up action to register validation event handler on component ${componentDescriptor.id} in container ${this.descriptor.id}`);
-		this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => {
-			this.logService.debug(`Registering validation event handler on component ${componentDescriptor.id} in container ${this.descriptor.id}`);
-			component.registerEventHandler(async event => {
-				if (event.eventType === ComponentEventType.validityChanged) {
-					this.logService.debug(`Running validation on container ${this.descriptor.id} because validity of child component ${componentDescriptor.id} changed`);
-					this.validate().catch(onUnexpectedError);
-				}
-			});
-		}, true);
+			this.logService.debug(`Queueing up action to register validation event handler on component ${newItem.componentDescriptor.id} in container ${this.descriptor.id}`);
+			this.modelStore.eventuallyRunOnComponent(newItem.componentDescriptor.id, component => {
+				this.logService.debug(`Registering validation event handler on component ${newItem.componentDescriptor.id} in container ${this.descriptor.id}`);
+				component.registerEventHandler(async event => {
+					if (event.eventType === ComponentEventType.validityChanged) {
+						this.logService.debug(`Running validation on container ${this.descriptor.id} because validity of child component ${newItem.componentDescriptor.id} changed`);
+						this.validate().catch(onUnexpectedError);
+					}
+				});
+			}, true);
+		});
 		this._changeRef.detectChanges();
 		this.onItemsUpdated();
 		return;
