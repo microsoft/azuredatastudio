@@ -1100,6 +1100,16 @@
             }
           ],
           "when": "mi-type=arc-mi"
+        },
+        "helpText": {
+          "template": "%arc.agreement.sql.help.text%",
+          "links": [
+            {
+              "text": "%arc.agreement.sql.help.text.learn.more%",
+              "url": "https://go.microsoft.com/fwlink/?linkid=2141849"
+            }
+          ],
+          "when": "mi-type=arc-mi"
         }
       }
     ]

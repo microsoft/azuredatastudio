@@ -14,13 +14,13 @@ import { ControllerModel } from '../../../models/controllerModel';
 import { MiaaModel } from '../../../models/miaaModel';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ResourceType } from 'arc';
+import { UserCancelledError } from '../../../common/api';
 
 export class MiaaDashboardOverviewPage extends DashboardPage {
 
 	private _propertiesLoading!: azdata.LoadingComponent;
 	private _kibanaLoading!: azdata.LoadingComponent;
 	private _grafanaLoading!: azdata.LoadingComponent;
-	private _databasesTableLoading!: azdata.LoadingComponent;
 
 	private _propertiesContainer!: azdata.PropertiesContainerComponent;
 	private _kibanaLink!: azdata.HyperlinkComponent;
@@ -28,6 +28,11 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	private _databasesTable!: azdata.DeclarativeTableComponent;
 	private _databasesMessage!: azdata.TextComponent;
 	private _openInAzurePortalButton!: azdata.ButtonComponent;
+
+	private _databasesContainer!: azdata.DivContainer;
+	private _connectToServerLoading!: azdata.LoadingComponent;
+	private _connectToServerButton!: azdata.ButtonComponent;
+	private _databasesTableLoading!: azdata.LoadingComponent;
 
 	private readonly _azdataApi: azdataExt.IExtension;
 	private readonly _azurecoreApi: azurecore.IExtension;
@@ -83,6 +88,28 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 		this._grafanaLink = this.modelView.modelBuilder.hyperlink().component();
 		this._grafanaLoading = this.modelView.modelBuilder.loadingComponent().component();
+
+		this._databasesContainer = this.modelView.modelBuilder.divContainer().component();
+
+		const connectToServerText = this.modelView.modelBuilder.text().withProps({
+			value: loc.miaaConnectionRequired
+		}).component();
+
+		this._connectToServerButton = this.modelView.modelBuilder.button().withProps({
+			label: loc.connectToServer,
+			enabled: false,
+			CSSStyles: { 'max-width': '125px', 'margin-left': '40%' }
+		}).component();
+
+		const connectToServerContainer = this.modelView.modelBuilder.divContainer().component();
+
+
+		connectToServerContainer.addItem(connectToServerText, { CSSStyles: { 'text-align': 'center', 'margin-top': '20px' } });
+		connectToServerContainer.addItem(this._connectToServerButton);
+
+		this._connectToServerLoading = this.modelView.modelBuilder.loadingComponent().withItem(connectToServerContainer).component();
+
+		this._databasesContainer.addItem(this._connectToServerLoading, { CSSStyles: { 'margin-top': '20px' } });
 
 		this._databasesTableLoading = this.modelView.modelBuilder.loadingComponent().component();
 		this._databasesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
@@ -180,7 +207,18 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 		// Databases
 		rootContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.databases, CSSStyles: titleCSS }).component());
-		rootContainer.addItem(this._databasesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
+		this.disposables.push(
+			this._connectToServerButton!.onDidClick(async () => {
+				this._connectToServerButton!.enabled = false;
+				this._databasesTableLoading!.loading = true;
+				try {
+					await this.callGetDatabases();
+				} catch {
+					this._connectToServerButton!.enabled = true;
+				}
+			})
+		);
+		rootContainer.addItem(this._databasesContainer);
 		rootContainer.addItem(this._databasesMessage);
 
 		this.initialized = true;
@@ -283,6 +321,19 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		).component();
 	}
 
+	private async callGetDatabases(): Promise<void> {
+		try {
+			await this._miaaModel.getDatabases();
+		} catch (error) {
+			if (error instanceof UserCancelledError) {
+				vscode.window.showWarningMessage(loc.miaaConnectionRequired);
+			} else {
+				vscode.window.showErrorMessage(loc.fetchDatabasesFailed(this._miaaModel.info.name, error));
+			}
+			throw error;
+		}
+	}
+
 	private handleRegistrationsUpdated(): void {
 		const config = this._controllerModel.controllerConfig;
 		if (this._openInAzurePortalButton) {
@@ -301,6 +352,9 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			this._instanceProperties.externalEndpoint = this._miaaModel.config.status.externalEndpoint || loc.notConfigured;
 			this._instanceProperties.vCores = this._miaaModel.config.spec.limits?.vcores?.toString() || '';
 			this._databasesMessage.value = !this._miaaModel.config.status.externalEndpoint ? loc.noExternalEndpoint : '';
+			if (!this._miaaModel.config.status.externalEndpoint) {
+				this._databasesContainer.removeItem(this._connectToServerLoading);
+			}
 		}
 
 		this.refreshDisplayedProperties();
@@ -312,7 +366,20 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
 		this.refreshDisplayedProperties();
 		this._databasesTable.data = this._miaaModel.databases.map(d => [d.name, getDatabaseStateDisplayText(d.status)]);
-		this._databasesTableLoading.loading = !this._miaaModel.databasesLastUpdated;
+		this._databasesTableLoading.loading = false;
+
+		if (this._miaaModel.databasesLastUpdated) {
+			// We successfully connected so now can remove the button and replace it with the actual databases table
+			this._databasesContainer.removeItem(this._connectToServerLoading);
+			this._databasesContainer.addItem(this._databasesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
+		} else {
+			// If we don't have an endpoint then there's no point in showing the connect button - but the logic
+			// to display text informing the user of this is already handled by the handleMiaaConfigUpdated
+			if (this._miaaModel?.config?.status.externalEndpoint) {
+				this._connectToServerLoading.loading = false;
+				this._connectToServerButton.enabled = true;
+			}
+		}
 	}
 
 	private refreshDisplayedProperties(): void {

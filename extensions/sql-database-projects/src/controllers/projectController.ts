@@ -128,7 +128,6 @@ export class ProjectsController {
 			return project.dacpacOutputPath;
 		} catch (err) {
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.build)
-				.withAdditionalProperties({ error: utils.getErrorMessage(err) })
 				.withAdditionalMeasurements({ duration: new Date().getMilliseconds() - startTime.getMilliseconds() })
 				.send();
 
@@ -203,7 +202,6 @@ export class ProjectsController {
 			const actionEndTime = new Date().getMilliseconds();
 			telemetryProps.actionDuration = (actionEndTime - actionStartTime).toString();
 			telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
-			telemetryProps.errorMessage = utils.getErrorMessage(err);
 
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
 				.withAdditionalProperties(telemetryProps)

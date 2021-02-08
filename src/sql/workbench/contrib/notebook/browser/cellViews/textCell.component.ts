@@ -33,7 +33,8 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
-
+const findHighlightClass = 'rangeHighlight';
+const findRangeSpecificClass = 'rangeSpecificHighlight';
 @Component({
 	selector: TEXT_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./textCell.component.html'))
@@ -98,7 +99,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 		@Inject(INotebookService) private _notebookService: INotebookService,
-
 	) {
 		super();
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
@@ -353,31 +353,41 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private addDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
+			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
 			let elements = this.getHtmlElements();
 			if (elements?.length >= range.startLineNumber) {
 				let elementContainingText = elements[range.startLineNumber - 1];
-				let mark = new Mark(elementContainingText);
+				let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
 				let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
 				if (editor) {
 					let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
 					if (findModel?.findMatches?.length > 0) {
 						let searchString = findModel.findExpression;
-						mark.mark(searchString, {
-							className: 'rangeHighlight'
+						markAllOccurances.mark(searchString, {
+							className: findHighlightClass
 						});
 						elementContainingText.scrollIntoView({ behavior: 'smooth' });
 					}
 				}
+				markCurrent.markRanges([{
+					start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
+					length: range.endColumn - range.startColumn
+				}], {
+					className: findRangeSpecificClass
+				});
+				elementContainingText.scrollIntoView({ behavior: 'smooth' });
 			}
 		}
 	}
 
 	private removeDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
+			let markAllOccurances = new Mark(this.output.nativeElement);
 			let elements = this.getHtmlElements();
 			let elementContainingText = elements[range.startLineNumber - 1];
-			let mark = new Mark(elementContainingText);
-			mark.unmark({ acrossElements: true, className: 'rangeHighlight' });
+			let markCurrent = new Mark(elementContainingText);
+			markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
+			markCurrent.unmark({ acrossElements: true, className: findRangeSpecificClass });
 		}
 	}
 
@@ -422,8 +432,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		let textOutput: string[] = [];
 		let elements = this.getHtmlElements();
 		elements.forEach(element => {
-			if (element && element.innerText) {
-				textOutput.push(element.innerText);
+			if (element && element.textContent) {
+				textOutput.push(element.textContent);
 			} else {
 				textOutput.push('');
 			}

@@ -740,10 +740,10 @@ export class Project {
 		referenceNode.appendChild(privateElement);
 	}
 
-	public addSqlCmdVariableToProjFile(entry: SqlCmdVariableProjectEntry): void {
+	public async addSqlCmdVariableToProjFile(entry: SqlCmdVariableProjectEntry): Promise<void> {
 		// Remove any entries with the same variable name. It'll be replaced with a new one
 		if (Object.keys(this.sqlCmdVariables).includes(entry.variableName)) {
-			this.removeFromProjFile(entry);
+			await this.removeFromProjFile(entry);
 		}
 
 		const sqlCmdVariableNode = this.projFileXmlDoc.createElement(constants.SqlCmdVariable);
@@ -882,7 +882,7 @@ export class Project {
 				await this.addDatabaseReferenceToProjFile(<IDatabaseReferenceProjectEntry>entry);
 				break;
 			case EntryType.SqlCmdVariable:
-				this.addSqlCmdVariableToProjFile(<SqlCmdVariableProjectEntry>entry);
+				await this.addSqlCmdVariableToProjFile(<SqlCmdVariableProjectEntry>entry);
 				break; // not required but adding so that we dont miss when we add new items
 		}
 
