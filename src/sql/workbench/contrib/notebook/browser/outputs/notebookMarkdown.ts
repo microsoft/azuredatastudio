@@ -21,8 +21,8 @@ export class NotebookMarkdownRenderer {
 
 	}
 
-	render(markdown: IMarkdownString): IMarkdownRenderResult {
-		const element: HTMLElement = markdown ? this.renderMarkdown(markdown, undefined) : document.createElement('span');
+	render(markdown: IMarkdownString, cellAttachments: { [key: string]: any }): IMarkdownRenderResult {
+		const element: HTMLElement = markdown ? this.renderMarkdown(markdown, undefined, cellAttachments) : document.createElement('span');
 		return {
 			element,
 			dispose: () => { }
@@ -51,7 +51,7 @@ export class NotebookMarkdownRenderer {
 	 * respects the trusted state of a notebook, and allows command links to
 	 * be clickable.
 	 */
-	renderMarkdown(markdown: IMarkdownString, options: MarkdownRenderOptions = {}): HTMLElement {
+	renderMarkdown(markdown: IMarkdownString, options: MarkdownRenderOptions = {}, cellAttachments: { [key: string]: any }): HTMLElement {
 		const element = this.createElement(options);
 
 		// signal to code-block render that the element has been created
@@ -64,7 +64,7 @@ export class NotebookMarkdownRenderer {
 		}
 		const renderer = new marked.Renderer({ baseUrl: notebookFolder });
 		renderer.image = (href: string, title: string, text: string) => {
-			href = this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
+			href = this.findAttachment(href, cellAttachments) || this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
 			let dimensions: string[] = [];
 			if (href) {
 				const splitted = href.split('|').map(s => s.trim());
@@ -238,6 +238,13 @@ export class NotebookMarkdownRenderer {
 		} else {
 			return base + href;
 		}
+	}
+
+	findAttachment(href: string, cellAttachments: { [key: string]: any }): string {
+		if (href.startsWith('attachment:')) {
+			return cellAttachments[href.replace('attachment:', '')] || '';
+		}
+		return '';
 	}
 
 	// end marked.js adaptation

@@ -524,6 +524,7 @@ export interface ICellModel {
 	sendChangeToNotebook(change: NotebookChangeType): void;
 	cellSourceChanged: boolean;
 	readonly savedConnectionName: string | undefined;
+	readonly attachments: { [key: string]: any };
 }
 
 export interface IModelFactory {

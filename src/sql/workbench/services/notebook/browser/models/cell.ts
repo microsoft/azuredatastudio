@@ -80,6 +80,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
 	private _isInjectedParameter: boolean;
+	private _attachments: { [key: string]: any; };
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -138,6 +139,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get metadata(): any {
 		return this._metadata;
+	}
+
+	public get attachments() {
+		return this._attachments;
 	}
 
 	public get isEditMode(): boolean {
@@ -866,6 +871,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this._isParameter = false;
 			this._isInjectedParameter = false;
 		}
+		this._attachments = cell.attachments || {};
 
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);
