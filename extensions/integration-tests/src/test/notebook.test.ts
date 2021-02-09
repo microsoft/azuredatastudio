@@ -55,7 +55,7 @@ suite('Notebook integration test suite', function () {
 		assert(actualOutput2[0] === '1', `Expected result: 1, Actual: '${actualOutput2[0]}'`);
 	});
 
-	test('Sql NB multiple cells test', async function (done) {
+	test.skip('Sql NB multiple cells test', async function (done) {
 		let notebook = await openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
 		await runCells(notebook);
 		const expectedOutput0 = '(1 row affected)';
@@ -85,7 +85,7 @@ suite('Notebook integration test suite', function () {
 		done();
 	});
 
-	test('Sql NB run cells above and below test', async function (done) {
+	test.skip('Sql NB run cells above and below test', async function (done) {
 		let notebook = await openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
 		// When running all cells above a cell, ensure that only cells preceding current cell have output
 		await runCells(notebook, true, undefined, notebook.document.cells[1]);
@@ -103,21 +103,21 @@ suite('Notebook integration test suite', function () {
 		done();
 	});
 
-	test('Clear cell output - SQL notebook', async function (done) {
+	test.skip('Clear cell output - SQL notebook', async function (done) {
 		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
 		await runCell(notebook);
 		await verifyClearOutputs(notebook);
 		done();
 	});
 
-	test('Clear all outputs - SQL notebook', async function (done) {
+	test.skip('Clear all outputs - SQL notebook', async function (done) {
 		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
 		await runCell(notebook);
 		await verifyClearAllOutputs(notebook);
 		done();
 	});
 
-	test('sql language test', async function (done) {
+	test.skip('sql language test', async function (done) {
 		let language = 'sql';
 		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title + this.invocationCount++, language, {
 			'kernelspec': {
@@ -133,7 +133,7 @@ suite('Notebook integration test suite', function () {
 		done();
 	});
 
-	test('should not be dirty after saving notebook test', async function (done) {
+	test.skip('should not be dirty after saving notebook test', async function (done) {
 		// Given a notebook that's been edited (in this case, open notebook runs the 1st cell and adds an output)
 		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title);
 		await runCell(notebook);
