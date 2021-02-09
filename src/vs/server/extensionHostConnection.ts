@@ -12,7 +12,7 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import { IRemoteConsoleLog } from 'vs/base/common/console';
 import { Emitter, Event } from 'vs/base/common/event';
 import { NodeSocket, WebSocketNodeSocket } from 'vs/base/parts/ipc/node/ipc.net';
-import { getShellEnvironment } from 'vs/code/node/shellEnv';
+import { resolveShellEnv } from 'vs/code/node/shellEnv';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IRemoteExtensionHostStartParams } from 'vs/platform/remote/common/remoteAgentConnection';
 import { IExtHostReadyMessage, IExtHostSocketMessage, IExtHostReduceGraceTimeMessage } from 'vs/workbench/services/extensions/common/extensionHostProtocol';
@@ -21,9 +21,7 @@ import { IProcessEnvironment, isWindows } from 'vs/base/common/platform';
 
 export async function buildUserEnvironment(startParamsEnv: { [key: string]: string | null } = {}, language: string, environmentService: ServerEnvironmentService, logService: ILogService): Promise<IProcessEnvironment> {
 	const nlsConfig = await getNLSConfiguration(language, environmentService.userDataPath);
-	// {{SQL CARBON }}
-	//const userShellEnv = await resolveShellEnv(logService, environmentService.args, process.env);
-	const userShellEnv = await getShellEnvironment(logService, environmentService);
+	const userShellEnv = await resolveShellEnv(logService, environmentService.args, process.env);
 	const binFolder = environmentService.isBuilt ? join(environmentService.appRoot, 'bin') : join(environmentService.appRoot, 'resources', 'server', 'bin-dev');
 	const processEnv = process.env;
 	let PATH = startParamsEnv['PATH'] || userShellEnv['PATH'] || processEnv['PATH'];
