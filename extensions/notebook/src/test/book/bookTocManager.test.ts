@@ -16,7 +16,6 @@ import * as rimraf from 'rimraf';
 import { promisify } from 'util';
 import { BookModel } from '../../book/bookModel';
 import { MockExtensionContext } from '../common/stubs';
-import { BookVersion } from '../../book/bookVersionHandler';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { NavigationProviders } from '../../common/constants';
 import * as loc from '../../common/localizedConstants';
@@ -517,11 +516,8 @@ describe('BookTocManagerTests', function () {
 					await bookTocManager.updateBook(notebook, targetBook);
 					await bookTocManager.updateBook(duplicatedNotebook, targetBook);
 					const listFiles = await fs.promises.readdir(run.targetBook.bookContentFolderPath);
-					if (run.version === BookVersion.v1) {
-						should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['notebook5 - 2.ipynb', 'notebook5.ipynb', 'sectionC']), 'Should modify the name of the file');
-					} else {
-						should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['_config.yml', '_toc.yml', 'notebook5 - 2.ipynb', 'notebook5.ipynb', 'sectionC']), 'Should modify the name of the file');
-					}
+					should(JSON.stringify(listFiles).includes('notebook5 - 2.ipynb')).be.true('Should rename the notebook to notebook5 - 2.ipynb');
+					should(JSON.stringify(listFiles).includes('notebook5.ipynb')).be.true('Should keep notebook5.ipynb');
 				});
 
 				it('Recovery method is called after error', async () => {
