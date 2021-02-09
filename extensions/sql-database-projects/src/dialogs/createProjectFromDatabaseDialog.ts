@@ -161,9 +161,7 @@ export class CreateProjectFromDatabaseDialog {
 		this.sourceDatabaseDropDown = view.modelBuilder.dropDown().withProperties({
 			ariaLabel: constants.databaseNameLabel,
 			required: true,
-			width: cssStyles.createProjectFromDatabaseTextboxWidth,
-			editable: true,
-			fireOnTextChange: true
+			width: cssStyles.createProjectFromDatabaseTextboxWidth
 		}).component();
 
 		this.sourceDatabaseDropDown.onValueChanged(() => {

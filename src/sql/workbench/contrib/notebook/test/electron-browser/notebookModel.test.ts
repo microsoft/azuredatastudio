@@ -44,12 +44,11 @@ let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
 		cell_type: CellTypes.Code,
 		source: ['insert into t1 values (c1, c2)'],
-		metadata: { language: 'python' },
+		metadata: { language: 'sql' },
 		execution_count: 1
 	}, {
 		cell_type: CellTypes.Markdown,
 		source: ['I am *markdown*'],
-		metadata: { language: 'python' },
 		execution_count: 1
 	}],
 	metadata: {
@@ -57,6 +56,9 @@ let expectedNotebookContent: nb.INotebookContents = {
 			name: 'mssql',
 			language: 'sql',
 			display_name: 'SQL'
+		},
+		language_info: {
+			name: 'sql'
 		}
 	},
 	nbformat: 4,
@@ -544,6 +546,34 @@ suite('notebook model', function (): void {
 		assert.equal(notebookContentChange.changeType, NotebookChangeType.CellMetadataUpdated, 'notebookContentChange changeType should indicate ');
 	});
 
+	test('Should set cell language correctly after cell type conversion', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		let newCell: ICellModel;
+		model.onCellTypeChanged(c => newCell = c);
+
+		let firstCell = model.cells[0];
+		let secondCell = model.cells[1];
+
+		assert.equal(firstCell.cellType, CellTypes.Code, 'Initial cell type for first cell should be code');
+		assert.equal(firstCell.language, 'sql', 'Initial language should be sql for first cell');
+
+		model.convertCellType(firstCell);
+		assert.equal(firstCell.cellType, CellTypes.Markdown, 'Failed to convert cell type after conversion');
+		assert.equal(firstCell.language, 'markdown', 'Language should be markdown for text cells');
+		assert.deepEqual(newCell, firstCell);
+
+		model.convertCellType(secondCell);
+		assert.equal(secondCell.cellType, CellTypes.Code, 'Failed to convert second cell type');
+		assert.equal(secondCell.language, 'sql', 'Language should be sql again for second cell');
+		assert.deepEqual(newCell, secondCell);
+	});
+
 	test('Should load contents but then go to error state if client session startup fails', async function (): Promise<void> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContentOneCell));
@@ -797,6 +827,42 @@ suite('notebook model', function (): void {
 
 		// I expect the connection profile matching the saved connection name to be used
 		assert.ok(spy.calledWith(connectionName, expectedConnectionProfile));
+	});
+
+	test('should read and write multi_connection_mode to notebook metadata correctly', async function () {
+		// Given a notebook with multi_connection_mode: true in metadata
+		let notebook: nb.INotebookContents = {
+			cells: [],
+			metadata: {
+				multi_connection_mode: true
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(notebook));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		// I expect multiConnectionMode to be set to true
+		assert.equal(model.multiConnectionMode, true, 'multi_connection_mode not read correctly from notebook metadata');
+
+		// When I change multiConnectionMode to false
+		model.multiConnectionMode = false;
+
+		// I expect multi_connection_mode to not be in the notebook metadata
+		let output: nb.INotebookContents = model.toJSON();
+		assert.equal(output.metadata['multi_connection_mode'], undefined, 'multi_connection_mode saved in notebook metadata when it should not be');
+
+		// When I change multiConnectionMode to true
+		model.multiConnectionMode = true;
+
+		// I expect multi_connection_mode to be in the notebook metadata
+		output = model.toJSON();
+		assert.equal(output.metadata['multi_connection_mode'], true, 'multi_connection_mode not saved correctly to notebook metadata');
 	});
 
 	async function loadModelAndStartClientSession(): Promise<NotebookModel> {

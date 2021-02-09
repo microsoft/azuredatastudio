@@ -19,7 +19,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { RowDetailView, ExtendedItem } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import {
 	IAssessmentComponent,
@@ -46,6 +45,7 @@ import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 import { LocalizedStrings } from 'sql/workbench/contrib/assessment/common/strings';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 export const ASMTRESULTSVIEW_SELECTOR: string = 'asmt-results-view-component';
 export const ROW_HEIGHT: number = 25;

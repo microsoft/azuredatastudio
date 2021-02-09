@@ -14,18 +14,19 @@
 		"textLinkActiveForeground": "#3062d6",
 
 		//Button control
-		"button.background": "#007ACC",
-		"button.foreground": "#ffffff",
-		"button.hoverBackground": "#0078d7",
+		"button.background": "#0078D4",
+		"button.foreground": "#FFFFFF",
+		"button.hoverBackground": "#106EBE",
+		"button.border": "#0078D4",
 
-		// TODO add support for these
-		"button.secondaryBackground": "#ffffff",
-		"button.secondaryHoverBackground": "#ffffff",
+		"button.secondaryBackground": "#FFFFFF",
+		"button.secondaryHoverBackground": "#F3F2F1",
 		"button.secondaryForeground": "#323130",
-		"button.secondaryHoverForeground": "#0078D4",
+		"button.secondaryBorder": "#8A8886",
 
 		"button.disabledBackground": "#F3F2F1",
 		"button.disabledForeground": "#A19F9D",
+		"button.disabledBorder": "#F3F2F1",
 
 
 		//Checkbox

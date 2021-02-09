@@ -59,8 +59,6 @@ suite('SQL Drag And Drop Controller tests', () => {
 		let instantiationService = new TestInstantiationService();
 		instantiationService.stub(IStorageService, new TestStorageService());
 		let mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
-			undefined, //connection store
-			undefined, // connectionstatusmanager
 			undefined, // connectiondialog service
 			instantiationService, // instantiation service
 			undefined, // editor service

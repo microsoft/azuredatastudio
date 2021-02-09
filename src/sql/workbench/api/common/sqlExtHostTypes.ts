@@ -183,7 +183,8 @@ export enum ModelComponentTypes {
 
 export enum ModelViewAction {
 	SelectTab = 'selectTab',
-	AppendData = 'appendData'
+	AppendData = 'appendData',
+	Filter = 'filter'
 }
 
 export enum ColumnSizingMode {
@@ -271,6 +272,7 @@ export interface IModelViewButtonDetails {
 	hidden: boolean;
 	focused?: boolean;
 	position?: 'left' | 'right';
+	secondary?: boolean;
 }
 
 export interface IModelViewWizardPageDetails {

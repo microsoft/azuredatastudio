@@ -6,7 +6,6 @@
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -20,6 +19,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 export class WebViewDialog extends Modal {
 

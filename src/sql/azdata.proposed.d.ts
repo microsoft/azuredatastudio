@@ -75,6 +75,7 @@ declare module 'azdata' {
 
 		export interface INotebookMetadata {
 			connection_name?: string;
+			multi_connection_mode?: boolean;
 		}
 
 		export interface ICellMetadata {
@@ -300,6 +301,11 @@ declare module 'azdata' {
 
 	export interface DeclarativeTableComponent extends Component, DeclarativeTableProperties {
 		onRowSelected: vscode.Event<DeclarativeTableRowSelectedEvent>;
+		/**
+		 * Sets the filter currently applied to this table - only rows with index in the given array will be visible. undefined
+		 * will clear the filter
+		 */
+		setFilter(rowIndexes: number[] | undefined): void;
 	}
 
 	/*
@@ -702,6 +708,13 @@ declare module 'azdata' {
 		 * @param pageName The optional page name parameter will be used for telemetry
 		 */
 		export function createWizardPage(title: string, pageName?: string): WizardPage;
+
+		export interface Button {
+			/**
+			 * Specifies whether this is a secondary button. Default is false.
+			 */
+			secondary?: boolean;
+		}
 	}
 
 	export namespace workspace {
@@ -847,6 +860,10 @@ declare module 'azdata' {
 		* Description text to display inside button element.
 		*/
 		description?: string;
+		/**
+		 * Specifies whether this is a secondary button. Default value is false.
+		 */
+		secondary?: boolean;
 	}
 
 	export enum ButtonType {

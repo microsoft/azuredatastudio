@@ -196,29 +196,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			ignoreErrors: boolean): Promise<azurecore.GetFileSharesResult> {
 			return azureResourceUtils.getFileShares(account, subscription, storageAccount, ignoreErrors);
 		},
-		getMigrationController(account: azdata.Account,
+		makeAzureRestRequest(account: azdata.Account,
 			subscription: azureResource.AzureResourceSubscription,
-			resourceGroupName: string,
-			regionName: string,
-			controllerName: string,
-			ignoreErrors: boolean): Promise<azurecore.GetMigrationControllerResult> {
-			return azureResourceUtils.getMigrationControllers(account, subscription, resourceGroupName, regionName, controllerName, ignoreErrors);
-		},
-		createMigrationController(account: azdata.Account,
-			subscription: azureResource.AzureResourceSubscription,
-			resourceGroupName: string,
-			regionName: string,
-			controllerName: string,
-			ignoreErrors: boolean): Promise<azurecore.CreateMigrationControllerResult> {
-			return azureResourceUtils.createMigrationController(account, subscription, resourceGroupName, regionName, controllerName, ignoreErrors);
-		},
-		getMigrationControllerAuthKeys(account: azdata.Account,
-			subscription: azureResource.AzureResourceSubscription,
-			resourceGroupName: string,
-			regionName: string,
-			controllerName: string,
-			ignoreErrors: boolean): Promise<azurecore.GetMigrationControllerAuthKeysResult> {
-			return azureResourceUtils.getMigrationControllerAuthKeys(account, subscription, resourceGroupName, regionName, controllerName, ignoreErrors);
+			path: string,
+			requestType: azurecore.HttpRequestMethod,
+			requestBody: any,
+			ignoreErrors: boolean,
+			host: string = 'https://management.azure.com'): Promise<azurecore.AzureRestResponse> {
+			return azureResourceUtils.makeHttpRequest(account, subscription, path, requestType, requestBody, ignoreErrors, host);
 		},
 		getRegionDisplayName: utils.getRegionDisplayName,
 		runGraphQuery<T extends azureResource.AzureGraphResource>(account: azdata.Account,

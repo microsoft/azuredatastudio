@@ -6,6 +6,11 @@
 declare module 'azdata' {
 	import * as vscode from 'vscode';
 
+	/**
+	 * The version of the application.
+	 */
+	export const version: string;
+
 	// EXPORTED NAMESPACES /////////////////////////////////////////////////
 	/**
 	 * Namespace for Data Management Protocol global methods

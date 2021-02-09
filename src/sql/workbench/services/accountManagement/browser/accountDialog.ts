@@ -10,7 +10,7 @@ import { List } from 'vs/base/browser/ui/list/listWidget';
 import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachButtonStyler, attachListStyler } from 'vs/platform/theme/common/styler';
 import { IAction } from 'vs/base/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -23,7 +23,6 @@ import * as azdata from 'azdata';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel';
 import { AddAccountAction } from 'sql/platform/accounts/common/accountActions';
 import { AccountListRenderer, AccountListDelegate } from 'sql/workbench/services/accountManagement/browser/accountListRenderer';
