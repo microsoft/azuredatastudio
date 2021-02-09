@@ -367,16 +367,20 @@ export class PostgresParametersPage extends DashboardPage {
 	@debounce(500)
 	private onSearchFilter(): void {
 		if (!this.searchBox!.value) {
-			this.parametersTable.data = this._parameters.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
+			this.parametersTable.setFilter(undefined);
 		} else {
 			this.filterParameters(this.searchBox!.value);
 		}
 	}
 
 	private filterParameters(search: string): void {
-		this.parametersTable.data = this._parameters
-			.filter(p => p.parameterName?.search(search) !== -1 || p.description?.search(search) !== -1)
-			.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
+		const filteredRowIndexes: number[] = [];
+		this.parametersTable.data?.forEach((row, index) => {
+			if (row[0]?.search(search) !== -1 || row[2]?.search(search) !== -1) {
+				filteredRowIndexes.push(index);
+			}
+		});
+		this.parametersTable.setFilter(filteredRowIndexes);
 	}
 
 	private handleOnTextChanged(component: azdata.InputBoxComponent, currentValue: string | undefined): boolean {

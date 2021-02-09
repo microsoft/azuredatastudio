@@ -28,7 +28,8 @@ export enum ComponentEventType {
  */
 export enum ModelViewAction {
 	SelectTab = 'selectTab',
-	AppendData = 'appendData'
+	AppendData = 'appendData',
+	Filter = 'filter'
 }
 
 /**
