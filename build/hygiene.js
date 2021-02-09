@@ -24,7 +24,6 @@ const pall = require('p-all');
 
 const all = [
 	'*',
-	'build/**/*',
 	'extensions/**/*',
 	'scripts/**/*',
 	'src/**/*',
