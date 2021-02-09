@@ -43,8 +43,8 @@ export class CreateBookDialog {
 		});
 		if (uris && uris.length > 0) {
 			let pickedFolder = uris[0];
-			let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(this.groupNameInputBox.value)));
-			if (destinationUri) {
+			//let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(this.groupNameInputBox.value)));
+			if (pickedFolder.fsPath) {
 				// if (await pathExists(destinationUri.fsPath)) {
 				// 	let doReplace = await this.confirmReplace();
 				// 	if (!doReplace) {
@@ -55,7 +55,7 @@ export class CreateBookDialog {
 				// 		await remove(destinationUri.fsPath);
 				// 	}
 				// }
-				return destinationUri.fsPath;
+				return pickedFolder.fsPath;
 			}
 		}
 		return undefined;
