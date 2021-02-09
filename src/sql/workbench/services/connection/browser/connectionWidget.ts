@@ -35,6 +35,7 @@ import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 export enum AuthenticationType {
 	SqlLogin = 'SqlLogin',
@@ -329,7 +330,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let cellContainer = DOM.append(rowContainer, DOM.$('td'));
 		cellContainer.setAttribute('align', 'right');
 		let divContainer = DOM.append(cellContainer, DOM.$('div.advanced-button'));
-		let button = new Button(divContainer);
+		let button = new Button(divContainer, { secondary: true });
 		button.label = title;
 		button.onDidClick(() => {
 			//open advanced page
@@ -351,7 +352,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._register(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
 		this._register(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
 		this._register(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
-		this._register(styler.attachButtonStyler(this._advancedButton, this._themeService));
+		this._register(attachButtonStyler(this._advancedButton, this._themeService));
 		this._register(styler.attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
 		this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 		if (this._serverGroupSelectBox) {

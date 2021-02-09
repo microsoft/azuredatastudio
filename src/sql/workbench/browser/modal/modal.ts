@@ -234,7 +234,7 @@ export abstract class Modal extends Disposable implements IThemable {
 				this._modalHeaderSection = DOM.append(this._modalContent, DOM.$('.modal-header'));
 				if (this._modalOptions.hasBackButton) {
 					const container = DOM.append(this._modalHeaderSection, DOM.$('.modal-go-back'));
-					this._backButton = new Button(container);
+					this._backButton = new Button(container, { secondary: true });
 					this._backButton.icon = 'backButtonIcon';
 					this._backButton.title = localize('modal.back', "Back");
 				}

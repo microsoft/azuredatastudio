@@ -868,7 +868,11 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 	input.labelComponent = label;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, input);
 	input.component.enabled = false;
-	const browseFileButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.browse, width: buttonWidth }).component();
+	const browseFileButton = context.view!.modelBuilder.button().withProps({
+		label: loc.browse,
+		width: buttonWidth,
+		secondary: true
+	}).component();
 	const fieldInfo = context.fieldInfo as FilePickerFieldInfo;
 	let filter: { [name: string]: string[] } | undefined = undefined;
 	if (fieldInfo.filter) {
@@ -1163,8 +1167,8 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAcc
 	accountDropdown.component.fireOnTextChange = true;
 	accountDropdown.labelComponent = label;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, accountDropdown);
-	const signInButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.signIn, width: '100px' }).component();
-	const refreshButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.refresh, width: '100px' }).component();
+	const signInButton = context.view!.modelBuilder.button().withProps({ label: loc.signIn, width: '100px', secondary: true }).component();
+	const refreshButton = context.view!.modelBuilder.button().withProps({ label: loc.refresh, width: '100px', secondary: true }).component();
 	addLabelInputPairToContainer(context.view, context.components, label, accountDropdown.component, context.fieldInfo);
 
 	const buttons = createFlexContainer(context.view!, [signInButton, refreshButton], true, undefined, undefined, undefined, { 'margin-right': '10px' });

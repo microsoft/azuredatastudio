@@ -106,6 +106,7 @@ export class DialogButton implements azdata.window.Button {
 	private _hidden: boolean;
 	private _focused: boolean | undefined;
 	private _position?: azdata.window.DialogButtonPosition;
+	private _secondary: boolean | undefined;
 	private _onClick: Emitter<void> = new Emitter<void>();
 	public readonly onClick: Event<void> = this._onClick.event;
 	private _onUpdate: Emitter<void> = new Emitter<void>();
@@ -160,6 +161,14 @@ export class DialogButton implements azdata.window.Button {
 	public set position(value: azdata.window.DialogButtonPosition | undefined) {
 		this._position = value;
 		this._onUpdate.fire();
+	}
+
+	public get secondary(): boolean | undefined {
+		return this._secondary;
+	}
+
+	public set secondary(value: boolean | undefined) {
+		this._secondary = value;
 	}
 
 	/**

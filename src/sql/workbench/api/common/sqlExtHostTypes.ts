@@ -277,6 +277,7 @@ export interface IModelViewButtonDetails {
 	hidden: boolean;
 	focused?: boolean;
 	position?: 'left' | 'right';
+	secondary?: boolean;
 }
 
 export interface IModelViewWizardPageDetails {

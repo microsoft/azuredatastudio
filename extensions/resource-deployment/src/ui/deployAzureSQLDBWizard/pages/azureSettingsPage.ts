@@ -168,11 +168,13 @@ export class AzureSettingsPage extends BasePage {
 
 		this.signInButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: localizedConstants.signIn,
-			width: '100px'
+			width: '100px',
+			secondary: true
 		}).component();
 		this.refreshButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: localizedConstants.refresh,
-			width: '100px'
+			width: '100px',
+			secondary: true
 		}).component();
 
 		this.signInButton.onDidClick(async (event) => {

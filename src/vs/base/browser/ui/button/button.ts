@@ -28,6 +28,11 @@ export interface IButtonStyles {
 	buttonSecondaryHoverBackground?: Color;
 	buttonSecondaryForeground?: Color;
 	buttonBorder?: Color;
+	// {{SQL CARBON EDIT}}
+	buttonSecondaryBorder?: Color;
+	buttonDisabledBackground?: Color;
+	buttonDisabledForeground?: Color;
+	buttonDisabledBorder?: Color;
 }
 
 const defaultOptions: IButtonStyles = {
@@ -48,6 +53,13 @@ export class Button extends Disposable {
 	private buttonSecondaryHoverBackground: Color | undefined;
 	private buttonSecondaryForeground: Color | undefined;
 	private buttonBorder: Color | undefined;
+	// {{SQL CARBON EDIT}}
+	private buttonSecondaryBorder: Color | undefined;
+	private buttonDisabledBackground: Color | undefined;
+	private buttonDisabledForeground: Color | undefined;
+	private buttonDisabledBorder: Color | undefined;
+	private hasIcon: boolean = false;
+	// {{SQL CARBON EDIT}} - END
 
 	private _onDidClick = this._register(new Emitter<Event>());
 	get onDidClick(): BaseEvent<Event> { return this._onDidClick.event; }
@@ -69,6 +81,12 @@ export class Button extends Disposable {
 		this.buttonSecondaryHoverBackground = this.options.buttonSecondaryHoverBackground;
 
 		this.buttonBorder = this.options.buttonBorder;
+		// {{SQL CARBON EDIT}}
+		this.buttonSecondaryBorder = this.options.buttonSecondaryBorder;
+		this.buttonDisabledBackground = this.options.buttonDisabledBackground;
+		this.buttonDisabledForeground = this.options.buttonDisabledForeground;
+		this.buttonDisabledBorder = this.options.buttonDisabledBorder;
+
 
 		this._element = document.createElement('a');
 		this._element.classList.add('monaco-button');
@@ -125,6 +143,10 @@ export class Button extends Disposable {
 	}
 
 	private setHoverBackground(): void {
+		// {{SQL CARBON EDIT}} - skip if this is an icon button
+		if (this.hasIcon) {
+			return;
+		}
 		let hoverBackground;
 		if (this.options.secondary) {
 			hoverBackground = this.buttonSecondaryHoverBackground ? this.buttonSecondaryHoverBackground.toString() : null;
@@ -145,9 +167,15 @@ export class Button extends Disposable {
 		this.buttonSecondaryHoverBackground = styles.buttonSecondaryHoverBackground;
 		this.buttonBorder = styles.buttonBorder;
 
+		this.buttonSecondaryBorder = styles.buttonSecondaryBorder;
+		this.buttonDisabledBackground = styles.buttonDisabledBackground;
+		this.buttonDisabledForeground = styles.buttonDisabledForeground;
+		this.buttonDisabledBorder = styles.buttonDisabledBorder;
+
 		this.applyStyles();
 	}
 
+	/**
 	// {{SQL CARBON EDIT}} -- removed 'private' access modifier @todo anthonydresser 4/12/19 things needs investigation whether we need this
 	applyStyles(): void {
 		if (this._element) {
@@ -170,6 +198,49 @@ export class Button extends Disposable {
 			this._element.style.borderColor = border;
 		}
 	}
+	*/
+
+	// {{SQL CARBON EDIT}} - custom applyStyles
+	applyStyles(): void {
+		if (this._element) {
+			let background, foreground, border, fontWeight, fontSize;
+			if (this.hasIcon) {
+				background = border = 'transparent';
+				foreground = this.buttonSecondaryForeground;
+				fontWeight = fontSize = 'inherit';
+			} else {
+				if (this.enabled) {
+					if (this.options.secondary) {
+						foreground = this.buttonSecondaryForeground ? this.buttonSecondaryForeground.toString() : '';
+						background = this.buttonSecondaryBackground ? this.buttonSecondaryBackground.toString() : '';
+						border = this.buttonSecondaryBorder ? this.buttonSecondaryBorder.toString() : '';
+					} else {
+						foreground = this.buttonForeground ? this.buttonForeground.toString() : '';
+						background = this.buttonBackground ? this.buttonBackground.toString() : '';
+						border = this.buttonBorder ? this.buttonBorder.toString() : '';
+					}
+				}
+				else {
+					foreground = this.buttonDisabledForeground;
+					background = this.buttonDisabledBackground;
+					border = this.buttonDisabledBorder;
+				}
+				fontWeight = '600';
+				fontSize = '12px';
+			}
+
+			this._element.style.color = foreground;
+			this._element.style.backgroundColor = background;
+			this._element.style.borderWidth = border ? '1px' : '';
+			this._element.style.borderStyle = border ? 'solid' : '';
+			this._element.style.borderColor = border;
+			this._element.style.opacity = this.hasIcon ? '' : '1';
+			this._element.style.fontWeight = fontWeight;
+			this._element.style.fontSize = fontSize;
+			this._element.style.borderRadius = '2px';
+		}
+	}
+	// {{SQL CARBON EDIT}} - end custom applyStyles
 
 	get element(): HTMLElement {
 		return this._element;
@@ -192,7 +263,9 @@ export class Button extends Disposable {
 
 	// {{SQL CARBON EDIT}}
 	set icon(iconClassName: string) {
+		this.hasIcon = iconClassName !== '';
 		this._element.classList.add(...iconClassName.split(' '));
+		this.applyStyles();
 	}
 
 	set enabled(value: boolean) {
@@ -205,6 +278,7 @@ export class Button extends Disposable {
 			this._element.setAttribute('aria-disabled', String(true));
 			removeTabIndexAndUpdateFocus(this._element);
 		}
+		this.applyStyles(); // {{SQL CARBON EDIT}}
 	}
 
 	get enabled() {

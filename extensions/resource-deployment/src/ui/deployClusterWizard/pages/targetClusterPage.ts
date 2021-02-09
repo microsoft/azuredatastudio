@@ -87,7 +87,7 @@ export class TargetClusterContextPage extends ResourceTypePage {
 		configFileLabel.width = labelWidth;
 		this.configFileInput = this.view!.modelBuilder.inputBox().withProperties({ width: '300px' }).component();
 		this.configFileInput.enabled = false;
-		this.browseFileButton = this.view!.modelBuilder.button().withProperties({ label: localize('deployCluster.browseText', "Browse"), width: '100px' }).component();
+		this.browseFileButton = this.view!.modelBuilder.button().withProperties({ label: localize('deployCluster.browseText', "Browse"), width: '100px', secondary: true }).component();
 		let configFileContainer = this.view!.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
 			.withItems([configFileLabel, this.configFileInput, this.browseFileButton], { CSSStyles: { 'margin-right': '10px' } }).component();
