@@ -13,7 +13,8 @@
   },
   "activationEvents": [
     "onCommand:sqlmigration.start",
-    "onCommand:sqlmigration.testDialog"
+    "onCommand:sqlmigration.testDialog",
+    "onCommand:sqlmigration.openNotebooks"
   ],
   "main": "./out/main",
   "repository": {
@@ -33,6 +34,11 @@
       {
         "command": "sqlmigration.testDialog",
         "title": "SQL Migration test dialog",
+        "category": "SQL Migration"
+      },
+      {
+        "command": "sqlmigration.openNotebooks",
+        "title": "%migration-notebook-command-title%",
         "category": "SQL Migration"
       }
     ]

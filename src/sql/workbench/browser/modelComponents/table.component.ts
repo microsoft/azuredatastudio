@@ -15,7 +15,7 @@ import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBa
 
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { attachTableStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension, isAncestor } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
@@ -34,6 +34,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { TableCellClickEventArgs } from 'sql/base/browser/ui/table/plugins/tableColumn';
 import { HyperlinkCellValue, HyperlinkColumn } from 'sql/base/browser/ui/table/plugins/hyperlinkColumn.plugin';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -55,7 +56,7 @@ type TableCellDataType = string | CssIconCellValue | ButtonCellValue | Hyperlink
 @Component({
 	selector: 'modelview-table',
 	template: `
-		<div #table style="height:100%;" [style.font-size]="fontSize" [style.width]="width"></div>
+		<div #table [ngStyle]="CSSStyles"></div>
 	`
 })
 export default class TableComponent extends ComponentBase<azdata.TableComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
@@ -620,5 +621,13 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			}
 			this._table.grid.getActiveCellNode().focus();
 		}
+	}
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth(),
+			'height': '100%',
+			'font-size': this.fontSize
+		});
 	}
 }

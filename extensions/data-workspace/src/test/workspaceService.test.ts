@@ -10,10 +10,10 @@ import * as sinon from 'sinon';
 import * as should from 'should';
 import * as path from 'path';
 import * as TypeMoq from 'typemoq';
+import * as constants from '../common/constants';
 import { WorkspaceService } from '../services/workspaceService';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import { createProjectProvider } from './projectProviderRegistry.test';
-import { ProjectAlreadyOpened } from '../common/constants';
 
 const DefaultWorkspaceFilePath = '/test/folder/ws.code-workspace';
 
@@ -227,7 +227,7 @@ suite('WorkspaceService Tests', function (): void {
 		should.strictEqual(updateConfigurationStub.calledOnce, true, 'update configuration should have been called once');
 		should.strictEqual(updateWorkspaceFoldersStub.calledOnce, true, 'updateWorkspaceFolders should have been called once');
 		should.strictEqual(showInformationMessageStub.calledOnce, true, 'showInformationMessage should be called once');
-		should(showInformationMessageStub.calledWith(ProjectAlreadyOpened(processPath('/test/folder/folder1/proj2.sqlproj')))).be.true(`showInformationMessage not called with expected message '${ProjectAlreadyOpened(processPath('/test/folder/folder1/proj2.sqlproj'))}' Actual '${showInformationMessageStub.getCall(0).args[0]}'`);
+		should(showInformationMessageStub.calledWith(constants.ProjectAlreadyOpened(processPath('/test/folder/folder1/proj2.sqlproj')))).be.true(`showInformationMessage not called with expected message '${constants.ProjectAlreadyOpened(processPath('/test/folder/folder1/proj2.sqlproj'))}' Actual '${showInformationMessageStub.getCall(0).args[0]}'`);
 		should.strictEqual(updateConfigurationStub.calledWith('projects', sinon.match.array.deepEquals([
 			processPath('folder1/proj2.sqlproj'),
 			processPath('proj1.sqlproj'),
@@ -299,4 +299,30 @@ suite('WorkspaceService Tests', function (): void {
 		onWorkspaceProjectsChangedDisposable.dispose();
 	});
 
+	test('test checkForProjectsNotAddedToWorkspace', async () => {
+		const previousSetting = await vscode.workspace.getConfiguration(constants.projectsConfigurationKey)[constants.showNotAddedProjectsMessageKey];
+		await vscode.workspace.getConfiguration(constants.projectsConfigurationKey).update(constants.showNotAddedProjectsMessageKey, true, true);
+
+		sinon.stub(service, 'getProjectsInWorkspace').returns([vscode.Uri.file('abc.sqlproj'), vscode.Uri.file('folder1/abc1.sqlproj')]);
+		sinon.stub(vscode.workspace, 'workspaceFolders').value([{uri: vscode.Uri.file('.')}]);
+		sinon.stub(service, 'getAllProjectTypes').resolves([{
+			projectFileExtension: 'sqlproj',
+			id: 'sql project',
+			displayName: 'sql project',
+			description: '',
+			icon: ''
+		}]);
+		const infoMessageStub = sinon.stub(vscode.window, 'showInformationMessage').resolves(<any>constants.DoNotShowAgain);
+		const getProjectsInwWorkspaceFolderStub = sinon.stub(service, 'getAllProjectsInWorkspaceFolder').resolves([vscode.Uri.file('abc.sqlproj').fsPath, vscode.Uri.file('folder1/abc1.sqlproj').fsPath]);
+
+		await service.checkForProjectsNotAddedToWorkspace();
+		should(infoMessageStub.notCalled).be.true('Should not have found projects not added to workspace');
+
+		// add a project to the workspace folder not added to the workspace yet
+		getProjectsInwWorkspaceFolderStub.resolves([vscode.Uri.file('abc.sqlproj').fsPath, vscode.Uri.file('folder1/abc1.sqlproj').fsPath, vscode.Uri.file('folder2/abc2.sqlproj').fsPath]);
+		await service.checkForProjectsNotAddedToWorkspace();
+		should(infoMessageStub.calledOnce).be.true('Should have found a project that was not added to the workspace');
+
+		await vscode.workspace.getConfiguration(constants.projectsConfigurationKey).update(constants.showNotAddedProjectsMessageKey, previousSetting, true);
+	});
 });

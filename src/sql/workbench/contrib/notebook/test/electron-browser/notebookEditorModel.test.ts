@@ -77,8 +77,6 @@ suite('Notebook Editor Model', function (): void {
 	testinstantiationService.stub(IStorageService, new TestStorageService());
 	testinstantiationService.stub(IProductService, { quality: 'stable' });
 	const queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose,
-		undefined, // connection store
-		undefined, // connection status manager
 		undefined, // connection dialog service
 		testinstantiationService, // instantiation service
 		undefined, // editor service

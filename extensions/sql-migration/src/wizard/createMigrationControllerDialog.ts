@@ -327,6 +327,7 @@ export class CreateMigrationControllerDialog {
 
 		const refreshButton = this._view.modelBuilder.button().withProps({
 			label: constants.REFRESH,
+			secondary: true
 		}).component();
 
 		const refreshLoadingIndicator = this._view.modelBuilder.loadingComponent().withProps({
@@ -383,7 +384,8 @@ export class CreateMigrationControllerDialog {
 			CSSStyles: {
 				'margin-top': '10px'
 			},
-			width: '100px'
+			width: '100px',
+			secondary: true
 		}).component();
 
 		refreshKeyButton.onDidClick(async (e) => {
@@ -418,7 +420,7 @@ export class CreateMigrationControllerDialog {
 		const region = (this.migrationControllerRegionDropdown.value as azdata.CategoryValue).name;
 		const controllerStatus = await getMigrationController(this.migrationStateModel.azureAccount, subscription, resourceGroup, region, this.migrationStateModel.migrationController!.name);
 		if (controllerStatus) {
-			const state = controllerStatus.properties.integrationRunTimeState;
+			const state = controllerStatus.properties.integrationRuntimeState;
 
 			if (state === 'Online') {
 				this._connectionStatus.value = constants.CONTRLLER_READY(this.migrationStateModel.migrationController!.name, os.hostname());
@@ -437,7 +439,8 @@ export class CreateMigrationControllerDialog {
 		const keys = await getMigrationControllerAuthKeys(this.migrationStateModel.azureAccount, subscription, resourceGroup, region, this.migrationStateModel.migrationController!.name);
 
 		this._copyKey1Button = this._view.modelBuilder.button().withProps({
-			label: constants.COPY_KEY
+			label: constants.COPY_KEY,
+			secondary: true
 		}).component();
 
 		this._copyKey1Button.onDidClick((e) => {
@@ -446,7 +449,8 @@ export class CreateMigrationControllerDialog {
 		});
 
 		this._copyKey2Button = this._view.modelBuilder.button().withProps({
-			label: constants.COPY_KEY
+			label: constants.COPY_KEY,
+			secondary: true
 		}).component();
 
 		this._copyKey2Button.onDidClick((e) => {

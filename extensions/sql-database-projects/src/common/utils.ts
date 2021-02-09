@@ -261,7 +261,7 @@ export interface IPackageInfo {
 	aiKey: string;
 }
 
-export function GetPackageInfo(packageJson?: any): IPackageInfo | undefined {
+export function getPackageInfo(packageJson?: any): IPackageInfo | undefined {
 	if (!packageJson) {
 		packageJson = require('../../package.json');
 	}

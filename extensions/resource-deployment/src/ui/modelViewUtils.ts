@@ -10,7 +10,7 @@ import * as path from 'path';
 import { IOptionsSourceProvider } from 'resource-deployment';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { getDateTimeString, getErrorMessage, throwUnless } from '../common/utils';
+import { getDateTimeString, getErrorMessage, isUserCancelledError, throwUnless } from '../common/utils';
 import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, instanceOfDynamicEnablementInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
@@ -667,12 +667,16 @@ async function configureOptionsSourceSubfields(context: FieldContext, optionsSou
 			try {
 				return await optionsSourceProvider.getVariableValue!(variableKey, value);
 			} catch (e) {
-				disableControlButtons(context.container);
-				context.container.message = {
-					text: getErrorMessage(e),
-					description: '',
-					level: azdata.window.MessageLevel.Error
-				};
+				if (!isUserCancelledError(e)) {
+					// User cancelled is a normal scenario so we shouldn't disable anything in that case
+					// so that the user can retry if they want to
+					disableControlButtons(context.container);
+					context.container.message = {
+						text: getErrorMessage(e),
+						description: '',
+						level: azdata.window.MessageLevel.Error
+					};
+				}
 				throw e;
 			}
 		},
@@ -864,7 +868,11 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 	input.labelComponent = label;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, input);
 	input.component.enabled = false;
-	const browseFileButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.browse, width: buttonWidth }).component();
+	const browseFileButton = context.view!.modelBuilder.button().withProps({
+		label: loc.browse,
+		width: buttonWidth,
+		secondary: true
+	}).component();
 	const fieldInfo = context.fieldInfo as FilePickerFieldInfo;
 	let filter: { [name: string]: string[] } | undefined = undefined;
 	if (fieldInfo.filter) {
@@ -1159,8 +1167,8 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAcc
 	accountDropdown.component.fireOnTextChange = true;
 	accountDropdown.labelComponent = label;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, accountDropdown);
-	const signInButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.signIn, width: '100px' }).component();
-	const refreshButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.refresh, width: '100px' }).component();
+	const signInButton = context.view!.modelBuilder.button().withProps({ label: loc.signIn, width: '100px', secondary: true }).component();
+	const refreshButton = context.view!.modelBuilder.button().withProps({ label: loc.refresh, width: '100px', secondary: true }).component();
 	addLabelInputPairToContainer(context.view, context.components, label, accountDropdown.component, context.fieldInfo);
 
 	const buttons = createFlexContainer(context.view!, [signInButton, refreshButton], true, undefined, undefined, undefined, { 'margin-right': '10px' });

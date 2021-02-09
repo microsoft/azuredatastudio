@@ -864,7 +864,7 @@ export class IssueReporter extends Disposable {
 			}
 		}
 
-		const queryStringPrefix = this.configuration.product.reportIssueUrl && this.configuration.product.reportIssueUrl.indexOf('?') === -1 ? '?' : '&';
+		const queryStringPrefix = repositoryUrl && repositoryUrl.indexOf('?') === -1 ? '?' : '&'; // {{ SQL CARBON EDIT }}
 		return `${repositoryUrl}${queryStringPrefix}title=${encodeURIComponent(issueTitle)}`;
 	}
 

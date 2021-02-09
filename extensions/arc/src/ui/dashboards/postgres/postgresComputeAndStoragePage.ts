@@ -341,8 +341,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		const information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			iconPath: IconPathHelper.information,
 			title: loc.workerNodesInformation,
-			width: '12px',
-			height: '12px',
+			width: '15px',
+			height: '15px',
 			enabled: false
 		}).component();
 
@@ -434,8 +434,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		const information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			iconPath: IconPathHelper.information,
 			title: loc.postgresConfigurationInformation,
-			width: '12px',
-			height: '12px',
+			width: '15px',
+			height: '15px',
 			enabled: false
 		}).component();
 

@@ -8,13 +8,6 @@
 - title: Search
   search: true
 
-- title: ADP
-  url: /ADP/readme
-  not_numbered: true
-  expand_sections: false
-  sections:
-  - title: ADP Control
-    url: ADP/ADPControl
 - title: Assessment
   url: /Assessments/readme
   not_numbered: true
@@ -64,6 +57,8 @@
   sections:
   - title: Backup Database to Blob Storage
     url: hadr/backup-to-blob
+  - title: Create Failover Cluster
+    url: hadr/configure-failover
 - title: Offline Migration
   url: /offline-migration/readme
   not_numbered: true

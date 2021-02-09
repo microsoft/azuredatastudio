@@ -32,6 +32,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		const createNewController = view.modelBuilder.button().withProps({
 			label: constants.NEW,
 			width: '100px',
+			secondary: true
 		}).component();
 
 		createNewController.onDidClick((e) => {
@@ -53,7 +54,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		this.startSetupButton = view.modelBuilder.button().withProps({
 			label: constants.CREATE,
-			width: '100px'
+			width: '100px',
+			secondary: true
 		}).component();
 
 		this.startSetupButton.onDidClick((e) => {
@@ -68,7 +70,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		this.cancelSetupButton = view.modelBuilder.button().withProps({
 			label: constants.CANCEL,
-			width: '100px'
+			width: '100px',
+			secondary: true
 		}).component();
 
 		this.cancelSetupButton.onDidClick((e) => {

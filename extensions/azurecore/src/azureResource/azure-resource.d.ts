@@ -83,26 +83,5 @@ declare module 'azureResource' {
 		export interface BlobContainer extends AzureResource { }
 
 		export interface FileShare extends AzureResource { }
-
-		export interface MigrationControllerProperties {
-			name: string;
-			subscriptionId: string;
-			resourceGroup: string;
-			location: string;
-			provisioningState: string;
-			integrationRunTimeState?: string;
-			isProvisioned?: boolean;
-		}
-
-		export interface MigrationController {
-			properties: MigrationControllerProperties;
-			location: string;
-			id: string;
-			name: string;
-			error: {
-				code: string,
-				message: string
-			}
-		}
 	}
 }
