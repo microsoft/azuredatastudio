@@ -35,7 +35,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _subscriptionDropdownValues: azdata.CategoryValue[] = [];
 	private _subscriptionMap: Map<string, Subscription> = new Map();
 	private view: azdata.ModelView | undefined;
-	private assessmentLink!: azdata.HyperlinkComponent;
 
 	private async initialState(view: azdata.ModelView) {
 		this.igComponent = this.createStatusComponent(view); // The first component giving basic information

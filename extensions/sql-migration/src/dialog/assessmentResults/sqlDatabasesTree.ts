@@ -15,9 +15,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 	private instanceTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
 	private databaseTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
-	private _databaseTableRow!: number;
 	private _assessmentResultsTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
-	private _assessmentResultsTableRow!: number;
 	private _impactedObjectsTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
 	private _assessmentData: Map<string, Issues[]>;
 
@@ -60,7 +58,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		let mapRowIssue = new Map<number, DbIssues>();
 		const styleLeft: azdata.CssStyles = {
 			'border': 'none',
-			'text-align': 'left !important'
+			'text-align': 'left'
 		};
 		const styleRight: azdata.CssStyles = {
 			'border': 'none',
@@ -70,7 +68,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		this.databaseTable = view.modelBuilder.declarativeTable().withProps(
 			{
 				selectEffect: true,
-				width: '100%',
+				width: '200px',
 				columns: [
 					{
 						displayName: '',
@@ -134,9 +132,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		}
 
 		this.databaseTable.component().onRowSelected(({ row }) => {
-			this._databaseTableRow = row; //TODO: Put data for each row so it can be displayed as each DB entry is selected
 			// deselect instance table
-			//TODO: change values here
 			const rowInfo = mapRowIssue.get(row);
 			if (rowInfo) {
 				this._assessmentResultsTable.component().dataValues = [];
@@ -580,13 +576,20 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		};
 		const rowStyle: azdata.CssStyles = {
 			'border': 'none',
-			'text-align': 'left'
+			'text-align': 'left',
+			'white-space': 'nowrap',
+			'text-overflow': 'ellipsis',
+			'width': '200px',
+			'overflow': 'hidden'
 		};
 
 		this._assessmentResultsTable = view.modelBuilder.declarativeTable().withProps(
 			{
 				selectEffect: true,
-				width: '100%',
+				width: '200px',
+				CSSStyles: {
+					'table-layout': 'fixed'
+				},
 				columns: [
 					{
 						displayName: '', // TODO localize
@@ -614,7 +617,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 		this._assessmentResultsTable.component().onRowSelected(({ row }) => {
 			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected, need some kind of dictionary
-			this._assessmentResultsTableRow = row;
 			this._descriptionText.value = this._assessmentResultsTable.component().data![row][0];
 
 			if (this._dbName.value) {
