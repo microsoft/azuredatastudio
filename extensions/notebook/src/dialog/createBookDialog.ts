@@ -62,9 +62,15 @@ export class CreateBookDialog {
 	}
 
 	public async createDialog(): Promise<void> {
-		this.dialog = azdata.window.createModelViewDialog('New group');
+		this.dialog = azdata.window.createModelViewDialog(loc.newGroup);
 		this.dialog.registerContent(async view => {
 			this.view = view;
+
+			const groupLabel = this.view.modelBuilder.text()
+				.withProperties({
+					value: loc.groupDescription,
+					CSSStyles: { 'margin-bottom': '0px', 'margin-top': '0px', 'font-size': 'small' }
+				}).component();
 
 			this.groupNameInputBox = this.view.modelBuilder.inputBox()
 				.withProperties({
@@ -76,26 +82,26 @@ export class CreateBookDialog {
 			this.locationInputBox = this.view.modelBuilder.inputBox().withProperties({
 				values: [],
 				value: '',
-				placeHolder: 'Browse locations...',
+				placeHolder: loc.locationBrowser,
 				width: '400px'
 			}).component();
 
 			this.notebooksLocationInputBox = this.view.modelBuilder.inputBox().withProperties({
 				values: [],
 				value: '',
-				placeHolder: 'Select content folder.',
+				placeHolder: loc.selectContentFolder,
 				width: '400px'
 			}).component();
 
 			const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-				ariaLabel: 'Browse',
+				ariaLabel: loc.browse,
 				iconPath: IconPathHelper.folder,
 				width: '18px',
 				height: '20px',
 			}).component();
 
 			const browseContentFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-				ariaLabel: 'Browse',
+				ariaLabel: loc.browse,
 				iconPath: IconPathHelper.folder,
 				width: '18px',
 				height: '20px',
@@ -115,17 +121,21 @@ export class CreateBookDialog {
 				.withFormItems([{
 					components: [
 						{
+							component: groupLabel,
+							required: false
+						},
+						{
 							component: this.groupNameInputBox,
-							title: 'Name',
+							title: loc.name,
 							required: true
 						},
 						{
-							title: 'Save location',
+							title: loc.saveLocation,
 							required: true,
 							component: this.createHorizontalContainer(view, [this.locationInputBox, browseFolderButton])
 						},
 						{
-							title: 'Content folder (Optional)',
+							title: loc.contentFolder,
 							required: false,
 							component: this.createHorizontalContainer(view, [this.notebooksLocationInputBox, browseContentFolderButton])
 						},
@@ -134,13 +144,13 @@ export class CreateBookDialog {
 				}]).withLayout({ width: '100%' }).component();
 			await this.view.initializeModel(this.formModel);
 		});
-		this.dialog.okButton.label = 'Create';
+		this.dialog.okButton.label = loc.create;
 		this.dialog.okButton.onClick(() => {
 			this.saveLocation = this.locationInputBox.value;
 			this.contentFolder = this.notebooksLocationInputBox.value;
 		});
 
-		this.dialog.cancelButton.label = 'Cancel';
+		this.dialog.cancelButton.label = loc.cancel;
 		this.dialog.registerCloseValidator(async () => await this.create());
 		azdata.window.openDialog(this.dialog);
 	}
