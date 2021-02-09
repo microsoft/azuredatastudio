@@ -19,6 +19,7 @@ import * as glob from 'fast-glob';
 import { debounce, getPinnedNotebooks } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
+import { CreateBookDialog } from '../dialog/createBookDialog';
 import { getContentPath } from './bookVersionHandler';
 import { TelemetryReporter, BookTelemetryView, NbTelemetryActions } from '../telemetry';
 
@@ -142,10 +143,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async createBook(bookPath: string, contentPath: string): Promise<void> {
-		bookPath = path.normalize(bookPath);
-		contentPath = path.normalize(contentPath);
-		await this.bookTocManager.createBook(bookPath, contentPath);
+	async createBook(): Promise<void> {
+		const bookTocManager = new BookTocManager();
+		const dialog = new CreateBookDialog(bookTocManager);
+		dialog.createDialog();
 		TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.CreateBook).send();
 	}
 
