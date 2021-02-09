@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Injectable, forwardRef, Inject } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 
 import { DashboardServiceInterface } from './dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';

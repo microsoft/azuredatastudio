@@ -75,7 +75,7 @@ export const DialogModule = (params: IBootstrapParams, selector: string, instant
 			let componentClass = this.selector.startsWith(WizardNavigation.SELECTOR) ? WizardNavigation : DialogContainer;
 			const factoryWrapper: any = this._resolver.resolveComponentFactory<WizardNavigation | DialogContainer>(componentClass);
 			factoryWrapper.factory.selector = this.selector;
-			appRef.bootstrap(factoryWrapper);
+			appRef.bootstrap(factoryWrapper.factory);
 		}
 	}
 

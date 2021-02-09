@@ -116,7 +116,8 @@
                     "vs/css!./**/*",
                     "**/{vs,sql}/base/{common,browser}/**",
                     "@angular/*",
-                    "rxjs/*"
+                    "rxjs/*",
+                    "rxjs"
                 ]
             },
             {
@@ -578,6 +579,7 @@
                     "onigasm-umd",
                     "sanitize-html",
                     "@angular/*",
+                    "rxjs",
                     "rxjs/**",
                     "vscode-oniguruma"
                 ]
@@ -726,7 +728,8 @@
                     "**/{vs,sql}/workbench/services/**/{common,browser}/**",
 					"**/{vs,sql}/workbench/contrib/**/{common,browser}/**",
 					"@angular/*",
-					"rxjs/**",
+                    "rxjs",
+                    "rxjs/**",
 					"ng2-charts",
 					"chart.js",
 					"plotly.js-dist-min",

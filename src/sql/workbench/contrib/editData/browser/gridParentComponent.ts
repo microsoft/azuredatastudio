@@ -7,7 +7,7 @@ import 'vs/css!./media/flexbox';
 import 'vs/css!./media/styles';
 
 import { Table } from 'sql/base/browser/ui/table/table';
-import { Subscription, Subject } from 'rxjs/Rx';
+import { Subscription, Subject } from 'rxjs';
 import * as Constants from 'sql/platform/query/common/constants';
 import { IGridInfo, IGridDataSet } from 'sql/workbench/contrib/grid/browser/interfaces';
 import * as Utils from 'sql/platform/connection/common/utils';

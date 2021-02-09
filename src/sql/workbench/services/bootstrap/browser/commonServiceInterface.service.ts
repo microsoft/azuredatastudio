@@ -5,8 +5,7 @@
 
 /* Node Modules */
 import { Injectable, Inject } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/fromPromise';
+import { from as observableFrom, Observable } from 'rxjs';
 
 /* SQL imports */
 import { IDefaultComponentParams, IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
@@ -33,11 +32,11 @@ export class SingleConnectionMetadataService {
 	) { }
 
 	get metadata(): Observable<ProviderMetadata | undefined> {
-		return Observable.fromPromise(this._metadataService.getMetadata(this._uri));
+		return observableFrom(this._metadataService.getMetadata(this._uri));
 	}
 
 	get databases(): Observable<string[] | DatabaseInfo[]> {
-		return Observable.fromPromise(this._metadataService.getDatabases(this._uri));
+		return observableFrom(this._metadataService.getDatabases(this._uri));
 	}
 }
 
@@ -71,7 +70,7 @@ export class SingleAdminService {
 	) { }
 
 	public get databaseInfo(): Observable<DatabaseInfo> {
-		return Observable.fromPromise(this._adminService.getDatabaseInfo(this._uri));
+		return observableFrom(this._adminService.getDatabaseInfo(this._uri));
 	}
 }
 

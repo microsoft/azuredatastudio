@@ -3,9 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { ChangeDetectorRef } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-// of is not on Observable by default, need to import it
-import 'rxjs/add/observable/of';
+import { of as observableOf } from 'rxjs';
 
 import { WidgetConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/workbench/contrib/dashboard/browser/services/dashboardServiceInterface.service';
@@ -84,7 +82,7 @@ suite('Dashboard Properties Widget Tests', () => {
 		} as DashboardServiceInterface, TypeMoq.MockBehavior.Loose);
 
 		let singleAdminService = TypeMoq.Mock.ofType(SingleAdminService);
-		singleAdminService.setup(x => x.databaseInfo).returns(() => Observable.of(databaseInfo));
+		singleAdminService.setup(x => x.databaseInfo).returns(() => observableOf(databaseInfo));
 
 		dashboardService.setup(x => x.adminService).returns(() => singleAdminService.object);
 

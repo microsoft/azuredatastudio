@@ -170,7 +170,7 @@ export const DashboardModule = (params, selector: string, instantiationService: 
 		ngDoBootstrap(appRef: ApplicationRef) {
 			const factory = this._resolver.resolveComponentFactory(DashboardComponent);
 			(<any>factory).factory.selector = this.selector;
-			appRef.bootstrap(factory);
+			appRef.bootstrap((<any>factory).factory);
 
 			this._router.events.subscribe(e => {
 				if (e instanceof NavigationEnd) {

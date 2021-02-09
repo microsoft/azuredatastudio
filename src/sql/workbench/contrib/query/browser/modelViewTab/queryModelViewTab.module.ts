@@ -70,7 +70,7 @@ export const QueryModelViewTabModule = (params, selector: string, instantiationS
 			let componentClass = QueryModelViewTabContainer;
 			const factoryWrapper: any = this._resolver.resolveComponentFactory<QueryModelViewTabContainer>(componentClass);
 			factoryWrapper.factory.selector = this.selector;
-			appRef.bootstrap(factoryWrapper);
+			appRef.bootstrap(factoryWrapper.factory);
 		}
 	}
 

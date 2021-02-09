@@ -7,7 +7,7 @@ import 'vs/css!./dashboardWidgetWrapper';
 
 import {
 	Component, Input, Inject, forwardRef, ComponentFactoryResolver, ViewChild,
-	ElementRef, OnInit, ChangeDetectorRef, ReflectiveInjector, Injector, Type, ComponentRef
+	ElementRef, OnInit, ChangeDetectorRef, Injector, Type, ComponentRef
 } from '@angular/core';
 
 import { ComponentHostDirective } from 'sql/base/browser/componentHost.directive';
@@ -207,7 +207,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		const viewContainerRef = this.componentHost.viewContainerRef;
 		viewContainerRef.clear();
 
-		const injector = ReflectiveInjector.resolveAndCreate([{ provide: WIDGET_CONFIG, useValue: this._config }], this._injector);
+		const injector = Injector.create([{ provide: WIDGET_CONFIG, useValue: this._config }], this._injector);
 		let componentRef: ComponentRef<IDashboardWidget>;
 		try {
 			componentRef = viewContainerRef.createComponent(componentFactory, 0, injector);

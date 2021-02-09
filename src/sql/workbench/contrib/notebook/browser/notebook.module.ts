@@ -91,7 +91,7 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 		ngDoBootstrap(appRef: ApplicationRef) {
 			const factoryWrapper: any = this._resolver.resolveComponentFactory(NotebookEditorComponent);
 			factoryWrapper.factory.selector = this.selector;
-			appRef.bootstrap(factoryWrapper);
+			appRef.bootstrap(factoryWrapper.factory);
 		}
 	}
 

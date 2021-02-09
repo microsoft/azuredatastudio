@@ -3,13 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./insightsWidget';
+import { from as observableFrom, Observable } from 'rxjs';
 
 import {
 	Component, Inject, forwardRef, AfterContentInit,
 	ComponentFactoryResolver, ViewChild, ChangeDetectorRef, Injector
 } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/fromPromise';
 
 import { DashboardWidget, IDashboardWidget, WIDGET_CONFIG, WidgetConfig } from 'sql/workbench/contrib/dashboard/browser/core/dashboardWidget';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
@@ -88,7 +87,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		this._parseConfig().then(() => {
 			if (!this._checkStorage()) {
 				const promise = this._runQuery();
-				this.queryObv = Observable.fromPromise(promise);
+				this.queryObv = observableFrom(promise);
 				const cancelablePromise = createCancelablePromise(() => {
 					return promise.then(
 						result => {
@@ -96,7 +95,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 								this._updateChild(result);
 								this.setupInterval();
 							} else {
-								this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(result));
+								this.queryObv = observableFrom(Promise.resolve<SimpleExecuteResult>(result));
 							}
 						},
 						error => {
@@ -106,7 +105,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 							if (this._inited) {
 								this.showError(error);
 							} else {
-								this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(error));
+								this.queryObv = observableFrom(Promise.resolve<SimpleExecuteResult>(error));
 							}
 						}
 					).then(() => this._changeRef.detectChanges());
@@ -206,7 +205,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 					this.setupInterval();
 					this._changeRef.detectChanges();
 				} else {
-					this.queryObv = Observable.fromPromise(Promise.resolve<SimpleExecuteResult>(JSON.parse(storage)));
+					this.queryObv = observableFrom(Promise.resolve<SimpleExecuteResult>(JSON.parse(storage)));
 				}
 				return true;
 			} else {

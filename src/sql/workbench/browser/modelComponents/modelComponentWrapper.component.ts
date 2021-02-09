@@ -5,7 +5,7 @@
 
 import {
 	Component, Input, Inject, forwardRef, ComponentFactoryResolver, ViewChild,
-	ChangeDetectorRef, ReflectiveInjector, Injector, ComponentRef, AfterViewInit
+	ChangeDetectorRef, Injector, ComponentRef, AfterViewInit
 } from '@angular/core';
 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
@@ -119,7 +119,7 @@ export class ModelComponentWrapper extends AngularDisposable implements AfterVie
 		let viewContainerRef = this.componentHost.viewContainerRef;
 		viewContainerRef.clear();
 
-		let injector = ReflectiveInjector.resolveAndCreate([{ provide: COMPONENT_CONFIG, useValue: this.componentConfig }], this._injector);
+		let injector = Injector.create([{ provide: COMPONENT_CONFIG, useValue: this.componentConfig }], this._injector);
 		let componentRef: ComponentRef<IComponent>;
 		try {
 			componentRef = viewContainerRef.createComponent(componentFactory, 0, injector);

@@ -47,7 +47,7 @@ export const BackupModule = (params: IBootstrapParams, selector: string, instant
 		ngDoBootstrap(appRef: ApplicationRef) {
 			const factory = this._resolver.resolveComponentFactory(BackupComponent);
 			(<any>factory).factory.selector = this.selector;
-			appRef.bootstrap(factory);
+			appRef.bootstrap((<any>factory).factory);
 		}
 	}
 
