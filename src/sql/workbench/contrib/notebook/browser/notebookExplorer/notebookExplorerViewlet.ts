@@ -291,7 +291,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 									filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
 								} else {
 									let pattern = {};
-									let rootFolder = URI.file(root.resourceUri.path);
+									let rootFolder = URI.file(path.dirname(root.resourceUri.path));
 									let pathToNotebook = isString(root.tooltip) ? root.tooltip : root.tooltip.value;
 									let baseName = path.join('**', path.basename(pathToNotebook));
 									pattern[baseName] = true;
