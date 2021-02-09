@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as constants from '../common/constants';
-import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
+import { IPrompter } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
 import { BookModel } from './bookModel';
@@ -16,7 +16,7 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { debounce, getPinnedNotebooks } from '../common/utils';
+import { debounce, getPinnedNotebooks, confirmReplace } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { CreateBookDialog } from '../dialog/createBookDialog';
@@ -499,7 +499,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(this.currentBook.bookPath)));
 				if (destinationUri) {
 					if (await fs.pathExists(destinationUri.fsPath)) {
-						let doReplace = await this.confirmReplace();
+						let doReplace = await confirmReplace(this.prompter);
 						if (!doReplace) {
 							return undefined;
 						}
@@ -671,15 +671,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			this.currentBook.getAllNotebooks().set(path.basename(untitledFileName.fsPath), notebook);
 		}
 		return untitledFileName;
-	}
-
-	//Confirmation message dialog
-	private async confirmReplace(): Promise<boolean> {
-		return await this.prompter.promptSingle<boolean>(<IQuestion>{
-			type: QuestionTypes.confirm,
-			message: loc.confirmReplace,
-			default: false
-		});
 	}
 
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {

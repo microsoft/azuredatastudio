@@ -5,10 +5,13 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as path from 'path';
-//import {pathExists, remove} from 'fs-extra';
+import { pathExists, remove } from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IconPathHelper } from '../common/iconHelper';
 import { BookTocManager } from '../book/bookTocManager';
+import { confirmReplace } from '../common/utils';
+import { IPrompter } from '../prompts/question';
+import CodeAdapter from '../prompts/adapter';
 
 export class CreateBookDialog {
 
@@ -21,9 +24,11 @@ export class CreateBookDialog {
 	public saveLocation: string = '';
 	public contentFolder: string = '';
 	public tocManager: BookTocManager;
+	private prompter: IPrompter;
 
 	constructor(toc: BookTocManager) {
 		this.tocManager = toc;
+		this.prompter = new CodeAdapter();
 	}
 
 	protected createHorizontalContainer(view: azdata.ModelView, items: azdata.Component[]): azdata.FlexContainer {
@@ -42,19 +47,19 @@ export class CreateBookDialog {
 			openLabel: loc.labelSelectFolder
 		});
 		if (uris && uris.length > 0) {
-			let pickedFolder = uris[0];
-			//let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(this.groupNameInputBox.value)));
-			if (pickedFolder.fsPath) {
-				// if (await pathExists(destinationUri.fsPath)) {
-				// 	let doReplace = await this.confirmReplace();
-				// 	if (!doReplace) {
-				// 		return undefined;
-				// 	}
-				// 	else {
-				// 		//remove folder if exists
-				// 		await remove(destinationUri.fsPath);
-				// 	}
-				// }
+			const pickedFolder = uris[0];
+			const destinationUri = path.join(pickedFolder.fsPath, path.basename(this.groupNameInputBox.value));
+			if (destinationUri) {
+				if (await pathExists(destinationUri)) {
+					let doReplace = await confirmReplace(this.prompter);
+					if (!doReplace) {
+						return undefined;
+					}
+					else {
+						//remove folder if exists
+						await remove(destinationUri);
+					}
+				}
 				return pickedFolder.fsPath;
 			}
 		}
