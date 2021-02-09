@@ -52,16 +52,18 @@ class SQLMigration {
 
 				input.onDidAccept(async (e) => {
 					const selectedNotebook = input.selectedItems[0];
-					try {
-						azdata.nb.showNotebookDocument(vscode.Uri.parse(`untitled: ${selectedNotebook.label}`), {
-							preview: false,
-							initialContent: (await fs.readFile(selectedNotebook.notebookPath)).toString(),
-							initialDirtyState: false
-						});
-					} catch (e) {
-						vscode.window.showErrorMessage(e.toString());
+					if (selectedNotebook) {
+						try {
+							azdata.nb.showNotebookDocument(vscode.Uri.parse(`untitled: ${selectedNotebook.label}`), {
+								preview: false,
+								initialContent: (await fs.readFile(selectedNotebook.notebookPath)).toString(),
+								initialDirtyState: false
+							});
+						} catch (e) {
+							vscode.window.showErrorMessage(`${loc.NOTEBOOK_OPEN_ERROR} - ${e.toString()}`);
+						}
+						input.hide();
 					}
-					input.hide();
 				});
 
 				input.show();

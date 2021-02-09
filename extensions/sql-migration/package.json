@@ -38,7 +38,7 @@
       },
       {
         "command": "sqlmigration.openNotebooks",
-        "title": "Open SQL Migration Notebooks",
+        "title": "%migration-notebook-command-title%",
         "category": "SQL Migration"
       }
     ]
