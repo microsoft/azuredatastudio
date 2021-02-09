@@ -529,13 +529,10 @@ function getTestState(): AccountManagementState {
 	mockInstantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountStore), TypeMoq.It.isAny()))
 		.returns(() => mockAccountStore.object);
 
-	// Create mock memento
-	let mockMemento = {};
-
 	const testNotificationService = new TestNotificationService();
 
 	// Create the account management service
-	let ams = new AccountManagementService(mockMemento, mockInstantiationService.object, new TestStorageService(), undefined!, undefined!, undefined!, testNotificationService);
+	let ams = new AccountManagementService(mockInstantiationService.object, new TestStorageService(), undefined!, undefined!, undefined!, testNotificationService);
 
 	// Wire up event handlers
 	let evUpdate = new EventVerifierSingle<UpdateAccountListEventParams>();

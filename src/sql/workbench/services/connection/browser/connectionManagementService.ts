@@ -41,8 +41,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { ILogService } from 'vs/platform/log/common/log';
 import * as interfaces from 'sql/platform/connection/common/interfaces';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
-import { Memento } from 'vs/workbench/common/memento';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { Memento, MementoObject } from 'vs/workbench/common/memento';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { entries } from 'sql/base/common/collections';
 import { values } from 'vs/base/common/collections';
@@ -70,14 +69,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._notificationService);
 
 	private _mementoContext: Memento;
-	private _mementoObj: any;
+	private _mementoObj: MementoObject;
+	private _connectionStore: ConnectionStore;
+	private _connectionStatusManager: ConnectionStatusManager;
+
 	private static readonly CONNECTION_MEMENTO = 'ConnectionManagement';
 	private static readonly _azureResources: AzureResource[] =
 		[AzureResource.ResourceManagement, AzureResource.Sql, AzureResource.OssRdbms];
 
 	constructor(
-		private _connectionStore: ConnectionStore,
-		private _connectionStatusManager: ConnectionStatusManager,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
@@ -91,18 +91,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService private _logService: ILogService,
 		@IStorageService private _storageService: IStorageService,
-		@IEnvironmentService private _environmentService: IEnvironmentService,
 		@IExtensionService private readonly extensionService: IExtensionService
 	) {
 		super();
 
-		if (!this._connectionStore) {
-			this._connectionStore = _instantiationService.createInstance(ConnectionStore);
-		}
-		if (!this._connectionStatusManager) {
-			this._connectionStatusManager = new ConnectionStatusManager(this._capabilitiesService, this._logService, this._environmentService, this._notificationService);
-		}
-
+		this._connectionStore = _instantiationService.createInstance(ConnectionStore);
+		this._connectionStatusManager = _instantiationService.createInstance(ConnectionStatusManager);
 		if (this._storageService) {
 			this._mementoContext = new Memento(ConnectionManagementService.CONNECTION_MEMENTO, this._storageService);
 			this._mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
