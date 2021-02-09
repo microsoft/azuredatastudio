@@ -95,7 +95,7 @@ steps:
   - script: |
       set -e
       yarn gulp package-rebuild-extensions
-      yarn gulp vscode-darwin-min-ci
+      yarn gulp vscode-darwin-x64-min-ci
     displayName: Build
     env:
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
