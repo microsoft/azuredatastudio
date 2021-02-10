@@ -1,22 +1,21 @@
+"use strict";
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
-'use strict';
-
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getBuiltInExtensions = void 0;
+const fs = require("fs");
+const path = require("path");
+const os = require("os");
+const rimraf = require("rimraf");
+const es = require("event-stream");
+const rename = require("gulp-rename");
+const vfs = require("vinyl-fs");
+const ext = require("./extensions");
+const fancyLog = require("fancy-log");
+const ansiColors = require("ansi-colors");
 const mkdirp = require('mkdirp');
-const rimraf = require('rimraf');
-const es = require('event-stream');
-const rename = require('gulp-rename');
-const vfs = require('vinyl-fs');
-const ext = require('./extensions');
-const fancyLog = require('fancy-log');
-const ansiColors = require('ansi-colors');
-
 const root = path.dirname(path.dirname(__dirname));
 const productjson = JSON.parse(fs.readFileSync(path.join(__dirname, '../../product.json'), 'utf8'));
 const builtInExtensions = productjson.builtInExtensions;
@@ -46,6 +45,7 @@ function isUpToDate(extension) {
 	try {
 		const diskVersion = JSON.parse(packageContents).version;
 		return (diskVersion === extension.version);
+    }
 	} catch (err) {
 		return false;
 	}
@@ -92,6 +92,7 @@ function syncExtension(extension, controlState) {
 function readControlFile() {
 	try {
 		return JSON.parse(fs.readFileSync(controlFilePath, 'utf8'));
+    }
 	} catch (err) {
 		return {};
 	}

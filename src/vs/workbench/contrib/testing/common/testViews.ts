@@ -3,6 +3,4 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.codicon-wrench-subaction {
-	opacity: 0.5;
-}
+export const TESTING_VIEWLET_ID = 'workbench.view.testing';

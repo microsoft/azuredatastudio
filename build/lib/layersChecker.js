@@ -24,8 +24,6 @@ const minimatch_1 = require("minimatch");
 // Feel free to add more core types as you see needed if present in node.js and browsers
 const CORE_TYPES = [
     'require',
-    // 'atob',
-    // 'btoa',
     'setTimeout',
     'clearTimeout',
     'setInterval',

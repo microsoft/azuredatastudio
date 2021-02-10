@@ -88,7 +88,7 @@ export namespace ThemeIcon {
 		}
 		// {{SQL CARBON EDIT}} End of edit
 		if (modifier) {
-			return ['codicon', className, modifier.substr(1)];
+			return ['codicon', className, `codicon-modifier-${modifier.substr(1)}`];
 		}
 		return ['codicon', className];
 	}

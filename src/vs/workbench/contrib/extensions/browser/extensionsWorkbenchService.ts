@@ -23,7 +23,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { URI } from 'vs/base/common/uri';
-import { IExtension, ExtensionState, IExtensionsWorkbenchService, AutoUpdateConfigurationKey, AutoCheckUpdatesConfigurationKey } from 'vs/workbench/contrib/extensions/common/extensions';
+import { IExtension, ExtensionState, IExtensionsWorkbenchService, AutoUpdateConfigurationKey, AutoCheckUpdatesConfigurationKey, HasOutdatedExtensionsContext } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IEditorService, SIDE_GROUP, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IURLService, IURLHandler, IOpenURLOptions } from 'vs/platform/url/common/url';
 import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
@@ -517,6 +517,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 	private static readonly SyncPeriod = 1000 * 60 * 60 * 12; // 12 hours
 	declare readonly _serviceBrand: undefined;
 
+	private hasOutdatedExtensionsContextKey: IContextKey<boolean>;
+
 	private readonly localExtensions: Extensions | null = null;
 	private readonly remoteExtensions: Extensions | null = null;
 	private readonly webExtensions: Extensions | null = null;
@@ -547,9 +549,9 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		@IUserDataAutoSyncService private readonly userDataAutoSyncService: IUserDataAutoSyncService,
 		@IProductService private readonly productService: IProductService,
 		@IOpenerService private readonly openerService: IOpenerService, // {{SQL CARBON EDIT}}
-		@IExtensionManagementService private readonly extensionService: IExtensionManagementService
 	) {
 		super();
+		this.hasOutdatedExtensionsContextKey = HasOutdatedExtensionsContext.bindTo(contextKeyService);
 		if (extensionManagementServerService.localExtensionManagementServer) {
 			this.localExtensions = this._register(instantiationService.createInstance(Extensions, extensionManagementServerService.localExtensionManagementServer, ext => this.getExtensionState(ext)));
 			this._register(this.localExtensions.onChange(e => this._onChange.fire(e ? e.extension : undefined)));
@@ -587,7 +589,10 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			this.eventuallySyncWithGallery(true);
 		});
 
-		this._register(this.onChange(() => this.updateActivity()));
+		this._register(this.onChange(() => {
+			this.updateContexts();
+			this.updateActivity();
+		}));
 	}
 
 	get local(): IExtension[] {
@@ -1247,6 +1252,14 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			}
 		}
 		return changed;
+	}
+
+	private updateContexts(extension?: Extension): void {
+		if (extension && extension.outdated) {
+			this.hasOutdatedExtensionsContextKey.set(true);
+		} else {
+			this.hasOutdatedExtensionsContextKey.set(this.outdated.length > 0);
+		}
 	}
 
 	private _activityCallBack: ((value: void) => void) | null = null;

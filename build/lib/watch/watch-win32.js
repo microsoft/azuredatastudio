@@ -1,3 +1,4 @@
+"use strict";
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
@@ -63,6 +64,7 @@ function watch(root) {
 	process.once('SIGTERM', function () { process.exit(0); });
 	process.once('SIGTERM', function () { process.exit(0); });
 	process.once('exit', function () { child && child.kill(); });
+        child.kill();
 
 	return result;
 }

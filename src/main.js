@@ -7,17 +7,16 @@
 'use strict';
 
 const perf = require('./vs/base/common/performance');
+perf.mark('code/didStartMain');
+
 const lp = require('./vs/base/node/languagePacks');
-
-perf.mark('main:started');
-
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const bootstrap = require('./bootstrap');
 const bootstrapNode = require('./bootstrap-node');
 const paths = require('./paths');
-/** @type {any} */
+/** @type {Partial<import('./vs/platform/product/common/productService').IProductConfiguration> & { applicationName: string}} */
 const product = require('../product.json');
 const { app, protocol, crashReporter } = require('electron');
 
@@ -201,14 +200,14 @@ function startup(cachedDataDir, nlsConfig) {
 	process.env['VSCODE_NODE_CACHED_DATA_DIR'] = cachedDataDir || '';
 
 	// Load main in AMD
-	perf.mark('willLoadMainBundle');
+	perf.mark('code/willLoadMainBundle');
 	require('./bootstrap-amd').load('vs/code/electron-main/main', () => {
-		perf.mark('didLoadMainBundle');
+		perf.mark('code/didLoadMainBundle');
 	});
 }
 
 async function onReady() {
-	perf.mark('main:appReady');
+	perf.mark('code/mainAppReady');
 
 	try {
 		const [cachedDataDir, nlsConfig] = await Promise.all([nodeCachedDataDir.ensureExists(), resolveNlsConfiguration()]);
@@ -220,9 +219,7 @@ async function onReady() {
 }
 
 /**
- * @typedef	 {{ [arg: string]: any; '--'?: string[]; _: string[]; }} NativeParsedArgs
- *
- * @param {NativeParsedArgs} cliArgs
+ * @param {import('./vs/platform/environment/common/argv').NativeParsedArgs} cliArgs
  */
 function configureCommandlineSwitchesSync(cliArgs) {
 	const SUPPORTED_ELECTRON_SWITCHES = [
@@ -375,7 +372,7 @@ function getArgvConfigPath() {
 }
 
 /**
- * @param {NativeParsedArgs} cliArgs
+ * @param {import('./vs/platform/environment/common/argv').NativeParsedArgs} cliArgs
  * @returns {string | null}
  */
 function getJSFlags(cliArgs) {
@@ -395,7 +392,7 @@ function getJSFlags(cliArgs) {
 }
 
 /**
- * @param {NativeParsedArgs} cliArgs
+ * @param {import('./vs/platform/environment/common/argv').NativeParsedArgs} cliArgs
  *
  * @returns {string}
  */
@@ -408,7 +405,7 @@ function getUserDataPath(cliArgs) {
 }
 
 /**
- * @returns {NativeParsedArgs}
+ * @returns {import('./vs/platform/environment/common/argv').NativeParsedArgs}
  */
 function parseCLIArgs() {
 	const minimist = require('minimist');
@@ -457,11 +454,16 @@ function registerListeners() {
 	 * @type {string[]}
 	 */
 	const openUrls = [];
-	const onOpenUrl = function (event, url) {
-		event.preventDefault();
+	const onOpenUrl =
+		/**
+		 * @param {{ preventDefault: () => void; }} event
+		 * @param {string} url
+		 */
+		function (event, url) {
+			event.preventDefault();
 
-		openUrls.push(url);
-	};
+			openUrls.push(url);
+		};
 
 	app.on('will-finish-launching', function () {
 		app.on('open-url', onOpenUrl);

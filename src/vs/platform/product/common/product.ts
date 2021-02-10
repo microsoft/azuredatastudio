@@ -20,7 +20,7 @@ if (isWeb || typeof require === 'undefined' || typeof require.__$__nodeRequire !
 	// Running out of sources
 	if (Object.keys(product).length === 0) {
 		Object.assign(product, {
-			version: '1.17.0-dev',
+			version: '1.27.0-dev',
 			vscodeVersion: '1.50.0-dev',
 			nameLong: 'Azure Data Studio Web Dev',
 			nameShort: 'Azure Data Studio Web Dev',

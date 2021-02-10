@@ -106,7 +106,9 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 							});
 					} else {
 						const startupEditorTypeID = startupEditorSetting === 'gettingStarted' ? gettingStartedInputTypeId : welcomeInputTypeId;
-						const startupEditorCtor = startupEditorSetting === 'gettingStarted' ? GettingStartedPage : WelcomePage;
+						const launchEditor = startupEditorSetting === 'gettingStarted'
+							? instantiationService.createInstance(GettingStartedPage, {})
+							: instantiationService.createInstance(WelcomePage);
 
 						let options: IEditorOptions;
 						let editor = editorService.activeEditor;
@@ -119,7 +121,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 						} else {
 							options = { pinned: false };
 						}
-						return instantiationService.createInstance(startupEditorCtor).openEditor(options);
+						return launchEditor.openEditor(options);
 					}
 				}
 				return undefined;

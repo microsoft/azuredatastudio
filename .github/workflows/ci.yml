@@ -11,10 +11,156 @@ on:
       - release/*
 
 jobs:
-  # linux:
+  hygiene:
+    name: Hygiene and Layering
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: 12
+
+      - name: Cache node modules
+        id: cacheNodeModules
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-cacheNodeModules3-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules3-
+      - name: Get yarn cache directory path
+        id: yarnCacheDirPath
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Cache yarn directory
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarnCacheDirPath.outputs.dir }}
+          key: ${{ runner.os }}-yarnCacheDir-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarnCacheDir-
+      - name: Execute yarn
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+          ELECTRON_SKIP_BINARY_DOWNLOAD: 1
+        run: yarn --frozen-lockfile --network-timeout 180000
+
+      - name: Run Hygiene Checks
+        run: yarn gulp hygiene
+
+      - name: Run Valid Layers Checks
+        run: yarn valid-layers-check
+
+  # build-compile-core:
+  #   name: "Build: Compile Core"
   #   runs-on: ubuntu-latest
   #   env:
-  #     CHILD_CONCURRENCY: "1"
+  #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - uses: actions/setup-node@v2-beta
+  #       with:
+  #         node-version: 12
+
+  #     - name: Cache node modules
+  #       id: cacheNodeModules
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: '**/node_modules'
+  #         key: ${{ runner.os }}-cacheNodeModules3-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+  #         restore-keys: ${{ runner.os }}-cacheNodeModules3-
+  #     - name: Get yarn cache directory path
+  #       id: yarnCacheDirPath
+  #       if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+  #       run: echo "::set-output name=dir::$(yarn cache dir)"
+  #     - name: Cache yarn directory
+  #       if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: ${{ steps.yarnCacheDirPath.outputs.dir }}
+  #         key: ${{ runner.os }}-yarnCacheDir-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+  #         restore-keys: ${{ runner.os }}-yarnCacheDir-
+  #     - name: Execute yarn
+  #       if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+  #       env:
+  #         PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+  #         ELECTRON_SKIP_BINARY_DOWNLOAD: 1
+  #       run: yarn --frozen-lockfile --network-timeout 180000
+
+  #     - name: Cache compiled core code
+  #       id: cacheCompiledCoreCode
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: |
+  #           out-build
+  #           out-vscode-min
+  #         key: cacheCompiledCoreCode-${{ github.sha }}
+
+  #     - name: Compile Core
+  #       if: ${{ steps.cacheCompiledCoreCode.outputs.cache-hit != 'true' }}
+  #       run: yarn gulp compile-build
+
+  #     - name: Minify VS Code
+  #       if: ${{ steps.cacheCompiledCoreCode.outputs.cache-hit != 'true' }}
+  #       run: yarn gulp minify-vscode
+
+  # build-compile-extensions:
+  #   name: "Build: Compile Extensions"
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - uses: actions/setup-node@v2-beta
+  #       with:
+  #         node-version: 12
+
+  #     - name: Cache node modules
+  #       id: cacheNodeModules
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: '**/node_modules'
+  #         key: ${{ runner.os }}-cacheNodeModules3-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+  #         restore-keys: ${{ runner.os }}-cacheNodeModules3-
+  #     - name: Get yarn cache directory path
+  #       id: yarnCacheDirPath
+  #       if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+  #       run: echo "::set-output name=dir::$(yarn cache dir)"
+  #     - name: Cache yarn directory
+  #       if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: ${{ steps.yarnCacheDirPath.outputs.dir }}
+  #         key: ${{ runner.os }}-yarnCacheDir-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+  #         restore-keys: ${{ runner.os }}-yarnCacheDir-
+  #     - name: Execute yarn
+  #       if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+  #       env:
+  #         PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+  #         ELECTRON_SKIP_BINARY_DOWNLOAD: 1
+  #       run: yarn --frozen-lockfile --network-timeout 180000
+
+  #     - name: Cache compiled extensions code
+  #       id: cacheCompiledExtensionsCode
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: .build
+  #         key: cacheCompiledExtensionsCode-${{ github.sha }}
+
+  #     - name: Compile Extensions
+  #       if: ${{ steps.cacheCompiledExtensionsCode.outputs.cache-hit != 'true' }}
+  #       run: yarn gulp compile-extensions-build
+
+  # build-linux-unit-tests:
+  #   name: "Build: Linux Unit Tests"
+  #   needs: [build-compile-core, build-compile-extensions]
+  #   runs-on: ubuntu-latest
+  #   env:
   #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   #   steps:
   #     - uses: actions/checkout@v2.2.0
