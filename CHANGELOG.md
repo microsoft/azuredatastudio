@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 1.25.3
+* Release date: February 10, 2021
+* Release status: General Availability
+* Update Electron to 9.4.3 to incorporate critical upstream fixes
+
 ## Version 1.25.2
 * Release date: January 22, 2021
 * Release status: General Availability
