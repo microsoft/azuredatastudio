@@ -28,8 +28,8 @@ export class MiaaModel extends ResourceModel {
 	private readonly _azdataApi: azdataExt.IExtension;
 	public onConfigUpdated = this._onConfigUpdated.event;
 	public onDatabasesUpdated = this._onDatabasesUpdated.event;
-	public configLastUpdated?: Date;
-	public databasesLastUpdated?: Date;
+	public configLastUpdated: Date | undefined;
+	public databasesLastUpdated: Date | undefined;
 
 	private _refreshPromise: Deferred<void> | undefined = undefined;
 
@@ -91,22 +91,16 @@ export class MiaaModel extends ResourceModel {
 
 			// If we have an external endpoint configured then fetch the databases now
 			if (this._config.status.externalEndpoint) {
-				this.getDatabases().catch(err => {
-					// If an error occurs show a message so the user knows something failed but still
-					// fire the event so callers can know to update (e.g. so dashboards don't show the
-					// loading icon forever)
-					if (err instanceof UserCancelledError) {
-						vscode.window.showWarningMessage(loc.connectionRequired);
-					} else {
-						vscode.window.showErrorMessage(loc.fetchDatabasesFailed(this.info.name, err));
-					}
-					this.databasesLastUpdated = new Date();
+				this.getDatabases(false).catch(_err => {
+					// If an error occurs still fire the event so callers can know to
+					// update (e.g. so dashboards don't show the loading icon forever)
+
+					this.databasesLastUpdated = undefined;
 					this._onDatabasesUpdated.fire(this._databases);
-					throw err;
 				});
 			} else {
 				// Otherwise just fire the event so dashboards can update appropriately
-				this.databasesLastUpdated = new Date();
+				this.databasesLastUpdated = undefined;
 				this._onDatabasesUpdated.fire(this._databases);
 			}
 
@@ -120,9 +114,9 @@ export class MiaaModel extends ResourceModel {
 		}
 	}
 
-	private async getDatabases(): Promise<void> {
+	public async getDatabases(promptForConnection: boolean = true): Promise<void> {
 		if (!this._connectionProfile) {
-			await this.getConnectionProfile();
+			await this.getConnectionProfile(promptForConnection);
 		}
 
 		// We haven't connected yet so do so now and then store the ID for the active connection
@@ -182,6 +176,7 @@ export class MiaaModel extends ResourceModel {
 
 	protected async updateConnectionProfile(connectionProfile: azdata.IConnectionProfile): Promise<void> {
 		this._connectionProfile = connectionProfile;
+		this._activeConnectionId = connectionProfile.id;
 		this.info.connectionId = connectionProfile.id;
 		this._miaaInfo.userName = connectionProfile.userName;
 		await this._treeDataProvider.saveControllers();
