@@ -52,7 +52,7 @@
 	display: none;
 }
 
-/* // {{SQL CARBON EDIT}} - hide drop-down to avoid rendering bug */
+/* {{SQL CARBON EDIT}} - hide drop-down to avoid rendering bug */
 .extension-editor .details .monaco-action-bar .monaco-dropdown,
 .extensions-viewlet > .extensions .monaco-action-bar .monaco-dropdown {
 	width: 0px;
