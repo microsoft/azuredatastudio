@@ -509,7 +509,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				action.tooltip = action.label;
 				action.label = '';
 			}
-			return new LabeledMenuItemActionItem(action, this.keybindingService, this.contextMenuService, this.notificationService, 'notebook-button fixed-width');
+			return new LabeledMenuItemActionItem(action, this.keybindingService, this.notificationService, 'notebook-button');
 		}
 		return undefined;
 	}

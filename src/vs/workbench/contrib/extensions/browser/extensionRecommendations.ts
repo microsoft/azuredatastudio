@@ -4,16 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
+import { IExtensionRecommendationReason, EnablementState, IWorkbenchExtensionEnablementService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
 import { SearchExtensionsAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
-import { EnablementState, ExtensionRecommendationSource, IExtensionRecommendationReson, IWorkbenchExtensionEnablementService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { IExtensionsConfiguration, ConfigurationKey, IExtension, IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { IStorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IAction } from 'vs/base/common/actions';
 import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { CancellationToken } from 'vs/base/common/cancellation';
@@ -31,11 +30,9 @@ type ExtensionWorkspaceRecommendationsNotificationClassification = {
 const ignoreWorkspaceRecommendationsStorageKey = 'extensionsAssistant/workspaceRecommendationsIgnore';
 const ignoreImportantExtensionRecommendation = 'extensionsAssistant/importantRecommendationsIgnore';
 const choiceNever = localize('neverShowAgain', "Don't Show Again");
-
 export type ExtensionRecommendation = {
 	readonly extensionId: string,
-	readonly source: ExtensionRecommendationSource;
-	readonly reason: IExtensionRecommendationReson;
+	readonly reason: IExtensionRecommendationReason;
 };
 
 export abstract class ExtensionRecommendations extends Disposable {
@@ -44,7 +41,8 @@ export abstract class ExtensionRecommendations extends Disposable {
 	protected abstract doActivate(): Promise<void>;
 
 	constructor(
-		protected readonly promptedExtensionRecommendations: PromptedExtensionRecommendations,
+		// {{SQL CARBON EDIT}}
+		protected readonly promptedExtensionRecommendations?: PromptedExtensionRecommendations,
 	) {
 		super();
 	}
@@ -72,10 +70,8 @@ export class PromptedExtensionRecommendations extends Disposable {
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
 		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService,
-		@IStorageKeysSyncRegistryService storageKeysSyncRegistryService: IStorageKeysSyncRegistryService,
 	) {
 		super();
-		storageKeysSyncRegistryService.registerStorageKey({ key: ignoreImportantExtensionRecommendation, version: 1 });
 	}
 
 	async promptImportantExtensionsInstallNotification(extensionIds: string[], message: string, searchValue: string): Promise<void> {
@@ -182,7 +178,7 @@ export class PromptedExtensionRecommendations extends Disposable {
 				isSecondary: true,
 				run: () => {
 					this.telemetryService.publicLog2<{ userReaction: string }, ExtensionWorkspaceRecommendationsNotificationClassification>('extensionWorkspaceRecommendations:popup', { userReaction: 'neverShowAgain' });
-					this.storageService.store(ignoreWorkspaceRecommendationsStorageKey, true, StorageScope.WORKSPACE);
+					this.storageService.store(ignoreWorkspaceRecommendationsStorageKey, true, StorageScope.WORKSPACE, StorageTarget.MACHINE);
 				}
 			}],
 			{
@@ -240,7 +236,7 @@ export class PromptedExtensionRecommendations extends Disposable {
 	private addToImportantRecommendationsIgnore(id: string) {
 		const importantRecommendationsIgnoreList = <string[]>JSON.parse(this.storageService.get(ignoreImportantExtensionRecommendation, StorageScope.GLOBAL, '[]'));
 		importantRecommendationsIgnoreList.push(id.toLowerCase());
-		this.storageService.store(ignoreImportantExtensionRecommendation, JSON.stringify(importantRecommendationsIgnoreList), StorageScope.GLOBAL);
+		this.storageService.store(ignoreImportantExtensionRecommendation, JSON.stringify(importantRecommendationsIgnoreList), StorageScope.GLOBAL, StorageTarget.MACHINE);
 	}
 
 	private setIgnoreRecommendationsConfig(configVal: boolean) {

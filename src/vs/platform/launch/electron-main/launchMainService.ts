@@ -18,7 +18,9 @@ import { URI } from 'vs/base/common/uri';
 import { BrowserWindow, ipcMain, Event as IpcEvent, app } from 'electron';
 import { coalesce } from 'vs/base/common/arrays';
 import { IDiagnosticInfoOptions, IDiagnosticInfo, IRemoteDiagnosticInfo, IRemoteDiagnosticError } from 'vs/platform/diagnostics/common/diagnostics';
-import { IMainProcessInfo, IWindowInfo } from 'vs/platform/launch/common/launch';
+import { IMainProcessInfo, IWindowInfo } from 'vs/platform/launch/node/launch';
+import { isLaunchedFromCli } from 'vs/platform/environment/node/argvHelper';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export const ID = 'launchMainService';
 export const ILaunchMainService = createDecorator<ILaunchMainService>(ID);
@@ -33,14 +35,14 @@ export interface IRemoteDiagnosticOptions {
 	includeWorkspaceMetadata?: boolean;
 }
 
-function parseOpenUrl(args: NativeParsedArgs): URI[] {
+function parseOpenUrl(args: NativeParsedArgs): { uri: URI, url: string }[] {
 	if (args['open-url'] && args._urls && args._urls.length > 0) {
 		// --open-url must contain -- followed by the url(s)
 		// process.argv is used over args._ as args._ are resolved to file paths at this point
 		return coalesce(args._urls
 			.map(url => {
 				try {
-					return URI.parse(url);
+					return { uri: URI.parse(url), url };
 				} catch (err) {
 					return null;
 				}
@@ -73,10 +75,18 @@ export class LaunchMainService implements ILaunchMainService {
 	async start(args: NativeParsedArgs, userEnv: IProcessEnvironment): Promise<void> {
 		this.logService.trace('Received data from other instance: ', args, userEnv);
 
-		// Since we now start to open a window, make sure the app has focus.
-		// Focussing a window will not ensure that the application itself
-		// has focus, so we use the `steal: true` hint to force focus.
-		app.focus({ steal: true });
+		// macOS: Electron > 7.x changed its behaviour to not
+		// bring the application to the foreground when a window
+		// is focused programmatically. Only via `app.focus` and
+		// the option `steal: true` can you get the previous
+		// behaviour back. The only reason to use this option is
+		// when a window is getting focused while the application
+		// is not in the foreground and since we got instructed
+		// to open a new window from another instance, we ensure
+		// that the app has focus.
+		if (isMacintosh) {
+			app.focus({ steal: true });
+		}
 
 		// Check early for open-url which is handled in URL service
 		const urlsToOpen = parseOpenUrl(args);
@@ -91,8 +101,8 @@ export class LaunchMainService implements ILaunchMainService {
 
 			// Make sure a window is open, ready to receive the url event
 			whenWindowReady.then(() => {
-				for (const url of urlsToOpen) {
-					this.urlService.open(url);
+				for (const { uri, url } of urlsToOpen) {
+					this.urlService.open(uri, { originalUrl: url });
 				}
 			});
 		}
@@ -104,7 +114,7 @@ export class LaunchMainService implements ILaunchMainService {
 	}
 
 	private startOpenWindow(args: NativeParsedArgs, userEnv: IProcessEnvironment): Promise<void> {
-		const context = !!userEnv['VSCODE_CLI'] ? OpenContext.CLI : OpenContext.DESKTOP;
+		const context = isLaunchedFromCli(userEnv) ? OpenContext.CLI : OpenContext.DESKTOP;
 		let usedWindows: ICodeWindow[] = [];
 
 		const waitMarkerFileURI = args.wait && args.waitMarkerFilePath ? URI.file(args.waitMarkerFilePath) : undefined;
@@ -130,7 +140,7 @@ export class LaunchMainService implements ILaunchMainService {
 
 			// Otherwise check for settings
 			else {
-				const windowConfig = this.configurationService.getValue<IWindowSettings>('window');
+				const windowConfig = this.configurationService.getValue<IWindowSettings | undefined>('window');
 				const openWithoutArgumentsInNewWindowConfig = windowConfig?.openWithoutArgumentsInNewWindow || 'default' /* default */;
 				switch (openWithoutArgumentsInNewWindowConfig) {
 					case 'on':
@@ -247,7 +257,7 @@ export class LaunchMainService implements ILaunchMainService {
 						folders: options.includeWorkspaceMetadata ? this.getFolderURIs(window) : undefined
 					};
 
-					window.sendWhenReady('vscode:getDiagnosticInfo', { replyChannel, args });
+					window.sendWhenReady('vscode:getDiagnosticInfo', CancellationToken.None, { replyChannel, args });
 
 					ipcMain.once(replyChannel, (_: IpcEvent, data: IRemoteDiagnosticInfo) => {
 						// No data is returned if getting the connection fails.
