@@ -65,7 +65,7 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 		}
 		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		Promise.all([this.getRecommendedExtensionsByScenario(scenarioType), this.extensionManagementService.getInstalled(ExtensionType.User)]).then(([recommendations, localExtensions]) => {
-			if (!recommendations.every(rec => { return localExtensions.findIndex(local => local.identifier.id.toLocaleLowerCase() === rec.extensionId.toLocaleLowerCase()) !== -1; })) {
+			if (!recommendations?.every(rec => { return localExtensions.findIndex(local => local.identifier.id.toLocaleLowerCase() === rec.extensionId.toLocaleLowerCase()) !== -1; })) {
 				this.notificationService.prompt(
 					Severity.Info,
 					recommendationMessage,
@@ -128,7 +128,7 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 		if (!scenarioType) {
 			return Promise.reject(new Error(localize('scenarioTypeUndefined', 'The scenario type for extension recommendations must be provided.')));
 		}
-		return this.promptedExtensionRecommendations.filterIgnoredOrNotAllowed(this.productService.recommendedExtensionsByScenario[scenarioType] || [])
+		return this.promptedExtensionRecommendations?.filterIgnoredOrNotAllowed(this.productService.recommendedExtensionsByScenario[scenarioType] || [])
 			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] }));
 	}
 }
