@@ -223,10 +223,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				await this.bookTocManager.recovery();
 				vscode.window.showErrorMessage(loc.editBookError(updateBook.book.contentPath, e instanceof Error ? e.message : e));
 			} finally {
-				this.fireBookRefresh(targetBook);
+				await this.fireBookRefresh(targetBook);
 				if (sourceBook) {
 					// refresh source book model to pick up latest changes
-					this.fireBookRefresh(sourceBook);
+					await this.fireBookRefresh(sourceBook);
 				}
 				// even if it fails, we still need to watch the toc file again.
 				if (sourceBook) {
