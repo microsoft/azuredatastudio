@@ -170,7 +170,13 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 			this.applyAndSetProductIconTheme(productIconData, true);
 		}
 
-		Promise.all([extensionService.whenInstalledExtensionsRegistered(), userDataInitializationService.whenInitializationFinished()]).then(_ => {
+		// {{SQL CARBON EDIT}} - avoid nullref in tests
+		let promises = [extensionService.whenInstalledExtensionsRegistered()];
+		if (userDataInitializationService && userDataInitializationService.whenInitializationFinished) {
+			promises.push(<any>userDataInitializationService.whenInitializationFinished());
+		}
+
+		Promise.all(promises).then(_ => {
 			this.installConfigurationListener();
 			this.installPreferredSchemeListener();
 			this.installRegistryListeners();

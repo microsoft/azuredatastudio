@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.26.0",
-  "distro": "e70265117090eff42a72ce17fa88b732b92e99b0",
+  "distro": "dcbbf1f1ca37475a4eba64fb7f9c29191d45f039",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -154,7 +154,7 @@
     "glob": "^5.0.13",
     "gulp": "^4.0.0",
     "gulp-atom-electron": "^1.22.0",
-    "gulp-azure-storage": "^0.10.0",
+    "gulp-azure-storage": "^0.11.1",
     "gulp-buffer": "0.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-cssnano": "^2.1.3",

@@ -24,14 +24,14 @@ const pall = require('p-all');
 
 const all = [
 	'*',
-	'build/**/*',
 	'extensions/**/*',
 	'scripts/**/*',
 	'src/**/*',
 	'test/**/*',
 	'!test/**/out/**',
 	'!**/node_modules/**',
-	'!build/actions/**/*.js' // {{ SQL CARBON EDIT }}
+	'!build/actions/**/*.js', // {{ SQL CARBON EDIT }}
+	'!build/**/*' // {{SQL CARBON EDIT}}
 ];
 module.exports.all = all;
 
@@ -113,7 +113,8 @@ const indentationFilter = [
 	'!extensions/sql-database-projects/BuildDirectory/SystemDacpacs/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
-	'!resources/linux/snap/electron-launch'
+	'!resources/linux/snap/electron-launch',
+	'!build/**/*' // {{SQL CARBON EDIT}}
 ];
 
 const copyrightFilter = [
@@ -200,6 +201,7 @@ const jsHygieneFilter = [
 	'!src/**/marked.js',
 	'!src/**/semver.js',
 	'!**/test/**',
+	'!build/**/*' // {{SQL CARBON EDIT}}
 ];
 module.exports.jsHygieneFilter = jsHygieneFilter;
 
@@ -215,10 +217,11 @@ const tsHygieneFilter = [
 	'!extensions/vscode-api-tests/testWorkspace2/**',
 	'!extensions/**/*.test.ts',
 	'!extensions/html-language-features/server/lib/jquery.d.ts',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts', // {{SQL CARBON EDIT}},
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts', // {{SQL CARBON EDIT}},
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts', // {{SQL CARBON EDIT}}
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts', // {{SQL CARBON EDIT}}
 	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts', // {{SQL CARBON EDIT}} skip this because we have no plans on touching this and its not ours
-	'!src/vs/workbench/contrib/extensions/browser/extensionRecommendationsService.ts' // {{SQL CARBON EDIT}} skip this because known issue
+	'!src/vs/workbench/contrib/extensions/browser/extensionRecommendationsService.ts', // {{SQL CARBON EDIT}} skip this because known issue
+	'!build/**/*' // {{SQL CARBON EDIT}}
 ];
 module.exports.tsHygieneFilter = tsHygieneFilter;
 

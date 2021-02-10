@@ -582,9 +582,12 @@ export class DirtyDiffController extends Disposable implements IEditorContributi
 			this.isDirtyDiffVisible = isDirtyDiffVisible.bindTo(contextKeyService);
 			this._register(editor.onDidChangeModel(() => this.close()));
 
-			const onDidChangeGutterAction = Event.filter(configurationService.onDidChangeConfiguration, e => e.affectsConfiguration('scm.diffDecorationsGutterAction'));
-			this._register(onDidChangeGutterAction(this.onDidChangeGutterAction, this));
-			this.onDidChangeGutterAction();
+			// {{SQL CARBON EDIT}} - avoid null reference in tests
+			if (configurationService && configurationService.onDidChangeConfiguration) {
+				const onDidChangeGutterAction = Event.filter(configurationService.onDidChangeConfiguration, e => e.affectsConfiguration('scm.diffDecorationsGutterAction'));
+				this._register(onDidChangeGutterAction(this.onDidChangeGutterAction, this));
+				this.onDidChangeGutterAction();
+			}
 		}
 	}
 

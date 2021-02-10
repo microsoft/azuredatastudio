@@ -206,13 +206,29 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		});
 
 		/*
+		 * Default popular extensions view
+		 * Separate view for popular extensions required as we need to show popular and recommended sections
+		 * in the default view when there is no search text, and user has no installed extensions.
+		 */
+		// {{SQL CARBON EDIT}} -- remove "Popular" view
+		// viewDescriptors.push({
+		// 	id: 'workbench.views.extensions.popular',
+		// 	name: localize('popularExtensions', "Popular"),
+		// 	ctorDescriptor: new SyncDescriptor(ExtensionsListView, [{}]),
+		// 	when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.not('hasInstalledExtensions')),
+		// 	weight: 60,
+		// 	order: 2,
+		// 	canToggleVisibility: false
+		// });
+
+		/*
 		 * Default recommended extensions view
 		 * When user has installed extensions, this is shown along with the views for enabled & disabled extensions
 		 * When user has no installed extensions, this is shown along with the view for popular extensions
 		 */
 		viewDescriptors.push({
 			id: 'extensions.recommendedList',
-			name: localize('recommendedExtensions', "Recommended"),
+			name: localize('recommendedExtensions', "Marketplace"), // {{SQL CARBON EDIT}} - change name to marketplace
 			ctorDescriptor: new SyncDescriptor(DefaultRecommendedExtensionsView, [{}]),
 			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.not('config.extensions.showRecommendationsOnlyOnDemand')),
 			weight: 40,
