@@ -189,6 +189,16 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
+"@microsoft/azdata-test@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/azdata-test/-/azdata-test-1.4.0.tgz#a809187ae8a065c518e3a3e2d350883e592853bc"
+  integrity sha512-iscDA13/XRknRCNauP9OPsSg/ulTrMJOPFA0XMyNG1it3zY8mEJxxFJcNkWTnnEWpOUFvyksvoouzYUNy1fvrQ==
+  dependencies:
+    http-proxy-agent "^2.1.0"
+    https-proxy-agent "^2.2.4"
+    rimraf "^2.6.3"
+    typemoq "^2.1.0"
+
 "@sinonjs/commons@^1", "@sinonjs/commons@^1.6.0", "@sinonjs/commons@^1.7.0", "@sinonjs/commons@^1.8.1":
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/@sinonjs/commons/-/commons-1.8.1.tgz#e7df00f98a203324f6dc7cc606cad9d4a8ab2217"
@@ -291,16 +301,6 @@ axios@^0.19.2:
   integrity sha512-fjgm5MvRHLhx+osE2xoekY70AhARk3a6hkN+3Io1jc00jtquGvxYlKlsFUhmUET0V5te6CcZI7lcv2Ym61mjHA==
   dependencies:
     follow-redirects "1.5.10"
-
-azdata-test@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/azdata-test/-/azdata-test-1.1.1.tgz#0feb13ec01397841f7bbce0ad25a41e4a3afb5b5"
-  integrity sha512-+jZ5/4Orqt5Q2MLPqmV+iQjGYxG5FK4pC3UqTOPdSzlbs0JQhOXckC8Hmw8ZOS0N6Cn7mNDCpfaqEU9coTyVsw==
-  dependencies:
-    http-proxy-agent "^2.1.0"
-    https-proxy-agent "^2.2.4"
-    rimraf "^2.6.3"
-    typemoq "^2.1.0"
 
 balanced-match@^1.0.0:
   version "1.0.0"
