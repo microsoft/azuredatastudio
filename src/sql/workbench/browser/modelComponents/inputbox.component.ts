@@ -32,8 +32,8 @@ import { ILogService } from 'vs/platform/log/common/log';
 @Component({
 	selector: 'modelview-inputBox',
 	template: `
-			<div [style.display]="getInputBoxDisplay()" #input [style.width]="width" ></div>
-			<div [style.display]="getTextAreaDisplay()" #textarea [style.width]="width" ></div>
+			<div #input [ngStyle]="inputBoxCSSStyles"></div>
+			<div #textarea [ngStyle]="textAreaCSSStyles"></div>
 	`
 })
 export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProperties> implements IComponent, OnDestroy, AfterViewInit {
@@ -362,5 +362,19 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 
 	public set validationErrorMessage(newValue: string) {
 		this.setPropertyFromUI<string>((props, value) => props.validationErrorMessage = value, newValue);
+	}
+
+	public get inputBoxCSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth(),
+			'display': this.getInputBoxDisplay()
+		});
+	}
+
+	public get textAreaCSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth(),
+			'display': this.getTextAreaDisplay()
+		});
 	}
 }

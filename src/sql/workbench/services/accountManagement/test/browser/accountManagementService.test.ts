@@ -214,7 +214,7 @@ suite('Account Management Service Tests:', () => {
 		// If: I add an account when the provider doesn't exist
 		// Then: It should not resolve
 		return Promise.race([
-			new Promise((resolve, reject) => setTimeout(() => resolve(), 100)),
+			new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 100)),
 			ams.addAccount('doesNotExist').then(() => { throw new Error('Promise resolved when the provider did not exist'); })
 		]);
 	});
@@ -283,7 +283,7 @@ suite('Account Management Service Tests:', () => {
 		// If: I get accounts when the provider doesn't exist
 		// Then: It should not resolve
 		return Promise.race([
-			new Promise((resolve, reject) => setTimeout(() => resolve(), 100)),
+			new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 100)),
 			ams.getAccountsForProvider('doesNotExist').then(() => { throw new Error('Promise resolved when the provider did not exist'); })
 		]);
 	});
@@ -529,13 +529,10 @@ function getTestState(): AccountManagementState {
 	mockInstantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(AccountStore), TypeMoq.It.isAny()))
 		.returns(() => mockAccountStore.object);
 
-	// Create mock memento
-	let mockMemento = {};
-
 	const testNotificationService = new TestNotificationService();
 
 	// Create the account management service
-	let ams = new AccountManagementService(mockMemento, mockInstantiationService.object, new TestStorageService(), undefined!, undefined!, undefined!, testNotificationService);
+	let ams = new AccountManagementService(mockInstantiationService.object, new TestStorageService(), undefined!, undefined!, undefined!, testNotificationService);
 
 	// Wire up event handlers
 	let evUpdate = new EventVerifierSingle<UpdateAccountListEventParams>();

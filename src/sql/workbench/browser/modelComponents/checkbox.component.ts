@@ -23,7 +23,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 @Component({
 	selector: 'modelview-checkbox',
 	template: `
-		<div #input width="100%" [style.display]="display"></div>
+		<div #input width="100%" [ngStyle]="CSSStyles"></div>
 	`
 })
 export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProperties> implements IComponent, OnDestroy, AfterViewInit {
@@ -126,5 +126,11 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 
 	public focus(): void {
 		this._input.focus();
+	}
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'display': this.display
+		});
 	}
 }

@@ -395,7 +395,8 @@ async function getClusterController(controllerEndpoint: string, authType: bdc.Au
 		username,
 		password);
 	try {
-		await controller.getClusterConfig();
+		// We just want to test the connection - so using getEndpoints since that is available to all users (not just admin)
+		await controller.getEndPoints();
 		return controller;
 	} catch (err) {
 		// Initial username/password failed so prompt user for username password until either user
@@ -426,7 +427,8 @@ async function getClusterController(controllerEndpoint: string, authType: bdc.Au
 			}
 			const controller = bdcApi.getClusterController(controllerEndpoint, authType, newUsername, newPassword);
 			try {
-				await controller.getClusterConfig();
+				// We just want to test the connection - so using getEndpoints since that is available to all users (not just admin)
+				await controller.getEndPoints();
 				return controller;
 			} catch (err) {
 				errorMessage = localize('bdcConnectError', "Error: {0}. ", err.message ?? err);

@@ -24,5 +24,5 @@ export abstract class Dashboard {
 		return dashboard;
 	}
 
-	protected abstract async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]>;
+	protected abstract registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]>;
 }

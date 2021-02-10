@@ -75,6 +75,7 @@ declare module 'azdata' {
 
 		export interface INotebookMetadata {
 			connection_name?: string;
+			multi_connection_mode?: boolean;
 		}
 
 		export interface ICellMetadata {
@@ -300,6 +301,11 @@ declare module 'azdata' {
 
 	export interface DeclarativeTableComponent extends Component, DeclarativeTableProperties {
 		onRowSelected: vscode.Event<DeclarativeTableRowSelectedEvent>;
+		/**
+		 * Sets the filter currently applied to this table - only rows with index in the given array will be visible. undefined
+		 * will clear the filter
+		 */
+		setFilter(rowIndexes: number[] | undefined): void;
 	}
 
 	/*

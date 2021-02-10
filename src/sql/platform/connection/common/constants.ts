@@ -25,6 +25,7 @@ export const sqlLogin = 'SqlLogin';
 export const integrated = 'Integrated';
 export const azureMFA = 'AzureMFA';
 export const azureMFAAndUser = 'AzureMFAAndUser';
+export const dstsAuth = 'dstsAuth';
 
 /* CMS constants */
 export const cmsProviderName = 'MSSQL-CMS';
