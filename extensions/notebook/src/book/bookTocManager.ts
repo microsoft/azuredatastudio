@@ -224,17 +224,16 @@ export class BookTocManager implements IBookTocManager {
 	 * @param bookContentPath - The path to the book folder, the basename of the path is the name of the book
 	 * @param contentFolder - (Optional) The path to the folder that contains the notebooks and markdown files to be added to the created book.
 	 * If it's undefined then a blank notebook is attached to the book.
-	 *
 	*/
 	public async createBook(bookContentPath: string, contentFolder?: string): Promise<void> {
 		let filesinDir: string[];
 		await fs.promises.mkdir(bookContentPath, { recursive: true });
-		if (!!contentFolder) {
+		if (contentFolder) {
 			await fs.copy(contentFolder, bookContentPath);
 			filesinDir = await fs.readdir(bookContentPath);
 			this.tableofContents = await this.getAllFiles([], bookContentPath, filesinDir, bookContentPath);
 		} else {
-			await fs.writeFile(path.join(bookContentPath, 'readme.md'), '');
+			await fs.writeFile(path.join(bookContentPath, 'README.md'), '');
 			filesinDir = ['readme.md'];
 			this.tableofContents = await this.getAllFiles([], bookContentPath, filesinDir, bookContentPath);
 		}

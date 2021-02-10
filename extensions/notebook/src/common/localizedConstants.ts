@@ -88,8 +88,11 @@ export const groupDescription = localize('groupDescription', "Groups are used to
 export const locationBrowser = localize('locationBrowser', "Browse locations...");
 export const selectContentFolder = localize('selectContentFolder', "Select content folder");
 export const browse = localize('browse', "Browse");
-export const cancel = localize('cancel', "Cancel");
 export const create = localize('create', "Create");
 export const name = localize('name', "Name");
 export const saveLocation = localize('saveLocation', "Save location");
 export const contentFolder = localize('contentFolder', "Content folder (Optional)");
+export const msgContentFolderError = localize('msgContentFolderError', "Content folder path does not exist");
+export const msgSaveFolderError = localize('msgSaveFolderError', "Save location path is not valid");
+
+

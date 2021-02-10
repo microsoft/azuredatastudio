@@ -18,16 +18,12 @@ export class CreateBookDialog {
 	private dialog: azdata.window.Dialog;
 	public view: azdata.ModelView;
 	private formModel: azdata.FormContainer;
-	private groupNameInputBox: azdata.InputBoxComponent;
-	private locationInputBox: azdata.InputBoxComponent;
-	private notebooksLocationInputBox: azdata.InputBoxComponent;
-	public saveLocation: string = '';
-	public contentFolder: string = '';
-	public tocManager: BookTocManager;
+	private bookNameInputBox: azdata.InputBoxComponent;
+	private saveLocationInputBox: azdata.InputBoxComponent;
+	private contentFolderInputBox: azdata.InputBoxComponent;
 	private prompter: IPrompter;
 
-	constructor(toc: BookTocManager) {
-		this.tocManager = toc;
+	constructor(private tocManager: BookTocManager) {
 		this.prompter = new CodeAdapter();
 	}
 
@@ -35,7 +31,7 @@ export class CreateBookDialog {
 		return view.modelBuilder.flexContainer().withItems(items, { CSSStyles: { 'margin-right': '10px', 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row' }).component();
 	}
 
-	public async selectFolder(): Promise<string> {
+	public async selectFolder(): Promise<string | undefined> {
 		const allFilesFilter = loc.allFiles;
 		let filter: any = {};
 		filter[allFilesFilter] = '*';
@@ -47,23 +43,23 @@ export class CreateBookDialog {
 			openLabel: loc.labelSelectFolder
 		});
 		if (uris && uris.length > 0) {
-			const pickedFolder = uris[0];
-			const destinationUri = path.join(pickedFolder.fsPath, path.basename(this.groupNameInputBox.value));
-			if (destinationUri) {
-				if (await pathExists(destinationUri)) {
-					let doReplace = await confirmReplace(this.prompter);
-					if (!doReplace) {
-						return undefined;
-					}
-					else {
-						//remove folder if exists
-						await remove(destinationUri);
-					}
-				}
-				return pickedFolder.fsPath;
-			}
+			return uris[0].fsPath;
 		}
 		return undefined;
+	}
+
+	public async validatePath(folderPath: string): Promise<boolean> {
+		const destinationUri = path.join(folderPath, path.basename(this.bookNameInputBox.value));
+		if (await pathExists(destinationUri)) {
+			const doReplace = await confirmReplace(this.prompter);
+			if (doReplace) {
+				//remove folder if exists
+				await remove(destinationUri);
+				return true;
+			}
+			return false;
+		}
+		return await pathExists(folderPath);
 	}
 
 	public async createDialog(): Promise<void> {
@@ -77,21 +73,21 @@ export class CreateBookDialog {
 					CSSStyles: { 'margin-bottom': '0px', 'margin-top': '0px', 'font-size': 'small' }
 				}).component();
 
-			this.groupNameInputBox = this.view.modelBuilder.inputBox()
+			this.bookNameInputBox = this.view.modelBuilder.inputBox()
 				.withProperties({
 					values: [],
 					value: '',
 					enabled: true
 				}).component();
 
-			this.locationInputBox = this.view.modelBuilder.inputBox().withProperties({
+			this.saveLocationInputBox = this.view.modelBuilder.inputBox().withProperties({
 				values: [],
 				value: '',
 				placeHolder: loc.locationBrowser,
 				width: '400px'
 			}).component();
 
-			this.notebooksLocationInputBox = this.view.modelBuilder.inputBox().withProperties({
+			this.contentFolderInputBox = this.view.modelBuilder.inputBox().withProperties({
 				values: [],
 				value: '',
 				placeHolder: loc.selectContentFolder,
@@ -113,13 +109,11 @@ export class CreateBookDialog {
 			}).component();
 
 			browseFolderButton.onDidClick(async () => {
-				this.saveLocation = await this.selectFolder();
-				this.locationInputBox.value = this.saveLocation;
+				this.saveLocationInputBox.value = await this.selectFolder();
 			});
 
 			browseContentFolderButton.onDidClick(async () => {
-				this.contentFolder = await this.selectFolder();
-				this.notebooksLocationInputBox.value = this.contentFolder;
+				this.contentFolderInputBox.value = await this.selectFolder();
 			});
 
 			this.formModel = this.view.modelBuilder.formContainer()
@@ -130,19 +124,19 @@ export class CreateBookDialog {
 							required: false
 						},
 						{
-							component: this.groupNameInputBox,
+							component: this.bookNameInputBox,
 							title: loc.name,
 							required: true
 						},
 						{
 							title: loc.saveLocation,
 							required: true,
-							component: this.createHorizontalContainer(view, [this.locationInputBox, browseFolderButton])
+							component: this.createHorizontalContainer(view, [this.saveLocationInputBox, browseFolderButton])
 						},
 						{
 							title: loc.contentFolder,
 							required: false,
-							component: this.createHorizontalContainer(view, [this.notebooksLocationInputBox, browseContentFolderButton])
+							component: this.createHorizontalContainer(view, [this.contentFolderInputBox, browseContentFolderButton])
 						},
 					],
 					title: ''
@@ -150,22 +144,27 @@ export class CreateBookDialog {
 			await this.view.initializeModel(this.formModel);
 		});
 		this.dialog.okButton.label = loc.create;
-		this.dialog.okButton.onClick(() => {
-			this.saveLocation = this.locationInputBox.value;
-			this.contentFolder = this.notebooksLocationInputBox.value;
-		});
-
-		this.dialog.cancelButton.label = loc.cancel;
 		this.dialog.registerCloseValidator(async () => await this.create());
 		azdata.window.openDialog(this.dialog);
 	}
 
 	private async create(): Promise<boolean> {
 		try {
-			const bookPath = path.join(this.saveLocation, this.groupNameInputBox.value);
-			await this.tocManager.createBook(bookPath, this.contentFolder);
+			const isValid = await this.validatePath(this.saveLocationInputBox.value);
+			if (!isValid) {
+				throw (new Error(loc.msgSaveFolderError));
+			}
+			if (this.contentFolderInputBox.value !== '' && !await pathExists(this.contentFolderInputBox.value)) {
+				throw (new Error(loc.msgContentFolderError));
+			}
+			const bookPath = path.join(this.saveLocationInputBox.value, this.bookNameInputBox.value);
+			await this.tocManager.createBook(bookPath, this.contentFolderInputBox.value);
 			return true;
 		} catch (error) {
+			this.dialog.message = {
+				text: error.message,
+				level: azdata.window.MessageLevel.Error
+			};
 			return false;
 		}
 	}
