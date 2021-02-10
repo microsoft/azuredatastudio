@@ -9,7 +9,6 @@ import { InputBox, OnLoseFocusParams } from 'sql/base/browser/ui/inputBox/inputB
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { FileBrowserTreeView } from 'sql/workbench/services/fileBrowser/browser/fileBrowserTreeView';
@@ -21,7 +20,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { attachInputBoxStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+import { attachButtonStyler, attachInputBoxStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
@@ -105,7 +104,7 @@ export class FileBrowserDialog extends Modal {
 
 		this._okButton = this.addFooterButton(localize('fileBrowser.ok', "OK"), () => this.ok());
 		this._okButton.enabled = false;
-		this._cancelButton = this.addFooterButton(localize('fileBrowser.discard', "Discard"), () => this.close());
+		this._cancelButton = this.addFooterButton(localize('fileBrowser.discard', "Discard"), () => this.close(), 'right', true);
 
 		this.registerListeners();
 		this.updateTheme();

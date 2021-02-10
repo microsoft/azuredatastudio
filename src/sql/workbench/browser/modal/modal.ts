@@ -191,8 +191,10 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalHeaderSection = DOM.append(this._modalContent, DOM.$('.modal-header'));
 			if (this._modalOptions.hasBackButton) {
 				const container = DOM.append(this._modalHeaderSection, DOM.$('.modal-go-back'));
-				this._backButton = new Button(container);
-				this._backButton.icon = 'backButtonIcon';
+				this._backButton = new Button(container, { secondary: true });
+				this._backButton.icon = {
+					classNames: 'backButtonIcon'
+				};
 				this._backButton.title = localize('modal.back', "Back");
 			}
 
@@ -211,17 +213,23 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._messageSeverity = DOM.append(headerContainer, DOM.$('.dialog-message-severity'));
 			this._detailsButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
 			this._toggleMessageDetailButton = new Button(this._detailsButtonContainer);
-			this._toggleMessageDetailButton.icon = 'message-details-icon';
+			this._toggleMessageDetailButton.icon = {
+				classNames: 'message-details-icon'
+			};
 			this._toggleMessageDetailButton.label = SHOW_DETAILS_TEXT;
 			this._register(this._toggleMessageDetailButton.onDidClick(() => this.toggleMessageDetail()));
 			const copyMessageButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
 			this._copyMessageButton = new Button(copyMessageButtonContainer);
-			this._copyMessageButton.icon = 'copy-message-icon';
+			this._copyMessageButton.icon = {
+				classNames: 'copy-message-icon'
+			};
 			this._copyMessageButton.label = COPY_TEXT;
 			this._register(this._copyMessageButton.onDidClick(() => this._clipboardService.writeText(this.getTextForClipboard())));
 			const closeMessageButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
 			this._closeMessageButton = new Button(closeMessageButtonContainer);
-			this._closeMessageButton.icon = 'close-message-icon';
+			this._closeMessageButton.icon = {
+				classNames: 'close-message-icon'
+			};
 			this._closeMessageButton.label = CLOSE_TEXT;
 			this._register(this._closeMessageButton.onDidClick(() => this.setError(undefined)));
 
@@ -416,9 +424,9 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * @param label Label to show on the button
 	 * @param onSelect The callback to call when the button is selected
 	 */
-	protected addFooterButton(label: string, onSelect: () => void, orientation: 'left' | 'right' = 'right'): Button {
+	protected addFooterButton(label: string, onSelect: () => void, orientation: 'left' | 'right' = 'right', isSecondary: boolean = false): Button {
 		let footerButton = DOM.$('.footer-button');
-		let button = this._register(new Button(footerButton));
+		let button = this._register(new Button(footerButton, { secondary: isSecondary }));
 		button.label = label;
 		button.onDidClick(() => onSelect()); // @todo this should be registered to dispose but that brakes some dialogs
 		if (orientation === 'left') {

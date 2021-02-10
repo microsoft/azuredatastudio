@@ -7,7 +7,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import * as nls from 'vs/nls';
 import { SyncActionDescriptor, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
-import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
+import { IWorkbenchActionRegistry, Extensions, CATEGORIES } from 'vs/workbench/common/actions';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { isLinux, isMacintosh } from 'vs/base/common/platform';
 import { ToggleDevToolsAction, ConfigureRuntimeArgumentsAction } from 'vs/workbench/electron-sandbox/actions/developerActions';
@@ -18,7 +18,7 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IsMacContext } from 'vs/platform/contextkey/common/contextkeys';
 import { EditorsVisibleContext, SingleEditorGroupsContext } from 'vs/workbench/common/editor';
-import { IElectronService } from 'vs/platform/electron/electron-sandbox/electron';
+import { INativeHostService } from 'vs/platform/native/electron-sandbox/native';
 import { IJSONContributionRegistry, Extensions as JSONExtensions } from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 import product from 'vs/platform/product/common/product';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
@@ -32,11 +32,9 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 
 	// Actions: Zoom
 	(function registerZoomActions(): void {
-		const viewCategory = nls.localize('view', "View");
-
-		registry.registerWorkbenchAction(SyncActionDescriptor.from(ZoomInAction, { primary: KeyMod.CtrlCmd | KeyCode.US_EQUAL, secondary: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.US_EQUAL, KeyMod.CtrlCmd | KeyCode.NUMPAD_ADD] }), 'View: Zoom In', viewCategory);
-		registry.registerWorkbenchAction(SyncActionDescriptor.from(ZoomOutAction, { primary: KeyMod.CtrlCmd | KeyCode.US_MINUS, secondary: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.US_MINUS, KeyMod.CtrlCmd | KeyCode.NUMPAD_SUBTRACT], linux: { primary: KeyMod.CtrlCmd | KeyCode.US_MINUS, secondary: [KeyMod.CtrlCmd | KeyCode.NUMPAD_SUBTRACT] } }), 'View: Zoom Out', viewCategory);
-		registry.registerWorkbenchAction(SyncActionDescriptor.from(ZoomResetAction, { primary: KeyMod.CtrlCmd | KeyCode.NUMPAD_0 }), 'View: Reset Zoom', viewCategory);
+		registry.registerWorkbenchAction(SyncActionDescriptor.from(ZoomInAction, { primary: KeyMod.CtrlCmd | KeyCode.US_EQUAL, secondary: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.US_EQUAL, KeyMod.CtrlCmd | KeyCode.NUMPAD_ADD] }), 'View: Zoom In', CATEGORIES.View.value);
+		registry.registerWorkbenchAction(SyncActionDescriptor.from(ZoomOutAction, { primary: KeyMod.CtrlCmd | KeyCode.US_MINUS, secondary: [KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.US_MINUS, KeyMod.CtrlCmd | KeyCode.NUMPAD_SUBTRACT], linux: { primary: KeyMod.CtrlCmd | KeyCode.US_MINUS, secondary: [KeyMod.CtrlCmd | KeyCode.NUMPAD_SUBTRACT] } }), 'View: Zoom Out', CATEGORIES.View.value);
+		registry.registerWorkbenchAction(SyncActionDescriptor.from(ZoomResetAction, { primary: KeyMod.CtrlCmd | KeyCode.NUMPAD_0 }), 'View: Reset Zoom', CATEGORIES.View.value);
 	})();
 
 	// Actions: Window
@@ -51,8 +49,8 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 			when: ContextKeyExpr.and(EditorsVisibleContext.toNegated(), SingleEditorGroupsContext),
 			primary: KeyMod.CtrlCmd | KeyCode.KEY_W,
 			handler: accessor => {
-				const electronService = accessor.get(IElectronService);
-				electronService.closeWindow();
+				const nativeHostService = accessor.get(INativeHostService);
+				nativeHostService.closeWindow();
 			}
 		});
 
@@ -60,8 +58,8 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 			id: 'workbench.action.quit',
 			weight: KeybindingWeight.WorkbenchContrib,
 			handler(accessor: ServicesAccessor) {
-				const electronService = accessor.get(IElectronService);
-				electronService.quit();
+				const nativeHostService = accessor.get(INativeHostService);
+				nativeHostService.quit();
 			},
 			when: undefined,
 			mac: { primary: KeyMod.CtrlCmd | KeyCode.KEY_Q },
@@ -92,9 +90,8 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 
 	// Actions: Developer
 	(function registerDeveloperActions(): void {
-		const developerCategory = nls.localize({ key: 'developer', comment: ['A developer on Code itself or someone diagnosing issues in Code'] }, "Developer");
-		registry.registerWorkbenchAction(SyncActionDescriptor.from(ReloadWindowWithExtensionsDisabledAction), 'Developer: Reload With Extensions Disabled', developerCategory);
-		registry.registerWorkbenchAction(SyncActionDescriptor.from(ToggleDevToolsAction), 'Developer: Toggle Developer Tools', developerCategory);
+		registry.registerWorkbenchAction(SyncActionDescriptor.from(ReloadWindowWithExtensionsDisabledAction), 'Developer: Reload With Extensions Disabled', CATEGORIES.Developer.value);
+		registry.registerWorkbenchAction(SyncActionDescriptor.from(ToggleDevToolsAction), 'Developer: Toggle Developer Tools', CATEGORIES.Developer.value);
 
 		KeybindingsRegistry.registerKeybindingRule({
 			id: ToggleDevToolsAction.ID,
@@ -227,16 +224,17 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 			},
 			'window.restoreWindows': {
 				'type': 'string',
-				'enum': ['all', 'folders', 'one', 'none'],
+				'enum': ['preserve', 'all', 'folders', 'one', 'none'],
 				'enumDescriptions': [
-					nls.localize('window.reopenFolders.all', "Reopen all windows."),
-					nls.localize('window.reopenFolders.folders', "Reopen all folders. Empty workspaces will not be restored."),
-					nls.localize('window.reopenFolders.one', "Reopen the last active window."),
-					nls.localize('window.reopenFolders.none', "Never reopen a window. Always start with an empty one.")
+					nls.localize('window.reopenFolders.preserve', "Reopen all windows. If a folder or workspace is opened (e.g. from the command line) it opens as new window. Files will open in one of the restored windows."),
+					nls.localize('window.reopenFolders.all', "Reopen all windows unless a folder, workspace or file is opened (e.g. from the command line)."),
+					nls.localize('window.reopenFolders.folders', "Reopen all windows that had folders or workspaces opened unless a folder, workspace or file is opened (e.g. from the command line)."),
+					nls.localize('window.reopenFolders.one', "Reopen the last active window unless a folder, workspace or file is opened (e.g. from the command line)."),
+					nls.localize('window.reopenFolders.none', "Never reopen a window. Unless a folder or workspace is opened (e.g. from the command line), an empty window will appear.")
 				],
 				'default': 'all',
 				'scope': ConfigurationScope.APPLICATION,
-				'description': nls.localize('restoreWindows', "Controls how windows are being reopened after a restart.")
+				'description': nls.localize('restoreWindows', "Controls how windows are being reopened after starting for the first time. This setting has no effect when the application is already running.")
 			},
 			'window.restoreFullscreen': {
 				'type': 'boolean',
@@ -281,6 +279,13 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 				'scope': ConfigurationScope.APPLICATION,
 				'description': nls.localize('titleBarStyle', "Adjust the appearance of the window title bar. On Linux and Windows, this setting also affects the application and context menu appearances. Changes require a full restart to apply.")
 			},
+			'window.dialogStyle': {
+				'type': 'string',
+				'enum': ['native', 'custom'],
+				'default': 'native',
+				'scope': ConfigurationScope.APPLICATION,
+				'description': nls.localize('dialogStyle', "Adjust the appearance of dialog windows.")
+			},
 			'window.nativeTabs': {
 				'type': 'boolean',
 				'default': false,
@@ -301,6 +306,12 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 				'scope': ConfigurationScope.APPLICATION,
 				'description': nls.localize('window.clickThroughInactive', "If enabled, clicking on an inactive window will both activate the window and trigger the element under the mouse if it is clickable. If disabled, clicking anywhere on an inactive window will activate it only and a second click is required on the element."),
 				'included': isMacintosh
+			},
+			'window.enableExperimentalProxyLoginDialog': {
+				'type': 'boolean',
+				'default': true,
+				'scope': ConfigurationScope.APPLICATION,
+				'description': nls.localize('window.enableExperimentalProxyLoginDialog', "Enables a new login dialog for proxy authentication. Requires a restart to take effect."),
 			}
 		}
 	});

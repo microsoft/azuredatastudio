@@ -22,7 +22,7 @@ export interface CommandEventArgs<T extends Slick.SlickData> {
 
 export class HeaderFilter<T extends Slick.SlickData> {
 
-	public onFilterApplied = new Slick.Event<{ grid: Slick.Grid<T>, column: IExtendedColumn<T>}>();
+	public onFilterApplied = new Slick.Event<{ grid: Slick.Grid<T>, column: IExtendedColumn<T> }>();
 	public onCommand = new Slick.Event<CommandEventArgs<T>>();
 
 	private grid!: Slick.Grid<T>;
@@ -221,7 +221,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			this.handleApply(ev, this.columnDef);
 		});
 
-		this.clearButton = new Button(this.$menu.get(0));
+		this.clearButton = new Button(this.$menu.get(0), { secondary: true });
 		this.clearButton.label = localize('headerFilter.clear', "Clear");
 		this.clearButton.title = localize('headerFilter.clear', "Clear");
 		this.clearButton.element.id = 'filter-clear-button';
@@ -232,7 +232,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			this.handleApply(ev, this.columnDef);
 		});
 
-		this.cancelButton = new Button(this.$menu.get(0));
+		this.cancelButton = new Button(this.$menu.get(0), { secondary: true });
 		this.cancelButton.label = localize('headerFilter.cancel', "Cancel");
 		this.cancelButton.title = localize('headerFilter.cancel', "Cancel");
 		this.cancelButton.element.id = 'filter-cancel-button';

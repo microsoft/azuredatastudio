@@ -9,7 +9,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { ColorIdentifier, activeContrastBorder, foreground } from 'vs/platform/theme/common/colorRegistry';
 import { attachStyler, IColorMapping, attachButtonStyler, attachLinkStyler, attachProgressBarStyler } from 'vs/platform/theme/common/styler';
 import { SIDE_BAR_DRAG_AND_DROP_BACKGROUND, SIDE_BAR_SECTION_HEADER_FOREGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, SIDE_BAR_SECTION_HEADER_BORDER, PANEL_BACKGROUND, SIDE_BAR_BACKGROUND, PANEL_SECTION_HEADER_FOREGROUND, PANEL_SECTION_HEADER_BACKGROUND, PANEL_SECTION_HEADER_BORDER, PANEL_SECTION_DRAG_AND_DROP_BACKGROUND, PANEL_SECTION_BORDER } from 'vs/workbench/common/theme';
-import { after, append, $, trackFocus, EventType, isAncestor, Dimension, addDisposableListener, createCSSRule, asCSSUrl, addClasses } from 'vs/base/browser/dom';
+import { after, append, $, trackFocus, EventType, isAncestor, Dimension, addDisposableListener, createCSSRule, asCSSUrl } from 'vs/base/browser/dom';
 import { IDisposable, combinedDisposable, dispose, toDisposable, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IAction, Separator, IActionViewItem } from 'vs/base/common/actions';
 import { ActionsOrientation, prepareActions } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -18,15 +18,15 @@ import { ToolBar } from 'vs/base/browser/ui/toolbar/toolbar';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IThemeService, Themable } from 'vs/platform/theme/common/themeService';
+import { IThemeService, Themable, ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { PaneView, IPaneViewOptions, IPaneOptions, Pane, IPaneStyles } from 'vs/base/browser/ui/splitview/paneview';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkbenchLayoutService, Position } from 'vs/workbench/services/layout/browser/layoutService';
 import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
-import { Extensions as ViewContainerExtensions, IView, FocusedViewContext, IViewDescriptor, ViewContainer, IViewDescriptorService, ViewContainerLocation, IViewPaneContainer, IViewsRegistry, IViewContentDescriptor, IAddedViewDescriptorRef, IViewDescriptorRef, IViewContainerModel } from 'vs/workbench/common/views';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { Extensions as ViewContainerExtensions, IView, FocusedViewContext, IViewDescriptor, ViewContainer, IViewDescriptorService, ViewContainerLocation, IViewPaneContainer, IViewsRegistry, IViewContentDescriptor, IAddedViewDescriptorRef, IViewDescriptorRef, IViewContainerModel, defaultViewIcon } from 'vs/workbench/common/views';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { assertIsDefined, isString } from 'vs/base/common/types';
+import { assertIsDefined } from 'vs/base/common/types';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -50,6 +50,8 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { URI } from 'vs/base/common/uri';
 import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
+import { Codicon } from 'vs/base/common/codicons';
 
 export interface IPaneColors extends IColorMapping {
 	dropBackground?: ColorIdentifier;
@@ -69,6 +71,9 @@ type WelcomeActionClassification = {
 	viewId: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
 	uri: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
 };
+
+const viewPaneContainerExpandedIcon = registerIcon('view-pane-container-expanded', Codicon.chevronDown, nls.localize('viewPaneContainerExpandedIcon', 'Icon for an expanded view pane container.'));
+const viewPaneContainerCollapsedIcon = registerIcon('view-pane-container-collapsed', Codicon.chevronRight, nls.localize('viewPaneContainerCollapsedIcon', 'Icon for a collapsed view pane container.'));
 
 const viewsRegistry = Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry);
 
@@ -263,7 +268,10 @@ export abstract class ViewPane extends Pane implements IView {
 		if (changed) {
 			this._onDidChangeBodyVisibility.fire(expanded);
 		}
-
+		if (this.twistiesContainer) {
+			this.twistiesContainer.classList.remove(...ThemeIcon.asClassNameArray(this.getTwistyIcon(!expanded)));
+			this.twistiesContainer.classList.add(...ThemeIcon.asClassNameArray(this.getTwistyIcon(expanded)));
+		}
 		return changed;
 	}
 
@@ -288,7 +296,7 @@ export abstract class ViewPane extends Pane implements IView {
 	protected renderHeader(container: HTMLElement): void {
 		this.headerContainer = container;
 
-		this.renderTwisties(container);
+		this.twistiesContainer = append(container, $(ThemeIcon.asCSSSelector(this.getTwistyIcon(this.isExpanded()))));
 
 		this.renderHeaderTitle(container, this.title);
 
@@ -305,6 +313,8 @@ export abstract class ViewPane extends Pane implements IView {
 		this._register(this.toolbar);
 		this.setActions();
 
+		this._register(addDisposableListener(actions, EventType.CLICK, e => e.preventDefault()));
+
 		this._register(this.viewDescriptorService.getViewContainerModel(this.viewDescriptorService.getViewContainerByViewId(this.id)!)!.onDidChangeContainerInfo(({ title }) => {
 			this.updateTitle(this.title);
 		}));
@@ -314,8 +324,8 @@ export abstract class ViewPane extends Pane implements IView {
 		this.updateActionsVisibility();
 	}
 
-	protected renderTwisties(container: HTMLElement): void {
-		this.twistiesContainer = append(container, $('.twisties.codicon.codicon-chevron-right'));
+	protected getTwistyIcon(expanded: boolean): ThemeIcon {
+		return expanded ? viewPaneContainerExpandedIcon : viewPaneContainerCollapsedIcon;
 	}
 
 	style(styles: IPaneStyles): void {
@@ -336,8 +346,8 @@ export abstract class ViewPane extends Pane implements IView {
 		}
 	}
 
-	private getIcon(): string | URI {
-		return this.viewDescriptorService.getViewDescriptorById(this.id)?.containerIcon || 'codicon-window';
+	private getIcon(): ThemeIcon | URI {
+		return this.viewDescriptorService.getViewDescriptorById(this.id)?.containerIcon || defaultViewIcon;
 	}
 
 	protected renderHeaderTitle(container: HTMLElement, title: string): void {
@@ -355,13 +365,12 @@ export abstract class ViewPane extends Pane implements IView {
 				-webkit-mask: ${asCSSUrl(icon)} no-repeat 50% 50%;
 				-webkit-mask-size: 16px;
 			`);
-		} else if (isString(icon)) {
-			this.iconContainer.classList.add('codicon');
-			cssClass = icon;
+		} else if (ThemeIcon.isThemeIcon(icon)) {
+			cssClass = ThemeIcon.asClassName(icon);
 		}
 
 		if (cssClass) {
-			addClasses(this.iconContainer, cssClass);
+			this.iconContainer.classList.add(...cssClass.split(' '));
 		}
 
 		const calculatedTitle = this.calculateTitle(title);
@@ -554,9 +563,7 @@ export abstract class ViewPane extends Pane implements IView {
 		this.bodyContainer.classList.add('welcome');
 		this.viewWelcomeContainer.innerText = '';
 
-		let buttonIndex = 0;
-
-		for (const { content, preconditions } of contents) {
+		for (const { content, precondition } of contents) {
 			const lines = content.split('\n');
 
 			for (let line of lines) {
@@ -579,21 +586,15 @@ export abstract class ViewPane extends Pane implements IView {
 					disposables.add(button);
 					disposables.add(attachButtonStyler(button, this.themeService));
 
-					if (preconditions) {
-						const precondition = preconditions[buttonIndex];
+					if (precondition) {
+						const updateEnablement = () => button.enabled = this.contextKeyService.contextMatchesRules(precondition);
+						updateEnablement();
 
-						if (precondition) {
-							const updateEnablement = () => button.enabled = this.contextKeyService.contextMatchesRules(precondition);
-							updateEnablement();
-
-							const keys = new Set();
-							precondition.keys().forEach(key => keys.add(key));
-							const onDidChangeContext = Event.filter(this.contextKeyService.onDidChangeContext, e => e.affectsSome(keys));
-							onDidChangeContext(updateEnablement, null, disposables);
-						}
+						const keys = new Set();
+						precondition.keys().forEach(key => keys.add(key));
+						const onDidChangeContext = Event.filter(this.contextKeyService.onDidChangeContext, e => e.affectsSome(keys));
+						onDidChangeContext(updateEnablement, null, disposables);
 					}
-
-					buttonIndex++;
 				} else {
 					const p = append(this.viewWelcomeContainer, $('p'));
 
@@ -640,7 +641,7 @@ type BoundingRect = { top: number, left: number, bottom: number, right: number }
 
 class ViewPaneDropOverlay extends Themable {
 
-	private static readonly OVERLAY_ID = 'monaco-workbench-pane-drop-overlay';
+	private static readonly OVERLAY_ID = 'monaco-pane-drop-overlay';
 
 	private container!: HTMLElement;
 	private overlay!: HTMLElement;
@@ -1317,7 +1318,7 @@ export class ViewPaneContainer extends Component implements IViewPaneContainer {
 
 	saveState(): void {
 		this.panes.forEach((view) => view.saveState());
-		this.storageService.store(this.visibleViewsStorageId, this.length, StorageScope.WORKSPACE);
+		this.storageService.store(this.visibleViewsStorageId, this.length, StorageScope.WORKSPACE, StorageTarget.USER);
 	}
 
 	private onContextMenu(event: StandardMouseEvent, viewDescriptor: IViewDescriptor): void {

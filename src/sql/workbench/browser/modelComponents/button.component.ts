@@ -11,19 +11,16 @@ import {
 import * as azdata from 'azdata';
 
 import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 
-import { SIDE_BAR_BACKGROUND, SIDE_BAR_TITLE_FOREGROUND } from 'vs/workbench/common/theme';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { focusBorder, foreground } from 'vs/platform/theme/common/colorRegistry';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { InfoButton } from 'sql/base/browser/ui/infoButton/infoButton';
-import { Color } from 'vs/base/common/color';
 import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 @Component({
 	selector: 'modelview-button',
@@ -78,7 +75,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		this._currentButtonType = this.buttonType;
 		const elementToRemove = this._button?.element;
 		if (this._inputContainer) {
-			this._button = new Button(this._inputContainer.nativeElement);
+			this._button = new Button(this._inputContainer.nativeElement, { secondary: this.secondary });
 		} else if (this._infoButtonContainer) {
 			this._button = new InfoButton(this._infoButtonContainer.nativeElement);
 		}
@@ -177,7 +174,9 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		if (this.iconPath) {
 			if (!this._iconClass) {
 				super.updateIcon();
-				this._button.icon = this._iconClass + ' icon';
+				this._button.icon = {
+					classNames: this._iconClass + ' icon'
+				};
 				this.updateStyler();
 			} else {
 				super.updateIcon();
@@ -192,22 +191,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 	 */
 	private updateStyler(): void {
 		this._buttonStyler?.dispose();
-		if (this.iconPath) {
-			this._buttonStyler = this._register(attachButtonStyler(this._button, this.themeService, {
-				buttonBackground: Color.transparent.toString(),
-				buttonHoverBackground: Color.transparent.toString(),
-				buttonFocusOutline: focusBorder,
-				buttonForeground: foreground
-			}));
-		} else {
-			this._buttonStyler = this._register(attachButtonStyler(this._button, this.themeService, {
-				buttonBackground: SIDE_BAR_BACKGROUND,
-				buttonHoverBackground: SIDE_BAR_BACKGROUND,
-				buttonForeground: SIDE_BAR_TITLE_FOREGROUND
-			}));
-		}
-
-
+		this._buttonStyler = this._register(attachButtonStyler(this._button, this.themeService));
 	}
 
 	protected get defaultIconHeight(): number {
@@ -266,5 +250,9 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 
 	private setFileProperties(properties: azdata.ButtonProperties, isFile: boolean): void {
 		properties.isFile = isFile;
+	}
+
+	private get secondary(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.secondary, false);
 	}
 }
