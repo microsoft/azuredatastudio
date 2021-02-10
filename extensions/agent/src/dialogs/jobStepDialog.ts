@@ -154,18 +154,20 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 
 	private createCommands(view: azdata.ModelView, queryProvider: azdata.QueryProvider) {
 		this.openButton = view.modelBuilder.button()
-			.withProperties({
+			.withProps({
 				label: this.OpenCommandText,
 				title: this.OpenCommandText,
 				width: '80px',
-				isFile: true
+				isFile: true,
+				secondary: true
 			}).component();
 		this.parseButton = view.modelBuilder.button()
-			.withProperties({
+			.withProps({
 				label: this.ParseCommandText,
 				title: this.ParseCommandText,
 				width: '80px',
-				isFile: false
+				isFile: false,
+				secondary: true
 			}).component();
 		this.openButton.onDidClick(e => {
 			let queryContent = e.fileContent;
@@ -492,7 +494,11 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 
 	private createTSQLOptions(view: azdata.ModelView) {
 		this.outputFileBrowserButton = view.modelBuilder.button()
-			.withProperties({ width: '20px', label: '...' }).component();
+			.withProps({
+				width: '20px',
+				label: '...',
+				secondary: true
+			}).component();
 		this.outputFileBrowserButton.onDidClick(() => this.openFileBrowserDialog());
 		this.outputFileNameBox = view.modelBuilder.inputBox()
 			.withProperties({

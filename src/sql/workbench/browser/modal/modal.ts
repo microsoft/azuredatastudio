@@ -191,7 +191,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalHeaderSection = DOM.append(this._modalContent, DOM.$('.modal-header'));
 			if (this._modalOptions.hasBackButton) {
 				const container = DOM.append(this._modalHeaderSection, DOM.$('.modal-go-back'));
-				this._backButton = new Button(container);
+				this._backButton = new Button(container, { secondary: true });
 				this._backButton.icon = {
 					classNames: 'backButtonIcon'
 				};
@@ -424,9 +424,9 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * @param label Label to show on the button
 	 * @param onSelect The callback to call when the button is selected
 	 */
-	protected addFooterButton(label: string, onSelect: () => void, orientation: 'left' | 'right' = 'right'): Button {
+	protected addFooterButton(label: string, onSelect: () => void, orientation: 'left' | 'right' = 'right', isSecondary: boolean = false): Button {
 		let footerButton = DOM.$('.footer-button');
-		let button = this._register(new Button(footerButton));
+		let button = this._register(new Button(footerButton, { secondary: isSecondary }));
 		button.label = label;
 		button.onDidClick(() => onSelect()); // @todo this should be registered to dispose but that brakes some dialogs
 		if (orientation === 'left') {

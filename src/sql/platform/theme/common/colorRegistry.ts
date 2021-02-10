@@ -22,14 +22,7 @@ export const tileBorder = registerColor('tileBorder', { light: '#fff', dark: '#8
 export const tileBoxShadow = registerColor('tileBoxShadow', { light: tileBoxShadowColor, dark: tileBoxShadowColor, hc: tileBoxShadowColor }, nls.localize('tileBoxShadow', "The tile box shadow color"));
 
 // -- Buttons
-export const buttonSecondaryBorder = registerColor('button.secondaryBorder', { light: '#8A8886', dark: '#FFF', hc: '#264BD3' }, nls.localize('button.secondaryBorder', "The border color for secondary button"));
-export const buttonSecondaryBackground = registerColor('button.secondaryBackground', { light: null, dark: null, hc: null }, nls.localize('button.secondaryBackground', "The background color for the secondary button"));
-export const buttonSecondary = registerColor('button.secondaryForeground', { light: '#323130', dark: '#fff', hc: '#fff' }, nls.localize('button.secondaryForeground', "The font color for secondary button"));
-export const buttonSecondaryHoverColor = registerColor('button.secondaryHoverForeground', { light: '#0078D4', dark: '#3794ff', hc: '#3794ff' }, nls.localize('button.secondaryHoverForeground', "The hover color for secondary buttons"));
-export const buttonSecondaryHoverBorder = registerColor('button.buttonSecondaryHoverBorder', { light: '#0078D4', dark: '#3794ff', hc: '#3794ff' }, nls.localize('button.buttonSecondaryHoverBorder', "The hover border color for secondary buttons"));
 export const buttonDropdownBackgroundHover = registerColor('buttonDropdownBackgroundHover', { light: '#3062d6', dark: '#3062d6', hc: '#3062d6' }, nls.localize('buttonDropdownBackgroundHover', "The button dropdown background hover color"));
-export const disabledButton = registerColor('button.disabledForeground', { light: '#A19F9D', dark: '#797775', hc: '#797775' }, nls.localize('button.disabledForeground', "The color for a secondary disabled button"));
-export const disabledButtonBackground = registerColor('button.disabledBackground', { light: '#F3F2F1', dark: '#252423', hc: '#252423' }, nls.localize('button.disabledBackground', "The background color for secondary disabled button"));
 
 // -- Shadows
 export const hoverShadow = registerColor('buttonDropdownBoxShadow', { light: dropdownBoxShadow, dark: dropdownBoxShadow, hc: dropdownBoxShadow }, nls.localize('buttonDropdownBoxShadow', "The button dropdown box shadow color"));

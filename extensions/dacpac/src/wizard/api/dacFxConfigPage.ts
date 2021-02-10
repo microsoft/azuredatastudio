@@ -171,10 +171,11 @@ export abstract class DacFxConfigPage extends BasePage {
 		});
 
 		this.fileTextBox.ariaLabel = loc.fileLocation;
-		this.fileButton = this.view.modelBuilder.button().withProperties({
+		this.fileButton = this.view.modelBuilder.button().withProps({
 			label: '•••',
 			title: loc.selectFile,
-			ariaLabel: loc.selectFile
+			ariaLabel: loc.selectFile,
+			secondary: true
 		}).component();
 	}
 

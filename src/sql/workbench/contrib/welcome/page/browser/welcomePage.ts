@@ -28,9 +28,9 @@ import { IWorkbenchExtensionEnablementService, EnablementState } from 'vs/workbe
 import { ILifecycleService, StartupKind } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
-import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { buttonSecondaryBackground, buttonSecondaryBorder, buttonSecondary, buttonSecondaryHoverColor, tileBorder, disabledButton, disabledButtonBackground, gradientOne, gradientTwo, gradientBackground, extensionPackHeaderShadow, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, tileBoxShadow, hoverShadow } from 'sql/platform/theme/common/colorRegistry';
-import { registerColor, foreground, textLinkActiveForeground, descriptionForeground, activeContrastBorder, buttonForeground, menuBorder, menuForeground, editorWidgetBorder, selectBackground, buttonHoverBackground, selectBorder, iconForeground, textLinkForeground, inputBackground, focusBorder, listFocusBackground, listFocusForeground } from 'vs/platform/theme/common/colorRegistry';
+import { IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { tileBorder, gradientOne, gradientTwo, gradientBackground, extensionPackHeaderShadow, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, tileBoxShadow, hoverShadow } from 'sql/platform/theme/common/colorRegistry';
+import { registerColor, foreground, textLinkActiveForeground, descriptionForeground, activeContrastBorder, buttonForeground, menuBorder, menuForeground, editorWidgetBorder, selectBackground, buttonHoverBackground, selectBorder, iconForeground, textLinkForeground, inputBackground, focusBorder, listFocusBackground, listFocusForeground, buttonSecondaryBackground, buttonSecondaryBorder, buttonDisabledForeground, buttonDisabledBackground, buttonSecondaryForeground, buttonSecondaryHoverBackground } from 'vs/platform/theme/common/colorRegistry';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IEditorInputFactory, EditorInput } from 'vs/workbench/common/editor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -52,7 +52,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ICommandAction, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IExtensionRecommendationsService } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
@@ -248,7 +248,8 @@ class WelcomePage extends Disposable {
 		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
 		@ICommandService private readonly commandService: ICommandService,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
-		@IContextKeyService private readonly contextKeyService: IContextKeyService) {
+		@IContextKeyService private readonly contextKeyService: IContextKeyService,
+		@IThemeService private themeService: IThemeService) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
 		const recentlyOpened = this.workspacesService.getRecentlyOpened();
@@ -570,6 +571,7 @@ class WelcomePage extends Disposable {
 			extensionPacks.forEach((extension) => {
 				const installText = localize('welcomePage.install', "Install");
 				let dropdownBtn = this._register(new Button(btnContainer));
+				this._register(attachButtonStyler(dropdownBtn, this.themeService));
 				dropdownBtn.label = installText;
 				const classes = ['btn'];
 				const getDropdownBtn = container.querySelector('.extensionPack .monaco-button:first-of-type') as HTMLAnchorElement;
@@ -599,6 +601,7 @@ class WelcomePage extends Disposable {
 				installedButton.label = installedText;
 				installedButton.enabled = false;
 				const getInstalledButton = container.querySelector('.extensionPack .monaco-button:nth-of-type(2)') as HTMLAnchorElement;
+				this._register(attachButtonStyler(installedButton, this.themeService));
 
 				getInstalledButton.innerText = localize('welcomePage.installed', "Installed");
 				getInstalledButton.title = extension.isKeymap ? localize('welcomePage.installedKeymap', "{0} keymap is already installed", extension.name) : localize('welcomePage.installedExtensionPack', "{0} support is already installed", extension.name);
@@ -875,7 +878,7 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonHoverBackgroundColor = theme.getColor(buttonHoverBackground);
 	if (buttonHoverBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary:hover { background: ${buttonHoverBackgroundColor}}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary:hover { background-color: ${buttonHoverBackgroundColor}}`);
 	}
 	const buttonSecondaryBackgroundColor = theme.getColor(buttonSecondaryBackground);
 	if (buttonSecondaryBackgroundColor) {
@@ -885,13 +888,13 @@ registerThemingParticipant((theme, collector) => {
 	if (buttonSecondaryBorderColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary .monaco-button{ border: 1px solid ${buttonSecondaryBorderColor}}`);
 	}
-	const buttonSecondaryColor = theme.getColor(buttonSecondary);
+	const buttonSecondaryColor = theme.getColor(buttonSecondaryForeground);
 	if (buttonSecondaryColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { color: ${buttonSecondaryColor} !important}`);
 	}
-	const buttonSecondaryHover = theme.getColor(buttonSecondaryHoverColor);
+	const buttonSecondaryHover = theme.getColor(buttonSecondaryHoverBackground);
 	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary:hover:not(.disabled) { color: ${buttonSecondaryHover};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary:hover:not(.disabled) { background-color: ${buttonSecondaryHover};}`);
 	}
 	const selectBackgroundColor = theme.getColor(selectBackground);
 	if (selectBackgroundColor) {
@@ -934,11 +937,11 @@ registerThemingParticipant((theme, collector) => {
 	if (descriptionColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .detail { color: ${descriptionColor}; }`);
 	}
-	const disabledButtonColor = theme.getColor(disabledButton);
+	const disabledButtonColor = theme.getColor(buttonDisabledForeground);
 	if (disabledButtonColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .btn:disabled { color: ${disabledButtonColor}; }`);
 	}
-	const disabledButtonBackgroundColor = theme.getColor(disabledButtonBackground);
+	const disabledButtonBackgroundColor = theme.getColor(buttonDisabledBackground);
 	if (disabledButtonColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .btn:disabled { background: ${disabledButtonBackgroundColor}; }`);
 	}

@@ -7,7 +7,6 @@ import 'vs/css!./media/errorMessageDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -24,6 +23,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 const maxActions = 1;
 
@@ -79,7 +79,7 @@ export class ErrorMessageDialog extends Modal {
 			if (this._messageDetails) {
 				this._clipboardService.writeText(this._messageDetails!).catch(err => onUnexpectedError(err));
 			}
-		}, 'left');
+		}, 'left', true);
 		this._copyButton!.icon = {
 			classNames: 'codicon scriptToClipboard'
 		};
@@ -88,7 +88,7 @@ export class ErrorMessageDialog extends Modal {
 	}
 
 	private createStandardButton(label: string, onSelect: () => void): Button {
-		let button = this.addFooterButton(label, onSelect, 'right');
+		let button = this.addFooterButton(label, onSelect, 'right', true);
 		this._register(attachButtonStyler(button, this._themeService));
 		return button;
 	}
