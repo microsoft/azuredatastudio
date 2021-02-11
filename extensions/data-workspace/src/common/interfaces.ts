@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import { IProjectProvider, IProjectType, } from 'dataworkspace';
+import * as vscode from 'vscode';
 
 /**
  * Defines the project provider registry

@@ -34,23 +34,25 @@ export function createProjectProvider(projectTypes: IProjectType[]): IProjectPro
 		},
 		getProjectToolbarActions: (): IProjectAction[] => {
 			return [{
-				id: 'Add'
+				id: 'Add',
+				run: async (): Promise<any> => { return Promise.resolve(); }
 			},
 			{
-				id: 'Schema Compare'
+				id: 'Schema Compare',
+				run: async (): Promise<any> => { return Promise.resolve(); }
 			},
 			{
-				id: 'Build'
+				id: 'Build',
+				run: async (): Promise<any> => { return Promise.resolve(); }
 			},
 			{
-				id: 'Publish'
+				id: 'Publish',
+				run: async (): Promise<any> => { return Promise.resolve(); }
 			},
 			{
-				id: 'Target Version'
+				id: 'Target Version',
+				run: async (): Promise<any> => { return Promise.resolve(); }
 			} ];
-		},
-		performAction: (treeItem: WorkspaceTreeItem, actionId: string): Promise<void> => {
-			return Promise.resolve();
 		}
 	};
 	return projectProvider;

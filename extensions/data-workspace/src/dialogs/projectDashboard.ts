@@ -62,7 +62,7 @@ export class ProjectDashboard {
 				}).component();
 
 			button.onDidClick(async () => {
-				await this.projectProvider!.performAction(this.treeItem, projectAction.id);
+				await projectAction.run(this.treeItem);
 			});
 
 			buttons.push({ component: button, toolbarSeparatorAfter: projectAction.toolbarSeparatorAfter ? projectAction.toolbarSeparatorAfter : false });

@@ -81,44 +81,29 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	getProjectToolbarActions(): dataworkspace.IProjectAction[] {
 		return [{
 			id: constants.addItemAction,
-			icon: IconPathHelper.add
+			icon: IconPathHelper.add,
+			run: async (treeItem): Promise<any> => await this.projectController.addItemPromptFromNode(treeItem)
 		},
 		{
 			id: constants.schemaCompareAction,
-			icon: IconPathHelper.schemaCompare
+			icon: IconPathHelper.schemaCompare,
+			run: async (treeItem): Promise<any> => await this.projectController.schemaCompare(treeItem)
 		},
 		{
 			id: constants.buildAction,
-			icon: IconPathHelper.build
+			icon: IconPathHelper.build,
+			run: async (treeItem): Promise<any> => await this.projectController.buildProject(treeItem)
 		},
 		{
 			id: constants.publishAction,
 			icon: IconPathHelper.publish,
-			toolbarSeparatorAfter: true
+			toolbarSeparatorAfter: true,
+			run: async (treeItem): Promise<any> => await this.projectController.publishProject(treeItem)
 		},
 		{
 			id: constants.targetPlatformAction,
-			icon: IconPathHelper.targetPlatform
+			icon: IconPathHelper.targetPlatform,
+			run: async (treeItem): Promise<any> => await this.projectController.changeTargetPlatform(treeItem)
 		}];
-	}
-
-	/**
-	 * Perform the desired action from the tooldbar
-	 * @param treeNode The treeItem in a project's hierarchy, to be used to obtain a Project
-	 * @param actionId the action to perform
-	 */
-	async performAction(treeItem: dataworkspace.WorkspaceTreeItem, actionId: string): Promise<void> {
-		if (actionId === constants.addItemAction) {
-			await this.projectController.addItemPromptFromNode(treeItem);
-		} else if (actionId === constants.schemaCompareAction) {
-			await this.projectController.schemaCompare(treeItem);
-		} else if (actionId === constants.buildAction) {
-			await this.projectController.buildProject(treeItem);
-		} else if (actionId === constants.publishAction) {
-			await this.projectController.publishProject(treeItem);
-		} else if (actionId === constants.targetPlatformAction) {
-			await this.projectController.changeTargetPlatform(treeItem);
-		}
-		return Promise.resolve();
 	}
 }

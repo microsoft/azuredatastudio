@@ -74,13 +74,6 @@ declare module 'dataworkspace' {
 		 * Gets the project actions to be placed on the dashboard toolbar
 		 */
 		getProjectToolbarActions(): IProjectAction[];
-
-		/**
-		 * Perform the desired action from the tooldbar
-		 * @param treeNode The treeItem in a project's hierarchy, to be used to obtain a Project
-		 * @param actionId the action to perform
-		 */
-		performAction(treeItem: WorkspaceTreeItem, actionId: string): Promise<void>;
 	}
 
 	/**
@@ -143,5 +136,11 @@ declare module 'dataworkspace' {
 		 * boolean to specify if a toolbar separator should be added after this action
 		 */
 		readonly toolbarSeparatorAfter?: boolean;
+
+		/**
+		 * Run context for each project action
+		 * @param treeItem The treeItem in a project's hierarchy, to be used to obtain a Project
+		 */
+		run(treeItem: WorkspaceTreeItem): Promise<any>;
 	}
 }
