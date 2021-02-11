@@ -459,8 +459,10 @@ export class ChartView extends Disposable implements IPanelView {
 	 * @param options visualization options returned by query
 	 */
 	public setVisualizationOptions(options: VisualizationOptions): void {
-		this.options = {
-			type: options.type as (ChartType | InsightType)
-		};
+		if (options?.type) {
+			this.options = {
+				type: options.type as (ChartType | InsightType)
+			};
+		}
 	}
 }
