@@ -455,7 +455,7 @@ export class ChartView extends Disposable implements IPanelView {
 	}
 
 	/**
-	 * Set the visualization options
+	 * Set the visualization options, this method handles the conversion from VisualizationOptions(defined in azdata typing) to IInsightOptions
 	 * @param options visualization options returned by query
 	 */
 	public setVisualizationOptions(options: VisualizationOptions): void {
