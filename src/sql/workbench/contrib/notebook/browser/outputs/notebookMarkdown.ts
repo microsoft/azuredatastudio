@@ -150,15 +150,15 @@ export class NotebookMarkdownRenderer {
 					withInnerHTML.then(e => {
 						const span = element.querySelector(`div[data-code="${id}"]`);
 						if (span) {
-							span.innerHTML = strValue.innerHTML;
+							span.innerHTML = strValue;
 						}
 					}).catch(err => {
 						// ignore
 					});
 				});
 
-				if (options.asyncRenderCallback) {
-					promise.then(options.asyncRenderCallback);
+				if (options.codeBlockRenderCallback) {
+					promise.then(options.codeBlockRenderCallback);
 				}
 
 				return `<div class="code" data-code="${id}">${escape(code)}</div>`;

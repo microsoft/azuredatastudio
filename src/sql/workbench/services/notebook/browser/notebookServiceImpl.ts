@@ -17,7 +17,7 @@ import { standardRendererFactories } from 'sql/workbench/services/notebook/brows
 import { Extensions, INotebookProviderRegistry, NotebookProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Memento } from 'vs/workbench/common/memento';
-import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IExtensionManagementService, IExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -449,11 +449,11 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private get providersMemento(): NotebookProvidersMemento {
-		return this._providersMemento.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE) as NotebookProvidersMemento;
+		return this._providersMemento.getMemento(StorageScope.GLOBAL) as NotebookProvidersMemento;
 	}
 
 	private get trustedNotebooksMemento(): TrustedNotebooksMemento {
-		let cache = this._trustedNotebooksMemento.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE) as TrustedNotebooksMemento;
+		let cache = this._trustedNotebooksMemento.getMemento(StorageScope.GLOBAL) as TrustedNotebooksMemento;
 		if (!cache.trustedNotebooksCache) {
 			cache.trustedNotebooksCache = {};
 		}
