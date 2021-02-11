@@ -15,6 +15,7 @@ import { DatabaseBackupPage } from './databaseBackupPage';
 import { AccountsSelectionPage } from './accountsSelectionPage';
 import { IntergrationRuntimePage } from './integrationRuntimePage';
 import { TempTargetSelectionPage } from './tempTargetSelectionPage';
+import { SummaryPage } from './summaryPage';
 
 export class WizardController {
 	constructor(private readonly extensionContext: vscode.ExtensionContext) {
@@ -34,7 +35,6 @@ export class WizardController {
 		const wizard = azdata.window.createWizard(WIZARD_TITLE, 'wide');
 		wizard.generateScriptButton.enabled = false;
 		wizard.generateScriptButton.hidden = true;
-		// Disabling unused pages
 		const sourceConfigurationPage = new SourceConfigurationPage(wizard, stateModel);
 		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
 		// const subscriptionSelectionPage = new SubscriptionSelectionPage(wizard, stateModel);
@@ -42,6 +42,7 @@ export class WizardController {
 		const tempTargetSelectionPage = new TempTargetSelectionPage(wizard, stateModel);
 		const databaseBackupPage = new DatabaseBackupPage(wizard, stateModel);
 		const integrationRuntimePage = new IntergrationRuntimePage(wizard, stateModel);
+		const summaryPage = new SummaryPage(wizard, stateModel);
 
 		const pages: MigrationWizardPage[] = [
 			// subscriptionSelectionPage,
@@ -50,7 +51,8 @@ export class WizardController {
 			sourceConfigurationPage,
 			skuRecommendationPage,
 			databaseBackupPage,
-			integrationRuntimePage
+			integrationRuntimePage,
+			summaryPage
 		];
 
 		wizard.pages = pages.map(p => p.getwizardPage());
@@ -79,5 +81,9 @@ export class WizardController {
 
 		await Promise.all(wizardSetupPromises);
 		await pages[0].onPageEnter();
+
+		wizard.doneButton.onClick(async (e) => {
+			await stateModel.startMigration();
+		});
 	}
 }
