@@ -223,10 +223,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				await this.bookTocManager.recovery();
 				vscode.window.showErrorMessage(loc.editBookError(updateBook.book.contentPath, e instanceof Error ? e.message : e));
 			} finally {
-				await this.initializeBookContents(targetBook);
-				if (sourceBook) {
+				await targetBook.initializeContents().then(() => {
+					this._onDidChangeTreeData.fire(undefined);
+				});
+				if (sourceBook && sourceBook.bookPath !== targetBook.bookPath) {
 					// refresh source book model to pick up latest changes
-					await this.initializeBookContents(sourceBook);
+					await sourceBook.initializeContents().then(() => {
+						this._onDidChangeTreeData.fire(undefined);
+					});
 				}
 				// even if it fails, we still need to watch the toc file again.
 				if (sourceBook) {
@@ -262,7 +266,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					if (curr.mtime > prev.mtime) {
 						let book = this.books.find(book => book.bookPath === bookPath);
 						if (book) {
-							this.fireBookRefresh(book);
+							this.initializeBookContents(book);
 						}
 					}
 				});
