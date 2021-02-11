@@ -983,4 +983,23 @@ declare module 'azdata' {
 		 */
 		MsGraph = 7
 	}
+
+	export interface ResultSetSummary {
+		/**
+		 * The visualization options for the result set.
+		 */
+		visualization?: VisualizationOptions;
+	}
+
+	/**
+	 * Defines all the supported visualization types
+	 */
+	export type VisualizationType = 'Bar' | 'Count' | 'Doughnut' | 'HorizontalBar' | 'Image' | 'Line' | 'Pie' | 'Scatter' | 'Table' | 'TimeSeries';
+
+	/**
+	 * Defines the configuration options for visualization
+	 */
+	export interface VisualizationOptions {
+		type: VisualizationType;
+	}
 }

@@ -23,6 +23,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
@@ -178,12 +179,13 @@ export class QueryResultsView extends Disposable {
 		container: HTMLElement,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@IQueryModelService private queryModelService: IQueryModelService
+		@IQueryModelService private queryModelService: IQueryModelService,
+		@INotificationService notificationService: INotificationService
 	) {
 		super();
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
 		this.messagesTab = this._register(new MessagesTab(instantiationService));
-		this.chartTab = this._register(new ChartTab(instantiationService));
+		this.chartTab = this._register(new ChartTab(instantiationService, notificationService));
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: true }));
 		this._register(attachTabbedPanelStyler(this._panelView, themeService));
 		this.qpTab = this._register(new QueryPlanTab());
@@ -236,6 +238,16 @@ export class QueryResultsView extends Disposable {
 		this.runnerDisposables.add(runner.onQueryEnd(() => {
 			if (runner.messages.some(v => v.isError)) {
 				this._panelView.showTab(this.messagesTab.identifier);
+			}
+			// Currently we only need to support visualization options for the first result set.
+			if (runner.batchSets[0]?.resultSetSummaries[0]?.visualization) {
+				const batchSet = runner.batchSets[0];
+				const resultSet = batchSet.resultSetSummaries[0];
+				this.chartData({
+					resultId: batchSet.id,
+					batchId: resultSet.batchId
+				});
+				this.chartTab.setOptions(resultSet.visualization);
 			}
 		}));
 
