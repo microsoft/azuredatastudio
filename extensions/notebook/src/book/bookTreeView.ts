@@ -93,7 +93,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	setFileWatcher(book: BookModel): void {
 		fs.watchFile(book.tableOfContentsPath, async (curr, prev) => {
 			if (curr.mtime > prev.mtime) {
-				this.initializeBookContents(book);
+				await this.initializeBookContents(book);
 			}
 		});
 	}
@@ -223,15 +223,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				await this.bookTocManager.recovery();
 				vscode.window.showErrorMessage(loc.editBookError(updateBook.book.contentPath, e instanceof Error ? e.message : e));
 			} finally {
-				await targetBook.initializeContents().then(() => {
-					this._onDidChangeTreeData.fire(undefined);
-				});
+				await targetBook.initializeContents();
 				if (sourceBook && sourceBook.bookPath !== targetBook.bookPath) {
 					// refresh source book model to pick up latest changes
-					await sourceBook.initializeContents().then(() => {
-						this._onDidChangeTreeData.fire(undefined);
-					});
+					await sourceBook.initializeContents();
 				}
+				this._onDidChangeTreeData.fire(undefined);
 				// even if it fails, we still need to watch the toc file again.
 				if (sourceBook) {
 					this.setFileWatcher(sourceBook);
@@ -266,7 +263,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					if (curr.mtime > prev.mtime) {
 						let book = this.books.find(book => book.bookPath === bookPath);
 						if (book) {
-							this.initializeBookContents(book);
+							await this.initializeBookContents(book);
 						}
 					}
 				});
