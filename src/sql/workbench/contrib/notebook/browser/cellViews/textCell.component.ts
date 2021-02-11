@@ -100,6 +100,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public readonly onDidClickLink = this._onDidClickLink.event;
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
+	private highlightRange: NotebookRange;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -219,8 +220,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		let trustedChanged = this.cellModel && this._lastTrustedMode !== this.cellModel.trustedMode;
 		let cellModelSourceJoined = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
 		let contentJoined = Array.isArray(this._content) ? this._content.join('') : this._content;
-		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0;
-		if (trustedChanged || contentChanged || this._previewMode === true) {
+		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0 || this._previewMode === true;
+		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
 			if ((!cellModelSourceJoined) && !this.isEditMode) {
 				if (this.doubleClickEditEnabled) {
@@ -228,25 +229,24 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				} else {
 					this._content = localize('addContent', "<i>Add content here...</i>");
 				}
-			} else if (contentChanged) {
+			} else {
 				this._content = this.cellModel.source;
-
-				this.markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
-				this.markdownResult = this.markdownRenderer.render({
-					isTrusted: true,
-					value: Array.isArray(this._content) ? this._content.join('') : this._content
-				});
-				this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
-				this.setLoading(false);
-				if (this._previewMode) {
-					let outputElement = <HTMLElement>this.output.nativeElement;
-					outputElement.innerHTML = this.markdownResult.element.innerHTML;
-					outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
-					this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
-					outputElement.focus();
-				}
 			}
-
+			this.markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
+			this.markdownResult = this.markdownRenderer.render({
+				isTrusted: true,
+				value: Array.isArray(this._content) ? this._content.join('') : this._content
+			});
+			this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
+			this.setLoading(false);
+			if (this._previewMode) {
+				let outputElement = <HTMLElement>this.output.nativeElement;
+				outputElement.innerHTML = this.markdownResult.element.innerHTML;
+				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
+				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
+				outputElement.focus();
+				this.addDecoration();
+			}
 		}
 	}
 
@@ -353,15 +353,18 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
 		if (oldDecorationRange) {
+			this.highlightRange = oldDecorationRange === this.highlightRange ? null : this.highlightRange;
 			this.removeDecoration(oldDecorationRange);
 		}
 
 		if (newDecorationRange) {
+			this.highlightRange = newDecorationRange;
 			this.addDecoration(newDecorationRange);
 		}
 	}
 
-	private addDecoration(range: NotebookRange): void {
+	private addDecoration(range?: NotebookRange): void {
+		range = range ?? this.highlightRange;
 		if (range && this.output && this.output.nativeElement) {
 			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
 			let elements = this.getHtmlElements();
