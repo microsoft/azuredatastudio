@@ -252,7 +252,7 @@ export class ActionBar extends Disposable implements IActionRunner {
 	}
 
 	push(arg: IAction | ReadonlyArray<IAction>, options: IActionOptions = {}): void {
-		const actions: ReadonlyArray<IAction> = Array.isArray(arg) ? arg : [arg];
+		const actions: ReadonlyArray<IAction> = Array.isArray(arg) ? arg : [<IAction>arg];
 
 		let index = types.isNumber(options.index) ? options.index : null;
 
