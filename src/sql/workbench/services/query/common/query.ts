@@ -11,7 +11,7 @@ export interface IColumn {
 	isJson?: boolean;
 }
 
-export type VisualizationType = 'Bar' | 'Count' | 'Doughnut' | 'HorizontalBar' | 'Image' | 'Line' | 'Pie' | 'Scatter' | 'Table' | 'TimeSeries';
+export type VisualizationType = 'bar' | 'count' | 'doughnut' | 'horizontalBar' | 'image' | 'line' | 'pie' | 'scatter' | 'table' | 'timeSeries';
 
 export interface VisualizationOptions {
 	type: VisualizationType
