@@ -38,7 +38,6 @@ import { getOutOfWorkspaceEditorResources } from 'vs/workbench/contrib/search/co
 import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearch';
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
-import { isString } from 'vs/base/common/types';
 import { TreeViewPane } from 'vs/workbench/browser/parts/views/treeView';
 
 export const VIEWLET_ID = 'workbench.view.notebooks';
@@ -260,7 +259,8 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		this.validateQuery(query).then(() => {
 			if (this.views.length > 1) {
 				let filesToIncludeFiltered: string = '';
-				this.views.forEach(async (v) => {
+				// search book results first and then notebooks
+				this.views.reverse().forEach(async (v) => {
 					if (v instanceof TreeViewPane) {
 						const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(v.id));
 						if (treeView.dataProvider) {
@@ -268,32 +268,34 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 							items?.forEach(root => {
 								this.updateViewletsState();
 								if (root.contextValue === 'providedBook' || root.contextValue === 'savedBook') {
-									let rootFolder = URI.file(root.resourceUri.path);
+									const rootFolder = URI.file(root.resourceUri.path);
 									let folderToSearch = { folder: rootFolder };
 									if (root.tooltip.toString().includes('content')) {
 										let pattern = {};
 										pattern['content/**'] = true;
 										folderToSearch['includePattern'] = pattern;
 									}
-									query.folderQueries = query.folderQueries.filter((folder) => {
-										if (!!folder.includePattern && !folder.includePattern.toString().startsWith('content')) {
-											//verify if pinned notebook is not opened in Books Viewlet
-											return path.relative(folder.folder.fsPath, folderToSearch.folder.fsPath) !== '..';
-										} else {
-											return true;
-										}
-									});
 									query.folderQueries.push(folderToSearch);
 									filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
 								} else {
 									let pattern = {};
-									let rootFolder = URI.file(path.dirname(root.resourceUri.path));
-									let pathToNotebook = isString(root.tooltip) ? root.tooltip : root.tooltip.value;
-									let baseName = path.join('**', path.basename(pathToNotebook));
+									const rootFolder = URI.file(path.dirname(root.resourceUri.path));
+									const baseName = path.join('**', path.basename(root.resourceUri.path));
+									let isOpenedInBooksView = false;
 									pattern[baseName] = true;
-									let folderToSearch = { folder: rootFolder, includePattern: pattern };
-									query.folderQueries.push(folderToSearch);
-									filesToIncludeFiltered = filesToIncludeFiltered + rootFolder + ',';
+									query.folderQueries.forEach((folder) => {
+										//check for books
+										if ((folder.includePattern === undefined || folder.includePattern['content/**']) && !isOpenedInBooksView) {
+											//verify if pinned notebook is not opened in Books Viewlet
+											const relativePath = path.relative(folder.folder.fsPath, root.resourceUri.path);
+											isOpenedInBooksView = !relativePath.startsWith('..') || !relativePath.startsWith('.');
+										}
+									});
+									if (!isOpenedInBooksView) {
+										const folderToSearch = { folder: rootFolder, includePattern: pattern };
+										query.folderQueries.push(folderToSearch);
+										filesToIncludeFiltered = filesToIncludeFiltered + rootFolder + ',';
+									}
 								}
 							});
 
