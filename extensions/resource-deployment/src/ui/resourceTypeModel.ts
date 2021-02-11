@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DeploymentProvider } from '../interfaces';
+import { DeploymentProvider, InitialVariableValues } from '../interfaces';
 import { Model } from './model';
 import { ResourceTypeWizard } from './resourceTypeWizard';
 
@@ -13,7 +13,7 @@ export abstract class ResourceTypeModel extends Model {
 		super();
 	}
 
-	abstract initialize(): void;
+	abstract initialize(initialParams?: InitialVariableValues): void;
 	abstract onOk(): Promise<void>;
 	abstract onCancel(): void;
 	/**
