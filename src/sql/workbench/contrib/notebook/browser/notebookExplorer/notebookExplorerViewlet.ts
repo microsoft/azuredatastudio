@@ -260,7 +260,10 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			if (this.views.length > 1) {
 				let filesToIncludeFiltered: string = '';
 				// search book results first and then notebooks
-				this.views.reverse().forEach(async (v) => {
+				const pinnedNotebookIndex = this.views.findIndex(view => view.id === 'pinnedBooksView');
+				const viewPanes = this.views;
+				viewPanes.push(viewPanes.splice(pinnedNotebookIndex, 1)[0]);
+				viewPanes.forEach(async (v) => {
 					if (v instanceof TreeViewPane) {
 						const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(v.id));
 						if (treeView.dataProvider) {
@@ -280,14 +283,14 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 								} else {
 									let pattern = {};
 									const rootFolder = URI.file(path.dirname(root.resourceUri.path));
-									const baseName = path.join('**', path.basename(root.resourceUri.path));
+									const baseName = path.join('**', path.basename(root.resourceUri.path)).replace(/\\/g, '/');
 									let isOpenedInBooksView = false;
 									pattern[baseName] = true;
 									query.folderQueries.forEach((folder) => {
 										//check for books
 										if ((folder.includePattern === undefined || folder.includePattern['content/**']) && !isOpenedInBooksView) {
 											//verify if pinned notebook is not opened in Books Viewlet
-											const relativePath = path.relative(folder.folder.fsPath, root.resourceUri.path);
+											const relativePath = path.relative(folder.folder.fsPath, rootFolder.fsPath);
 											isOpenedInBooksView = !relativePath.startsWith('..') || !relativePath.startsWith('.');
 										}
 									});
