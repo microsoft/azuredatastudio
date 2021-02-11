@@ -994,7 +994,7 @@ declare module 'azdata' {
 	/**
 	 * Defines all the supported visualization types
 	 */
-	export type VisualizationType = 'Bar' | 'Count' | 'Doughnut' | 'HorizontalBar' | 'Image' | 'Line' | 'Pie' | 'Scatter' | 'Table' | 'TimeSeries';
+	export type VisualizationType = 'bar' | 'count' | 'doughnut' | 'horizontalBar' | 'image' | 'line' | 'pie' | 'scatter' | 'table' | 'timeSeries';
 
 	/**
 	 * Defines the configuration options for visualization

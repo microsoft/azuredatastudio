@@ -23,7 +23,6 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
@@ -179,13 +178,12 @@ export class QueryResultsView extends Disposable {
 		container: HTMLElement,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@IQueryModelService private queryModelService: IQueryModelService,
-		@INotificationService notificationService: INotificationService
+		@IQueryModelService private queryModelService: IQueryModelService
 	) {
 		super();
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
 		this.messagesTab = this._register(new MessagesTab(instantiationService));
-		this.chartTab = this._register(new ChartTab(instantiationService, notificationService));
+		this.chartTab = this._register(new ChartTab(instantiationService));
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: true }));
 		this._register(attachTabbedPanelStyler(this._panelView, themeService));
 		this.qpTab = this._register(new QueryPlanTab());
@@ -247,7 +245,7 @@ export class QueryResultsView extends Disposable {
 					resultId: batchSet.id,
 					batchId: resultSet.batchId
 				});
-				this.chartTab.setOptions(resultSet.visualization);
+				this.chartTab.view.setVisualizationOptions(resultSet.visualization);
 			}
 		}));
 
