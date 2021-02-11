@@ -11,7 +11,7 @@ import * as constants from '../models/strings';
 import * as os from 'os';
 import { azureResource } from 'azureResource';
 import { IntergrationRuntimePage } from './integrationRuntimePage';
-import { IconPathHelper } from '../constants';
+import { IconPathHelper } from '../constants/iconPathHelper';
 
 export class CreateMigrationControllerDialog {
 
@@ -294,7 +294,8 @@ export class CreateMigrationControllerDialog {
 			label: constants.CONTROLLER_STEP3,
 			url: '',
 			CSSStyles: {
-				'margin-top': '5px'
+				'margin-top': '10px',
+				'margin-bottom': '10px'
 			}
 		}).component();
 
@@ -374,7 +375,11 @@ export class CreateMigrationControllerDialog {
 				irSetupStep3Text,
 				this._connectionStatus,
 				refreshLoadingIndicator
-			]
+			], {
+			CSSStyles: {
+				'margin-bottom': '5px'
+			}
+		}
 		).withLayout({
 			flexFlow: 'column'
 		}).component();
@@ -397,14 +402,14 @@ export class CreateMigrationControllerDialog {
 
 			if (state === 'Online') {
 				this._connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
-					text: constants.CONTRLLER_READY(this.migrationStateModel.migrationController!.name, this.migrationStateModel._nodeNames.join(', ')),
+					text: constants.CONTROLLER_READY(this.migrationStateModel.migrationController!.name, this.migrationStateModel._nodeNames.join(', ')),
 					style: 'success'
 				});
 				this._dialogObject.okButton.enabled = true;
 			} else {
-				this._connectionStatus.text = constants.CONTRLLER_NOT_READY(this.migrationStateModel.migrationController!.name);
+				this._connectionStatus.text = constants.CONTROLLER_NOT_READY(this.migrationStateModel.migrationController!.name);
 				this._connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
-					text: constants.CONTRLLER_NOT_READY(this.migrationStateModel.migrationController!.name),
+					text: constants.CONTROLLER_NOT_READY(this.migrationStateModel.migrationController!.name),
 					style: 'warning'
 				});
 				this._dialogObject.okButton.enabled = false;
@@ -456,7 +461,7 @@ export class CreateMigrationControllerDialog {
 			dataValues: [
 				[
 					{
-						value: constants.CONTROLELR_KEY1_LABEL
+						value: constants.CONTROLLER_KEY1_LABEL
 					},
 					{
 						value: keys.keyName1
@@ -470,7 +475,7 @@ export class CreateMigrationControllerDialog {
 				],
 				[
 					{
-						value: constants.CONTROLELR_KEY2_LABEL
+						value: constants.CONTROLLER_KEY2_LABEL
 					},
 					{
 						value: keys.keyName2

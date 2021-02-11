@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { WIZARD_INPUT_COMPONENT_WIDTH } from '../constants';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../models/strings';
+import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 
 export class TempTargetSelectionPage extends MigrationWizardPage {
 

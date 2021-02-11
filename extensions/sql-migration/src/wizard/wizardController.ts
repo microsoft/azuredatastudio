@@ -17,6 +17,7 @@ import { IntergrationRuntimePage } from './integrationRuntimePage';
 import { TempTargetSelectionPage } from './tempTargetSelectionPage';
 import { SummaryPage } from './summaryPage';
 
+export const WIZARD_INPUT_COMPONENT_WIDTH = '400px';
 export class WizardController {
 	constructor(private readonly extensionContext: vscode.ExtensionContext) {
 

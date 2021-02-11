@@ -9,7 +9,7 @@ import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import { CreateMigrationControllerDialog } from './createMigrationControllerDialog';
 import * as constants from '../models/strings';
 import * as os from 'os';
-import { WIZARD_INPUT_COMPONENT_WIDTH } from '../constants';
+import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 
 export class IntergrationRuntimePage extends MigrationWizardPage {
 
@@ -141,7 +141,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		if (this.migrationStateModel.migrationController) {
 
 			this._connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
-				text: constants.CONTRLLER_READY(this.migrationStateModel.migrationController!.name, this.migrationStateModel._nodeNames.join(', ')),
+				text: constants.CONTROLLER_READY(this.migrationStateModel.migrationController!.name, this.migrationStateModel._nodeNames.join(', ')),
 				style: 'success'
 			});
 			this._form.addFormItem({

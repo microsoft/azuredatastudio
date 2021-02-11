@@ -82,7 +82,7 @@ export const NO_STORAGE_ACCOUNT_FOUND = localize('sql.migration.no.storageAccoun
 export const NO_FILESHARES_FOUND = localize('sql.migration.no.fileShares.found', "No file shares found");
 export const NO_BLOBCONTAINERS_FOUND = localize('sql.migration.no.blobContainers.found', "No blob containers found");
 export const INVALID_SUBSCRIPTION_ERROR = localize('sql.migration.invalid.subscription.error', "Please select a valid subscription to proceed.");
-export const INVALID_STORAGE_ACCOUNT_ERROR = localize('sql.migration.invalid.storageAccout.error', "Please select a valid storage account to proceed.");
+export const INVALID_STORAGE_ACCOUNT_ERROR = localize('sql.migration.invalid.storageAccount.error', "Please select a valid storage account to proceed.");
 export const INVALID_FILESHARE_ERROR = localize('sql.migration.invalid.fileShare.error', "Please select a valid file share to proceed.");
 export const INVALID_BLOBCONTAINER_ERROR = localize('sql.migration.invalid.blobContainer.error', "Please select a valid blob container to proceed.");
 export const INVALID_NETWORK_SHARE_LOCATION = localize('sql.migration.invalid.network.share.location', "Invalid network share location format. Example: {0}", '\\\\Servername.domainname.com\\Backupfolder');
@@ -103,23 +103,23 @@ export const CREATE_NEW = localize('sql.migration.create.new', "Create new");
 export const CONTROLLER_DIALOG_DESCRIPTION = localize('sql.migration.controller.container.description', "A migration controller is an ARM (Azure Resource Manager) resource created in your Azure subscription and it is needed to coordinate and monitor data migration activities. {0}");
 export const CONTROLLER_DIALOG_CONTROLLER_CONTAINER_LOADING_HELP = localize('sql.migration.controller.container.loading.help', "Loading Controller");
 export const CONTROLLER_DIALOG_CREATE_CONTROLLER_FORM_HEADING = localize('sql.migration.controller.dialog.create.controller.form.heading', "Enter the information below to add a new migration controller.");
-export const CONTROLLER_DIALOG_CONTROLLER_CONTAINER_HEADING = localize('sql.migration.contoller.container.heading', "Setup Integration Runtime");
-export const CONTROLLER_DIALOG_CONTROLLER_CONTAINER_DESCRIPTION = localize('sql.migration.contoller.container.description', "Follow the instructions below to setup self-hosted Integration Runtime.");
+export const CONTROLLER_DIALOG_CONTROLLER_CONTAINER_HEADING = localize('sql.migration.controller.container.heading', "Setup Integration Runtime");
+export const CONTROLLER_DIALOG_CONTROLLER_CONTAINER_DESCRIPTION = localize('sql.migration.controller.container.container.description', "Follow the instructions below to setup self-hosted Integration Runtime.");
 export const CONTROLLER_STEP1 = localize('sql.migration.ir.setup.step1', "Step 1: {0}");
 export const CONTROLLER_STEP1_LINK = localize('sql.migration.option', "Download and install integration runtime");
 export const CONTROLLER_STEP2 = localize('sql.migration.ir.setup.step2', "Step 2: Use this key to register your integration runtime");
 export const CONTROLLER_STEP3 = localize('sql.migration.ir.setup.step3', "Step 3: Check connection");
 export const CONTROLLER_CONNECTION_STATUS = localize('sql.migration.connection.status', "Connection Status");
-export const CONTROLELR_KEY1_LABEL = localize('sql.migration.key1.label', "Key 1");
-export const CONTROLELR_KEY2_LABEL = localize('sql.migration.key2.label', "Key 2");
+export const CONTROLLER_KEY1_LABEL = localize('sql.migration.key1.label', "Key 1");
+export const CONTROLLER_KEY2_LABEL = localize('sql.migration.key2.label', "Key 2");
 export const CONTROLLER_KEY_COPIED_HELP = localize('sql.migration.key.copied', "Key copied");
 export const REFRESH_KEYS = localize('sql.migration.refresh.keys', "Refresh keys");
 export const COPY_KEY = localize('sql.migration.copy.key', "Copy key");
 export const AUTH_KEY_COLUMN_HEADER = localize('sql.migration.authkeys.header', "Authentication key");
-export function CONTRLLER_NOT_READY(controllerName: string): string {
+export function CONTROLLER_NOT_READY(controllerName: string): string {
 	return localize('sql.migration.controller.not.ready', "Migration Controller {0} is not connected to self-hosted Integration Runtime on any node.", controllerName);
 }
-export function CONTRLLER_READY(controllerName: string, host: string): string {
+export function CONTROLLER_READY(controllerName: string, host: string): string {
 	return localize('sql.migration.controller.ready', "Migration Controller '{0}' is connected to self-hosted Integration Runtime on the node - {1}", controllerName, host);
 }
 export const RESOURCE_GROUP_NOT_FOUND = localize('sql.migration.resource.group.not.found', "No resource Groups found");
@@ -159,12 +159,12 @@ export const SUMMARY_MI_TYPE = localize('sql.migration.summary.mi.type', "Azure 
 export const SUMMARY_VM_TYPE = localize('sql.migration.summary.vm.type', "Azure SQL Virtual Machine");
 export const SUMMARY_DATABASE_COUNT_LABEL = localize('sql.migration.summary.database.count', "Number of database to be migrated");
 export const SUMMARY_AZURE_STORAGE_SUBSCRIPTION = localize('sql.migration.summary.azure.storage.subscription', "Azure storage subscription");
-export const SUMMARY_AZURE_STORAGE = localize('sql.migation.summary.azure.storage', "Azure storage");
+export const SUMMARY_AZURE_STORAGE = localize('sql.migration.summary.azure.storage', "Azure storage");
 export const SUMMARY_IR_NODE = localize('sql.migration.ir.node', "Integration Runtime node");
 export const NETWORK_SHARE = localize('sql.migration.network.share', "Network Share");
 export const BLOB_CONTAINER = localize('sql.migration.blob.container', "Blob Container");
 export const FILE_SHARE = localize('sql.migration.file.share', "File Share");
-export const MIGRATION_STARTED = localize('sql.migration.started.notification', "Migraiton in progress");
+export const MIGRATION_STARTED = localize('sql.migration.started.notification', "Migration in progress");
 
 // Open notebook quick pick string
 export const NOTEBOOK_QUICK_PICK_PLACEHOLDER = localize('sql.migration.quick.pick.placeholder', "Select the operation you'd like to perform");

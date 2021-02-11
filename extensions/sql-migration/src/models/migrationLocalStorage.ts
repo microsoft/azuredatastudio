@@ -8,12 +8,12 @@ import { DatabaseMigration, SqlManagedInstance } from '../api/azure';
 import * as azdata from 'azdata';
 
 
-export class Migrations {
+export class MigrationLocalStorage {
 	private static context: vscode.ExtensionContext;
 	private static mementoToken: string = 'sqlmigration.databaseMigrations';
 
 	public static setExtensionContext(context: vscode.ExtensionContext): void {
-		Migrations.context = context;
+		MigrationLocalStorage.context = context;
 	}
 
 	public static getMigrations(connectionProfile: azdata.connection.ConnectionProfile): MigrationContext[] {

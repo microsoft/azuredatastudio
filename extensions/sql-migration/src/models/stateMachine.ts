@@ -10,7 +10,7 @@ import * as mssql from '../../../mssql';
 import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getMigrationControllers, getSubscriptions, MigrationController, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount } from '../api/azure';
 import { SKURecommendations } from './externalContract';
 import * as constants from '../models/strings';
-import { Migrations } from './migration';
+import { MigrationLocalStorage } from './migrationLocalStorage';
 
 export enum State {
 	INIT,
@@ -466,7 +466,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 		console.log(response);
 		if (!response.error) {
-			Migrations.saveMigration(currentConnection!, response, this._targetManagedInstance, this.azureAccount, this._targetSubscription);
+			MigrationLocalStorage.saveMigration(currentConnection!, response, this._targetManagedInstance, this.azureAccount, this._targetSubscription);
 		}
 
 		vscode.window.showInformationMessage(constants.MIGRATION_STARTED);
