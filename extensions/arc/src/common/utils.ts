@@ -134,7 +134,7 @@ async function promptInputBox(title: string, options: vscode.InputBoxOptions): P
 		});
 		inputBox.onDidHide(() => {
 			if (!valueAccepted) {
-				resolve(undefined);
+				resolve('');
 			}
 			inputBox.dispose();
 		});

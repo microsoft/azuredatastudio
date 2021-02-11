@@ -52,7 +52,7 @@ describe('HttpClient', function (): void {
 		it('errors on write stream error', async function (): Promise<void> {
 			const downloadFolder = os.tmpdir();
 			const mockWriteStream = new PassThrough();
-			const deferredPromise = new Deferred();
+			const deferredPromise = new Deferred<void>();
 			sinon.stub(fs, 'createWriteStream').callsFake(() => {
 				deferredPromise.resolve();
 				return <any>mockWriteStream;

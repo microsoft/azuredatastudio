@@ -9,7 +9,7 @@ import { Deferred } from '../../common/promise';
 describe('DeferredPromise', function (): void {
 
 	it('Resolves correctly', async function(): Promise<void> {
-		const deferred = new Deferred();
+		const deferred = new Deferred<void>();
 		deferred.resolve();
 		await should(deferred.promise).be.resolved();
 	});
@@ -21,7 +21,7 @@ describe('DeferredPromise', function (): void {
 	});
 
 	it('Chains then correctly', function(done): void {
-		const deferred = new Deferred();
+		const deferred = new Deferred<void>();
 		deferred.then( () => {
 			done();
 		});
