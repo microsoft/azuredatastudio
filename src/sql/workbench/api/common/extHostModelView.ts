@@ -707,9 +707,12 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public addItems(items: Array<azdata.Component>, itemLayout?: any): void {
-		for (let item of items) {
-			this.addItem(item, itemLayout);
-		}
+		const itemConfigs = items.map(item => {
+			return {
+				itemConfig: this.createAndAddItemConfig(item, itemLayout).toIItemConfig()
+			};
+		});
+		this._proxy.$addToContainer(this._handle, this.id, itemConfigs).then(undefined, (err) => this.handleError(err));
 	}
 
 	public removeItemAt(index: number): boolean {
@@ -735,11 +738,22 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public addItem(item: azdata.Component, itemLayout?: any, index?: number): void {
-		let itemImpl = item as ComponentWrapper;
+		const config = this.createAndAddItemConfig(item, itemLayout, index);
+		this._proxy.$addToContainer(this._handle, this.id, [{ itemConfig: config.toIItemConfig(), index }]).then(undefined, (err) => this.handleError(err));
+	}
+
+	/**
+	 * Creates the internal item config for the component and adds it to the list of child configs for this component.
+	 * @param item The child component to add
+	 * @param itemLayout The optional layout to apply to the child component
+	 * @param index The optional index to insert the child component at
+	 */
+	private createAndAddItemConfig(item: azdata.Component, itemLayout?: any, index?: number): InternalItemConfig {
+		const itemImpl = item as ComponentWrapper;
 		if (!itemImpl) {
 			throw new Error(nls.localize('unknownComponentType', "Unknown component type. Must use ModelBuilder to create objects"));
 		}
-		let config = new InternalItemConfig(itemImpl, itemLayout);
+		const config = new InternalItemConfig(itemImpl, itemLayout);
 		if (index !== undefined && index >= 0 && index <= this.items.length) {
 			this.itemConfigs.splice(index, 0, config);
 		} else if (!index) {
@@ -747,7 +761,7 @@ class ComponentWrapper implements azdata.Component {
 		} else {
 			throw new Error(nls.localize('invalidIndex', "The index {0} is invalid.", index));
 		}
-		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig(), index).then(undefined, (err) => this.handleError(err));
+		return config;
 	}
 
 	public setLayout(layout: any): Thenable<void> {
@@ -1571,6 +1585,10 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		this.setProperty('selectEffect', v);
 	}
 
+	public setFilter(rowIndexes: number[]): void {
+		this._proxy.$doAction(this._handle, this._id, ModelViewAction.Filter, rowIndexes);
+	}
+
 	public toComponentShape(): IComponentShape {
 		// Overridden to ensure we send the correct properties mapping.
 		return <IComponentShape>{
@@ -1591,14 +1609,16 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		// data property though since the caller would still expect that to contain
 		// the Component objects they created
 		const properties = assign({}, this.properties);
+		const componentsToAdd: ComponentWrapper[] = [];
 		if (properties.data?.length > 0) {
+
 			properties.data = properties.data.map((row: any[]) => row.map(cell => {
 				if (cell instanceof ComponentWrapper) {
 					// First ensure that we register the component using addItem
 					// such that it gets added to the ModelStore. We don't want to
 					// make the table component an actual container since that exposes
 					// a lot of functionality we don't need.
-					this.addItem(cell);
+					componentsToAdd.push(cell);
 					return cell.id;
 				}
 				return cell;
@@ -1611,13 +1631,14 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 						// such that it gets added to the ModelStore. We don't want to
 						// make the table component an actual container since that exposes
 						// a lot of functionality we don't need.
-						this.addItem(cell.value);
+						componentsToAdd.push(cell.value);
 						return { value: cell.value.id, ariaLabel: cell.ariaLabel, style: cell.style };
 					}
 					return cell;
 				}));
 			}
 		}
+		this.addItems(componentsToAdd);
 		return properties;
 	}
 }

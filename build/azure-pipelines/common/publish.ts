@@ -128,7 +128,7 @@ function createOrUpdate(commit: string, quality: string, platform: string, type:
 }
 
 async function assertContainer(blobService: azure.BlobService, quality: string): Promise<void> {
-	await new Promise((c, e) => blobService.createContainerIfNotExists(quality, { publicAccessLevel: 'blob' }, err => err ? e(err) : c()));
+	await new Promise<void>((c, e) => blobService.createContainerIfNotExists(quality, { publicAccessLevel: 'blob' }, err => err ? e(err) : c()));
 }
 
 async function doesAssetExist(blobService: azure.BlobService, quality: string, blobName: string): Promise<boolean | undefined> {
@@ -144,7 +144,7 @@ async function uploadBlob(blobService: azure.BlobService, quality: string, blobN
 		}
 	};
 
-	await new Promise((c, e) => blobService.createBlockBlobFromLocalFile(quality, blobName, file, blobOptions, err => err ? e(err) : c()));
+	await new Promise<void>((c, e) => blobService.createBlockBlobFromLocalFile(quality, blobName, file, blobOptions, err => err ? e(err) : c()));
 }
 
 interface PublishOptions {

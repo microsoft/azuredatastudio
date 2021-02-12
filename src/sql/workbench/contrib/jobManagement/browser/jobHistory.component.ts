@@ -31,8 +31,8 @@ import { JobManagementView, JobActionContext } from 'sql/workbench/contrib/jobMa
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -83,7 +83,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) dashboardService: IDashboardService,
-		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
+		@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService
 	) {
 		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		this._treeController = new JobHistoryController();
@@ -148,7 +148,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		}, { verticalScrollMode: ScrollbarVisibility.Visible });
 		this._register(attachListStyler(this._tree, this.themeService));
 		this._tree.layout(dom.getContentHeight(this._tableContainer.nativeElement));
-		this._telemetryService.publicLog(TelemetryKeys.JobHistoryView);
+		this._telemetryService.sendViewEvent(TelemetryView.AgentJobHistory);
 	}
 
 	private loadHistory() {

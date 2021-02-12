@@ -34,7 +34,7 @@ export class HTMLMarkdownConverter {
 	private turndownService: TurndownService;
 
 	constructor(private notebookUri: URI) {
-		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-', 'headingStyle': 'atx' });
+		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-', 'headingStyle': 'atx', blankReplacement: blankReplacement });
 		this.setTurndownOptions();
 	}
 
@@ -143,6 +143,39 @@ export class HTMLMarkdownConverter {
 				return `[${content}](${node.href})`;
 			}
 		});
+		// Only nested list case differs from original turndown rule
+		// This ensures that tightly coupled lists are treated as such and do not have excess newlines in markdown
+		this.turndownService.addRule('list', {
+			filter: ['ul', 'ol'],
+			replacement: function (content, node) {
+				let parent = node.parentNode;
+				if ((parent.nodeName === 'LI' && parent.lastElementChild === node)) {
+					return '\n' + content;
+				} else if (parent.nodeName === 'UL' || parent.nodeName === 'OL') { // Nested list case
+					return '\n' + content + '\n';
+				} else {
+					return '\n\n' + content + '\n\n';
+				}
+			}
+		});
+		this.turndownService.addRule('lineBreak', {
+			filter: 'br',
+			replacement: function (content, node, options) {
+				// For elements that aren't lists, convert <br> into its markdown equivalent
+				if (node.parentElement?.nodeName !== 'LI') {
+					return options.br + '\n';
+				}
+				// One (and only one) line break is ignored when it's inside of a list item
+				// Otherwise, a new list will be created due to the looseness of the list
+				let numberLineBreaks = 0;
+				(node.parentElement as HTMLElement)?.childNodes?.forEach(n => {
+					if (n.nodeName === 'BR') {
+						numberLineBreaks++;
+					}
+				});
+				return numberLineBreaks > 1 ? options.br + '\n' : '';
+			}
+		});
 		this.turndownService.addRule('listItem', {
 			filter: 'li',
 			replacement: function (content, node, options) {
@@ -229,6 +262,14 @@ function escapeMarkdown(text) {
 		(search, replacement) => search.replace(replacement[0], replacement[1]),
 		text,
 	);
+}
+
+function blankReplacement(content, node) {
+	// When outdenting a nested list, an empty list will still remain. Need to handle this case.
+	if (node.nodeName === 'UL' || node.nodeName === 'OL') {
+		return '\n';
+	}
+	return node.isBlock ? '\n\n' : '';
 }
 
 export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined): string {

@@ -10,8 +10,8 @@ import * as path from 'path';
 import { IOptionsSourceProvider } from 'resource-deployment';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { getDateTimeString, getErrorMessage, throwUnless } from '../common/utils';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, instanceOfDynamicEnablementInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
+import { getDateTimeString, getErrorMessage, isUserCancelledError, throwUnless } from '../common/utils';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, InitialVariableValues, instanceOfDynamicEnablementInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
 import { valueProviderService } from '../services/valueProviderService';
@@ -126,6 +126,7 @@ interface ContextBase {
 	container: azdata.window.Dialog | azdata.window.Wizard;
 	toolsService: IToolsService,
 	inputComponents: InputComponents;
+	initialVariableValues?: InitialVariableValues;
 	onNewValidatorCreated: (validator: Validator) => void;
 	onNewDisposableCreated: (disposable: vscode.Disposable) => void;
 	onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo<InputComponent>) => void;
@@ -170,9 +171,10 @@ interface InputBoxInfo {
  */
 function createInputBoxField({ context, inputBoxType = 'text' }: { context: FieldContext; inputBoxType?: azdata.InputBoxInputType; }) {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
+	const defaultValue = context.initialVariableValues?.[context.fieldInfo.variableName || '']?.toString() || context.fieldInfo.defaultValue;
 	const input = createInputBoxInputInfo(context.view, {
 		type: inputBoxType,
-		defaultValue: context.fieldInfo.defaultValue,
+		defaultValue: defaultValue,
 		ariaLabel: context.fieldInfo.label,
 		required: context.fieldInfo.required,
 		min: context.fieldInfo.min,
@@ -329,6 +331,7 @@ export function initializeWizardPage(context: WizardPageContext): void {
 				container: context.container,
 				toolsService: context.toolsService,
 				inputComponents: context.inputComponents,
+				initialVariableValues: context.initialVariableValues,
 				onNewDisposableCreated: context.onNewDisposableCreated,
 				onNewInputComponentCreated: context.onNewInputComponentCreated,
 				onNewValidatorCreated: context.onNewValidatorCreated,
@@ -483,6 +486,7 @@ async function processFields(fieldInfoArray: FieldInfo[], components: azdata.Com
 			fieldInfo: fieldInfo,
 			container: context.container,
 			inputComponents: context.inputComponents,
+			initialVariableValues: context.initialVariableValues,
 			components: components,
 			toolsService: context.toolsService
 		});
@@ -667,12 +671,16 @@ async function configureOptionsSourceSubfields(context: FieldContext, optionsSou
 			try {
 				return await optionsSourceProvider.getVariableValue!(variableKey, value);
 			} catch (e) {
-				disableControlButtons(context.container);
-				context.container.message = {
-					text: getErrorMessage(e),
-					description: '',
-					level: azdata.window.MessageLevel.Error
-				};
+				if (!isUserCancelledError(e)) {
+					// User cancelled is a normal scenario so we shouldn't disable anything in that case
+					// so that the user can retry if they want to
+					disableControlButtons(context.container);
+					context.container.message = {
+						text: getErrorMessage(e),
+						description: '',
+						level: azdata.window.MessageLevel.Error
+					};
+				}
 				throw e;
 			}
 		},
@@ -864,7 +872,11 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 	input.labelComponent = label;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, input);
 	input.component.enabled = false;
-	const browseFileButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.browse, width: buttonWidth }).component();
+	const browseFileButton = context.view!.modelBuilder.button().withProps({
+		label: loc.browse,
+		width: buttonWidth,
+		secondary: true
+	}).component();
 	const fieldInfo = context.fieldInfo as FilePickerFieldInfo;
 	let filter: { [name: string]: string[] } | undefined = undefined;
 	if (fieldInfo.filter) {
@@ -1159,8 +1171,8 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAcc
 	accountDropdown.component.fireOnTextChange = true;
 	accountDropdown.labelComponent = label;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, accountDropdown);
-	const signInButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.signIn, width: '100px' }).component();
-	const refreshButton = context.view!.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.refresh, width: '100px' }).component();
+	const signInButton = context.view!.modelBuilder.button().withProps({ label: loc.signIn, width: '100px', secondary: true }).component();
+	const refreshButton = context.view!.modelBuilder.button().withProps({ label: loc.refresh, width: '100px', secondary: true }).component();
 	addLabelInputPairToContainer(context.view, context.components, label, accountDropdown.component, context.fieldInfo);
 
 	const buttons = createFlexContainer(context.view!, [signInButton, refreshButton], true, undefined, undefined, undefined, { 'margin-right': '10px' });

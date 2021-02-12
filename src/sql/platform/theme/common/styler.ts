@@ -284,23 +284,6 @@ export function attachEditableDropdownStyler(widget: IThemable, themeService: IT
 	}, widget);
 }
 
-type ButtonStyle = {
-	buttonForeground?: cr.ColorIdentifier,
-	buttonBackground?: cr.ColorIdentifier,
-	buttonHoverBackground?: cr.ColorIdentifier,
-	buttonFocusOutline?: cr.ColorIdentifier
-};
-
-export function attachButtonStyler(widget: IThemable, themeService: IThemeService, style?: ButtonStyle): IDisposable {
-	return attachStyler(themeService, {
-		buttonForeground: (style && style.buttonForeground) || cr.buttonForeground,
-		buttonBackground: (style && style.buttonBackground) || cr.buttonBackground,
-		buttonHoverBackground: (style && style.buttonHoverBackground) || cr.buttonHoverBackground,
-		buttonBorder: cr.contrastBorder,
-		buttonFocusOutline: (style && style.buttonFocusOutline) || colors.buttonFocusOutline
-	}, widget);
-}
-
 export function attachCheckboxStyler(widget: IThemable, themeService: IThemeService, style?: { disabledCheckboxForeground?: cr.ColorIdentifier })
 	: IDisposable {
 	return attachStyler(themeService, {

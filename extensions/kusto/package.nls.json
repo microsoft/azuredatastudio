@@ -1,20 +1,15 @@
 {
 	"notebook.command.new": "New Notebook",
 	"notebook.command.open": "Open Notebook",
-
 	"cloud.databaseProperties.name": "Database Name",
 	"cloud.databaseProperties.size": "Size (MB)",
-
 	"cloud.serverProperties.summary": "Status",
 	"cloud.serverProperties.machinesTotal": "Total Machines in the cluster",
 	"cloud.serverProperties.diskCacheCapacity": "% of Cluster data capacity used",
-
 	"databasesListProperties.name": "Name",
 	"databasesListProperties.size": "Size (MB)",
-
 	"objectsListProperties.name": "Name",
 	"objectsListProperties.metadataTypeName": "Type",
-
 	"kusto.configuration.title": "KUSTO configuration",
 	"kusto.query.displayBitAsNumber": "Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'",
 	"kusto.format.alignColumnDefinitionsInColumns": "Should column definitions be aligned?",
@@ -22,7 +17,6 @@
 	"kusto.format.keywordCasing": "Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)",
 	"kusto.logDebugInfo": "[Optional] Log debug output to the console (View -> Output) and then select appropriate output channel from the dropdown",
 	"kusto.tracingLevel": "[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information",
-
 	"kusto.provider.displayName": "Azure Data Explorer (Kusto)",
 	"kusto.connectionOptions.connectionName.displayName": "Name (optional)",
 	"kusto.connectionOptions.connectionName.description": "Custom name of the connection",
