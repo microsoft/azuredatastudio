@@ -369,8 +369,15 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 			loop: true
 		};
 		this._notebookModel.cells?.forEach(cell => {
-			this._register(cell.onCellModeChanged((state) => {
-				this._onFindStateChange(changeEvent).catch(onUnexpectedError);
+			this._register(cell.onCellPreviewModeChanged((previewMode) => {
+				if (previewMode) {
+					this._onFindStateChange(changeEvent).catch(onUnexpectedError);
+				}
+			}));
+			this._register(cell.onCellMarkdownModeChanged((markdownMode) => {
+				if (markdownMode) {
+					this._onFindStateChange(changeEvent).catch(onUnexpectedError);
+				}
 			}));
 		});
 		this._register(this._notebookModel.contentChanged(e => {
