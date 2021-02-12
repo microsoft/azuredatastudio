@@ -204,7 +204,7 @@ export class BookTocManager implements IBookTocManager {
 			if (section.sections && section.sections.length > 0) {
 				newSection.sections = [] as JupyterBookSection[];
 				for (let s of section.sections) {
-					let child = this.buildTOC(version, s, findSection, addSection);
+					const child = this.buildTOC(version, s, findSection, addSection);
 					if (child) {
 						newSection.sections.push(convertTo(version, child));
 					}
