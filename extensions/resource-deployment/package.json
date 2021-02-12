@@ -262,7 +262,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.2.6"
+                "version": "20.3.0"
               }
             ],
             "when": "target=new-aks&&version=bdc2019"
@@ -279,7 +279,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.2.6"
+                "version": "20.3.0"
               }
             ],
             "when": "target=existing-aks&&version=bdc2019"
@@ -296,7 +296,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.2.6"
+                "version": "20.3.0"
               }
             ],
             "when": "target=existing-kubeadm&&version=bdc2019"
@@ -313,7 +313,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.2.6"
+                "version": "20.3.0"
               }
             ],
             "when": "target=existing-aro&&version=bdc2019"
@@ -330,7 +330,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.2.6"
+                "version": "20.3.0"
               }
             ],
             "when": "target=existing-openshift&&version=bdc2019"
