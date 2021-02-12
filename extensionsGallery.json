@@ -1451,14 +1451,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.9.0",
-							"lastUpdated": "2/09/2021",
+							"version": "1.9.1",
+							"lastUpdated": "2/12/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-1.9.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-1.9.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3371,14 +3371,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.6.0",
-							"lastUpdated": "2/10/2021",
+							"version": "0.6.1",
+							"lastUpdated": "2/12/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-0.6.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-0.6.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
