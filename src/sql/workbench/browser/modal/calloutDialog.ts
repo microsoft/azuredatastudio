@@ -8,7 +8,6 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as DOM from 'vs/base/browser/dom';
 import * as styler from 'vs/platform/theme/common/styler';
 import * as strings from 'vs/base/common/strings';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { IDialogProperties, Modal, DialogWidth } from 'sql/workbench/browser/modal/modal';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { localize } from 'vs/nls';
@@ -23,7 +22,6 @@ import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { Button } from 'sql/base/browser/ui/button/button';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
@@ -40,8 +38,6 @@ export interface ICalloutDialogOptions {
 export class CalloutDialog extends Modal {
 	private _calloutType: CalloutType;
 	private _selectionComplete: Deferred<ICalloutDialogOptions>;
-	private _insertButton: Button;
-	private _cancelButton: Button;
 	// Link
 	private _linkTextLabel: HTMLElement;
 	private _linkTextInputBox: InputBox;
@@ -125,11 +121,8 @@ export class CalloutDialog extends Modal {
 
 		attachModalDialogStyler(this, this._themeService);
 
-		this._insertButton = this.addFooterButton(this.insertButtonText, () => this.insert());
-		attachButtonStyler(this._insertButton, this._themeService);
-
-		this._cancelButton = this.addFooterButton(this.cancelButtonText, () => this.cancel(), undefined, true);
-		attachButtonStyler(this._cancelButton, this._themeService);
+		this.addFooterButton(this.insertButtonText, () => this.insert());
+		this.addFooterButton(this.cancelButtonText, () => this.cancel(), undefined, true);
 
 		this.registerListeners();
 	}
@@ -269,8 +262,6 @@ export class CalloutDialog extends Modal {
 
 	private registerListeners(): void {
 		// Theme styler
-		this._register(attachButtonStyler(this._insertButton, this._themeService));
-		this._register(attachButtonStyler(this._cancelButton, this._themeService));
 		if (this._calloutType === 'IMAGE') {
 			this._register(styler.attachInputBoxStyler(this._imageUrlInputBox, this._themeService));
 			this._register(styler.attachCheckboxStyler(this._imageEmbedCheckbox, this._themeService));
