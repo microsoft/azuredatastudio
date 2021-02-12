@@ -7,7 +7,7 @@ import { Deferred } from '../../common/promise';
 
 describe('Deferred', () => {
 	it('Then should be called upon resolution', function (done): void {
-		const deferred = new Deferred();
+		const deferred = new Deferred<void>();
 		deferred.then(() => {
 			done();
 		});

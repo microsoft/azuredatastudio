@@ -109,7 +109,7 @@ export function getDatabaseStateDisplayText(state: string): string {
  * @returns Promise resolving to the user's input if it passed validation,
  * or undefined if the input box was closed for any other reason
  */
-async function promptInputBox(title: string, options: vscode.InputBoxOptions): Promise<string> {
+async function promptInputBox(title: string, options: vscode.InputBoxOptions): Promise<string | undefined> {
 	const inputBox = vscode.window.createInputBox();
 	inputBox.title = title;
 	inputBox.prompt = options.prompt;

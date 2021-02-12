@@ -56,7 +56,7 @@ export class NotebookMarkdownRenderer {
 
 		// signal to code-block render that the element has been created
 		let signalInnerHTML: () => void;
-		const withInnerHTML = new Promise(c => signalInnerHTML = c);
+		const withInnerHTML = new Promise<void>(c => signalInnerHTML = c);
 
 		let notebookFolder = this._notebookURI ? path.join(path.dirname(this._notebookURI.fsPath), path.sep) : '';
 		if (!this._baseUrls.some(x => x === notebookFolder)) {

@@ -8,6 +8,6 @@ export class Deferred<T> {
 		this.resolve = resolve;
 		this.reject = reject;
 	});;
-	resolve!: (value?: T | PromiseLike<T>) => void;
+	resolve!: (value: T | PromiseLike<T>) => void;
 	reject!: (reason?: any) => void;
 }

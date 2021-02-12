@@ -22,7 +22,7 @@ export class NoAzdataError extends Error implements azdataExt.ErrorWithLink {
  */
 export function searchForCmd(exe: string): Promise<string> {
 	// Note : This is separated out to allow for easy test stubbing
-	return new Promise<string>((resolve, reject) => which(exe, (err, path) => err ? reject(err) : resolve(path)));
+	return new Promise<string>((resolve, reject) => which(exe, (err, path) => err ? reject(err) : resolve(path || '')));
 }
 
 /**

@@ -93,13 +93,13 @@ describe('WizardPage', () => {
 			return enabled;
 		});
 		// Used to ensure that we wait until the enabled state is updated for our mocked components before continuing
-		let enabledDeferred = new Deferred();
+		let enabledDeferred = new Deferred<void>();
 
 		initializeWizardPage(testWizardPage);
 		await contentRegistered.promise;
 		await enabledDeferred.promise;
 		should(stubInputBox.enabled).be.false('Input box should be disabled by default');
-		enabledDeferred = new Deferred();
+		enabledDeferred = new Deferred<void>();
 		stubCheckbox.checked = true;
 		// Now wait for the enabled state to be updated again
 		await enabledDeferred.promise;

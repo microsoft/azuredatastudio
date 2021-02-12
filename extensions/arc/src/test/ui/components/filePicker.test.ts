@@ -29,7 +29,7 @@ describe('filePicker', function (): void {
 		should(filePicker.filePathInputBox.value).should.not.be.undefined();
 		filePicker.value!.should.equal(initialPath);
 		filePicker.component().items.length.should.equal(2, 'Filepicker container should have two components');
-		const deferred = new Deferred();
+		const deferred = new Deferred<void>();
 		sinon.stub(vscode.window, 'showOpenDialog').callsFake(async (_options) => {
 			deferred.resolve();
 			return [newFileUri];

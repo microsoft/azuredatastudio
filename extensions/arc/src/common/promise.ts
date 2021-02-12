@@ -8,7 +8,7 @@
  */
 export class Deferred<T> {
 	promise: Promise<T>;
-	resolve!: (value?: T | PromiseLike<T>) => void;
+	resolve!: (value: T | PromiseLike<T>) => void;
 	reject!: (reason?: any) => void;
 	constructor() {
 		this.promise = new Promise<T>((resolve, reject) => {
