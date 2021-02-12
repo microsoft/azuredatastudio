@@ -345,7 +345,10 @@ class WelcomePage extends Disposable {
 			workspaces = workspaces.filter(recent => !this.contextService.isCurrentWorkspace(isRecentWorkspace(recent) ? recent.workspace : recent.folderUri));
 			if (!workspaces.length) {
 				const recent = container.querySelector('.welcomePage') as HTMLElement;
-				recent.classList.add('emptyRecent');
+				// {{SQL CARBON EDIT}} - avoid unit test null ref
+				if (recent && recent.classList) {
+					recent.classList.add('emptyRecent');
+				}
 				return;
 			}
 			const ul = container.querySelector('.recent ul');
