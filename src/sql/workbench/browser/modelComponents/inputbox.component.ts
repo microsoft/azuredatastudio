@@ -166,6 +166,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		// set aria label based on validity of input
 		if (valid) {
 			this.inputElement.setAriaLabel(this.ariaLabel);
+			this.inputElement.hideMessage();
 		} else {
 			if (otherErrorMsg) {
 				this.inputElement.showMessage({ type: MessageType.ERROR, content: otherErrorMsg }, true);
