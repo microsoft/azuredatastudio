@@ -154,6 +154,12 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 				Object.keys(options.data).join(', '));
 			return;
 		}
+
+		// Do not show the text messages in the panel in Notebook Views
+		if (this.cellModel.isInView === true && mimeType === 'text/html') {
+			return;
+		}
+
 		let selector = componentRegistry.getCtorFromMimeType(mimeType);
 		if (!selector) {
 			this.errorText = localize('noSelectorFound', "No component could be found for selector {0}", mimeType);
