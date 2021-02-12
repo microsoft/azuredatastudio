@@ -18,19 +18,18 @@ export type PodHealthModel = {
 };
 
 export class PostgresResourceHealthPage extends DashboardPage {
-
 	private podOverviewLoading!: azdata.LoadingComponent;
 	private podOverviewTable!: azdata.DeclarativeTableComponent;
 
-	private availablePodsContainer!: azdata.DivContainer;
 	private podConditionsContainer!: azdata.DivContainer;
 	private podConditionsLoading!: azdata.LoadingComponent;
 	private podConditionsTable!: azdata.DeclarativeTableComponent;
-
-	private pods: Map<string, PodHealthModel[]> = new Map();
+	private podConditionsTableIndexes: Map<string, number[]> = new Map();
 
 	private podDropDown!: azdata.DropDownComponent;
-	//private coordinatorPodName?: string;
+	private coordinatorPodName!: string;
+	private coordinatorData: PodHealthModel[] = [];
+	private podsData: PodHealthModel[] = [];
 
 	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(modelView);
@@ -82,16 +81,13 @@ export class PostgresResourceHealthPage extends DashboardPage {
 
 		content.addItem(overviewBox);
 
-		this.availablePodsContainer = this.modelView.modelBuilder.divContainer().component();
-
-		this.availablePodsContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.availablePods,
 			CSSStyles: { ...cssStyles.title }
 		}).component());
 
 		// Pod Conditions
 		this.podConditionsContainer = this.modelView.modelBuilder.divContainer().component();
-		//const titleCSS = { ...cssStyles.title, 'margin-block-start': '2em', 'margin-block-end': '0' };
 		this.podConditionsTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
 			columns: [
@@ -126,40 +122,30 @@ export class PostgresResourceHealthPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				}
 			],
-			data: []
+			data: [this.coordinatorData.map(p => [p.condition, p.details, p.lastUpdate])]
 		}).component();
 
 		this.podDropDown = this.modelView.modelBuilder.dropDown().withProps({ width: '150px' }).component();
 		this.disposables.push(
 			this.podDropDown.onValueChanged(() => {
-				this.podConditionsTable.data = this.pods.get(String(this.podDropDown.value))?.map(p => [p.condition, p.details, p.lastUpdate]);
+				this.podConditionsTable.setFilter(this.podConditionsTableIndexes.get(String(this.podDropDown.value)));
 			})
 		);
 
 		this.podConditionsContainer.addItem(this.podDropDown);
 		this.podConditionsContainer.addItem(this.podConditionsTable);
+		this.podConditionsLoading = this.modelView.modelBuilder.loadingComponent()
+			.withItem(this.podConditionsContainer)
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._postgresModel.configLastUpdated
+			}).component();
 
+		this.refreshPodcondtions();
 
-		this.podConditionsLoading = this.modelView.modelBuilder.loadingComponent().withItem(this.podConditionsContainer).component();
-
-		// this.availablePodsContainer.addItem(this.podConditionsLoading, { CSSStyles: cssStyles.text });
-
-		this.selectComponent();
-
-		content.addItem(this.availablePodsContainer, { CSSStyles: cssStyles.text });
+		content.addItem(this.podConditionsLoading, { CSSStyles: cssStyles.text });
 
 		this.initialized = true;
 		return root;
-	}
-
-	private selectComponent(): void {
-		if (!this._postgresModel.configLastUpdated) {
-			this.availablePodsContainer.addItem(this.podConditionsLoading, { CSSStyles: cssStyles.text });
-		} else {
-			this.podConditionsLoading.loading = false;
-			this.podDropDown.values = this.getPods();
-			this.availablePodsContainer.addItem(this.podConditionsContainer);
-		}
 	}
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
@@ -198,13 +184,8 @@ export class PostgresResourceHealthPage extends DashboardPage {
 
 		podStatus?.forEach(p => {
 			let podHealthModels: PodHealthModel[] = [];
+			let indexes: number[] = [];
 
-			if (p.role.toUpperCase() !== loc.coordinator.toUpperCase()) {
-				podNames.push(p.name);
-			} else {
-				//this.coordinatorPodName = p.name;
-				podNames.unshift(p.name);
-			}
 
 			p.conditions.forEach(c => {
 				const condtionContainer = this.modelView.modelBuilder.flexContainer().withProps({
@@ -253,22 +234,34 @@ export class PostgresResourceHealthPage extends DashboardPage {
 					}
 				}
 
-				podHealthModels.push({
+				indexes.push(this.podsData.length);
+				this.podsData.push({
 					condition: c.type,
 					details: condtionContainer,
 					lastUpdate: c.lastTransitionTime
 				});
 			});
-			this.pods.set(p.name, podHealthModels);
+
+			if (p.role.toUpperCase() !== loc.coordinator.toUpperCase()) {
+				podNames.push(p.name);
+			} else {
+				this.coordinatorData = podHealthModels;
+				this.coordinatorPodName = p.name;
+				podNames.unshift(p.name);
+			}
+			this.podConditionsTableIndexes.set(p.name, indexes);
 		});
+
+		this.podConditionsTable.data = this.podsData.map(p => [p.condition, p.details, p.lastUpdate]);
 
 		return podNames;
 	}
 
 	private refreshPodcondtions(): void {
 		if (this._postgresModel.config) {
+			this.podConditionsTableIndexes = new Map();
 			this.podDropDown.values = this.getPods();
-			//this.podConditionsTable.data = this.pods.get(this.coordinatorPodName!)?.map(p => [p.condition, p.details, p.lastUpdate]);
+			this.podConditionsTable.setFilter(this.podConditionsTableIndexes.get(this.coordinatorPodName!));
 			this.podConditionsLoading.loading = false;
 		}
 	}
