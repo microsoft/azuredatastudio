@@ -24,8 +24,9 @@ export function createContext(): TestContext {
 				update: () => { return Promise.resolve(); }
 			},
 			globalState: {
-				get: () => { return Promise.resolve(); },
-				update: () => { return Promise.resolve(); }
+				setKeysForSync: (): void => { },
+				get: (): any | undefined => { return Promise.resolve(); },
+				update: (): Thenable<void> => { return Promise.resolve(); }
 			},
 			extensionPath: extensionPath,
 			asAbsolutePath: () => { return ''; },
@@ -88,6 +89,7 @@ export function createViewContext(): ViewTestContext {
 			label: '',
 			checked: false,
 			onDidClick: onClick.event,
+			onDidChangeCheckedState: onValueChanged.event
 		});
 		return button;
 	};
@@ -311,7 +313,8 @@ export function createViewContext(): ViewTestContext {
 			hyperlink: () => undefined!,
 			tabbedPanel: undefined!,
 			separator: undefined!,
-			propertiesContainer: undefined!
+			propertiesContainer: undefined!,
+			infoBox: undefined!
 		}
 	};
 	return {

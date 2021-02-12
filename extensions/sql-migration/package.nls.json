@@ -1,4 +1,5 @@
 {
 	"displayName": "SQL Migration",
-	"description": "SQL migration description"
+	"description": "SQL migration description",
+	"migration-notebook-command-title": "Open SQL migration notebooks"
 }

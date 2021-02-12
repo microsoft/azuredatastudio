@@ -76,6 +76,9 @@ export class NotebookModelStub implements INotebookModel {
 	get savedConnectionName(): string {
 		throw new Error('method not implemented.');
 	}
+	get multiConnectionMode(): boolean {
+		throw new Error('method not implemented.');
+	}
 	get providerId(): string {
 		throw new Error('method not implemented.');
 	}
@@ -98,6 +101,12 @@ export class NotebookModelStub implements INotebookModel {
 		throw new Error('Method not implemented.');
 	}
 	set viewMode(mode: ViewMode) {
+		throw new Error('Method not implemented.');
+	}
+	setMetaValue(key: string, value: any) {
+		throw new Error('Method not implemented.');
+	}
+	getMetaValue(key: string) {
 		throw new Error('Method not implemented.');
 	}
 	addCell(cellType: CellType, index?: number): void {

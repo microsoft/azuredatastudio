@@ -8,7 +8,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IUpdateService } from 'vs/platform/update/common/update';
-import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
+import { ILifecycleService, LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -47,6 +47,8 @@ export interface IMemoryInfo {
 		"timers.ellapsedRequire" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true },
 		"timers.ellapsedWorkspaceStorageInit" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true },
 		"timers.ellapsedWorkspaceServiceInit" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true },
+		"timers.ellapsedRequiredUserDataInit" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true },
+		"timers.ellapsedOtherUserDataInit" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true },
 		"timers.ellapsedViewletRestore" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true },
 		"timers.ellapsedPanelRestore" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true },
 		"timers.ellapsedEditorRestore" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true },
@@ -98,7 +100,7 @@ export interface IStartupMetrics {
 	readonly didUseCachedData: boolean;
 
 	/**
-	 * How/why the window was created. See https://github.com/Microsoft/vscode/blob/d1f57d871722f4d6ba63e4ef6f06287121ceb045/src/vs/platform/lifecycle/common/lifecycle.ts#L50
+	 * How/why the window was created. See https://github.com/microsoft/vscode/blob/d1f57d871722f4d6ba63e4ef6f06287121ceb045/src/vs/platform/lifecycle/common/lifecycle.ts#L50
 	 */
 	readonly windowKind: number;
 
@@ -187,6 +189,15 @@ export interface IStartupMetrics {
 		readonly ellapsedWindowLoadToRequire: number;
 
 		/**
+		 * The time it took to wait for resolving the shell environment. This time the workbench
+		 * will not continue to load and be blocked entirely.
+		 *
+		 * * Happens in the renderer-process
+		 * * Measured with the `willWaitForShellEnv` and `didWaitForShellEnv` performance marks.
+		 */
+		readonly ellapsedWaitForShellEnv: number;
+
+		/**
 		 * The time it took to require the workspace storage DB, connect to it
 		 * and load the initial set of values.
 		 *
@@ -202,6 +213,22 @@ export interface IStartupMetrics {
 		 * * Measured with the `willInitWorkspaceService` and `didInitWorkspaceService` performance marks.
 		 */
 		readonly ellapsedWorkspaceServiceInit: number;
+
+		/**
+		 * The time it took to initialize required user data (settings & global state) using settings sync service.
+		 *
+		 * * Happens in the renderer-process (only in Web)
+		 * * Measured with the `willInitRequiredUserData` and `didInitRequiredUserData` performance marks.
+		 */
+		readonly ellapsedRequiredUserDataInit: number;
+
+		/**
+		 * The time it took to initialize other user data (keybindings, snippets & extensions) using settings sync service.
+		 *
+		 * * Happens in the renderer-process (only in Web)
+		 * * Measured with the `willInitOtherUserData` and `didInitOtherUserData` performance marks.
+		 */
+		readonly ellapsedOtherUserDataInit: number;
 
 		/**
 		 * The time it took to load the main-bundle of the workbench, e.g. `workbench.desktop.main.js`.
@@ -307,7 +334,7 @@ export abstract class AbstractTimerService implements ITimerService {
 
 	declare readonly _serviceBrand: undefined;
 
-	private _startupMetrics?: Promise<IStartupMetrics>;
+	private readonly _startupMetrics: Promise<IStartupMetrics>;
 
 	constructor(
 		@ILifecycleService private readonly _lifecycleService: ILifecycleService,
@@ -319,17 +346,19 @@ export abstract class AbstractTimerService implements ITimerService {
 		@IEditorService private readonly _editorService: IEditorService,
 		@IAccessibilityService private readonly _accessibilityService: IAccessibilityService,
 		@ITelemetryService private readonly _telemetryService: ITelemetryService,
-	) { }
+	) {
+		this._startupMetrics = Promise.all([
+			this._extensionService.whenInstalledExtensionsRegistered(),
+			_lifecycleService.when(LifecyclePhase.Restored)
+		])
+			.then(() => this._computeStartupMetrics())
+			.then(metrics => {
+				this._reportStartupTimes(metrics);
+				return metrics;
+			});
+	}
 
 	get startupMetrics(): Promise<IStartupMetrics> {
-		if (!this._startupMetrics) {
-			this._startupMetrics = this._extensionService.whenInstalledExtensionsRegistered()
-				.then(() => this._computeStartupMetrics())
-				.then(metrics => {
-					this._reportStartupTimes(metrics);
-					return metrics;
-				});
-		}
 		return this._startupMetrics;
 	}
 
@@ -386,8 +415,11 @@ export abstract class AbstractTimerService implements ITimerService {
 				ellapsedWindowLoad: initialStartup ? perf.getDuration('main:appReady', 'main:loadWindow') : undefined,
 				ellapsedWindowLoadToRequire: perf.getDuration('main:loadWindow', 'willLoadWorkbenchMain'),
 				ellapsedRequire: perf.getDuration('willLoadWorkbenchMain', 'didLoadWorkbenchMain'),
+				ellapsedWaitForShellEnv: perf.getDuration('willWaitForShellEnv', 'didWaitForShellEnv'),
 				ellapsedWorkspaceStorageInit: perf.getDuration('willInitWorkspaceStorage', 'didInitWorkspaceStorage'),
 				ellapsedWorkspaceServiceInit: perf.getDuration('willInitWorkspaceService', 'didInitWorkspaceService'),
+				ellapsedRequiredUserDataInit: perf.getDuration('willInitRequiredUserData', 'didInitRequiredUserData'),
+				ellapsedOtherUserDataInit: perf.getDuration('willInitOtherUserData', 'didInitOtherUserData'),
 				ellapsedExtensions: perf.getDuration('willLoadExtensions', 'didLoadExtensions'),
 				ellapsedEditorRestore: perf.getDuration('willRestoreEditors', 'didRestoreEditors'),
 				ellapsedViewletRestore: perf.getDuration('willRestoreViewlet', 'didRestoreViewlet'),

@@ -63,7 +63,7 @@ suite('ProjectProviderRegistry Tests', function (): void {
 			}
 		]);
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');
-		const disposable1 = ProjectProviderRegistry.registerProvider(provider1);
+		const disposable1 = ProjectProviderRegistry.registerProvider(provider1, 'test.testProvider');
 		let providerResult = ProjectProviderRegistry.getProviderByProjectExtension('testproj');
 		should.equal(providerResult, provider1, 'provider1 should be returned for testproj project type');
 		// make sure the project type is case-insensitive for getProviderByProjectType method
@@ -72,7 +72,7 @@ suite('ProjectProviderRegistry Tests', function (): void {
 		providerResult = ProjectProviderRegistry.getProviderByProjectExtension('testproj1');
 		should.equal(providerResult, provider1, 'provider1 should be returned for testproj1 project type');
 		should.strictEqual(ProjectProviderRegistry.providers.length, 1, 'there should be only one project provider at this time');
-		const disposable2 = ProjectProviderRegistry.registerProvider(provider2);
+		const disposable2 = ProjectProviderRegistry.registerProvider(provider2, 'test.testProvider2');
 		providerResult = ProjectProviderRegistry.getProviderByProjectExtension('sqlproj');
 		should.equal(providerResult, provider2, 'provider2 should be returned for sqlproj project type');
 		should.strictEqual(ProjectProviderRegistry.providers.length, 2, 'there should be 2 project providers at this time');
@@ -106,7 +106,7 @@ suite('ProjectProviderRegistry Tests', function (): void {
 			}
 		]);
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');
-		ProjectProviderRegistry.registerProvider(provider);
+		ProjectProviderRegistry.registerProvider(provider, 'test.testProvider');
 		should.strictEqual(ProjectProviderRegistry.providers.length, 1, 'there should be only one project provider at this time');
 		ProjectProviderRegistry.clear();
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider after clearing the registry');

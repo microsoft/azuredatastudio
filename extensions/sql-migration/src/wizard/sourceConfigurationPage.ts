@@ -33,7 +33,7 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 
 		await view.initializeModel(form);
 
-		let connectionUri: string = await azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnection.connectionId);
+		let connectionUri: string = await azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId);
 		this.migrationStateModel.migrationService.getAssessments(connectionUri).then(results => {
 			if (results) {
 				this.migrationStateModel.assessmentResults = results.items;

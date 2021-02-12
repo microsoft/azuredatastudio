@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Deferred } from 'sql/base/common/promise';
-import { entries } from 'sql/base/common/collections';
 import { IComponentDescriptor, IModelStore, IComponent } from 'sql/platform/dashboard/browser/interfaces';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -76,9 +75,9 @@ export class ModelStore implements IModelStore {
 		this._validationCallbacks.push(callback);
 	}
 
-	validate(component: IComponent): Thenable<boolean> {
-		let componentId = entries(this._componentMappings).find(([id, mappedComponent]) => component === mappedComponent)[0];
-		return Promise.all(this._validationCallbacks.map(callback => callback(componentId))).then(validations => validations.every(validation => validation === true));
+	async validate(component: IComponent): Promise<boolean> {
+		const validations = await Promise.all(this._validationCallbacks.map(callback => callback(component.descriptor.id)));
+		return validations.every(validation => validation === true);
 	}
 
 	/**
@@ -114,7 +113,7 @@ export class ModelStore implements IModelStore {
 		let promiseTracker = this._componentActions[componentId];
 		if (promiseTracker) {
 			// Run initial actions first to ensure they're done before later actions (and thus don't overwrite following actions)
-			new Promise(resolve => {
+			new Promise<void>(resolve => {
 				promiseTracker.initial.forEach(action => action(component));
 				resolve();
 			}).then(() => {

@@ -6,7 +6,7 @@
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { deepFreeze } from 'vs/base/common/objects';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
 
@@ -43,8 +43,8 @@ export class ConfigurationUpgraderContribution implements IWorkbenchContribution
 	) {
 		this.processingPromise = (async () => {
 			await this.processSettings();
-			this.storageService.store(ConfigurationUpgraderContribution.STORAGE_KEY, JSON.stringify(this.globalStorage), StorageScope.GLOBAL);
-			this.storageService.store(ConfigurationUpgraderContribution.STORAGE_KEY, JSON.stringify(this.workspaceStorage), StorageScope.WORKSPACE);
+			this.storageService.store(ConfigurationUpgraderContribution.STORAGE_KEY, JSON.stringify(this.globalStorage), StorageScope.GLOBAL, StorageTarget.MACHINE);
+			this.storageService.store(ConfigurationUpgraderContribution.STORAGE_KEY, JSON.stringify(this.workspaceStorage), StorageScope.WORKSPACE, StorageTarget.MACHINE);
 		})();
 	}
 

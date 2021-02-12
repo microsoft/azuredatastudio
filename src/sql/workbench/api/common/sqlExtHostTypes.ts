@@ -177,12 +177,14 @@ export enum ModelComponentTypes {
 	ListView,
 	TabbedPanel,
 	Separator,
-	PropertiesContainer
+	PropertiesContainer,
+	InfoBox
 }
 
 export enum ModelViewAction {
 	SelectTab = 'selectTab',
-	AppendData = 'appendData'
+	AppendData = 'appendData',
+	Filter = 'filter'
 }
 
 export enum ColumnSizingMode {
@@ -270,6 +272,7 @@ export interface IModelViewButtonDetails {
 	hidden: boolean;
 	focused?: boolean;
 	position?: 'left' | 'right';
+	secondary?: boolean;
 }
 
 export interface IModelViewWizardPageDetails {
@@ -278,6 +281,7 @@ export interface IModelViewWizardPageDetails {
 	enabled: boolean;
 	customButtons: number[];
 	description: string;
+	pageName?: string;
 }
 
 export interface IModelViewWizardDetails {

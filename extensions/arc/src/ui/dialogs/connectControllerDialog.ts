@@ -19,9 +19,7 @@ import { getCurrentClusterContext, getDefaultKubeConfigPath, getKubeConfigCluste
 import { FilePicker } from '../components/filePicker';
 
 export type ConnectToControllerDialogModel = { controllerModel: ControllerModel, password: string };
-export interface IReadOnly {
-	readOnly?: boolean
-}
+
 abstract class ControllerDialogBase extends InitializingComponent {
 	protected _toDispose: vscode.Disposable[] = [];
 	protected modelBuilder!: azdata.ModelBuilder;
@@ -70,7 +68,7 @@ abstract class ControllerDialogBase extends InitializingComponent {
 	}
 
 	protected abstract fieldToFocusOn(): azdata.Component;
-	protected readonlyFields(): IReadOnly[] { return []; }
+	protected readonlyFields(): azdata.Component[] { return []; }
 
 	protected initializeFields(controllerInfo: ControllerInfo | undefined, password: string | undefined) {
 		this.urlInputBox = this.modelBuilder.inputBox()
@@ -140,7 +138,7 @@ abstract class ControllerDialogBase extends InitializingComponent {
 				}]).withLayout({ width: '100%' }).component();
 			await view.initializeModel(formModel);
 			await this.fieldToFocusOn().focus();
-			this.readonlyFields().forEach(f => f.readOnly = true);
+			this.readonlyFields().forEach(f => f.enabled = false);
 			this.initialized = true;
 		});
 
@@ -255,11 +253,11 @@ export class PasswordToControllerDialog extends ControllerDialogBase {
 		return this.passwordInputBox;
 	}
 
-	protected readonlyFields() {
+	protected readonlyFields(): azdata.Component[] {
 		return [
 			this.urlInputBox,
-			this.kubeConfigInputBox,
-			this.clusterContextRadioGroup,
+			...this.kubeConfigInputBox.items,
+			...this.clusterContextRadioGroup.items,
 			this.nameInputBox,
 			this.usernameInputBox
 		];

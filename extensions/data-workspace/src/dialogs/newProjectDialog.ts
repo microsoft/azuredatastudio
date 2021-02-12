@@ -13,6 +13,7 @@ import { IProjectType } from 'dataworkspace';
 import { directoryExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
 import { defaultProjectSaveLocation } from '../common/projectLocationHelper';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 class NewProjectDialogModel {
 	projectTypeId: string = '';
@@ -25,6 +26,11 @@ export class NewProjectDialog extends DialogBase {
 
 	constructor(private workspaceService: IWorkspaceService) {
 		super(constants.NewProjectDialogTitle, 'NewProject');
+
+		// dialog launched from Welcome message button (only visible when no current workspace) vs. "add project" button
+		TelemetryReporter.createActionEvent(TelemetryViews.NewProjectDialog, TelemetryActions.NewProjectDialogLaunched)
+			.withAdditionalProperties({ isWorkspaceOpen: (vscode.workspace.workspaceFile !== undefined).toString() })
+			.send();
 	}
 
 	async validate(): Promise<boolean> {
@@ -59,11 +65,21 @@ export class NewProjectDialog extends DialogBase {
 	async onComplete(): Promise<void> {
 		try {
 			const validateWorkspace = await this.workspaceService.validateWorkspace();
+
+			TelemetryReporter.createActionEvent(TelemetryViews.NewProjectDialog, TelemetryActions.NewProjectDialogCompleted)
+				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId, workspaceValidationPassed: validateWorkspace.toString() })
+				.send();
+
 			if (validateWorkspace) {
 				await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId, vscode.Uri.file(this.workspaceInputBox!.value!));
 			}
 		}
 		catch (err) {
+
+			TelemetryReporter.createErrorEvent(TelemetryViews.NewProjectDialog, TelemetryActions.NewProjectDialogCompleted)
+				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId, error: err?.message ? err.message : err })
+				.send();
+
 			vscode.window.showErrorMessage(err?.message ? err.message : err);
 		}
 	}

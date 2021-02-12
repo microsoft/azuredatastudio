@@ -13,7 +13,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { NullLogService } from 'vs/platform/log/common/log';
-import { EnvironmentService } from 'vs/platform/environment/node/environmentService';
+import { NativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { parseArgs, OPTIONS } from 'vs/platform/environment/node/argv';
 import { assign } from 'vs/base/common/objects';
 
@@ -81,7 +81,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 		capabilitiesService = new TestCapabilitiesService();
 		connectionProfileObject = new ConnectionProfile(capabilitiesService, connectionProfile);
 
-		const environmentService = new EnvironmentService(parseArgs(process.argv, OPTIONS));
+		const environmentService = new NativeEnvironmentService(parseArgs(process.argv, OPTIONS));
 		connections = new ConnectionStatusManager(capabilitiesService, new NullLogService(), environmentService, new TestNotificationService());
 		connection1Id = Utils.generateUri(connectionProfile);
 		connection2Id = 'connection2Id';

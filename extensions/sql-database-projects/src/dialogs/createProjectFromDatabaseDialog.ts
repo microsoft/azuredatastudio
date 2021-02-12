@@ -36,7 +36,7 @@ export class CreateProjectFromDatabaseDialog {
 	public createProjectFromDatabaseCallback: ((model: ImportDataModel) => any) | undefined;
 
 	constructor(private profile: azdata.IConnectionProfile | undefined) {
-		this.dialog = azdata.window.createModelViewDialog(constants.createProjectFromDatabaseDialogName);
+		this.dialog = azdata.window.createModelViewDialog(constants.createProjectFromDatabaseDialogName, 'createProjectFromDatabaseDialog');
 		this.createProjectFromDatabaseTab = azdata.window.createTab(constants.createProjectFromDatabaseDialogName);
 		this.dialog.registerCloseValidator(async () => {
 			return this.validate();
@@ -152,7 +152,7 @@ export class CreateProjectFromDatabaseDialog {
 		}).component();
 
 		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, sourceConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-5px', 'margin-top': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-		connectionRow.insertItem(selectConnectionButton, 2, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '-5px', 'margin-top': '-10px' } });
+		connectionRow.addItem(selectConnectionButton, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '-5px', 'margin-top': '-10px' } });
 
 		return connectionRow;
 	}
@@ -161,9 +161,7 @@ export class CreateProjectFromDatabaseDialog {
 		this.sourceDatabaseDropDown = view.modelBuilder.dropDown().withProperties({
 			ariaLabel: constants.databaseNameLabel,
 			required: true,
-			width: cssStyles.createProjectFromDatabaseTextboxWidth,
-			editable: true,
-			fireOnTextChange: true
+			width: cssStyles.createProjectFromDatabaseTextboxWidth
 		}).component();
 
 		this.sourceDatabaseDropDown.onValueChanged(() => {
@@ -295,7 +293,7 @@ export class CreateProjectFromDatabaseDialog {
 		}).component();
 
 		const projectLocationRow = view.modelBuilder.flexContainer().withItems([projectLocationLabel, this.projectLocationTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-		projectLocationRow.insertItem(browseFolderButton, 2, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '-10px' } });
+		projectLocationRow.addItem(browseFolderButton, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '-10px' } });
 
 		return projectLocationRow;
 	}

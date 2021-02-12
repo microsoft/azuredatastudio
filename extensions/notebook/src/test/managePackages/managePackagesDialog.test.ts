@@ -40,7 +40,7 @@ describe('Manage Package Dialog', () => {
 
 	it('getLocationComponent should create text component for undefined location', async function (): Promise<void> {
 		let testContext = createViewContext();
-		let locations: IPackageLocation[] | undefined  = undefined;
+		let locations: IPackageLocation[] | undefined = undefined;
 		testContext.model.setup(x => x.getLocations()).returns(() => Promise.resolve(locations));
 
 		let actual = await InstalledPackagesTab.getLocationComponent(testContext.view, testContext.dialog.object);
@@ -117,6 +117,7 @@ describe('Manage Package Dialog', () => {
 		dialog.setup(x => x.model).returns(() => model.object);
 
 		let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+		let onChange: vscode.EventEmitter<boolean> = new vscode.EventEmitter<boolean>();
 
 		let componentBase: azdata.Component = {
 			id: '',
@@ -132,8 +133,10 @@ describe('Manage Package Dialog', () => {
 			onDidClick: onClick.event
 		});
 		let radioButton: azdata.RadioButtonComponent = Object.assign({}, componentBase, {
-			onDidClick: onClick.event
+			onDidClick: onClick.event,
+			onDidChangeCheckedState: onChange.event
 		});
+
 		const components: azdata.Component[] = [];
 		let container = {
 			clearItems: () => { },
@@ -181,6 +184,7 @@ describe('Manage Package Dialog', () => {
 		let declarativeTable: () => azdata.DeclarativeTableComponent = () => Object.assign({}, componentBase, {
 			onDataChanged: undefined!,
 			onRowSelected: undefined!,
+			setFilter: undefined!,
 			data: [],
 			columns: []
 		});
@@ -297,7 +301,8 @@ describe('Manage Package Dialog', () => {
 				hyperlink: undefined!,
 				tabbedPanel: undefined!,
 				separator: undefined!,
-				propertiesContainer: undefined!
+				propertiesContainer: undefined!,
+				infoBox: undefined!
 			}
 		};
 

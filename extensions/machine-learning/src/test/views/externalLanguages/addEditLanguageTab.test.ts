@@ -104,7 +104,7 @@ describe('Add Edit External Languages Tab', () => {
 		let tab = new AddEditLanguageTab(testContext.apiWrapper.object, parent, languageUpdateModel);
 		should.notEqual(tab.saveButton, undefined);
 		let updateCalled = false;
-		let promise = new Promise(resolve => {
+		let promise = new Promise<void>(resolve => {
 			parent.onUpdate(() => {
 				updateCalled = true;
 				resolve();

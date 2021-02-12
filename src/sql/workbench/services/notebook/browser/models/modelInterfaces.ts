@@ -308,6 +308,12 @@ export interface INotebookModel {
 	 * or undefined if none.
 	 */
 	readonly savedConnectionName: string | undefined;
+
+	/**
+	 * The connection mode of the notebook (single vs multiple connections)
+	 */
+	multiConnectionMode: boolean;
+
 	/**
 	 * Event fired on first initialization of the cells and
 	 * on subsequent change events
@@ -344,6 +350,16 @@ export interface INotebookModel {
 	 * will be displayed.
 	 */
 	viewMode: ViewMode;
+
+	/**
+	 * Add custom metadata values to the notebook
+	 */
+	setMetaValue(key: string, value: any);
+
+	/**
+	 * Get a custom metadata value from the notebook
+	 */
+	getMetaValue(key: string): any;
 
 	/**
 	 * Change the current kernel from the Kernel dropdown
@@ -476,6 +492,7 @@ export interface ICellModel {
 	source: string | string[];
 	cellType: CellType;
 	trustedMode: boolean;
+	metadata: any | undefined;
 	active: boolean;
 	hover: boolean;
 	executionCount: number | undefined;

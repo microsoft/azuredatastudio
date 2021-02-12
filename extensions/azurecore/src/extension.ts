@@ -196,6 +196,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			ignoreErrors: boolean): Promise<azurecore.GetFileSharesResult> {
 			return azureResourceUtils.getFileShares(account, subscription, storageAccount, ignoreErrors);
 		},
+		makeAzureRestRequest(account: azdata.Account,
+			subscription: azureResource.AzureResourceSubscription,
+			path: string,
+			requestType: azurecore.HttpRequestMethod,
+			requestBody: any,
+			ignoreErrors: boolean,
+			host: string = 'https://management.azure.com'): Promise<azurecore.AzureRestResponse> {
+			return azureResourceUtils.makeHttpRequest(account, subscription, path, requestType, requestBody, ignoreErrors, host);
+		},
 		getRegionDisplayName: utils.getRegionDisplayName,
 		runGraphQuery<T extends azureResource.AzureGraphResource>(account: azdata.Account,
 			subscriptions: azureResource.AzureResourceSubscription[],
