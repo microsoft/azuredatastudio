@@ -126,6 +126,9 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			this._table.onDidInsert();
 			this.layout();
 			this._initialized = true;
+			if (this.cellModel.isInView !== true) {
+				this._table.rebuildActionBar();
+			}
 		}
 	}
 
@@ -259,6 +262,9 @@ class DataResourceTable extends GridTableBase<any> {
 
 			this.element.appendChild(this._chartContainer);
 			this._chart.render(this._chartContainer);
+			if (this.cellModel.isInView !== true) {
+				this._chart.showActionBar();
+			}
 		}
 	}
 

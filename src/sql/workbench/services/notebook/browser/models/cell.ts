@@ -78,6 +78,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
 	private _isInjectedParameter: boolean;
+	private _isInView: boolean;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -358,6 +359,14 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 	public set cellSourceChanged(val: boolean) {
 		this._cellSourceChanged = val;
+	}
+
+	public get isInView(): boolean {
+		return this._isInView;
+	}
+
+	public set isInView(val: boolean) {
+		this._isInView = val;
 	}
 
 	public get onCellPreviewModeChanged(): Event<boolean> {
@@ -708,17 +717,6 @@ export class CellModel extends Disposable implements ICellModel {
 			case 'display_data':
 				output = msg.content as nb.ICellOutput;
 				output.output_type = msgType;
-				// Display message outputs before grid outputs
-				if (this._outputs.length > 0) {
-					for (let i = 0; i < this._outputs.length; i++) {
-						if (this._outputs[i].output_type === 'execute_result') {
-							this._outputs.splice(i, 0, this.rewriteOutputUrls(output));
-							this.fireOutputsChanged();
-							added = true;
-							break;
-						}
-					}
-				}
 				break;
 			case 'stream':
 			case 'error':

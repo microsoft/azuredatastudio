@@ -204,9 +204,9 @@
 }
 
 .notebookEditor .notebook-cellTable {
-	margin-left: 20px;
-	margin-top: 10px;
-	margin-bottom: 10px;
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-bottom: 0px;
 }
 
 .notebookEditor .notebook-cellTable .ui-widget-content.slick-row {

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./cellToolbar';
-import { Component, OnInit, ViewChildren, QueryList, Input, Inject, forwardRef, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList, Input, Inject, forwardRef, ChangeDetectorRef, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCard.component';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
@@ -18,7 +18,7 @@ import { CellChangeEvent, INotebookViewCell } from 'sql/workbench/services/noteb
 	templateUrl: decodeURI(require.toUrl('./notebookViewsGrid.component.html')),
 	encapsulation: ViewEncapsulation.None,
 })
-export class NotebookViewsGridComponent implements OnInit {
+export class NotebookViewsGridComponent implements OnInit, OnDestroy {
 	@Input() cells: ICellModel[];
 	@Input() model: NotebookModel;
 	@Input() views: NotebookViewsExtension;
@@ -48,7 +48,9 @@ export class NotebookViewsGridComponent implements OnInit {
 
 	ngOnInit() {
 		const self = this;
-
+		self.cells.forEach(function (cell) {
+			cell.isInView = true;
+		});
 		setTimeout(() => {
 			self._grid = GridStack.init({
 				alwaysShowResizeHandle: false,
@@ -62,6 +64,12 @@ export class NotebookViewsGridComponent implements OnInit {
 			self._grid.on('removed', function (e: Event, items: GridStackNode[]) { self.persist('removed', items, self._grid, self._items); });
 			self._grid.on('change', function (e: Event, items: GridStackNode[]) { self.persist('change', items, self._grid, self._items); });
 		}, 100);
+	}
+
+	ngOnDestroy() {
+		this.cells.forEach(function (cell) {
+			cell.isInView = false;
+		});
 	}
 
 	private detectChanges(): void {

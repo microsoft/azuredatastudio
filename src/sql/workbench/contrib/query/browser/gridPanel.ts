@@ -511,7 +511,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
 			this.actionBar.context = this.generateContext();
 		});
-		this.rebuildActionBar();
+
+		this.clearActionBar();
 
 		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
 			if (this.state) {
@@ -563,7 +564,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 		this.restoreScrollState();
 
-		this.rebuildActionBar();
+		this.clearActionBar();
 
 		// Setting the active cell resets the selection so save it here
 		let savedSelection = this.state.selection;
@@ -628,10 +629,14 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		};
 	}
 
-	private rebuildActionBar() {
+	public rebuildActionBar() {
 		let actions = this.getCurrentActions();
 		this.actionBar.clear();
 		this.actionBar.push(actions, { icon: true, label: false });
+	}
+
+	public clearActionBar() {
+		this.actionBar.clear();
 	}
 
 	protected abstract getCurrentActions(): IAction[];

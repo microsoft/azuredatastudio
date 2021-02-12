@@ -192,6 +192,12 @@ export class ChartView extends Disposable implements IPanelView {
 		this.verifyOptions();
 	}
 
+	public showActionBar() {
+		if (this.container) {
+			this.updateActionbar();
+		}
+	}
+
 	public chart(dataId: { batchId: number, resultId: number }) {
 		this.state.dataId = dataId;
 		this._currentData = dataId;
@@ -261,7 +267,6 @@ export class ChartView extends Disposable implements IPanelView {
 		};
 		DOM.clearNode(this.typeControls);
 
-		this.updateActionbar();
 		this.getChartTypeOptions().map(o => {
 			this.createOption(o, this.typeControls);
 		});
@@ -272,7 +277,6 @@ export class ChartView extends Disposable implements IPanelView {
 	}
 
 	private verifyOptions() {
-		this.updateActionbar();
 		for (let key in this.optionMap) {
 			if (this.optionMap.hasOwnProperty(key)) {
 				let option = this.getChartTypeOptions().find(e => e.configEntry === key);
