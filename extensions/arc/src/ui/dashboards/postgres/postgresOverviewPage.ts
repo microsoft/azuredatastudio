@@ -32,6 +32,7 @@ export class PostgresOverviewPage extends DashboardPage {
 	private grafanaLink!: azdata.HyperlinkComponent;
 
 	private podStatusTable!: azdata.DeclarativeTableComponent;
+	private podStatusData: PodStatusModel[] = [];
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
@@ -183,14 +184,18 @@ export class PostgresOverviewPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				}
 			],
-			data: []
+			data: [this.podStatusData.map(p => [p.podName, p.type, p.status])]
 		}).component();
+
+
 
 		this.serverGroupNodesLoading = this.modelView.modelBuilder.loadingComponent()
 			.withItem(this.podStatusTable)
 			.withProperties<azdata.LoadingComponentProperties>({
 				loading: !this._postgresModel.configLastUpdated
 			}).component();
+
+		this.refreshServerNodes();
 
 		content.addItem(this.serverGroupNodesLoading, { CSSStyles: cssStyles.text });
 
@@ -406,7 +411,8 @@ export class PostgresOverviewPage extends DashboardPage {
 
 	private refreshServerNodes(): void {
 		if (this._postgresModel.config) {
-			this.podStatusTable.data = this.getPodStatus().map(p => [p.podName, p.type, p.status]);
+			this.podStatusData = this.getPodStatus();
+			this.podStatusTable.data = this.podStatusData.map(p => [p.podName, p.type, p.status]);
 			this.serverGroupNodesLoading.loading = false;
 		}
 	}
