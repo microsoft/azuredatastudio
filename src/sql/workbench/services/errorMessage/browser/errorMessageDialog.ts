@@ -80,7 +80,9 @@ export class ErrorMessageDialog extends Modal {
 				this._clipboardService.writeText(this._messageDetails!).catch(err => onUnexpectedError(err));
 			}
 		}, 'left', true);
-		this._copyButton!.icon = 'codicon scriptToClipboard';
+		this._copyButton!.icon = {
+			classNames: 'codicon scriptToClipboard'
+		};
 		this._copyButton!.element.title = copyButtonLabel;
 		this._register(attachButtonStyler(this._copyButton!, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_FOREGROUND }));
 	}

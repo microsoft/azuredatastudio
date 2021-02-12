@@ -869,7 +869,7 @@ declare module 'azdata' {
 		generateAssessmentScript(items: SqlAssessmentResultItem[]): Promise<ResultStatus>;
 	}
 
-	export interface TreeItem2 extends vscode.TreeItem2 {
+	export interface TreeItem2 extends vscode.TreeItem {
 		payload?: IConnectionProfile;
 		childProvider?: string;
 		type?: ExtensionNodeType;
@@ -1035,5 +1035,24 @@ declare module 'azdata' {
 		 * Microsoft Graph
 		 */
 		MsGraph = 7
+	}
+
+	export interface ResultSetSummary {
+		/**
+		 * The visualization options for the result set.
+		 */
+		visualization?: VisualizationOptions;
+	}
+
+	/**
+	 * Defines all the supported visualization types
+	 */
+	export type VisualizationType = 'bar' | 'count' | 'doughnut' | 'horizontalBar' | 'image' | 'line' | 'pie' | 'scatter' | 'table' | 'timeSeries';
+
+	/**
+	 * Defines the configuration options for visualization
+	 */
+	export interface VisualizationOptions {
+		type: VisualizationType;
 	}
 }

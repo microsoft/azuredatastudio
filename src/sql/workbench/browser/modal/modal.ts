@@ -235,7 +235,9 @@ export abstract class Modal extends Disposable implements IThemable {
 				if (this._modalOptions.hasBackButton) {
 					const container = DOM.append(this._modalHeaderSection, DOM.$('.modal-go-back'));
 					this._backButton = new Button(container, { secondary: true });
-					this._backButton.icon = 'backButtonIcon';
+					this._backButton.icon = {
+						classNames: 'backButtonIcon'
+					};
 					this._backButton.title = localize('modal.back', "Back");
 				}
 
@@ -255,17 +257,23 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._messageSeverity = DOM.append(headerContainer, DOM.$('.dialog-message-severity'));
 			this._detailsButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
 			this._toggleMessageDetailButton = new Button(this._detailsButtonContainer);
-			this._toggleMessageDetailButton.icon = 'message-details-icon';
+			this._toggleMessageDetailButton.icon = {
+				classNames: 'message-details-icon'
+			};
 			this._toggleMessageDetailButton.label = SHOW_DETAILS_TEXT;
 			this._register(this._toggleMessageDetailButton.onDidClick(() => this.toggleMessageDetail()));
 			const copyMessageButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
 			this._copyMessageButton = new Button(copyMessageButtonContainer);
-			this._copyMessageButton.icon = 'copy-message-icon';
+			this._copyMessageButton.icon = {
+				classNames: 'copy-message-icon'
+			};
 			this._copyMessageButton.label = COPY_TEXT;
 			this._register(this._copyMessageButton.onDidClick(() => this._clipboardService.writeText(this.getTextForClipboard())));
 			const closeMessageButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
 			this._closeMessageButton = new Button(closeMessageButtonContainer);
-			this._closeMessageButton.icon = 'close-message-icon';
+			this._closeMessageButton.icon = {
+				classNames: 'close-message-icon'
+			};
 			this._closeMessageButton.label = CLOSE_TEXT;
 			this._register(this._closeMessageButton.onDidClick(() => this.setError(undefined)));
 

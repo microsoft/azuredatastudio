@@ -6,7 +6,7 @@
 import { localize } from 'vs/nls';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IAction } from 'vs/base/common/actions';
-import { append, $, addClass, toggleClass, Dimension, IFocusTracker, getTotalHeight } from 'vs/base/browser/dom';
+import { $, toggleClass, Dimension, IFocusTracker, getTotalHeight, prepend } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -104,7 +104,6 @@ export class NotebookExplorerViewlet extends Viewlet {
 export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	private root: HTMLElement;
 	private static readonly MAX_TEXT_RESULTS = 10000;
-	private notebookSourcesBox: HTMLElement;
 	private searchWidgetsContainerElement!: HTMLElement;
 	searchWidget!: NotebookSearchWidget;
 	private inputBoxFocused: IContextKey<boolean>;
@@ -135,15 +134,12 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 
 	create(parent: HTMLElement): void {
-		addClass(parent, 'notebookExplorer-viewlet');
 		this.root = parent;
+		super.create(parent);
+		parent.classList.add('notebookExplorer-viewlet');
 
-		this.searchWidgetsContainerElement = append(this.root, $('.header'));
+		this.searchWidgetsContainerElement = prepend(parent, $('.header'));
 		this.createSearchWidget(this.searchWidgetsContainerElement);
-
-		this.notebookSourcesBox = append(this.root, $('.notebookSources'));
-
-		return super.create(this.notebookSourcesBox);
 	}
 
 	private createSearchWidget(container: HTMLElement): void {
@@ -443,7 +439,7 @@ export const NOTEBOOK_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(View
 	id: VIEWLET_ID,
 	name: localize('notebookExplorer.name', "Notebooks"),
 	ctorDescriptor: new SyncDescriptor(NotebookExplorerViewPaneContainer),
-	icon: 'book',
+	icon: { id: 'book' },
 	order: 6,
 	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Sidebar);
