@@ -85,14 +85,16 @@ export class DataTierApplicationWizard {
 	public model: DacFxDataModel;
 	public pages: Map<string, Page> = new Map<string, Page>();
 	public selectedOperation: Operation;
+	public extensionContext: vscode.ExtensionContext;
 
 	constructor(dacfxInputService?: mssql.IDacFxService) {
 		this.wizard = azdata.window.createWizard(loc.wizardTitle, 'Data Tier Application Wizard');
 		this.dacfxService = dacfxInputService;
 	}
 
-	public async start(p: any, ...args: any[]): Promise<boolean> {
+	public async start(p: any, extensionContext?: vscode.ExtensionContext): Promise<boolean> {
 		this.model = <DacFxDataModel>{};
+		this.extensionContext = extensionContext;
 
 		let profile = p ? <azdata.IConnectionProfile>p.connectionProfile : undefined;
 		if (profile) {
