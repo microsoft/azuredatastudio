@@ -200,13 +200,13 @@ export class BookTocManager implements IBookTocManager {
 			// if addSection is undefined then we remove the whole section from the table of contents.
 			return addSection;
 		} else {
-			let newSection = convertTo(version, section);
+			let newSection = { ...section };
 			if (section.sections && section.sections.length > 0) {
 				newSection.sections = [] as JupyterBookSection[];
 				for (let s of section.sections) {
 					const child = this.buildTOC(version, s, findSection, addSection);
 					if (child) {
-						newSection.sections.push(convertTo(version, child));
+						newSection.sections.push(child);
 					}
 				}
 			}
