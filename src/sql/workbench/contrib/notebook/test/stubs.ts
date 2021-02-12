@@ -43,6 +43,9 @@ export class NotebookModelStub implements INotebookModel {
 	get sessionLoadFinished(): Promise<void> {
 		throw new Error('method not implemented.');
 	}
+	get gridDataConversionComplete(): Promise<any[]> {
+		throw new Error('method not implemented.');
+	}
 	get notebookManagers(): INotebookManager[] {
 		throw new Error('method not implemented.');
 	}

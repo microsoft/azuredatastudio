@@ -27,7 +27,7 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 	private readonly _viewItemKey: IContextKey<string>;
 	private readonly _nodeContextKey: IContextKey<INodeContextValue>;
 
-	private _nodeContextUtils: MssqlNodeContext;
+	private _nodeContextUtils?: MssqlNodeContext;
 
 	constructor(
 		@IContextKeyService private contextKeyService: IContextKeyService,
@@ -47,7 +47,7 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 	}
 
 	set(value: INodeContextValue) {
-		if (value.node && value.node.payload) {
+		if (value.node?.payload) {
 			this._connectableKey.set(true);
 			this._connectedKey.set(this.oeService.isNodeConnected(value.viewId, value.node));
 			this._connectionContextKey.set(value.node.payload);
@@ -56,14 +56,14 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 			this._connectedKey.set(false);
 			this._connectionContextKey.reset();
 		}
-		if (value.node) {
+		if (value.node?.contextValue) {
 			this._viewItemKey.set(value.node.contextValue);
 		} else {
 			this._viewItemKey.reset();
 		}
 		this._nodeContextKey.set(value);
 		this._viewIdKey.set(value.viewId);
-		this._nodeContextUtils = new MssqlNodeContext(this._nodeContextKey.get(), this.contextKeyService,
+		this._nodeContextUtils = new MssqlNodeContext(this._nodeContextKey.get()!, this.contextKeyService,
 			this.connectionManagementService, this.capabilitiesService);
 	}
 
@@ -74,7 +74,7 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 		this._connectedKey.reset();
 		this._connectionContextKey.reset();
 		this._nodeContextKey.reset();
-		this._nodeContextUtils.dispose();
+		this._nodeContextUtils?.dispose();
 	}
 
 	get(): INodeContextValue | undefined {

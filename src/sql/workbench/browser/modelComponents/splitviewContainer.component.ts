@@ -3,10 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./media/flexContainer';
-
 import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnDestroy } from '@angular/core';
 
-import { FlexItemLayout, SplitViewLayout } from 'azdata';
+import { FlexItemLayout, SplitViewLayout, SplitViewContainer } from 'azdata';
 import { FlexItem } from './flexContainer.component';
 import { ContainerBase, ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { Event } from 'vs/base/common/event';
@@ -22,7 +21,7 @@ class SplitPane implements IView {
 	maximumSize: number;
 	onDidChange: Event<number> = Event.None;
 	size: number;
-	component: ComponentBase;
+	component: ComponentBase<SplitViewContainer>;
 	layout(size: number): void {
 		this.size = size;
 		try {
@@ -48,7 +47,7 @@ class SplitPane implements IView {
 	`
 })
 
-export default class SplitViewContainer extends ContainerBase<FlexItemLayout> implements IComponent, OnDestroy {
+export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _flexFlow: string;
@@ -87,7 +86,7 @@ export default class SplitViewContainer extends ContainerBase<FlexItemLayout> im
 	}
 
 	private GetCorrespondingView(component: IComponent, orientation: Orientation): IView {
-		let c = component as ComponentBase;
+		let c = component as ComponentBase<SplitViewContainer>;
 		let basicView: SplitPane = new SplitPane();
 		basicView.orientation = orientation;
 		basicView.element = c.getHtml();

@@ -165,7 +165,10 @@ class ServiceAccessor {
 }
 
 class MockEditorService extends TestEditorService {
-	public readonly activeEditor: IEditorInput | undefined = undefined;
+	private __activeEditor: IEditorInput | undefined = undefined;
+	public get activeEditor(): IEditorInput | undefined {
+		return this.__activeEditor;
+	}
 
 	constructor(instantiationService?: IInstantiationService) {
 		super();
@@ -174,7 +177,7 @@ class MockEditorService extends TestEditorService {
 			const accessor = workbenchinstantiationService.createInstance(ServiceAccessor);
 			const service = accessor.untitledTextEditorService;
 			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: URI.file('/test/file') }));
-			this.activeEditor = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, undefined);
+			this.__activeEditor = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, undefined);
 		}
 	}
 }

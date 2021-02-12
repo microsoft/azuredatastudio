@@ -33,7 +33,7 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 		});
 	}
 
-	public onLeave(): void {
+	public async onLeave(): Promise<void> {
 		this.wizard.wizardObject.message = { text: '' };
 	}
 
@@ -79,6 +79,7 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 					title: pageInfo.title,
 					component: await createSection({
 						container: this.wizard.wizardObject,
+						toolsService: this.wizard.toolsService,
 						inputComponents: this.wizard.inputComponents,
 						sectionInfo: summarySectionInfo,
 						view: this.view,

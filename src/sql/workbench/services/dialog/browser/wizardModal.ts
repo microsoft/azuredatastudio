@@ -46,7 +46,6 @@ export class WizardModal extends Modal {
 
 	constructor(
 		private _wizard: Wizard,
-		name: string,
 		options: IModalOptions,
 		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
@@ -57,7 +56,7 @@ export class WizardModal extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(_wizard.title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
+		super(_wizard.title, _wizard.name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
 		this._useDefaultMessageBoxLocation = false;
 	}
 
@@ -74,12 +73,10 @@ export class WizardModal extends Modal {
 			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
 
-		if (this._wizard.customButtons) {
-			this._wizard.customButtons.forEach(button => {
-				let buttonElement = this.addDialogButton(button);
-				this.updateButtonElement(buttonElement, button);
-			});
-		}
+		this._wizard.customButtons.forEach(button => {
+			let buttonElement = this.addDialogButton(button);
+			this.updateButtonElement(buttonElement, button);
+		});
 
 		this._previousButton = this.addDialogButton(this._wizard.backButton, () => this.showPage(this._wizard.currentPage - 1));
 		this._nextButton = this.addDialogButton(this._wizard.nextButton, () => this.showPage(this._wizard.currentPage + 1, true, true), true, true);
@@ -176,7 +173,7 @@ export class WizardModal extends Modal {
 		page.onUpdate(() => this.setButtonsForPage(this._wizard.currentPage));
 	}
 
-	private async showPage(index: number, validate: boolean = true, focus: boolean = false): Promise<void> {
+	public async showPage(index: number, validate: boolean = true, focus: boolean = false): Promise<void> {
 		let pageToShow = this._wizard.pages[index];
 		if (!pageToShow) {
 			this.done(validate).catch(err => onUnexpectedError(err));
@@ -266,14 +263,14 @@ export class WizardModal extends Modal {
 			}
 			this._onDone.fire();
 			this.dispose();
-			this.hide();
+			this.hide('done');
 		}
 	}
 
 	public cancel(): void {
 		this._onCancel.fire();
 		this.dispose();
-		this.hide();
+		this.hide('cancel');
 	}
 
 	private async validateNavigation(newPage: number): Promise<boolean> {
@@ -288,14 +285,6 @@ export class WizardModal extends Modal {
 		button.element.classList.remove('validating');
 		this.updateButtonElement(button, newPage === undefined ? this._wizard.doneButton : this._wizard.nextButton, true);
 		return navigationValid;
-	}
-
-	protected hide(): void {
-		super.hide();
-	}
-
-	protected show(): void {
-		super.show();
 	}
 
 	/**

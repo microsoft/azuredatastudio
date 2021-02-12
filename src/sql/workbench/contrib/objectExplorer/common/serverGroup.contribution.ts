@@ -48,7 +48,7 @@ const serverTreeConfig: IConfigurationNode = {
 	'properties': {
 		'serverTree.useAsyncServerTree': {
 			'type': 'boolean',
-			'default': true,
+			'default': false,
 			'description': localize('serverTree.useAsyncServerTree', "(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.")
 		}
 	}

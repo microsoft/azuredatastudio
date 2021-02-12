@@ -42,9 +42,9 @@ const mockAccount: AzureAccount = {
 };
 
 const mockTenantId: string = 'mock_tenant';
-
+const mockSubscriptionId = 'mock_subscription';
 const mockSubscription: azureResource.AzureResourceSubscription = {
-	id: 'mock_subscription',
+	id: mockSubscriptionId,
 	name: 'mock subscription',
 	tenant: mockTenantId
 };
@@ -74,14 +74,16 @@ const mockDatabaseServers: azureResource.AzureResourceDatabaseServer[] = [
 		id: 'mock-id-1',
 		fullName: 'mock database server full name 1',
 		loginName: 'mock login',
-		defaultDatabaseName: 'master'
+		defaultDatabaseName: 'master',
+		subscriptionId: 'mock_subscription'
 	},
 	{
 		name: 'mock database server 2',
 		id: 'mock-id-2',
 		fullName: 'mock database server full name 2',
 		loginName: 'mock login',
-		defaultDatabaseName: 'master'
+		defaultDatabaseName: 'master',
+		subscriptionId: 'mock_subscription'
 	}
 ];
 
@@ -108,7 +110,7 @@ describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function ():
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 
 		sinon.stub(azdata.accounts, 'getAccountSecurityToken').returns(Promise.resolve(mockToken));
-		mockDatabaseServerService.setup((o) => o.getResources(mockSubscription, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabaseServers));
+		mockDatabaseServerService.setup((o) => o.getResources([mockSubscription], TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabaseServers));
 		mockExtensionContext.setup((o) => o.asAbsolutePath(TypeMoq.It.isAnyString())).returns(() => TypeMoq.It.isAnyString());
 	});
 

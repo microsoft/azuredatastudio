@@ -3,13 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ControllerInfo } from 'arc';
 import 'mocha';
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
+import { v4 as uuid } from 'uuid';
 import * as vscode from 'vscode';
 import { ControllerModel } from '../../../models/controllerModel';
 import { AzureArcTreeDataProvider } from '../../../ui/tree/azureArcTreeDataProvider';
 import { ControllerTreeNode } from '../../../ui/tree/controllerTreeNode';
+import { FakeControllerModel } from '../../mocks/fakeControllerModel';
 
 describe('AzureArcTreeDataProvider tests', function (): void {
 	let treeDataProvider: AzureArcTreeDataProvider;
@@ -27,15 +30,17 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 			treeDataProvider['_loading'] = false;
 			let children = await treeDataProvider.getChildren();
 			should(children.length).equal(0, 'There initially shouldn\'t be any children');
-			const controllerModelMock = TypeMoq.Mock.ofType<ControllerModel>();
-			await treeDataProvider.addOrUpdateController(controllerModelMock.object, '');
+			const controllerModel = new FakeControllerModel();
+			await treeDataProvider.addOrUpdateController(controllerModel, '');
+			children = await treeDataProvider.getChildren();
 			should(children.length).equal(1, 'Controller node should be added correctly');
 
 			// Add a couple more
-			const controllerModelMock2 = TypeMoq.Mock.ofType<ControllerModel>();
-			const controllerModelMock3 = TypeMoq.Mock.ofType<ControllerModel>();
-			await treeDataProvider.addOrUpdateController(controllerModelMock2.object, '');
-			await treeDataProvider.addOrUpdateController(controllerModelMock3.object, '');
+			const controllerModel2 = new FakeControllerModel();
+			const controllerModel3 = new FakeControllerModel();
+			await treeDataProvider.addOrUpdateController(controllerModel2, '');
+			await treeDataProvider.addOrUpdateController(controllerModel3, '');
+			children = await treeDataProvider.getChildren();
 			should(children.length).equal(3, 'Additional Controller nodes should be added correctly');
 		});
 
@@ -43,7 +48,7 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 			treeDataProvider['_loading'] = false;
 			let children = await treeDataProvider.getChildren();
 			should(children.length).equal(0, 'There initially shouldn\'t be any children');
-			const controllerModel = new ControllerModel(treeDataProvider, { url: '127.0.0.1', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] });
+			const controllerModel = new ControllerModel(treeDataProvider, { id: uuid(), url: '127.0.0.1', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] });
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			should(children.length).equal(1, 'Controller node should be added correctly');
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
@@ -54,14 +59,16 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 			treeDataProvider['_loading'] = false;
 			let children = await treeDataProvider.getChildren();
 			should(children.length).equal(0, 'There initially shouldn\'t be any children');
-			const controllerModel = new ControllerModel(treeDataProvider, { url: '127.0.0.1', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] });
+			const originalInfo: ControllerInfo = { id: uuid(), url: '127.0.0.1', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] };
+			const controllerModel = new ControllerModel(treeDataProvider, originalInfo);
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			should(children.length).equal(1, 'Controller node should be added correctly');
-			should((<ControllerTreeNode>children[0]).model.info.rememberPassword).be.true('Info was not set correctly initially');
-			const controllerModel2 = new ControllerModel(treeDataProvider, { url: '127.0.0.1', name: 'my-arc', username: 'sa', rememberPassword: false, resources: [] });
+			should((<ControllerTreeNode>children[0]).model.info).deepEqual(originalInfo);
+			const newInfo = { id: originalInfo.id, url: '1.1.1.1', name: 'new-name', username: 'admin', rememberPassword: false, resources: [] };
+			const controllerModel2 = new ControllerModel(treeDataProvider, newInfo);
 			await treeDataProvider.addOrUpdateController(controllerModel2, '');
 			should(children.length).equal(1, 'Shouldn\'t add duplicate controller node');
-			should((<ControllerTreeNode>children[0]).model.info.rememberPassword).be.false('Info was not updated correctly');
+			should((<ControllerTreeNode>children[0]).model.info).deepEqual(newInfo);
 		});
 	});
 
@@ -82,8 +89,8 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 	describe('removeController', function (): void {
 		it('removing a controller should work as expected', async function (): Promise<void> {
 			treeDataProvider['_loading'] = false;
-			const controllerModel = new ControllerModel(treeDataProvider, { url: '127.0.0.1', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] });
-			const controllerModel2 = new ControllerModel(treeDataProvider, { url: '127.0.0.2', name: 'my-arc', username: 'cloudsa', rememberPassword: true, resources: [] });
+			const controllerModel = new ControllerModel(treeDataProvider, { id: uuid(), url: '127.0.0.1', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] });
+			const controllerModel2 = new ControllerModel(treeDataProvider, { id: uuid(), url: '127.0.0.2', name: 'my-arc', username: 'cloudsa', rememberPassword: true, resources: [] });
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			await treeDataProvider.addOrUpdateController(controllerModel2, '');
 			const children = <ControllerTreeNode[]>(await treeDataProvider.getChildren());

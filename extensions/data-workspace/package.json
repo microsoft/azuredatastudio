@@ -1,0 +1,131 @@
+{
+  "name": "data-workspace",
+  "displayName": "%extension-displayName%",
+  "description": "%extension-description%",
+  "version": "0.1.0",
+  "publisher": "Microsoft",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
+  "icon": "images/extension.png",
+  "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
+  "engines": {
+    "vscode": "*",
+    "azdata": ">=1.22.0"
+  },
+  "activationEvents": [
+    "onView:dataworkspace.views.main"
+  ],
+  "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "extensionDependencies": [],
+  "contributes": {
+    "configuration": [
+      {
+        "title": "Projects",
+        "properties": {
+          "dataworkspace.projects": {
+            "type": "array",
+            "default": [],
+            "description": ""
+          }
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "projects.addProject",
+        "title": "%add-project-command%",
+        "category": "",
+        "icon": "$(add)"
+      },
+      {
+        "command": "dataworkspace.refresh",
+        "title": "%refresh-workspace-command%",
+        "category": "",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "projects.removeProject",
+        "title": "%remove-project-command%"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "dataworkspace.refresh",
+          "when": "view == dataworkspace.views.main",
+          "group": "navigation"
+        },
+        {
+          "command": "projects.addProject",
+          "when": "view == dataworkspace.views.main",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "projects.addProject",
+          "when": "false"
+        },
+        {
+          "command": "dataworkspace.refresh",
+          "when": "false"
+        },
+        {
+          "command": "projects.removeProject",
+          "when": "false"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "projects.removeProject",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "group": "9_dbProjectsLast@9"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "dataworkspace",
+          "title": "%data-workspace-view-container-name%",
+          "icon": "images/data-workspace.svg"
+        }
+      ]
+    },
+    "views": {
+      "dataworkspace": [
+        {
+          "id": "dataworkspace.views.main",
+          "name": "%main-view-name%",
+          "contextualTitle": "%data-workspace-view-container-name%",
+          "icon": "images/data-workspace.svg"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "dataworkspace.views.main",
+        "contents": "%projects-view-no-workspace-content%",
+        "when": "workbenchState != workspace"
+      }
+    ]
+  },
+  "dependencies": {
+    "vscode-nls": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.5",
+    "@types/sinon": "^9.0.4",
+    "mocha": "^5.2.0",
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.7",
+    "typemoq": "^2.1.0",
+    "vscodetestcover": "^1.1.0",
+    "should": "^13.2.3",
+    "sinon": "^9.0.2"
+  }
+}

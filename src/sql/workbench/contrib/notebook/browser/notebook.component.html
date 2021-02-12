@@ -14,7 +14,7 @@
 				<cell-toolbar-component *ngIf="cell.active" [cellModel]="cell" [model]="model"></cell-toolbar-component>
 				<code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
 				</code-cell-component>
-				<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
+				<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId" (dblclick)="enableActiveCellIconOnDoubleClick()">
 				</text-cell-component>
 			</div>
 		</div>

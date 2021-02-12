@@ -191,7 +191,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			this._providers.set(p.id, new ProviderDescriptor());
 		}
 		if (registration.fileExtensions) {
-			if (Array.isArray<string>(registration.fileExtensions)) {
+			if (Array.isArray(registration.fileExtensions)) {
 				for (let fileType of registration.fileExtensions) {
 					this.addFileProvider(fileType, registration);
 				}

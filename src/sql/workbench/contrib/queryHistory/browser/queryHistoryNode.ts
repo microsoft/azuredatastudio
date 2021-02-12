@@ -15,5 +15,5 @@ export class QueryHistoryNode {
 	public children: QueryHistoryNode[] = [];
 
 	constructor(
-		public info: QueryHistoryInfo) { }
+		public info: QueryHistoryInfo | undefined) { }
 }

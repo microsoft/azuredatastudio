@@ -145,7 +145,7 @@ function globExprsToRgGlobs(patterns: glob.IExpression, folder?: string, exclude
 				}
 
 				globArgs.push(fixDriveC(key));
-				// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 cast value because we aren't using strict null checks
+				// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 cast value because we aren't using strict-null-checks
 			} else if (value && (<glob.SiblingClause>value).when) {
 				siblingClauses[key] = value;
 			}

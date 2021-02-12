@@ -52,7 +52,7 @@ export class TreeUpdateUtils {
 		let expandableTree: IExpandableTree = <IExpandableTree>tree;
 
 		let selectedElement: any;
-		let targetsToExpand: any[];
+		let targetsToExpand: any[] = [];
 		if (tree && !(tree instanceof AsyncServerTree)) {
 			let selection = tree.getSelection();
 			if (selection && selection.length === 1) {
@@ -61,7 +61,7 @@ export class TreeUpdateUtils {
 			targetsToExpand = expandableTree.getExpandedElements();
 		}
 		let groups;
-		let treeInput = new ConnectionProfileGroup('root', null, undefined);
+		let treeInput: ConnectionProfileGroup | undefined = new ConnectionProfileGroup('root', undefined, undefined);
 		if (viewKey === 'recent') {
 			groups = connectionManagementService.getRecentConnections(providers);
 			treeInput.addConnections(groups);
@@ -72,8 +72,9 @@ export class TreeUpdateUtils {
 			treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService, providers);
 		}
 		const previousTreeInput = tree.getInput();
-		await tree.setInput(treeInput);
-
+		if (treeInput) {
+			await tree.setInput(treeInput);
+		}
 		if (previousTreeInput instanceof Disposable) {
 			previousTreeInput.dispose();
 		}
@@ -95,7 +96,9 @@ export class TreeUpdateUtils {
 	public static async registeredServerUpdate(tree: ITree | AsyncServerTree, connectionManagementService: IConnectionManagementService, elementToSelect?: any): Promise<void> {
 		if (tree instanceof AsyncServerTree) {
 			const treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
-			await tree.setInput(treeInput);
+			if (treeInput) {
+				await tree.setInput(treeInput);
+			}
 			tree.rerender();
 		} else {
 			// convert to old VS Code tree interface with expandable methods
@@ -155,7 +158,7 @@ export class TreeUpdateUtils {
 		connection: ConnectionProfile,
 		options: IConnectionCompletionOptions,
 		connectionManagementService: IConnectionManagementService,
-		tree: AsyncServerTree | ITree): Promise<ConnectionProfile | undefined> {
+		tree: AsyncServerTree | ITree | undefined): Promise<ConnectionProfile | undefined> {
 		if (!connectionManagementService.isProfileConnected(connection)) {
 			// don't try to reconnect if currently connecting
 			if (connectionManagementService.isProfileConnecting(connection)) {
@@ -163,14 +166,14 @@ export class TreeUpdateUtils {
 
 				// else if we aren't connected or connecting then try to connect
 			} else {
-				let callbacks: IConnectionCallbacks = undefined;
+				let callbacks: IConnectionCallbacks | undefined;
 				if (tree instanceof AsyncServerTree) {
 					callbacks = {
-						onConnectStart: undefined,
-						onConnectReject: undefined,
-						onConnectSuccess: undefined,
-						onDisconnect: undefined,
-						onConnectCanceled: undefined,
+						onConnectStart: () => { },
+						onConnectReject: () => { },
+						onConnectSuccess: () => { },
+						onDisconnect: () => { },
+						onConnectCanceled: () => { },
 					};
 				} else if (tree) {
 					// Show the spinner in OE by adding the 'loading' trait to the connection, and set up callbacks to hide the spinner
@@ -180,10 +183,10 @@ export class TreeUpdateUtils {
 						tree.removeTraits('loading', [connection]);
 					};
 					callbacks = {
-						onConnectStart: undefined,
+						onConnectStart: () => { },
 						onConnectReject: rejectOrCancelCallback,
 						onConnectSuccess: () => tree.removeTraits('loading', [connection]),
-						onDisconnect: undefined,
+						onDisconnect: () => { },
 						onConnectCanceled: rejectOrCancelCallback,
 					};
 				}
@@ -215,14 +218,14 @@ export class TreeUpdateUtils {
 	 * @param objectExplorerService Object explorer service instance
 	 */
 	public static async connectAndCreateOeSession(connection: ConnectionProfile, options: IConnectionCompletionOptions,
-		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: AsyncServerTree | ITree): Promise<boolean> {
+		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: AsyncServerTree | ITree | undefined): Promise<boolean> {
 		const connectedConnection = await TreeUpdateUtils.connectIfNotConnected(connection, options, connectionManagementService, tree);
 		if (connectedConnection) {
 			// append group ID and original display name to build unique OE session ID
 			connectedConnection.options['groupId'] = connection.groupId;
 			connectedConnection.options['databaseDisplayName'] = connection.databaseName;
 
-			let rootNode: TreeNode = objectExplorerService.getObjectExplorerNode(connectedConnection);
+			let rootNode: TreeNode | undefined = objectExplorerService.getObjectExplorerNode(connectedConnection);
 			if (!rootNode) {
 				await objectExplorerService.updateObjectExplorerNodes(connectedConnection);
 				return true;
@@ -240,10 +243,11 @@ export class TreeUpdateUtils {
 			return [];
 		} else {
 			let rootNode = objectExplorerService.getObjectExplorerNode(connection);
-			if (rootNode) {
+			const session = rootNode?.getSession();
+			if (rootNode && session) {
 				try {
-					await objectExplorerService.resolveTreeNodeChildren(rootNode.getSession(), rootNode);
-					return rootNode.children;
+					await objectExplorerService.resolveTreeNodeChildren(session, rootNode);
+					return rootNode.children ?? [];
 				} catch (err) {
 					onUnexpectedError(err);
 					return [];
@@ -260,9 +264,10 @@ export class TreeUpdateUtils {
 			return [];
 		} else {
 			let rootNode = objectExplorerService.getObjectExplorerNode(connection);
-			if (rootNode) {
-				await objectExplorerService.resolveTreeNodeChildren(rootNode.getSession(), rootNode);
-				return rootNode.children;
+			const session = rootNode?.getSession();
+			if (rootNode && session) {
+				await objectExplorerService.resolveTreeNodeChildren(session, rootNode);
+				return rootNode.children ?? [];
 			} else {
 				const options: IConnectionCompletionOptions = {
 					params: undefined,
@@ -284,9 +289,12 @@ export class TreeUpdateUtils {
 				});
 				await TreeUpdateUtils.connectAndCreateOeSession(connection, options, connectionManagementService, objectExplorerService, undefined);
 				await nodesUpdatedPromise;
-				let rootNode = objectExplorerService.getObjectExplorerNode(connection);
-				await objectExplorerService.resolveTreeNodeChildren(rootNode.getSession(), rootNode);
-				return rootNode.children;
+				let rootNode = objectExplorerService.getObjectExplorerNode(connection); // Major code change
+				const session = rootNode?.getSession();
+				if (rootNode && session) {
+					await objectExplorerService.resolveTreeNodeChildren(session, rootNode);
+				}
+				return rootNode?.children ?? [];
 			}
 		}
 	}
@@ -295,10 +303,12 @@ export class TreeUpdateUtils {
 		if (objectExplorerNode && objectExplorerNode.parent) {
 			// if object explorer node's parent is root, return connection profile
 			if (!objectExplorerNode.parent.parent) {
-				const connectionId = objectExplorerNode.getConnectionProfile().id;
+				const connectionId = objectExplorerNode.getConnectionProfile()?.id;
 				// get connection profile from connection profile groups
 				const root = TreeUpdateUtils.getTreeInput(connectionManagementService);
-				return ConnectionProfileGroup.getConnectionsInGroup(root).find(conn => connectionId === conn.id);
+				if (root) {
+					return ConnectionProfileGroup.getConnectionsInGroup(root).find(conn => connectionId === conn.id);
+				}
 			} else {
 				return objectExplorerNode.parent;
 			}
@@ -325,11 +335,11 @@ export class TreeUpdateUtils {
 	/**
 	 * Get connection profile with the current database
 	 */
-	public static getConnectionProfile(treeNode: TreeNode): ConnectionProfile {
+	public static getConnectionProfile(treeNode: TreeNode): ConnectionProfile | undefined {
 		let connectionProfile = treeNode.getConnectionProfile();
 		let databaseName = treeNode.getDatabaseName();
-		if (databaseName !== undefined && connectionProfile.databaseName !== databaseName) {
-			connectionProfile = connectionProfile.cloneWithDatabase(databaseName);
+		if (databaseName !== undefined && connectionProfile?.databaseName !== databaseName) {
+			connectionProfile = connectionProfile?.cloneWithDatabase(databaseName);
 		}
 		return connectionProfile;
 	}

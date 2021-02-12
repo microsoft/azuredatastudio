@@ -27,9 +27,11 @@ new BackupAction().registerTask();
 const DE_BACKUP_COMMAND_ID = 'dataExplorer.backup';
 CommandsRegistry.registerCommand({
 	id: DE_BACKUP_COMMAND_ID,
-	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const commandService = accessor.get(ICommandService);
-		return commandService.executeCommand(BackupAction.ID, args.$treeItem.payload);
+	handler: async (accessor, args: TreeViewItemHandleArg) => {
+		if (args.$treeItem?.payload) {
+			const commandService = accessor.get(ICommandService);
+			return commandService.executeCommand(BackupAction.ID, args.$treeItem.payload);
+		}
 	}
 });
 

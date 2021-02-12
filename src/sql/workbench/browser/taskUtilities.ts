@@ -4,51 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import {
-	IConnectionManagementService,
-	IConnectionCompletionOptions, ConnectionType,
-	RunQueryOnConnectionMode, IConnectionResult
-} from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { DashboardInput } from 'sql/workbench/browser/editor/profiler/dashboardInput';
-
-export function replaceConnection(oldUri: string, newUri: string, connectionService: IConnectionManagementService): Promise<IConnectionResult> {
-	return new Promise<IConnectionResult>((resolve, reject) => {
-		let defaultResult: IConnectionResult = {
-			connected: false,
-			errorMessage: undefined,
-			errorCode: undefined,
-			callStack: undefined
-		};
-		if (connectionService) {
-			let connectionProfile = connectionService.getConnectionProfile(oldUri);
-			if (connectionProfile) {
-				let options: IConnectionCompletionOptions = {
-					params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none },
-					saveTheConnection: false,
-					showDashboard: false,
-					showConnectionDialogOnError: true,
-					showFirewallRuleOnError: true
-				};
-				connectionService.disconnect(oldUri).then(() => {
-					connectionService.connect(connectionProfile, newUri, options).then(result => {
-						resolve(result);
-					}, connectError => {
-						reject(connectError);
-					});
-				}, disconnectError => {
-					reject(disconnectError);
-				});
-
-			} else {
-				resolve(defaultResult);
-			}
-		} else {
-			resolve(defaultResult);
-		}
-	});
-}
 
 /**
  * Get the current global connection, which is the connection from the active editor, unless OE
@@ -58,16 +17,17 @@ export function replaceConnection(oldUri: string, newUri: string, connectionServ
  * @param topLevelOnly If true, only return top-level (i.e. connected) Object Explorer connections instead of database connections when appropriate
 */
 export function getCurrentGlobalConnection(objectExplorerService: IObjectExplorerService, connectionManagementService: IConnectionManagementService, workbenchEditorService: IEditorService, topLevelOnly: boolean = false): IConnectionProfile | undefined {
-	let connection: IConnectionProfile;
+	let connection: IConnectionProfile | undefined;
 	// object Explorer Connection
 	let objectExplorerSelection = objectExplorerService.getSelectedProfileAndDatabase();
 	if (objectExplorerSelection) {
-		let objectExplorerProfile = objectExplorerSelection.profile;
-		if (connectionManagementService.isProfileConnected(objectExplorerProfile)) {
-			if (objectExplorerSelection.databaseName && !topLevelOnly) {
-				connection = objectExplorerProfile.cloneWithDatabase(objectExplorerSelection.databaseName);
-			} else {
-				connection = objectExplorerProfile;
+		if (objectExplorerSelection.profile) {
+			if (connectionManagementService.isProfileConnected(objectExplorerSelection.profile)) {
+				if (objectExplorerSelection.databaseName && !topLevelOnly) {
+					connection = objectExplorerSelection.profile.cloneWithDatabase(objectExplorerSelection.databaseName);
+				} else {
+					connection = objectExplorerSelection.profile;
+				}
 			}
 		}
 		if (objectExplorerService.isFocused()) {

@@ -16,6 +16,8 @@ export const table: string = 'table';
 export const view: string = 'view';
 export const storedProcedure: string = 'storedProcedure';
 export const folder: string = 'folder';
+export const preDeployScript: string = 'preDeployScript';
+export const postDeployScript: string = 'postDeployScript';
 
 // Object maps
 
@@ -45,7 +47,9 @@ export async function loadTemplates(templateFolderPath: string) {
 		loadObjectTypeInfo(script, constants.scriptFriendlyName, templateFolderPath, 'newTsqlScriptTemplate.sql'),
 		loadObjectTypeInfo(table, constants.tableFriendlyName, templateFolderPath, 'newTsqlTableTemplate.sql'),
 		loadObjectTypeInfo(view, constants.viewFriendlyName, templateFolderPath, 'newTsqlViewTemplate.sql'),
-		loadObjectTypeInfo(storedProcedure, constants.storedProcedureFriendlyName, templateFolderPath, 'newTsqlStoredProcedureTemplate.sql')
+		loadObjectTypeInfo(storedProcedure, constants.storedProcedureFriendlyName, templateFolderPath, 'newTsqlStoredProcedureTemplate.sql'),
+		loadObjectTypeInfo(preDeployScript, constants.preDeployScriptFriendlyName, templateFolderPath, 'newTsqlPreDeployScriptTemplate.sql'),
+		loadObjectTypeInfo(postDeployScript, constants.postDeployScriptFriendlyName, templateFolderPath, 'newTsqlPostDeployScriptTemplate.sql')
 	]);
 
 	for (const scriptType of scriptTypes) {

@@ -203,7 +203,7 @@ export class NewDashboardTabDialog extends Modal {
 	}
 
 	public close() {
-		this.hide();
+		this.hide('close');
 	}
 
 	private addNewTabs() {
@@ -214,7 +214,7 @@ export class NewDashboardTabDialog extends Modal {
 	}
 
 	public cancel() {
-		this.hide();
+		this.hide('cancel');
 	}
 
 	public open(dashboardTabs: Array<IDashboardTab>, openedTabs: Array<IDashboardTab>) {

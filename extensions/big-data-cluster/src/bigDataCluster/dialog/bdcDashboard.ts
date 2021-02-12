@@ -34,7 +34,7 @@ export class BdcDashboard extends InitializingComponent {
 	}
 
 	private async createDashboard(): Promise<void> {
-		this.dashboard = azdata.window.createModelViewDashboard(this.title, { alwaysShowTabs: true });
+		this.dashboard = azdata.window.createModelViewDashboard(this.title, 'BdcDashboard', { alwaysShowTabs: true });
 		this.dashboard.registerTabs(async (modelView: azdata.ModelView) => {
 			this.modelView = modelView;
 

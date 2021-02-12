@@ -16,7 +16,7 @@ export class OpenSparkYarnHistoryTask {
 
 	async execute(sqlConnProfile: azdata.IConnectionProfile, isSpark: boolean): Promise<void> {
 		try {
-			let sqlClusterConnection = SqlClusterLookUp.findSqlClusterConnection(sqlConnProfile, this.appContext);
+			let sqlClusterConnection = await SqlClusterLookUp.findSqlClusterConnection(sqlConnProfile, this.appContext);
 			if (!sqlClusterConnection) {
 				let name = isSpark ? 'Spark' : 'Yarn';
 				vscode.window.showErrorMessage(loc.sparkConnectionRequired(name));

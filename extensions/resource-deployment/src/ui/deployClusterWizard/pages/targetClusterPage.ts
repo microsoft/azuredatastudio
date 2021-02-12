@@ -74,7 +74,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 		});
 	}
 
-	public onLeave() {
+	public async onLeave(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((e) => {
 			return true;
 		});

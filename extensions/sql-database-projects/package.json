@@ -2,12 +2,12 @@
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "The SQL Database Projects extension for Azure Data Studio allows users to develop and publish database schemas.",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
     "vscode": "^1.30.1",
-    "azdata": ">=1.20.0"
+    "azdata": ">=1.22.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/sqlDatabaseProjects.png",
@@ -16,7 +16,8 @@
     "onCommand:sqlDatabaseProjects.new",
     "onCommand:sqlDatabaseProjects.open",
     "onCommand:sqlDatabaseProjects.importDatabase",
-    "workspaceContains:**/*.sqlproj"
+    "workspaceContains:**/*.sqlproj",
+    "onView:dataworkspace.views.main"
   ],
   "main": "./out/extension",
   "repository": {
@@ -28,6 +29,9 @@
     "Microsoft.schema-compare"
   ],
   "contributes": {
+    "projects": [
+      "sqlproj"
+    ],
     "configuration": [
       {
         "title": "%sqlDatabaseProjects.Settings%",
@@ -35,6 +39,15 @@
           "sqlDatabaseProjects.netCoreSDKLocation": {
             "type": "string",
             "description": "%sqlDatabaseProjects.netCoreInstallLocation%"
+          },
+          "sqlDatabaseProjects.defaultProjectSaveLocation": {
+            "type": "string",
+            "description": "%sqlDatabaseProjects.defaultProjectSaveLocation%"
+          },
+          "sqlDatabaseProjects.showUpdateSaveLocationPrompt": {
+            "type": "boolean",
+            "description": "%sqlDatabaseProjects.showUpdateSaveLocationPrompt%",
+            "default": true
           }
         }
       }
@@ -43,12 +56,14 @@
       {
         "command": "sqlDatabaseProjects.new",
         "title": "%sqlDatabaseProjects.new%",
-        "category": "%sqlDatabaseProjects.displayName%"
+        "category": "%sqlDatabaseProjects.displayName%",
+        "icon": "$(add)"
       },
       {
         "command": "sqlDatabaseProjects.open",
         "title": "%sqlDatabaseProjects.open%",
-        "category": "%sqlDatabaseProjects.displayName%"
+        "category": "%sqlDatabaseProjects.displayName%",
+        "icon": "$(folder-opened)"
       },
       {
         "command": "sqlDatabaseProjects.close",
@@ -58,6 +73,16 @@
       {
         "command": "sqlDatabaseProjects.newScript",
         "title": "%sqlDatabaseProjects.newScript%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.newPreDeploymentScript",
+        "title": "%sqlDatabaseProjects.newPreDeploymentScript%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.newPostDeploymentScript",
+        "title": "%sqlDatabaseProjects.newPostDeploymentScript%",
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
@@ -119,7 +144,7 @@
         "command": "sqlDatabaseProjects.importDatabase",
         "title": "%sqlDatabaseProjects.importDatabase%",
         "category": "%sqlDatabaseProjects.displayName%",
-          "icon": "images/databaseProjectToolbar.svg"
+        "icon": "images/databaseProjectToolbar.svg"
       },
       {
         "command": "sqlDatabaseProjects.addDatabaseReference",
@@ -129,6 +154,16 @@
       {
         "command": "sqlDatabaseProjects.openContainingFolder",
         "title": "%sqlDatabaseProjects.openContainingFolder%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.editProjectFile",
+        "title": "%sqlDatabaseProjects.editProjectFile%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.changeTargetPlatform",
+        "title": "%sqlDatabaseProjects.changeTargetPlatform%",
         "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
@@ -146,6 +181,14 @@
         },
         {
           "command": "sqlDatabaseProjects.newScript",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPreDeploymentScript",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPostDeploymentScript",
           "when": "false"
         },
         {
@@ -198,72 +241,116 @@
         {
           "command": "sqlDatabaseProjects.openContainingFolder",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.editProjectFile",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.exclude",
+          "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.changeTargetPlatform",
+          "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "sqlDatabaseProjects.new",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "sqlDatabaseProjects.open",
+          "when": "view == sqlDatabaseProjectsView",
+          "group": "navigation@2"
         }
       ],
       "view/item/context": [
         {
           "command": "sqlDatabaseProjects.build",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project",
           "group": "1_dbProjectsFirst@1"
         },
         {
           "command": "sqlDatabaseProjects.publish",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project",
           "group": "1_dbProjectsFirst@2"
         },
         {
           "command": "sqlDatabaseProjects.schemaCompare",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project",
           "group": "1_dbProjectsFirst@3"
         },
         {
           "command": "sqlDatabaseProjects.newItem",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "2_dbProjects_newMain@1"
         },
         {
           "command": "sqlDatabaseProjects.newFolder",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "2_dbProjects_newMain@2"
         },
         {
           "command": "sqlDatabaseProjects.newTable",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@1"
         },
         {
           "command": "sqlDatabaseProjects.newView",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@2"
         },
         {
           "command": "sqlDatabaseProjects.newStoredProcedure",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@3"
         },
         {
           "command": "sqlDatabaseProjects.newScript",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "group": "3_dbProjects_newItem@7"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPreDeploymentScript",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
+          "group": "3_dbProjects_newItem@8"
+        },
+        {
+          "command": "sqlDatabaseProjects.newPostDeploymentScript",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project || viewItem == databaseProject.itemType.folder",
           "group": "3_dbProjects_newItem@9"
         },
         {
           "command": "sqlDatabaseProjects.addDatabaseReference",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.referencesRoot",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.referencesRoot",
           "group": "4_dbProjects_addDatabaseReference"
         },
         {
           "command": "sqlDatabaseProjects.exclude",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.folder || viewItem == databaseProject.itemType.file",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.folder || viewItem == databaseProject.itemType.file",
           "group": "9_dbProjectsLast@1"
         },
         {
           "command": "sqlDatabaseProjects.delete",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.folder || viewItem == databaseProject.itemType.file",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.folder || viewItem == databaseProject.itemType.file || viewItem == databaseProject.itemType.reference",
           "group": "9_dbProjectsLast@2"
         },
         {
+          "command": "sqlDatabaseProjects.changeTargetPlatform",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project",
+          "group": "9_dbProjectsLast@6"
+        },
+        {
+          "command": "sqlDatabaseProjects.editProjectFile",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project",
+          "group": "9_dbProjectsLast@7"
+        },
+        {
           "command": "sqlDatabaseProjects.openContainingFolder",
-          "when": "view == sqlDatabaseProjectsView && viewItem == databaseProject.itemType.project",
+          "when": "view =~ /^(sqlDatabaseProjectsView|dataworkspace.views.main)$/ && viewItem == databaseProject.itemType.project",
           "group": "9_dbProjectsLast@8"
         },
         {
@@ -284,7 +371,6 @@
           "group": "export"
         }
       ],
-
       "dataExplorer/context": [
         {
           "command": "sqlDatabaseProjects.importDatabase",
@@ -299,8 +385,8 @@
       ],
       "dashboard/toolbar": [
         {
-            "command": "sqlDatabaseProjects.importDatabase",
-            "when": "connectionProvider == 'MSSQL' && mssql:engineedition != 11"
+          "command": "sqlDatabaseProjects.importDatabase",
+          "when": "connectionProvider == 'MSSQL' && mssql:engineedition != 11"
         }
       ]
     },

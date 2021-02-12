@@ -1,0 +1,10 @@
+{
+	"Top N by count": {
+		"prefix": "kustoTopNested",
+		"body": [
+			"// Get top ${1:N} of column: ${2:ColumnName} by count",
+			"top-nested ${1:N} of ${2:ColumnName} by agg_${2:ColumnName}=count() desc"
+		],
+		"description": "Get the top N of a column by the count of rows"
+	}
+}

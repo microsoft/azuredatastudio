@@ -49,7 +49,7 @@ export class MainThreadObjectExplorer extends Disposable implements MainThreadOb
 		return this._objectExplorerService.getTreeNode(connectionId, nodePath).then(treeNode => treeNode.getChildren().then(children => children.map(node => node.toNodeInfo())));
 	}
 
-	public $isExpanded(connectionId: string, nodePath: string): Thenable<boolean> {
+	public $isExpanded(connectionId: string, nodePath: string): Thenable<boolean | undefined> {
 		return this._objectExplorerService.getTreeNode(connectionId, nodePath).then(treeNode => treeNode.isExpanded());
 	}
 

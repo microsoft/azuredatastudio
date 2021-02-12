@@ -546,6 +546,9 @@
 	background: url("SystemUnicodeCharacterString.svg") center center no-repeat;
 }
 
+.vs .icon.function,
+.vs-dark .icon.function,
+.hc-black .icon.function,
 .vs .icon.tablevaluedfunction,
 .vs-dark .icon.tablevaluedfunction,
 .hc-black .icon.tablevaluedfunction {

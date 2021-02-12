@@ -1,10 +1,14 @@
-# Microsoft azdata Extension for Azure Data Studio
+# Microsoft Azure Data CLI Extension for Azure Data Studio
 
-Welcome to Microsoft azdata for Azure Data Studio!
+Welcome to Microsoft Azure Data CLI Extension for Azure Data Studio!
+
+**This extension is only applicable to customers in the Azure Arc data services public preview. Other usage is not supported at this time.**
 
 ## Overview
 
-This extension adds support for azdata within Azure Data Studio.
+This extension adds support for the Azure Data CLI (azdata) within Azure Data Studio.
+
+See https://docs.microsoft.com/cli/azure/?view=azure-cli-latest for more information on the tool.
 
 ## Code of Conduct
 

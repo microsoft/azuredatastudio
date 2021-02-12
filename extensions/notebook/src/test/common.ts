@@ -346,6 +346,7 @@ class TestDeclarativeTableComponent extends TestComponentBase implements azdata.
 		super();
 	}
 	onDataChanged: vscode.Event<any> = this.onClick.event;
+	onRowSelected: vscode.Event<any> = this.onClick.event;
 	data: any[][];
 	columns: azdata.DeclarativeTableColumn[];
 }
@@ -430,22 +431,27 @@ class TestFlexContainer extends TestComponentBase implements azdata.FlexContaine
 	}
 }
 
-class TestComponentBuilder<T extends azdata.Component> implements azdata.ComponentBuilder<T> {
+class TestComponentBuilder<T extends azdata.Component, TPropertyBag> implements azdata.ComponentBuilder<T, TPropertyBag> {
 	constructor(private _component: T) {
 	}
 	component(): T {
 		return this._component;
 	}
-	withProperties<U>(properties: U): azdata.ComponentBuilder<T> {
+	withProperties<U>(properties: U): azdata.ComponentBuilder<T, TPropertyBag> {
 		this._component.updateProperties(properties);
 		return this;
 	}
-	withValidation(validation: (component: T) => boolean): azdata.ComponentBuilder<T> {
+	withValidation(validation: (component: T) => boolean): azdata.ComponentBuilder<T, TPropertyBag> {
+		return this;
+	}
+
+	withProps(properties: TPropertyBag): azdata.ComponentBuilder<T, TPropertyBag> {
+		this._component.updateProperties(properties);
 		return this;
 	}
 }
 
-class TestLoadingBuilder extends TestComponentBuilder<azdata.LoadingComponent> implements azdata.LoadingComponentBuilder {
+class TestLoadingBuilder extends TestComponentBuilder<azdata.LoadingComponent, azdata.LoadingComponentProperties> implements azdata.LoadingComponentBuilder {
 	withItem(component: azdata.Component): azdata.LoadingComponentBuilder {
 		this.component().component = component;
 		return this;
@@ -456,12 +462,12 @@ export function createViewContext(): TestContext {
 	let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
 
 	let form: azdata.FormContainer = new TestFormContainer();
-	let textBuilder: azdata.ComponentBuilder<azdata.TextComponent> = new TestComponentBuilder(new TestTextComponent());
-	let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = new TestComponentBuilder(new TestButtonComponent(onClick));
-	let radioButtonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = new TestComponentBuilder(new TestRadioButtonComponent(onClick));
-	let declarativeTableBuilder: azdata.ComponentBuilder<azdata.DeclarativeTableComponent> = new TestComponentBuilder(new TestDeclarativeTableComponent(onClick));
+	let textBuilder: azdata.ComponentBuilder<azdata.TextComponent, azdata.TextComponentProperties> = new TestComponentBuilder(new TestTextComponent());
+	let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent, azdata.ButtonProperties> = new TestComponentBuilder(new TestButtonComponent(onClick));
+	let radioButtonBuilder: azdata.ComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties> = new TestComponentBuilder(new TestRadioButtonComponent(onClick));
+	let declarativeTableBuilder: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties> = new TestComponentBuilder(new TestDeclarativeTableComponent(onClick));
 	let loadingBuilder: azdata.LoadingComponentBuilder = new TestLoadingBuilder(new TestLoadingComponent());
-	let dropdownBuilder: azdata.ComponentBuilder<azdata.DropDownComponent> = new TestComponentBuilder(new TestDropdownComponent(onClick));
+	let dropdownBuilder: azdata.ComponentBuilder<azdata.DropDownComponent, azdata.DropDownProperties> = new TestComponentBuilder(new TestDropdownComponent(onClick));
 
 	let formBuilder: azdata.FormBuilder = Object.assign({}, {
 		component: () => form,
@@ -473,7 +479,8 @@ export function createViewContext(): TestContext {
 		withProperties: () => formBuilder,
 		withValidation: () => formBuilder,
 		withItems: () => formBuilder,
-		withLayout: () => formBuilder
+		withLayout: () => formBuilder,
+		withProps: () => formBuilder
 	});
 
 	let div: azdata.DivContainer = new TestDivContainer();
@@ -487,7 +494,8 @@ export function createViewContext(): TestContext {
 		withProperties: () => divBuilder,
 		withValidation: () => divBuilder,
 		withItems: () => divBuilder,
-		withLayout: () => divBuilder
+		withLayout: () => divBuilder,
+		withProps: () => divBuilder
 	});
 
 	let flex: azdata.FlexContainer = new TestFlexContainer();
@@ -501,7 +509,8 @@ export function createViewContext(): TestContext {
 		withProperties: () => flexBuilder,
 		withValidation: () => flexBuilder,
 		withItems: () => flexBuilder,
-		withLayout: () => flexBuilder
+		withLayout: () => flexBuilder,
+		withProps: () => flexBuilder
 	});
 
 	let view: azdata.ModelView = {

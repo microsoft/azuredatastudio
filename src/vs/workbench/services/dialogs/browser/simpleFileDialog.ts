@@ -306,7 +306,7 @@ export class SimpleFileDialog {
 
 			this.filePickBox.onDidCustom(() => {
 				if (isAcceptHandled || this.busy) {
-					return undefined; // {{SQL CARBON EDIT}} @todo anthonydresser return to return; when we do strict null checks
+					return undefined; // {{SQL CARBON EDIT}} @todo anthonydresser return to return; when we do strict-null-checks
 				}
 
 				isAcceptHandled = true;

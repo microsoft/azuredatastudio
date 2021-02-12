@@ -22,7 +22,7 @@ import { PROPERTIES_CONTAINER_PROPERTY_NAME, PROPERTIES_CONTAINER_PROPERTY_VALUE
 		<properties-container> </properties-container>
 	`
 })
-export default class PropertiesContainerComponent extends ComponentBase implements IComponent, OnDestroy {
+export default class PropertiesContainerComponent extends ComponentBase<azdata.PropertiesContainerComponentProperties> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
@@ -48,11 +48,11 @@ export default class PropertiesContainerComponent extends ComponentBase implemen
 	}
 
 	public get propertyItems(): PropertyItem[] {
-		return this.getPropertyOrDefault<azdata.PropertiesContainerComponentProperties, azdata.PropertiesContainerItem[]>((props) => props.propertyItems, []);
+		return this.getPropertyOrDefault<azdata.PropertiesContainerItem[]>((props) => props.propertyItems, []);
 	}
 
 	public set propertyItems(newValue: azdata.PropertiesContainerItem[]) {
-		this.setPropertyFromUI<azdata.PropertiesContainerComponentProperties, azdata.PropertiesContainerItem[]>((props, value) => props.propertyItems = value, newValue);
+		this.setPropertyFromUI<azdata.PropertiesContainerItem[]>((props, value) => props.propertyItems = value, newValue);
 		this._propertiesContainer.propertyItems = newValue;
 	}
 }

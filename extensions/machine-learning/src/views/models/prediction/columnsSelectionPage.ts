@@ -78,7 +78,7 @@ export class ColumnsSelectionPage extends ModelViewBase implements IPageView, ID
 		const data = this.data;
 		const validated = data !== undefined && data.databaseName !== undefined && data.inputColumns !== undefined && data.outputColumns !== undefined
 			&& data.tableName !== undefined && data.databaseName !== constants.selectDatabaseTitle && data.tableName !== constants.selectTableTitle
-			&& !data.inputColumns.find(x => x.columnName === constants.selectColumnTitle);
+			&& !data.inputColumns.find(x => (x.columnName === constants.selectColumnTitle) || !x.columnName);
 		if (!validated) {
 			this.showErrorMessage(constants.invalidModelParametersError);
 		}

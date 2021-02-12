@@ -6,9 +6,11 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
 import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ToolStatus } from '../interfaces';
+import { select } from '../localizedConstants';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
 import { getErrorMessage } from '../utils';
+import * as loc from './../localizedConstants';
 import { DialogBase } from './dialogBase';
 import { createFlexContainer } from './modelViewUtils';
 
@@ -18,7 +20,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private toolRefreshTimestamp: number = 0;
 	private _selectedResourceType: ResourceType;
 	private _view!: azdata.ModelView;
-	private _resourceDescriptionLabel!: azdata.TextComponent;
 	private _optionsContainer!: azdata.FlexContainer;
 	private _toolsTable!: azdata.TableComponent;
 	private _cardGroup!: azdata.RadioCardGroupComponent;
@@ -29,6 +30,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _installToolButton: azdata.window.Button;
 	private _installationInProgress: boolean = false;
 	private _tools: ITool[] = [];
+	private _eulaValidationSucceeded: boolean = false;
 
 	constructor(
 		private toolsService: IToolsService,
@@ -43,21 +45,25 @@ export class ResourceTypePickerDialog extends DialogBase {
 		}));
 		this._dialogObject.customButtons = [this._installToolButton];
 		this._installToolButton.hidden = true;
-		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', "Select");
+		this._dialogObject.okButton.label = loc.select;
 		this._dialogObject.okButton.enabled = false; // this is enabled after all tools are discovered.
 	}
 
 	initialize() {
 		let tab = azdata.window.createTab('');
-		this._dialogObject.registerCloseValidator(() => {
+		this._dialogObject.registerCloseValidator(async () => {
 			const isValid = this._selectedResourceType && (this._selectedResourceType.agreement === undefined || this._agreementCheckboxChecked);
 			if (!isValid) {
 				this._dialogObject.message = {
 					text: localize('deploymentDialog.AcceptAgreements', "You must agree to the license agreements in order to proceed."),
 					level: azdata.window.MessageLevel.Error
 				};
+				return false;
 			}
-			return isValid;
+			if (!this._eulaValidationSucceeded && !(await this.acquireEulaAndProceed())) {
+				return false; // we return false so that the workflow does not proceed and user gets to either click acceptEulaAndSelect again or cancel
+			}
+			return true;
 		});
 		tab.registerContent((view: azdata.ModelView) => {
 			const tableWidth = 1126;
@@ -73,28 +79,42 @@ export class ResourceTypePickerDialog extends DialogBase {
 					return <azdata.RadioCard>{
 						id: resourceType.name,
 						label: resourceType.displayName,
-						icon: resourceType.icon
+						icon: resourceType.icon,
+						descriptions: [
+							{
+								textValue: resourceType.displayName,
+								textStyles: {
+									'font-size': '14px',
+									'font-weight': 'bold'
+								}
+							},
+							{
+								textValue: resourceType.description,
+							}
+						]
 					};
 				}),
-				iconHeight: '50px',
-				iconWidth: '50px',
-				cardWidth: '220px',
-				cardHeight: '180px',
+				iconHeight: '35px',
+				iconWidth: '35px',
+				cardWidth: '300px',
+				cardHeight: '150px',
 				ariaLabel: localize('deploymentDialog.deploymentOptions', "Deployment options"),
-				width: '1100px'
+				width: '1100px',
+				iconPosition: 'left'
 			}).component();
-			this._toDispose.push(this._cardGroup.onSelectionChanged((cardId: string) => {
+			this._toDispose.push(this._cardGroup.onSelectionChanged(({ cardId }) => {
+				this._dialogObject.message = { text: '' };
+				this._dialogObject.okButton.label = loc.select;
 				const resourceType = resourceTypes.find(rt => { return rt.name === cardId; });
 				if (resourceType) {
 					this.selectResourceType(resourceType);
 				}
 			}));
-			this._resourceDescriptionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this._selectedResourceType ? this._selectedResourceType.description : undefined }).component();
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
 			const toolColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolNameColumnHeader', "Tool"),
-				width: 55
+				width: 105
 			};
 			const descriptionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolDescriptionColumnHeader', "Description"),
@@ -110,7 +130,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			};
 			const minVersionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolMinimumVersionColumnHeader', "Required Version"),
-				width: 95
+				width: 105
 			};
 			const installedPathColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolDiscoveredPathColumnHeader', "Discovered Path or Additional Information"),
@@ -134,9 +154,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 				[
 					{
 						component: this._cardGroup,
-						title: ''
-					}, {
-						component: this._resourceDescriptionLabel,
 						title: ''
 					}, {
 						component: this._agreementContainer,
@@ -168,7 +185,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 	private selectResourceType(resourceType: ResourceType): void {
 		this._selectedResourceType = resourceType;
-		this._resourceDescriptionLabel.value = resourceType.description;
+		//handle special case when resource type has different OK button.
+		this._dialogObject.okButton.label = this._selectedResourceType.okButtonText || select;
+
 		this._agreementCheckboxChecked = false;
 		this._agreementContainer.clearItems();
 		if (resourceType.agreement) {
@@ -268,7 +287,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			if (messages.length > 1) {
 				messages = messages.map(message => `•	${message}`);
 			}
-			messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed manually after Azure Data Studio is launched to pick up the updated PATH environment variable. You may find additional details in 'Deployments' output channel"));
+			messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed manually to pick up the change. You may find additional details in 'Deployments' and 'Azure Data CLI' output channels"));
 			this._dialogObject.message = {
 				level: azdata.window.MessageLevel.Error,
 				text: messages.join(EOL)
@@ -295,7 +314,41 @@ export class ResourceTypePickerDialog extends DialogBase {
 				text: infoText.join(EOL)
 			};
 		}
+		if (!this.areToolsEulaAccepted()) {
+			this._dialogObject.okButton.label = loc.acceptEulaAndSelect;
+		}
 		this._toolsLoadingComponent.loading = false;
+	}
+
+	private areToolsEulaAccepted(): boolean {
+		// we run 'map' on each tool before doing 'every' so that we collect eula messages for all tools (instead of bailing out after 1st failure)
+		this._eulaValidationSucceeded = this._tools.map(tool => {
+			const eulaAccepted = tool.isEulaAccepted();
+			if (!eulaAccepted) {
+				this._dialogObject.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: [tool.statusDescription!, this._dialogObject.message.text].join(EOL)
+				};
+			}
+			return eulaAccepted;
+		}).every(isEulaAccepted => isEulaAccepted);
+		return this._eulaValidationSucceeded;
+	}
+
+	private async acquireEulaAndProceed(): Promise<boolean> {
+		this._dialogObject.message = { text: '' };
+		let eulaAccepted = true;
+		for (const tool of this._tools) {
+			eulaAccepted = tool.isEulaAccepted() || await tool.promptForEula();
+			if (!eulaAccepted) {
+				this._dialogObject.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: [tool.statusDescription!, this._dialogObject.message.text].join(EOL)
+				};
+				break;
+			}
+		}
+		return eulaAccepted;
 	}
 
 	private get toolRequirements() {
@@ -340,7 +393,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		return this._selectedResourceType.getProvider(options)!;
 	}
 
-	protected onComplete(): void {
+	protected async onComplete(): Promise<void> {
 		this.toolsService.toolsForCurrentProvider = this._tools;
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
 	}

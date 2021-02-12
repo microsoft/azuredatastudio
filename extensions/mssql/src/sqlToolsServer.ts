@@ -11,7 +11,7 @@ import * as path from 'path';
 import { getCommonLaunchArgsAndCleanupOldLogFiles } from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature } from './features';
+import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature } from './features';
 import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import { SchemaCompareService } from './schemaCompare/schemaCompareService';
@@ -24,6 +24,7 @@ import * as nls from 'vscode-nls';
 import { LanguageExtensionService } from './languageExtension/languageExtensionService';
 import { SqlAssessmentService } from './sqlAssessment/sqlAssessmentService';
 import { NotebookConvertService } from './notebookConvert/notebookConvertService';
+import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -162,7 +163,9 @@ function getClientOptions(context: AppContext): ClientOptions {
 			DacFxService.asFeature(context),
 			CmsService.asFeature(context),
 			SqlAssessmentService.asFeature(context),
-			NotebookConvertService.asFeature(context)
+			NotebookConvertService.asFeature(context),
+			ProfilerFeature,
+			SqlMigrationService.asFeature(context),
 		],
 		outputChannel: new CustomOutputChannel()
 	};

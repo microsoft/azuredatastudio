@@ -406,7 +406,7 @@ export class ManageAccessCommand extends Command {
 		try {
 			let node = await getNode<HdfsFileSourceNode>(context, this.appContext);
 			if (node) {
-				new ManageAccessDialog(node.hdfsPath, node.fileSource).openDialog();
+				new ManageAccessDialog(node.hdfsPath, await node.getFileSource()).openDialog();
 			} else {
 				vscode.window.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}

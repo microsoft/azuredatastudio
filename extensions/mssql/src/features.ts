@@ -918,6 +918,166 @@ export class SqlAssessmentServicesFeature extends SqlOpsFeature<undefined> {
 			generateAssessmentScript
 		});
 	}
-
-
 }
+
+export class ProfilerFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		contracts.StartProfilingRequest.type,
+		contracts.StopProfilingRequest.type,
+		contracts.ProfilerEventsAvailableNotification.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, ProfilerFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		let createSession = (ownerUri: string, sessionName: string, template: azdata.ProfilerSessionTemplate): Thenable<boolean> => {
+			let params: contracts.CreateXEventSessionParams = {
+				ownerUri,
+				sessionName,
+				template
+			};
+
+			return client.sendRequest(contracts.CreateXEventSessionRequest.type, params).then(
+				r => true,
+				e => {
+					client.logFailedRequest(contracts.CreateXEventSessionRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let startSession = (ownerUri: string, sessionName: string): Thenable<boolean> => {
+			let params: contracts.StartProfilingParams = {
+				ownerUri,
+				sessionName
+			};
+
+			return client.sendRequest(contracts.StartProfilingRequest.type, params).then(
+				r => true,
+				e => {
+					client.logFailedRequest(contracts.StartProfilingRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let stopSession = (ownerUri: string): Thenable<boolean> => {
+			let params: contracts.StopProfilingParams = {
+				ownerUri
+			};
+
+			return client.sendRequest(contracts.StopProfilingRequest.type, params).then(
+				r => true,
+				e => {
+					client.logFailedRequest(contracts.StopProfilingRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let pauseSession = (ownerUri: string): Thenable<boolean> => {
+			let params: contracts.PauseProfilingParams = {
+				ownerUri
+			};
+
+			return client.sendRequest(contracts.PauseProfilingRequest.type, params).then(
+				r => true,
+				e => {
+					client.logFailedRequest(contracts.PauseProfilingRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let getXEventSessions = (ownerUri: string): Thenable<string[]> => {
+			let params: contracts.GetXEventSessionsParams = {
+				ownerUri
+			};
+
+			return client.sendRequest(contracts.GetXEventSessionsRequest.type, params).then(
+				r => r.sessions,
+				e => {
+					client.logFailedRequest(contracts.GetXEventSessionsRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let connectSession = (sessionId: string): Thenable<boolean> => {
+			return undefined;
+		};
+
+		let disconnectSession = (ownerUri: string): Thenable<boolean> => {
+			let params: contracts.DisconnectSessionParams = {
+				ownerUri: ownerUri
+			};
+			return client.sendRequest(contracts.DisconnectSessionRequest.type, params).then(
+				r => true,
+				e => {
+					client.logFailedRequest(contracts.DisconnectSessionRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
+		let registerOnSessionEventsAvailable = (handler: (response: azdata.ProfilerSessionEvents) => any): void => {
+			client.onNotification(contracts.ProfilerEventsAvailableNotification.type, (params: contracts.ProfilerEventsAvailableParams) => {
+				handler(<azdata.ProfilerSessionEvents>{
+					sessionId: params.ownerUri,
+					events: params.events,
+					eventsLost: params.eventsLost
+				});
+			});
+		};
+
+
+		let registerOnSessionStopped = (handler: (response: azdata.ProfilerSessionStoppedParams) => any): void => {
+			client.onNotification(contracts.ProfilerSessionStoppedNotification.type, (params: contracts.ProfilerSessionStoppedParams) => {
+				handler(<azdata.ProfilerSessionStoppedParams>{
+					ownerUri: params.ownerUri,
+					sessionId: params.sessionId
+				});
+			});
+		};
+
+		let registerOnProfilerSessionCreated = (handler: (response: azdata.ProfilerSessionCreatedParams) => any): void => {
+			client.onNotification(contracts.ProfilerSessionCreatedNotification.type, (params: contracts.ProfilerSessionCreatedParams) => {
+				handler(<azdata.ProfilerSessionCreatedParams>{
+					ownerUri: params.ownerUri,
+					sessionName: params.sessionName,
+					templateName: params.templateName
+				});
+			});
+		};
+
+
+		return azdata.dataprotocol.registerProfilerProvider({
+			providerId: client.providerId,
+			connectSession,
+			disconnectSession,
+			registerOnSessionEventsAvailable,
+			registerOnSessionStopped,
+			registerOnProfilerSessionCreated,
+			createSession,
+			startSession,
+			stopSession,
+			pauseSession,
+			getXEventSessions
+		});
+	}
+}
+

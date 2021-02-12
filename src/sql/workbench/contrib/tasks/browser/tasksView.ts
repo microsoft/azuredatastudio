@@ -36,8 +36,8 @@ import { IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/t
  * TaskHistoryView implements the dynamic tree view.
  */
 export class TaskHistoryView extends ViewPane {
-	private _messages: HTMLElement;
-	private _tree: ITree;
+	private _messages?: HTMLElement;
+	private _tree?: ITree;
 
 	constructor(
 		options: IViewPaneOptions,
@@ -80,7 +80,7 @@ export class TaskHistoryView extends ViewPane {
 		this._register(attachListStyler(this._tree, this.themeService));
 
 		this._register(this.taskService.onAddNewTask(args => {
-			hide(this._messages);
+			hide(this._messages!);
 			this.refreshTree();
 		}));
 		this._register(this.taskService.onTaskComplete(task => {
@@ -101,11 +101,10 @@ export class TaskHistoryView extends ViewPane {
 		const controller = instantiationService.createInstance(TaskHistoryController, actionProvider);
 		const dnd = new DefaultDragAndDrop();
 		const filter = new DefaultFilter();
-		const sorter = null;
 		const accessibilityProvider = new DefaultAccessibilityProvider();
 
 		return new Tree(treeContainer, {
-			dataSource, renderer, controller, dnd, filter, sorter, accessibilityProvider
+			dataSource, renderer, controller, dnd, filter, accessibilityProvider
 		}, {
 			indentPixels: 10,
 			twistiePixels: 20,
@@ -114,7 +113,7 @@ export class TaskHistoryView extends ViewPane {
 	}
 
 	private updateTask(task: TaskNode): void {
-		this._tree.refresh(task).catch(err => errors.onUnexpectedError(err));
+		this._tree!.refresh(task).catch(err => errors.onUnexpectedError(err));
 	}
 
 	public refreshTree(): void {
@@ -122,9 +121,9 @@ export class TaskHistoryView extends ViewPane {
 		let targetsToExpand: any[];
 
 		// Focus
-		this._tree.domFocus();
 
 		if (this._tree) {
+			this._tree.domFocus();
 			let selection = this._tree.getSelection();
 			if (selection && selection.length === 1) {
 				selectedElement = <any>selection[0];
@@ -132,26 +131,27 @@ export class TaskHistoryView extends ViewPane {
 			// convert to old VS Code tree interface with expandable methods
 			let expandableTree: IExpandableTree = <IExpandableTree>this._tree;
 			targetsToExpand = expandableTree.getExpandedElements();
+
+			//Get the tree Input
+			let treeInput = this.taskService.getAllTasks();
+			if (treeInput) {
+				this._tree.setInput(treeInput).then(async () => {
+					// Make sure to expand all folders that where expanded in the previous session
+					if (targetsToExpand) {
+						await this._tree!.expandAll(targetsToExpand);
+					}
+					if (selectedElement) {
+						this._tree!.select(selectedElement);
+					}
+					this._tree!.getFocus();
+				}, errors.onUnexpectedError);
+			}
 		}
 
-		//Get the tree Input
-		let treeInput = this.taskService.getAllTasks();
-		if (treeInput) {
-			this._tree.setInput(treeInput).then(async () => {
-				// Make sure to expand all folders that where expanded in the previous session
-				if (targetsToExpand) {
-					await this._tree.expandAll(targetsToExpand);
-				}
-				if (selectedElement) {
-					this._tree.select(selectedElement);
-				}
-				this._tree.getFocus();
-			}, errors.onUnexpectedError);
-		}
 	}
 
 	private onSelected(event: any) {
-		let selection = this._tree.getSelection();
+		let selection = this._tree!.getSelection();
 
 		if (selection && selection.length > 0 && (selection[0] instanceof TaskNode)) {
 			let task = <TaskNode>selection[0];
@@ -171,6 +171,8 @@ export class TaskHistoryView extends ViewPane {
 	 */
 	public layoutBody(height: number, width: number): void {
 		super.layoutBody(height, width);
-		this._tree.layout(height);
+		if (this._tree) {
+			this._tree.layout(height);
+		}
 	}
 }

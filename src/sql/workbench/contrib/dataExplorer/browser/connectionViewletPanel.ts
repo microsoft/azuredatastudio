@@ -31,7 +31,7 @@ export class ConnectionViewletPanel extends ViewPane {
 
 	public static readonly ID = 'dataExplorer.servers';
 
-	private _root: HTMLElement;
+	private _root?: HTMLElement;
 	private _serverTreeView: ServerTreeView;
 	private _addServerAction: IAction;
 	private _addServerGroupAction: IAction;
@@ -89,7 +89,7 @@ export class ConnectionViewletPanel extends ViewPane {
 
 	layoutBody(size: number): void {
 		this._serverTreeView.layout(size);
-		DOM.toggleClass(this._root, 'narrow', this._root.clientWidth < 300);
+		DOM.toggleClass(this._root!, 'narrow', this._root!.clientWidth < 300);
 	}
 
 	show(): void {

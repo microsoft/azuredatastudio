@@ -35,7 +35,7 @@ function fourPart2SemVer(version: string): string {
 			<version core> ::= <major> "." <minor> "." <patch>
  */
 export class SemVerProxy extends SemVer {
-	private _version: string;
+	public readonly version: string;
 
 	constructor(version: string | SemVerProxy, loose?: boolean) {
 		let ver: string;
@@ -50,13 +50,9 @@ export class SemVerProxy extends SemVer {
 		}
 		super(ver, loose);
 		if (ver.includes('-')) {
-			this._version = ver;
+			this.version = ver;
 		} else {
-			this._version = ver.replace('+', '.'); // change back any '+' character used to delimit the build portion of the version with a '.'
+			this.version = ver.replace('+', '.'); // change back any '+' character used to delimit the build portion of the version with a '.'
 		}
-	}
-
-	get version(): string {
-		return this._version;
 	}
 }

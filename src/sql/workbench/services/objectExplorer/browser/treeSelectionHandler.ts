@@ -16,7 +16,7 @@ import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/a
 export class TreeSelectionHandler {
 	// progressRunner: IProgressRunner;
 
-	private _lastClicked: any[];
+	private _lastClicked: any[] | undefined;
 	private _clickTimer: any = undefined;
 	private _otherTimer: any = undefined;
 
@@ -100,7 +100,7 @@ export class TreeSelectionHandler {
 				this.onTreeActionStateChange(true);
 			}
 		} else {
-			let connectionProfile: ConnectionProfile = undefined;
+			let connectionProfile: ConnectionProfile | undefined = undefined;
 			let options: IConnectionCompletionOptions = {
 				params: undefined,
 				saveTheConnection: true,

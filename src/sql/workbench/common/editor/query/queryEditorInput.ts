@@ -120,7 +120,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public get state(): QueryEditorState { return this._state; }
 
 	constructor(
-		private _description: string,
+		private _description: string | undefined,
 		protected _text: AbstractTextResourceEditorInput,
 		protected _results: QueryResultsInput,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
@@ -173,7 +173,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public get text(): AbstractTextResourceEditorInput { return this._text; }
 	public get results(): QueryResultsInput { return this._results; }
 	// Description is shown beside the tab name in the combobox of open editors
-	public getDescription(): string { return this._description; }
+	public getDescription(): string | undefined { return this._description; }
 	public supportsSplitEditor(): boolean { return false; }
 	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<void> {
 		return this._text.revert(group, options);

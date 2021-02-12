@@ -19,10 +19,8 @@ export class RecentConnectionDataSource implements IDataSource {
 	public getId(tree: ITree, element: any): string {
 		if (element instanceof ConnectionProfile) {
 			return (<ConnectionProfile>element).id;
-		} else if (element instanceof ConnectionProfileGroup) {
-			return (<ConnectionProfileGroup>element).id;
 		} else {
-			return undefined;
+			return (<ConnectionProfileGroup>element).id!;
 		}
 	}
 

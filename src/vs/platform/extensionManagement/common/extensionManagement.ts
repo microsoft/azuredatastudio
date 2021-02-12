@@ -21,6 +21,7 @@ export interface IGalleryExtensionProperties {
 	// {{SQL CARBON EDIT}}
 	azDataEngine?: string;
 	localizedLanguages?: string[];
+	webExtension?: boolean;
 }
 
 export interface IGalleryExtensionAsset {
@@ -87,6 +88,7 @@ export interface IGalleryExtension {
 	properties: IGalleryExtensionProperties;
 	telemetryData: any;
 	preview: boolean;
+	webResource?: URI;
 }
 
 export interface IGalleryMetadata {
@@ -208,6 +210,7 @@ export interface IExtensionManagementService {
 	unzip(zipLocation: URI): Promise<IExtensionIdentifier>;
 	getManifest(vsix: URI): Promise<IExtensionManifest>;
 	install(vsix: URI, isMachineScoped?: boolean): Promise<ILocalExtension>;
+	canInstall(extension: IGalleryExtension): Promise<boolean>;
 	installFromGallery(extension: IGalleryExtension, isMachineScoped?: boolean): Promise<ILocalExtension>;
 	uninstall(extension: ILocalExtension, force?: boolean): Promise<void>;
 	reinstallFromGallery(extension: ILocalExtension): Promise<void>;
@@ -243,6 +246,7 @@ export type IExecutableBasedExtensionTip = {
 	readonly extensionId: string,
 	readonly extensionName: string,
 	readonly isExtensionPack: boolean,
+	readonly exeName: string,
 	readonly exeFriendlyName: string,
 	readonly windowsPath?: string,
 };

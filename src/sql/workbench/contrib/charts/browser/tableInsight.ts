@@ -12,7 +12,7 @@ import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelect
 import { $, Dimension } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 
 export class TableInsight extends Disposable implements IInsight {
@@ -21,7 +21,8 @@ export class TableInsight extends Disposable implements IInsight {
 
 	private table: Table<any>;
 	private dataView: TableDataView<any>;
-	private columns: Slick.Column<any>[];
+	private columns?: Slick.Column<any>[];
+	public options: IInsightOptions = { type: InsightType.Table };
 
 	constructor(container: HTMLElement, options: any,
 		@IThemeService themeService: IThemeService
@@ -47,9 +48,6 @@ export class TableInsight extends Disposable implements IInsight {
 	layout(dim: Dimension) {
 		this.table.layout(dim);
 	}
-
-	public options;
-
 }
 
 function transformData(rows: string[][], columns: string[]): { [key: string]: string }[] {

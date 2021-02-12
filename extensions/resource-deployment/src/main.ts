@@ -70,7 +70,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		}
 	});
 	vscode.commands.registerCommand('azdata.openNotebookInputDialog', (dialogInfo: NotebookBasedDialogInfo) => {
-		const dialog = new DeploymentInputDialog(notebookService, platformService, dialogInfo);
+		const dialog = new DeploymentInputDialog(notebookService, platformService, toolsService, dialogInfo);
 		dialog.open();
 	});
 }

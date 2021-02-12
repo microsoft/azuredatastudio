@@ -6,15 +6,14 @@ import { Event } from 'vs/base/common/event';
 import * as platform from 'vs/base/common/platform';
 import { URI } from 'vs/base/common/uri';
 import { createRemoteURITransformer } from 'vs/server/remoteUriTransformer';
-import { IRemoteAgentEnvironmentDTO, IGetEnvironmentDataArguments, IScanExtensionsArguments } from 'vs/workbench/services/remote/common/remoteAgentEnvironmentChannel';
+import { IRemoteAgentEnvironmentDTO, IGetEnvironmentDataArguments, IScanExtensionsArguments, IScanSingleExtensionArguments } from 'vs/workbench/services/remote/common/remoteAgentEnvironmentChannel';
 import * as nls from 'vs/nls';
 import * as pfs from 'vs/base/node/pfs';
-import { Schemas } from 'vs/base/common/network';
-import { INativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
+import { FileAccess, Schemas } from 'vs/base/common/network';
+import { INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 import product from 'vs/platform/product/common/product';
 import { ExtensionScanner, ExtensionScannerInput, IExtensionResolver, IExtensionReference } from 'vs/workbench/services/extensions/node/extensionPoints';
 import { IServerChannel } from 'vs/base/parts/ipc/common/ipc';
-import { getPathFromAmdModule } from 'vs/base/common/amd';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { transformOutgoingURIs } from 'vs/base/common/uriIpc';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -29,18 +28,20 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ILog, Translations } from 'vs/workbench/services/extensions/common/extensionPoints';
 import { ITelemetryAppender } from 'vs/platform/telemetry/common/telemetryUtils';
 import { IBuiltInExtension } from 'vs/platform/product/common/productService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Main as CliMain } from 'vs/code/node/cliProcessMain';
 
 let _SystemExtensionsRoot: string | null = null;
 function getSystemExtensionsRoot(): string {
 	if (!_SystemExtensionsRoot) {
-		_SystemExtensionsRoot = normalize(join(getPathFromAmdModule(require, ''), '..', 'extensions'));
+		_SystemExtensionsRoot = normalize(join(FileAccess.asFileUri('', require).fsPath, '..', 'extensions'));
 	}
 	return _SystemExtensionsRoot;
 }
 let _ExtraDevSystemExtensionsRoot: string | null = null;
 function getExtraDevSystemExtensionsRoot(): string {
 	if (!_ExtraDevSystemExtensionsRoot) {
-		_ExtraDevSystemExtensionsRoot = normalize(join(getPathFromAmdModule(require, ''), '..', '.build', 'builtInExtensions'));
+		_ExtraDevSystemExtensionsRoot = normalize(join(FileAccess.asFileUri('', require).fsPath, '..', '.build', 'builtInExtensions'));
 	}
 	return _ExtraDevSystemExtensionsRoot;
 }
@@ -50,9 +51,12 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 	private static _namePool = 1;
 	private readonly _logger: ILog;
 
+	private readonly whenExtensionsReady: Promise<void>;
+
 	constructor(
 		private readonly _connectionToken: string,
 		private readonly environmentService: INativeEnvironmentService,
+		instantiationService: IInstantiationService,
 		private readonly logService: ILogService,
 		private readonly telemetryService: ITelemetryService,
 		private readonly telemetryAppender: ITelemetryAppender | null
@@ -68,6 +72,24 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 				logService.info(source, message);
 			}
 		};
+
+		const cli = instantiationService.createInstance(CliMain);
+		if (environmentService.args['install-builtin-extension']) {
+			this.whenExtensionsReady = cli.installExtensions([], environmentService.args['install-builtin-extension'], !!environmentService.args['do-not-sync'], !!environmentService.args['force'])
+				.then(null, error => {
+					logService.error(error);
+				});
+		} else {
+			this.whenExtensionsReady = Promise.resolve();
+		}
+
+		if (environmentService.args['install-extension']) {
+			this.whenExtensionsReady
+				.then(() => cli.installExtensions(environmentService.args['install-extension']!, [], !!environmentService.args['do-not-sync'], !!environmentService.args['force']))
+				.then(null, error => {
+					logService.error(error);
+				});
+		}
 	}
 
 	async call(_: any, command: string, arg?: any): Promise<any> {
@@ -81,13 +103,19 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 				const args = <IGetEnvironmentDataArguments>arg;
 				const uriTransformer = createRemoteURITransformer(args.remoteAuthority);
 
-				let environmentData = await this.getEnvironmentData();
+				let environmentData = await this._getEnvironmentData();
 				environmentData = transformOutgoingURIs(environmentData, uriTransformer);
 
 				return environmentData;
 			}
 
+			case 'whenExtensionsReady': {
+				await this.whenExtensionsReady;
+				return;
+			}
+
 			case 'scanExtensions': {
+				await this.whenExtensionsReady;
 				const args = <IScanExtensionsArguments>arg;
 				const language = args.language;
 				this.logService.trace(`Scanning extensions using UI language: ${language}`);
@@ -96,12 +124,40 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 				const extensionDevelopmentLocations = args.extensionDevelopmentPath && args.extensionDevelopmentPath.map(url => URI.revive(uriTransformer.transformIncoming(url)));
 				const extensionDevelopmentPath = extensionDevelopmentLocations ? extensionDevelopmentLocations.filter(url => url.scheme === Schemas.file).map(url => url.fsPath) : undefined;
 
-				let extensions = await this.scanExtensions(language, extensionDevelopmentPath);
+				let extensions = await this._scanExtensions(language, extensionDevelopmentPath);
 				extensions = transformOutgoingURIs(extensions, uriTransformer);
 
-				RemoteAgentEnvironmentChannel.massageWhenConditions(extensions);
+				this.logService.trace('Scanned Extensions', extensions);
+				RemoteAgentEnvironmentChannel._massageWhenConditions(extensions);
 
 				return extensions;
+			}
+
+			case 'scanSingleExtension': {
+				await this.whenExtensionsReady;
+				const args = <IScanSingleExtensionArguments>arg;
+				const language = args.language;
+				const isBuiltin = args.isBuiltin;
+				const uriTransformer = createRemoteURITransformer(args.remoteAuthority);
+				const extensionLocation = URI.revive(uriTransformer.transformIncoming(args.extensionLocation));
+				const extensionPath = extensionLocation.scheme === Schemas.file ? extensionLocation.fsPath : null;
+
+				if (!extensionPath) {
+					return null;
+				}
+
+				const translations = await this._getTranslations(language);
+				let extension = await this._scanSingleExtension(extensionPath, isBuiltin, language, translations);
+
+				if (!extension) {
+					return null;
+				}
+
+				extension = transformOutgoingURIs(extension, uriTransformer);
+
+				RemoteAgentEnvironmentChannel._massageWhenConditions([extension]);
+
+				return extension;
 			}
 
 			case 'getDiagnosticInfo': {
@@ -164,7 +220,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 		throw new Error('Not supported');
 	}
 
-	private static massageWhenConditions(extensions: IExtensionDescription[]): void {
+	private static _massageWhenConditions(extensions: IExtensionDescription[]): void {
 		// We must massage "when" conditions which mention `resourceScheme`
 		// See https://github.com/Microsoft/vscode-remote/issues/663
 
@@ -263,7 +319,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 		});
 	}
 
-	private async getEnvironmentData(): Promise<IRemoteAgentEnvironmentDTO> {
+	private async _getEnvironmentData(): Promise<IRemoteAgentEnvironmentDTO> {
 		return {
 			pid: process.pid,
 			connectionToken: this._connectionToken,
@@ -279,58 +335,62 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 		};
 	}
 
-	private scanExtensions(language: string, extensionDevelopmentPath?: string[]): Promise<IExtensionDescription[]> {
-		// Ensure that the language packs are available
-		return getNLSConfiguration(language, this.environmentService.userDataPath).then((config) => {
-			if (InternalNLSConfiguration.is(config)) {
-				return pfs.readFile(config._translationsConfigFile, 'utf8').then((content) => {
-					return JSON.parse(content);
-				}, (err) => {
-					return Object.create(null);
-				});
-			} else {
+	private async _getTranslations(language: string): Promise<Translations> {
+		const config = await getNLSConfiguration(language, this.environmentService.userDataPath);
+		if (InternalNLSConfiguration.is(config)) {
+			try {
+				const content = await pfs.readFile(config._translationsConfigFile, 'utf8');
+				return JSON.parse(content);
+			} catch (err) {
 				return Object.create(null);
 			}
-		}).then((translations: Translations) => {
-			return Promise.all([
-				this.scanBuiltinExtensions(language, translations),
-				this.scanInstalledExtensions(language, translations),
-				this.scanDevelopedExtensions(language, translations, extensionDevelopmentPath)
-			]).then(([builtinExtensions, installedExtensions, developedExtensions]) => {
-				let result = new Map<string, IExtensionDescription>();
-
-				builtinExtensions.forEach((builtinExtension) => {
-					if (!builtinExtension) {
-						return;
-					}
-					result.set(ExtensionIdentifier.toKey(builtinExtension.identifier), builtinExtension);
-				});
-
-				installedExtensions.forEach((installedExtension) => {
-					if (!installedExtension) {
-						return;
-					}
-					if (result.has(ExtensionIdentifier.toKey(installedExtension.identifier))) {
-						console.warn(nls.localize('overwritingExtension', "Overwriting extension {0} with {1}.", result.get(ExtensionIdentifier.toKey(installedExtension.identifier))!.extensionLocation.fsPath, installedExtension.extensionLocation.fsPath));
-					}
-					result.set(ExtensionIdentifier.toKey(installedExtension.identifier), installedExtension);
-				});
-
-				developedExtensions.forEach((developedExtension) => {
-					if (!developedExtension) {
-						return;
-					}
-					result.set(ExtensionIdentifier.toKey(developedExtension.identifier), developedExtension);
-				});
-
-				const r: IExtensionDescription[] = [];
-				result.forEach((v) => r.push(v));
-				return r;
-			});
-		});
+		} else {
+			return Object.create(null);
+		}
 	}
 
-	private scanDevelopedExtensions(language: string, translations: Translations, extensionDevelopmentPaths?: string[]): Promise<IExtensionDescription[]> {
+	private async _scanExtensions(language: string, extensionDevelopmentPath?: string[]): Promise<IExtensionDescription[]> {
+		// Ensure that the language packs are available
+		const translations = await this._getTranslations(language);
+
+		const [builtinExtensions, installedExtensions, developedExtensions] = await Promise.all([
+			this._scanBuiltinExtensions(language, translations),
+			this._scanInstalledExtensions(language, translations),
+			this._scanDevelopedExtensions(language, translations, extensionDevelopmentPath)
+		]);
+
+		let result = new Map<string, IExtensionDescription>();
+
+		builtinExtensions.forEach((builtinExtension) => {
+			if (!builtinExtension) {
+				return;
+			}
+			result.set(ExtensionIdentifier.toKey(builtinExtension.identifier), builtinExtension);
+		});
+
+		installedExtensions.forEach((installedExtension) => {
+			if (!installedExtension) {
+				return;
+			}
+			if (result.has(ExtensionIdentifier.toKey(installedExtension.identifier))) {
+				console.warn(nls.localize('overwritingExtension', "Overwriting extension {0} with {1}.", result.get(ExtensionIdentifier.toKey(installedExtension.identifier))!.extensionLocation.fsPath, installedExtension.extensionLocation.fsPath));
+			}
+			result.set(ExtensionIdentifier.toKey(installedExtension.identifier), installedExtension);
+		});
+
+		developedExtensions.forEach((developedExtension) => {
+			if (!developedExtension) {
+				return;
+			}
+			result.set(ExtensionIdentifier.toKey(developedExtension.identifier), developedExtension);
+		});
+
+		const r: IExtensionDescription[] = [];
+		result.forEach((v) => r.push(v));
+		return r;
+	}
+
+	private _scanDevelopedExtensions(language: string, translations: Translations, extensionDevelopmentPaths?: string[]): Promise<IExtensionDescription[]> {
 
 		if (extensionDevelopmentPaths) {
 
@@ -360,7 +420,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 		return Promise.resolve([]);
 	}
 
-	private scanBuiltinExtensions(language: string, translations: Translations): Promise<IExtensionDescription[]> {
+	private _scanBuiltinExtensions(language: string, translations: Translations): Promise<IExtensionDescription[]> {
 		const version = product.version;
 		const commit = product.commit;
 		const devMode = !!process.env['VSCODE_DEV'];
@@ -393,18 +453,34 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 		return finalBuiltinExtensions;
 	}
 
-	private scanInstalledExtensions(language: string, translations: Translations): Promise<IExtensionDescription[]> {
+	private _scanInstalledExtensions(language: string, translations: Translations): Promise<IExtensionDescription[]> {
+		const devMode = !!process.env['VSCODE_DEV'];
 		const input = new ExtensionScannerInput(
 			product.version,
 			product.commit,
 			language,
-			true,
+			devMode,
 			this.environmentService.extensionsPath!,
 			false, // isBuiltin
-			true, // isUnderDevelopment
+			false, // isUnderDevelopment
 			translations
 		);
 
 		return ExtensionScanner.scanExtensions(input, this._logger);
+	}
+
+	private _scanSingleExtension(extensionPath: string, isBuiltin: boolean, language: string, translations: Translations): Promise<IExtensionDescription | null> {
+		const devMode = !!process.env['VSCODE_DEV'];
+		const input = new ExtensionScannerInput(
+			product.version,
+			product.commit,
+			language,
+			devMode,
+			extensionPath,
+			isBuiltin,
+			false, // isUnderDevelopment
+			translations
+		);
+		return ExtensionScanner.scanSingleExtension(input, this._logger);
 	}
 }

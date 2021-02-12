@@ -104,7 +104,7 @@ export class TreeCreationUtils {
 				identityProvider: identityProvider
 			};
 
-			return instantiationService.createInstance(
+			const tree = instantiationService.createInstance(
 				AsyncServerTree,
 				'ServerTreeView',
 				treeContainer,
@@ -117,6 +117,8 @@ export class TreeCreationUtils {
 				dataSource,
 				treeOptions
 			);
+			dnd.tree = tree;
+			return tree;
 		} else {
 			const dataSource = instantiationService.createInstance(ServerTreeDataSource);
 			const actionProvider = instantiationService.createInstance(ServerTreeActionProvider);
@@ -140,5 +142,5 @@ export class TreeCreationUtils {
 }
 
 function useAsyncServerTree(configurationService: IConfigurationService): boolean {
-	return configurationService.getValue('workbench.enablePreviewFeatures') && configurationService.getValue('serverTree.useAsyncServerTree');
+	return configurationService.getValue<boolean>('workbench.enablePreviewFeatures') && configurationService.getValue<boolean>('serverTree.useAsyncServerTree');
 }

@@ -6,7 +6,7 @@
 import { nb, IResultMessage } from 'azdata';
 import { localize } from 'vs/nls';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { BatchSummary, ResultSetSummary, IColumn, ResultSetSubset } from 'sql/workbench/services/query/common/query';
+import { ResultSetSummary, ResultSetSubset, IColumn, BatchSummary } from 'sql/workbench/services/query/common/query';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
@@ -14,8 +14,8 @@ import { Deferred } from 'sql/base/common/promise';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { escape } from 'sql/base/common/strings';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ILogService } from 'vs/platform/log/common/log';

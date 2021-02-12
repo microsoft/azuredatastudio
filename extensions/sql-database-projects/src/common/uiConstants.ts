@@ -9,4 +9,16 @@ export namespace cssStyles {
 	export const tableHeader = { ...text, 'text-align': 'left', 'border': 'none', 'font-size': '12px', 'font-weight': 'normal', 'color': '#666666' };
 	export const tableRow = { ...text, 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none', 'font-size': '12px' };
 	export const titleFontSize = 13;
+
+	export const publishDialogLabelWidth = '205px';
+	export const publishDialogTextboxWidth = '190px';
+
+	export const addDatabaseReferenceDialogLabelWidth = '215px';
+	export const addDatabaseReferenceInputboxWidth = '220px';
+
+	// font-styles
+	export namespace fontStyle {
+		export const normal = 'normal';
+		export const italics = 'italic';
+	}
 }

@@ -140,6 +140,9 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		this.viewContainer = container;
 		this.viewContainerModel = viewDescriptorService.getViewContainerModel(container);
 	}
+	getActionsContext(): unknown {
+		throw new Error('Method not implemented.');
+	}
 
 	/**
 	 * Update the available connection providers, this is called when new providers are registered
@@ -151,6 +154,10 @@ export class ConnectionDialogWidget extends Modal implements IViewPaneContainer 
 		this.providerDisplayNameOptions = providerTypeDisplayNameOptions;
 		this.providerNameToDisplayNameMap = providerNameToDisplayNameMap;
 		this.refresh();
+	}
+
+	public getDisplayNameFromProviderName(providerName: string): string {
+		return this.providerNameToDisplayNameMap[providerName];
 	}
 
 	public refresh(): void {

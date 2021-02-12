@@ -327,4 +327,22 @@ describe('Utils Tests', function () {
 			}
 		});
 	});
+
+	describe('isBookItemPinned', function (): void {
+		it('Should NOT pin an unknown book within a workspace', async function (): Promise<void> {
+
+			let notebookUri = path.join(path.sep, 'randomfolder', 'randomsubfolder', 'content', 'randomnotebook.ipynb');
+			let isNotebookPinned = utils.isBookItemPinned(notebookUri);
+
+			should(isNotebookPinned).be.false('Random notebooks should not be pinned');
+		});
+	});
+
+	describe('getPinnedNotebooks', function (): void {
+		it('Should NOT have any pinned notebooks', async function (): Promise<void> {
+			let pinnedNotebooks: string[] = utils.getPinnedNotebooks();
+
+			should(pinnedNotebooks.length).equal(0, 'Should not have any pinned notebooks');
+		});
+	});
 });

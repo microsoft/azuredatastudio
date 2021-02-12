@@ -11,7 +11,7 @@ import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 
 
-export abstract class TitledComponent extends ComponentBase implements ITitledComponent {
+export abstract class TitledComponent<T extends azdata.TitledComponentProperties> extends ComponentBase<T> implements ITitledComponent {
 
 	constructor(
 		protected _changeRef: ChangeDetectorRef,
@@ -20,10 +20,10 @@ export abstract class TitledComponent extends ComponentBase implements ITitledCo
 	}
 
 	public get title(): string {
-		return this.getPropertyOrDefault<azdata.TitledComponentProperties, string>((props) => props.title, '');
+		return this.getPropertyOrDefault<string>((props) => props.title, '');
 	}
 
 	public set title(newTitle: string) {
-		this.setPropertyFromUI<azdata.TitledComponentProperties, string>((properties, title) => { properties.title = title; }, newTitle);
+		this.setPropertyFromUI<string>((properties, title) => { properties.title = title; }, newTitle);
 	}
 }

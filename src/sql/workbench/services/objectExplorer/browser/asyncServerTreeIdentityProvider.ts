@@ -8,6 +8,6 @@ import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser
 
 export class AsyncServerTreeIdentityProvider implements IIdentityProvider<ServerTreeElement> {
 	getId(element: ServerTreeElement): { toString(): string; } {
-		return element.id;
+		return element.id!;
 	}
 }

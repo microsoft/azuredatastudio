@@ -14,7 +14,7 @@ import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dash
 
 export enum Orientation {
 	Horizontal = 'horizontal',
-	Vertical = 'vertial'
+	Vertical = 'vertical'
 }
 
 export interface ToolbarLayout {

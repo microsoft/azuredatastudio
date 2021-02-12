@@ -20,7 +20,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IOverlayWidget } from 'vs/editor/browser/editorBrowser';
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -39,7 +39,7 @@ export interface ProfilerTableViewState {
 	scrollLeft: number;
 }
 
-export class ProfilerTableEditor extends BaseEditor implements IProfilerController, ITableController {
+export class ProfilerTableEditor extends EditorPane implements IProfilerController, ITableController {
 
 	public static ID: string = 'workbench.editor.profiler.table';
 	protected _input: ProfilerInput;

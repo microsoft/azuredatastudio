@@ -38,6 +38,7 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 			this._register(this.cellModel.onOutputsChanged(e => {
 				if (!(this._changeRef['destroyed'])) {
 					this._changeRef.detectChanges();
+					this._changeRef.detach();
 					if (e && e.shouldScroll) {
 						this.setFocusAndScroll(this.outputArea.nativeElement);
 					}

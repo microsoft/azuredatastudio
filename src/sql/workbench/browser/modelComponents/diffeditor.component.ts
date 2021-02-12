@@ -37,7 +37,7 @@ import { convertSizeToNumber } from 'sql/base/browser/dom';
 	</div>`,
 	selector: 'modelview-diff-editor-component'
 })
-export default class DiffEditorComponent extends ComponentBase implements IComponent, OnDestroy {
+export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditorComponent> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _editor: TextDiffEditor;
@@ -92,7 +92,7 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		let editorinput1 = this._instantiationService.createInstance(ResourceEditorInput, uri1, 'source', undefined, undefined);
 		let editorinput2 = this._instantiationService.createInstance(ResourceEditorInput, uri2, 'target', undefined, undefined);
 		this._editorInput = new DiffEditorInput('DiffEditor', undefined, editorinput1, editorinput2, true);
-		this._editor.setInput(this._editorInput, undefined, cancellationTokenSource.token);
+		this._editor.setInput(this._editorInput, undefined, undefined, cancellationTokenSource.token);
 
 
 		this._editorInput.resolve().then(model => {
@@ -176,66 +176,66 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 
 	// CSS-bound properties
 	public get contentLeft(): string {
-		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.contentLeft, undefined);
+		return this.getPropertyOrDefault<string>((props) => props.contentLeft, undefined);
 	}
 
 	public set contentLeft(newValue: string) {
-		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, contentLeft) => { properties.contentLeft = contentLeft; }, newValue);
+		this.setPropertyFromUI<string>((properties, contentLeft) => { properties.contentLeft = contentLeft; }, newValue);
 	}
 
 	public get contentRight(): string {
-		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.contentRight, undefined);
+		return this.getPropertyOrDefault<string>((props) => props.contentRight, undefined);
 	}
 
 	public set contentRight(newValue: string) {
-		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, contentRight) => { properties.contentRight = contentRight; }, newValue);
+		this.setPropertyFromUI<string>((properties, contentRight) => { properties.contentRight = contentRight; }, newValue);
 	}
 
 	public get languageMode(): string {
-		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.languageMode, undefined);
+		return this.getPropertyOrDefault<string>((props) => props.languageMode, undefined);
 	}
 
 	public set languageMode(newValue: string) {
-		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, languageMode) => { properties.languageMode = languageMode; }, newValue);
+		this.setPropertyFromUI<string>((properties, languageMode) => { properties.languageMode = languageMode; }, newValue);
 	}
 
 	public get isAutoResizable(): boolean {
-		return this.getPropertyOrDefault<azdata.EditorProperties, boolean>((props) => props.isAutoResizable, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.isAutoResizable, false);
 	}
 
 	public set isAutoResizable(newValue: boolean) {
-		this.setPropertyFromUI<azdata.EditorProperties, boolean>((properties, isAutoResizable) => { properties.isAutoResizable = isAutoResizable; }, newValue);
+		this.setPropertyFromUI<boolean>((properties, isAutoResizable) => { properties.isAutoResizable = isAutoResizable; }, newValue);
 	}
 
 	public get minimumHeight(): number {
-		return this.getPropertyOrDefault<azdata.EditorProperties, number>((props) => props.minimumHeight, this._editor.minimumHeight);
+		return this.getPropertyOrDefault<number>((props) => props.minimumHeight, this._editor.minimumHeight);
 	}
 
 	public set minimumHeight(newValue: number) {
-		this.setPropertyFromUI<azdata.EditorProperties, number>((properties, minimumHeight) => { properties.minimumHeight = minimumHeight; }, newValue);
+		this.setPropertyFromUI<number>((properties, minimumHeight) => { properties.minimumHeight = minimumHeight; }, newValue);
 	}
 
 	public get editorUriLeft(): string {
-		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.editorUriLeft, '');
+		return this.getPropertyOrDefault<string>((props) => props.editorUriLeft, '');
 	}
 
 	public set editorUriLeft(newValue: string) {
-		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, editorUriLeft) => { properties.editorUriLeft = editorUriLeft; }, newValue);
+		this.setPropertyFromUI<string>((properties, editorUriLeft) => { properties.editorUriLeft = editorUriLeft; }, newValue);
 	}
 
 	public get editorUriRight(): string {
-		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.editorUriRight, '');
+		return this.getPropertyOrDefault<string>((props) => props.editorUriRight, '');
 	}
 
 	public set editorUriRight(newValue: string) {
-		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, editorUriRight) => { properties.editorUriRight = editorUriRight; }, newValue);
+		this.setPropertyFromUI<string>((properties, editorUriRight) => { properties.editorUriRight = editorUriRight; }, newValue);
 	}
 
 	public get title(): string {
-		return this.getPropertyOrDefault<azdata.EditorProperties, string>((props) => props.title, undefined);
+		return this.getPropertyOrDefault<string>((props) => props.title, undefined);
 	}
 
 	public set title(newValue: string) {
-		this.setPropertyFromUI<azdata.EditorProperties, string>((properties, title) => { properties.title = title; }, newValue);
+		this.setPropertyFromUI<string>((properties, title) => { properties.title = title; }, newValue);
 	}
 }

@@ -128,8 +128,8 @@ export class SelectBox extends vsSelectBox {
 
 	private static createOptions(options: SelectOptionItemSQL[] | string[] | ISelectOptionItem[]): SelectOptionItemSQL[] {
 		let selectOptions: SelectOptionItemSQL[];
-		if (Array.isArray<string>(options) && typeof (options[0]) === 'string') {
-			selectOptions = options.map(o => {
+		if (Array.isArray(options) && typeof (options[0]) === 'string') {
+			selectOptions = (options as string[]).map(o => {
 				return { text: o, value: o } as SelectOptionItemSQL;
 			});
 		} else { // Handle both SelectOptionItemSql and ISelectOptionItem
@@ -336,6 +336,7 @@ export class SelectBox extends vsSelectBox {
 		if (selectOptions && selectOptions.labelText && selectOptions.labelText !== undefined) {
 			let outerContainer = document.createElement('div');
 			let selectContainer = document.createElement('div');
+			selectContainer.setAttribute('role', 'presentation');
 
 			outerContainer.className = selectOptions.labelOnTop ? 'labelOnTopContainer' : 'labelOnLeftContainer';
 

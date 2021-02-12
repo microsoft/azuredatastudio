@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/qp';
 import * as QP from 'html-query-plan';
 
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
@@ -31,10 +32,10 @@ export class QueryPlanTab implements IPanelTab {
 }
 
 export class QueryPlanView implements IPanelView {
-	private qp: QueryPlan;
-	private xml: string;
+	private qp?: QueryPlan;
+	private xml?: string;
 	private container = document.createElement('div');
-	private _state: QueryPlanState;
+	private _state?: QueryPlanState;
 
 	public render(container: HTMLElement): void {
 		container.appendChild(this.container);
@@ -50,7 +51,6 @@ export class QueryPlanView implements IPanelView {
 	dispose() {
 		this.container.remove();
 		this.qp = undefined;
-		this.container = undefined;
 	}
 
 	public layout(dimension: Dimension): void {
@@ -79,38 +79,38 @@ export class QueryPlanView implements IPanelView {
 		}
 	}
 
-	public set state(val: QueryPlanState) {
+	public setState(val: QueryPlanState) {
 		this._state = val;
-		if (this.state.xml) {
-			this.showPlan(this.state.xml);
+		if (this._state.xml) {
+			this.showPlan(this._state.xml);
 		}
 	}
 
-	public get state(): QueryPlanState {
+	public get state(): QueryPlanState | undefined {
 		return this._state;
 	}
 }
 
 export class QueryPlan {
-	private _xml: string;
+	private _xml?: string;
 	constructor(private container: HTMLElement) {
 	}
 
-	public set xml(xml: string) {
+	public set xml(xml: string | undefined) {
 		this._xml = xml;
 		clearNode(this.container);
 		if (this.xml) {
-			QP.showPlan(this.container, this._xml, {
+			QP.showPlan(this.container, this.xml, {
 				jsTooltips: false
 			});
-			(<any>this.container.querySelectorAll('div.qp-tt')).forEach(toolTip => {
+			this.container.querySelectorAll('div.qp-tt').forEach(toolTip => {
 				toolTip.classList.add('monaco-editor');
 				toolTip.classList.add('monaco-editor-hover');
 			});
 		}
 	}
 
-	public get xml(): string {
+	public get xml(): string | undefined {
 		return this._xml;
 	}
 }

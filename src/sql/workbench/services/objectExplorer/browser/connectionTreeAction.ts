@@ -43,7 +43,7 @@ export class RefreshAction extends Action {
 		super(id, label);
 	}
 	public async run(): Promise<boolean> {
-		let treeNode: TreeNode;
+		let treeNode: TreeNode | undefined = undefined;
 		if (this.element instanceof ConnectionProfile) {
 			let connection: ConnectionProfile = this.element;
 			if (this._connectionManagementService.isConnected(undefined, connection)) {
@@ -60,7 +60,10 @@ export class RefreshAction extends Action {
 		if (treeNode) {
 			try {
 				try {
-					await this._objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
+					const session = treeNode.getSession();
+					if (session) {
+						await this._objectExplorerService.refreshTreeNode(session, treeNode);
+					}
 				} catch (error) {
 					this.showError(error);
 					return true;
@@ -160,7 +163,8 @@ export class AddServerAction extends Action {
 	}
 
 	public async run(element: ConnectionProfileGroup): Promise<boolean> {
-		let connection: IConnectionProfile = element === undefined ? undefined : {
+		// Not sure how to fix this....
+		let connection: Partial<IConnectionProfile> | undefined = element === undefined ? undefined : {
 			connectionName: undefined,
 			serverName: undefined,
 			databaseName: undefined,
@@ -175,8 +179,8 @@ export class AddServerAction extends Action {
 			providerName: '',
 			options: {},
 			saveProfile: true,
-			id: element.id
-		};
+			id: element.id!
+		} as Partial<IConnectionProfile>;
 		await this._connectionManagementService.showConnectionDialog(undefined, undefined, connection);
 		return true;
 	}
@@ -236,7 +240,7 @@ export class ActiveConnectionsFilterAction extends Action {
 	private static enabledClass = 'active-connections-action';
 	private static disabledClass = 'icon server-page';
 	private static showAllConnectionsLabel = localize('showAllConnections', "Show All Connections");
-	private _isSet: boolean;
+	private _isSet: boolean = false;
 	public static readonly ACTIVE = 'active';
 	public get isSet(): boolean {
 		return this._isSet;
@@ -342,7 +346,7 @@ export class DeleteConnectionAction extends Action {
 		}
 
 		if (element instanceof ConnectionProfile) {
-			let parent: ConnectionProfileGroup = element.parent;
+			let parent: ConnectionProfileGroup | undefined = element.parent;
 			if (parent && parent.id === UNSAVED_GROUP_ID) {
 				this.enabled = false;
 			}

@@ -98,7 +98,7 @@ suite('AsyncServerTreeDragAndDrop', () => {
 		assert.equal(treeNodeArray[0].label, labelTreeNode);
 
 		let labelUndefined = serverTreeDragAndDrop.getDragLabel(undefined);
-		assert.equal(undefined, labelUndefined);
+		assert.equal('', labelUndefined);
 
 	});
 

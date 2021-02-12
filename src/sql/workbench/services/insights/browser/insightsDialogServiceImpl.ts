@@ -8,8 +8,8 @@ import { InsightsDialogView } from 'sql/workbench/services/insights/browser/insi
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInsightsDialogModel, IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { InsightsDialogModel } from 'sql/workbench/services/insights/browser/insightsDialogModel';
-import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 import { InsightsDialogController } from 'sql/workbench/services/insights/browser/insightsDialogController';
+import { IInsightsConfig } from 'sql/platform/extensions/common/extensions';
 
 export class InsightsDialogService implements IInsightsDialogService {
 	_serviceBrand: undefined;

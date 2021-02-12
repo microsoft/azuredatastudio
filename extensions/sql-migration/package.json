@@ -12,7 +12,8 @@
     "azdata": ">=1.19.0"
   },
   "activationEvents": [
-    "onCommand:sqlmigration.start"
+    "onCommand:sqlmigration.start",
+    "onCommand:sqlmigration.testDialog"
   ],
   "main": "./out/main",
   "repository": {
@@ -27,6 +28,11 @@
       {
         "command": "sqlmigration.start",
         "title": "SQL Migration Start",
+        "category": "SQL Migration"
+      },
+      {
+        "command": "sqlmigration.testDialog",
+        "title": "SQL Migration test dialog",
         "category": "SQL Migration"
       }
     ]

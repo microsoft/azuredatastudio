@@ -2,19 +2,19 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.21.0"
+    "azdata": ">=1.22.0"
   },
   "activationEvents": [
-    "onCommand:arc.manageArcController",
-    "onCommand:arc.manageMiaa",
-    "onCommand:arc.managePostgres",
+    "onCommand:arc.connectToController",
+    "onCommand:arc.createController",
+    "onCommand:azdata.resource.deploy",
     "onView:azureArc"
   ],
   "extensionDependencies": [
@@ -37,18 +37,6 @@
     },
     "commands": [
       {
-        "command": "arc.manageArcController",
-        "title": "%arc.manageArcController%"
-      },
-      {
-        "command": "arc.manageMiaa",
-        "title": "%arc.manageMiaa%"
-      },
-      {
-        "command": "arc.managePostgres",
-        "title": "%arc.managePostgres%"
-      },
-      {
         "command": "arc.openDashboard",
         "title": "%arc.openDashboard%"
       },
@@ -69,22 +57,14 @@
       {
         "command": "arc.refresh",
         "title": "%command.refresh.title%"
+      },
+      {
+        "command": "arc.editConnection",
+        "title": "%command.editConnection.title%"
       }
     ],
     "menus": {
       "commandPalette": [
-        {
-          "command": "arc.manageArcController",
-          "when": "false"
-        },
-        {
-          "command": "arc.manageMiaa",
-          "when": "false"
-        },
-        {
-          "command": "arc.managePostgres",
-          "when": "false"
-        },
         {
           "command": "arc.openDashboard",
           "when": "false"
@@ -95,6 +75,10 @@
         },
         {
           "command": "arc.refresh",
+          "when": "false"
+        },
+        {
+          "command": "arc.editConnection",
           "when": "false"
         }
       ],
@@ -113,18 +97,23 @@
       "view/item/context": [
         {
           "command": "arc.openDashboard",
-          "when": "view == azureArc && viewItem != loading",
+          "when": "view == azureArc && viewItem",
           "group": "navigation@1"
         },
         {
-          "command": "arc.refresh",
+          "command": "arc.editConnection",
           "when": "view == azureArc && viewItem == dataControllers",
           "group": "navigation@2"
         },
         {
-          "command": "arc.removeController",
+          "command": "arc.refresh",
           "when": "view == azureArc && viewItem == dataControllers",
           "group": "navigation@3"
+        },
+        {
+          "command": "arc.removeController",
+          "when": "view == azureArc && viewItem == dataControllers",
+          "group": "navigation@4"
         }
       ]
     },
@@ -153,63 +142,45 @@
         "providers": [
           {
             "notebookWizard": {
-              "notebook": "./notebooks/arcDeployment/deploy.arc.control.plane.ipynb",
+              "notebook": "./notebooks/arcDeployment/deploy.arc.data.controller.ipynb",
               "type": "new-arc-control-plane",
-              "runNotebook": false,
+              "doneAction": {
+                "label": "%deploy.done.action%"
+              },
+              "scriptAction": {
+                "label": "%deploy.script.action%"
+              },
               "codeCellInsertionPosition": 5,
-              "actionText": "%deploy.arc.control.plane.action%",
-              "title": "%arc.control.plane.new.wizard.title%",
-              "name": "arc.control.plane.new.wizard",
+              "title": "%arc.data.controller.new.wizard.title%",
+              "name": "arc.data.controller.new.wizard",
               "labelPosition": "left",
               "generateSummaryPage": false,
               "pages": [
                 {
-                  "title": "%arc.control.plane.select.cluster.title%",
+                  "title": "%arc.data.controller.select.cluster.title%",
                   "sections": [
                     {
                       "fields": [
                         {
                           "type": "kube_cluster_context_picker",
-                          "label": "%arc.control.plane.kube.cluster.context%",
+                          "label": "%arc.data.controller.kube.cluster.context%",
                           "required": true,
                           "inputWidth": "350px",
                           "variableName": "AZDATA_NB_VAR_ARC_CLUSTER_CONTEXT",
                           "configFileVariableName": "AZDATA_NB_VAR_ARC_CONFIG_FILE"
                         }
                       ]
-                    },
-                    {
-                      "title": "%arc.control.plane.container.registry.title%",
-                      "fields": [
-                        {
-                          "label": "%arc.control.plane.container.registry.name%",
-                          "variableName": "AZDATA_NB_VAR_ARC_DOCKER_USERNAME",
-                          "type": "text",
-                          "required": true,
-                          "defaultValue": "22cda7bb-2eb1-419e-a742-8710c313fe79",
-                          "enabled": true
-                        },
-                        {
-                          "label": "%arc.control.plane.container.registry.password%",
-                          "variableName": "AZDATA_NB_VAR_ARC_DOCKER_PASSWORD",
-                          "type": "password",
-                          "userName": "docker",
-                          "confirmationRequired": false,
-                          "defaultValue": "",
-                          "required": true
-                        }
-                      ]
                     }
                   ]
                 },
                 {
-                  "title": "%arc.control.plane.cluster.config.profile.title%",
+                  "title": "%arc.data.controller.cluster.config.profile.title%",
                   "sections": [
                     {
                       "fields": [
                         {
                           "type": "options",
-                          "label": "%arc.control.plane.cluster.config.profile%",
+                          "label": "%arc.data.controller.cluster.config.profile%",
                           "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_PROFILE",
                           "editable": false,
@@ -218,6 +189,7 @@
                               "azure-arc-ake",
                               "azure-arc-aks-default-storage",
                               "azure-arc-aks-premium-storage",
+                              "azure-arc-aks-hci",
                               "azure-arc-azure-openshift",
                               "azure-arc-eks",
                               "azure-arc-kubeadm",
@@ -232,14 +204,14 @@
                   ]
                 },
                 {
-                  "title": "%arc.control.plane.data.controller.create.title%",
+                  "title": "%arc.data.controller.data.controller.create.title%",
                   "sections": [
                     {
-                      "title": "%arc.control.plane.project.details.title%",
+                      "title": "%arc.data.controller.project.details.title%",
                       "fields": [
                         {
                           "type": "readonly_text",
-                          "label": "%arc.control.plane.project.details.description%",
+                          "label": "%arc.data.controller.project.details.description%",
                           "labelWidth": "600px"
                         },
                         {
@@ -252,71 +224,69 @@
                       ]
                     },
                     {
-                      "title": "%arc.control.plane.data.controller.details.title%",
+                      "title": "%arc.data.controller.data.controller.details.title%",
                       "fields": [
                         {
                           "type": "readonly_text",
-                          "label": "%arc.control.plane.data.controller.details.description%",
+                          "label": "%arc.data.controller.data.controller.details.description%",
                           "labelWidth": "600px"
                         },
                         {
                           "type": "text",
-                          "label": "%arc.control.plane.arc.data.controller.namespace%",
+                          "label": "%arc.data.controller.arc.data.controller.namespace%",
                           "textValidationRequired": true,
-                          "textValidationRegex": "^[a-z0-9]([-a-z0-9]{0,11}[a-z0-9])?$",
-                          "textValidationDescription": "%arc.control.plane.arc.data.controller.namespace.validation.description%",
+                          "textValidationRegex": "^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$",
+                          "textValidationDescription": "%arc.data.controller.arc.data.controller.namespace.validation.description%",
                           "defaultValue": "arc",
                           "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE"
                         },
                         {
                           "type": "text",
-                          "label": "%arc.control.plane.arc.data.controller.name%",
+                          "label": "%arc.data.controller.arc.data.controller.name%",
                           "textValidationRequired": true,
-                          "textValidationRegex": "^[a-z0-9]([-a-z0-9]{0,11}[a-z0-9])?$",
-                          "textValidationDescription": "%arc.control.plane.arc.data.controller.name.validation.description%",
-                          "defaultValue": "arc-cp1",
+                          "textValidationRegex": "^[a-z0-9]([-.a-z0-9]{0,251}[a-z0-9])?$",
+                          "textValidationDescription": "%arc.data.controller.arc.data.controller.name.validation.description%",
+                          "defaultValue": "arc-dc",
                           "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME"
                         },
                         {
+                          "label": "%arc.storage-class.dc.label%",
+                          "description": "%arc.sql.storage-class.dc.description%",
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_STORAGE_CLASS",
+                          "type": "kube_storage_class",
+                          "required": true
+                        },
+                        {
                           "type": "azure_locations",
-                          "label": "%arc.control.plane.arc.data.controller.location%",
+                          "label": "%arc.data.controller.arc.data.controller.location%",
                           "defaultValue": "eastus",
                           "required": true,
                           "locationVariableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_LOCATION",
                           "displayLocationVariableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_DISPLAY_LOCATION",
                           "locations": [
+                            "australiaeast",
+                            "centralus",
                             "eastus",
                             "eastus2",
-                            "centralus",
-                            "westus2",
+                            "francecentral",
+                            "japaneast",
+                            "koreacentral",
+                            "northeurope",
                             "southeastasia",
-                            "westeurope"
+                            "uksouth",
+                            "westeurope",
+                            "westus2"
                           ]
-                        },
-                        {
-                          "type": "options",
-                          "label": "%arc.control.plane.arc.data.controller.connectivity.mode%",
-                          "options": {
-                            "values": [
-                              "Indirect",
-                              "Direct"
-                            ],
-                            "defaultValue": "Indirect",
-                            "optionsType": "radio"
-                          },
-                          "enabled": false,
-                          "required": true,
-                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE"
                         }
                       ]
                     },
                     {
-                      "title": "%arc.control.plane.admin.account.title%",
+                      "title": "%arc.data.controller.admin.account.title%",
                       "fields": [
                         {
-                          "label": "%arc.control.plane.admin.account.name%",
+                          "label": "%arc.data.controller.admin.account.name%",
                           "variableName": "AZDATA_NB_VAR_ARC_ADMIN_USERNAME",
                           "type": "text",
                           "required": true,
@@ -324,12 +294,12 @@
                           "enabled": true
                         },
                         {
-                          "label": "%arc.control.plane.admin.account.password%",
+                          "label": "%arc.data.controller.admin.account.password%",
                           "variableName": "AZDATA_NB_VAR_ARC_ADMIN_PASSWORD",
                           "type": "sql_password",
                           "userName": "arcadmin",
                           "confirmationRequired": true,
-                          "confirmationLabel": "%arc.control.plane.admin.account.confirm.password%",
+                          "confirmationLabel": "%arc.data.controller.admin.account.confirm.password%",
                           "defaultValue": "",
                           "required": true
                         }
@@ -338,7 +308,7 @@
                   ]
                 },
                 {
-                  "title": "%arc.control.plane.data.controller.create.summary.title%",
+                  "title": "%arc.data.controller.data.controller.create.summary.title%",
                   "isSummaryPage": true,
                   "fieldHeight": "16px",
                   "sections": [
@@ -354,7 +324,7 @@
                             {
                               "items": [
                                 {
-                                  "label": "%arc.control.plane.summary.arc.data.controller%",
+                                  "label": "%arc.data.controller.summary.arc.data.controller%",
                                   "type": "readonly_text",
                                   "enabled": true,
                                   "labelWidth": "185px"
@@ -364,7 +334,7 @@
                             {
                               "items": [
                                 {
-                                  "label": "%arc.control.plane.summary.estimated.cost.per.month%",
+                                  "label": "%arc.data.controller.summary.estimated.cost.per.month%",
                                   "type": "readonly_text",
                                   "enabled": true,
                                   "labelWidth": "190px",
@@ -381,7 +351,7 @@
                             {
                               "items": [
                                 {
-                                  "label": "%arc.control.plane.summary.arc.by.microsoft%",
+                                  "label": "%arc.data.controller.summary.arc.by.microsoft%",
                                   "type": "readonly_text",
                                   "labelWidth": "185px"
                                 }
@@ -390,7 +360,7 @@
                             {
                               "items": [
                                 {
-                                  "label": "%arc.control.plane.summary.free%",
+                                  "label": "%arc.data.controller.summary.free%",
                                   "type": "readonly_text",
                                   "enabled": true,
                                   "defaultValue": "",
@@ -408,10 +378,10 @@
                                   "label": "{0}",
                                   "type": "readonly_text",
                                   "enabled": true,
-                                  "labelWidth": "67px",
+                                  "labelWidth": "69px",
                                   "links": [
                                     {
-                                      "text": "%arc.control.plane.summary.arc.terms.of.use%",
+                                      "text": "%arc.data.controller.summary.arc.terms.of.use%",
                                       "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
                                     }
                                   ]
@@ -428,10 +398,10 @@
                                   "label": "{0}",
                                   "type": "readonly_text",
                                   "enabled": true,
-                                  "labelWidth": "102px",
+                                  "labelWidth": "100px",
                                   "links": [
                                     {
-                                      "text": "%arc.control.plane.summary.arc.terms.privacy.policy%",
+                                      "text": "%arc.data.controller.summary.arc.terms.privacy.policy%",
                                       "url": "https://go.microsoft.com/fwlink/?linkid=512132"
                                     }
                                   ]
@@ -443,17 +413,17 @@
                       ]
                     },
                     {
-                      "title": "%arc.control.plane.summary.terms%",
+                      "title": "%arc.data.controller.summary.terms%",
                       "fieldHeight": "88px",
                       "fields": [
                         {
-                          "label": "%arc.control.plane.summary.terms.description%",
+                          "label": "%arc.data.controller.summary.terms.description%",
                           "type": "readonly_text",
                           "enabled": true,
                           "labelWidth": "750px",
                           "links": [
                             {
-                              "text": "%arc.control.plane.summary.terms.link.text%",
+                              "text": "%arc.data.controller.summary.terms.link.text%",
                               "url": "https://go.microsoft.com/fwlink/?linkid=2045624"
                             }
                           ]
@@ -461,76 +431,64 @@
                       ]
                     },
                     {
-                      "title": "%arc.control.plane.summary.kubernetes%",
+                      "title": "%arc.data.controller.summary.kubernetes%",
                       "fields": [
                         {
-                          "label": "%arc.control.plane.summary.kube.config.file.path%",
+                          "label": "%arc.data.controller.summary.kube.config.file.path%",
                           "type": "readonly_text",
                           "isEvaluated": true,
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_CONFIG_FILE)"
                         },
                         {
-                          "label": "%arc.control.plane.summary.cluster.context%",
+                          "label": "%arc.data.controller.summary.cluster.context%",
                           "type": "readonly_text",
                           "isEvaluated": true,
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_CLUSTER_CONTEXT)"
                         },
                         {
-                          "label": "%arc.control.plane.summary.profile%",
+                          "label": "%arc.data.controller.summary.profile%",
                           "type": "readonly_text",
                           "isEvaluated": true,
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_PROFILE)"
                         },
                         {
-                          "label": "%arc.control.plane.summary.username%",
+                          "label": "%arc.data.controller.summary.username%",
                           "type": "readonly_text",
                           "isEvaluated": true,
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_ADMIN_USERNAME)"
-                        },
-                        {
-                          "label": "%arc.control.plane.summary.docker.username%",
-                          "type": "readonly_text",
-                          "isEvaluated": true,
-                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DOCKER_USERNAME)"
                         }
                       ]
                     },
                     {
-                      "title": "%arc.control.plane.summary.azure%",
+                      "title": "%arc.data.controller.summary.azure%",
                       "fields": [
                         {
-                          "label": "%arc.control.plane.summary.data.controller.namespace%",
+                          "label": "%arc.data.controller.summary.data.controller.namespace%",
                           "type": "readonly_text",
                           "isEvaluated": true,
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE)"
                         },
                         {
-                          "label": "%arc.control.plane.summary.data.controller.name%",
+                          "label": "%arc.data.controller.summary.data.controller.name%",
                           "type": "readonly_text",
                           "isEvaluated": true,
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME)"
                         },
                         {
-                          "label": "%arc.control.plane.summary.data.controller.connectivity.mode%",
-                          "type": "readonly_text",
-                          "isEvaluated": true,
-                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE)"
-                        },
-                        {
-                          "label": "%arc.control.plane.summary.subscription%",
+                          "label": "%arc.data.controller.summary.subscription%",
                           "type": "readonly_text",
                           "isEvaluated": true,
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_DISPLAY_SUBSCRIPTION)",
                           "inputWidth": "600"
                         },
                         {
-                          "label": "%arc.control.plane.summary.resource.group%",
+                          "label": "%arc.data.controller.summary.resource.group%",
                           "type": "readonly_text",
                           "isEvaluated": true,
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_RESOURCE_GROUP)"
                         },
                         {
-                          "label": "%arc.control.plane.summary.location%",
+                          "label": "%arc.data.controller.summary.location%",
                           "type": "readonly_text",
                           "isEvaluated": true,
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_DISPLAY_LOCATION)"
@@ -547,25 +505,12 @@
               },
               {
                 "name": "azdata",
-                "version": "20.1.0"
+                "version": "20.2.0"
               }
             ],
             "when": true
           }
-        ],
-        "agreement": {
-          "template": "%arc.control.plane.arc.data.controller.agreement%",
-          "links": [
-            {
-              "text": "%microsoft.agreement.privacy.statement%",
-              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
-            },
-            {
-              "text": "%arc.agreement.azdata.eula%",
-              "url": "https://aka.ms/eula-azdata-en"
-            }
-          ]
-        }
+        ]
       },
       {
         "name": "arc.sql",
@@ -576,48 +521,68 @@
           "light": "./images/miaa.svg",
           "dark": "./images/miaa.svg"
         },
-        "options": [
-          {
-            "name": "resourceType",
-            "displayName": "%resource.type.picker.display.name%",
-            "values": [
-              {
-                "name": "sql.managed.instance",
-                "displayName": "%sql.managed.instance.display.name%"
-              }
-            ]
-          }
-        ],
         "providers": [
           {
-            "dialog": {
+            "notebookWizard": {
               "notebook": "./notebooks/arcDeployment/deploy.sql.existing.arc.ipynb",
-              "runNotebook": true,
-              "taskName": "%arc.sql.new.dialog.title%",
-              "actionText": "%arc.deploy.action%",
-              "title": "%arc.sql.new.dialog.title%",
-              "name": "arc.sql.new.dialog",
-              "tabs": [
+              "doneAction": {
+                "label": "%deploy.done.action%"
+              },
+              "scriptAction": {
+                "label": "%deploy.script.action%"
+              },
+              "codeCellInsertionPosition": 5,
+              "title": "%arc.sql.wizard.title%",
+              "name": "arc.sql.wizard",
+              "labelPosition": "left",
+              "generateSummaryPage": false,
+              "pages": [
                 {
-                  "title": "",
+                  "title": "%arc.sql.wizard.page1.title%",
+                  "labelWidth": "175px",
+                  "inputWidth": "280px",
                   "sections": [
                     {
-                      "title": "%arc.sql.settings.section.title%",
+                      "title": "%arc.sql.connection.settings.section.title%",
                       "fields": [
+                        {
+                          "label": "%arc.controller%",
+                          "variableName": "",
+                          "type": "options",
+                          "editable": false,
+                          "required": true,
+                          "options": {
+                            "source": {
+                              "type": "ArcControllersOptionsSource",
+                              "variableNames": {
+                                "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
+                                "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
+                                "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
+                              }
+                            },
+                            "optionsType": "dropdown"
+                          }
+                        },
                         {
                           "label": "%arc.sql.instance.name%",
                           "variableName": "AZDATA_NB_VAR_SQL_INSTANCE_NAME",
                           "type": "text",
                           "defaultValue": "sqlinstance1",
+                          "description": "%arc.sql.invalid.instance.name%",
                           "required": true,
-                          "labelWidth": "100%"
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^[a-z]([-a-z0-9]{0,11}[a-z0-9])?$",
+                          "textValidationDescription": "%arc.sql.invalid.instance.name%"
                         },
                         {
                           "label": "%arc.sql.username%",
                           "variableName": "AZDATA_NB_VAR_SQL_USERNAME",
                           "type": "text",
-                          "defaultValue": "sa",
-                          "enabled": false
+                          "description": "%arc.sql.invalid.username%",
+                          "required": true,
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^(?!sa$)",
+                          "textValidationDescription": "%arc.sql.invalid.username%"
                         },
                         {
                           "label": "%arc.password%",
@@ -628,6 +593,57 @@
                           "confirmationLabel": "%arc.confirm.password%",
                           "defaultValue": "",
                           "required": true
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%arc.sql.instance.settings.section.title%",
+                      "fields": [
+                        {
+                          "label": "%arc.storage-class.data.label%",
+                          "description": "%arc.sql.storage-class.data.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_DATA",
+                          "type": "kube_storage_class",
+                          "required": true
+                        },
+                        {
+                          "label": "%arc.storage-class.logs.label%",
+                          "description": "%arc.sql.storage-class.logs.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_LOGS",
+                          "type": "kube_storage_class",
+                          "required": true
+                        },
+                        {
+                          "label": "%arc.cores-request.label%",
+                          "description": "%arc.sql.cores-request.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
+                          "type": "number",
+                          "min": 1,
+                          "required": false
+                        },
+                        {
+                          "label": "%arc.cores-limit.label%",
+                          "description": "%arc.sql.cores-limit.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
+                          "type": "number",
+                          "min": 1,
+                          "required": false
+                        },
+                        {
+                          "label": "%arc.memory-request.label%",
+                          "description": "%arc.sql.memory-request.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
+                          "type": "number",
+                          "min": 2,
+                          "required": false
+                        },
+                        {
+                          "label": "%arc.memory-limit.label%",
+                          "description": "%arc.sql.memory-limit.description%",
+                          "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
+                          "type": "number",
+                          "min": 2,
+                          "required": false
                         }
                       ]
                     }
@@ -641,10 +657,10 @@
               },
               {
                 "name": "azdata",
-                "version": "20.1.0"
+                "version": "20.2.0"
               }
             ],
-            "when": "resourceType=sql.managed.instance"
+            "when": "true"
           }
         ],
         "agreement": {
@@ -657,10 +673,6 @@
             {
               "text": "%arc.agreement.sql.terms.conditions%",
               "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
-            },
-            {
-              "text": "%arc.agreement.azdata.eula%",
-              "url": "https://aka.ms/eula-azdata-en"
             }
           ]
         }
@@ -674,42 +686,56 @@
           "light": "./images/postgres.svg",
           "dark": "./images/postgres.svg"
         },
-        "options": [
-          {
-            "name": "resourceType",
-            "displayName": "%resource.type.picker.display.name%",
-            "values": [
-              {
-                "name": "postgres",
-                "displayName": "%postgres.server.group.display.name%"
-              }
-            ]
-          }
-        ],
         "providers": [
           {
-            "dialog": {
+            "notebookWizard": {
               "notebook": "./notebooks/arcDeployment/deploy.postgres.existing.arc.ipynb",
-              "runNotebook": true,
-              "taskName": "%arc.postgres.new.dialog.title%",
-              "actionText": "%arc.deploy.action%",
-              "title": "%arc.postgres.new.dialog.title%",
-              "name": "arc.postgres.new.dialog",
-              "tabs": [
+              "doneAction": {
+                "label": "%deploy.done.action%"
+              },
+              "scriptAction": {
+                "label": "%deploy.script.action%"
+              },
+              "codeCellInsertionPosition": 5,
+              "title": "%arc.postgres.wizard.title%",
+              "name": "arc.postgres.wizard",
+              "labelPosition": "left",
+              "generateSummaryPage": false,
+              "pages": [
                 {
-                  "title": "",
+                  "title": "%arc.postgres.wizard.page1.title%",
+                  "labelWidth": "205px",
+                  "inputWidth": "280px",
                   "sections": [
                     {
                       "title": "%arc.postgres.settings.section.title%",
                       "fields": [
                         {
+                          "label": "%arc.controller%",
+                          "variableName": "",
+                          "type": "options",
+                          "editable": false,
+                          "required": true,
+                          "options": {
+                            "source": {
+                              "type": "ArcControllersOptionsSource",
+                              "variableNames": {
+                                "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
+                                "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
+                                "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
+                              }
+                            },
+                            "optionsType": "dropdown"
+                          }
+                        },
+                        {
                           "label": "%arc.postgres.server.group.name%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_NAME",
                           "type": "text",
+                          "description": "%arc.postgres.server.group.name.validation.description%",
                           "textValidationRequired": true,
-                          "textValidationRegex": "^[a-z]([-a-z0-9]{0,8}[a-z0-9])?$",
+                          "textValidationRegex": "^[a-z]([-a-z0-9]{0,10}[a-z0-9])?$",
                           "textValidationDescription": "%arc.postgres.server.group.name.validation.description%",
-                          "defaultValue": "postgres1",
                           "required": true
                         },
                         {
@@ -722,11 +748,12 @@
                           "required": true
                         },
                         {
-                          "label": "%arc.postgres.server.group.workers%",
+                          "label": "%arc.postgres.server.group.workers.label%",
+                          "description": "%arc.postgres.server.group.workers.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS",
                           "type": "number",
-                          "defaultValue": "1",
-                          "min": 1
+                          "defaultValue": "0",
+                          "min": 0
                         },
                         {
                           "label": "%arc.postgres.server.group.port%",
@@ -735,35 +762,102 @@
                           "defaultValue": "5432",
                           "min": 1,
                           "max": 65535
+                        },
+                        {
+                          "label": "%arc.postgres.server.group.engine.version%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_ENGINE_VERSION",
+                          "type": "options",
+                          "options" : ["11","12"],
+                          "defaultValue": "12"
+                        },
+                        {
+                          "label": "%arc.postgres.server.group.extensions.label%",
+                          "description": "%arc.postgres.server.group.extensions.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_EXTENSIONS",
+                          "type": "text"
                         }
                       ]
                     },
                     {
-                      "title": "%arc.postgres.settings.scheduling.title%",
+                      "title": "%arc.postgres.settings.storage.title%",
                       "fields": [
                         {
-                          "label": "%arc.postgres.server.group.cores.request%",
+                          "label": "%arc.storage-class.data.label%",
+                          "description": "%arc.postgres.storage-class.data.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_STORAGE_CLASS_DATA",
+                          "type": "kube_storage_class",
+                          "required": true
+                        },
+                        {
+                          "label": "%arc.postgres.server.group.volume.size.data.label%",
+                          "description": "%arc.postgres.server.group.volume.size.data.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_VOLUME_SIZE_DATA",
+                          "type": "number",
+                          "defaultValue": "5",
+                          "min": 1
+                        },
+                        {
+                          "label": "%arc.storage-class.logs.label%",
+                          "description": "%arc.postgres.storage-class.logs.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_STORAGE_CLASS_LOGS",
+                          "type": "kube_storage_class",
+                          "required": true
+                        },
+                        {
+                          "label": "%arc.postgres.server.group.volume.size.logs.label%",
+                          "description": "%arc.postgres.server.group.volume.size.logs.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_VOLUME_SIZE_LOGS",
+                          "type": "number",
+                          "defaultValue": "5",
+                          "min": 1
+                        },
+                        {
+                          "label": "%arc.storage-class.backups.label%",
+                          "description": "%arc.postgres.storage-class.backups.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_STORAGE_CLASS_BACKUPS",
+                          "type": "kube_storage_class",
+                          "required": true
+                        },
+                        {
+                          "label": "%arc.postgres.server.group.volume.size.backups.label%",
+                          "description": "%arc.postgres.server.group.volume.size.backups.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_VOLUME_SIZE_BACKUPS",
+                          "type": "number",
+                          "defaultValue": "5",
+                          "min": 1
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%arc.postgres.settings.resource.title%",
+                      "fields": [
+                        {
+                          "label": "%arc.postgres.server.group.cores.request.label%",
+                          "description": "%arc.postgres.server.group.cores.request.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_REQUEST",
                           "type": "number",
-                          "min": 0
+                          "min": 1
                         },
                         {
-                          "label": "%arc.postgres.server.group.cores.limit%",
+                          "label": "%arc.postgres.server.group.cores.limit.label%",
+                          "description": "%arc.postgres.server.group.cores.limit.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_LIMIT",
                           "type": "number",
-                          "min": 0
+                          "min": 1
                         },
                         {
-                          "label": "%arc.postgres.server.group.memory.request%",
+                          "label": "%arc.postgres.server.group.memory.request.label%",
+                          "description": "%arc.postgres.server.group.memory.request.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_REQUEST",
                           "type": "number",
-                          "min": 0
+                          "min": 0.25
                         },
                         {
-                          "label": "%arc.postgres.server.group.memory.limit%",
+                          "label": "%arc.postgres.server.group.memory.limit.label%",
+                          "description": "%arc.postgres.server.group.memory.limit.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_LIMIT",
                           "type": "number",
-                          "min": 0
+                          "min": 0.25
                         }
                       ]
                     }
@@ -773,14 +867,14 @@
             },
             "requiredTools": [
               {
-                "name": "azure-cli"
+                "name": "kubectl"
               },
               {
                 "name": "azdata",
-                "version": "20.1.0"
+                "version": "20.2.0"
               }
             ],
-            "when": "resourceType=postgres"
+            "when": "true"
           }
         ],
         "agreement": {
@@ -793,10 +887,6 @@
             {
               "text": "%arc.agreement.postgres.terms.conditions%",
               "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
-            },
-            {
-              "text": "%arc.agreement.azdata.eula%",
-              "url": "https://aka.ms/eula-azdata-en"
             }
           ]
         }
@@ -805,6 +895,7 @@
   },
   "dependencies": {
     "request": "^2.88.0",
+    "uuid": "^8.3.0",
     "vscode-nls": "^4.1.2"
   },
   "devDependencies": {
@@ -812,6 +903,7 @@
     "@types/node": "^12.11.7",
     "@types/request": "^2.48.3",
     "@types/sinon": "^9.0.4",
+    "@types/uuid": "^8.3.0",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",

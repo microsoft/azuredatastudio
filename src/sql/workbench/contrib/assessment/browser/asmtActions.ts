@@ -36,6 +36,7 @@ export interface IAssessmentComponent {
 	stopProgress(mode: AssessmentType): any;
 	recentResult: SqlAssessmentResultInfo;
 	isActive: boolean;
+	isBusy: boolean;
 }
 
 
@@ -61,7 +62,7 @@ abstract class AsmtServerAction extends Action {
 
 	public async run(context: IAsmtActionInfo): Promise<boolean> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, this.id);
-		if (context && context.component) {
+		if (context && context.component && !context.component.isBusy) {
 			context.component.showProgress(this.asmtType);
 			let serverResults = this.getServerItems(context.ownerUri);
 			let connectionUri: string = this._connectionManagement.getConnectionUriFromId(context.connectionId);
@@ -138,7 +139,7 @@ export class AsmtDatabaseSelectItemsAction extends Action {
 
 	public async run(context: IAsmtActionInfo): Promise<boolean> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, this.id);
-		if (context && context.component) {
+		if (context && context.component && !context.component.isBusy) {
 			context.component.showProgress(AssessmentType.AvailableRules);
 			let dbAsmtResults = await this._assessmentService.getAssessmentItems(context.ownerUri, AssessmentTargetType.Database);
 			context.component.showInitialResults(dbAsmtResults, AssessmentType.AvailableRules);
@@ -186,7 +187,7 @@ export class AsmtDatabaseInvokeItemsAction extends Action {
 
 	public async run(context: IAsmtActionInfo): Promise<boolean> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, this.id);
-		if (context && context.component) {
+		if (context && context.component && !context.component.isBusy) {
 			context.component.showProgress(AssessmentType.InvokeAssessment);
 			let dbAsmtResults = await this._assessmentService.assessmentInvoke(context.ownerUri, AssessmentTargetType.Database);
 			context.component.showInitialResults(dbAsmtResults, AssessmentType.InvokeAssessment);
@@ -241,7 +242,7 @@ export class AsmtSamplesLinkAction extends Action {
 
 export class AsmtGenerateHTMLReportAction extends Action {
 	public static readonly ID = 'asmtaction.generatehtmlreport';
-	public static readonly LABEL = nls.localize('asmtaction.generatehtmlreport', "Make HTML Report");
+	public static readonly LABEL = nls.localize('asmtaction.generatehtmlreport', "Create HTML Report");
 	public static readonly ICON = 'bookreport';
 
 	constructor(
@@ -294,7 +295,7 @@ export class AsmtGenerateHTMLReportAction extends Action {
 	}
 }
 
-function generateReportFileName(resultDate): string {
+function generateReportFileName(resultDate: Date): string {
 	const datetime = `${resultDate.toISOString().replace(/-/g, '').replace('T', '').replace(/:/g, '').split('.')[0]}`;
 	return `SqlAssessmentReport_${datetime}.html`;
 

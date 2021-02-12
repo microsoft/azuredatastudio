@@ -6,6 +6,8 @@
 export const extensionConfigSectionName = 'azure';
 export const ViewType = 'view';
 
+export const dataGridProviderId = 'azure-resources';
+
 export enum BuiltInCommands {
 	SetContext = 'setContext'
 }

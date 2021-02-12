@@ -39,6 +39,7 @@ export interface IQueryManagementService {
 	isProviderRegistered(providerId: string): boolean;
 	getRegisteredProviders(): string[];
 	registerRunner(runner: QueryRunner, uri: string): void;
+	getRunner(uri: string): QueryRunner | undefined;
 
 	cancelQuery(ownerUri: string): Promise<QueryCancelResult>;
 	runQuery(ownerUri: string, range?: IRange, runOptions?: ExecutionPlanOptions): Promise<void>;
@@ -136,6 +137,10 @@ export class QueryManagementService implements IQueryManagementService {
 		if (!runner.hasCompleted) {
 			this._queryRunners.set(uri, runner);
 		}
+	}
+
+	public getRunner(uri: string): QueryRunner | undefined {
+		return this._queryRunners.get(uri);
 	}
 
 	// Handles logic to run the given handlerCallback at the appropriate time. If the given runner is

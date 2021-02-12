@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { IModelService } from 'vs/editor/common/services/modelService';
@@ -15,22 +15,22 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export class DashboardInput extends EditorInput {
 
-	private _uri: string;
+	private _uri?: string;
 	public static ID: string = 'workbench.editorinputs.connectiondashboardinputs';
 	public static SCHEMA: string = 'sqldashboard';
 
 	private _initializedPromise: Thenable<void>;
-	private _onConnectionChanged: IDisposable;
+	private _onConnectionChanged?: IDisposable;
 
 	public get initializedPromise(): Thenable<void> {
 		return this._initializedPromise;
 	}
 
-	private _uniqueSelector: string;
+	private _uniqueSelector?: string;
 
 	public hasBootstrapped = false;
 	// Holds the HTML content for the editor when the editor discards this input and loads another
-	private _parentContainer: HTMLElement;
+	private _parentContainer?: HTMLElement;
 
 	constructor(
 		_connectionProfile: IConnectionProfile,
@@ -95,10 +95,10 @@ export class DashboardInput extends EditorInput {
 
 	private isMasterMssql(): boolean {
 		return this.connectionProfile.providerName === mssqlProviderName
-			&& this.connectionProfile.databaseName.toLowerCase() === 'master';
+			&& this.connectionProfile.databaseName?.toLowerCase() === 'master';
 	}
 
-	public get uri(): string {
+	public get uri(): string | undefined {
 		return this._uri;
 	}
 
@@ -107,7 +107,7 @@ export class DashboardInput extends EditorInput {
 		if (this._onConnectionChanged) {
 			this._onConnectionChanged.dispose();
 		}
-		this._connectionService.disconnect(this._uri);
+		this._connectionService.disconnect(this._uri!);
 		super.dispose();
 	}
 
@@ -119,16 +119,15 @@ export class DashboardInput extends EditorInput {
 		const parentNode = this._parentContainer.parentNode;
 		if (parentNode) {
 			parentNode.removeChild(this._parentContainer);
-			this._parentContainer = null;
 		}
 	}
 
-	set container(container: HTMLElement) {
+	set container(container: HTMLElement | undefined) {
 		this._disposeContainer();
 		this._parentContainer = container;
 	}
 
-	get container(): HTMLElement {
+	get container(): HTMLElement | undefined {
 		return this._parentContainer;
 	}
 
@@ -137,18 +136,14 @@ export class DashboardInput extends EditorInput {
 	}
 
 	public get connectionProfile(): IConnectionProfile {
-		return this._connectionService.getConnectionProfile(this._uri);
-	}
-
-	public resolve(refresh?: boolean): Promise<EditorModel> {
-		return undefined;
+		return this._connectionService.getConnectionProfile(this._uri!);
 	}
 
 	public get hasInitialized(): boolean {
 		return !!this._uniqueSelector;
 	}
 
-	public get uniqueSelector(): string {
+	public get uniqueSelector(): string | undefined {
 		return this._uniqueSelector;
 	}
 
@@ -168,6 +163,6 @@ export class DashboardInput extends EditorInput {
 	}
 
 	public get tabColor(): string {
-		return this._connectionService.getTabColorForUri(this.uri);
+		return this._connectionService.getTabColorForUri(this.uri!);
 	}
 }

@@ -6,8 +6,8 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as http from 'http';
 import * as net from 'net';
-import * as os from 'os';
 import * as url from 'url';
+// import { performance } from 'perf_hooks';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { Disposable, toDisposable } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -21,17 +21,16 @@ import { ExtensionHostConnection } from 'vs/server/extensionHostConnection';
 import { ManagementConnection } from 'vs/server/remoteExtensionManagement';
 import { createRemoteURITransformer } from 'vs/server/remoteUriTransformer';
 import { ILogService, LogLevel, AbstractLogService, DEFAULT_LOG_LEVEL, MultiplexLogService, getLogLevel } from 'vs/platform/log/common/log';
-import { Schemas } from 'vs/base/common/network';
-import { getPathFromAmdModule } from 'vs/base/common/amd';
+import { FileAccess, Schemas } from 'vs/base/common/network';
 import product from 'vs/platform/product/common/product';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { ConfigurationService } from 'vs/platform/configuration/common/configurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IRequestService } from 'vs/platform/request/common/request';
 import { RequestService } from 'vs/platform/request/node/requestService';
-import { NullTelemetryService, ITelemetryAppender, NullAppender, combinedAppender, LogAppender } from 'vs/platform/telemetry/common/telemetryUtils';
+import { NullTelemetryService, ITelemetryAppender, NullAppender } from 'vs/platform/telemetry/common/telemetryUtils';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IExtensionGalleryService, IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
@@ -64,11 +63,25 @@ import { IURITransformer } from 'vs/base/common/uriIpc';
 import { WebClientServer, serveError, serveFile } from 'vs/server/webClientServer';
 import { URI } from 'vs/base/common/uri';
 import { isEqualOrParent } from 'vs/base/common/extpath';
-import { ServerEnvironmentService } from 'vs/server/remoteExtensionHostAgent';
+import { ServerEnvironmentService, ServerParsedArgs } from 'vs/server/serverEnvironmentService';
 import { basename, dirname, join } from 'vs/base/common/path';
-import { assertIsDefined } from 'vs/base/common/types';
+import { REMOTE_TERMINAL_CHANNEL_NAME } from 'vs/workbench/contrib/terminal/common/remoteTerminalChannel';
+import { RemoteTerminalChannel } from 'vs/server/remoteTerminalChannel';
+//import { LoaderStats } from 'vs/base/common/amd';
+import { SpdLogService } from 'vs/platform/log/node/spdlogService';
+import { RemoteExtensionLogFileName } from 'vs/workbench/services/remote/common/remoteAgentService';
 
 const SHUTDOWN_TIMEOUT = 5 * 60 * 1000;
+const license = `
+
+*
+* Visual Studio Code Server
+*
+* Reminder: You may only use this software with Visual Studio family products,
+* as described in the license https://aka.ms/vscode-remote/license
+*
+
+`;
 
 const eventPrefix = 'monacoworkbench';
 
@@ -192,28 +205,36 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 	private shutdownTimer: NodeJS.Timer | undefined;
 
 	constructor(
-		private readonly _connectionToken: string,
 		private readonly _environmentService: ServerEnvironmentService,
-		logService: ILogService
+		private readonly _connectionToken: string,
+		private readonly _connectionTokenIsMandatory: boolean,
+		hasWebClient: boolean,
+		REMOTE_DATA_FOLDER: string
 	) {
 		super();
+
+		const logService = getOrCreateSpdLogService(this._environmentService);
+		logService.trace(`Remote configuration data at ${REMOTE_DATA_FOLDER}`);
+		logService.trace('process arguments:', this._environmentService.args);
+		logService.info(license);
+
 		this._logService = new MultiplexLogService([new ServerLogService(getLogLevel(this._environmentService)), logService]);
 		this._socketServer = new SocketServer<RemoteAgentConnectionContext>();
 		this._uriTransformerCache = Object.create(null);
 		this._extHostConnections = Object.create(null);
 		this._managementConnections = Object.create(null);
 
-		const webRootFile = getPathFromAmdModule(require, 'vs/code/browser/workbench/workbench.html');
-		if (fs.existsSync(webRootFile)) {
+		if (hasWebClient) {
 			this._webClientServer = new WebClientServer(this._connectionToken, this._environmentService, this._logService);
 		} else {
 			this._webClientServer = null;
 		}
+		this._logService.info(`Extension host agent started.`);
 	}
 
-	public async start(listenOptions: ServerListenOptions) {
+	public async initialize(): Promise<void> {
 		await this._createServices();
-		return this._start(listenOptions);
+		setTimeout(() => this._cleanupOlderLogs(this._environmentService.logsPath).then(null, err => this._logService.error(err)), 10000);
 	}
 
 	private async _createServices(): Promise<void> {
@@ -227,6 +248,8 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		this._socketServer.registerChannel('logger', new LoggerChannel(this._logService));
 
 		services.set(IEnvironmentService, this._environmentService);
+		services.set(INativeEnvironmentService, this._environmentService);
+
 		services.set(ILogService, this._logService);
 		services.set(IProductService, { _serviceBrand: undefined, ...product });
 
@@ -241,13 +264,13 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		let appInsightsAppender: ITelemetryAppender | null = NullAppender;
 		if (!this._environmentService.args['disable-telemetry'] && product.enableTelemetry) {
 			if (product.aiConfig && product.aiConfig.asimovKey) {
-				appInsightsAppender = new AppInsightsAppender(eventPrefix, null, product.aiConfig.asimovKey, this._logService);
+				appInsightsAppender = new AppInsightsAppender(eventPrefix, null, product.aiConfig.asimovKey);
 				this._register(toDisposable(() => appInsightsAppender!.flush())); // Ensure the AI appender is disposed so that it flushes remaining data
 			}
 
 			const machineId = await getMachineId();
 			const config: ITelemetryServiceConfig = {
-				appender: combinedAppender(appInsightsAppender, new LogAppender(this._logService)),
+				appender: appInsightsAppender,
 				commonProperties: resolveCommonProperties(product.commit, product.version + '-remote', machineId, product.msftInternalDomains, this._environmentService.installSourcePath, 'remoteAgent'),
 				piiPaths: [this._environmentService.appRoot]
 			};
@@ -268,8 +291,10 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		services.set(ILocalizationsService, instantiationService.createInstance(LocalizationsService));
 
 		instantiationService.invokeFunction(accessor => {
-			const remoteExtensionEnvironmentChannel = new RemoteAgentEnvironmentChannel(this._connectionToken, this._environmentService, this._logService, accessor.get(ITelemetryService), appInsightsAppender);
+			const remoteExtensionEnvironmentChannel = new RemoteAgentEnvironmentChannel(this._connectionToken, this._environmentService, instantiationService, this._logService, accessor.get(ITelemetryService), appInsightsAppender);
 			this._socketServer.registerChannel('remoteextensionsenvironment', remoteExtensionEnvironmentChannel);
+
+			this._socketServer.registerChannel(REMOTE_TERMINAL_CHANNEL_NAME, new RemoteTerminalChannel(this._logService, this._environmentService));
 
 			const remoteFileSystemChannel = new RemoteAgentFileSystemChannel(this._logService, this._environmentService);
 			this._socketServer.registerChannel(REMOTE_FILE_SYSTEM_CHANNEL_NAME, remoteFileSystemChannel);
@@ -294,162 +319,126 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		return this._uriTransformerCache[remoteAuthority];
 	}
 
-	private async _start(listenOptions: ServerListenOptions) {
-		if (typeof listenOptions.port === 'number') {
-			const ifaces = os.networkInterfaces();
-			const logService = this._logService;
-			Object.keys(ifaces).forEach(function (ifname) {
-				ifaces[ifname].forEach(function (iface) {
-					if (!iface.internal && iface.family === 'IPv4') {
-						console.log(`IP Address: ${iface.address}`);
-						logService.trace(`IP Address: ${iface.address}`);
-					}
-				});
-			});
+	public async handleRequest(req: http.IncomingMessage, res: http.ServerResponse) {
+		// Only serve GET requests
+		if (req.method !== 'GET') {
+			return serveError(req, res, 405, `Unsupported method ${req.method}`);
 		}
 
-		setTimeout(() => this._cleanupOlderLogs(this._environmentService.logsPath).then(null, err => this._logService.error(err)), 10000);
+		if (!req.url) {
+			return serveError(req, res, 400, `Bad request.`);
+		}
 
-		const server = http.createServer(async (req: http.IncomingMessage, res: http.ServerResponse) => {
+		const parsedUrl = url.parse(req.url, true);
+		const pathname = parsedUrl.pathname;
 
-			// Only serve GET requests
-			if (req.method !== 'GET') {
-				return serveError(req, res, 405, `Unsupported method ${req.method}`);
+		if (!pathname) {
+			return serveError(req, res, 400, `Bad request.`);
+		}
+
+		// Version
+		if (pathname === '/version') {
+			res.writeHead(200, { 'Content-Type': 'text/plain' });
+			return res.end(product.commit || '');
+		}
+
+		// Delay shutdown
+		if (pathname === '/delay-shutdown') {
+			this._delayShutdown();
+			res.writeHead(200);
+			return res.end('OK');
+		}
+
+		if (pathname === '/vscode-remote-resource') {
+			// Handle HTTP requests for resources rendered in the rich client (images, fonts, etc.)
+			// These resources could be files shipped with extensions or even workspace files.
+			if (parsedUrl.query['tkn'] !== this._connectionToken) {
+				return serveError(req, res, 403, `Forbidden.`);
 			}
 
-			if (!req.url) {
+			const desiredPath = parsedUrl.query['path'];
+			if (typeof desiredPath !== 'string') {
 				return serveError(req, res, 400, `Bad request.`);
 			}
 
-			const parsedUrl = url.parse(req.url, true);
-			const pathname = parsedUrl.pathname;
-
-			if (!pathname) {
+			let filePath: string;
+			try {
+				filePath = URI.from({ scheme: Schemas.file, path: desiredPath }).fsPath;
+			} catch (err) {
 				return serveError(req, res, 400, `Bad request.`);
 			}
 
-			// Version
-			if (pathname === '/version') {
-				res.writeHead(200, { 'Content-Type': 'text/plain' });
-				return res.end(product.commit || '');
-			}
-
-			// Delay shutdown
-			if (pathname === '/delay-shutdown') {
-				this._delayShutdown();
-				res.writeHead(200);
-				return res.end('OK');
-			}
-
-			if (pathname === '/vscode-remote-resource') {
-				// Handle HTTP requests for resources rendered in the rich client (images, fonts, etc.)
-				// These resources could be files shipped with extensions or even workspace files.
-				if (parsedUrl.query['tkn'] !== this._connectionToken) {
-					return serveError(req, res, 403, `Forbidden.`);
-				}
-
-				const desiredPath = parsedUrl.query['path'];
-				if (typeof desiredPath !== 'string') {
-					return serveError(req, res, 400, `Bad request.`);
-				}
-
-				let filePath: string;
-				try {
-					filePath = URI.from({ scheme: Schemas.file, path: desiredPath }).fsPath;
-				} catch (err) {
-					return serveError(req, res, 400, `Bad request.`);
-				}
-
-				const responseHeaders: Record<string, string> = Object.create(null);
-				if (this._environmentService.isBuilt) {
-					if (isEqualOrParent(filePath, this._environmentService.builtinExtensionsPath, !platform.isLinux)
-						|| isEqualOrParent(filePath, this._environmentService.extensionsPath, !platform.isLinux)
-					) {
-						responseHeaders['Cache-Control'] = 'public, max-age=31536000';
-					}
-				}
-				return serveFile(this._logService, req, res, filePath, responseHeaders);
-			}
-
-			// workbench web UI
-			if (this._webClientServer) {
-				this._webClientServer.handle(req, res, parsedUrl);
-				return;
-			}
-
-			res.writeHead(404, { 'Content-Type': 'text/plain' });
-			return res.end('Not found');
-		});
-		server.on('upgrade', (req: http.IncomingMessage, socket: net.Socket) => {
-			if (req.headers['upgrade'] !== 'websocket') {
-				socket.end('HTTP/1.1 400 Bad Request');
-				return;
-			}
-
-			// https://tools.ietf.org/html/rfc6455#section-4
-			const requestNonce = req.headers['sec-websocket-key'];
-			const hash = crypto.createHash('sha1');
-			hash.update(requestNonce + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11');
-			const responseNonce = hash.digest('base64');
-
-			const responseHeaders = [
-				`HTTP/1.1 101 Switching Protocols`,
-				`Upgrade: websocket`,
-				`Connection: Upgrade`,
-				`Sec-WebSocket-Accept: ${responseNonce}`
-			];
-			socket.write(responseHeaders.join('\r\n') + '\r\n\r\n');
-
-			// Never timeout this socket due to inactivity!
-			socket.setTimeout(0);
-			// Finally!
-			let reconnectionToken = generateUuid();
-			let isReconnection = false;
-			let skipWebSocketFrames = false;
-
-			if (req.url) {
-				const query = url.parse(req.url, true).query;
-				if (typeof query.reconnectionToken === 'string') {
-					reconnectionToken = query.reconnectionToken;
-				}
-				if (query.reconnection === 'true') {
-					isReconnection = true;
-				}
-				if (query.skipWebSocketFrames === 'true') {
-					skipWebSocketFrames = true;
+			const responseHeaders: Record<string, string> = Object.create(null);
+			if (this._environmentService.isBuilt) {
+				if (isEqualOrParent(filePath, this._environmentService.builtinExtensionsPath, !platform.isLinux)
+					|| isEqualOrParent(filePath, this._environmentService.extensionsPath, !platform.isLinux)
+				) {
+					responseHeaders['Cache-Control'] = 'public, max-age=31536000';
 				}
 			}
+			return serveFile(this._logService, req, res, filePath, responseHeaders);
+		}
 
-			if (skipWebSocketFrames) {
-				this._handleWebSocketConnection(new NodeSocket(socket), isReconnection, reconnectionToken);
-			} else {
-				this._handleWebSocketConnection(new WebSocketNodeSocket(new NodeSocket(socket)), isReconnection, reconnectionToken);
+		// workbench web UI
+		if (this._webClientServer) {
+			this._webClientServer.handle(req, res, parsedUrl);
+			return;
+		}
+
+		res.writeHead(404, { 'Content-Type': 'text/plain' });
+		return res.end('Not found');
+	}
+
+	public handleUpgrade(req: http.IncomingMessage, socket: net.Socket) {
+		if (req.headers['upgrade'] !== 'websocket') {
+			socket.end('HTTP/1.1 400 Bad Request');
+			return;
+		}
+
+		// https://tools.ietf.org/html/rfc6455#section-4
+		const requestNonce = req.headers['sec-websocket-key'];
+		const hash = crypto.createHash('sha1');
+		hash.update(requestNonce + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11');
+		const responseNonce = hash.digest('base64');
+
+		const responseHeaders = [
+			`HTTP/1.1 101 Switching Protocols`,
+			`Upgrade: websocket`,
+			`Connection: Upgrade`,
+			`Sec-WebSocket-Accept: ${responseNonce}`
+		];
+		socket.write(responseHeaders.join('\r\n') + '\r\n\r\n');
+
+		// Never timeout this socket due to inactivity!
+		socket.setTimeout(0);
+		// Finally!
+		let reconnectionToken = generateUuid();
+		let isReconnection = false;
+		let skipWebSocketFrames = false;
+
+		if (req.url) {
+			const query = url.parse(req.url, true).query;
+			if (typeof query.reconnectionToken === 'string') {
+				reconnectionToken = query.reconnectionToken;
 			}
-		});
-		server.on('error', (err) => {
-			this._logService.error(`Error occurred in server`);
-			this._logService.error(err);
-		});
-		const nodeListenOptions = listenOptions.socketPath ?
-			{ path: listenOptions.socketPath } :
-			{ host: listenOptions.host, port: listenOptions.port };
-		server.listen(nodeListenOptions, () => {
-			// Do not change this line. VS Code looks for this in
-			// the output.
-			const address = assertIsDefined(server.address());
-			console.log(`Extension host agent listening on ${typeof address === 'string' ? address : address.port}`);
-
-			if (this._webClientServer && typeof address !== 'string') {
-				// ships the web ui!
-				console.log(`Web UI available at http://localhost${address.port === 80 ? '' : `:${address.port}`}/?tkn=${this._connectionToken}`);
+			if (query.reconnection === 'true') {
+				isReconnection = true;
 			}
+			if (query.skipWebSocketFrames === 'true') {
+				skipWebSocketFrames = true;
+			}
+		}
 
-			console.log();
-			console.log();
-			this._logService.info(`Extension host agent started.`);
-		});
+		if (skipWebSocketFrames) {
+			this._handleWebSocketConnection(new NodeSocket(socket), isReconnection, reconnectionToken);
+		} else {
+			this._handleWebSocketConnection(new WebSocketNodeSocket(new NodeSocket(socket)), isReconnection, reconnectionToken);
+		}
+	}
 
-		this._register({ dispose: () => server.close() });
+	public handleServerError(err: Error): void {
+		this._logService.error(`Error occurred in server`);
+		this._logService.error(err);
 	}
 
 	// Eventually cleanup
@@ -493,12 +482,10 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 
 			const msg = <HandshakeMessage>JSON.parse(raw.toString());
 			if (msg.type === 'auth') {
-
-				if (typeof msg.auth !== 'string' || msg.auth !== '00000000000000000000') {
-					// TODO@vs-remote: use real nonce here
-					// Invalid nonce, will not communicate further with this client
-					this._logService.error(`${logPrefix} Unauthorized client refused.`);
-					protocol.sendControl(VSBuffer.fromString(JSON.stringify({ type: 'error', reason: 'Unauthorized client refused.' })));
+				if (this._connectionTokenIsMandatory && msg.auth !== this._connectionToken) {
+					// Invalid connection token, will not communicate further with this client
+					this._logService.error(`${logPrefix} Unauthorized client refused, missing auth.`);
+					protocol.sendControl(VSBuffer.fromString(JSON.stringify({ type: 'error', reason: 'Unauthorized client refused, missing auth.' })));
 					protocol.dispose();
 					socket.dispose();
 					return;
@@ -699,8 +686,10 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 
 		localSocket.on('end', () => remoteSocket.end());
 		localSocket.on('close', () => remoteSocket.end());
+		localSocket.on('error', () => remoteSocket.destroy());
 		remoteSocket.on('end', () => localSocket.end());
 		remoteSocket.on('close', () => localSocket.end());
+		remoteSocket.on('error', () => localSocket.destroy());
 
 		localSocket.pipe(remoteSocket);
 		remoteSocket.pipe(localSocket);
@@ -798,3 +787,108 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		}
 	}
 }
+
+function parseConnectionToken(args: ServerParsedArgs): { connectionToken: string; connectionTokenIsMandatory: boolean; } {
+	if (args['connection-secret']) {
+		if (args['connectionToken']) {
+			console.warn(`Please do not use the argument connectionToken at the same time as connection-secret.`);
+			process.exit(1);
+		}
+		let rawConnectionToken = fs.readFileSync(args['connection-secret']).toString();
+		rawConnectionToken = rawConnectionToken.replace(/\r?\n$/, '');
+		if (!/^[0-9A-Za-z\-]+$/.test(rawConnectionToken)) {
+			console.warn(`The secret defined in ${args['connection-secret']} does not adhere to the characters 0-9, a-z, A-Z or -.`);
+			process.exit(1);
+		}
+		return { connectionToken: rawConnectionToken, connectionTokenIsMandatory: true };
+	} else {
+		return { connectionToken: args['connectionToken'] || generateUuid(), connectionTokenIsMandatory: false };
+	}
+}
+
+export interface IServerAPI {
+	initialize(): Promise<void>;
+	handleRequest(req: http.IncomingMessage, res: http.ServerResponse): Promise<void>;
+	handleUpgrade(req: http.IncomingMessage, socket: net.Socket): void;
+	handleServerError(err: Error): void;
+	dispose(): void;
+}
+
+export function createServer(address: string | net.AddressInfo | null, args: ServerParsedArgs, REMOTE_DATA_FOLDER: string): Promise<IServerAPI> {
+	const environmentService = new ServerEnvironmentService(args);
+
+	//
+	// On Windows, exit early with warning message to users about potential security issue
+	// if there is node_modules folder under home drive or Users folder.
+	//
+	if (process.platform === 'win32' && process.env.HOMEDRIVE && process.env.HOMEPATH) {
+		const homeDirModulesPath = join(process.env.HOMEDRIVE, 'node_modules');
+		const userDir = dirname(join(process.env.HOMEDRIVE, process.env.HOMEPATH));
+		const userDirModulesPath = join(userDir, 'node_modules');
+		if (fs.existsSync(homeDirModulesPath) || fs.existsSync(userDirModulesPath)) {
+			const message = `
+
+*
+* !!!! Server terminated due to presence of CVE-2020-1416 !!!!
+*
+* Please remove the following directories and re-try
+* ${homeDirModulesPath}
+* ${userDirModulesPath}
+*
+* For more information on the vulnerability https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1416
+*
+
+`;
+			const logService = getOrCreateSpdLogService(environmentService);
+			logService.warn(message);
+			console.warn(message);
+			process.exit(0);
+		}
+	}
+
+	const { connectionToken, connectionTokenIsMandatory } = parseConnectionToken(args);
+	const hasWebClient = fs.existsSync(FileAccess.asFileUri('vs/code/browser/workbench/workbench.html', require).fsPath);
+
+	if (hasWebClient && address && typeof address !== 'string') {
+		// ships the web ui!
+		console.log(`Web UI available at http://localhost${address.port === 80 ? '' : `:${address.port}`}/?tkn=${connectionToken}`);
+	}
+
+	const remoteExtensionHostAgentServer = new RemoteExtensionHostAgentServer(environmentService, connectionToken, connectionTokenIsMandatory, hasWebClient, REMOTE_DATA_FOLDER);
+	return remoteExtensionHostAgentServer.initialize().then(_ => {
+		// {{SQL CARBON EDIT}} - build break
+		// if (args['print-startup-performance']) {
+		// 	const currentTime = performance.now();
+		// 	const vscodeServerStartTime: number = (<any>global).vscodeServerStartTime;
+		// 	const vscodeServerListenTime: number = (<any>global).vscodeServerListenTime;
+		// 	const vscodeServerCodeLoadedTime: number = (<any>global).vscodeServerCodeLoadedTime;
+
+		// 	const stats = LoaderStats.get();
+		// 	let output = '';
+		// 	output += '\n\n### Load AMD-module\n';
+		// 	output += LoaderStats.toMarkdownTable(['Module', 'Duration'], stats.amdLoad);
+		// 	output += '\n\n### Load commonjs-module\n';
+		// 	output += LoaderStats.toMarkdownTable(['Module', 'Duration'], stats.nodeRequire);
+		// 	output += '\n\n### Invoke AMD-module factory\n';
+		// 	output += LoaderStats.toMarkdownTable(['Module', 'Duration'], stats.amdInvoke);
+		// 	output += '\n\n### Invoke commonjs-module\n';
+		// 	output += LoaderStats.toMarkdownTable(['Module', 'Duration'], stats.nodeEval);
+		// 	output += `Start-up time: ${vscodeServerListenTime - vscodeServerStartTime}\n`;
+		// 	output += `Code loading time: ${vscodeServerCodeLoadedTime - vscodeServerStartTime}\n`;
+		// 	output += `Initialized time: ${currentTime - vscodeServerStartTime}\n`;
+		// 	output += `\n`;
+		// 	console.log(output);
+		// }
+		return remoteExtensionHostAgentServer;
+	});
+}
+
+const getOrCreateSpdLogService: (environmentService: ServerEnvironmentService) => ILogService = (function () {
+	let _logService: ILogService | null;
+	return function getLogService(environmentService: ServerEnvironmentService): ILogService {
+		if (!_logService) {
+			_logService = new SpdLogService(RemoteExtensionLogFileName, environmentService.logsPath, getLogLevel(environmentService));
+		}
+		return _logService;
+	};
+})();

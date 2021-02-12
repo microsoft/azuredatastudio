@@ -34,7 +34,10 @@ export function createContext(): TestContext {
 			logPath: '',
 			extensionUri: vscode.Uri.parse(''),
 			environmentVariableCollection: undefined as any,
-			extensionMode: undefined as any
+			extensionMode: undefined as any,
+			globalStorageUri: undefined,
+			logUri: undefined,
+			storageUri: undefined
 		},
 		viewContext: viewContext
 	};
@@ -110,9 +113,16 @@ export function createViewContext(): ViewTestContext {
 		onDidClick: onClick.event
 	});
 
-	let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent> = {
+	let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent, azdata.ButtonProperties> = {
 		component: () => button,
-		withProperties: (properties) => {
+		withProperties: (properties: any) => {
+			if ((properties as any).label === '•••') {
+				button.label = '•••';
+				button.onDidClick = fileButtonOnClick.event;
+			}
+			return buttonBuilder;
+		},
+		withProps: (properties) => {
 			if ((properties as any).label === '•••') {
 				button.label = '•••';
 				button.onDidClick = fileButtonOnClick.event;
@@ -124,8 +134,9 @@ export function createViewContext(): ViewTestContext {
 
 	let radioButtonBuilder = () => {
 		let button = radioButton();
-		let builder: azdata.ComponentBuilder<azdata.RadioButtonComponent> = {
+		let builder: azdata.ComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties> = {
 			component: () => button,
+			withProps: () => undefined,
 			withProperties: (properties) => {
 				switch ((properties as any).label) {
 					case loc.newDatabase:
@@ -160,9 +171,10 @@ export function createViewContext(): ViewTestContext {
 		return builder;
 	};
 
-	let checkBoxBuilder: azdata.ComponentBuilder<azdata.CheckBoxComponent> = {
+	let checkBoxBuilder: azdata.ComponentBuilder<azdata.CheckBoxComponent, azdata.CheckBoxProperties> = {
 		component: () => checkbox,
 		withProperties: () => checkBoxBuilder,
+		withProps: () => checkBoxBuilder,
 		withValidation: () => checkBoxBuilder
 	};
 	let inputBox: () => azdata.InputBoxComponent = () => Object.assign({}, componentBase, {
@@ -190,17 +202,19 @@ export function createViewContext(): ViewTestContext {
 		component: undefined!
 	});
 
-	let tableBuilder: azdata.ComponentBuilder<azdata.TableComponent> = {
+	let tableBuilder: azdata.ComponentBuilder<azdata.TableComponent, azdata.TableComponentProperties> = {
 		component: () => table(),
 		withProperties: () => tableBuilder,
-		withValidation: () => tableBuilder
+		withValidation: () => tableBuilder,
+		withProps: () => tableBuilder
 	};
 
 	let loadingBuilder: azdata.LoadingComponentBuilder = {
 		component: () => loadingComponent(),
 		withProperties: () => loadingBuilder,
 		withValidation: () => loadingBuilder,
-		withItem: () => loadingBuilder
+		withItem: () => loadingBuilder,
+		withProps: () => loadingBuilder
 	};
 
 	let formBuilder: azdata.FormBuilder = Object.assign({}, {
@@ -213,7 +227,8 @@ export function createViewContext(): ViewTestContext {
 		withProperties: () => formBuilder,
 		withValidation: () => formBuilder,
 		withItems: () => formBuilder,
-		withLayout: () => formBuilder
+		withLayout: () => formBuilder,
+		withProps: () => formBuilder
 	});
 
 	let flexBuilder: azdata.FlexBuilder = Object.assign({}, {
@@ -221,32 +236,37 @@ export function createViewContext(): ViewTestContext {
 		withProperties: () => flexBuilder,
 		withValidation: () => flexBuilder,
 		withItems: () => flexBuilder,
-		withLayout: () => flexBuilder
+		withLayout: () => flexBuilder,
+		withProps: () => flexBuilder
 	});
+
 	let divBuilder: azdata.DivBuilder = Object.assign({}, {
 		component: () => div,
 		withProperties: () => divBuilder,
 		withValidation: () => divBuilder,
 		withItems: () => divBuilder,
-		withLayout: () => divBuilder
+		withLayout: () => divBuilder,
+		withProps: () => divBuilder
 	});
 
-	let inputBoxBuilder: azdata.ComponentBuilder<azdata.InputBoxComponent> = {
+	let inputBoxBuilder: azdata.ComponentBuilder<azdata.InputBoxComponent, azdata.InputBoxProperties> = {
 		component: () => {
 			let r = inputBox();
 			return r;
 		},
 		withProperties: () => inputBoxBuilder,
-		withValidation: () => inputBoxBuilder
+		withValidation: () => inputBoxBuilder,
+		withProps: () => inputBoxBuilder
 	};
 
-	let dropdownBuilder: azdata.ComponentBuilder<azdata.DropDownComponent> = {
+	let dropdownBuilder: azdata.ComponentBuilder<azdata.DropDownComponent, azdata.DropDownProperties> = {
 		component: () => {
 			let r = dropdown();
 			return r;
 		},
 		withProperties: () => dropdownBuilder,
-		withValidation: () => dropdownBuilder
+		withValidation: () => dropdownBuilder,
+		withProps: () => dropdownBuilder
 	};
 
 	let view: azdata.ModelView = {

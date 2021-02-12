@@ -26,7 +26,7 @@ import { status } from 'vs/base/browser/ui/aria/aria';
 		</model-component-wrapper>
 	`
 })
-export default class LoadingComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class LoadingComponent extends ComponentBase<azdata.LoadingComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
 	private _component: IComponentDescriptor;
 
 	@Input() descriptor: IComponentDescriptor;
@@ -72,24 +72,24 @@ export default class LoadingComponent extends ComponentBase implements IComponen
 	}
 
 	public get loading(): boolean {
-		return this.getPropertyOrDefault<azdata.LoadingComponentProperties, boolean>((props) => props.loading, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.loading, false);
 	}
 
 	public set loading(newValue: boolean) {
-		this.setPropertyFromUI<azdata.LoadingComponentProperties, boolean>((properties, value) => { properties.loading = value; }, newValue);
+		this.setPropertyFromUI<boolean>((properties, value) => { properties.loading = value; }, newValue);
 		this.layout();
 	}
 
 	public get showText(): boolean {
-		return this.getPropertyOrDefault<azdata.LoadingComponentProperties, boolean>((props) => props.showText, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.showText, false);
 	}
 
 	public get loadingText(): string {
-		return this.getPropertyOrDefault<azdata.LoadingComponentProperties, string>((props) => props.loadingText, localize('loadingMessage', "Loading"));
+		return this.getPropertyOrDefault<string>((props) => props.loadingText, localize('loadingMessage', "Loading"));
 	}
 
 	public get loadingCompletedText(): string {
-		return this.getPropertyOrDefault<azdata.LoadingComponentProperties, string>((props) => props.loadingCompletedText, localize('loadingCompletedMessage', "Loading completed"));
+		return this.getPropertyOrDefault<string>((props) => props.loadingCompletedText, localize('loadingCompletedMessage', "Loading completed"));
 	}
 
 	public addToContainer(componentDescriptor: IComponentDescriptor): void {

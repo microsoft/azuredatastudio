@@ -27,8 +27,8 @@ export class ScriptSelectAction extends Action {
 
 	public async run(actionContext: BaseActionContext): Promise<boolean> {
 		return scriptSelect(
-			actionContext.profile,
-			actionContext.object,
+			actionContext.profile!,
+			actionContext.object!,
 			this._connectionManagementService,
 			this._queryEditorService,
 			this._scriptingService
@@ -52,8 +52,8 @@ export class ScriptExecuteAction extends Action {
 
 	public async run(actionContext: BaseActionContext): Promise<boolean> {
 		return script(
-			actionContext.profile,
-			actionContext.object,
+			actionContext.profile!,
+			actionContext.object!,
 			this._connectionManagementService,
 			this._queryEditorService,
 			this._scriptingService,
@@ -79,8 +79,8 @@ export class ScriptAlterAction extends Action {
 
 	public async run(actionContext: BaseActionContext): Promise<boolean> {
 		return script(
-			actionContext.profile,
-			actionContext.object,
+			actionContext.profile!,
+			actionContext.object!,
 			this._connectionManagementService,
 			this._queryEditorService,
 			this._scriptingService,
@@ -105,8 +105,8 @@ export class EditDataAction extends Action {
 
 	public async run(actionContext: BaseActionContext): Promise<boolean> {
 		return scriptEditSelect(
-			actionContext.profile,
-			actionContext.object,
+			actionContext.profile!,
+			actionContext.object!,
 			this._connectionManagementService,
 			this._queryEditorService,
 			this._scriptingService
@@ -130,8 +130,8 @@ export class ScriptCreateAction extends Action {
 
 	public async run(actionContext: BaseActionContext): Promise<boolean> {
 		return script(
-			actionContext.profile,
-			actionContext.object,
+			actionContext.profile!,
+			actionContext.object!,
 			this._connectionManagementService,
 			this._queryEditorService,
 			this._scriptingService,
@@ -157,8 +157,8 @@ export class ScriptDeleteAction extends Action {
 
 	public async run(actionContext: BaseActionContext): Promise<boolean> {
 		return script(
-			actionContext.profile,
-			actionContext.object,
+			actionContext.profile!,
+			actionContext.object!,
 			this._connectionManagementService,
 			this._queryEditorService,
 			this._scriptingService,

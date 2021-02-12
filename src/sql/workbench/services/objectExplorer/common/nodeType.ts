@@ -93,10 +93,11 @@ export class NodeType {
 	public static ExternalTable = 'ExternalTable';
 	public static ColumnMasterKey = 'ColumnMasterKey';
 	public static ColumnEncryptionKey = 'ColumnEncryptionKey';
+	public static Function = 'Function';
 
 	public static readonly SCRIPTABLE_OBJECTS = [NodeType.Table, NodeType.View, NodeType.Schema, NodeType.User, NodeType.UserDefinedTableType,
 	NodeType.StoredProcedure, NodeType.AggregateFunction, NodeType.PartitionFunction, NodeType.ScalarValuedFunction,
-	NodeType.TableValuedFunction];
+	NodeType.TableValuedFunction, NodeType.Function];
 }
 
 export interface SqlThemeIcon {

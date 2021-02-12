@@ -152,7 +152,7 @@ export class ConnectionStatusManager {
 		//Check if the existing connection database name is different the one in the summary
 		if (connection.connectionProfile.databaseName !== summary.connectionSummary.databaseName) {
 			//Add the ownerUri with database name to the map if not already exists
-			connection.connectionProfile.databaseName = summary.connectionSummary.databaseName;
+			connection.connectionProfile.databaseName = summary.connectionSummary.databaseName!;
 			let prefix = Utils.getUriPrefix(summary.ownerUri);
 			let ownerUriWithDbName = Utils.generateUriWithPrefix(connection.connectionProfile, prefix);
 			if (!(ownerUriWithDbName in this._connections)) {
@@ -186,7 +186,7 @@ export class ConnectionStatusManager {
 		let connection = this._connections[changedConnInfo.connectionUri];
 		if (connection && connection.connectionProfile) {
 			connection.connectionProfile.serverName = changedConnInfo.connection.serverName;
-			connection.connectionProfile.databaseName = changedConnInfo.connection.databaseName;
+			connection.connectionProfile.databaseName = changedConnInfo.connection.databaseName!;
 			connection.connectionProfile.userName = changedConnInfo.connection.userName;
 			return connection.connectionProfile;
 		}

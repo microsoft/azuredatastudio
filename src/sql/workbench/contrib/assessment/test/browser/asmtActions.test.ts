@@ -86,6 +86,7 @@ class AssessmentTestViewComponent implements IAssessmentComponent {
 		dateUpdated: Date.now()
 	};
 	isActive: boolean = true;
+	isBusy: boolean = false;
 }
 
 let mockAssessmentService: TypeMoq.Mock<AssessmentService>;

@@ -15,7 +15,7 @@ export interface IFindPosition {
 }
 
 function defaultSort<T extends { [key: string]: any }>(args: Slick.OnSortEventArgs<T>, data: Array<T>): Array<T> {
-	if (!args.sortCol || !args.sortCol.field) {
+	if (!args.sortCol || !args.sortCol.field || data.length === 0) {
 		return data;
 	}
 	const field = args.sortCol.field;

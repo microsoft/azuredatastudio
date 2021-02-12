@@ -269,12 +269,13 @@ export class GridPanel extends Disposable {
 
 		for (let i = this.tables.length - 1; i >= 0; i--) {
 			if (this.tables[i].id === tableid) {
-				this.tables[i].state.maximized = true;
-				this.maximizedGrid = this.tables[i];
-				continue;
+				const selectedTable = this.tables[i];
+				selectedTable.state.maximized = true;
+				this.maximizedGrid = selectedTable;
+				this.scrollableView.clear();
+				this.scrollableView.addViews([selectedTable]);
+				break;
 			}
-
-			this.scrollableView.clear();
 		}
 	}
 

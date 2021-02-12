@@ -92,6 +92,28 @@
 													}
                         },
                         {
+													"type": "options",
+													"label": "%wizard.data.controllers%",
+													"required": true,
+													"variableName": "AZDATA_NB_VAR_CONTROLLER",
+													"editable": false,
+													"options": {
+                            "source": {
+                              "type": "ArcControllersOptionsSource",
+                              "variableNames": {
+                                "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
+                                "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
+                                "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
+                              }
+                            },
+														"values":[
+															"ignored1",
+															"ignored2"
+														],
+														"optionsType": "dropdown"
+													}
+                        },
+                        {
                           "label": "%wizard.dropdown.options.field%",
                           "variableName": "AZDATA_NB_VAR_DROPDOWN_OPTIONS",
                           "type": "options",
@@ -245,7 +267,37 @@
 													"type": "readonly_text",
 													"isEvaluated": true,
 													"defaultValue": "$(AZDATA_NB_VAR_PROFILE)"
-												}
+												},
+												{
+													"label": "%wizard.dropdown.options.field%",
+													"type": "readonly_text",
+													"isEvaluated": true,
+													"defaultValue": "$(AZDATA_NB_VAR_DROPDOWN_OPTIONS)"
+                        },
+                        {
+                          "label": "%wizard.summary.controller%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_CONTROLLER)"
+                        },
+                        {
+                          "label": "%wizard.summary.controller.endpoint%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_CONTROLLER_ENDPOINT)"
+                        },
+                        {
+                          "label": "%wizard.summary.controller.username%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_CONTROLLER_USERNAME)"
+                        },
+                        {
+                          "label": "%wizard.summary.controller.password%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_CONTROLLER_PASSWORD)"
+                        }
 											]
 										}
 									]

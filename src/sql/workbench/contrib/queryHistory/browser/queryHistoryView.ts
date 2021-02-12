@@ -34,8 +34,8 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
  * QueryHistoryView implements the dynamic tree view for displaying Query History
  */
 export class QueryHistoryView extends ViewPane {
-	private _messages: HTMLElement;
-	private _tree: ITree;
+	private _messages!: HTMLElement;
+	private _tree!: ITree;
 	private _actionProvider: QueryHistoryActionProvider;
 
 	constructor(
@@ -87,11 +87,10 @@ export class QueryHistoryView extends ViewPane {
 		const controller = instantiationService.createInstance(QueryHistoryController, this._actionProvider);
 		const dnd = new DefaultDragAndDrop();
 		const filter = new DefaultFilter();
-		const sorter = null;
 		const accessibilityProvider = new DefaultAccessibilityProvider();
 
 		return new Tree(treeContainer, {
-			dataSource, renderer, controller, dnd, filter, sorter, accessibilityProvider
+			dataSource, renderer, controller, dnd, filter, sorter: undefined, accessibilityProvider
 		}, {
 			indentPixels: 10,
 			twistiePixels: 20,
@@ -103,15 +102,13 @@ export class QueryHistoryView extends ViewPane {
 		let selectedElement: any;
 		let targetsToExpand: any[];
 
-		if (this._tree) {
-			const selection = this._tree.getSelection();
-			if (selection && selection.length === 1) {
-				selectedElement = <any>selection[0];
-			}
-			// convert to old VS Code tree interface with expandable methods
-			const expandableTree: IExpandableTree = <IExpandableTree>this._tree;
-			targetsToExpand = expandableTree.getExpandedElements();
+		const selection = this._tree.getSelection();
+		if (selection && selection.length === 1) {
+			selectedElement = <any>selection[0];
 		}
+		// convert to old VS Code tree interface with expandable methods
+		const expandableTree: IExpandableTree = <IExpandableTree>this._tree;
+		targetsToExpand = expandableTree.getExpandedElements();
 
 		const nodes: QueryHistoryNode[] = this.queryHistoryService.getQueryHistoryInfos().map(i => new QueryHistoryNode(i));
 

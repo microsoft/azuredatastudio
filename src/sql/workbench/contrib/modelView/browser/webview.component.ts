@@ -28,11 +28,15 @@ function reviveWebviewOptions(options: vscode.WebviewOptions): vscode.WebviewOpt
 	};
 }
 
+interface WebViewProperties extends azdata.WebViewProperties {
+	extensionLocation: UriComponents
+}
+
 @Component({
 	template: '',
 	selector: 'modelview-webview-component'
 })
-export default class WebViewComponent extends ComponentBase implements IComponent, OnDestroy {
+export default class WebViewComponent extends ComponentBase<WebViewProperties> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
@@ -172,27 +176,27 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	// CSS-bound properties
 
 	public get message(): any {
-		return this.getPropertyOrDefault<azdata.WebViewProperties, any>((props) => props.message, undefined);
+		return this.getPropertyOrDefault<any>((props) => props.message, undefined);
 	}
 
 	public set message(newValue: any) {
-		this.setPropertyFromUI<azdata.WebViewProperties, any>((properties, message) => { properties.message = message; }, newValue);
+		this.setPropertyFromUI<any>((properties, message) => { properties.message = message; }, newValue);
 	}
 
 	public get html(): string {
-		return this.getPropertyOrDefault<azdata.WebViewProperties, string>((props) => props.html, undefined);
+		return this.getPropertyOrDefault<string>((props) => props.html, undefined);
 	}
 
 	public set html(newValue: string) {
-		this.setPropertyFromUI<azdata.WebViewProperties, string>((properties, html) => { properties.html = html; }, newValue);
+		this.setPropertyFromUI<string>((properties, html) => { properties.html = html; }, newValue);
 	}
 
 	public get options(): vscode.WebviewOptions {
-		return this.getPropertyOrDefault<azdata.WebViewProperties, vscode.WebviewOptions>((props) => props.options, undefined);
+		return this.getPropertyOrDefault<vscode.WebviewOptions>((props) => props.options, undefined);
 	}
 
 	public get extensionLocation(): UriComponents {
-		return this.getPropertyOrDefault<azdata.WebViewProperties, UriComponents>((props) => props.extensionLocation, undefined);
+		return this.getPropertyOrDefault<UriComponents>((props) => props.extensionLocation, undefined);
 	}
 
 	private get extensionLocationUri(): URI {

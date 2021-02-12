@@ -38,7 +38,7 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 		try {
 			let sqlClusterConnection: SqlClusterConnection = undefined;
 			if (context.type === constants.ObjectExplorerService) {
-				sqlClusterConnection = SqlClusterLookUp.findSqlClusterConnection(context, this.appContext);
+				sqlClusterConnection = await SqlClusterLookUp.findSqlClusterConnection(context, this.appContext);
 			}
 			if (!sqlClusterConnection) {
 				sqlClusterConnection = await this.selectConnection();
@@ -103,7 +103,7 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 		let sqlConnection = connectionMap.get(selectedHost);
 		if (!sqlConnection) { throw new Error(errorMsg); }
 
-		let sqlClusterConnection = await SqlClusterLookUp.getSqlClusterConnection(sqlConnection);
+		let sqlClusterConnection = await SqlClusterLookUp.getSqlClusterConnectionParams(sqlConnection, this.appContext);
 		if (!sqlClusterConnection) {
 			throw new Error(localize('errorNotSqlBigDataCluster', "The selected server does not belong to a SQL Server Big Data Cluster"));
 		}
@@ -159,7 +159,7 @@ export class OpenSparkJobSubmissionDialogTask {
 
 	async execute(profile: azdata.IConnectionProfile, ...args: any[]): Promise<void> {
 		try {
-			let sqlClusterConnection = SqlClusterLookUp.findSqlClusterConnection(profile, this.appContext);
+			let sqlClusterConnection = await SqlClusterLookUp.findSqlClusterConnection(profile, this.appContext);
 			if (!sqlClusterConnection) {
 				throw new Error(LocalizedConstants.sparkJobSubmissionNoSqlBigDataClusterFound);
 			}

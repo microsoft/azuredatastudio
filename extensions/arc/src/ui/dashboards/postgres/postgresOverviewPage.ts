@@ -5,33 +5,35 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import * as azdataExt from 'azdata-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles, Endpoints } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
-import { promptAndConfirmPassword } from '../../../common/utils';
+import { promptAndConfirmPassword, promptForInstanceDeletion } from '../../../common/utils';
+import { ResourceType } from 'arc';
 
 export class PostgresOverviewPage extends DashboardPage {
 
 	private propertiesLoading?: azdata.LoadingComponent;
 	private kibanaLoading?: azdata.LoadingComponent;
 	private grafanaLoading?: azdata.LoadingComponent;
-	private nodesTableLoading?: azdata.LoadingComponent;
 
 	private properties?: azdata.PropertiesContainerComponent;
 	private kibanaLink?: azdata.HyperlinkComponent;
 	private grafanaLink?: azdata.HyperlinkComponent;
-	private nodesTable?: azdata.DeclarativeTableComponent;
+
+	private readonly _azdataApi: azdataExt.IExtension;
 
 	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(modelView);
+		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
 		this.disposables.push(
 			this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated())),
 			this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleRegistrationsUpdated())),
-			this._postgresModel.onServiceUpdated(() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())),
-			this._postgresModel.onPodsUpdated(() => this.eventuallyRunOnInitialized(() => this.handlePodsUpdated())));
+			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleConfigUpdated())));
 	}
 
 	protected get title(): string {
@@ -60,7 +62,7 @@ export class PostgresOverviewPage extends DashboardPage {
 		this.propertiesLoading = this.modelView.modelBuilder.loadingComponent()
 			.withItem(this.properties)
 			.withProperties<azdata.LoadingComponentProperties>({
-				loading: !this._controllerModel.registrationsLastUpdated && !this._postgresModel.serviceLastUpdated && !this._postgresModel.podsLastUpdated
+				loading: !this._controllerModel.registrationsLastUpdated && !this._postgresModel.configLastUpdated
 			}).component();
 
 		content.addItem(this.propertiesLoading, { CSSStyles: cssStyles.text });
@@ -134,60 +136,8 @@ export class PostgresOverviewPage extends DashboardPage {
 				[loc.kibanaDashboard, this.kibanaLoading, loc.kibanaDashboardDescription],
 				[loc.grafanaDashboard, this.grafanaLoading, loc.grafanaDashboardDescription]]
 		}).component();
+
 		content.addItem(endpointsTable);
-
-		// Server group nodes
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: loc.serverGroupNodes,
-			CSSStyles: titleCSS
-		}).component());
-
-		this.nodesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
-			width: '100%',
-			columns: [
-				{
-					displayName: loc.name,
-					valueType: azdata.DeclarativeDataType.string,
-					isReadOnly: true,
-					width: '30%',
-					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: cssStyles.tableRow
-				},
-				{
-					displayName: loc.type,
-					valueType: azdata.DeclarativeDataType.string,
-					isReadOnly: true,
-					width: '15%',
-					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: cssStyles.tableRow
-				},
-				{
-					displayName: loc.status,
-					valueType: azdata.DeclarativeDataType.string,
-					isReadOnly: true,
-					width: '20%',
-					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: cssStyles.tableRow
-				},
-				{
-					displayName: loc.fullyQualifiedDomain,
-					valueType: azdata.DeclarativeDataType.string,
-					isReadOnly: true,
-					width: '35%',
-					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: cssStyles.tableRow
-				}
-			],
-			data: this.getNodes()
-		}).component();
-
-		this.nodesTableLoading = this.modelView.modelBuilder.loadingComponent()
-			.withItem(this.nodesTable)
-			.withProperties<azdata.LoadingComponentProperties>({
-				loading: !this._postgresModel.serviceLastUpdated && !this._postgresModel.podsLastUpdated
-			}).component();
-
-		content.addItem(this.nodesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
 		this.initialized = true;
 		return root;
 	}
@@ -205,11 +155,13 @@ export class PostgresOverviewPage extends DashboardPage {
 				try {
 					const password = await promptAndConfirmPassword(input => !input ? loc.enterANonEmptyPassword : '');
 					if (password) {
-						await this._postgresModel.update(s => {
-							// TODO chgagnon
-							// s.arc = s.arc ?? new DuskyObjectModelsDatabaseServiceArcPayload();
-							s.arc.servicePassword = password;
-						});
+						await this._azdataApi.azdata.arc.postgres.server.edit(
+							this._postgresModel.info.name,
+							{
+								adminPassword: true,
+								noWait: true
+							},
+							{ 'AZDATA_PASSWORD': password });
 						vscode.window.showInformationMessage(loc.passwordReset);
 					}
 				} catch (error) {
@@ -229,15 +181,22 @@ export class PostgresOverviewPage extends DashboardPage {
 			deleteButton.onDidClick(async () => {
 				deleteButton.enabled = false;
 				try {
-					/*
-					if (await promptForResourceDeletion(this._postgresModel.namespace, this._postgresModel.name)) {
-						await this._postgresModel.delete();
-						await this._controllerModel.deleteRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
-						vscode.window.showInformationMessage(loc.resourceDeleted(this._postgresModel.fullName));
+					if (await promptForInstanceDeletion(this._postgresModel.info.name)) {
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.Notification,
+								title: loc.deletingInstance(this._postgresModel.info.name),
+								cancellable: false
+							},
+							(_progress, _token) => {
+								return this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name);
+							}
+						);
+						await this._controllerModel.refreshTreeNode();
+						vscode.window.showInformationMessage(loc.instanceDeleted(this._postgresModel.info.name));
 					}
-					*/
 				} catch (error) {
-					vscode.window.showErrorMessage(loc.resourceDeletionFailed(this._postgresModel.fullName, error));
+					vscode.window.showErrorMessage(loc.instanceDeletionFailed(this._postgresModel.info.name, error));
 				} finally {
 					deleteButton.enabled = true;
 				}
@@ -256,7 +215,6 @@ export class PostgresOverviewPage extends DashboardPage {
 					this.propertiesLoading!.loading = true;
 					this.kibanaLoading!.loading = true;
 					this.grafanaLoading!.loading = true;
-					this.nodesTableLoading!.loading = true;
 
 					await Promise.all([
 						this._postgresModel.refresh(),
@@ -278,15 +236,13 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		this.disposables.push(
 			openInAzurePortalButton.onDidClick(async () => {
-				/*
-				const r = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
-				if (!r) {
-					vscode.window.showErrorMessage(loc.couldNotFindAzureResource(this._postgresModel.fullName));
-				} else {
+				const azure = this._controllerModel.controllerConfig?.spec.settings.azure;
+				if (azure) {
 					vscode.env.openExternal(vscode.Uri.parse(
-						`https://portal.azure.com/#resource/subscriptions/${r.subscriptionId}/resourceGroups/${r.resourceGroupName}/providers/Microsoft.AzureData/${ResourceType.postgresInstances}/${r.instanceName}`));
+						`https://portal.azure.com/#resource/subscriptions/${azure.subscription}/resourceGroups/${azure.resourceGroup}/providers/Microsoft.AzureData/${ResourceType.postgresInstances}/${this._postgresModel.info.name}`));
+				} else {
+					vscode.window.showErrorMessage(loc.couldNotFindControllerRegistration);
 				}
-				*/
 			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
@@ -298,53 +254,34 @@ export class PostgresOverviewPage extends DashboardPage {
 	}
 
 	private getProperties(): azdata.PropertiesContainerItem[] {
-		/*
-		const registration = this._controllerModel.getRegistration(ResourceType.postgresInstances, this._postgresModel.namespace, this._postgresModel.name);
-		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
+		const status = this._postgresModel.config?.status;
+		const azure = this._controllerModel.controllerConfig?.spec.settings.azure;
 
 		return [
-			{ displayName: loc.name, value: this._postgresModel.name },
-			{ displayName: loc.coordinatorEndpoint, value: `postgresql://postgres@${endpoint.ip}:${endpoint.port}` },
-			{ displayName: loc.status, value: this._postgresModel.service?.status?.state ?? '' },
+			{ displayName: loc.resourceGroup, value: azure?.resourceGroup || '-' },
+			{ displayName: loc.dataController, value: this._controllerModel.controllerConfig?.metadata.name || '-' },
+			{ displayName: loc.region, value: azure?.location || '-' },
+			{ displayName: loc.namespace, value: this._postgresModel.config?.metadata.namespace || '-' },
+			{ displayName: loc.subscriptionId, value: azure?.subscription || '-' },
+			{ displayName: loc.externalEndpoint, value: this._postgresModel.config?.status.externalEndpoint || '-' },
+			{ displayName: loc.status, value: status ? `${status.state} (${status.readyPods} ${loc.podsReady})` : '-' },
 			{ displayName: loc.postgresAdminUsername, value: 'postgres' },
-			{ displayName: loc.dataController, value: this._controllerModel?.namespace ?? '' },
-			{ displayName: loc.nodeConfiguration, value: this._postgresModel.configuration },
-			{ displayName: loc.subscriptionId, value: registration?.subscriptionId ?? '' },
-			{ displayName: loc.postgresVersion, value: this._postgresModel.service?.spec?.engine?.version?.toString() ?? '' }
+			{ displayName: loc.postgresVersion, value: this._postgresModel.engineVersion ?? '-' },
+			{ displayName: loc.nodeConfiguration, value: this._postgresModel.scaleConfiguration || '-' }
 		];
-		*/
-		return [];
 	}
 
 	private getKibanaLink(): string {
-		const kibanaQuery = `kubernetes_namespace:"${this._postgresModel.namespace}" and cluster_name:"${this._postgresModel.name}"`;
+		const namespace = this._postgresModel.config?.metadata.namespace;
+		const kibanaQuery = `kubernetes_namespace:"${namespace}" and custom_resource_name:"${this._postgresModel.info.name}"`;
 		return `${this._controllerModel.getEndpoint(Endpoints.logsui)?.endpoint}/app/kibana#/discover?_a=(query:(language:kuery,query:'${kibanaQuery}'))`;
 
 	}
 
 	private getGrafanaLink(): string {
-		const grafanaQuery = `var-Namespace=${this._postgresModel.namespace}&var-Name=${this._postgresModel.name}`;
+		const namespace = this._postgresModel.config?.metadata.namespace;
+		const grafanaQuery = `var-Namespace=${namespace}&var-Name=${this._postgresModel.info.name}`;
 		return `${this._controllerModel.getEndpoint(Endpoints.metricsui)?.endpoint}/d/postgres-metrics?${grafanaQuery}`;
-	}
-
-	private getNodes(): string[][] {
-		/* TODO chgagnon
-		const endpoint: { ip?: string, port?: number } = this._postgresModel.endpoint;
-		return this._postgresModel.pods?.map((pod: V1Pod) => {
-			const name = pod.metadata?.name ?? '';
-			const role: PodRole | undefined = PostgresModel.getPodRole(pod);
-			const service = pod.metadata?.annotations?.['arcdata.microsoft.com/serviceHost'];
-			const internalDns = service ? `${name}.${service}` : '';
-
-			return [
-				name,
-				PostgresModel.getPodRoleName(role),
-				PostgresModel.getPodStatus(pod),
-				role === PodRole.Router ? `${endpoint.ip}:${endpoint.port}` : internalDns
-			];
-		}) ?? [];
-		*/
-		return [];
 	}
 
 	private handleEndpointsUpdated() {
@@ -362,19 +299,8 @@ export class PostgresOverviewPage extends DashboardPage {
 		this.propertiesLoading!.loading = false;
 	}
 
-	private handleServiceUpdated() {
+	private handleConfigUpdated() {
 		this.properties!.propertyItems = this.getProperties();
 		this.propertiesLoading!.loading = false;
-
-		this.nodesTable!.data = this.getNodes();
-		this.nodesTableLoading!.loading = false;
-	}
-
-	private handlePodsUpdated() {
-		this.properties!.propertyItems = this.getProperties();
-		this.propertiesLoading!.loading = false;
-
-		this.nodesTable!.data = this.getNodes();
-		this.nodesTableLoading!.loading = false;
 	}
 }

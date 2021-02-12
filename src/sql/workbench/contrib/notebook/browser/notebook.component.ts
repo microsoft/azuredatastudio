@@ -57,6 +57,7 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -71,6 +72,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	@ViewChildren(CodeCellComponent) private codeCells: QueryList<CodeCellComponent>;
 	@ViewChildren(TextCellComponent) private textCells: QueryList<TextCellComponent>;
+	@ViewChildren(CellToolbarComponent) private cellToolbar: QueryList<CellToolbarComponent>;
 
 	private _model: NotebookModel;
 	protected _actionBar: Taskbar;
@@ -85,6 +87,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _navProvider: INavigationProvider;
 	private navigationResult: nb.NavigationResult;
 	public previewFeaturesEnabled: boolean = false;
+	public doubleClickEditEnabled: boolean;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -110,8 +113,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		super();
 		this.updateProfile();
 		this.isLoading = true;
+		this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
+		}));
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		}));
 	}
 
@@ -201,6 +208,18 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public unselectActiveCell() {
 		this.model.updateActiveCell(undefined);
 		this.detectChanges();
+	}
+
+	// Handles double click to edit icon change
+	// See textcell.component.ts for changing edit behavior
+	public enableActiveCellIconOnDoubleClick() {
+		if (this.doubleClickEditEnabled) {
+			const toolbarComponent = (<CellToolbarComponent>this.cellToolbar.first);
+			const toolbarEditCellAction = toolbarComponent.getEditCellAction();
+			if (!toolbarEditCellAction.editMode) {
+				toolbarEditCellAction.editMode = !toolbarEditCellAction.editMode;
+			}
+		}
 	}
 
 	// Add cell based on cell type
@@ -320,6 +339,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider)));
 		this._register(model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs)));
 		this._register(model.onCellTypeChanged(() => this.detectChanges()));
+		this._register(model.layoutChanged(() => this.detectChanges()));
 		this._model = this._register(model);
 		await this._model.loadContents(trusted);
 		this.setLoading(false);

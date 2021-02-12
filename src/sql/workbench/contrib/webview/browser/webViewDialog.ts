@@ -12,7 +12,6 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
-import { toDisposable } from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWebviewService, WebviewElement } from 'vs/workbench/contrib/webview/browser/webview';
@@ -24,13 +23,13 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 export class WebViewDialog extends Modal {
 
-	private _body: HTMLElement;
-	private _okButton: Button;
+	private _body?: HTMLElement;
+	private _okButton?: Button;
 	private _okLabel: string;
 	private _closeLabel: string;
-	private _webview: WebviewElement;
-	private _html: string;
-	private _headerTitle: string;
+	private _webview?: WebviewElement;
+	private _html?: string;
+	private _headerTitle?: string;
 
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
@@ -55,11 +54,11 @@ export class WebViewDialog extends Modal {
 		this._closeLabel = localize('webViewDialog.close', "Close");
 	}
 
-	public set html(value: string) {
+	public setHtml(value: string) {
 		this._html = value;
 	}
 
-	public get html(): string {
+	public get html(): string | undefined {
 		return this._html;
 	}
 
@@ -79,11 +78,11 @@ export class WebViewDialog extends Modal {
 		return this._closeLabel;
 	}
 
-	public set headerTitle(value: string) {
+	public setHeaderTitle(value: string) {
 		this._headerTitle = value;
 	}
 
-	public get headerTitle(): string {
+	public get headerTitle(): string | undefined {
 		return this._headerTitle;
 	}
 
@@ -101,7 +100,6 @@ export class WebViewDialog extends Modal {
 		this._register(this._webview.onMessage(message => this._onMessage.fire(message)));
 
 		this._register(this._webview);
-		this._register(toDisposable(() => this._webview = null));
 	}
 
 	get onMessage(): Event<any> {
@@ -121,7 +119,9 @@ export class WebViewDialog extends Modal {
 	}
 
 	private updateDialogBody(): void {
-		this._webview.html = this.html;
+		if (this.html) {
+			this._webview!.html = this.html;
+		}
 	}
 
 	/* espace key */
@@ -145,13 +145,15 @@ export class WebViewDialog extends Modal {
 	}
 
 	public sendMessage(message: any): void {
-		this._webview.postMessage(message);
+		if (this._webview) {
+			this._webview.postMessage(message);
+		}
 	}
 
 	public open() {
-		this.title = this.headerTitle;
+		this.title = this.headerTitle ?? '';
 		this.updateDialogBody();
 		this.show();
-		this._okButton.focus();
+		this._okButton!.focus();
 	}
 }

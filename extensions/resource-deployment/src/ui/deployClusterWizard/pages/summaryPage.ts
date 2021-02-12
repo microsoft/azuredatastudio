@@ -296,7 +296,8 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 					view: this.view,
 					onNewDisposableCreated: () => { },
 					onNewInputComponentCreated: () => { },
-					onNewValidatorCreated: () => { }
+					onNewValidatorCreated: () => { },
+					toolsService: this.wizard.toolsService
 				})
 			};
 		};
@@ -325,7 +326,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 		this.form.addFormItems(this.formItems);
 	}
 
-	public onLeave() {
+	public async onLeave(): Promise<void> {
 		this.wizard.hideCustomButtons();
 		this.wizard.wizardObject.message = { text: '' };
 	}

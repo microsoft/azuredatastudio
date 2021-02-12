@@ -13,7 +13,7 @@ interface SqlInstanceGraphData extends GraphData {
 	};
 }
 
-const instanceQuery = 'where type == "microsoft.sql/managedinstances"';
+const instanceQuery = `where type == "${azureResource.AzureResourceType.sqlManagedInstance}"`;
 
 export class SqlInstanceResourceService extends ResourceServiceBase<SqlInstanceGraphData, azureResource.AzureResourceDatabaseServer> {
 
@@ -28,6 +28,7 @@ export class SqlInstanceResourceService extends ResourceServiceBase<SqlInstanceG
 			fullName: resource.properties.fullyQualifiedDomainName,
 			loginName: resource.properties.administratorLogin,
 			defaultDatabaseName: 'master',
+			subscriptionId: resource.subscriptionId,
 			tenant: resource.tenantId
 		};
 	}

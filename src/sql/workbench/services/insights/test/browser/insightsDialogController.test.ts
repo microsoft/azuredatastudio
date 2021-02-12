@@ -15,11 +15,11 @@ import { equal } from 'assert';
 import { Mock, MockBehavior, It } from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
 import { InsightsDialogModel } from 'sql/workbench/services/insights/browser/insightsDialogModel';
-import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
+import { IInsightsConfigDetails } from 'sql/platform/extensions/common/extensions';
 
 const testData: string[][] = [
 	['1', '2', '3', '4'],

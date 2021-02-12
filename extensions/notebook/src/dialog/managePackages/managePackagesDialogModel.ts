@@ -213,7 +213,9 @@ export class ManagePackagesDialogModel {
 	 * Changes the current location
 	 */
 	public changeLocation(location: string): void {
-		this._currentLocation = location;
+		if (location) {
+			this._currentLocation = location;
+		}
 	}
 
 	/**
@@ -238,6 +240,19 @@ export class ManagePackagesDialogModel {
 			return await provider.getLocations();
 		}
 		return Promise.resolve(undefined);
+	}
+
+	/**
+	 * Returns the current location for current provider
+	 */
+	public async getCurrentLocation(): Promise<string | undefined> {
+		if (!this._currentLocation) {
+			let provider = this.currentPackageManageProvider;
+			if (provider) {
+				return await provider.getCurrentLocation();
+			}
+		}
+		return Promise.resolve(this._currentLocation);
 	}
 
 	/**

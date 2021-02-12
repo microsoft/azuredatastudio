@@ -12,24 +12,24 @@ import { IItemExpandEvent, IItemCollapseEvent } from 'vs/base/parts/tree/browser
  */
 export class TestTree implements ITree {
 
-	readonly onDidChangeFocus: Event<IFocusEvent>;
-	readonly onDidChangeSelection: Event<ISelectionEvent>;
-	readonly onDidChangeHighlight: Event<IHighlightEvent>;
-	readonly onDidExpandItem: Event<IItemExpandEvent>;
-	readonly onDidCollapseItem: Event<IItemCollapseEvent>;
-	readonly onDidDispose: Event<void>;
+	readonly onDidChangeFocus: Event<IFocusEvent> = Event.None;
+	readonly onDidChangeSelection: Event<ISelectionEvent> = Event.None;
+	readonly onDidChangeHighlight: Event<IHighlightEvent> = Event.None;
+	readonly onDidExpandItem: Event<IItemExpandEvent> = Event.None;
+	readonly onDidCollapseItem: Event<IItemCollapseEvent> = Event.None;
+	readonly onDidDispose: Event<void> = Event.None;
 
 	constructor() { }
 
 	public style(styles: ITreeStyles): void { }
 
-	get onDidFocus(): Event<void> { return undefined; }
+	get onDidFocus(): Event<void> { return Event.None; }
 
-	get onDidBlur(): Event<void> { return undefined; }
+	get onDidBlur(): Event<void> { return Event.None; }
 
-	get onDidScroll(): Event<void> { return undefined; }
+	get onDidScroll(): Event<void> { return Event.None; }
 
-	public getHTMLElement(): HTMLElement { return undefined; }
+	public getHTMLElement(): HTMLElement { throw new Error('Method not implemented'); }
 
 	public layout(height?: number, width?: number): void { }
 
@@ -113,7 +113,7 @@ export class TestTree implements ITree {
 
 	public deselect(element: any, eventPayload?: any): void { }
 
-	getNavigator(fromElement?: any, subTreeOnly?: boolean): INavigator<any> { return undefined; }
+	getNavigator(fromElement?: any, subTreeOnly?: boolean): INavigator<any> { throw new Error('Method not implemented'); }
 
 	public dispose(): void { }
 }

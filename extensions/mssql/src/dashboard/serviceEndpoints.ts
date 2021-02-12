@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import * as bdc from 'bdc';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -23,15 +24,15 @@ const hyperlinkedEndpoints = [grafanaEndpointName, logsuiEndpointName, sparkHist
 
 export function registerServiceEndpoints(context: vscode.ExtensionContext): void {
 	azdata.ui.registerModelViewProvider('bdc-endpoints', async (view) => {
-		let endpointsArray: Array<utils.IEndpoint> = Object.assign([], utils.getClusterEndpoints(view.serverInfo));
+		let endpointsArray: Array<bdc.IEndpointModel> = Object.assign([], utils.getClusterEndpoints(view.serverInfo));
 
 		if (endpointsArray.length > 0) {
-			const grafanaEp = endpointsArray.find(e => e.serviceName === grafanaEndpointName);
+			const grafanaEp = endpointsArray.find(e => e.name === grafanaEndpointName);
 			if (grafanaEp && grafanaEp.endpoint && grafanaEp.endpoint.indexOf('/d/wZx3OUdmz') === -1) {
 				// Update to have correct URL
 				grafanaEp.endpoint += '/d/wZx3OUdmz';
 			}
-			const kibanaEp = endpointsArray.find(e => e.serviceName === logsuiEndpointName);
+			const kibanaEp = endpointsArray.find(e => e.name === logsuiEndpointName);
 			if (kibanaEp && kibanaEp.endpoint && kibanaEp.endpoint.indexOf('/app/kibana#/discover') === -1) {
 				// Update to have correct URL
 				kibanaEp.endpoint += '/app/kibana#/discover';
@@ -40,13 +41,13 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 			if (!grafanaEp) {
 				// We are on older CTP, need to manually add some endpoints.
 				// TODO remove once CTP support goes away
-				const managementProxyEp = endpointsArray.find(e => e.serviceName === mgmtProxyName);
+				const managementProxyEp = endpointsArray.find(e => e.name === mgmtProxyName);
 				if (managementProxyEp) {
 					endpointsArray.push(getCustomEndpoint(managementProxyEp, grafanaEndpointName, grafanaDescription, '/grafana/d/wZx3OUdmz'));
 					endpointsArray.push(getCustomEndpoint(managementProxyEp, logsuiEndpointName, logsuiDescription, '/kibana/app/kibana#/discover'));
 				}
 
-				const gatewayEp = endpointsArray.find(e => e.serviceName === 'gateway');
+				const gatewayEp = endpointsArray.find(e => e.name === 'gateway');
 				if (gatewayEp) {
 					endpointsArray.push(getCustomEndpoint(gatewayEp, sparkHistoryEndpointName, sparkHistoryDescription, '/gateway/default/sparkhistory'));
 					endpointsArray.push(getCustomEndpoint(gatewayEp, yarnUiEndpointName, yarnHistoryDescription, '/gateway/default/yarn'));
@@ -54,14 +55,14 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 			}
 
 			endpointsArray = endpointsArray.map(e => {
-				e.description = getEndpointDisplayText(e.serviceName, e.description);
+				e.description = getEndpointDisplayText(e.name, e.description);
 				return e;
 			});
 
 			// Sort the endpoints. The sort method is that SQL Server Master is first - followed by all
 			// others in alphabetical order by endpoint
-			const sqlServerMasterEndpoints = endpointsArray.filter(e => e.serviceName === Endpoint.sqlServerMaster);
-			endpointsArray = endpointsArray.filter(e => e.serviceName !== Endpoint.sqlServerMaster)
+			const sqlServerMasterEndpoints = endpointsArray.filter(e => e.name === Endpoint.sqlServerMaster);
+			endpointsArray = endpointsArray.filter(e => e.name !== Endpoint.sqlServerMaster)
 				.sort((e1, e2) => e1.endpoint.localeCompare(e2.endpoint));
 			endpointsArray.unshift(...sqlServerMasterEndpoints);
 
@@ -70,7 +71,7 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 				const endPointRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
 				const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.description }).component();
 				endPointRow.addItem(nameCell, { CSSStyles: { 'width': '35%', 'font-weight': '600', 'user-select': 'text' } });
-				if (hyperlinkedEndpoints.findIndex(e => e === endpointInfo.serviceName) >= 0) {
+				if (hyperlinkedEndpoints.findIndex(e => e === endpointInfo.name) >= 0) {
 					const linkCell = view.modelBuilder.hyperlink()
 						.withProperties<azdata.HyperlinkComponentProperties>({
 							label: endpointInfo.endpoint,
@@ -111,10 +112,10 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 	});
 }
 
-function getCustomEndpoint(parentEndpoint: utils.IEndpoint, serviceName: string, description: string, serviceUrl?: string): utils.IEndpoint {
+function getCustomEndpoint(parentEndpoint: bdc.IEndpointModel, serviceName: string, description: string, serviceUrl?: string): bdc.IEndpointModel {
 	if (parentEndpoint) {
-		let endpoint: utils.IEndpoint = {
-			serviceName: serviceName,
+		let endpoint: bdc.IEndpointModel = {
+			name: serviceName,
 			description: description,
 			endpoint: parentEndpoint.endpoint + serviceUrl,
 			protocol: 'https'

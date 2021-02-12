@@ -17,14 +17,13 @@ import { BackupDialog } from 'sql/workbench/contrib/backup/browser/backupDialog'
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
 import { IBackupUiService } from 'sql/workbench/contrib/backup/common/backupUiService';
-import { find } from 'vs/base/common/arrays';
 
 export class BackupUiService implements IBackupUiService {
 	public _serviceBrand: undefined;
 	private _backupDialogs: { [providerName: string]: BackupDialog | OptionsDialog } = {};
-	private _currentProvider: string;
+	private _currentProvider?: string;
 	private _optionValues: { [optionName: string]: any } = {};
-	private _connectionUri: string;
+	private _connectionUri?: string;
 	private static _connectionUniqueId: number = 0;
 
 	private _onShowBackupEvent: Emitter<{ connection: IConnectionProfile, ownerUri: string }>;
@@ -50,8 +49,8 @@ export class BackupUiService implements IBackupUiService {
 		});
 	}
 
-	private getOptions(provider: string): azdata.ServiceOption[] {
-		let feature = find(this._capabilitiesService.getLegacyCapabilities(this._currentProvider).features, f => f.featureName === 'backup');
+	private getOptions(provider: string): azdata.ServiceOption[] | undefined {
+		let feature = this._capabilitiesService.getLegacyCapabilities(provider)?.features.find(f => f.featureName === 'backup');
 		if (feature) {
 			return feature.optionsMetadata;
 		} else {
@@ -60,22 +59,21 @@ export class BackupUiService implements IBackupUiService {
 	}
 
 	public async showBackupDialog(connection: IConnectionProfile): Promise<void> {
-		let self = this;
-		self._connectionUri = ConnectionUtils.generateUri(connection);
-		self._currentProvider = connection.providerName;
-		let backupDialog = self._backupDialogs[self._currentProvider];
+		this._connectionUri = ConnectionUtils.generateUri(connection);
+		this._currentProvider = connection.providerName;
+		let backupDialog = this._backupDialogs[this._currentProvider];
 		if (!backupDialog) {
 			let backupOptions = this.getOptions(this._currentProvider);
 			if (backupOptions) {
-				backupDialog = self._instantiationService ? self._instantiationService.createInstance(
-					OptionsDialog, 'Backup database - ' + connection.serverName + ':' + connection.databaseName, 'BackupOptions', undefined) : undefined;
+				backupDialog = this._instantiationService.createInstance(
+					OptionsDialog, 'Backup database - ' + connection.serverName + ':' + connection.databaseName, 'BackupOptions', undefined);
 				backupDialog.onOk(() => this.handleOptionDialogClosed());
 			}
 			else {
-				backupDialog = self._instantiationService ? self._instantiationService.createInstance(BackupDialog) : undefined;
+				backupDialog = this._instantiationService.createInstance(BackupDialog);
 			}
 			backupDialog.render();
-			self._backupDialogs[self._currentProvider] = backupDialog;
+			this._backupDialogs[this._currentProvider] = backupDialog;
 		}
 
 		let backupOptions = this.getOptions(this._currentProvider);
@@ -90,7 +88,7 @@ export class BackupUiService implements IBackupUiService {
 		BackupUiService._connectionUniqueId++;
 
 		if (backupOptions) {
-			(backupDialog as OptionsDialog).open(backupOptions, self._optionValues);
+			(backupDialog as OptionsDialog).open(backupOptions, this._optionValues);
 		} else {
 			(backupDialog as BackupDialog).open(connection);
 		}
@@ -103,22 +101,25 @@ export class BackupUiService implements IBackupUiService {
 	}
 
 	public onShowBackupDialog() {
-		let backupDialog = this._backupDialogs[this._currentProvider];
-		if (backupDialog) {
-			backupDialog.setInitialFocusedElement();
+		if (this._currentProvider) {
+			let backupDialog = this._backupDialogs[this._currentProvider];
+			if (backupDialog) {
+				backupDialog.setInitialFocusedElement();
+			}
 		}
 	}
 
 	public closeBackup() {
-		let self = this;
-		let backupDialog = self._backupDialogs[self._currentProvider];
-		if (backupDialog) {
-			backupDialog.close();
+		if (this._currentProvider) {
+			let backupDialog = this._backupDialogs[this._currentProvider];
+			if (backupDialog) {
+				backupDialog.close();
+			}
 		}
 	}
 
 	private handleOptionDialogClosed() {
-		this._disasterRecoveryService.backup(this._connectionUri, this._optionValues, TaskExecutionMode.executeAndScript);
+		this._disasterRecoveryService.backup(this._connectionUri!, this._optionValues, TaskExecutionMode.executeAndScript);
 	}
 
 }

@@ -30,7 +30,7 @@ import { NotebookSearchWidget, INotebookExplorerSearchOptions } from 'sql/workbe
 import * as Constants from 'sql/workbench/contrib/notebook/common/constants';
 import { IChangeEvent } from 'vs/workbench/contrib/search/common/searchModel';
 import { Delayer } from 'vs/base/common/async';
-import { ITextQuery, IPatternInfo, IFolderQuery } from 'vs/workbench/services/search/common/search';
+import { ITextQuery, IPatternInfo } from 'vs/workbench/services/search/common/search';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { QueryBuilder, ITextQueryBuilderOptions } from 'vs/workbench/contrib/search/common/queryBuilder';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -39,6 +39,7 @@ import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/noteb
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import { isString } from 'vs/base/common/types';
+import { TreeViewPane } from 'vs/workbench/browser/parts/views/treeView';
 
 export const VIEWLET_ID = 'workbench.view.notebooks';
 
@@ -125,7 +126,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		@IMenuService private menuService: IMenuService,
 		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
-		@IFileService private readonly fileService: IFileService,
+		@IFileService private readonly fileService: IFileService
 	) {
 		super(VIEWLET_ID, { mergeViewWithContainerWhenSingleView: true }, instantiationService, configurationService, layoutService, contextMenuService, telemetryService, extensionService, themeService, storageService, contextService, viewDescriptorService);
 		this.inputBoxFocused = Constants.InputBoxFocusedKey.bindTo(this.contextKeyService);
@@ -264,15 +265,22 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			if (this.views.length > 1) {
 				let filesToIncludeFiltered: string = '';
 				this.views.forEach(async (v) => {
-					const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(v.id));
-					let items = await treeView?.dataProvider.getChildren();
-					items?.forEach(root => {
-						this.updateViewletsState();
-						let folderToSearch: IFolderQuery = { folder: URI.file(path.join(isString(root.tooltip) ? root.tooltip : root.tooltip.value, 'content')) };
-						query.folderQueries.push(folderToSearch);
-						filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
-						this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
-					});
+					if (v instanceof TreeViewPane) {
+						const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView(v.id));
+						if (treeView.dataProvider) {
+							let items = await treeView?.dataProvider.getChildren(treeView?.root);
+							items?.forEach(root => {
+								if (root.contextValue !== 'pinnedNotebook') {
+									this.updateViewletsState();
+									let rootFolder = URI.file(isString(root.tooltip) ? root.tooltip : root.tooltip.value);
+									let folderToSearch = { folder: rootFolder };
+									query.folderQueries.push(folderToSearch);
+									filesToIncludeFiltered = filesToIncludeFiltered + path.join(folderToSearch.folder.fsPath, '**', '*.md') + ',' + path.join(folderToSearch.folder.fsPath, '**', '*.ipynb') + ',';
+									this.searchView.startSearch(query, null, filesToIncludeFiltered, false, this.searchWidget);
+								}
+							});
+						}
+					}
 				});
 			}
 
@@ -293,7 +301,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 				let allViews = containerModel.allViewDescriptors;
 				allViews.forEach(v => {
 					let view = this.getView(v.id);
-					if (view !== this.searchView) {
+					if (view && view !== this.searchView) {
 						view.setExpanded(false);
 					}
 				});
@@ -348,8 +356,6 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			return undefined;
 		});
 	}
-
-
 
 	async refreshTree(event?: IChangeEvent): Promise<void> {
 		await this.searchView.refreshTree(event);

@@ -199,7 +199,7 @@ function resolveIconPath(extension: IExtensionPointUser<any>): void {
 
 	let baseDir = extension.description.extensionLocation.fsPath;
 	let properties: ConnectionProviderProperties = extension.value;
-	if (Array.isArray<ConnectionProviderProperties>(properties)) {
+	if (Array.isArray(properties)) {
 		for (let p of properties) {
 			toAbsolutePath(p['iconPath']);
 		}

@@ -33,9 +33,9 @@ export interface NotebookExecutionResult {
 }
 
 export interface INotebookService {
-	launchNotebook(notebook: string | NotebookPathInfo): Promise<azdata.nb.NotebookEditor>;
-	launchNotebookWithEdits(notebook: string | NotebookPathInfo, cellStatements: string[], insertionPosition?: number): Promise<void>;
-	launchNotebookWithContent(title: string, content: string): Promise<azdata.nb.NotebookEditor>;
+	openNotebook(notebook: string | NotebookPathInfo): Promise<azdata.nb.NotebookEditor>;
+	openNotebookWithEdits(notebook: string | NotebookPathInfo, cellStatements: string[], insertionPosition?: number): Promise<azdata.nb.NotebookEditor>;
+	openNotebookWithContent(title: string, content: string): Promise<azdata.nb.NotebookEditor>;
 	getNotebook(notebook: string | NotebookPathInfo): Promise<Notebook>;
 	getNotebookPath(notebook: string | NotebookPathInfo): string;
 	executeNotebook(notebook: any, env?: NodeJS.ProcessEnv): Promise<NotebookExecutionResult>;
@@ -47,38 +47,39 @@ export class NotebookService implements INotebookService {
 	constructor(private platformService: IPlatformService, private extensionPath: string) { }
 
 	/**
-	 * Launch notebook with file path
+	 * Open notebook with file path
 	 * @param notebook the path of the notebook
 	 */
-	async launchNotebook(notebook: string | NotebookPathInfo): Promise<azdata.nb.NotebookEditor> {
+	async openNotebook(notebook: string | NotebookPathInfo): Promise<azdata.nb.NotebookEditor> {
 		const notebookPath = await this.getNotebookFullPath(notebook);
 		return await this.showNotebookAsUntitled(notebookPath);
 	}
 
 	/**
 	 * Inserts cell code given by {@param cellStatements} in an existing notebook given by {@param notebook} file path at the location
-	 * {@param insertionPosition} and then launches the edited notebook.
+	 * {@param insertionPosition} and then opens the edited notebook.
 	 *
-	 * @param notebook - the path to notebook that needs to be launched
+	 * @param notebook - the path to notebook that needs to be opened
 	 * @param cellStatements - array of statements to be inserted in a cell
 	 * @param insertionPosition - the position at which cells are inserted. Default is a new cell at the beginning of the notebook.
 	 */
-	async launchNotebookWithEdits(notebook: string, cellStatements: string[], insertionPosition: number = 0): Promise<void> {
-		const openedNotebook = await this.launchNotebook(notebook);
+	async openNotebookWithEdits(notebook: string, cellStatements: string[], insertionPosition: number = 0): Promise<azdata.nb.NotebookEditor> {
+		const openedNotebook = await this.openNotebook(notebook);
 		await openedNotebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
 			editBuilder.insertCell({
 				cell_type: 'code',
 				source: cellStatements
 			}, insertionPosition);
 		});
+		return openedNotebook;
 	}
 
 	/**
-	 * Launch notebook with file path
+	 * Open notebook with given contents
 	 * @param title the title of the notebook
 	 * @param content the notebook content
 	 */
-	async launchNotebookWithContent(title: string, content: string): Promise<azdata.nb.NotebookEditor> {
+	async openNotebookWithContent(title: string, content: string): Promise<azdata.nb.NotebookEditor> {
 		const uri: vscode.Uri = vscode.Uri.parse(`untitled:${this.findNextUntitledEditorName(title)}`);
 		return await azdata.nb.showNotebookDocument(uri, {
 			connectionProfile: undefined,
@@ -150,11 +151,11 @@ export class NotebookService implements INotebookService {
 						platformService.logToOutputChannel(taskFailedMessage);
 						if (selectedOption === viewErrorDetail) {
 							try {
-								await this.launchNotebookWithContent(`${tempNotebookPrefix}-${getDateTimeString()}`, result.outputNotebook);
+								await this.openNotebookWithContent(`${tempNotebookPrefix}-${getDateTimeString()}`, result.outputNotebook);
 							} catch (error) {
-								const launchNotebookError = localize('resourceDeployment.FailedToOpenNotebook', "An error occurred launching the output notebook. {1}{2}.", EOL, getErrorMessage(error));
-								platformService.logToOutputChannel(launchNotebookError);
-								vscode.window.showErrorMessage(launchNotebookError);
+								const openNotebookError = localize('resourceDeployment.FailedToOpenNotebook', "An error occurred opening the output notebook. {1}{2}.", EOL, getErrorMessage(error));
+								platformService.logToOutputChannel(openNotebookError);
+								vscode.window.showErrorMessage(openNotebookError);
 							}
 						}
 					} else {

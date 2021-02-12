@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ResourceType } from 'arc';
 import * as vscode from 'vscode';
-import { ResourceType } from '../../constants';
-import { TreeNode } from './treeNode';
-import { MiaaModel } from '../../models/miaaModel';
 import { ControllerModel } from '../../models/controllerModel';
+import { MiaaModel } from '../../models/miaaModel';
 import { MiaaDashboard } from '../dashboards/miaa/miaaDashboard';
+import { TreeNode } from './treeNode';
 
 /**
  * The TreeNode for displaying a SQL Managed Instance on Azure Arc

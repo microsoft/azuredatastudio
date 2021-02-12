@@ -23,9 +23,12 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 
 CommandsRegistry.registerCommand({
 	id: openInAzureDECommandId,
-	handler: (accessor, args: TreeViewItemHandleArg) => {
+	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		const commandService = accessor.get(ICommandService);
-		return commandService.executeCommand('azure.resource.openInAzurePortal', args.$treeItem.payload);
+		const payload = args.$treeItem?.payload;
+		if (payload) {
+			commandService.executeCommand('azure.resource.openInAzurePortal', payload);
+		}
 	}
 });
 

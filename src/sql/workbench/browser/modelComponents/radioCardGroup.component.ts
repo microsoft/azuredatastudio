@@ -9,14 +9,17 @@ import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUt
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+
 import 'vs/css!./media/card';
+import 'vs/css!./media/verticalCard';
+
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { deepClone } from 'vs/base/common/objects';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./radioCardGroup.component.html'))
-
 })
-export default class RadioCardGroup extends ComponentBase implements IComponent, OnDestroy {
+export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupComponentProperties> implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	@ViewChildren('cardDiv') cardElements: QueryList<ElementRef>;
@@ -93,27 +96,44 @@ export default class RadioCardGroup extends ComponentBase implements IComponent,
 	}
 
 	public get cards(): azdata.RadioCard[] {
-		return this.getPropertyOrDefault<azdata.RadioCardGroupComponentProperties, azdata.RadioCard[]>((props) => props.cards, []);
+		return this.getProperties().cards ?? [];
 	}
 
 	public get cardWidth(): string | undefined {
-		return this.getPropertyOrDefault<azdata.RadioCardGroupComponentProperties, string | undefined>((props) => props.cardWidth, undefined);
+		return this.getProperties().cardWidth ?? undefined;
 	}
 
 	public get cardHeight(): string | undefined {
-		return this.getPropertyOrDefault<azdata.RadioCardGroupComponentProperties, string | undefined>((props) => props.cardHeight, undefined);
+		return this.getProperties().cardHeight ?? undefined;
 	}
 
 	public get iconWidth(): string | undefined {
-		return this.getPropertyOrDefault<azdata.RadioCardGroupComponentProperties, string | undefined>((props) => props.iconWidth, undefined);
+		return this.getProperties().iconWidth ?? undefined;
 	}
 
 	public get iconHeight(): string | undefined {
-		return this.getPropertyOrDefault<azdata.RadioCardGroupComponentProperties, string | undefined>((props) => props.iconHeight, undefined);
+		return this.getProperties().iconHeight ?? undefined;
 	}
 
 	public get selectedCardId(): string | undefined {
-		return this.getPropertyOrDefault<azdata.RadioCardGroupComponentProperties, string | undefined>((props) => props.selectedCardId, undefined);
+		return this.getProperties().selectedCardId ?? undefined;
+	}
+
+	public get iconPosition(): string {
+		return this.getProperties().iconPosition ?? 'top';
+	}
+
+	public isIconPositionTop(): boolean {
+		return this.iconPosition === 'top';
+	}
+
+	public isIconPositionLeft(): boolean {
+		return this.iconPosition === 'left';
+	}
+
+	public get orientation(): string {
+		const x = this.getProperties().orientation ?? 'horizontal';
+		return x;
 	}
 
 	public getIconClass(cardId: string): string {
@@ -137,11 +157,26 @@ export default class RadioCardGroup extends ComponentBase implements IComponent,
 		}
 		const cardElement = this.getCardElement(cardId);
 		cardElement.nativeElement.focus();
-		this.setPropertyFromUI<azdata.RadioCardGroupComponentProperties, string | undefined>((props, value) => props.selectedCardId = value, cardId);
+		this.setPropertyFromUI<string | undefined>((props, value) => props.selectedCardId = value, cardId);
 		this._changeRef.detectChanges();
 		this.fireEvent({
 			eventType: ComponentEventType.onDidChange,
-			args: cardId
+			args: {
+				cardId,
+				card: deepClone(this.getCardById(cardId))
+			}
+		});
+	}
+
+	public onLinkClick(event: Event, cardId: string, textContents: azdata.RadioCardDescription): void {
+		event.stopPropagation();
+		this.fireEvent({
+			eventType: ComponentEventType.onDidClick,
+			args: {
+				cardId,
+				textContents: deepClone(textContents),
+				card: deepClone(this.getCardById(cardId))
+			}
 		});
 	}
 

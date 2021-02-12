@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.model-card {
+.horizontal .model-card {
 	position: relative;
 	display: inline-block;
 	height: 90%;
@@ -16,7 +16,7 @@
 	border-color: rgb(214, 214, 214);
 }
 
-.model-card .card-content {
+.horizontal .model-card .card-content {
 	position: relative;
 	display: inline-block;
 	height: auto;
@@ -26,7 +26,8 @@
 	min-width: 30px;
 }
 
-.model-card .card-vertical-button {
+.horizontal .model-card .card-vertical-button,
+.horizontal .model-card .text-container {
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -38,17 +39,17 @@
 	min-width: 130px;
 }
 
-.model-card .card-label {
+.horizontal .model-card .card-label {
 	font-size: 12px;
 	font-weight: bold;
 }
 
-.model-card .card-value {
+.horizontal .model-card .card-value {
 	font-size: 12px;
 	line-height: 18px;
 }
 
-.model-card .iconContainer {
+.horizontal .model-card .icon-container {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -60,7 +61,7 @@
 	border-color: rgb(214, 214, 214);
 }
 
-.model-card .cardIcon {
+.horizontal .model-card .icon, .model-portal-card .cardIcon {
 	display: inline-block;
 	flex-grow: 1;
 	width: 100%;
@@ -72,7 +73,7 @@
 	background-size: contain;
 }
 
-.model-card .card-status {
+.horizontal .model-card .card-status {
 	position: absolute;
 	top: 7px;
 	left: 5px;
@@ -81,7 +82,7 @@
 	height: 22px;
 }
 
-.model-card .status-content {
+.horizontal .model-card .status-content {
 	position: absolute;
 	top: 0px;
 	right: 0px;
@@ -91,7 +92,8 @@
 	text-align: center;
 }
 
-.model-card-list-item .selection-indicator-container, .model-card .selection-indicator-container {
+.horizontal .model-card-list-item .selection-indicator-container,
+.horizontal .model-card .selection-indicator-container {
 	position: absolute;
 	top: 5px;
 	right: 5px;
@@ -105,7 +107,8 @@
 	border-style: solid;
 }
 
-.model-card-list-item .selection-indicator-container, .model-card .selection-indicator-container {
+.horizontal .model-card-list-item .selection-indicator-container,
+.horizontal .model-card .selection-indicator-container {
 	position: absolute;
 	overflow: hidden;
 	width: 16px;
@@ -117,17 +120,18 @@
 	border-style: solid;
 }
 
-.model-card-list-item .selection-indicator-container {
+.horizontal .model-card-list-item .selection-indicator-container {
 	top: 10px;
 	right: 10px;
 }
 
-.model-card .selection-indicator-container {
+.horizontal .model-card .selection-indicator-container {
 	top: 5px;
 	right: 5px;
 }
 
-.model-card-list-item .selection-indicator, .model-card .selection-indicator {
+.horizontal .model-card-list-item .selection-indicator,
+.horizontal .model-card .selection-indicator {
 	margin: 4px;
 	width: 8px;
 	height: 8px;
@@ -135,26 +139,26 @@
 	background-color: rgb(0, 120, 215);
 }
 
-.model-card .model-table {
+.horizontal .model-card .model-table {
 	border-spacing: 5px;
 }
 
-.model-table .table-row {
+.horizontal .model-table .table-row {
 	width: auto;
 	clear: both;
 }
 
-.model-table .table-cell {
+.horizontal .model-table .table-cell {
 	vertical-align: top;
 	padding: 7px;
 }
 
-.model-table a {
+.horizontal .model-table a {
 	cursor: pointer;
 	text-decoration: underline
 }
 
-.model-card-list-item {
+.horizontal .model-card-list-item {
 	display: inline-block;
 	height: 100%;
 	width: 100%;
@@ -165,14 +169,14 @@
 	vertical-align: top;
 }
 
-.model-card-list-item .list-item-content {
+.horizontal .model-card-list-item .list-item-content {
 	height: auto;
 	padding: 5px 26px 5px 5px;
 	min-height: 30px;
 	min-width: 300px;
 }
 
-.model-card-list-item .list-item-icon {
+.horizontal .model-card-list-item .list-item-icon {
 	background-position: 2px 2px;
 	padding-left: 22px;
 	font-size: 15px;
@@ -180,40 +184,75 @@
 	background-size: 16px 16px;
 }
 
-.model-card-list-item .list-item-description {
+.horizontal .model-card-list-item .list-item-description {
 	padding-left: 22px;
 }
 
-.model-card-description-container {
+.horizontal .model-card-description-container {
 	border-top-width: 1px;
 	border-top-style: solid;
 	border-color: rgb(214, 214, 214);
 	padding: 5px;
 }
 
-.model-card-list-item-description {
+.horizontal .model-card-list-item-description {
 	text-align: left;
 }
 
-.model-card-list-item-description-value {
+.horizontal .model-card-list-item-description-value {
 	float: right;
 }
 
-.card-group {
+.horizontal .card-group {
 	display: flex;
 	flex-flow: row;
 }
 
-.model-card-description-table {
+.horizontal .model-card-description-table {
 	margin-bottom: 10px;
 }
 
-.model-card-description-label-column {
+.horizontal .model-card-description-label-column {
 	text-align: left;
 	width: 100%;
 }
 
-.model-card-description-value-column {
+.horizontal .model-card-description-value-column {
 	text-align: right;
 	white-space: nowrap;
 }
+
+
+.horizontal .model-left-icon-card {
+	display: flex;
+	max-width: 365px;
+	height: calc(100% - 35px);
+	padding: 20px 15px 15px;
+}
+
+.horizontal .model-left-icon-card .left-icon-container {
+	height: 35px;
+	width: 35px;
+	flex: 0 0 35px;
+}
+
+
+.horizontal .model-left-icon-card .detail-container {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 0%;
+	padding: 0px 15px;
+	width: 77%;
+}
+
+.horizontal .model-left-icon-card .card-label {
+	margin-bottom: 12px;
+	font-weight: bold;
+	font-size: 14px;
+}
+
+.horizontal .model-left-icon-card .card-description {
+	margin-bottom: 12px;
+	font-size: 100%;
+}
+

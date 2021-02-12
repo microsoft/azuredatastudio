@@ -8,7 +8,7 @@ import 'vs/css!./media/objectTypes/objecttypes';
 import * as dom from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfile, IconPath } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { iconRenderer } from 'sql/workbench/services/objectExplorer/browser/iconRenderer';
@@ -22,6 +22,7 @@ import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
 import { ServerTreeRenderer } from 'sql/workbench/services/objectExplorer/browser/serverTreeRenderer';
 import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
+import { withNullAsUndefined } from 'vs/base/common/types';
 
 class ConnectionProfileGroupTemplate extends Disposable {
 	private _root: HTMLElement;
@@ -31,7 +32,7 @@ class ConnectionProfileGroupTemplate extends Disposable {
 		container: HTMLElement
 	) {
 		super();
-		container.parentElement.classList.add('server-group');
+		container.parentElement!.classList.add('server-group');
 		container.classList.add('server-group');
 		this._root = dom.append(container, dom.$('.server-group'));
 		this._nameContainer = dom.append(this._root, dom.$('span.name'));
@@ -76,6 +77,7 @@ class ConnectionProfileTemplate extends Disposable {
 
 	private _root: HTMLElement;
 	private _icon: HTMLElement;
+	private _connectionStatusBadge: HTMLElement;
 	private _label: HTMLElement;
 	/**
 	 * _isCompact is used to render connections tiles with and without the action buttons.
@@ -88,25 +90,26 @@ class ConnectionProfileTemplate extends Disposable {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super();
-		container.parentElement.classList.add('connection-profile');
+		container.parentElement!.classList.add('connection-profile');
 		this._root = dom.append(container, dom.$('.connection-tile'));
 		this._icon = dom.append(this._root, dom.$('div.icon server-page'));
+		this._connectionStatusBadge = dom.append(this._icon, dom.$('div.connection-status-badge'));
 		this._label = dom.append(this._root, dom.$('div.label'));
 	}
 
 	set(element: ConnectionProfile) {
 		if (!this._isCompact) {
-			let iconPath: IconPath = getIconPath(element, this._connectionManagementService);
 			if (this._connectionManagementService.isConnected(undefined, element)) {
-				this._icon.classList.remove('disconnected');
-				this._icon.classList.add('connected');
-				renderServerIcon(this._icon, iconPath, true);
+				this._connectionStatusBadge.classList.remove('disconnected');
+				this._connectionStatusBadge.classList.add('connected');
 			} else {
-				this._icon.classList.remove('connected');
-				this._icon.classList.add('disconnected');
-				renderServerIcon(this._icon, iconPath, false);
+				this._connectionStatusBadge.classList.remove('connected');
+				this._connectionStatusBadge.classList.add('disconnected');
 			}
 		}
+
+		let iconPath: IconPath | undefined = getIconPath(element, this._connectionManagementService);
+		renderServerIcon(this._icon, iconPath);
 
 		let label = element.title;
 		if (!element.isConnectionOptionsValid) {
@@ -154,7 +157,7 @@ class TreeNodeTemplate extends Disposable {
 	set(element: TreeNode) {
 		// Use an explicitly defined iconType first. If not defined, fall back to using nodeType and
 		// other compount indicators instead.
-		let iconName: string = undefined;
+		let iconName: string | undefined = undefined;
 		if (element.iconType) {
 			iconName = (typeof element.iconType === 'string') ? element.iconType : element.iconType.id;
 		} else {
@@ -169,7 +172,7 @@ class TreeNodeTemplate extends Disposable {
 
 		let tokens: string[] = [];
 		for (let index = 1; index < this._icon.classList.length; index++) {
-			tokens.push(this._icon.classList.item(index));
+			tokens.push(this._icon.classList.item(index)!);
 		}
 		this._icon.classList.remove(...tokens);
 		this._icon.classList.add('icon');
@@ -227,7 +230,7 @@ export class ServerTreeAccessibilityProvider implements IListAccessibilityProvid
 
 	getAriaLabel(element: ServerTreeElement): string | null {
 		if (element instanceof ConnectionProfileGroup) {
-			return element.fullName;
+			return element.fullName ?? null;
 		} else if (element instanceof ConnectionProfile) {
 			return element.title;
 		}
@@ -238,59 +241,50 @@ export class ServerTreeAccessibilityProvider implements IListAccessibilityProvid
 /**
  * Returns the first parent which contains the className
  */
-function findParentElement(container: HTMLElement, className: string): HTMLElement {
-	let currentElement = container;
+function findParentElement(container: HTMLElement, className: string): HTMLElement | undefined {
+	let currentElement: HTMLElement | null = container;
 	while (currentElement) {
 		if (currentElement.className.indexOf(className) > -1) {
 			break;
 		}
 		currentElement = currentElement.parentElement;
 	}
-	return currentElement;
+	return withNullAsUndefined(currentElement);
 }
 
-function getIconPath(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService): IconPath {
+function getIconPath(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService): IconPath | undefined {
 	if (!connection) { return undefined; }
 
-	if (connection['iconPath']) {
-		return connection['iconPath'];
+	if (connection.iconPath) {
+		return connection.iconPath;
 	}
 
 	let iconId = connectionManagementService.getConnectionIconId(connection.id);
-	if (!iconId) { return undefined; }
-
 	let providerProperties = connectionManagementService.getProviderProperties(connection.providerName);
 	if (!providerProperties) { return undefined; }
 
-	let iconPath: IconPath = undefined;
-	let pathConfig: URI | IconPath | { id: string, path: IconPath }[] = providerProperties['iconPath'];
+	let iconPath: IconPath | undefined = undefined;
+	let pathConfig: URI | IconPath | { id: string, path: IconPath, default?: boolean }[] | undefined = providerProperties['iconPath'];
 	if (Array.isArray(pathConfig)) {
 		for (const e of pathConfig) {
-			if (!e.id || e.id === iconId) {
+			if (!e.id || e.id === iconId || (!iconId && e.default)) {
 				iconPath = e.path;
 				connection['iconPath'] = iconPath;
 				break;
 			}
 		}
-	} else if (pathConfig['light']) {
-		iconPath = pathConfig as IconPath;
-		connection['iconPath'] = iconPath;
+	} else if (URI.isUri(pathConfig)) {
+		iconPath = { light: pathConfig, dark: pathConfig };
+		connection.iconPath = iconPath;
 	} else {
-		let singlePath = pathConfig as URI;
-		iconPath = { light: singlePath, dark: singlePath };
-		connection['iconPath'] = iconPath;
+		connection.iconPath = pathConfig;
 	}
 	return iconPath;
 }
 
-function renderServerIcon(element: HTMLElement, iconPath: IconPath, isConnected: boolean): void {
+function renderServerIcon(element: HTMLElement, iconPath?: IconPath): void {
 	if (!element) { return; }
 	if (iconPath) {
 		iconRenderer.putIcon(element, iconPath);
 	}
-}
-
-interface IconPath {
-	light: URI;
-	dark: URI;
 }

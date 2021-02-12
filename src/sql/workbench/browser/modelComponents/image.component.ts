@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 
 import * as DOM from 'vs/base/browser/dom';
+import * as azdata from 'azdata';
 import { ITitledComponent } from 'sql/workbench/browser/modelComponents/interfaces';
 import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
@@ -18,7 +19,7 @@ import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dash
 	template: `
 		<div #imageContainer [title]="title" [style.width]="getWidth()" [style.height]="getHeight()" [style.background-size]="getImageSize()">`
 })
-export default class ImageComponent extends ComponentWithIconBase implements ITitledComponent, IComponent, OnDestroy, AfterViewInit {
+export default class ImageComponent extends ComponentWithIconBase<azdata.ImageComponentProperties> implements ITitledComponent, IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	@ViewChild('imageContainer', { read: ElementRef }) imageContainer: ElementRef;

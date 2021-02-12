@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AppContext } from './appContext';
-import { IExtension, ICmsService, IDacFxService, ISchemaCompareService, MssqlObjectExplorerBrowser, ILanguageExtensionService, ISqlAssessmentService } from './mssql';
+import { IExtension, ICmsService, IDacFxService, ISchemaCompareService, MssqlObjectExplorerBrowser, ILanguageExtensionService, ISqlAssessmentService, ISqlMigrationService } from './mssql';
 import * as constants from './constants';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import * as azdata from 'azdata';
@@ -33,6 +33,9 @@ export function createMssqlApi(context: AppContext): IExtension {
 		},
 		get sqlAssessment() {
 			return context.getService<ISqlAssessmentService>(constants.SqlAssessmentService);
+		},
+		get sqlMigration() {
+			return context.getService<ISqlMigrationService>(constants.SqlMigrationService);
 		}
 	};
 }

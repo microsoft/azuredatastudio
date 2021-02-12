@@ -8,9 +8,9 @@ import * as utils from '../common/utils';
 import { IAsset } from './remoteBookController';
 
 export abstract class RemoteBook {
-	protected _localPath: vscode.Uri;
+	public localPath: vscode.Uri;
 
-	constructor(public remotePath: vscode.Uri, public outputChannel: vscode.OutputChannel, protected _asset?: IAsset) {
+	constructor(public readonly remotePath: vscode.Uri, public readonly outputChannel: vscode.OutputChannel, public readonly _asset?: IAsset) {
 		this.remotePath = remotePath;
 	}
 
@@ -21,10 +21,10 @@ export abstract class RemoteBook {
 		if (vscode.workspace.workspaceFolders !== undefined) {
 			// Get workspace root path
 			let folders = vscode.workspace.workspaceFolders;
-			this._localPath = vscode.Uri.file(folders[0].uri.fsPath);
+			this.localPath = vscode.Uri.file(folders[0].uri.fsPath);
 		} else {
 			//If no workspace folder is opened then path is Users directory
-			this._localPath = vscode.Uri.file(utils.getUserHome());
+			this.localPath = vscode.Uri.file(utils.getUserHome());
 		}
 	}
 }

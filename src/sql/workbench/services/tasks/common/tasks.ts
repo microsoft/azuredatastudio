@@ -15,7 +15,7 @@ import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation
 export interface ITaskOptions {
 	id: string;
 	title: string;
-	iconPath: { dark: string; light?: string; };
+	iconPath?: { dark: string; light?: string; };
 	description?: ITaskHandlerDescription;
 	iconClass?: string;
 }

@@ -139,6 +139,11 @@ export interface IPackageManageProvider {
 	getLocations(): Promise<IPackageLocation[]>;
 
 	/**
+	 * Get the current location
+	 */
+	getCurrentLocation(): Promise<string | undefined>;
+
+	/**
 	 * Returns Package Overview
 	 * @param packageName package name
 	 */

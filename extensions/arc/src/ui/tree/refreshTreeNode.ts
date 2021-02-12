@@ -14,7 +14,7 @@ import { refreshActionId } from '../../constants';
 export class RefreshTreeNode extends TreeNode {
 
 	constructor(private _parent: TreeNode) {
-		super(loc.refreshToEnterCredentials, vscode.TreeItemCollapsibleState.None, 'refresh');
+		super(loc.refreshToEnterCredentials, vscode.TreeItemCollapsibleState.None, '');
 	}
 
 	public command: vscode.Command = {

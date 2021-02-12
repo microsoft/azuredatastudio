@@ -6,6 +6,7 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
+import { LoadingComponentProperties } from 'azdata';
 
 declare module 'azdata' {
 	/**
@@ -34,7 +35,7 @@ declare module 'azdata' {
 			/**
 			 * Sets the trust mode for the notebook document.
 			 */
-			setTrusted(state: boolean);
+			setTrusted(state: boolean): void;
 		}
 
 		export interface IStandardKernel {
@@ -43,6 +44,12 @@ declare module 'azdata' {
 
 		export interface IKernelChangedArgs {
 			nbKernelAlias?: string
+		}
+
+		export interface IExecuteResult {
+			data: any;
+			batchId?: number;
+			id?: number;
 		}
 	}
 
@@ -95,6 +102,98 @@ declare module 'azdata' {
 	export namespace dataprotocol {
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
 		export function registerSqlAssessmentServicesProvider(provider: SqlAssessmentServicesProvider): vscode.Disposable;
+		/**
+		 * Registers a DataGridProvider which is used to provide lists of items to a data grid
+		 * @param provider The provider implementation
+		 */
+		export function registerDataGridProvider(provider: DataGridProvider): vscode.Disposable;
+	}
+
+	export enum DataProviderType {
+		DataGridProvider = 'DataGridProvider'
+	}
+
+	export type DataGridColumnType = 'hyperlink' | 'text' | 'image';
+	/**
+	 * A column in a data grid
+	 */
+	export interface DataGridColumn {
+		/**
+		* The text to display on the column heading.
+		 */
+		name: string;
+
+		/**
+		* The property name in the DataGridItem
+		 */
+		field: string;
+
+		/**
+		* A unique identifier for the column within the grid.
+		*/
+		id: string;
+
+		/**
+		 * The type of column this is. This is used to determine how to render the contents.
+		 */
+		type: DataGridColumnType;
+
+		/**
+		 * Whether this column is sortable.
+		 */
+		sortable?: boolean;
+
+		/**
+		 * Whether this column is filterable
+		 */
+		filterable?: boolean;
+
+		/**
+		 * If false, column can no longer be resized.
+		 */
+		resizable?: boolean;
+
+		/**
+		 * If set to a non-empty string, a tooltip will appear on hover containing the string.
+		 */
+		tooltip?: string;
+
+		/**
+		 * Width of the column in pixels.
+		 */
+		width?: number
+	}
+
+	/**
+	 * An item for displaying in a data grid
+	 */
+	export interface DataGridItem {
+		/**
+		 * A unique identifier for this item
+		 */
+		id: string;
+		/**
+		 * The optional icon to display for this item
+		 */
+		iconPath?: string;
+		/**
+		 * The other properties that will be displayed in the grid
+		 */
+		[key: string]: any;
+	}
+
+	/**
+	 * A data provider that provides lists of resource items for a data grid
+	 */
+	export interface DataGridProvider extends DataProvider {
+		/**
+		 * Gets the list of data grid items for this provider
+		 */
+		getDataGridItems(): Thenable<DataGridItem[]>;
+		/**
+		 * Gets the list of data grid columns for this provider
+		 */
+		getDataGridColumns(): Thenable<DataGridColumn[]>;
 	}
 
 	export interface HyperlinkComponent {
@@ -105,15 +204,24 @@ declare module 'azdata' {
 	}
 
 	export interface DeclarativeTableColumn {
-		headerCssStyles?: { [key: string]: string };
-		rowCssStyles?: { [key: string]: string };
+		headerCssStyles?: CssStyles;
+		rowCssStyles?: CssStyles;
 		ariaLabel?: string;
 		showCheckAll?: boolean;
 		isChecked?: boolean;
 	}
 
+
 	export enum DeclarativeDataType {
 		component = 'component'
+	}
+
+	export type DeclarativeTableRowSelectedEvent = {
+		row: number
+	};
+
+	export interface DeclarativeTableComponent extends Component, DeclarativeTableProperties {
+		onRowSelected: vscode.Event<DeclarativeTableRowSelectedEvent>;
 	}
 
 	/*
@@ -139,30 +247,35 @@ declare module 'azdata' {
 	}
 
 	export interface ModelBuilder {
-		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent>;
+		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent, RadioCardGroupComponentProperties>;
 		tabbedPanel(): TabbedPanelComponentBuilder;
-		separator(): ComponentBuilder<SeparatorComponent>;
-		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent>;
+		separator(): ComponentBuilder<SeparatorComponent, SeparatorComponentProperties>;
+		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent, PropertiesContainerComponentProperties>;
+	}
+
+	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
+		withProps(properties: TPropertyBag): ComponentBuilder<TComponent, TPropertyBag>;
+	}
+
+	export interface DropDownProperties extends LoadingComponentProperties {
 	}
 
 	export interface RadioCard {
 		id: string;
-		label: string;
-		descriptions?: RadioCardDescription[];
+		descriptions: RadioCardDescription[];
 		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 	}
 
 	export interface RadioCardDescription {
-		ariaLabel: string;
-		labelHeader: string;
-		contents: RadioCardLabelValuePair[];
-		valueHeader?: string;
+		textValue: string;
+		linkDisplayValue?: string;
+		displayLinkCodicon?: boolean;
+		textStyles?: CssStyles;
+		linkStyles?: CssStyles;
+		linkCodiconStyles?: CssStyles;
 	}
 
-	export interface RadioCardLabelValuePair {
-		label: string;
-		value?: string;
-	}
+	export type CssStyles = { [key: string]: string | number };
 
 	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
 		cards: RadioCard[];
@@ -171,23 +284,52 @@ declare module 'azdata' {
 		iconWidth?: string;
 		iconHeight?: string;
 		selectedCardId?: string;
+		orientation?: Orientation; // Defaults to horizontal
+		iconPosition?: 'top' | 'left'; // Defaults to top
 	}
 
+	export type RadioCardSelectionChangedEvent = { cardId: string; card: RadioCard };
+	export type RadioCardLinkClickEvent = { cardId: string, card: RadioCard, selectorText: RadioCardDescription };
+
 	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
-		onSelectionChanged: vscode.Event<any>;
+		/**
+		 * The card object returned from this function is a clone of the internal representation - changes will not impact the original object
+		 */
+		onSelectionChanged: vscode.Event<RadioCardSelectionChangedEvent>;
+
+		onLinkClick: vscode.Event<RadioCardLinkClickEvent>;
+
 	}
 
 	export interface SeparatorComponent extends Component {
 	}
+	export interface SeparatorComponentProperties extends ComponentProperties {
 
-	export interface DeclarativeTableProperties extends ComponentProperties {
+	}
+
+	export interface DeclarativeTableProperties {
+		/**
+		 * dataValues will only be used if data is an empty array
+		 */
+		dataValues?: DeclarativeTableCellValue[][];
+
+		/**
+		 * Should the table react to user selections
+		 */
+		selectEffect?: boolean; // Defaults to false
+	}
+
+	export interface DeclarativeTableCellValue {
+		value: string | number | boolean;
+		ariaLabel?: string;
+		style?: CssStyles
 	}
 
 	export interface ComponentProperties {
 		ariaHidden?: boolean;
 	}
 
-	export interface ComponentWithIconProperties {
+	export interface ComponentWithIconProperties extends ComponentProperties {
 		/**
 		 * The path for the icon with optional dark-theme away alternative
 		 */
@@ -309,12 +451,12 @@ declare module 'azdata' {
 	/**
 	 * Builder for TabbedPannelComponent
 	 */
-	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any> {
+	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties> {
 		/**
 		 * Add the tabs to the component
 		 * @param tabs tabs/tab groups to be added
 		 */
-		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any>;
+		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties>;
 	}
 
 	export interface InputBoxProperties extends ComponentProperties {
@@ -350,7 +492,7 @@ declare module 'azdata' {
 	/**
 	 * Properties for configuring a PropertiesContainerComponent
 	 */
-	export interface PropertiesContainerComponentProperties {
+	export interface PropertiesContainerComponentProperties extends ComponentProperties {
 		/**
 		 * The properties to display
 		 */
@@ -363,7 +505,6 @@ declare module 'azdata' {
 		 */
 		export const onDidChangeActiveNotebookEditor: vscode.Event<NotebookEditor>;
 	}
-
 	export namespace window {
 		export interface ModelViewDashboard {
 			registerTabs(handler: (view: ModelView) => Thenable<(DashboardTab | DashboardTabGroup)[]>): void;
@@ -372,7 +513,13 @@ declare module 'azdata' {
 			selectTab(id: string): void;
 		}
 
-		export function createModelViewDashboard(title: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
+		/**
+		 *
+		 * @param title The title displayed in the editor tab for the dashboard
+		 * @param name The name used to identify this dashboard in telemetry
+		 * @param options Options to configure the dashboard
+		 */
+		export function createModelViewDashboard(title: string, name?: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
 
 		export interface Dialog {
 			/**
@@ -382,6 +529,10 @@ declare module 'azdata' {
 		}
 
 		export interface Wizard {
+			/**
+			 * The name used to identify the wizard in telemetry
+			 */
+			name?: string;
 			/**
 			 * Width of the wizard
 			 */
@@ -401,9 +552,20 @@ declare module 'azdata' {
 		/**
 		 * Create a wizard with the given title and width
 		 * @param title The title of the wizard
+		 * @param name The name used to identify the wizard in telemetry
 		 * @param width The width of the wizard, default value is 'narrow'
 		 */
-		export function createWizard(title: string, width?: DialogWidth): Wizard;
+		export function createWizard(title: string, name?: string, width?: DialogWidth): Wizard;
+	}
+
+	export namespace workspace {
+		/**
+		 * Create a new ModelView editor
+		 * @param title The title shown in the editor tab
+		 * @param options Options to configure the editor
+		 * @param name The name used to identify the editor in telemetry
+		 */
+		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions, name?: string,): ModelViewEditor;
 	}
 
 	export interface DashboardTab extends Tab {
@@ -529,5 +691,10 @@ declare module 'azdata' {
 		 */
 		delete?: boolean;
 	}
-
+	export interface DiffEditorComponent {
+		/**
+		 * Title of editor
+		 */
+		title: string;
+	}
 }

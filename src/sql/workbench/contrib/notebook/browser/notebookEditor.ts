@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { EditorOptions } from 'vs/workbench/common/editor';
+import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
+import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -35,7 +35,7 @@ import { TimeoutTimer } from 'vs/base/common/async';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { onUnexpectedError } from 'vs/base/common/errors';
 
-export class NotebookEditor extends BaseEditor implements IFindNotebookController {
+export class NotebookEditor extends EditorPane implements IFindNotebookController {
 
 	public static ID: string = 'workbench.editor.notebookEditor';
 	private _notebookContainer: HTMLElement;
@@ -187,14 +187,14 @@ export class NotebookEditor extends BaseEditor implements IFindNotebookControlle
 		}
 	}
 
-	public async setInput(input: NotebookInput, options: EditorOptions): Promise<void> {
+	public async setInput(input: NotebookInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
 		if (this.input && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}
 
 		const parentElement = this.getContainer();
 
-		await super.setInput(input, options, CancellationToken.None);
+		await super.setInput(input, options, context, CancellationToken.None);
 		DOM.clearNode(parentElement);
 		await this.setFindInput(parentElement);
 		if (!input.hasBootstrapped) {

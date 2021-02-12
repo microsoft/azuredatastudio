@@ -23,7 +23,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 
 class ModelBuilderImpl implements azdata.ModelBuilder {
 	private nextComponentId: number;
-	private readonly _componentBuilders = new Map<string, ComponentBuilderImpl<any>>();
+	private readonly _componentBuilders = new Map<string, ComponentBuilderImpl<any, azdata.ComponentProperties>>();
 
 	constructor(
 		private readonly _proxy: MainThreadModelViewShape,
@@ -35,9 +35,9 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		this.nextComponentId = 0;
 	}
 
-	navContainer(): azdata.ContainerBuilder<azdata.NavContainer, any, any> {
+	navContainer(): azdata.ContainerBuilder<azdata.NavContainer, any, any, azdata.ComponentProperties> {
 		let id = this.getNextComponentId();
-		let container: GenericContainerBuilder<azdata.NavContainer, any, any> = new GenericContainerBuilder(this._proxy, this._handle, ModelComponentTypes.NavContainer, id);
+		let container: GenericContainerBuilder<azdata.NavContainer, any, any, azdata.ComponentProperties> = new GenericContainerBuilder(this._proxy, this._handle, ModelComponentTypes.NavContainer, id);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
@@ -51,14 +51,14 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 
 	flexContainer(): azdata.FlexBuilder {
 		let id = this.getNextComponentId();
-		let container: GenericContainerBuilder<azdata.FlexContainer, any, any> = new GenericContainerBuilder<azdata.FlexContainer, azdata.FlexLayout, azdata.FlexItemLayout>(this._proxy, this._handle, ModelComponentTypes.FlexContainer, id);
+		let container: GenericContainerBuilder<azdata.FlexContainer, any, any, azdata.ComponentProperties> = new GenericContainerBuilder<azdata.FlexContainer, azdata.FlexLayout, azdata.FlexItemLayout, azdata.ComponentProperties>(this._proxy, this._handle, ModelComponentTypes.FlexContainer, id);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
 
 	splitViewContainer(): azdata.SplitViewBuilder {
 		let id = this.getNextComponentId();
-		let container: GenericContainerBuilder<azdata.SplitViewContainer, any, any> = new GenericContainerBuilder<azdata.SplitViewContainer, azdata.SplitViewLayout, azdata.FlexItemLayout>(this._proxy, this._handle, ModelComponentTypes.SplitViewContainer, id);
+		let container: GenericContainerBuilder<azdata.SplitViewContainer, any, any, azdata.SplitViewContainer> = new GenericContainerBuilder<azdata.SplitViewContainer, azdata.SplitViewLayout, azdata.FlexItemLayout, azdata.SplitViewContainer>(this._proxy, this._handle, ModelComponentTypes.SplitViewContainer, id);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
@@ -85,132 +85,132 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 	}
 
 	private cardDeprecationMessagePrinted = false;
-	card(): azdata.ComponentBuilder<azdata.CardComponent> {
+	card(): azdata.ComponentBuilder<azdata.CardComponent, azdata.CardProperties> {
 		if (!this.cardDeprecationMessagePrinted) {
 			this.logService.warn(`Extension '${this._extension.identifier.value}' is using card component which has been replaced by radioCardGroup. the card component will be removed in a future release.`);
 			this.cardDeprecationMessagePrinted = true;
 		}
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.CardComponent> = this.getComponentBuilder(new CardWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.CardComponent, azdata.CardProperties> = this.getComponentBuilder(new CardWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	tree<T>(): azdata.ComponentBuilder<azdata.TreeComponent<T>> {
+	tree<T>(): azdata.ComponentBuilder<azdata.TreeComponent<T>, azdata.TreeProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.TreeComponent<T>> = this.getComponentBuilder(new TreeComponentWrapper(this._extHostModelViewTree, this._proxy, this._handle, id, this._extension), id);
+		let builder: ComponentBuilderImpl<azdata.TreeComponent<T>, azdata.TreeProperties> = this.getComponentBuilder(new TreeComponentWrapper(this._extHostModelViewTree, this._proxy, this._handle, id, this._extension), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	inputBox(): azdata.ComponentBuilder<azdata.InputBoxComponent> {
+	inputBox(): azdata.ComponentBuilder<azdata.InputBoxComponent, azdata.InputBoxProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.InputBoxComponent> = this.getComponentBuilder(new InputBoxWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.InputBoxComponent, azdata.InputBoxProperties> = this.getComponentBuilder(new InputBoxWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	text(): azdata.ComponentBuilder<azdata.TextComponent> {
+	text(): azdata.ComponentBuilder<azdata.TextComponent, azdata.TextComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.TextComponent> = this.getComponentBuilder(new TextComponentWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.TextComponent, azdata.TextComponentProperties> = this.getComponentBuilder(new TextComponentWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	image(): azdata.ComponentBuilder<azdata.ImageComponent> {
+	image(): azdata.ComponentBuilder<azdata.ImageComponent, azdata.ImageComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.ImageComponent> = this.getComponentBuilder(new ImageComponentWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.ImageComponent, azdata.ImageComponentProperties> = this.getComponentBuilder(new ImageComponentWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	radioButton(): azdata.ComponentBuilder<azdata.RadioButtonComponent> {
+	radioButton(): azdata.ComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.RadioButtonComponent> = this.getComponentBuilder(new RadioButtonWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.RadioButtonComponent, azdata.RadioButtonProperties> = this.getComponentBuilder(new RadioButtonWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	checkBox(): azdata.ComponentBuilder<azdata.CheckBoxComponent> {
+	checkBox(): azdata.ComponentBuilder<azdata.CheckBoxComponent, azdata.CheckBoxProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.CheckBoxComponent> = this.getComponentBuilder(new CheckBoxWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.CheckBoxComponent, azdata.CheckBoxProperties> = this.getComponentBuilder(new CheckBoxWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	webView(): azdata.ComponentBuilder<azdata.WebViewComponent> {
+	webView(): azdata.ComponentBuilder<azdata.WebViewComponent, azdata.WebViewProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.WebViewComponent> = this.getComponentBuilder(new WebViewWrapper(this._proxy, this._handle, id, this._extension.extensionLocation), id);
+		let builder: ComponentBuilderImpl<azdata.WebViewComponent, azdata.WebViewProperties> = this.getComponentBuilder(new WebViewWrapper(this._proxy, this._handle, id, this._extension.extensionLocation), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	editor(): azdata.ComponentBuilder<azdata.EditorComponent> {
+	editor(): azdata.ComponentBuilder<azdata.EditorComponent, azdata.EditorProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.EditorComponent> = this.getComponentBuilder(new EditorWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.EditorComponent, azdata.EditorProperties> = this.getComponentBuilder(new EditorWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	diffeditor(): azdata.ComponentBuilder<azdata.DiffEditorComponent> {
+	diffeditor(): azdata.ComponentBuilder<azdata.DiffEditorComponent, azdata.DiffEditorComponent> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.DiffEditorComponent> = this.getComponentBuilder(new DiffEditorWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.DiffEditorComponent, azdata.DiffEditorComponent> = this.getComponentBuilder(new DiffEditorWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	button(): azdata.ComponentBuilder<azdata.ButtonComponent> {
+	button(): azdata.ComponentBuilder<azdata.ButtonComponent, azdata.ButtonProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.ButtonComponent> = this.getComponentBuilder(new ButtonWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.ButtonComponent, azdata.ButtonProperties> = this.getComponentBuilder(new ButtonWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	separator(): azdata.ComponentBuilder<azdata.SeparatorComponent> {
+	separator(): azdata.ComponentBuilder<azdata.SeparatorComponent, azdata.SeparatorComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.SeparatorComponent> = this.getComponentBuilder(new SeparatorWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.SeparatorComponent, azdata.SeparatorComponentProperties> = this.getComponentBuilder(new SeparatorWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	dropDown(): azdata.ComponentBuilder<azdata.DropDownComponent> {
+	dropDown(): azdata.ComponentBuilder<azdata.DropDownComponent, azdata.DropDownProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.DropDownComponent> = this.getComponentBuilder(new DropDownWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.DropDownComponent, azdata.DropDownProperties> = this.getComponentBuilder(new DropDownWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	listBox(): azdata.ComponentBuilder<azdata.ListBoxComponent> {
+	listBox(): azdata.ComponentBuilder<azdata.ListBoxComponent, azdata.ListBoxProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.ListBoxComponent> = this.getComponentBuilder(new ListBoxWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.ListBoxComponent, azdata.ListBoxProperties> = this.getComponentBuilder(new ListBoxWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	table(): azdata.ComponentBuilder<azdata.TableComponent> {
+	table(): azdata.ComponentBuilder<azdata.TableComponent, azdata.TableComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.TableComponent> = this.getComponentBuilder(new TableComponentWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.TableComponent, azdata.TableComponentProperties> = this.getComponentBuilder(new TableComponentWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	declarativeTable(): azdata.ComponentBuilder<azdata.DeclarativeTableComponent> {
+	declarativeTable(): azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.DeclarativeTableComponent> = this.getComponentBuilder(new DeclarativeTableWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties> = this.getComponentBuilder(new DeclarativeTableWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	dashboardWidget(widgetId: string): azdata.ComponentBuilder<azdata.DashboardWidgetComponent> {
+	dashboardWidget(widgetId: string): azdata.ComponentBuilder<azdata.DashboardWidgetComponent, azdata.ComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder = this.getComponentBuilder<azdata.DashboardWidgetComponent>(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWidget, id), id);
+		let builder = this.getComponentBuilder<azdata.DashboardWidgetComponent, azdata.ComponentProperties>(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWidget, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	dashboardWebview(webviewId: string): azdata.ComponentBuilder<azdata.DashboardWebviewComponent> {
+	dashboardWebview(webviewId: string): azdata.ComponentBuilder<azdata.DashboardWebviewComponent, azdata.ComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.DashboardWebviewComponent> = this.getComponentBuilder(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWebview, id), id);
+		let builder: ComponentBuilderImpl<azdata.DashboardWebviewComponent, azdata.ComponentProperties> = this.getComponentBuilder(new ComponentWrapper(this._proxy, this._handle, ModelComponentTypes.DashboardWebview, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -222,30 +222,30 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
-	fileBrowserTree(): azdata.ComponentBuilder<azdata.FileBrowserTreeComponent> {
+	fileBrowserTree(): azdata.ComponentBuilder<azdata.FileBrowserTreeComponent, azdata.FileBrowserTreeProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.FileBrowserTreeComponent> = this.getComponentBuilder(new FileBrowserTreeComponentWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.FileBrowserTreeComponent, azdata.FileBrowserTreeProperties> = this.getComponentBuilder(new FileBrowserTreeComponentWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	dom(): azdata.ComponentBuilder<azdata.DomComponent> {
+	dom(): azdata.ComponentBuilder<azdata.DomComponent, azdata.DomProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.DomComponent> = this.getComponentBuilder(new DomComponentWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.DomComponent, azdata.DomProperties> = this.getComponentBuilder(new DomComponentWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	hyperlink(): azdata.ComponentBuilder<azdata.HyperlinkComponent> {
+	hyperlink(): azdata.ComponentBuilder<azdata.HyperlinkComponent, azdata.HyperlinkComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.HyperlinkComponent> = this.getComponentBuilder(new HyperlinkComponentWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.HyperlinkComponent, azdata.HyperlinkComponentProperties> = this.getComponentBuilder(new HyperlinkComponentWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	radioCardGroup(): azdata.ComponentBuilder<azdata.RadioCardGroupComponent> {
+	radioCardGroup(): azdata.ComponentBuilder<azdata.RadioCardGroupComponent, azdata.RadioCardGroupComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.RadioCardGroupComponent> = this.getComponentBuilder(new RadioCardGroupComponentWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.RadioCardGroupComponent, azdata.RadioCardGroupComponentProperties> = this.getComponentBuilder(new RadioCardGroupComponentWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -257,16 +257,16 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
-	propertiesContainer(): azdata.ComponentBuilder<azdata.PropertiesContainerComponent> {
+	propertiesContainer(): azdata.ComponentBuilder<azdata.PropertiesContainerComponent, azdata.PropertiesContainerComponentProperties> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.PropertiesContainerComponent> = this.getComponentBuilder(new PropertiesContainerComponentWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<azdata.PropertiesContainerComponent, azdata.PropertiesContainerComponentProperties> = this.getComponentBuilder(new PropertiesContainerComponentWrapper(this._proxy, this._handle, id), id);
 
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
 
-	getComponentBuilder<T extends azdata.Component>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T> {
-		let componentBuilder: ComponentBuilderImpl<T> = new ComponentBuilderImpl<T>(component);
+	getComponentBuilder<T extends azdata.Component, TPropertyBag extends azdata.ComponentProperties>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T, TPropertyBag> {
+		let componentBuilder: ComponentBuilderImpl<T, TPropertyBag> = new ComponentBuilderImpl<T, TPropertyBag>(component);
 		this._componentBuilders.set(id, componentBuilder);
 		return componentBuilder;
 	}
@@ -292,7 +292,7 @@ interface IWithEventHandler {
 	handleEvent(eventArgs: IComponentEventArgs): void;
 }
 
-class ComponentBuilderImpl<T extends azdata.Component> implements azdata.ComponentBuilder<T>, IWithEventHandler {
+class ComponentBuilderImpl<T extends azdata.Component, TPropertyBag extends azdata.ComponentProperties> implements azdata.ComponentBuilder<T, TPropertyBag>, IWithEventHandler {
 
 	constructor(protected _component: ComponentWrapper) {
 		_component.registerEvent();
@@ -306,13 +306,18 @@ class ComponentBuilderImpl<T extends azdata.Component> implements azdata.Compone
 		return this._component;
 	}
 
-	withProperties<U>(properties: U): azdata.ComponentBuilder<T> {
+	withProperties<U>(properties: U): azdata.ComponentBuilder<T, TPropertyBag> {
 		// Keep any properties that may have been set during initial object construction
 		this._component.properties = assign({}, this._component.properties, properties);
 		return this;
 	}
 
-	withValidation(validation: (component: T) => boolean): azdata.ComponentBuilder<T> {
+	withProps(properties: TPropertyBag): azdata.ComponentBuilder<T, TPropertyBag> {
+		this._component.properties = assign({}, this._component.properties, properties);
+		return this;
+	}
+
+	withValidation(validation: (component: T) => boolean): azdata.ComponentBuilder<T, TPropertyBag> {
 		this._component.customValidations.push(validation);
 		return this;
 	}
@@ -322,17 +327,17 @@ class ComponentBuilderImpl<T extends azdata.Component> implements azdata.Compone
 	}
 }
 
-class ContainerBuilderImpl<T extends azdata.Component, TLayout, TItemLayout> extends ComponentBuilderImpl<T> implements azdata.ContainerBuilder<T, TLayout, TItemLayout> {
+class ContainerBuilderImpl<TComponent extends azdata.Component, TLayout, TItemLayout, TPropertyBag extends azdata.ComponentProperties> extends ComponentBuilderImpl<TComponent, TPropertyBag> implements azdata.ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag> {
 	constructor(componentWrapper: ComponentWrapper) {
 		super(componentWrapper);
 	}
 
-	withLayout(layout: TLayout): azdata.ContainerBuilder<T, TLayout, TItemLayout> {
+	withLayout(layout: TLayout): azdata.ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag> {
 		this._component.layout = layout;
 		return this;
 	}
 
-	withItems(components: azdata.Component[], itemLayout?: TItemLayout): azdata.ContainerBuilder<T, TLayout, TItemLayout> {
+	withItems(components: azdata.Component[], itemLayout?: TItemLayout): azdata.ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag> {
 		this._component.itemConfigs = components.map(item => {
 			let componentWrapper = item as ComponentWrapper;
 			return new InternalItemConfig(componentWrapper, itemLayout);
@@ -341,19 +346,19 @@ class ContainerBuilderImpl<T extends azdata.Component, TLayout, TItemLayout> ext
 	}
 }
 
-class GenericContainerBuilder<T extends azdata.Component, TLayout, TItemLayout> extends ContainerBuilderImpl<T, TLayout, TItemLayout> {
+class GenericContainerBuilder<T extends azdata.Component, TLayout, TItemLayout, TPropertyBag extends azdata.ComponentProperties> extends ContainerBuilderImpl<T, TLayout, TItemLayout, TPropertyBag> {
 	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
 		super(new ComponentWrapper(proxy, handle, type, id));
 	}
 }
 
-class DivContainerBuilder extends ContainerBuilderImpl<azdata.DivContainer, azdata.DivLayout, azdata.DivItemLayout> {
+class DivContainerBuilder extends ContainerBuilderImpl<azdata.DivContainer, azdata.DivLayout, azdata.DivItemLayout, azdata.DivContainerProperties> {
 	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
 		super(new DivContainerWrapper(proxy, handle, type, id));
 	}
 }
 
-class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer, azdata.FormLayout, azdata.FormItemLayout> implements azdata.FormBuilder {
+class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer, azdata.FormLayout, azdata.FormItemLayout, azdata.ComponentProperties> implements azdata.FormBuilder {
 	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string, private _builder: ModelBuilderImpl) {
 		super(proxy, handle, type, id);
 	}
@@ -471,14 +476,14 @@ class FormContainerBuilder extends GenericContainerBuilder<azdata.FormContainer,
 	}
 }
 
-class GroupContainerBuilder extends ContainerBuilderImpl<azdata.GroupContainer, azdata.GroupLayout, azdata.GroupItemLayout> {
+class GroupContainerBuilder extends ContainerBuilderImpl<azdata.GroupContainer, azdata.GroupLayout, azdata.GroupItemLayout, azdata.GroupContainerProperties> {
 	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
 		super(new GroupContainerComponentWrapper(proxy, handle, type, id));
 	}
 }
 
-class ToolbarContainerBuilder extends GenericContainerBuilder<azdata.ToolbarContainer, azdata.ToolbarLayout, any> implements azdata.ToolbarBuilder {
-	withToolbarItems(components: azdata.ToolbarComponent[]): azdata.ContainerBuilder<azdata.ToolbarContainer, any, any> {
+class ToolbarContainerBuilder extends GenericContainerBuilder<azdata.ToolbarContainer, azdata.ToolbarLayout, any, azdata.ComponentProperties> implements azdata.ToolbarBuilder {
+	withToolbarItems(components: azdata.ToolbarComponent[]): azdata.ContainerBuilder<azdata.ToolbarContainer, any, any, azdata.ComponentProperties> {
 		this._component.itemConfigs = components.map(item => {
 			return this.convertToItemConfig(item);
 		});
@@ -506,8 +511,8 @@ class ToolbarContainerBuilder extends GenericContainerBuilder<azdata.ToolbarCont
 	}
 }
 
-class TabbedPanelComponentBuilder extends ContainerBuilderImpl<azdata.TabbedPanelComponent, azdata.TabbedPanelLayout, any> implements azdata.TabbedPanelComponentBuilder {
-	withTabs(items: (azdata.Tab | azdata.TabGroup)[]): azdata.ContainerBuilder<azdata.TabbedPanelComponent, azdata.TabbedPanelLayout, any> {
+class TabbedPanelComponentBuilder extends ContainerBuilderImpl<azdata.TabbedPanelComponent, azdata.TabbedPanelLayout, any, azdata.ComponentProperties> implements azdata.TabbedPanelComponentBuilder {
+	withTabs(items: (azdata.Tab | azdata.TabGroup)[]): azdata.ContainerBuilder<azdata.TabbedPanelComponent, azdata.TabbedPanelLayout, any, azdata.ComponentProperties> {
 		this._component.itemConfigs = createFromTabs(items);
 		return this;
 	}
@@ -537,7 +542,7 @@ function toTabItemConfig(content: azdata.Component, title: string, id?: string, 
 	});
 }
 
-class LoadingComponentBuilder extends ComponentBuilderImpl<azdata.LoadingComponent> implements azdata.LoadingComponentBuilder {
+class LoadingComponentBuilder extends ComponentBuilderImpl<azdata.LoadingComponent, azdata.LoadingComponentProperties> implements azdata.LoadingComponentBuilder {
 	withItem(component: azdata.Component) {
 		this.component().component = component;
 		return this;
@@ -1230,6 +1235,14 @@ class DiffEditorWrapper extends ComponentWrapper implements azdata.DiffEditorCom
 	public set editorUriRight(v: string) {
 		this.setProperty('editorUriRight', v);
 	}
+
+	public get title(): string {
+		return this.properties['title'];
+	}
+
+	public set title(v: string) {
+		this.setProperty('title', v);
+	}
 }
 
 class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonComponent {
@@ -1437,6 +1450,22 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 		this.setProperty('fireOnTextChange', v);
 	}
 
+	public get loading(): boolean {
+		return this.properties['loading'];
+	}
+
+	public set loading(v: boolean) {
+		this.setProperty('loading', v);
+	}
+
+	public get loadingText(): string {
+		return this.properties['loadingText'];
+	}
+
+	public set loadingText(v: string) {
+		this.setProperty('loadingText', v);
+	}
+
 	public get onValueChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
@@ -1449,13 +1478,24 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		super(proxy, handle, ModelComponentTypes.DeclarativeTable, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+
 	}
 
 	public get data(): any[][] {
 		return this.properties['data'];
 	}
+
 	public set data(v: any[][]) {
 		this.setProperty('data', v);
+	}
+
+	public get dataValues(): azdata.DeclarativeTableCellValue[][] {
+		return this.properties['dataValues'];
+	}
+
+	public set dataValues(v: azdata.DeclarativeTableCellValue[][]) {
+		this.setProperty('dataValues', v);
 	}
 
 	public get columns(): azdata.DeclarativeTableColumn[] {
@@ -1471,8 +1511,21 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		return emitter && emitter.event;
 	}
 
+	public get onRowSelected(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
+	}
+
 	protected notifyPropertyChanged(): Thenable<void> {
 		return this._proxy.$setProperties(this._handle, this._id, this.getPropertiesForMainThread());
+	}
+
+	public get selectEffect(): boolean | undefined {
+		return this.properties['selectEffect'];
+	}
+
+	public set selectEffect(v: boolean | undefined) {
+		this.setProperty('selectEffect', v);
 	}
 
 	public toComponentShape(): IComponentShape {
@@ -1696,7 +1749,9 @@ class RadioCardGroupComponentWrapper extends ComponentWrapper implements azdata.
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.RadioCardGroup, id);
 		this.properties = {};
-		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<azdata.RadioCardSelectionChangedEvent>());
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<azdata.RadioCardLinkClickEvent>());
 	}
 
 	public get iconWidth(): string | undefined {
@@ -1746,8 +1801,21 @@ class RadioCardGroupComponentWrapper extends ComponentWrapper implements azdata.
 		this.setProperty('selectedCardId', v);
 	}
 
-	public get onSelectionChanged(): vscode.Event<any> {
+	public get orientation(): azdata.Orientation | undefined {
+		return this.properties['orientation'];
+	}
+
+	public set orientation(orientation: azdata.Orientation | undefined) {
+		this.setProperty('orientation', orientation);
+	}
+
+	public get onSelectionChanged(): vscode.Event<azdata.RadioCardSelectionChangedEvent> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+
+	public get onLinkClick(): vscode.Event<azdata.RadioCardLinkClickEvent> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}
 }

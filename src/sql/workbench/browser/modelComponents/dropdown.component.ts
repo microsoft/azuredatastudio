@@ -21,26 +21,33 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { find } from 'vs/base/common/arrays';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { localize } from 'vs/nls';
 
 @Component({
 	selector: 'modelview-dropdown',
 	template: `
 
 	<div [style.width]="getWidth()">
+		<div [style.display]="getLoadingDisplay()" style="width: 100%; position: relative">
+			<div class="modelview-loadingComponent-spinner" style="position:absolute; right: 0px; margin-right: 5px; height:15px; z-index:1" #spinnerElement></div>
+			<div [style.display]="getLoadingDisplay()" #loadingBox style="width: 100%;"></div>
+		</div>
 		<div [style.display]="getEditableDisplay()" #editableDropDown style="width: 100%;"></div>
 		<div [style.display]="getNotEditableDisplay()" #dropDown style="width: 100%;"></div>
 	</div>
 	`
 })
-export default class DropDownComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class DropDownComponent extends ComponentBase<azdata.DropDownProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _editableDropdown: Dropdown;
 	private _selectBox: SelectBox;
 	private _isInAccessibilityMode: boolean;
+	private _loadingBox: SelectBox;
 
 	@ViewChild('editableDropDown', { read: ElementRef }) private _editableDropDownContainer: ElementRef;
 	@ViewChild('dropDown', { read: ElementRef }) private _dropDownContainer: ElementRef;
+	@ViewChild('loadingBox', { read: ElementRef }) private _loadingBoxContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
@@ -103,6 +110,12 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 			}));
 			this._validations.push(() => !this.required || this.editable || !!this._selectBox.value);
 		}
+
+		this._loadingBox = new SelectBox([this.getStatusText()], this.getStatusText(), this.contextViewService, this._loadingBoxContainer.nativeElement);
+		this._loadingBox.render(this._loadingBoxContainer.nativeElement);
+		this._register(this._loadingBox);
+		this._register(attachSelectBoxStyler(this._loadingBox, this.themeService));
+		this._loadingBoxContainer.nativeElement.className = ''; // Removing the dropdown arrow icon from the right
 	}
 
 	ngOnDestroy(): void {
@@ -122,6 +135,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		if (this.ariaLabel !== '') {
 			this._selectBox.setAriaLabel(this.ariaLabel);
 			this._editableDropdown.ariaLabel = this.ariaLabel;
+			this._loadingBox.setAriaLabel(this.ariaLabel);
 		}
 
 		if (this.editable && !this._isInAccessibilityMode) {
@@ -139,6 +153,14 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 			} else {
 				this._selectBox.disable();
 			}
+		}
+
+		if (this.loading) {
+			this._loadingBox.setOptions([this.getStatusText()]);
+			this._loadingBox.selectWithOptionName(this.getStatusText());
+			this._loadingBox.enable();
+		} else {
+			this._loadingBox.disable();
 		}
 
 		this._selectBox.selectElem.required = this.required;
@@ -186,35 +208,39 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	// CSS-bound properties
 
 	private get value(): string | azdata.CategoryValue {
-		return this.getPropertyOrDefault<azdata.DropDownProperties, string | azdata.CategoryValue>((props) => props.value, '');
+		return this.getPropertyOrDefault<string | azdata.CategoryValue>((props) => props.value, '');
 	}
 
 	private get editable(): boolean {
-		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.editable, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.editable, false);
 	}
 
 	private get fireOnTextChange(): boolean {
-		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.fireOnTextChange, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.fireOnTextChange, false);
 	}
 
 	public getEditableDisplay(): string {
-		return this.editable && !this._isInAccessibilityMode ? '' : 'none';
+		return (this.editable && !this._isInAccessibilityMode) && !this.loading ? '' : 'none';
 	}
 
 	public getNotEditableDisplay(): string {
-		return !this.editable || this._isInAccessibilityMode ? '' : 'none';
+		return (!this.editable || this._isInAccessibilityMode) && !this.loading ? '' : 'none';
+	}
+
+	public getLoadingDisplay(): string {
+		return this.loading ? '' : 'none';
 	}
 
 	private set value(newValue: string | azdata.CategoryValue) {
-		this.setPropertyFromUI<azdata.DropDownProperties, string | azdata.CategoryValue>(this.setValueProperties, newValue);
+		this.setPropertyFromUI<string | azdata.CategoryValue>(this.setValueProperties, newValue);
 	}
 
 	private get values(): string[] | azdata.CategoryValue[] {
-		return this.getPropertyOrDefault<azdata.DropDownProperties, string[] | azdata.CategoryValue[]>((props) => props.values, []);
+		return this.getPropertyOrDefault<string[] | azdata.CategoryValue[]>((props) => props.values, []);
 	}
 
 	private set values(newValue: string[] | azdata.CategoryValue[]) {
-		this.setPropertyFromUI<azdata.DropDownProperties, string[] | azdata.CategoryValue[]>(this.setValuesProperties, newValue);
+		this.setPropertyFromUI<string[] | azdata.CategoryValue[]>(this.setValuesProperties, newValue);
 	}
 
 	private setValueProperties(properties: azdata.DropDownProperties, value: string | azdata.CategoryValue): void {
@@ -226,11 +252,11 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	}
 
 	public get required(): boolean {
-		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.required, false);
+		return this.getPropertyOrDefault<boolean>((props) => props.required, false);
 	}
 
 	public set required(newValue: boolean) {
-		this.setPropertyFromUI<azdata.DropDownProperties, boolean>((props, value) => props.required = value, newValue);
+		this.setPropertyFromUI<boolean>((props, value) => props.required = value, newValue);
 	}
 
 	public focus(): void {
@@ -239,5 +265,25 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 		} else {
 			this._selectBox.focus();
 		}
+	}
+
+	public get showText(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.showText, false);
+	}
+
+	public get loading(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.loading, false);
+	}
+
+	public get loadingText(): string {
+		return this.getPropertyOrDefault<string>((props) => props.loadingText, localize('loadingMessage', "Loading"));
+	}
+
+	public get loadingCompletedText(): string {
+		return this.getPropertyOrDefault<string>((props) => props.loadingCompletedText, localize('loadingCompletedMessage', "Loading completed"));
+	}
+
+	public getStatusText(): string {
+		return this.loading ? this.loadingText : this.loadingCompletedText;
 	}
 }

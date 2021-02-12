@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
+import * as loc from '../../localizedConstants';
 import { INotebookService, Notebook } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
 import { Model } from '../model';
@@ -13,8 +13,6 @@ import { DeploymentType, NotebookWizardInfo } from './../../interfaces';
 import { IPlatformService } from './../../services/platformService';
 import { NotebookWizardAutoSummaryPage } from './notebookWizardAutoSummaryPage';
 import { NotebookWizardPage } from './notebookWizardPage';
-
-const localize = nls.loadMessageBundle();
 
 export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPage, Model> {
 	private _inputComponents: InputComponents = {};
@@ -35,12 +33,13 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 		return this._inputComponents;
 	}
 
-	constructor(private _wizardInfo: NotebookWizardInfo, private _notebookService: INotebookService, private _platformService: IPlatformService, private _toolsService: IToolsService) {
-		super(_wizardInfo.title, new Model());
+	constructor(private _wizardInfo: NotebookWizardInfo, private _notebookService: INotebookService, private _platformService: IPlatformService, toolsService: IToolsService) {
+		super(_wizardInfo.title, _wizardInfo.name || '', new Model(), toolsService);
 		if (this._wizardInfo.codeCellInsertionPosition === undefined) {
 			this._wizardInfo.codeCellInsertionPosition = 0;
 		}
-		this.wizardObject.doneButton.label = _wizardInfo.actionText || this.wizardObject.doneButton.label;
+		this.wizardObject.doneButton.label = _wizardInfo.doneAction?.label || loc.deployNotebook;
+		this.wizardObject.generateScriptButton.label = _wizardInfo.scriptAction?.label || loc.scriptToNotebook;
 	}
 
 	public get deploymentType(): DeploymentType | undefined {
@@ -49,17 +48,37 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 
 	protected initialize(): void {
 		this.setPages(this.getPages());
-		this.wizardObject.generateScriptButton.hidden = true;
-		this.wizardInfo.actionText = this.wizardInfo.actionText || localize('notebookWizard.ScriptToNotebook', "Script to Notebook");
-		this.wizardObject.doneButton.label = this.wizardInfo.actionText;
 	}
 
 	protected onCancel(): void {
 	}
 
+	protected async onGenerateScript(): Promise<void> {
+		try {
+			const notebook = await this.prepareNotebookAndEnvironment();
+			await this.openNotebook(notebook);
+		} catch (error) {
+			vscode.window.showErrorMessage(error);
+		}
+	}
 	protected async onOk(): Promise<void> {
-		setModelValues(this.inputComponents, this.model);
-		const env: NodeJS.ProcessEnv = {};
+		try {
+			const notebook = await this.prepareNotebookAndEnvironment();
+			const openedNotebook = await this.openNotebook(notebook);
+			openedNotebook.runAllCells();
+		} catch (error) {
+			vscode.window.showErrorMessage(error);
+		}
+	}
+
+	private async openNotebook(notebook: Notebook) {
+		const notebookPath = this.notebookService.getNotebookPath(this.wizardInfo.notebook);
+		return await this.notebookService.openNotebookWithContent(notebookPath, JSON.stringify(notebook, undefined, 4));
+	}
+
+	private async prepareNotebookAndEnvironment() {
+		await setModelValues(this.inputComponents, this.model);
+		const env: NodeJS.ProcessEnv = process.env;
 		this.model.setEnvironmentVariables(env, (varName) => {
 			const isPassword = !!this.inputComponents[varName]?.isPassword;
 			return isPassword;
@@ -67,7 +86,7 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 		const notebook: Notebook = await this.notebookService.getNotebook(this.wizardInfo.notebook);
 		// generate python code statements for all variables captured by the wizard
 		const statements = this.model.getCodeCellContentForNotebook(
-			this._toolsService.toolsForCurrentProvider,
+			this.toolsService.toolsForCurrentProvider,
 			(varName) => {
 				const isPassword = !!this.inputComponents[varName]?.isPassword;
 				return !isPassword;
@@ -85,17 +104,7 @@ export class NotebookWizard extends WizardBase<NotebookWizard, NotebookWizardPag
 				execution_count: 0
 			}
 		);
-		try {
-			if (this.wizardInfo.runNotebook) {
-				this.notebookService.backgroundExecuteNotebook(this.wizardInfo.taskName, notebook, 'deploy', this.platformService, env);
-			} else {
-				Object.assign(process.env, env);
-				const notebookPath = this.notebookService.getNotebookPath(this.wizardInfo.notebook);
-				await this.notebookService.launchNotebookWithContent(notebookPath, JSON.stringify(notebook, undefined, 4));
-			}
-		} catch (error) {
-			vscode.window.showErrorMessage(error);
-		}
+		return notebook;
 	}
 
 	private getPages(): NotebookWizardPage[] {

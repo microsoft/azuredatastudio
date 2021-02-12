@@ -130,3 +130,9 @@ asmtview-component .asmtview-grid .slick-cell.error-row {
 	position: relative;
 	top: 50px;
 }
+
+#asmtDiv .ellps {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}

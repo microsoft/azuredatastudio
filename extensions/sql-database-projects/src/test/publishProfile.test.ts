@@ -43,16 +43,14 @@ describe('Publish profile tests', function (): void {
 		testContext.dacFxService.setup(x => x.getOptionsFromProfile(TypeMoq.It.isAny())).returns(async () => {
 			return Promise.resolve(mockDacFxOptionsResult);
 		});
-		const connectionString = 'Data Source=testserver;Integrated Security=true;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True';
 		sinon.stub(azdata.connection, 'connect').resolves(connectionResult);
-		sinon.stub(azdata.connection, 'getConnectionString').resolves(connectionString);
 
 		let result = await load(vscode.Uri.file(profilePath), testContext.dacFxService.object);
 		should(result.databaseName).equal('targetDb');
 		should(Object.keys(result.sqlCmdVariables).length).equal(1);
 		should(result.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
 		should(result.connectionId).equal('connId');
-		should(result.connectionString).equal('Data Source=testserver;Integrated Security=true;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True');
+		should(result.connection).equal('testserver (default)');
 		should(result.options).equal(mockDacFxOptionsResult.deploymentOptions);
 	});
 
@@ -62,21 +60,22 @@ describe('Publish profile tests', function (): void {
 		const connectionResult = {
 			providerName: 'MSSQL',
 			connectionId: 'connId',
-			options: {}
+			options: {
+				'server': 'testserver',
+				'user': 'testUser'
+			}
 		};
 		testContext.dacFxService.setup(x => x.getOptionsFromProfile(TypeMoq.It.isAny())).returns(async () => {
 			return Promise.resolve(mockDacFxOptionsResult);
 		});
-		const connectionString = 'Data Source=testserver;User Id=testUser;Password=******;Integrated Security=false;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True';
 		sinon.stub(azdata.connection, 'openConnectionDialog').resolves(connectionResult);
-		sinon.stub(azdata.connection, 'getConnectionString').resolves(connectionString);
 
 		let result = await load(vscode.Uri.file(profilePath), testContext.dacFxService.object);
 		should(result.databaseName).equal('targetDb');
 		should(Object.keys(result.sqlCmdVariables).length).equal(1);
 		should(result.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
 		should(result.connectionId).equal('connId');
-		should(result.connectionString).equal('Data Source=testserver;User Id=testUser;Password=******;Integrated Security=false;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True');
+		should(result.connection).equal('testserver (testUser)');
 		should(result.options).equal(mockDacFxOptionsResult.deploymentOptions);
 	});
 
@@ -85,9 +84,7 @@ describe('Publish profile tests', function (): void {
 		let profilePath = await testUtils.createTestFile(baselines.publishProfileIntegratedSecurityBaseline, 'publishProfile.publish.xml');
 		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
 
-		const connectionString = 'Data Source=testserver;Integrated Security=true;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True';
 		sinon.stub(azdata.connection, 'connect').throws(new Error('Could not connect'));
-		sinon.stub(azdata.connection, 'getConnectionString').resolves(connectionString);
 
 		await testUtils.shouldThrowSpecificError(async () => await projController.readPublishProfileCallback(vscode.Uri.file(profilePath)), constants.unableToCreatePublishConnection('Could not connect'));
 	});

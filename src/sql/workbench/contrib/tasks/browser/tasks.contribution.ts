@@ -24,7 +24,7 @@ import { TaskHistoryView } from 'sql/workbench/contrib/tasks/browser/tasksView';
 export class StatusUpdater extends lifecycle.Disposable implements ext.IWorkbenchContribution {
 	static ID = 'data.taskhistory.statusUpdater';
 
-	private badgeHandle: lifecycle.IDisposable;
+	private badgeHandle?: lifecycle.IDisposable;
 
 	constructor(
 		@IActivityService private readonly activityBarService: IActivityService,

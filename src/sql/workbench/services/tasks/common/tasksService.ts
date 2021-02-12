@@ -77,7 +77,7 @@ export class TaskService implements ITaskService {
 	}
 
 	public createNewTask(taskInfo: azdata.TaskInfo) {
-		let databaseName: string = taskInfo.databaseName;
+		let databaseName: string | undefined = taskInfo.databaseName;
 		let serverName: string = taskInfo.serverName;
 		if (taskInfo && taskInfo.connection) {
 			let connectionProfile = this.connectionManagementService.getConnectionProfile(taskInfo.connection.connectionId);

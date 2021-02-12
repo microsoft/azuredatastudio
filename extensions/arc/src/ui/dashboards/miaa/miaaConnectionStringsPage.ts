@@ -6,15 +6,18 @@
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
-import { KeyValueContainer, KeyValue } from '../../components/keyValueContainer';
+import { KeyValueContainer, KeyValue, InputKeyValue, MultilineInputKeyValue } from '../../components/keyValueContainer';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
+import { MiaaModel } from '../../../models/miaaModel';
+import { parseIpAndPort } from '../../../common/utils';
 
 export class MiaaConnectionStringsPage extends DashboardPage {
 
 	private _keyValueContainer!: KeyValueContainer;
+	private _connectionStringsMessage!: azdata.TextComponent;
 
-	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel) {
+	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView);
 		this.disposables.push(this._controllerModel.onRegistrationsUpdated(_ =>
 			this.eventuallyRunOnInitialized(() => this.updateConnectionStrings())));
@@ -54,6 +57,12 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 		this._keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, this.getConnectionStrings());
 		this.disposables.push(this._keyValueContainer);
 		content.addItem(this._keyValueContainer.container);
+
+		this._connectionStringsMessage = this.modelView.modelBuilder.text()
+			.withProperties<azdata.TextComponentProperties>({ CSSStyles: { 'text-align': 'center' } })
+			.component();
+		content.addItem(this._connectionStringsMessage);
+
 		this.initialized = true;
 		return root;
 	}
@@ -63,35 +72,32 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 	}
 
 	private getConnectionStrings(): KeyValue[] {
-		/*
-		const instanceRegistration = this._controllerModel.getRegistration(ResourceType.sqlManagedInstances, this._miaaModel.info.namespace, this._miaaModel.info.name);
-		if (!instanceRegistration) {
+		const config = this._miaaModel.config;
+		if (!config?.status.externalEndpoint) {
 			return [];
 		}
 
-		const ip = instanceRegistration.externalIp;
-		const port = instanceRegistration.externalPort;
+		const externalEndpoint = parseIpAndPort(config.status.externalEndpoint);
 		const username = this._miaaModel.username;
 
 		return [
-			new InputKeyValue(this.modelView.modelBuilder, 'ADO.NET', `Server=tcp:${ip},${port};Persist Security Info=False;User ID=${username};Password={your_password_here};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;`),
-			new InputKeyValue(this.modelView.modelBuilder, 'C++ (libpq)', `host=${ip} port=${port} user=${username} password={your_password_here} sslmode=require`),
-			new InputKeyValue(this.modelView.modelBuilder, 'JDBC', `jdbc:sqlserver://${ip}:${port};user=${username};password={your_password_here};encrypt=true;trustServerCertificate=false;loginTimeout=30;`),
-			new InputKeyValue(this.modelView.modelBuilder, 'Node.js', `host=${ip} port=${port} dbname=master user=${username} password={your_password_here} sslmode=require`),
-			new InputKeyValue(this.modelView.modelBuilder, 'ODBC', `Driver={ODBC Driver 13 for SQL Server};Server=${ip},${port};Uid=${username};Pwd={your_password_here};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;`),
+			new InputKeyValue(this.modelView.modelBuilder, 'ADO.NET', `Server=tcp:${externalEndpoint.ip},${externalEndpoint.port};Persist Security Info=False;User ID=${username};Password={your_password_here};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;`),
+			new InputKeyValue(this.modelView.modelBuilder, 'C++ (libpq)', `host=${externalEndpoint.ip} port=${externalEndpoint.port} user=${username} password={your_password_here} sslmode=require`),
+			new InputKeyValue(this.modelView.modelBuilder, 'JDBC', `jdbc:sqlserver://${externalEndpoint.ip}:${externalEndpoint.port};user=${username};password={your_password_here};encrypt=true;trustServerCertificate=false;loginTimeout=30;`),
+			new InputKeyValue(this.modelView.modelBuilder, 'Node.js', `host=${externalEndpoint.ip} port=${externalEndpoint.port} dbname=master user=${username} password={your_password_here} sslmode=require`),
+			new InputKeyValue(this.modelView.modelBuilder, 'ODBC', `Driver={ODBC Driver 13 for SQL Server};Server=${externalEndpoint.ip},${externalEndpoint.port};Uid=${username};Pwd={your_password_here};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;`),
 			new MultilineInputKeyValue(this.modelView.modelBuilder, 'PHP',
 				`$connectionInfo = array("UID" => "${username}", "pwd" => "{your_password_here}", "LoginTimeout" => 30, "Encrypt" => 1, "TrustServerCertificate" => 0);
-$serverName = "${ip},${port}";
+$serverName = "${externalEndpoint.ip},${externalEndpoint.port}";
 $conn = sqlsrv_connect($serverName, $connectionInfo);`),
-			new InputKeyValue(this.modelView.modelBuilder, 'Python', `dbname='master' user='${username}' host='${ip}' password='{your_password_here}' port='${port}' sslmode='true'`),
-			new InputKeyValue(this.modelView.modelBuilder, 'Ruby', `host=${ip}; user=${username} password={your_password_here} port=${port} sslmode=require`),
-			new InputKeyValue(this.modelView.modelBuilder, 'Web App', `Database=master; Data Source=${ip}; User Id=${username}; Password={your_password_here}`)
+			new InputKeyValue(this.modelView.modelBuilder, 'Python', `dbname='master' user='${username}' host='${externalEndpoint.ip}' password='{your_password_here}' port='${externalEndpoint.port}' sslmode='true'`),
+			new InputKeyValue(this.modelView.modelBuilder, 'Ruby', `host=${externalEndpoint.ip}; user=${username} password={your_password_here} port=${externalEndpoint.port} sslmode=require`),
+			new InputKeyValue(this.modelView.modelBuilder, 'Web App', `Database=master; Data Source=${externalEndpoint.ip}; User Id=${username}; Password={your_password_here}`)
 		];
-		*/
-		return [];
 	}
 
 	private updateConnectionStrings(): void {
+		this._connectionStringsMessage.value = !this._miaaModel.config?.status.externalEndpoint ? loc.noExternalEndpoint : '';
 		this._keyValueContainer.refresh(this.getConnectionStrings());
 	}
 }

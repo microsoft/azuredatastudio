@@ -39,9 +39,9 @@ export class BackupAction extends Task {
 		});
 	}
 
-	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): void | Promise<void> {
+	runTask(accessor: ServicesAccessor, profile?: IConnectionProfile): void | Promise<void> {
 		const configurationService = accessor.get<IConfigurationService>(IConfigurationService);
-		const previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
+		const previewFeaturesEnabled = configurationService.getValue<{ enablePreviewFeatures: boolean }>('workbench').enablePreviewFeatures;
 		if (!previewFeaturesEnabled) {
 			return accessor.get<INotificationService>(INotificationService).info(localize('backup.isPreviewFeature', "You must enable preview features in order to use backup"));
 		}

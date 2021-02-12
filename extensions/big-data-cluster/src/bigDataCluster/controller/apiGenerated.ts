@@ -10,6 +10,7 @@
 
 import localVarRequest = require('request');
 import http = require('http');
+import * as bdc from 'bdc';
 
 let defaultBasePath = 'https://localhost';
 
@@ -203,7 +204,7 @@ export class Dashboards {
     }
 }
 
-export class EndpointModel {
+export class EndpointModel implements bdc.IEndpointModel {
     'name'?: string;
     'description'?: string;
     'endpoint'?: string;

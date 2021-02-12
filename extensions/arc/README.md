@@ -2,7 +2,7 @@
 
 Welcome to Microsoft Azure Arc Extension for Azure Data Studio!
 
-**This extension is only applicable to customers in the Azure Arc data services private preview.**
+**This extension is only applicable to customers in the Azure Arc data services public preview.**
 
 ## Overview
 
