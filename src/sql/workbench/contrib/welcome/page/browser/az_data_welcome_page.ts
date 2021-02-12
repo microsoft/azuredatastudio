@@ -16,7 +16,7 @@ export default () => `
 				<div class="content-container">
 					<div class="ads-homepage-section tool-tip">
 						<div class="tool-tip-container" id="tool-tip-container-wide">
-							<a role="img" tabindex=0 class="ads-welcome-page-link" aria-label="${previewImgDescription}" title="${previewImgDescription}" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>Preview</p><i class="icon-info themed-icon"></i></a>
+							<a role="img" tabindex=0 class="ads-welcome-page-link" aria-label="${previewImgDescription}" title="${previewImgDescription}" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>${escape(localize('welcomePage.preview', "Preview"))}</p><i class="icon-info themed-icon"></i></a>
 						</div>
 					</div>
 					<div class="ads-homepage-section section header hero">
