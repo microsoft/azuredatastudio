@@ -68,7 +68,7 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 			temp.title = section.title;
 			temp.url = section.url ? section.url : section.file;
 			temp.expand_sections = section.expand_sections;
-			temp.not_numbered = section.numbered !== undefined ? !section.numbered : undefined;
+			temp.not_numbered = (section.numbered !== undefined ? !section.numbered : undefined || section.not_numbered !== undefined ? section.not_numbered : undefined);
 			temp.search = section.search;
 			temp.divider = section.divider;
 			temp.header = section.header;
