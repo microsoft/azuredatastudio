@@ -7,7 +7,7 @@ import { BookTreeItem } from './bookTreeItem';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs-extra';
 import { JupyterBookSection } from '../contracts/content';
-import { BookVersion, convertTo } from './bookVersionHandler';
+import { BookVersion, convertTo, convertFrom } from './bookVersionHandler';
 import * as vscode from 'vscode';
 import * as loc from '../common/localizedConstants';
 import { BookModel } from './bookModel';
@@ -200,12 +200,14 @@ export class BookTocManager implements IBookTocManager {
 			// if addSection is undefined then we remove the whole section from the table of contents.
 			return addSection;
 		} else {
-			let newSection = convertTo(version, section);
+			let newSection = convertFrom(version, section);
+			newSection = convertTo(version, section);
 			if (section.sections && section.sections.length > 0) {
 				newSection.sections = [] as JupyterBookSection[];
 				for (let s of section.sections) {
-					const child = this.buildTOC(version, s, findSection, addSection);
+					let child = this.buildTOC(version, s, findSection, addSection);
 					if (child) {
+						child = convertFrom(version, child);
 						newSection.sections.push(convertTo(version, child));
 					}
 				}
@@ -343,7 +345,9 @@ export class BookTocManager implements IBookTocManager {
 
 		if (this._sourceBook) {
 			const sectionTOC = this._sourceBook.bookItems[0].findChildSection(notebook.uri);
-			this.newSection = sectionTOC;
+			if (sectionTOC) {
+				this.newSection = sectionTOC;
+			}
 		}
 		fileName = fileName === undefined ? notebookPath.name : path.parse(fileName).name;
 		this.newSection.file = path.sep.concat(fileName).replace(/\\/g, '/');

@@ -38,7 +38,7 @@ export function convertFrom(version: string, section: JupyterBookSection): Jupyt
 			divider: (section as IJupyterBookSectionV1).divider,
 			header: (section as IJupyterBookSectionV1).header,
 			external: (section as IJupyterBookSectionV1).external,
-			numbered: !(section as IJupyterBookSectionV1).not_numbered,
+			numbered: (section as IJupyterBookSectionV1).not_numbered ? !(section as IJupyterBookSectionV1).not_numbered : undefined,
 			not_numbered: undefined
 		});
 	} else {
@@ -68,7 +68,7 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 			temp.title = section.title;
 			temp.url = section.url ? section.url : section.file;
 			temp.expand_sections = section.expand_sections;
-			temp.not_numbered = !section.numbered;
+			temp.not_numbered = section.numbered !== undefined ? !section.numbered : undefined;
 			temp.search = section.search;
 			temp.divider = section.divider;
 			temp.header = section.header;
@@ -84,7 +84,7 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 			newSection.title = section.title;
 			newSection.url = section.url ? section.url : section.file;
 			newSection.sections = section.sections;
-			newSection.not_numbered = !section.numbered;
+			newSection.not_numbered = section.numbered !== undefined ? !section.numbered : undefined;
 			newSection.expand_sections = section.expand_sections;
 			newSection.search = section.search;
 			newSection.divider = section.divider;
