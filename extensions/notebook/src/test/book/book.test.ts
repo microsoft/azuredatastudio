@@ -585,7 +585,7 @@ describe('BooksTreeViewTests', function () {
 					}
 				});
 			});
-		})
+		});
 	});
 
 	describe('BookTreeViewProvider.getSections', function () {
@@ -659,10 +659,12 @@ describe('BooksTreeViewTests', function () {
 				});
 
 				after(async function (): Promise<void> {
-					if (await exists(rootFolderPath)) await promisify(rimraf)(rootFolderPath);
+					if (await exists(rootFolderPath)) {
+						await promisify(rimraf)(rootFolderPath);
+					}
 				});
 			});
-		})
+		});
 	});
 
 	describe('BookTreeViewProvider.Commands', function () {
