@@ -451,8 +451,10 @@ export class AttachToDropdown extends SelectBox {
 	}
 
 	public doChangeContext(connection?: ConnectionProfile, hideErrorMessage?: boolean): void {
-		if (this.value === msgChangeConnection || this.value === msgSelectConnection) {
+		if (this.value === msgChangeConnection) {
 			this.openConnectionDialog().catch(err => this._notificationService.error(getErrorMessage(err)));
+		} else if (this.value === msgSelectConnection) {
+			// no-op, select connection is the default option and so shouldn't have any action done when selected (which only happens if a user cancels out of the connection dialog)
 		} else {
 			this.model.changeContext(this.value, connection, hideErrorMessage).catch(err => this._notificationService.error(getErrorMessage(err)));
 		}
