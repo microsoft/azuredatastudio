@@ -18,8 +18,10 @@ export type PodHealthModel = {
 };
 
 export class PostgresResourceHealthPage extends DashboardPage {
-	private podOverviewLoading!: azdata.LoadingComponent;
-	private podOverviewTable!: azdata.DeclarativeTableComponent;
+	private runningPodsLoading!: azdata.LoadingComponent;
+	private pendingPodsLoading!: azdata.LoadingComponent;
+	private runningPods!: azdata.TextComponent;
+	private pendingPods!: azdata.TextComponent;
 
 	private podConditionsContainer!: azdata.DivContainer;
 	private podConditionsLoading!: azdata.LoadingComponent;
@@ -61,7 +63,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		}).component());
 
 		const overviewBox = this.modelView.modelBuilder.divContainer().withProps({
-			CSSStyles: { 'border': 'solid 1px #ccc', 'height': '300px', 'width': '400px', }
+			CSSStyles: { 'border': 'solid 1px #ccc', 'height': '200px', 'width': '300px', }
 		}).component();
 
 		overviewBox.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -69,16 +71,51 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			CSSStyles: { ...cssStyles.title, 'margin': '10px 20px 20px 20px' }
 		}).component());
 
-		this.podOverviewTable = this.modelView.modelBuilder.declarativeTable().component();
+		this.runningPodsLoading = this.modelView.modelBuilder.loadingComponent().withProperties<azdata.LoadingComponentProperties>({
+			loading: !this._postgresModel.configLastUpdated
+		}).component();
 
-		this.podOverviewLoading = this.modelView.modelBuilder.loadingComponent()
-			.withItem(this.podOverviewTable)
-			.withProperties<azdata.LoadingComponentProperties>({
-				loading: !this._postgresModel.configLastUpdated
-			}).component();
+		this.pendingPodsLoading = this.modelView.modelBuilder.loadingComponent().withProperties<azdata.LoadingComponentProperties>({
+			loading: !this._postgresModel.configLastUpdated
+		}).component();
 
-		overviewBox.addItem(this.podOverviewLoading, { CSSStyles: cssStyles.text });
+		this.runningPods = this.modelView.modelBuilder.text().withProps({
+			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'font-size': '16px' }
+		}).component();
 
+		this.pendingPods = this.modelView.modelBuilder.text().withProps({
+			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'font-size': '16px' }
+		}).component();
+
+		this.refreshPodOverviewBox();
+
+		this.runningPodsLoading.component = this.runningPods;
+		this.pendingPodsLoading.component = this.pendingPods;
+
+		const podOverviewTable = this.modelView.modelBuilder.declarativeTable().withProps({
+			columns: [
+				{
+					displayName: '',
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: true,
+					width: '20px',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				},
+				{
+					displayName: '',
+					valueType: azdata.DeclarativeDataType.string,
+					isReadOnly: true,
+					width: '230px',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				}
+			],
+			data: [
+				[this.runningPodsLoading, loc.running],
+				[this.pendingPodsLoading, loc.pending]]
+		}).component();
+		overviewBox.addItem(podOverviewTable, { CSSStyles: { 'margin': '10px 20px 20px 20px' } });
 		content.addItem(overviewBox);
 
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
@@ -140,7 +177,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 				loading: !this._postgresModel.configLastUpdated
 			}).component();
 
-		this.refreshPodcondtions();
+		this.refreshPodCondtions();
 
 		content.addItem(this.podConditionsLoading, { CSSStyles: cssStyles.text });
 
@@ -176,6 +213,25 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
 			{ component: refreshButton, toolbarSeparatorAfter: true }
 		]).component();
+	}
+
+	private getPodOverview(): void {
+		const podStatus = this._postgresModel.config?.status.podsStatus;
+		let runningPodCount = 0;
+		let pendingPodCount = 0;
+
+		podStatus?.forEach(p => {
+			// If a condition of the pod has a status of False, pod is not Ready
+			if (p.conditions.find(c => c.status === 'False') ? true : false) {
+				pendingPodCount++;
+			} else {
+				runningPodCount++;
+			}
+		});
+
+		this.runningPods.value = runningPodCount.toString();
+
+		this.pendingPods.value = pendingPodCount.toString();
 	}
 
 	private getPods(): string[] {
@@ -257,7 +313,15 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		return podNames;
 	}
 
-	private refreshPodcondtions(): void {
+	private refreshPodOverviewBox(): void {
+		if (this._postgresModel.config) {
+			this.getPodOverview();
+			this.runningPodsLoading.loading = false;
+			this.pendingPodsLoading.loading = false;
+		}
+	}
+
+	private refreshPodCondtions(): void {
 		if (this._postgresModel.config) {
 			this.podConditionsTableIndexes = new Map();
 			this.podDropDown.values = this.getPods();
@@ -267,6 +331,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 	}
 
 	private handleConfigUpdated() {
-		this.refreshPodcondtions();
+		this.refreshPodOverviewBox();
+		this.refreshPodCondtions();
 	}
 }
