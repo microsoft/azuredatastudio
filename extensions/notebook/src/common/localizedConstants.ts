@@ -51,7 +51,6 @@ export function editBookError(path: string, error: string): string { return loca
 export function selectBookError(error: string): string { return localize('selectBookError', "Error while selecting a book or a section to edit: {0}", error); }
 export function sectionNotFound(section: string): string { return localize('sectionNotFound', "The section: {0} was not found in table of contents.", section); }
 
-
 // Remote Book dialog constants
 export const url = localize('url', "URL");
 export const repoUrl = localize('repoUrl', "Repository URL");
