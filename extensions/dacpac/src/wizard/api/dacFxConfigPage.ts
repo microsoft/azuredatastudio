@@ -174,7 +174,7 @@ export abstract class DacFxConfigPage extends BasePage {
 		this.fileButton = this.view.modelBuilder.button().withProps({
 			title: loc.selectFile,
 			ariaLabel: loc.selectFile,
-			iconPath: path.join(this.instance.extensionContext.extensionPath, 'images', 'folder.svg'),
+			iconPath: path.join(this.instance.extensionContextExtensionPath, 'images', 'folder.svg'),
 		}).component();
 	}
 
