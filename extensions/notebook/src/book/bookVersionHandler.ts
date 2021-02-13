@@ -56,6 +56,12 @@ export function convertFrom(version: string, section: JupyterBookSection): Jupyt
 	}
 }
 
+/**
+ * This method is used by JupyterBookSection to convert it's numbered property to
+ * not_numberered.
+ * Or it's used by an JupyterBookSectionV1 to make a deep copy of an object.
+ * @param section The section that'll be converted.
+*/
 function convertNotNumbered(section: JupyterBookSection): boolean | undefined {
 	if (section.numbered !== undefined) {
 		return !section.numbered;
@@ -65,6 +71,7 @@ function convertNotNumbered(section: JupyterBookSection): boolean | undefined {
 
 /**
  * Converts the JupyterSection to either Jupyter Book v1 or v2.
+ * This method is also used to make a deep copy of a section object.
  * @param version Version of the section that will be converted
  * @param section The section that'll be converted.
 */
