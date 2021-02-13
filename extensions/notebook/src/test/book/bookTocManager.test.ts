@@ -341,7 +341,7 @@ describe('BookTocManagerTests', function () {
 						version: run.version,
 						page: {
 							title: run.sectionA.sectionName,
-							file: path.join(path.sep,'sectionA', 'readme'),
+							file: path.join(path.sep, 'sectionA', 'readme'),
 							sections: run.sectionA.sectionFormat
 						}
 					};
@@ -405,8 +405,8 @@ describe('BookTocManagerTests', function () {
 						type: BookTreeItemType.Notebook,
 						version: run.version,
 						page: {
-								'title': 'Notebook 5',
-								'file': path.join(path.sep, 'notebook5')
+							'title': 'Notebook 5',
+							'file': path.join(path.sep, 'notebook5')
 						}
 					};
 
