@@ -39,6 +39,7 @@ export class BookTocManager implements IBookTocManager {
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
 	private _sourceBook: BookModel;
+	private _foundSection: boolean;
 
 	constructor(targetBook?: BookModel, sourceBook?: BookModel) {
 		this._sourceBook = sourceBook;
@@ -168,6 +169,7 @@ export class BookTocManager implements IBookTocManager {
 	 * @param addSection The section that'll be added to the target section. If it's undefined then the target section (findSection) is removed from the table of contents.
 	*/
 	async updateTOC(version: BookVersion, tocPath: string, findSection: JupyterBookSection, addSection?: JupyterBookSection): Promise<void> {
+		this._foundSection = false;
 		const toc = yaml.safeLoad((await fs.readFile(tocPath, 'utf8')));
 		this._tocFiles.set(tocPath, toc);
 		let newToc = new Array<JupyterBookSection>(toc.length);
@@ -176,6 +178,10 @@ export class BookTocManager implements IBookTocManager {
 			if (newSection) {
 				newToc[index] = newSection;
 			}
+		}
+		if (!this._foundSection) {
+			// if the section was not found, throw an error and restore both toc files.
+			throw (new Error(loc.sectionNotFound(findSection.title)));
 		}
 		await fs.writeFile(tocPath, yaml.safeDump(newToc, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
 		this.tableofContents = newToc;
@@ -192,6 +198,7 @@ export class BookTocManager implements IBookTocManager {
 	private buildTOC(version: BookVersion, section: JupyterBookSection, findSection: JupyterBookSection, addSection: JupyterBookSection): JupyterBookSection {
 		// condition to find the section to be modified
 		if (section.title === findSection.title && (section.file && section.file === findSection.file || section.url && section.url === findSection.file)) {
+			this._foundSection = true;
 			if (addSection) {
 				//if addSection is not undefined, then we added to the table of contents.
 				section.sections !== undefined && section.sections.length > 0 ? section.sections.push(addSection) : section.sections = [addSection];
