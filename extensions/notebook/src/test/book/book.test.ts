@@ -585,7 +585,7 @@ describe('BooksTreeViewTests', function () {
 					}
 				});
 			});
-		})
+		});
 	});
 
 	describe('BookTreeViewProvider.getSections', function () {
@@ -659,10 +659,12 @@ describe('BooksTreeViewTests', function () {
 				});
 
 				after(async function (): Promise<void> {
-					if (await exists(rootFolderPath)) await promisify(rimraf)(rootFolderPath);
+					if (await exists(rootFolderPath)) {
+						await promisify(rimraf)(rootFolderPath);
+					}
 				});
 			});
-		})
+		});
 	});
 
 	describe('BookTreeViewProvider.Commands', function () {
@@ -750,7 +752,7 @@ describe('BooksTreeViewTests', function () {
 					should(showNotebookSpy.calledWith(vscode.Uri.file(notebookPath))).be.true(`Should have opened the notebook from ${notebookPath} in the editor.`);
 				});
 
-				it('openNotebookAsUntitled should open a notebook as untitled file in the editor', async () => {
+				it('openNotebookAsUntitled should open a notebook as untitled file in the editor @UNSTABLE@', async () => {
 					let notebookPath = run.folderPaths.notebook2File;
 					await bookTreeViewProvider.openNotebookAsUntitled(notebookPath);
 					should(azdata.nb.notebookDocuments.find(doc => doc.uri.scheme === 'untitled')).not.be.undefined();

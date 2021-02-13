@@ -46,8 +46,7 @@ jobs:
   steps:
   - template: linux/sql-product-build-linux.yml
     parameters:
-      # extensionsToUnitTest: ["admin-tool-ext-win", "agent", "azdata", "azurecore", "cms", "dacpac", "import", "schema-compare", "notebook", "resource-deployment", "machine-learning", "sql-database-projects", "data-workspace"]
-      extensionsToUnitTest: ["admin-tool-ext-win", "agent", "azdata", "azurecore", "cms", "dacpac", "import", "schema-compare", "resource-deployment", "machine-learning", "sql-database-projects", "data-workspace"]
+      extensionsToUnitTest: ["admin-tool-ext-win", "agent", "azdata", "azurecore", "cms", "dacpac", "import", "schema-compare", "notebook", "resource-deployment", "machine-learning", "sql-database-projects", "data-workspace"]
   timeoutInMinutes: 70
 
 - job: LinuxWeb

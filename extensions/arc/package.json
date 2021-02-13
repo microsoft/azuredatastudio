@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.7.3",
+  "version": "0.8.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -618,7 +618,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.6"
+                "version": "20.3.0"
               }
             ],
             "when": true
@@ -869,7 +869,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.6"
+                "version": "20.3.0"
               }
             ],
             "when": "true"
@@ -1082,7 +1082,7 @@
             },
             {
               "name": "azdata",
-              "version": "20.2.6"
+              "version": "20.3.0"
             }
           ],
           "when": "mi-type=arc-mi"

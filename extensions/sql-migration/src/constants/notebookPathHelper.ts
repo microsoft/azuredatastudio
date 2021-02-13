@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as loc from './models/strings';
+import * as loc from '../models/strings';
 
 export class NotebookPathHelper {
 	private static context: vscode.ExtensionContext;
