@@ -198,12 +198,16 @@ export function getErrorMessage(error: any, useMessageWithLink: boolean = false)
 
 /**
  * Parses an address into its separate ip and port values. Address must be in the form <ip>:<port>
+ * or <ip>,<port>
  * @param address The address to parse
  */
 export function parseIpAndPort(address: string): { ip: string, port: string } {
-	const sections = address.split(':');
+	let sections = address.split(':');
 	if (sections.length !== 2) {
-		throw new Error(`Invalid address format for ${address}. Address must be in the form <ip>:<port>`);
+		sections = address.split(',');
+		if (sections.length !== 2) {
+			throw new Error(`Invalid address format for ${address}. Address must be in the form <ip>:<port> or <ip>,<port>`);
+		}
 	}
 	return {
 		ip: sections[0],
