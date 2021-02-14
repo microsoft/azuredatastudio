@@ -197,6 +197,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	// Connection Management handlers
 	$connect(handle: number, connectionUri: string, connection: azdata.ConnectionInfo): Thenable<boolean> {
 		if (this.uriTransformer) {
+			connectionUri = encodeURI(connectionUri);
 			connectionUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(connectionUri))).toString(true);
 		}
 		return this._resolveProvider<azdata.ConnectionProvider>(handle).connect(connectionUri, connection);
@@ -237,6 +238,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$onConnectComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
 		if (this.uriTransformer) {
+			connectionInfoSummary.ownerUri = encodeURI(connectionInfoSummary.ownerUri);
 			connectionInfoSummary.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(connectionInfoSummary.ownerUri))).toString(true);
 		}
 		this._proxy.$onConnectionComplete(handle, connectionInfoSummary);
