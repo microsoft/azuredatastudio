@@ -465,8 +465,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		);
 
 		console.log(response);
-		if (!response.error) {
-			MigrationLocalStorage.saveMigration(currentConnection!, response, this._targetManagedInstance, this.azureAccount, this._targetSubscription);
+		if (response.status === 201) {
+			MigrationLocalStorage.saveMigration(currentConnection!, response.databaseMigration, this._targetManagedInstance, this.azureAccount, this._targetSubscription);
 		}
 
 		vscode.window.showInformationMessage(constants.MIGRATION_STARTED);
