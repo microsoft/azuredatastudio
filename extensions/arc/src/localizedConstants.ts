@@ -150,6 +150,7 @@ export const computeAndStorageDescriptionPartSix = localize('arc.computeAndStora
 export const node = localize('arc.node', "node");
 export const nodes = localize('arc.nodes', "nodes");
 export const workerNodes = localize('arc.workerNodes', "Worker Nodes");
+export const coordinatorNode = localize('arc.coordinatorNode', "Coordinator Node");
 export const storagePerNode = localize('arc.storagePerNode', "storage per node");
 export const workerNodeCount = localize('arc.workerNodeCount', "Worker node count:");
 export const configurationPerNode = localize('arc.configurationPerNode', "Configuration (per node)");
