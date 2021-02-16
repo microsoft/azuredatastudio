@@ -225,11 +225,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			} finally {
 				try {
 					await targetBook.initializeContents();
+				} finally {
 					if (sourceBook && sourceBook.bookPath !== targetBook.bookPath) {
 						// refresh source book model to pick up latest changes
 						await sourceBook.initializeContents();
 					}
-				} finally {
 					this._onDidChangeTreeData.fire(undefined);
 					// even if it fails, we still need to watch the toc file again.
 					if (sourceBook) {
