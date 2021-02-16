@@ -12,12 +12,12 @@ const bom = require("gulp-bom");
 const sourcemaps = require("gulp-sourcemaps");
 const tsb = require("gulp-tsb");
 const path = require("path");
-const monacodts = require("../monaco/api");
+// import * as monacodts from '../monaco/api';
 const nls = require("./nls");
 const reporter_1 = require("./reporter");
 const util = require("./util");
-const fancyLog = require("fancy-log");
-const ansiColors = require("ansi-colors");
+// import * as fancyLog from 'fancy-log';
+// import * as ansiColors from 'ansi-colors';
 const os = require("os");
 const watch = require('./watch');
 const reporter = reporter_1.createReporter();
@@ -75,12 +75,14 @@ function compileTask(src, out, build) {
         }
         const compile = createCompile(src, build, true);
         const srcPipe = gulp.src(`${src}/**`, { base: `${src}` });
+        /* {{SQL CARBON EDIT}} Remove Monaco generator
         let generator = new MonacoGenerator(false);
         if (src === 'src') {
             generator.execute();
         }
+        */
         return srcPipe
-            .pipe(generator.stream)
+            //.pipe(generator.stream) {{SQL CARBON EDIT}} Remove Monaco generator
             .pipe(compile())
             .pipe(gulp.dest(out));
     };
@@ -91,84 +93,12 @@ function watchTask(out, build) {
         const compile = createCompile('src', build);
         const src = gulp.src('src/**', { base: 'src' });
         const watchSrc = watch('src/**', { base: 'src', readDelay: 200 });
-        let generator = new MonacoGenerator(true);
-        generator.execute();
+        // let generator = new MonacoGenerator(true); {{SQL CARBON EDIT}} Remove Monaco generator
+        // generator.execute(); {{SQL CARBON EDIT}} Remove Monaco generator
         return watchSrc
-            .pipe(generator.stream)
+            // .pipe(generator.stream) {{SQL CARBON EDIT}} Remove Monaco generator
             .pipe(util.incremental(compile, src, true))
             .pipe(gulp.dest(out));
     };
 }
 exports.watchTask = watchTask;
-const REPO_SRC_FOLDER = path.join(__dirname, '../../src');
-class MonacoGenerator {
-    constructor(isWatch) {
-        this._executeSoonTimer = null;
-        this._isWatch = isWatch;
-        this.stream = es.through();
-        this._watchedFiles = {};
-        let onWillReadFile = (moduleId, filePath) => {
-            if (!this._isWatch) {
-                return;
-            }
-            if (this._watchedFiles[filePath]) {
-                return;
-            }
-            this._watchedFiles[filePath] = true;
-            fs.watchFile(filePath, () => {
-                this._declarationResolver.invalidateCache(moduleId);
-                this._executeSoon();
-            });
-        };
-        this._fsProvider = new class extends monacodts.FSProvider {
-            readFileSync(moduleId, filePath) {
-                onWillReadFile(moduleId, filePath);
-                return super.readFileSync(moduleId, filePath);
-            }
-        };
-        this._declarationResolver = new monacodts.DeclarationResolver(this._fsProvider);
-        if (this._isWatch) {
-            fs.watchFile(monacodts.RECIPE_PATH, () => {
-                this._executeSoon();
-            });
-        }
-    }
-    _executeSoon() {
-        if (this._executeSoonTimer !== null) {
-            clearTimeout(this._executeSoonTimer);
-            this._executeSoonTimer = null;
-        }
-        this._executeSoonTimer = setTimeout(() => {
-            this._executeSoonTimer = null;
-            this.execute();
-        }, 20);
-    }
-    _run() {
-        let r = monacodts.run3(this._declarationResolver);
-        if (!r && !this._isWatch) {
-            // The build must always be able to generate the monaco.d.ts
-            throw new Error(`monaco.d.ts generation error - Cannot continue`);
-        }
-        return r;
-    }
-    _log(message, ...rest) {
-        fancyLog(ansiColors.cyan('[monaco.d.ts]'), message, ...rest);
-    }
-    execute() {
-        const startTime = Date.now();
-        const result = this._run();
-        if (!result) {
-            // nothing really changed
-            return;
-        }
-        if (result.isTheSame) {
-            return;
-        }
-        fs.writeFileSync(result.filePath, result.content);
-        fs.writeFileSync(path.join(REPO_SRC_FOLDER, 'vs/editor/common/standalone/standaloneEnums.ts'), result.enums);
-        this._log(`monaco.d.ts is changed - total time took ${Date.now() - startTime} ms`);
-        if (!this._isWatch) {
-            this.stream.emit('error', 'monaco.d.ts is no longer up to date. Please run gulp watch and commit the new file.');
-        }
-    }
-}

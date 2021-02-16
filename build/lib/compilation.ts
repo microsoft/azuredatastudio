@@ -12,12 +12,12 @@ import * as bom from 'gulp-bom';
 import * as sourcemaps from 'gulp-sourcemaps';
 import * as tsb from 'gulp-tsb';
 import * as path from 'path';
-import * as monacodts from '../monaco/api';
+// import * as monacodts from '../monaco/api'; {{SQL CARBON EDIT}} Remove Monaco generator
 import * as nls from './nls';
 import { createReporter } from './reporter';
 import * as util from './util';
-import * as fancyLog from 'fancy-log';
-import * as ansiColors from 'ansi-colors';
+// import * as fancyLog from 'fancy-log'; {{SQL CARBON EDIT}} Remove Monaco generator
+// import * as ansiColors from 'ansi-colors'; {{SQL CARBON EDIT}} Remove Monaco generator
 import * as os from 'os';
 import ts = require('typescript');
 
@@ -89,13 +89,15 @@ export function compileTask(src: string, out: string, build: boolean): () => Nod
 
 		const compile = createCompile(src, build, true);
 		const srcPipe = gulp.src(`${src}/**`, { base: `${src}` });
+		/* {{SQL CARBON EDIT}} Remove Monaco generator
 		let generator = new MonacoGenerator(false);
 		if (src === 'src') {
 			generator.execute();
 		}
+		*/
 
 		return srcPipe
-			.pipe(generator.stream)
+			//.pipe(generator.stream) {{SQL CARBON EDIT}} Remove Monaco generator
 			.pipe(compile())
 			.pipe(gulp.dest(out));
 	};
@@ -109,16 +111,17 @@ export function watchTask(out: string, build: boolean): () => NodeJS.ReadWriteSt
 		const src = gulp.src('src/**', { base: 'src' });
 		const watchSrc = watch('src/**', { base: 'src', readDelay: 200 });
 
-		let generator = new MonacoGenerator(true);
-		generator.execute();
+		// let generator = new MonacoGenerator(true); {{SQL CARBON EDIT}} Remove Monaco generator
+		// generator.execute(); {{SQL CARBON EDIT}} Remove Monaco generator
 
 		return watchSrc
-			.pipe(generator.stream)
+			// .pipe(generator.stream) {{SQL CARBON EDIT}} Remove Monaco generator
 			.pipe(util.incremental(compile, src, true))
 			.pipe(gulp.dest(out));
 	};
 }
 
+/* {{SQL CARBON EDIT}} Remove Monaco generator
 const REPO_SRC_FOLDER = path.join(__dirname, '../../src');
 
 class MonacoGenerator {
@@ -206,3 +209,4 @@ class MonacoGenerator {
 		}
 	}
 }
+*/
