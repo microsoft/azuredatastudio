@@ -265,6 +265,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$runQuery(handle: number, ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> {
 		if (this.uriTransformer) {
+			ownerUri = encodeURI(ownerUri);
 			ownerUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(ownerUri))).toString(true);
 		}
 
@@ -301,6 +302,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$getQueryRows(handle: number, rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> {
 		if (this.uriTransformer) {
+			rowData.ownerUri = encodeURI(rowData.ownerUri);
 			rowData.ownerUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(rowData.ownerUri))).toString(true);
 		}
 		return this._resolveProvider<azdata.QueryProvider>(handle).getQueryRows(rowData);
@@ -308,6 +310,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$disposeQuery(handle: number, ownerUri: string): Thenable<void> {
 		if (this.uriTransformer) {
+			ownerUri = encodeURI(ownerUri);
 			ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(ownerUri))).toString(true);
 		}
 		return this._resolveProvider<azdata.QueryProvider>(handle).disposeQuery(ownerUri);
@@ -315,6 +318,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void {
 		if (this.uriTransformer) {
+			result.ownerUri = encodeURI(result.ownerUri);
 			result.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(result.ownerUri))).toString(true);
 		}
 		// clear messages to maintain the order of things
@@ -326,12 +330,14 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 	$onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
 		if (this.uriTransformer) {
+			batchInfo.ownerUri = encodeURI(batchInfo.ownerUri);
 			batchInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(batchInfo.ownerUri))).toString(true);
 		}
 		this._proxy.$onBatchStart(handle, batchInfo);
 	}
 	$onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
 		if (this.uriTransformer) {
+			batchInfo.ownerUri = encodeURI(batchInfo.ownerUri);
 			batchInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(batchInfo.ownerUri))).toString(true);
 		}
 		this.messageRunner.cancel(); // clear batch messages before saying we completed the batch
@@ -340,18 +346,21 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 	$onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
 		if (this.uriTransformer) {
+			resultSetInfo.ownerUri = encodeURI(resultSetInfo.ownerUri);
 			resultSetInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(resultSetInfo.ownerUri))).toString(true);
 		}
 		this._proxy.$onResultSetAvailable(handle, resultSetInfo);
 	}
 	$onResultSetUpdated(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
 		if (this.uriTransformer) {
+			resultSetInfo.ownerUri = encodeURI(resultSetInfo.ownerUri);
 			resultSetInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(resultSetInfo.ownerUri))).toString(true);
 		}
 		this._proxy.$onResultSetUpdated(handle, resultSetInfo);
 	}
 	$onQueryMessage(message: azdata.QueryExecuteMessageParams): void {
 		if (this.uriTransformer) {
+			message.ownerUri = encodeURI(message.ownerUri);
 			message.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(message.ownerUri))).toString(true);
 		}
 		if (!this.queuedMessages.has(message.ownerUri)) {
