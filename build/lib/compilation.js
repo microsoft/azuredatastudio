@@ -12,12 +12,12 @@ const bom = require("gulp-bom");
 const sourcemaps = require("gulp-sourcemaps");
 const tsb = require("gulp-tsb");
 const path = require("path");
-// import * as monacodts from '../monaco/api';
+// import * as monacodts from '../monaco/api'; {{SQL CARBON EDIT}} Remove Monaco generator
 const nls = require("./nls");
 const reporter_1 = require("./reporter");
 const util = require("./util");
-// import * as fancyLog from 'fancy-log';
-// import * as ansiColors from 'ansi-colors';
+// import * as fancyLog from 'fancy-log'; {{SQL CARBON EDIT}} Remove Monaco generator
+// import * as ansiColors from 'ansi-colors'; {{SQL CARBON EDIT}} Remove Monaco generator
 const os = require("os");
 const watch = require('./watch');
 const reporter = reporter_1.createReporter();
