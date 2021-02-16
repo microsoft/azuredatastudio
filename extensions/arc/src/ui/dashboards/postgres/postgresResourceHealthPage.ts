@@ -71,6 +71,15 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			CSSStyles: { ...cssStyles.title, 'margin': '10px 20px 20px 20px' }
 		}).component());
 
+		this.runningPods = this.modelView.modelBuilder.text().withProps({
+			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'font-size': '16px' }
+		}).component();
+
+		this.pendingPods = this.modelView.modelBuilder.text().withProps({
+			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'font-size': '16px' }
+		}).component();
+
+
 		this.runningPodsLoading = this.modelView.modelBuilder.loadingComponent().withProperties<azdata.LoadingComponentProperties>({
 			loading: !this._postgresModel.configLastUpdated
 		}).component();
@@ -79,13 +88,6 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			loading: !this._postgresModel.configLastUpdated
 		}).component();
 
-		this.runningPods = this.modelView.modelBuilder.text().withProps({
-			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'font-size': '16px' }
-		}).component();
-
-		this.pendingPods = this.modelView.modelBuilder.text().withProps({
-			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'font-size': '16px' }
-		}).component();
 
 		this.refreshPodOverviewBox();
 
@@ -197,6 +199,8 @@ export class PostgresResourceHealthPage extends DashboardPage {
 				refreshButton.enabled = false;
 				try {
 					this.podConditionsLoading!.loading = true;
+					this.runningPodsLoading.loading = true;
+					this.pendingPodsLoading.loading = true;
 
 					await Promise.all([
 						this._postgresModel.refresh(),
@@ -230,7 +234,6 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		});
 
 		this.runningPods.value = runningPodCount.toString();
-
 		this.pendingPods.value = pendingPodCount.toString();
 	}
 
@@ -324,6 +327,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 	private refreshPodCondtions(): void {
 		if (this._postgresModel.config) {
 			this.podConditionsTableIndexes = new Map();
+			this.podsData = [];
 			this.podDropDown.values = this.getPods();
 			this.podConditionsTable.setFilter(this.podConditionsTableIndexes.get(this.coordinatorPodName!));
 			this.podConditionsLoading.loading = false;
