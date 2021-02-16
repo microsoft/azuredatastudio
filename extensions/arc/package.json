@@ -713,7 +713,7 @@
                               "description": "%should.be.integer%"
                             }
                           ],
-                          "defaultValue": "0",
+                          "defaultValue": "2",
                           "min": 0
                         },
                         {
