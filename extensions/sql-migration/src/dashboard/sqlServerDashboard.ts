@@ -27,55 +27,52 @@ export class DashboardWidget {
 	constructor() {
 	}
 
-	public register(): Promise<void> {
-		return new Promise<void>(resolve => {
-			azdata.ui.registerModelViewProvider('migration.dashboard', async (view) => {
-				this._view = view;
-				const container = view.modelBuilder.flexContainer().withLayout({
+	public register() {
+		azdata.ui.registerModelViewProvider('migration.dashboard', async (view) => {
+			this._view = view;
+			const container = view.modelBuilder.flexContainer().withLayout({
+				flexFlow: 'column',
+				width: '100%',
+				height: '100%'
+			}).component();
+			const header = this.createHeader(view);
+
+			const tasksContainer = await this.createTasks(view);
+
+			container.addItem(header, {
+				CSSStyles: {
+					'background-image': `url(${vscode.Uri.file(<string>IconPathHelper.migrationDashboardHeaderBackground.light)})`,
+					'width': '1100px',
+					'height': '300px',
+					'background-size': '100%',
+				}
+			});
+			header.addItem(tasksContainer, {
+				CSSStyles: {
+					'width': `${maxWidth}px`,
+					'height': '150px',
+				}
+			});
+
+			header.addItem(await this.createFooter(view), {
+				CSSStyles: {
+					'margin-top': '20px'
+				}
+			});
+
+			const mainContainer = view.modelBuilder.flexContainer()
+				.withLayout({
 					flexFlow: 'column',
 					width: '100%',
-					height: '100%'
+					height: '100%',
+					position: 'absolute'
 				}).component();
-				const header = this.createHeader(view);
-
-				const tasksContainer = await this.createTasks(view);
-
-				container.addItem(header, {
-					CSSStyles: {
-						'background-image': `url(${vscode.Uri.file(<string>IconPathHelper.migrationDashboardHeaderBackground.light)})`,
-						'width': `1100px`,
-						'height': '300px',
-						'background-size': '100%',
-					}
-				});
-				header.addItem(tasksContainer, {
-					CSSStyles: {
-						'width': `${maxWidth}px`,
-						'height': '150px',
-					}
-				});
-
-				header.addItem(await this.createFooter(view), {
-					CSSStyles: {
-						'margin-top': '20px'
-					}
-				});
-
-				const mainContainer = view.modelBuilder.flexContainer()
-					.withLayout({
-						flexFlow: 'column',
-						width: '100%',
-						height: '100%',
-						position: 'absolute'
-					}).component();
-				mainContainer.addItem(container, {
-					CSSStyles: { 'padding-top': '25px', 'padding-left': '5px' }
-				});
-				await view.initializeModel(mainContainer);
-
-				this.refreshMigrations();
-				resolve();
+			mainContainer.addItem(container, {
+				CSSStyles: { 'padding-top': '25px', 'padding-left': '5px' }
 			});
+			await view.initializeModel(mainContainer);
+
+			this.refreshMigrations();
 		});
 	}
 
@@ -121,7 +118,7 @@ export class DashboardWidget {
 		};
 
 		const preRequisiteListTitle = view.modelBuilder.text().withProps({
-			value: `${loc.PRE_REQ_TITLE}`,
+			value: loc.PRE_REQ_TITLE,
 			CSSStyles: {
 				'font-size': '14px',
 				'padding-left': '15px',

@@ -180,7 +180,6 @@ export async function getMigrationStatus(account: azdata.Account, subscription: 
 		throw new Error(response.errors.toString());
 	}
 	return {
-		errors: response.errors,
 		result: response.response.data
 	};
 }
