@@ -560,7 +560,7 @@ suite('Async', () => {
 	});
 
 	test('TaskSequentializer - pending basics', async function () {
-		const sequentializer = new async.TaskSequentializer();
+		const sequentializer: any = new async.TaskSequentializer();
 
 		assert.ok(!sequentializer.hasPending());
 		assert.ok(!sequentializer.hasPending(2323));

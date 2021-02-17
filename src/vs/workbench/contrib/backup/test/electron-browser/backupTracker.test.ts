@@ -97,8 +97,9 @@ suite('BackupTracker', () => {
 	let disposables: IDisposable[] = [];
 
 	// https://github.com/microsoft/vscode/issues/112146
-	this.retries(3);
-	this.timeout(1000 * 20);
+	let self: any = this;
+	self.retries(3);
+	self.timeout(1000 * 20);
 
 	setup(async () => {
 		const instantiationService = workbenchInstantiationService();

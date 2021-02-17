@@ -8,7 +8,7 @@ import { KeyChord, KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { CoreEditingCommands } from 'vs/editor/browser/controller/coreCommands';
 import { ICodeEditor, IActiveCodeEditor } from 'vs/editor/browser/editorBrowser';
 import { EditorAction, IActionOptions, ServicesAccessor, registerEditorAction } from 'vs/editor/browser/editorExtensions';
-import { ReplaceCommand, ReplaceCommandThatPreservesSelection, ReplaceCommandThatSelectsText } from 'vs/editor/common/commands/replaceCommand';
+import { ReplaceCommand, ReplaceCommandThatPreservesSelection, ReplaceCommandThatSelectsText, ReplaceCommandThatModifiesSelection } from 'vs/editor/common/commands/replaceCommand';
 import { TrimTrailingWhitespaceCommand } from 'vs/editor/common/commands/trimTrailingWhitespaceCommand';
 import { TypeOperations } from 'vs/editor/common/controller/cursorTypeOperations';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
@@ -1049,6 +1049,60 @@ export class TitleCaseAction extends AbstractCaseAction {
 	}
 }
 
+export class SnakeCaseAction extends AbstractCaseAction {
+	constructor() {
+		super({
+			id: 'editor.action.transformToSnakecase',
+			label: nls.localize('editor.transformToSnakecase', "Transform to Snake Case"),
+			alias: 'Transform to Snake Case',
+			precondition: EditorContextKeys.writable
+		});
+	}
+
+	public run(_accessor: ServicesAccessor, editor: ICodeEditor): void {
+		const selections = editor.getSelections();
+		if (selections === null) {
+			return;
+		}
+
+		const model = editor.getModel();
+		if (model === null) {
+			return;
+		}
+
+		const wordSeparators = editor.getOption(EditorOption.wordSeparators);
+		const commands: ICommand[] = [];
+
+		for (const selection of selections) {
+			if (selection.isEmpty()) {
+				const cursor = selection.getStartPosition();
+				const word = editor.getConfiguredWordAtPosition(cursor);
+
+				if (!word) {
+					continue;
+				}
+
+				const wordRange = new Range(cursor.lineNumber, word.startColumn, cursor.lineNumber, word.endColumn);
+				const text = model.getValueInRange(wordRange);
+				commands.push(new ReplaceCommandThatModifiesSelection(wordRange, this._modifyText(text, wordSeparators),
+					new Selection(cursor.lineNumber, cursor.column, cursor.lineNumber, cursor.column), text));
+
+			} else {
+				const text = model.getValueInRange(selection);
+				commands.push(new ReplaceCommandThatModifiesSelection(selection, this._modifyText(text, wordSeparators), selection, text));
+			}
+		}
+
+		editor.pushUndoStop();
+		editor.executeCommands(this.id, commands);
+		editor.pushUndoStop();
+	}
+
+	protected _modifyText(text: string, wordSeparators: string): string {
+		return text.replace(/(?<=\p{Ll})(\p{Lu})|(?<!\b|_)(\p{Lu})(?=\p{Ll})/gmu, '_$&').toLocaleLowerCase();
+	}
+}
+
 registerEditorAction(CopyLinesUpAction);
 registerEditorAction(CopyLinesDownAction);
 registerEditorAction(DuplicateSelectionAction);
@@ -1069,3 +1123,4 @@ registerEditorAction(TransposeAction);
 registerEditorAction(UpperCaseAction);
 registerEditorAction(LowerCaseAction);
 registerEditorAction(TitleCaseAction);
+registerEditorAction(SnakeCaseAction);
