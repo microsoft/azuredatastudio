@@ -119,20 +119,27 @@ export class DashboardWidget {
 			iconPath: IconPathHelper.sqlMigrationLogo,
 			command: 'sqlmigration.start'
 		};
+
+		const preRequisiteListTitle = view.modelBuilder.text().withProps({
+			value: `${loc.PRE_REQ_TITLE}`,
+			CSSStyles: {
+				'font-size': '14px',
+				'padding-left': '15px',
+				'margin-bottom': '-5px'
+			}
+		}).component();
+
 		const migrateButton = this.createTaskButton(view, migrateButtonMetadata);
 
-		const preRequisiteListHTMLTemplate =
-			`
-			<span style="font-size: 14px;">Things you need before starting migration:</span><br>
-			<ul style="padding:0 0 0 10px;font-size:12px;">
-			<li>Azure account details</li>
-			<li>Azure SQL Managed Instance or SQL Server on Azure Virtual Machine</li>
-			<li>Backup location details</li>
-			</ul>
-			`;
+		const points = `•	${loc.PRE_REQ_1}
+•	${loc.PRE_REQ_2}
+•	${loc.PRE_REQ_3}`;
 
-		const preRequisiteListElement = view.modelBuilder.dom().withProps({
-			html: preRequisiteListHTMLTemplate
+		const preRequisiteListElement = view.modelBuilder.text().withProps({
+			value: points,
+			CSSStyles: {
+				'padding-left': '15px'
+			}
 		}).component();
 
 		const preRequisiteLearnMoreLink = view.modelBuilder.hyperlink().withProps({
@@ -144,6 +151,7 @@ export class DashboardWidget {
 		}).component();
 
 		const preReqContainer = view.modelBuilder.flexContainer().withItems([
+			preRequisiteListTitle,
 			preRequisiteListElement
 		]).withLayout({
 			flexFlow: 'column'
@@ -232,7 +240,7 @@ export class DashboardWidget {
 		const statusContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '400px',
-			height: '250px',
+			height: '280px',
 			justifyContent: 'flex-start',
 		}).withProps({
 			CSSStyles: {
@@ -326,7 +334,7 @@ export class DashboardWidget {
 		const linksContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '400px',
-			height: '250px',
+			height: '280px',
 			justifyContent: 'flex-start',
 		}).withProps({
 			CSSStyles: {

@@ -183,3 +183,8 @@ export const HELP_VIDEO2_TITLE = localize('sql.migration.dashboard.video2.title'
 export const HELP_LINK1_TITLE = localize('sql.migration.dashboard.link1.title', "Migrating your SQL Server to cloud");
 export const HELP_LINK1_DESCRIPTION = localize('sql.migration.dashboard.link1.description', "Lorem ipsum dolor sit amet, consectetur adipi. Lorem ipsum dolor sit amet, consectetur adipi. Lorem ipsum.");
 export const HELP_TITLE = localize('sql.migration.dashboard.help.title', "Help Articles and Video Links");
+export const PRE_REQ_TITLE = localize('sql.migration.pre.req.title', "Things you need before starting migration:");
+export const PRE_REQ_1 = localize('sql.migration.pre.req.1', "Azure account details");
+export const PRE_REQ_2 = localize('sql.migration.pre.req.2', "Azure SQL Managed Instance or SQL Server on Azure Virtual Machine");
+export const PRE_REQ_3 = localize('sql.migration.pre.req.3', "Backup location details");
+
