@@ -1,6 +1,27 @@
 # Change Log
 
 ## Version 1.25.3
+* Release date: February 18, 2021
+* Release status: General Availability
+* Added edit Jupyter book UI support
+* Performance improvements in Jupyter notebooks server startup.
+* Added improvements to Azure Arc data controller
+* Extension Updates:
+    * Azure Arc
+        * PG dashboard enhancements
+        * Multi-controller support
+        * MIAA Dashboard will no longer prompt for SQL Server connection immediately upon opening
+    * Azure Data CLI
+    * Kusto
+    * Machine Learning
+    * Profiler
+    * Server Reports
+    * Schema Compare
+    * SQL Server Dacpac
+    * SQL Database Projects
+* Bug Fixes
+
+## Version 1.25.3
 * Release date: February 10, 2021
 * Release status: General Availability
 * Update Electron to 9.4.3 to incorporate critical upstream fixes
