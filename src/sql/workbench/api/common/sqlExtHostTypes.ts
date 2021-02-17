@@ -259,6 +259,11 @@ export interface IModelViewDialogDetails {
 	customButtons: number[];
 	message: DialogMessage;
 	width: DialogWidth;
+	dialogStyle: DialogStyle;
+	dialogPosition: DialogPosition;
+	renderHeader: boolean;
+	renderFooter: boolean;
+	dialogProperties: IDialogProperties;
 }
 
 export interface IModelViewTabDetails {
@@ -301,6 +306,17 @@ export interface IModelViewWizardDetails {
 }
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
+
+export type DialogStyle = 'normal' | 'flyout' | 'callout';
+
+export type DialogPosition = 'left' | 'below';
+
+export interface IDialogProperties {
+	xPos: number,
+	yPos: number,
+	width: number,
+	height: number
+}
 
 export enum MessageLevel {
 	Error = 0,

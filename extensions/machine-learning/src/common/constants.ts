@@ -244,8 +244,13 @@ export const invalidModelToPredictError = localize('models.invalidModelToPredict
 export const invalidModelParametersError = localize('models.invalidModelParametersError', "Please select valid source table and model parameters");
 export const invalidModelToSelectError = localize('models.invalidModelToSelectError', "Please select a valid model");
 export const invalidModelImportTargetError = localize('models.invalidModelImportTargetError', "Please select a valid table");
+
+export const columnDataTypeMismatchWarningHelper = localize('models.columnDataTypeMismatchWarningHelper', "Click to review warning details");
+export const columnDataTypeMismatchWarningHeading = localize('models.columnDataTypeMismatchWarningHeading', "Differences in data type");
 export const columnDataTypeMismatchWarning = localize('models.columnDataTypeMismatchWarning', "The data type of the source table column does not match the required input field’s type.");
 export const outputColumnDataTypeNotSupportedWarning = localize('models.outputColumnDataTypeNotSupportedWarning', "The data type of output column does not match the output field’s type.");
+
+
 export const modelNameRequiredError = localize('models.modelNameRequiredError', "Model name is required.");
 export const modelsRequiredError = localize('models.modelsRequiredError', "Please select at least one model to import.");
 export const updateModelFailedError = localize('models.updateModelFailedError', "Failed to update the model");

@@ -370,15 +370,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let spacerElement = document.createElement('li');
 			spacerElement.style.marginLeft = 'auto';
 
-			let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'notebook-button masked-pseudo code');
+			let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'masked-pseudo code');
 
-			let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
+			let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codePreview', "Code cell"), 'masked-pseudo code');
 			addCodeCellButton.cellType = CellTypes.Code;
 
-			let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('textPreview', "Text cell"), 'notebook-button masked-pseudo markdown');
+			let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('textPreview', "Text cell"), 'masked-pseudo markdown');
 			addTextCellButton.cellType = CellTypes.Markdown;
 
-			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'notebook-button masked-pseudo start-outline');
+			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'masked-pseudo start-outline');
 
 			let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', true);
 
@@ -401,7 +401,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				undefined,
 				this._actionBar.actionRunner,
 				undefined,
-				'codicon notebook-button masked-pseudo masked-pseudo-after add-new dropdown-arrow',
+				'codicon masked-pseudo masked-pseudo-after add-new dropdown-arrow',
 				localize('addCell', "Cell"),
 				undefined
 			);
@@ -431,13 +431,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			attachToDropdown.render(attachToContainer);
 			attachSelectBoxStyler(attachToDropdown, this.themeService);
 
-			let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('code', "Code"), 'notebook-button icon-add');
+			let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('code', "Code"), 'icon-add');
 			addCodeCellButton.cellType = CellTypes.Code;
 
-			let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
+			let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('text', "Text"), 'icon-add');
 			addTextCellButton.cellType = CellTypes.Markdown;
 
-			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run Cells"), 'notebook-button icon-run-cells');
+			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run Cells"), 'icon-run-cells');
 
 			let clearResultsButton = this.instantiationService.createInstance(ClearAllOutputsAction, 'notebook.ClearAllOutputs', false);
 

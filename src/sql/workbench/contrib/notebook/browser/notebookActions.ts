@@ -101,7 +101,7 @@ export abstract class TooltipFromLabelAction extends Action {
 // Action to clear outputs of all code cells.
 export class ClearAllOutputsAction extends TooltipFromLabelAction {
 	private static readonly label = localize('clearResults', "Clear Results");
-	private static readonly baseClass = 'notebook-button';
+	private static readonly baseClass = 'codicon';
 	private static readonly iconClass = 'icon-clear-results';
 	private static readonly maskedIconClass = 'masked-icon';
 
@@ -170,7 +170,7 @@ export class TrustedAction extends ToggleableAction {
 	// Constants
 	private static readonly trustedLabel = localize('trustLabel', "Trusted");
 	private static readonly notTrustedLabel = localize('untrustLabel', "Not Trusted");
-	private static readonly baseClass = 'notebook-button';
+	private static readonly baseClass = 'codicon';
 	private static readonly previewTrustedCssClass = 'icon-shield';
 	private static readonly trustedCssClass = 'icon-trusted';
 	private static readonly previewNotTrustedCssClass = 'icon-shield-x';
@@ -232,7 +232,7 @@ export class RunAllCellsAction extends Action {
 export class CollapseCellsAction extends ToggleableAction {
 	private static readonly collapseCells = localize('collapseAllCells', "Collapse Cells");
 	private static readonly expandCells = localize('expandAllCells', "Expand Cells");
-	private static readonly baseClass = 'notebook-button';
+	private static readonly baseClass = 'codicon';
 	private static readonly previewCollapseCssClass = 'icon-collapse-cells';
 	private static readonly collapseCssClass = 'icon-hide-cells';
 	private static readonly previewExpandCssClass = 'icon-expand-cells';
