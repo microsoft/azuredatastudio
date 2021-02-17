@@ -21,7 +21,7 @@ if (isWeb || typeof require === 'undefined' || typeof require.__$__nodeRequire !
 	if (Object.keys(product).length === 0) {
 		Object.assign(product, {
 			version: '1.27.0-dev',
-			vscodeVersion: '1.50.0-dev',
+			vscodeVersion: '1.53.0-dev',
 			nameLong: 'Azure Data Studio Web Dev',
 			nameShort: 'Azure Data Studio Web Dev',
 			applicationName: 'ads-oss',
