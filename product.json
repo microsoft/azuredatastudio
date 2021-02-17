@@ -76,13 +76,10 @@
 		"ms-vscode.github-richnav"
 	],
 	"extensionsGallery": {
-			"version": "1.44.15",
-			"version": "0.0.75",
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
 	},
 	"builtInExtensions": [
 		{
-			"version": "1.52.2",
 			"name": "Microsoft.sqlservernotebook",
 			"version": "0.3.9",
 			"repo": "https://github.com/Microsoft/azuredatastudio"
