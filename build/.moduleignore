@@ -80,6 +80,30 @@ node-pty/scripts/**
 !node-pty/build/Release/*.dll
 !node-pty/build/Release/*.node
 
+# START SQL Modules
+
+@angular/**/src/**
+@angular/**/testing/**
+
+angular2-grid/components/**
+angular2-grid/directives/**
+angular2-grid/interfaces/**
+angular2-grid/modules/**
+
+angular2-slickgrid/.vscode/**
+angular2-slickgrid/components/**
+angular2-slickgrid/examples/**
+
+jquery-ui/external/**
+jquery-ui/demos/**
+
+slickgrid/node_modules/**
+slickgrid/examples/**
+
+kerberos/build/**
+
+# END SQL Modules
+
 vscode-nsfw/binding.gyp
 vscode-nsfw/build/**
 vscode-nsfw/src/**

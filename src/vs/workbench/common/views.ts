@@ -49,6 +49,7 @@ export function ViewContainerLocationToString(viewContainerLocation: ViewContain
 		case ViewContainerLocation.Sidebar: return 'sidebar';
 		case ViewContainerLocation.Panel: return 'panel';
 	}
+	return '';
 }
 
 export interface IViewContainerDescriptor {

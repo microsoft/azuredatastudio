@@ -24,7 +24,8 @@ import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/c
 import { ShowViewletAction, Viewlet } from 'vs/workbench/browser/viewlet';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
-import { ViewPaneContainer, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { ViewPane } from 'vs/workbench/browser/parts/views/viewPane';
+import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { NotebookSearchWidget, INotebookExplorerSearchOptions } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchWidget';
 import * as Constants from 'sql/workbench/contrib/notebook/common/constants';

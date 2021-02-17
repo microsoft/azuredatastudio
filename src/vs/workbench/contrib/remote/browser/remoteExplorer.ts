@@ -225,7 +225,7 @@ class ForwardedPortNotifier extends Disposable {
 	private newerTunnel: RemoteTunnel | undefined;
 	private async portNumberHeuristicDelay(tunnels: RemoteTunnel[]): Promise<RemoteTunnel | undefined> {
 		if (tunnels.length === 0) {
-			return;
+			return undefined;
 		}
 		tunnels = tunnels.sort((a, b) => a.tunnelRemotePort - b.tunnelRemotePort);
 		const firstTunnel = tunnels.shift()!;

@@ -28,16 +28,8 @@ suite('ContextKeyExpr', () => {
 			ContextKeyExpr.notEquals('c2', 'cc2'),
 			ContextKeyExpr.not('d1'),
 			ContextKeyExpr.not('d2'),
-			ContextKeyExpr.greaterThanEquals('e1', 'ee1'), // {{SQL CARBON EDIT}} add test case
-			ContextKeyExpr.greaterThanEquals('e2', 'ee2'), // {{SQL CARBON EDIT}} add test case
-			ContextKeyExpr.lessThanEquals('f1', 'ff1'), // {{SQL CARBON EDIT}} add test case
-			ContextKeyExpr.lessThanEquals('f2', 'ff2'), // {{SQL CARBON EDIT}} add test case
 		)!;
 		let b = ContextKeyExpr.and(
-			ContextKeyExpr.lessThanEquals('f1', 'ff1'), // {{SQL CARBON EDIT}}
-			ContextKeyExpr.lessThanEquals('f2', 'ff2'), // {{SQL CARBON EDIT}}
-			ContextKeyExpr.greaterThanEquals('e2', 'ee2'), // {{SQL CARBON EDIT}}
-			ContextKeyExpr.greaterThanEquals('e1', 'ee1'), // {{SQL CARBON EDIT}}
 			ContextKeyExpr.equals('b2', 'bb2'),
 			ContextKeyExpr.notEquals('c1', 'cc1'),
 			ContextKeyExpr.not('d1'),

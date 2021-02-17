@@ -42,7 +42,7 @@ export class NotebookEditorModel extends EditorModel implements INotebookEditorM
 
 	private readonly _name: string;
 	private readonly _workingCopyResource: URI;
-	private readonly saveSequentializer = new TaskSequentializer();
+	private readonly saveSequentializer: any = new TaskSequentializer();
 
 	private _dirty = false;
 

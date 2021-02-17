@@ -20,9 +20,7 @@ import { ExtensionRecommendationReason, IExtensionIgnoredRecommendationsService,
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { ExtensionType, ExtensionIdentifier, IExtensionDescription, IExtensionManifest, isLanguagePackExtension, ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { ShowViewletAction } from 'vs/workbench/browser/viewlet';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
-import { Query } from 'vs/workbench/contrib/extensions/common/extensionQuery';
 import { IFileService, IFileContent } from 'vs/platform/files/common/files';
 import { IWorkspaceContextService, WorkbenchState, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
@@ -50,7 +48,7 @@ import { ILabelService } from 'vs/platform/label/common/label';
 import { prefersExecuteOnUI, prefersExecuteOnWorkspace, canExecuteOnUI, canExecuteOnWorkspace, prefersExecuteOnWeb } from 'vs/workbench/services/extensions/common/extensionsUtil';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { IProductService } from 'vs/platform/product/common/productService';
-import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IDialogService, IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { IActionViewItemOptions, ActionViewItem } from 'vs/base/browser/ui/actionbar/actionViewItems';
 import { EXTENSIONS_CONFIG, IExtensionsConfigContent } from 'vs/workbench/services/extensionRecommendations/common/workspaceExtensionsConfig';
@@ -60,9 +58,10 @@ import { ActionWithDropdownActionViewItem, IActionWithDropdownActionViewItemOpti
 import { IContextMenuProvider } from 'vs/base/browser/contextmenu';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as Constants from 'vs/workbench/contrib/logs/common/logConstants';
-import { clearSearchResultsIcon, infoIcon, manageExtensionIcon, refreshIcon, syncEnabledIcon, syncIgnoredIcon, warningIcon } from 'vs/workbench/contrib/extensions/browser/extensionsIcons';
+import { infoIcon, manageExtensionIcon, syncEnabledIcon, syncIgnoredIcon, warningIcon } from 'vs/workbench/contrib/extensions/browser/extensionsIcons';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage'; // {{SQL CARBON EDIT}}
 import product from 'vs/platform/product/common/product';
+import { mnemonicButtonLabel } from 'vs/base/common/labels';
 
 const promptDownloadManually = (extension: IGalleryExtension | undefined, message: string, error: Error, instantiationService: IInstantiationService): Promise<any> => {
 	return instantiationService.invokeFunction(accessor => {
@@ -1653,6 +1652,29 @@ export class SetProductIconThemeAction extends ExtensionAction {
 	}
 }
 
+
+export class ShowInstalledExtensionsAction extends Action {
+
+	static readonly ID = 'workbench.extensions.action.showInstalledExtensions';
+	static readonly LABEL = localize('showInstalledExtensions', "Show Installed Extensions");
+
+	constructor(
+		id: string,
+		label: string,
+		@IViewletService private readonly viewletService: IViewletService
+	) {
+		super(id, label, undefined, true);
+	}
+
+	run(): Promise<void> {
+		return this.viewletService.openViewlet(VIEWLET_ID, true)
+			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
+			.then(viewlet => {
+				viewlet.search('@installed ');
+				viewlet.focus();
+			});
+	}
+}
 export class ShowRecommendedExtensionAction extends Action {
 
 	static readonly ID = 'workbench.extensions.action.showRecommendedExtension';
@@ -2265,6 +2287,228 @@ export class SystemDisabledWarningAction extends ExtensionAction {
 
 	run(): Promise<any> {
 		return Promise.resolve(null);
+	}
+}
+
+export class DisableAllAction extends Action {
+
+	static readonly ID = 'workbench.extensions.action.disableAll';
+	static readonly LABEL = localize('disableAll', "Disable All Installed Extensions");
+
+	constructor(
+		id: string, label: string, isPrimary: boolean,
+		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
+		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService
+	) {
+		super(id, label);
+		if (isPrimary) {
+			this._register(this.extensionsWorkbenchService.onChange(() => this._onDidChange.fire({ enabled: this.enabled })));
+		}
+	}
+
+	private getExtensionsToDisable(): IExtension[] {
+		return this.extensionsWorkbenchService.local.filter(e => !e.isBuiltin && !!e.local && this.extensionEnablementService.isEnabled(e.local) && this.extensionEnablementService.canChangeEnablement(e.local));
+	}
+
+	get enabled(): boolean {
+		return this.getExtensionsToDisable().length > 0;
+	}
+
+	run(): Promise<any> {
+		return this.extensionsWorkbenchService.setEnablement(this.getExtensionsToDisable(), EnablementState.DisabledGlobally);
+	}
+}
+
+export class DisableAllWorkspaceAction extends Action {
+
+	static readonly ID = 'workbench.extensions.action.disableAllWorkspace';
+	static readonly LABEL = localize('disableAllWorkspace', "Disable All Installed Extensions for this Workspace");
+
+	constructor(
+		id: string, label: string, isPrimary: boolean,
+		@IWorkspaceContextService private readonly workspaceContextService: IWorkspaceContextService,
+		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
+		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService
+	) {
+		super(id, label);
+		if (isPrimary) {
+			this._register(Event.any(this.workspaceContextService.onDidChangeWorkbenchState, this.extensionsWorkbenchService.onChange)(() => this._onDidChange.fire({ enabled: this.enabled })));
+		}
+	}
+
+	private getExtensionsToDisable(): IExtension[] {
+		return this.extensionsWorkbenchService.local.filter(e => !e.isBuiltin && !!e.local && this.extensionEnablementService.isEnabled(e.local) && this.extensionEnablementService.canChangeEnablement(e.local));
+	}
+
+	get enabled(): boolean {
+		return this.getExtensionsToDisable().length > 0;
+	}
+
+	run(): Promise<any> {
+		return this.extensionsWorkbenchService.setEnablement(this.getExtensionsToDisable(), EnablementState.DisabledWorkspace);
+	}
+}
+
+export class EnableAllAction extends Action {
+
+	static readonly ID = 'workbench.extensions.action.enableAll';
+	static readonly LABEL = localize('enableAll', "Enable All Extensions");
+
+	constructor(
+		id: string, label: string, isPrimary: boolean,
+		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
+		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService
+	) {
+		super(id, label);
+		if (isPrimary) {
+			this._register(this.extensionsWorkbenchService.onChange(() => this._onDidChange.fire({ enabled: this.enabled })));
+		}
+	}
+
+	private getExtensionsToEnable(): IExtension[] {
+		return this.extensionsWorkbenchService.local.filter(e => !!e.local && this.extensionEnablementService.canChangeEnablement(e.local) && !this.extensionEnablementService.isEnabled(e.local));
+	}
+
+	get enabled(): boolean {
+		return this.getExtensionsToEnable().length > 0;
+	}
+
+	run(): Promise<any> {
+		return this.extensionsWorkbenchService.setEnablement(this.getExtensionsToEnable(), EnablementState.EnabledGlobally);
+	}
+}
+
+export class EnableAllWorkspaceAction extends Action {
+
+	static readonly ID = 'workbench.extensions.action.enableAllWorkspace';
+	static readonly LABEL = localize('enableAllWorkspace', "Enable All Extensions for this Workspace");
+
+	constructor(
+		id: string, label: string, isPrimary: boolean,
+		@IWorkspaceContextService private readonly workspaceContextService: IWorkspaceContextService,
+		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
+		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService
+	) {
+		super(id, label);
+		if (isPrimary) {
+			this._register(Event.any(this.workspaceContextService.onDidChangeWorkbenchState, this.extensionsWorkbenchService.onChange)(() => this._onDidChange.fire({ enabled: this.enabled })));
+		}
+	}
+
+	private getExtensionsToEnable(): IExtension[] {
+		return this.extensionsWorkbenchService.local.filter(e => !!e.local && this.extensionEnablementService.canChangeEnablement(e.local) && !this.extensionEnablementService.isEnabled(e.local));
+	}
+
+	get enabled(): boolean {
+		return this.getExtensionsToEnable().length > 0;
+	}
+
+	run(): Promise<any> {
+		return this.extensionsWorkbenchService.setEnablement(this.getExtensionsToEnable(), EnablementState.EnabledWorkspace);
+	}
+}
+
+export class InstallVSIXAction extends Action {
+
+	static readonly ID = 'workbench.extensions.action.installVSIX';
+	static readonly LABEL = localize('installVSIX', "Install from VSIX...");
+	static readonly AVAILABLE = !(product.disabledFeatures && product.disabledFeatures.indexOf(InstallVSIXAction.ID) >= 0);  // {{SQL CARBON EDIT}} add available logic
+
+	constructor(
+		id = InstallVSIXAction.ID,
+		label = InstallVSIXAction.LABEL,
+		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
+		@INotificationService private readonly notificationService: INotificationService,
+		@IHostService private readonly hostService: IHostService,
+		@IFileDialogService private readonly fileDialogService: IFileDialogService,
+		@IExtensionService private readonly extensionService: IExtensionService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IConfigurationService private readonly configurationService: IConfigurationService, // {{SQL CARBON EDIT}}
+		@IStorageService private storageService: IStorageService
+	) {
+		super(id, label, 'extension-action install-vsix', true);
+	}
+
+	async run(vsixPaths?: URI[]): Promise<void> {
+		// {{SQL CARBON EDIT}} - Replace run body
+		let extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey);
+		if (extensionPolicy === ExtensionsPolicy.allowAll) {
+			if (!vsixPaths) {
+				vsixPaths = await this.fileDialogService.showOpenDialog({
+					title: localize('installFromVSIX', "Install from VSIX"),
+					filters: [{ name: 'VSIX Extensions', extensions: ['vsix'] }],
+					canSelectFiles: true,
+					canSelectMany: true,
+					openLabel: mnemonicButtonLabel(localize({ key: 'installButton', comment: ['&& denotes a mnemonic'] }, "&&Install"))
+				});
+
+				if (!vsixPaths) {
+					return;
+				}
+			}
+
+			await Promise.all(vsixPaths.map(async vsix => {
+				if (!this.storageService.getBoolean(vsix.fsPath, StorageScope.GLOBAL)) {
+					const accept = await new Promise<boolean>(resolve => {
+						this.notificationService.prompt(
+							Severity.Warning,
+							localize('thirdPartyExtension.vsix', 'This is a third party extension and might involve security risks. Are you sure you want to install this extension?'),
+							[
+								{
+									label: localize('thirdPartExt.yes', 'Yes'),
+									run: () => resolve(true)
+								},
+								{
+									label: localize('thirdPartyExt.no', 'No'),
+									run: () => resolve(false)
+								},
+								{
+									label: localize('thirdPartyExt.dontShowAgain', 'Don\'t Show Again'),
+									isSecondary: true,
+									run: () => {
+										this.storageService.store(vsix.fsPath, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
+										resolve(true);
+									}
+								}
+							],
+							{ sticky: true }
+						);
+					});
+
+					if (!accept) {
+						return undefined;
+					}
+				}
+
+				return this.extensionsWorkbenchService.install(vsix);
+			})).then(async (extensions) => {
+				for (const extension of extensions) {
+					if (!extension) {
+						return;
+					}
+					const requireReload = !(extension.local && this.extensionService.canAddExtension(toExtensionDescription(extension.local)));
+					const message = requireReload ? localize('InstallVSIXAction.successReload', "Please reload Azure Data Studio to complete installing the extension {0}.", extension.displayName || extension.name) // {{SQL CARBON EDIT}}
+						: localize('InstallVSIXAction.success', "Completed installing the extension {0}.", extension.displayName || extension.name);
+					const actions = requireReload ? [{
+						label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
+						run: () => this.hostService.reload()
+					}] : [];
+					this.notificationService.prompt(
+						Severity.Info,
+						message,
+						actions,
+						{ sticky: true }
+					);
+				}
+				await this.instantiationService.createInstance(ShowInstalledExtensionsAction, ShowInstalledExtensionsAction.ID, ShowInstalledExtensionsAction.LABEL).run();
+			});
+		} else {
+			this.notificationService.error(localize('InstallVSIXAction.allowNone', 'Your extension policy does not allow downloading extensions. Please change your extension policy and try again.'));
+		}
+	}
+
+	get enabled(): boolean { // {{SQL CARBON EDIT}} add enabled logic
+		return InstallVSIXAction.AVAILABLE;
 	}
 }
 

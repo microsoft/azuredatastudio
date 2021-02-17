@@ -165,21 +165,21 @@ export class ProductContribution implements IWorkbenchContribution {
 
 			// was there a major/minor update? if so, open release notes
 			if (shouldShowReleaseNotes && !environmentService.skipReleaseNotes && releaseNotesUrl && lastVersion && currentVersion && isMajorMinorUpdate(lastVersion, currentVersion)) {
-				showReleaseNotes(instantiationService, productService.version)
-					.then(undefined, () => {
-						notificationService.prompt(
-							severity.Info,
-							nls.localize('read the release notes', "Welcome to {0} v{1}! Would you like to read the Release Notes?", productService.nameLong, productService.version),
-							[{
-								label: nls.localize('releaseNotes', "Release Notes"),
-								run: () => {
-									const uri = URI.parse(releaseNotesUrl);
-									openerService.open(uri);
-								}
-							}],
-							{ sticky: true }
-						);
-					});
+				/*showReleaseNotes(instantiationService, productService.version)
+					.then(undefined, () => { */
+				notificationService.prompt(
+					severity.Info,
+					nls.localize('read the release notes', "Welcome to {0} v{1}! Would you like to read the Release Notes?", productService.nameLong, productService.version),
+					[{
+						label: nls.localize('releaseNotes', "Release Notes"),
+						run: () => {
+							const uri = URI.parse(releaseNotesUrl);
+							openerService.open(uri);
+						}
+					}],
+					{ sticky: true }
+				);
+				/*});*/
 			}
 
 			// should we show the new license?

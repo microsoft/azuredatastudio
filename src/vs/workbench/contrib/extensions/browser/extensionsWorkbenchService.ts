@@ -44,6 +44,7 @@ import { IUserDataAutoSyncService } from 'vs/platform/userDataSync/common/userDa
 
 import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator'; // {{SQL CARBON EDIT}}
 import { IOpenerService } from 'vs/platform/opener/common/opener'; // {{SQL CARBON EDIT}}
+import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 interface IExtensionStateProvider<T> {
 	(extension: Extension): T;
@@ -548,7 +549,9 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		@IIgnoredExtensionsManagementService private readonly extensionsSyncManagementService: IIgnoredExtensionsManagementService,
 		@IUserDataAutoSyncService private readonly userDataAutoSyncService: IUserDataAutoSyncService,
 		@IProductService private readonly productService: IProductService,
+		@IContextKeyService contextKeyService: IContextKeyService,
 		@IOpenerService private readonly openerService: IOpenerService, // {{SQL CARBON EDIT}}
+		@IExtensionManagementService private readonly extensionService: IExtensionManagementService
 	) {
 		super();
 		this.hasOutdatedExtensionsContextKey = HasOutdatedExtensionsContext.bindTo(contextKeyService);

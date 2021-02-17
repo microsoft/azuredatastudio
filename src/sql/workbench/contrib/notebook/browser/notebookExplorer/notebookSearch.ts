@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { SearchView, SearchUIState } from 'vs/workbench/contrib/search/browser/searchView';
-import { IViewPaneOptions, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPane';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IProgressService } from 'vs/platform/progress/common/progress';

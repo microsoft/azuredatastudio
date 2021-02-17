@@ -98,8 +98,8 @@ suite.skip('BackupTracker', () => { // {{SQL CARBON EDIT}} skip failing tests
 	// we see random test failures when accessing the native file system. To
 	// diagnose further, we retry node.js file access tests up to 3 times to rule
 	// out any random disk issue and increase the timeout.
-	this.retries(3);
-	this.timeout(1000 * 10);
+	// this.retries(3);
+	// this.timeout(1000 * 10);
 
 	setup(async () => {
 		const instantiationService = workbenchInstantiationService();

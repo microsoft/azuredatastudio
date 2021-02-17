@@ -71,7 +71,7 @@ export interface IContextKeyExpression {
 export type ContextKeyExpression = (
 	ContextKeyFalseExpr | ContextKeyTrueExpr | ContextKeyDefinedExpr | ContextKeyNotExpr
 	| ContextKeyEqualsExpr | ContextKeyNotEqualsExpr | ContextKeyRegexExpr
-	| ContextKeyNotRegexExpr | ContextKeyAndExpr | ContextKeyOrExpr | ContextKeyInExpr | ContextKeyNotInExpr
+	| ContextKeyNotRegexExpr | ContextKeyAndExpr | ContextKeyOrExpr | ContextKeyInExpr
 	| ContextKeyNotInExpr | ContextKeyGreaterExpr | ContextKeyGreaterEqualsExpr
 	| ContextKeySmallerExpr | ContextKeySmallerEqualsExpr
 );
@@ -118,6 +118,14 @@ export abstract class ContextKeyExpr {
 		return ContextKeyOrExpr.create(expr);
 	}
 
+	public static greater(key: string, value: any): ContextKeyExpression {
+		return ContextKeyGreaterExpr.create(key, value);
+	}
+
+	public static less(key: string, value: any): ContextKeyExpression {
+		return ContextKeySmallerExpr.create(key, value);
+	}
+
 	public static deserialize(serialized: string | null | undefined, strict: boolean = false): ContextKeyExpression | undefined {
 		if (!serialized) {
 			return undefined;
@@ -154,7 +162,6 @@ export abstract class ContextKeyExpr {
 			return ContextKeyRegexExpr.create(pieces[0].trim(), this._deserializeRegexValue(pieces[1], strict));
 		}
 
-		//
 		if (serializedOne.indexOf(' in ') >= 0) {
 			let pieces = serializedOne.split(' in ');
 			return ContextKeyInExpr.create(pieces[0].trim(), pieces[1].trim());
@@ -1247,152 +1254,6 @@ export class ContextKeyOrExpr implements IContextKeyExpression {
 		}
 
 		return result[0];
-	}
-}
-
-// {{SQL CARBON EDIT}}
-export class ContextKeyGreaterThanEqualsExpr implements IContextKeyExpression {
-
-	public static create(key: string, value: any): ContextKeyExpression {
-		if (typeof value === 'boolean') {
-			return (value ? ContextKeyDefinedExpr.create(key) : ContextKeyNotExpr.create(key));
-		}
-		const staticValue = STATIC_VALUES.get(key);
-		if (typeof staticValue === 'boolean') {
-			const trueValue = staticValue ? 'true' : 'false';
-			return (value === trueValue ? ContextKeyTrueExpr.INSTANCE : ContextKeyFalseExpr.INSTANCE);
-		}
-		return new ContextKeyGreaterThanEqualsExpr(key, value);
-	}
-
-	public readonly type = ContextKeyExprType.GreaterThanEquals;
-
-	constructor(private key: string, private value: any) {
-	}
-
-	public cmp(other: ContextKeyExpression): number {
-		if (other.type !== this.type) {
-			return this.type - other.type;
-		}
-		if (this.key < other.key) {
-			return -1;
-		}
-		if (this.key > other.key) {
-			return 1;
-		}
-		if (this.value < other.value) {
-			return -1;
-		}
-		if (this.value > other.value) {
-			return 1;
-		}
-		return 0;
-	}
-
-	public equals(other: ContextKeyExpression): boolean {
-		if (other.type === this.type) {
-			return (this.key === other.key && this.value === other.value);
-		}
-		return false;
-	}
-
-	public negate(): ContextKeyExpression {
-		throw new Error('Method not implemented.'); // @TODO anthonydresser need to figure out what to do in this case
-	}
-
-	public evaluate(context: IContext): boolean {
-		const keyVal = context.getValue<string>(this.key);
-		if (!keyVal) {
-			return false;
-		}
-		const keyInt = parseFloat(keyVal);
-		const valueInt = parseFloat(this.value);
-		return (keyInt >= valueInt);
-	}
-
-	public serialize(): string {
-		return this.key + ' >= \'' + this.value + '\'';
-	}
-
-	public keys(): string[] {
-		return [this.key];
-	}
-
-	public map(mapFnc: IContextKeyExprMapper): ContextKeyExpression {
-		return mapFnc.mapEquals(this.key, this.value);
-	}
-}
-
-// {{SQL CARBON EDIT}}
-export class ContextKeyLessThanEqualsExpr implements IContextKeyExpression {
-
-	public static create(key: string, value: any): ContextKeyExpression {
-		if (typeof value === 'boolean') {
-			return (value ? ContextKeyDefinedExpr.create(key) : ContextKeyNotExpr.create(key));
-		}
-		const staticValue = STATIC_VALUES.get(key);
-		if (typeof staticValue === 'boolean') {
-			const trueValue = staticValue ? 'true' : 'false';
-			return (value === trueValue ? ContextKeyTrueExpr.INSTANCE : ContextKeyFalseExpr.INSTANCE);
-		}
-		return new ContextKeyLessThanEqualsExpr(key, value);
-	}
-
-	constructor(private key: string, private value: any) {
-	}
-
-	public readonly type = ContextKeyExprType.LessThanEquals;
-
-	public cmp(other: ContextKeyExpression): number {
-		if (other.type !== this.type) {
-			return this.type - other.type;
-		}
-		if (this.key < other.key) {
-			return -1;
-		}
-		if (this.key > other.key) {
-			return 1;
-		}
-		if (this.value < other.value) {
-			return -1;
-		}
-		if (this.value > other.value) {
-			return 1;
-		}
-		return 0;
-	}
-
-	public equals(other: ContextKeyExpression): boolean {
-		if (other.type === this.type) {
-			return (this.key === other.key && this.value === other.value);
-		}
-		return false;
-	}
-
-	public evaluate(context: IContext): boolean {
-		const keyVal = context.getValue<string>(this.key);
-		if (!keyVal) {
-			return false;
-		}
-		const keyInt = parseFloat(keyVal);
-		const valueInt = parseFloat(this.value);
-		return (keyInt <= valueInt);
-	}
-
-	public negate(): ContextKeyExpression {
-		throw new Error('Method not implemented.'); // @TODO anthonydresser need to figure out what to do in this case
-	}
-
-	public serialize(): string {
-		return this.key + ' <= \'' + this.value + '\'';
-	}
-
-	public keys(): string[] {
-		return [this.key];
-	}
-
-	public map(mapFnc: IContextKeyExprMapper): ContextKeyExpression {
-		return mapFnc.mapEquals(this.key, this.value);
 	}
 }
 

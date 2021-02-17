@@ -9,7 +9,7 @@ import { getGalleryExtensionId, getGalleryExtensionTelemetryData, adoptToGallery
 import { getOrDefault } from 'vs/base/common/objects';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IPager } from 'vs/base/common/paging';
-import { IRequestService, asJson, asText, isSuccess } from 'vs/platform/request/common/request';
+import { IRequestService, asJson, asText } from 'vs/platform/request/common/request';
 import { IRequestOptions, IRequestContext, IHeaders } from 'vs/base/parts/request/common/request';
 import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
@@ -152,33 +152,10 @@ const DefaultQueryState: IQueryState = {
 	assetTypes: []
 };
 
-type GalleryServiceQueryClassification = {
-	filterTypes: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	sortBy: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	sortOrder: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	duration: { classification: 'SystemMetaData', purpose: 'PerformanceAndHealth', 'isMeasurement': true };
-	success: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	requestBodySize: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	responseBodySize?: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	statusCode?: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	errorCode?: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	count?: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-};
-
 type QueryTelemetryData = {
 	filterTypes: string[];
 	sortBy: string;
 	sortOrder: string;
-};
-
-type GalleryServiceQueryEvent = QueryTelemetryData & {
-	duration: number;
-	success: boolean;
-	requestBodySize: string;
-	responseBodySize?: string;
-	statusCode?: string;
-	errorCode?: string;
-	count?: string;
 };
 
 class Query {
@@ -536,8 +513,19 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			throw new Error('No extension gallery service configured.');
 		}
 
+		const type = options.names ? 'ids' : (options.text ? 'text' : 'all');
 		let text = options.text || '';
 		const pageSize = getOrDefault(options, o => o.pageSize, 50);
+
+		type GalleryServiceQueryClassification = {
+			type: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+			text: { classification: 'CustomerContent', purpose: 'FeatureInsight' };
+		};
+		type GalleryServiceQueryEvent = {
+			type: string;
+			text: string;
+		};
+		this.telemetryService.publicLog2<GalleryServiceQueryEvent, GalleryServiceQueryClassification>('galleryService:query', { type, text });
 
 		let query = new Query()
 			.withFlags(Flags.IncludeLatestVersionOnly, Flags.IncludeAssetUri, Flags.IncludeStatistics, Flags.IncludeFiles, Flags.IncludeVersionProperties)
