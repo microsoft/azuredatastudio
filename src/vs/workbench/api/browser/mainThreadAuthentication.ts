@@ -419,7 +419,7 @@ export class MainThreadAuthentication extends Disposable implements MainThreadAu
 
 		const remoteConnection = this.remoteAgentService.getConnection();
 		const isVSO = remoteConnection !== null
-			? remoteConnection.remoteAuthority.startsWith('vsonline')
+			? remoteConnection.remoteAuthority.startsWith('vsonline') || remoteConnection.remoteAuthority.startsWith('codespaces')
 			: isWeb;
 
 		if (isVSO && VSO_ALLOWED_EXTENSIONS.includes(extensionId)) {
