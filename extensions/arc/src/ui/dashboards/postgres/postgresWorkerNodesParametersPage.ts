@@ -20,7 +20,7 @@ export type ParametersModel = {
 	resetButton: azdata.ButtonComponent
 };
 
-export class PostgresParametersPage extends DashboardPage {
+export class PostgresWorkerNodesParametersPage extends DashboardPage {
 	private searchBox!: azdata.InputBoxComponent;
 	private parametersTable!: azdata.DeclarativeTableComponent;
 	private parameterContainer?: azdata.DivContainer;
@@ -50,11 +50,11 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	protected get title(): string {
-		return loc.nodeParameters;
+		return loc.workerNodesParameters;
 	}
 
 	protected get id(): string {
-		return 'postgres-node-parameters';
+		return 'postgres-worker-nodes-parameters';
 	}
 
 	protected get icon(): { dark: string; light: string; } {
@@ -67,12 +67,12 @@ export class PostgresParametersPage extends DashboardPage {
 		root.addItem(content, { CSSStyles: { 'margin': '20px' } });
 
 		content.addItem(this.modelView.modelBuilder.text().withProps({
-			value: loc.nodeParameters,
+			value: loc.workerNodesParameters,
 			CSSStyles: { ...cssStyles.title }
 		}).component());
 
 		content.addItem(this.modelView.modelBuilder.text().withProps({
-			value: loc.nodeParametersDescription,
+			value: loc.workerNodesParametersDescription,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component());
 
@@ -571,7 +571,7 @@ export class PostgresParametersPage extends DashboardPage {
 	}
 
 	private refreshParametersTable(): void {
-		this._parameters = this._postgresModel._engineSettings.map(engineSetting => this.createParameterComponents(engineSetting));
+		this._parameters = this._postgresModel._workerNodesEngineSettings.map(engineSetting => this.createParameterComponents(engineSetting));
 		this.parametersTable.data = this._parameters.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
 	}
 

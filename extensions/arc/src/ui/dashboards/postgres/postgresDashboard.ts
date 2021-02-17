@@ -14,7 +14,8 @@ import { Dashboard } from '../../components/dashboard';
 import { PostgresDiagnoseAndSolveProblemsPage } from './postgresDiagnoseAndSolveProblemsPage';
 import { PostgresSupportRequestPage } from './postgresSupportRequestPage';
 import { PostgresComputeAndStoragePage } from './postgresComputeAndStoragePage';
-import { PostgresParametersPage } from './postgresParametersPage';
+import { PostgresCoordinatorNodeParametersPage } from './postgresCoordinatorNodeParametersPage';
+import { PostgresWorkerNodesParametersPage } from './postgresWorkerNodesParametersPage';
 import { PostgresPropertiesPage } from './postgresPropertiesPage';
 
 export class PostgresDashboard extends Dashboard {
@@ -35,7 +36,8 @@ export class PostgresDashboard extends Dashboard {
 		const connectionStringsPage = new PostgresConnectionStringsPage(modelView, this._postgresModel);
 		const computeAndStoragePage = new PostgresComputeAndStoragePage(modelView, this._postgresModel);
 		const propertiesPage = new PostgresPropertiesPage(modelView, this._controllerModel, this._postgresModel);
-		const parametersPage = new PostgresParametersPage(modelView, this._postgresModel);
+		const coordinatorNodeParametersPage = new PostgresCoordinatorNodeParametersPage(modelView, this._postgresModel);
+		const workerNodesParametersPage = new PostgresWorkerNodesParametersPage(modelView, this._postgresModel);
 		const diagnoseAndSolveProblemsPage = new PostgresDiagnoseAndSolveProblemsPage(modelView, this._context, this._postgresModel);
 		const supportRequestPage = new PostgresSupportRequestPage(modelView, this._controllerModel, this._postgresModel);
 
@@ -47,7 +49,8 @@ export class PostgresDashboard extends Dashboard {
 					propertiesPage.tab,
 					connectionStringsPage.tab,
 					computeAndStoragePage.tab,
-					parametersPage.tab
+					coordinatorNodeParametersPage.tab,
+					workerNodesParametersPage.tab
 				]
 			},
 			{
