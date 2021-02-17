@@ -535,7 +535,7 @@ class HierarchalElement implements ITestTreeElement {
 	public get location() {
 		const location = this.test.item.location;
 		if (!location) {
-			return;
+			return undefined;
 		}
 
 		return {
