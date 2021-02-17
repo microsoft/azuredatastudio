@@ -144,7 +144,7 @@ export class DashboardWidget {
 
 		const preRequisiteLearnMoreLink = view.modelBuilder.hyperlink().withProps({
 			label: loc.LEARN_MORE,
-			url: '',
+			url: '', //TODO: add link for the pre req document.
 			CSSStyles: {
 				'padding-left': '10px'
 			}
