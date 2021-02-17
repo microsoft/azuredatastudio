@@ -4,8 +4,7 @@
 * Release date: February 18, 2021
 * Release status: General Availability
 * Added edit Jupyter book UI support
-* Performance improvements in Jupyter notebooks server startup.
-* Added improvements to Azure Arc data controller
+* Improved Jupyter server start-up time by 50% on windows
 * Extension Updates:
     * Azure Arc
         * PG dashboard enhancements
