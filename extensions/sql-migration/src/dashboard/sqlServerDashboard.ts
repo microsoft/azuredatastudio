@@ -5,10 +5,9 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as path from 'path';
 import { MigrationLocalStorage } from '../models/migrationLocalStorage';
 import * as loc from '../models/strings';
-import { MigrationStatusDialog } from '../dialog/migrationStatusDialog';
+import { IconPathHelper } from '../constants/iconPathHelper';
 
 interface IActionMetadata {
 	title?: string,
@@ -24,14 +23,11 @@ export class DashboardWidget {
 
 	private _migrationStatusCardsContainer!: azdata.FlexContainer;
 	private _view!: azdata.ModelView;
-	/**
-	 * Creates new instance of dashboard
-	 */
-	constructor(private _root: string) {
+
+	constructor() {
 	}
 
 	public register(): Promise<void> {
-		//Migrations.clearMigrations();
 		return new Promise<void>(resolve => {
 			azdata.ui.registerModelViewProvider('migration.dashboard', async (view) => {
 				this._view = view;
@@ -46,7 +42,7 @@ export class DashboardWidget {
 
 				container.addItem(header, {
 					CSSStyles: {
-						'background-image': `url(${vscode.Uri.file(this.asAbsolutePath('images/background.svg'))})`,
+						'background-image': `url(${IconPathHelper.migrationDashboardHeaderBackground})`,
 						'width': `1100px`,
 						'height': '300px',
 						'background-size': '100%',
@@ -92,7 +88,6 @@ export class DashboardWidget {
 			value: loc.DASHBOARD_TITLE,
 			CSSStyles: {
 				'font-size': '36px',
-				'font-family': 'Segoe UI'
 			}
 		}).component();
 		const descComponent = view.modelBuilder.text().withProperties({
@@ -111,10 +106,6 @@ export class DashboardWidget {
 		return header;
 	}
 
-	private asAbsolutePath(filePath: string): string {
-		return path.join(this._root || '', filePath);
-	}
-
 	private async createTasks(view: azdata.ModelView): Promise<azdata.Component> {
 		const tasksContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
@@ -125,10 +116,7 @@ export class DashboardWidget {
 		const migrateButtonMetadata: IActionMetadata = {
 			title: loc.DASHBOARD_MIGRATE_TASK_BUTTON_TITLE,
 			description: loc.DASHBOARD_MIGRATE_TASK_BUTTON_DESCRIPTION,
-			iconPath: {
-				dark: this.asAbsolutePath('images/migration.svg'),
-				light: this.asAbsolutePath('images/migration.svg'),
-			},
+			iconPath: IconPathHelper.sqlMigrationLogo,
 			command: 'sqlmigration.start'
 		};
 		const migrateButton = this.createTaskButton(view, migrateButtonMetadata);
@@ -198,7 +186,7 @@ export class DashboardWidget {
 			width: maxWidth,
 		}).component();
 		buttonContainer.onDidClick(async () => {
-			if (buttonContainer.enabled && taskMetaData.command) {
+			if (taskMetaData.command) {
 				await vscode.commands.executeCommand(taskMetaData.command);
 			}
 		});
@@ -213,9 +201,7 @@ export class DashboardWidget {
 			const button = this._view.modelBuilder.button().withProps({
 				label: `Migration to ${migration.targetManagedInstance.name} using controller ${migration.migrationContext.name}`
 			}).component();
-
 			button.onDidClick(async (e) => {
-				await new MigrationStatusDialog(migration).initialize();
 			});
 			this._migrationStatusCardsContainer.addItem(
 				button
@@ -337,7 +323,6 @@ export class DashboardWidget {
 	}
 
 	private createVideoLinks(view: azdata.ModelView): azdata.Component {
-		//const maxWidth = 400;
 		const linksContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '400px',
@@ -384,17 +369,16 @@ export class DashboardWidget {
 
 		const videosContainer = this.createVideoLinkContainers(view, [
 			{
-				iconPath: { light: 'images/aiMlSqlServer.svg', dark: 'images/aiMlSqlServer.svg' },
+				iconPath: IconPathHelper.sqlMiImportHelpThumbnail,
 				description: loc.HELP_VIDEO1_TITLE,
 				link: 'https://www.youtube.com/watch?v=sE99cSoFOHs'
 			},
 			{
-				iconPath: { light: 'images/sqlServerMl.svg', dark: 'images/sqlServerMl.svg' },
+				iconPath: IconPathHelper.sqlVmImportHelpThumbnail,
 				description: loc.HELP_VIDEO2_TITLE,
 				link: 'https://www.youtube.com/watch?v=R4GCBoxADyQ'
 			}
 		]);
-
 		const viewPanelStyle = {
 			'padding': '10px 5px 10px 10px',
 			'margin-top': '-15px'
@@ -496,7 +480,7 @@ export class DashboardWidget {
 		});
 		videosContainer.addItem(video1Container, {
 			CSSStyles: {
-				'background-image': `url(${vscode.Uri.file(this.asAbsolutePath(linkMetaData.iconPath?.light as string || ''))})`,
+				'background-image': `url(${linkMetaData.iconPath?.light})`,
 				'background-repeat': 'no-repeat',
 				'background-position': 'top',
 				'width': `${maxWidth}px`,

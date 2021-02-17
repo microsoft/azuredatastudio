@@ -86,8 +86,7 @@ let sqlMigration: SQLMigration;
 export async function activate(context: vscode.ExtensionContext) {
 	sqlMigration = new SQLMigration(context);
 	await sqlMigration.registerCommands();
-	let rootPath: string = context.extensionPath;
-	let widget = new DashboardWidget(rootPath);
+	let widget = new DashboardWidget();
 	widget.register();
 }
 

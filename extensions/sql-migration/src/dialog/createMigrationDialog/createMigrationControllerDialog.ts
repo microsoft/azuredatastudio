@@ -464,7 +464,7 @@ export class CreateMigrationControllerDialog {
 						value: constants.CONTROLLER_KEY1_LABEL
 					},
 					{
-						value: keys.keyName1
+						value: keys.authKey1
 					},
 					{
 						value: this._copyKey1Button
@@ -478,7 +478,7 @@ export class CreateMigrationControllerDialog {
 						value: constants.CONTROLLER_KEY2_LABEL
 					},
 					{
-						value: keys.keyName2
+						value: keys.authKey2
 					},
 					{
 						value: this._copyKey2Button

@@ -453,7 +453,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				Scope: this._targetManagedInstance.id
 			}
 		};
-		console.log(requestBody);
+
 		const response = await startDatabaseMigration(
 			this.azureAccount,
 			this._targetSubscription,
@@ -464,7 +464,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			requestBody
 		);
 
-		console.log(response);
 		if (response.status === 201) {
 			MigrationLocalStorage.saveMigration(currentConnection!, response.databaseMigration, this._targetManagedInstance, this.azureAccount, this._targetSubscription);
 		}

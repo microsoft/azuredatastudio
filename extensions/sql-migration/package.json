@@ -12,7 +12,7 @@
     "azdata": ">=1.19.0"
   },
   "activationEvents": [
-    "*",
+    "onDashboardOpen",
     "onCommand:sqlmigration.start",
     "onCommand:sqlmigration.testDialog",
     "onCommand:sqlmigration.openNotebooks"

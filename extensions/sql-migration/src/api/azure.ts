@@ -127,8 +127,8 @@ export async function getMigrationControllerAuthKeys(account: azdata.Account, su
 		throw new Error(response.errors.toString());
 	}
 	return {
-		keyName1: response?.response?.data?.authKey1 ?? '',
-		keyName2: response?.response?.data?.authKey2 ?? ''
+		authKey1: response?.response?.data?.authKey1 ?? '',
+		authKey2: response?.response?.data?.authKey2 ?? ''
 	};
 }
 
@@ -235,8 +235,8 @@ export interface MigrationController {
 }
 
 export interface GetMigrationControllerAuthKeysResult {
-	keyName1: string,
-	keyName2: string
+	authKey1: string,
+	authKey2: string
 }
 
 export interface GetStorageAccountAccessKeysResult {
