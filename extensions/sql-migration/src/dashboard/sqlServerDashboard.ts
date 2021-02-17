@@ -27,7 +27,7 @@ export class DashboardWidget {
 	constructor() {
 	}
 
-	public register() {
+	public register(): void {
 		azdata.ui.registerModelViewProvider('migration.dashboard', async (view) => {
 			this._view = view;
 			const container = view.modelBuilder.flexContainer().withLayout({
