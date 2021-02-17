@@ -27,9 +27,9 @@ jobs:
         id: cacheNodeModules
         uses: actions/cache@v2
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-cacheNodeModules3-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-cacheNodeModules3-
+          path: "**/node_modules"
+          key: ${{ runner.os }}-cacheNodeModules5-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules5-
       - name: Get yarn cache directory path
         id: yarnCacheDirPath
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
@@ -71,8 +71,8 @@ jobs:
   #       uses: actions/cache@v2
   #       with:
   #         path: '**/node_modules'
-  #         key: ${{ runner.os }}-cacheNodeModules3-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
-  #         restore-keys: ${{ runner.os }}-cacheNodeModules3-
+  #         key: ${{ runner.os }}-cacheNodeModules5-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+  #         restore-keys: ${{ runner.os }}-cacheNodeModules5-
   #     - name: Get yarn cache directory path
   #       id: yarnCacheDirPath
   #       if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
@@ -125,8 +125,8 @@ jobs:
   #       uses: actions/cache@v2
   #       with:
   #         path: '**/node_modules'
-  #         key: ${{ runner.os }}-cacheNodeModules3-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
-  #         restore-keys: ${{ runner.os }}-cacheNodeModules3-
+  #         key: ${{ runner.os }}-cacheNodeModules4-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+  #         restore-keys: ${{ runner.os }}-cacheNodeModules4-
   #     - name: Get yarn cache directory path
   #       id: yarnCacheDirPath
   #       if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
@@ -172,12 +172,16 @@ jobs:
   #         sudo chmod +x /etc/init.d/xvfb
   #         sudo update-rc.d xvfb defaults
   #         sudo service xvfb start
+  #         key: ${{ runner.os }}-cacheNodeModules4-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+  #         restore-keys: ${{ runner.os }}-cacheNodeModules4-
   #       name: Setup Build Environment
   #     - uses: actions/setup-node@v1
   #       with:
   #         node-version: 10
   #     # TODO: cache node modules
   #     # Increase timeout to get around latency issues when fetching certain packages
+  #         key: ${{ runner.os }}-cacheNodeModules4-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+  #         restore-keys: ${{ runner.os }}-cacheNodeModules4-
   #     - run: |
   #         yarn config set network-timeout 300000
   #         yarn --frozen-lockfile
@@ -186,13 +190,18 @@ jobs:
   #       name: Download Electron
   #     - run: yarn gulp hygiene
   #       name: Run Hygiene Checks
+  #         key: ${{ runner.os }}-cacheNodeModules4-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+  #         restore-keys: ${{ runner.os }}-cacheNodeModules4-
   #     - run: yarn strict-vscode # {{SQL CARBON EDIT}} add step
   #       name: Run Strict Compile Options
-  #     # - run: yarn monaco-compile-check {{SQL CARBON EDIT}} remove step
+  #         key: ${{ runner.os }}-cacheNodeModules4-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+  #         restore-keys: ${{ runner.os }}-cacheNodeModules4-
   #     #   name: Run Monaco Editor Checks
   #     - run: yarn valid-layers-check
   #       name: Run Valid Layers Checks
   #     - run: yarn compile
+  #         key: ${{ runner.os }}-cacheNodeModules4-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+  #         restore-keys: ${{ runner.os }}-cacheNodeModules4-
   #       name: Compile Sources
   #     # - run: yarn download-builtin-extensions {{SQL CARBON EDIT}} remove step
   #     #   name: Download Built-in Extensions
@@ -203,6 +212,8 @@ jobs:
   #       # {{SQL CARBON EDIT}} Add coveralls. We merge first to get around issue where parallel builds weren't being combined correctly
   #     - run: node test/combineCoverage
   #       name: Combine code coverage files
+  #         key: ${{ runner.os }}-cacheNodeModules4-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+  #         restore-keys: ${{ runner.os }}-cacheNodeModules4-
   #     - name: Upload Code Coverage
   #       uses: coverallsapp/github-action@v1.1.1
   #       with:
@@ -210,6 +221,8 @@ jobs:
   #         path-to-lcov: "test/coverage/lcov.info"
 
     # Fails with cryptic error (e.g. https://github.com/microsoft/vscode/pull/90292/checks?check_run_id=433681926#step:13:9)
+          key: ${{ runner.os }}-cacheNodeModules4-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules4-
     # - run: DISPLAY=:10 yarn test-browser --browser chromium
     #   name: Run Unit Tests (Browser)
     # - run: DISPLAY=:10 ./scripts/test-integration.sh --tfs "Integration Tests" {{SQL CARBON EDIT}} remove step
@@ -239,7 +252,12 @@ jobs:
         name: Run Hygiene Checks
       - run: yarn strict-vscode # {{SQL CARBON EDIT}} add step
         name: Run Strict Compile Options
-      # - run: yarn monaco-compile-check {{SQL CARBON EDIT}} remove step
+            !**/Release/*.pdb
+            !**/Release/*.ilk
+            !**/Release/obj/**
+            !**/Release/**/*.tlog
+          key: ${{ runner.os }}-cacheNodeModules4-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules4-
       #   name: Run Monaco Editor Checks
       - run: yarn valid-layers-check
         name: Run Valid Layers Checks
@@ -275,7 +293,8 @@ jobs:
         name: Run Hygiene Checks
       - run: yarn strict-vscode # {{SQL CARBON EDIT}} add step
         name: Run Strict Compile Options
-      # - run: yarn monaco-compile-check {{SQL CARBON EDIT}} remove step
+          key: ${{ runner.os }}-cacheNodeModules4-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules4-
       #   name: Run Monaco Editor Checks
       - run: yarn valid-layers-check
         name: Run Valid Layers Checks
@@ -309,6 +328,8 @@ jobs:
   #   - uses: actions/setup-node@v1
   #     with:
   #       node-version: 10
+          key: ${{ runner.os }}-cacheNodeModules4-${{ hashFiles('.yarnrc', 'remote/.yarnrc', '**/yarn.lock', '!**/node_modules/**/yarn.lock', '!**/.*/**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules4-
   #   - run: yarn --frozen-lockfile
   #     name: Install Dependencies
   #   - run: yarn monaco-compile-check

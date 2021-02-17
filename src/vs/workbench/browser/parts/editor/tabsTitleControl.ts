@@ -132,6 +132,9 @@ export class TabsTitleControl extends TitleControl {
 		// If we are connected to remote, this accounts for the
 		// remote OS.
 		(async () => this.path = await this.pathService.path)();
+
+		// React to decorations changing for our resource labels
+		this._register(this.tabResourceLabels.onDidChangeDecorations(() => this.doHandleDecorationsChange()));
 	}
 
 	protected create(parent: HTMLElement): void {
@@ -164,7 +167,7 @@ export class TabsTitleControl extends TitleControl {
 		// Editor Actions Toolbar
 		this.createEditorActionsToolBar(this.editorToolbarContainer);
 
-		// Breadcrumbs (are on a separate row below tabs and actions)
+		// Breadcrumbs
 		const breadcrumbsContainer = document.createElement('div');
 		breadcrumbsContainer.classList.add('tabs-breadcrumbs');
 		this.titleContainer.appendChild(breadcrumbsContainer);
@@ -381,6 +384,13 @@ export class TabsTitleControl extends TitleControl {
 			// Disable normal scrolling, opening the editor will already reveal it properly
 			EventHelper.stop(e, true);
 		}));
+	}
+
+	private doHandleDecorationsChange(): void {
+
+		// A change to decorations potentially has an impact on the size of tabs
+		// so we need to trigger a layout in that case to adjust things
+		this.layout(this.dimensions);
 	}
 
 	protected updateEditorActionsToolbar(): void {

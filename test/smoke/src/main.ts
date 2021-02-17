@@ -275,19 +275,39 @@ after(async function () {
 	if (opts.log) {
 		const logsDir = path.join(userDataDir, 'logs');
 		const destLogsDir = path.join(path.dirname(opts.log), 'logs');
-		await new Promise((c, e) => ncp(logsDir, destLogsDir, err => err ? e(err) : c()));
+		await new Promise((c, e) => ncp(logsDir, destLogsDir, err => err ? e(err) : c(undefined)));
 	}
 
-	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c()));
+	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c(undefined)));
 });
 
 describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
+	if (screenshotsPath) {
+		afterEach(async function () {
+			if (this.currentTest!.state !== 'failed') {
+				return;
+			}
+			const app = this.app as Application;
+			const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
 
-	/*if (!opts.web && opts['stable-build']) {
-		describe(`Stable vs Insiders Smoke Tests: This test MUST run before releasing by providing the --stable-build command line argument`, () => {
-			setupDataMigrationTests(opts['stable-build'], testDataPath);
+			await app.captureScreenshot(name);
 		});
-	}*/
+	}
+
+	if (opts.log) {
+		beforeEach(async function () {
+			const app = this.app as Application;
+			const title = this.currentTest!.fullTitle();
+
+			app.logger.log('*** Test start:', title);
+		});
+	}
+
+	// if (!opts.web && opts['stable-build']) {
+	// 	describe(`Stable vs Insiders Smoke Tests: This test MUST run before releasing by providing the --stable-build command line argument`, () => {
+	// 		setupDataMigrationTests(opts['stable-build'], testDataPath);
+	// 	});
+	// }
 
 	describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 		before(async function () {
@@ -300,29 +320,9 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 			await this.app.stop();
 		});
 
-		if (screenshotsPath) {
-			afterEach(async function () {
-				if (this.currentTest.state !== 'failed') {
-					return;
-				}
-				const app = this.app as Application;
-				const name = this.currentTest.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
-
-				await app.captureScreenshot(name);
-			});
-		}
-
-		if (opts.log) {
-			beforeEach(async function () {
-				const app = this.app as Application;
-				const title = this.currentTest.fullTitle();
-
-				app.logger.log('*** Test start:', title);
-			});
-		}
-
 		sqlMain(opts.web);
-		/*if (!opts.web) { setupDataLossTests(); }
+
+		/* if (!opts.web) { setupDataLossTests(); }
 		if (!opts.web) { setupDataPreferencesTests(); }
 		setupDataSearchTests();
 		setupDataNotebookTests();
