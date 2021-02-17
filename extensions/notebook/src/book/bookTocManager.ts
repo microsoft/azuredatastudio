@@ -174,7 +174,9 @@ export class BookTocManager implements IBookTocManager {
 	*/
 	async updateTOC(version: BookVersion, tocPath: string, findSection: JupyterBookSection, addSection?: JupyterBookSection): Promise<void> {
 		const toc: JupyterBookSection[] = yaml.safeLoad((await fs.readFile(tocPath, 'utf8')));
-		this._tocFiles.set(tocPath, toc);
+		if (!this._tocFiles.has(tocPath)) {
+			this._tocFiles.set(tocPath, toc);
+		}
 		let originalToc: IJupyterBookToc = { sections: this.getSections(toc) };
 		const indexFindSection = originalToc.sections.findIndex(section => {
 			return section.title === findSection.title && (section.file && section.file === findSection.file || section.url && section.url === findSection.file);
