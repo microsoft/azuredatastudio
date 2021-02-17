@@ -327,7 +327,6 @@ export function createViewContext(): ViewTestContext {
 			divContainer: () => divBuilder,
 			flexContainer: () => flexBuilder,
 			splitViewContainer: () => splitViewBuilder,
-			dom: undefined!,
 			card: () => undefined!,
 			inputBox: () => inputBoxBuilder,
 			checkBox: () => checkBoxBuilder!,
