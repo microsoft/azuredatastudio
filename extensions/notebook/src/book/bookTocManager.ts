@@ -6,7 +6,7 @@ import * as path from 'path';
 import { BookTreeItem } from './bookTreeItem';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs-extra';
-import { JupyterBookSection } from '../contracts/content';
+import { IJupyterBookToc, JupyterBookSection } from '../contracts/content';
 import { BookVersion, convertTo } from './bookVersionHandler';
 import * as vscode from 'vscode';
 import * as loc from '../common/localizedConstants';
@@ -39,7 +39,6 @@ export class BookTocManager implements IBookTocManager {
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
 	private _sourceBook: BookModel;
-	private _foundSection: boolean;
 
 	constructor(targetBook?: BookModel, sourceBook?: BookModel) {
 		this._sourceBook = sourceBook;
@@ -161,6 +160,11 @@ export class BookTocManager implements IBookTocManager {
 		}
 	}
 
+	getSections(section: JupyterBookSection[]): JupyterBookSection[] {
+		return section.reduce((acc, val) => Array.isArray(val.sections) ?
+			acc.concat(val).concat(this.getSections(val.sections)) : acc.concat(val), []);
+	}
+
 	/**
 	 * Reads and modifies the table of contents file of the target book.
 	 * @param version the version of the target book
@@ -169,22 +173,27 @@ export class BookTocManager implements IBookTocManager {
 	 * @param addSection The section that'll be added to the target section. If it's undefined then the target section (findSection) is removed from the table of contents.
 	*/
 	async updateTOC(version: BookVersion, tocPath: string, findSection: JupyterBookSection, addSection?: JupyterBookSection): Promise<void> {
-		this._foundSection = false;
-		const toc = yaml.safeLoad((await fs.readFile(tocPath, 'utf8')));
+		const toc: JupyterBookSection[] = yaml.safeLoad((await fs.readFile(tocPath, 'utf8')));
 		this._tocFiles.set(tocPath, toc);
-		let newToc = new Array<JupyterBookSection>(toc.length);
-		for (const [index, section] of toc.entries()) {
-			let newSection = this.buildTOC(version, section, findSection, addSection);
-			if (newSection) {
-				newToc[index] = newSection;
+		let originalToc: IJupyterBookToc = { sections: this.getSections(toc) };
+		const indexFindSection = originalToc.sections.findIndex(section => {
+			return section.title === findSection.title && (section.file && section.file === findSection.file || section.url && section.url === findSection.file);
+		});
+		if (indexFindSection !== -1) {
+			let newToc = new Array<JupyterBookSection>(toc.length);
+			for (const [index, section] of toc.entries()) {
+				let newSection = this.buildTOC(version, section, findSection, addSection);
+				if (newSection) {
+					newToc[index] = newSection;
+				}
 			}
+
+			await fs.writeFile(tocPath, yaml.safeDump(newToc, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
+			this.tableofContents = newToc;
+		} else {
+			throw (new Error(loc.sectionNotFound(findSection.title, tocPath)));
 		}
-		if (!this._foundSection) {
-			// if the section was not found, throw an error and restore both toc files.
-			throw (new Error(loc.sectionNotFound(findSection.title)));
-		}
-		await fs.writeFile(tocPath, yaml.safeDump(newToc, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
-		this.tableofContents = newToc;
+
 	}
 
 	/**
@@ -198,7 +207,6 @@ export class BookTocManager implements IBookTocManager {
 	private buildTOC(version: BookVersion, section: JupyterBookSection, findSection: JupyterBookSection, addSection: JupyterBookSection): JupyterBookSection {
 		// condition to find the section to be modified
 		if (section.title === findSection.title && (section.file && section.file === findSection.file || section.url && section.url === findSection.file)) {
-			this._foundSection = true;
 			if (addSection) {
 				//if addSection is not undefined, then we added to the table of contents.
 				section.sections !== undefined && section.sections.length > 0 ? section.sections.push(addSection) : section.sections = [addSection];
