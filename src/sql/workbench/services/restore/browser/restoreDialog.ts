@@ -634,9 +634,12 @@ export class RestoreDialog extends Modal {
 	}
 
 	private onSourceDatabaseChanged(selectedDatabase: string) {
-		this.viewModel.sourceDatabaseName = selectedDatabase;
-		this.viewModel.selectedBackupSets = undefined;
-		this.validateRestore(true);
+		// This check is to avoid any unnecessary even firing (to remove flickering)
+		if (this.viewModel.sourceDatabaseName !== selectedDatabase) {
+			this.viewModel.sourceDatabaseName = selectedDatabase;
+			this.viewModel.selectedBackupSets = undefined;
+			this.validateRestore(true);
+		}
 	}
 
 	private onRestoreFromChanged(selectedRestoreFrom: string) {

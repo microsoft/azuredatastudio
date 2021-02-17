@@ -3,13 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { addClasses, createCSSRule, removeClasses, asCSSUrl } from 'vs/base/browser/dom';
+import { createCSSRule, asCSSUrl, ModifierKeyEmitter } from 'vs/base/browser/dom';
 import { domEvent } from 'vs/base/browser/event';
 import { IAction, Separator } from 'vs/base/common/actions';
-import { Emitter } from 'vs/base/common/event';
 import { IdGenerator } from 'vs/base/common/idGenerator';
-import { IDisposable, toDisposable, MutableDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
-import { isLinux, isWindows } from 'vs/base/common/platform';
+import { IDisposable, toDisposable, MutableDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle'; // {{SQL CARBON EDIT}}
 import { localize } from 'vs/nls';
 import { ICommandAction, IMenu, IMenuActionOptions, MenuItemAction, SubmenuItemAction, Icon } from 'vs/platform/actions/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -18,69 +16,11 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { ActionViewItem } from 'vs/base/browser/ui/actionbar/actionViewItems';
 import { DropdownMenuActionViewItem } from 'vs/base/browser/ui/dropdown/dropdownActionViewItem';
+import { isWindows, isLinux } from 'vs/base/common/platform';
 
-// The alternative key on all platforms is alt. On windows we also support shift as an alternative key #44136
-class AlternativeKeyEmitter extends Emitter<boolean> {
-
-	private readonly _subscriptions = new DisposableStore();
-	private _isPressed: boolean = false;
-	private static instance: AlternativeKeyEmitter;
-	private _suppressAltKeyUp: boolean = false;
-
-	private constructor(contextMenuService: IContextMenuService) {
-		super();
-
-		this._subscriptions.add(domEvent(document.body, 'keydown')(e => {
-			this.isPressed = e.altKey || ((isWindows || isLinux) && e.shiftKey);
-		}));
-		this._subscriptions.add(domEvent(document.body, 'keyup')(e => {
-			if (this.isPressed) {
-				if (this._suppressAltKeyUp) {
-					e.preventDefault();
-				}
-			}
-
-			this._suppressAltKeyUp = false;
-			this.isPressed = false;
-		}));
-		this._subscriptions.add(domEvent(document.body, 'mouseleave')(e => this.isPressed = false));
-		this._subscriptions.add(domEvent(document.body, 'blur')(e => this.isPressed = false));
-		// Workaround since we do not get any events while a context menu is shown
-		this._subscriptions.add(contextMenuService.onDidContextMenu(() => this.isPressed = false));
-	}
-
-	get isPressed(): boolean {
-		return this._isPressed;
-	}
-
-	set isPressed(value: boolean) {
-		this._isPressed = value;
-		this.fire(this._isPressed);
-	}
-
-	suppressAltKeyUp() {
-		// Sometimes the native alt behavior needs to be suppresed since the alt was already used as an alternative key
-		// Example: windows behavior to toggle tha top level menu #44396
-		this._suppressAltKeyUp = true;
-	}
-
-	static getInstance(contextMenuService: IContextMenuService) {
-		if (!AlternativeKeyEmitter.instance) {
-			AlternativeKeyEmitter.instance = new AlternativeKeyEmitter(contextMenuService);
-		}
-
-		return AlternativeKeyEmitter.instance;
-	}
-
-	dispose() {
-		super.dispose();
-		this._subscriptions.dispose();
-	}
-}
-
-export function createAndFillInContextMenuActions(menu: IMenu, options: IMenuActionOptions | undefined, target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, contextMenuService: IContextMenuService, isPrimaryGroup?: (group: string) => boolean): IDisposable {
+export function createAndFillInContextMenuActions(menu: IMenu, options: IMenuActionOptions | undefined, target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, isPrimaryGroup?: (group: string) => boolean): IDisposable {
 	const groups = menu.getActions(options);
-	const useAlternativeActions = AlternativeKeyEmitter.getInstance(contextMenuService).isPressed;
+	const useAlternativeActions = ModifierKeyEmitter.getInstance().keyStatus.altKey;
 	fillInActions(groups, target, useAlternativeActions, isPrimaryGroup);
 	return asDisposable(groups);
 }
@@ -134,16 +74,15 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 
 	private _wantsAltCommand: boolean = false;
 	private readonly _itemClassDispose = this._register(new MutableDisposable());
-	private readonly _altKey: AlternativeKeyEmitter;
+	private readonly _altKey: ModifierKeyEmitter;
 
 	constructor(
 		readonly _action: MenuItemAction,
-		@IKeybindingService private readonly _keybindingService: IKeybindingService,
-		@INotificationService protected _notificationService: INotificationService,
-		@IContextMenuService _contextMenuService: IContextMenuService
+		@IKeybindingService protected readonly _keybindingService: IKeybindingService,
+		@INotificationService protected _notificationService: INotificationService
 	) {
 		super(undefined, _action, { icon: !!(_action.class || _action.item.icon), label: !_action.class && !_action.item.icon });
-		this._altKey = AlternativeKeyEmitter.getInstance(_contextMenuService);
+		this._altKey = ModifierKeyEmitter.getInstance();
 	}
 
 	protected get _commandAction(): IAction {
@@ -153,10 +92,6 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 	onClick(event: MouseEvent): void {
 		event.preventDefault();
 		event.stopPropagation();
-
-		if (this._altKey.isPressed) {
-			this._altKey.suppressAltKeyUp();
-		}
 
 		this.actionRunner.run(this._commandAction, this._context)
 			.then(undefined, err => this._notificationService.error(err));
@@ -169,7 +104,7 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 
 		let mouseOver = false;
 
-		let alternativeKeyDown = this._altKey.isPressed;
+		let alternativeKeyDown = this._altKey.keyStatus.altKey || ((isWindows || isLinux) && this._altKey.keyStatus.shiftKey);
 
 		const updateAltState = () => {
 			const wantsAltCommand = mouseOver && alternativeKeyDown;
@@ -183,7 +118,7 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 
 		if (this._action.alt) {
 			this._register(this._altKey.event(value => {
-				alternativeKeyDown = value;
+				alternativeKeyDown = value.altKey || ((isWindows || isLinux) && value.shiftKey);
 				updateAltState();
 			}));
 		}
@@ -238,10 +173,10 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 			// theme icons
 			const iconClass = ThemeIcon.asClassName(icon);
 			if (this.label && iconClass) {
-				addClasses(this.label, iconClass);
+				this.label.classList.add(...iconClass.split(' '));
 				this._itemClassDispose.value = toDisposable(() => {
 					if (this.label) {
-						removeClasses(this.label, iconClass);
+						this.label.classList.remove(...iconClass.split(' '));
 					}
 				});
 			}
@@ -264,11 +199,10 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 				}
 
 				if (this.label) {
-
-					addClasses(this.label, 'icon', iconClass);
+					this.label.classList.add('icon', ...iconClass.split(' '));
 					this._itemClassDispose.value = toDisposable(() => {
 						if (this.label) {
-							removeClasses(this.label, 'icon', iconClass);
+							this.label.classList.remove('icon', ...iconClass.split(' '));
 						}
 					});
 				}
@@ -284,19 +218,19 @@ export class SubmenuEntryActionViewItem extends DropdownMenuActionViewItem {
 		@INotificationService _notificationService: INotificationService,
 		@IContextMenuService _contextMenuService: IContextMenuService
 	) {
-		const classNames: string[] = [];
+		let classNames: string | string[] | undefined;
 
 		if (action.item.icon) {
 			if (ThemeIcon.isThemeIcon(action.item.icon)) {
-				classNames.push(ThemeIcon.asClassName(action.item.icon)!);
+				classNames = ThemeIcon.asClassName(action.item.icon)!;
 			} else if (action.item.icon.dark?.scheme) {
 				const iconPathMapKey = action.item.icon.dark.toString();
 
 				if (ICON_PATH_TO_CSS_RULES.has(iconPathMapKey)) {
-					classNames.push('icon', ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!);
+					classNames = ['icon', ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!];
 				} else {
 					const className = ids.nextId();
-					classNames.push('icon', className);
+					classNames = ['icon', className];
 					createCSSRule(`.icon.${className}`, `background-image: ${asCSSUrl(action.item.icon.light || action.item.icon.dark)}`);
 					createCSSRule(`.vs-dark .icon.${className}, .hc-black .icon.${className}`, `background-image: ${asCSSUrl(action.item.icon.dark)}`);
 					ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, className);
@@ -304,7 +238,7 @@ export class SubmenuEntryActionViewItem extends DropdownMenuActionViewItem {
 			}
 		}
 
-		super(action, action.actions, _contextMenuService, { classNames });
+		super(action, action.actions, _contextMenuService, { classNames: classNames, menuAsChild: true });
 	}
 }
 
@@ -318,11 +252,10 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 	constructor(
 		public _action: MenuItemAction,
 		@IKeybindingService labeledkeybindingService: IKeybindingService,
-		@IContextMenuService labeledcontextMenuService: IContextMenuService,
 		@INotificationService protected _notificationService: INotificationService,
 		private readonly _defaultCSSClassToAdd: string = ''
 	) {
-		super(_action, labeledkeybindingService, _notificationService, labeledcontextMenuService);
+		super(_action, labeledkeybindingService, _notificationService);
 	}
 
 	updateLabel(): void {
@@ -356,10 +289,10 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 				}
 
 				if (this.label) {
-					addClasses(this.label, 'codicon', this._defaultCSSClassToAdd, iconClass);
+					this.label.classList.add('codicon', this._defaultCSSClassToAdd, ...iconClass.split(' '));
 					this._labeledItemClassDispose = toDisposable(() => {
 						if (this.label) {
-							removeClasses(this.label, 'codicon', this._defaultCSSClassToAdd, iconClass);
+							this.label.classList.remove('codicon', this._defaultCSSClassToAdd, ...iconClass.split(' '));
 						}
 					});
 				}

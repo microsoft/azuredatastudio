@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWizardDeploymentProvider, ResourceType, ResourceTypeOptionValue } from '../interfaces';
+import { DeploymentProvider, InitialVariableValues, instanceOfAzureSQLDBDeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWizardDeploymentProvider, ResourceType, ResourceTypeOptionValue } from '../interfaces';
 import { DeployClusterWizardModel } from './deployClusterWizard/deployClusterWizardModel';
 import { DeployAzureSQLVMWizardModel } from './deployAzureSQLVMWizard/deployAzureSQLVMWizardModel';
 import { WizardPageInfo } from './wizardPageInfo';
@@ -59,7 +59,8 @@ export class ResourceTypeWizard {
 		public toolsService: IToolsService,
 		public platformService: IPlatformService,
 		public resourceTypeService: ResourceTypeService,
-		private _optionValuesFilter?: OptionValuesFilter) {
+		private _optionValuesFilter?: OptionValuesFilter,
+		private _initialVariableValues?: InitialVariableValues) {
 		/**
 		 * Setting the first provider from the first value of the dropdowns.
 		 * If there are no options (dropdowns) then the resource type has only one provider which is set as default here.
@@ -164,7 +165,7 @@ export class ResourceTypeWizard {
 				// generateScriptButton is enabled only when the page is valid.
 				this.wizardObject.generateScriptButton.enabled = isValid;
 			});
-			page.initialize();
+			page.initialize(this._initialVariableValues);
 		});
 	}
 
