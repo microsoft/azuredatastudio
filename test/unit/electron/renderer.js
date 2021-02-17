@@ -158,9 +158,9 @@ function serializeSuite(suite) {
 		tests: suite.tests.map(serializeRunnable),
 		title: suite.title,
 		fullTitle: suite.fullTitle(),
+		titlePath: suite.titlePath(),
 		timeout: suite.timeout(),
 		retries: suite.retries(),
-		enableTimeouts: suite.enableTimeouts(),
 		slow: suite.slow(),
 		bail: suite.bail()
 	};
@@ -170,6 +170,7 @@ function serializeRunnable(runnable) {
 	return {
 		title: runnable.title,
 		fullTitle: runnable.fullTitle(),
+		titlePath: runnable.titlePath(),
 		async: runnable.async,
 		slow: runnable.slow(),
 		speed: runnable.speed,
