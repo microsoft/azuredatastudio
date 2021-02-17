@@ -376,12 +376,12 @@ export class DashboardWidget {
 			{
 				iconPath: IconPathHelper.sqlMiImportHelpThumbnail,
 				description: loc.HELP_VIDEO1_TITLE,
-				link: 'https://www.youtube.com/watch?v=sE99cSoFOHs'
+				link: 'https://www.youtube.com/watch?v=sE99cSoFOHs' //TODO: Fix Video link
 			},
 			{
 				iconPath: IconPathHelper.sqlVmImportHelpThumbnail,
 				description: loc.HELP_VIDEO2_TITLE,
-				link: 'https://www.youtube.com/watch?v=R4GCBoxADyQ'
+				link: 'https://www.youtube.com/watch?v=R4GCBoxADyQ' //TODO: Fix video link
 			}
 		]);
 		const viewPanelStyle = {
