@@ -248,7 +248,6 @@ export abstract class NotebookInput extends EditorInput {
 
 	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<void> {
 		return this._textInput.revert(group, options);
-		// return this._textInput.revert(group, { soft: true });
 	}
 
 	public get notebookUri(): URI {
