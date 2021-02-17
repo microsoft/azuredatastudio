@@ -52,13 +52,6 @@ export function ViewContainerLocationToString(viewContainerLocation: ViewContain
 	return '';
 }
 
-export function ViewContainerLocationToString(viewContainerLocation: ViewContainerLocation) {
-	switch (viewContainerLocation) {
-		case ViewContainerLocation.Sidebar: return 'sidebar';
-		case ViewContainerLocation.Panel: return 'panel';
-	}
-}
-
 export interface IViewContainerDescriptor {
 
 	readonly id: string;

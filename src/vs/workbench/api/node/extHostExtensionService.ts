@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as performance from 'vs/base/common/performance';
-import { createApiFactoryAndRegisterActors } from 'sql/workbench/api/common/extHost.api.impl'; // {{SQL CARBON EDIT}} replace with ours
+import { createApiFactoryAndRegisterActors } from 'sql/workbench/api/common/sqlExtHost.api.impl'; // {{SQL CARBON EDIT}} replace with ours
 import { RequireInterceptor } from 'vs/workbench/api/common/extHostRequireInterceptor';
 import { MainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtensionActivationTimesBuilder } from 'vs/workbench/api/common/extHostExtensionActivator';

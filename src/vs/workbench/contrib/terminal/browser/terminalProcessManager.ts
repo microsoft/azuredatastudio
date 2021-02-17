@@ -210,7 +210,7 @@ export class TerminalProcessManager extends Disposable implements ITerminalProce
 			}
 		}, LAUNCHING_DURATION);
 
-		const result = await this._process.start();
+		const result: any = await this._process.start();
 		if (result && 'remoteTerminalId' in result) {
 			this._remoteTerminalId = result.remoteTerminalId;
 		} else if (result) {
