@@ -277,7 +277,7 @@ export class Button extends Disposable implements IButton {
 
 	set icon(icon: CSSIcon) {
 		this.hasIcon = icon !== undefined;
-		this._element.classList.add(...icon.classNames.split(' '));
+		this._element.classList.add(...CSSIcon.asClassNameArray(icon));
 		this.applyStyles();
 	}
 
