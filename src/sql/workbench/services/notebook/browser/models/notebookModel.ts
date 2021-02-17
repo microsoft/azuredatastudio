@@ -423,7 +423,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						*/
 						if (cellModel.isInjectedParameter) {
 							hasInjectedCell = true;
-							// cellModel.source = cellModel.source.slice(1);
 							cellModel.source = [injectedParametersMsg].concat(cellModel.source.slice(1));
 						}
 						this.trackMarkdownTelemetry(<nb.ICellContents>c, cellModel);
