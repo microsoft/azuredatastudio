@@ -42,7 +42,7 @@ export class DashboardWidget {
 
 				container.addItem(header, {
 					CSSStyles: {
-						'background-image': `url(${IconPathHelper.migrationDashboardHeaderBackground})`,
+						'background-image': `url(${vscode.Uri.file(<string>IconPathHelper.migrationDashboardHeaderBackground.light)})`,
 						'width': `1100px`,
 						'height': '300px',
 						'background-size': '100%',
@@ -84,13 +84,13 @@ export class DashboardWidget {
 			flexFlow: 'column',
 			width: maxWidth,
 		}).component();
-		const titleComponent = view.modelBuilder.text().withProperties({
+		const titleComponent = view.modelBuilder.text().withProps({
 			value: loc.DASHBOARD_TITLE,
 			CSSStyles: {
 				'font-size': '36px',
 			}
 		}).component();
-		const descComponent = view.modelBuilder.text().withProperties({
+		const descComponent = view.modelBuilder.text().withProps({
 			value: loc.DASHBOARD_DESCRIPTION,
 			CSSStyles: {
 				'font-size': '12px',
@@ -182,7 +182,7 @@ export class DashboardWidget {
 	private createTaskButton(view: azdata.ModelView, taskMetaData: IActionMetadata): azdata.Component {
 		const maxHeight: number = 84;
 		const maxWidth: number = 236;
-		const buttonContainer = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const buttonContainer = view.modelBuilder.button().withProps({
 			buttonType: azdata.ButtonType.Informational,
 			description: taskMetaData.description,
 			height: maxHeight,
@@ -342,7 +342,7 @@ export class DashboardWidget {
 				'padding': '15px'
 			}
 		}).component();
-		const titleComponent = view.modelBuilder.text().withProperties({
+		const titleComponent = view.modelBuilder.text().withProps({
 			value: loc.HELP_TITLE,
 			CSSStyles: {
 				'font-size': '18px',
@@ -364,7 +364,7 @@ export class DashboardWidget {
 		const links = [{
 			title: loc.HELP_LINK1_TITLE,
 			description: loc.HELP_LINK1_DESCRIPTION,
-			link: 'www.microsoft.com'
+			link: 'www.microsoft.com' //TODO: add proper link over here.
 		}];
 
 		const styles = {
@@ -405,7 +405,7 @@ export class DashboardWidget {
 			width: maxWidth,
 			justifyContent: 'flex-start'
 		}).component();
-		const descriptionComponent = view.modelBuilder.text().withProperties({
+		const descriptionComponent = view.modelBuilder.text().withProps({
 			value: linkMetaData.description,
 			width: maxWidth,
 			CSSStyles: {
@@ -467,12 +467,12 @@ export class DashboardWidget {
 			width: maxWidth,
 			justifyContent: 'flex-start'
 		}).component();
-		const video1Container = view.modelBuilder.divContainer().withProperties({
+		const video1Container = view.modelBuilder.divContainer().withProps({
 			clickable: true,
 			width: maxWidth,
 			height: '100px'
 		}).component();
-		const descriptionComponent = view.modelBuilder.text().withProperties({
+		const descriptionComponent = view.modelBuilder.text().withProps({
 			value: linkMetaData.description,
 			width: maxWidth,
 			height: '50px',
@@ -488,7 +488,7 @@ export class DashboardWidget {
 		});
 		videosContainer.addItem(video1Container, {
 			CSSStyles: {
-				'background-image': `url(${linkMetaData.iconPath?.light})`,
+				'background-image': `url(${vscode.Uri.file(<string>linkMetaData.iconPath?.light)})`,
 				'background-repeat': 'no-repeat',
 				'background-position': 'top',
 				'width': `${maxWidth}px`,
