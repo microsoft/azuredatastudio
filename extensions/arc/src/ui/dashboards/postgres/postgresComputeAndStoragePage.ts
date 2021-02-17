@@ -227,9 +227,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.discardButton.onDidClick(async () => {
 				this.discardButton!.enabled = false;
 				try {
-					this.editWorkerNodeCount();
-					this.editWorkerCores();
-					this.editWorkerMemory();
+					this.handleServiceUpdated();
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
@@ -412,7 +410,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		return [
 			this.createWorkerNodesSectionContainer(),
-			this.createCoresMemorySection(loc.configurationPerNode),
+			this.createCoresMemorySection(loc.configurationPerNode, loc.workerNodesConfigurationInformation),
 			this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBoxW!),
 			this.createConfigurationSectionContainer(loc.coresLimit, this.coresLimitBoxW!),
 			this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBoxW!),
@@ -464,7 +462,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}
 
 		return [
-			this.createCoresMemorySection(loc.configurationCoordinatorNode),
+			this.createCoresMemorySection(loc.configurationCoordinatorNode, loc.coordinatorNodeConfigurationInformation),
 			this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBoxC!),
 			this.createConfigurationSectionContainer(loc.coresLimit, this.coresLimitBoxC!),
 			this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBoxC!),
@@ -531,7 +529,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.saveWorkerArgs.workers = undefined;
 	}
 
-	private createCoresMemorySection(title: string): azdata.DivContainer {
+	private createCoresMemorySection(title: string, description: string): azdata.DivContainer {
 		const titleFlex = { flex: `0 1 250px` };
 
 		const flexContainer = this.modelView.modelBuilder.flexContainer().withLayout({
@@ -549,7 +547,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		const information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			iconPath: IconPathHelper.information,
-			title: loc.postgresConfigurationInformation,
+			title: description,
 			width: '15px',
 			height: '15px',
 			enabled: false
