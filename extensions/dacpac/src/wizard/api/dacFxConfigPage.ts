@@ -40,8 +40,13 @@ export abstract class DacFxConfigPage extends BasePage {
 
 		// Handle server changes
 		this.serverDropdown.onValueChanged(async () => {
-			this.model.server = (this.serverDropdown.value as ConnectionDropdownValue).connection;
-			this.model.serverName = (this.serverDropdown.value as ConnectionDropdownValue).displayName;
+			const serverDropdownValue = this.serverDropdown.value as ConnectionDropdownValue;
+			if (!serverDropdownValue) {
+				return;
+			}
+
+			this.model.server = serverDropdownValue.connection;
+			this.model.serverName = serverDropdownValue.displayName;
 			if (this.databaseDropdown) {
 				await this.populateDatabaseDropdown();
 			} else {
@@ -98,8 +103,13 @@ export abstract class DacFxConfigPage extends BasePage {
 		}).component();
 
 		// Handle database changes
-		this.databaseDropdown.onValueChanged(async () => {
-			this.model.database = <string>this.databaseDropdown.value;
+		this.databaseDropdown.onValueChanged(() => {
+			const databaseDropdownValue = this.databaseDropdown.value;
+			if (!databaseDropdownValue) {
+				return;
+			}
+
+			this.model.database = databaseDropdownValue as string;
 			this.fileTextBox.value = this.generateFilePathFromDatabaseAndTimestamp();
 			this.model.filePath = this.fileTextBox.value;
 		});
@@ -172,10 +182,9 @@ export abstract class DacFxConfigPage extends BasePage {
 
 		this.fileTextBox.ariaLabel = loc.fileLocation;
 		this.fileButton = this.view.modelBuilder.button().withProps({
-			label: '•••',
 			title: loc.selectFile,
 			ariaLabel: loc.selectFile,
-			secondary: true
+			iconPath: path.join(this.instance.extensionContextExtensionPath, 'images', 'folder.svg'),
 		}).component();
 	}
 

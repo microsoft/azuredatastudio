@@ -49,7 +49,7 @@ export class WebViewDialog extends Modal {
 		@IWebviewService private readonly webviewService: IWebviewService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', TelemetryKeys.WebView, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.WebView, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 		this._okLabel = localize('webViewDialog.ok', "OK");
 		this._closeLabel = localize('webViewDialog.close', "Close");
 	}

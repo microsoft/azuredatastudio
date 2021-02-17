@@ -37,28 +37,29 @@
 	min-height: 21px;
 }
 
-.notebookEditor  .editor-toolbar .actions-container .action-item .notebook-button.masked-pseudo {
+.notebookEditor .editor-toolbar .actions-container .action-item .codicon.masked-pseudo {
 	padding-right: 18px;
 }
-.notebookEditor .editor-toolbar .actions-container .action-item .notebook-button {
+
+.notebookEditor .editor-toolbar .actions-container .action-item .codicon {
 	display: inline-block;
 	text-align: center;
 	cursor: pointer;
-	padding: 0 18px;
+	padding: 0 0 0 18px;
 	background-size: 13px;
 	font-size: 13px;
 	height: 21px;
 }
-.notebookEditor .editor-toolbar .actions-container .action-item .notebook-button.masked-icon {
+.notebookEditor .editor-toolbar .actions-container .action-item .codicon.masked-icon {
 	padding: 0;
 	width: 28px;
 }
 
-.notebookEditor .in-preview .actions-container .action-item .notebook-button,
-.notebookEditor .in-preview .actions-container .action-item .notebook-button:before {
+.notebookEditor .in-preview .actions-container .action-item .codicon,
+.notebookEditor .in-preview .actions-container .action-item .codicon:before {
 	display: flex;
 	height: 100%;
-	padding-right: 0px;
+	padding-right: 0;
 	background-size: contain;
 }
 
@@ -66,14 +67,14 @@
 	.in-preview
 	.actions-container
 	.action-item
-	.notebook-button.masked-pseudo {
+	.codicon.masked-pseudo {
 	padding-left: 30px;
 }
 .notebookEditor
 	.in-preview
 	.actions-container
 	.action-item
-	.notebook-button.masked-icon:before {
+	.codicon.masked-icon:before {
 	margin-right: 0;
 	padding-left: 18px;
 	width: 16px;
@@ -85,11 +86,11 @@
 	.in-preview
 	.actions-container
 	.action-item:last-child
-	.notebook-button {
+	.codicon {
 	margin-right: 0;
 }
 
-.notebookEditor .in-preview .actions-container .action-item:last-child .notebook-button.fixed-width {
+.notebookEditor .in-preview .actions-container .action-item:last-child .codicon.fixed-width {
 	background-size: contain;
 	margin-left: 8px;
 	padding: 0 0 0 18px;
@@ -109,71 +110,71 @@
 }
 
 /* non-preview */
-.notebookEditor :not(.in-preview) .notebook-button.icon-add {
+.notebookEditor :not(.in-preview) .codicon.icon-add {
 	background-image: url("./media/light/add.svg");
 }
 
-.vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-add,
-.hc-black .notebookEditor :not(.in-preview) .notebook-button.icon-add {
+.vs-dark .notebookEditor :not(.in-preview) .codicon.icon-add,
+.hc-black .notebookEditor :not(.in-preview) .codicon.icon-add {
 	background-image: url("./media/dark/add_inverse.svg");
 }
 
-.notebookEditor :not(.in-preview) .notebook-button.icon-run-cells {
+.notebookEditor :not(.in-preview) .codicon.icon-run-cells {
 	background-image: url("./media/light/run_cells.svg");
 }
 
-.vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-run-cells,
-.hc-black .notebookEditor :not(.in-preview) .notebook-button.icon-run-cells {
+.vs-dark .notebookEditor :not(.in-preview) .codicon.icon-run-cells,
+.hc-black .notebookEditor :not(.in-preview) .codicon.icon-run-cells {
 	background-image: url("./media/dark/run_cells_inverse.svg");
 }
 
-.notebookEditor :not(.in-preview) .notebook-button.icon-trusted {
+.notebookEditor :not(.in-preview) .codicon.icon-trusted {
 	background-image: url("./media/light/trusted.svg");
 }
 
-.vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-trusted,
-.hc-black .notebookEditor :not(.in-preview) .notebook-button.icon-trusted {
+.vs-dark .notebookEditor :not(.in-preview) .codicon.icon-trusted,
+.hc-black .notebookEditor :not(.in-preview) .codicon.icon-trusted {
 	background-image: url("./media/dark/trusted_inverse.svg");
 }
-.notebookEditor :not(.in-preview) .notebook-button.icon-notTrusted {
+.notebookEditor :not(.in-preview) .codicon.icon-notTrusted {
 	background-image: url("./media/light/nottrusted.svg");
 }
 
-.vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-notTrusted,
-.hc-black .notebookEditor :not(.in-preview) .notebook-button.icon-notTrusted {
+.vs-dark .notebookEditor :not(.in-preview) .codicon.icon-notTrusted,
+.hc-black .notebookEditor :not(.in-preview) .codicon.icon-notTrusted {
 	background-image: url("./media/dark/nottrusted_inverse.svg");
 }
 
-.notebookEditor :not(.in-preview) .notebook-button.icon-show-cells {
+.notebookEditor :not(.in-preview) .codicon.icon-show-cells {
 	background-image: url("./media/light/show_code.svg");
 }
 
-.vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-show-cells,
-.hc-black .notebookEditor :not(.in-preview) .notebook-button.icon-show-cells {
+.vs-dark .notebookEditor :not(.in-preview) .codicon.icon-show-cells,
+.hc-black .notebookEditor :not(.in-preview) .codicon.icon-show-cells {
 	background-image: url("./media/dark/show_code_inverse.svg");
 }
 
-.notebookEditor :not(.in-preview) .notebook-button.icon-hide-cells {
+.notebookEditor :not(.in-preview) .codicon.icon-hide-cells {
 	background-image: url("./media/light/hide_code.svg");
 }
 
-.vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-hide-cells,
-.hc-black .notebookEditor :not(.in-preview) .notebook-button.icon-hide-cells {
+.vs-dark .notebookEditor :not(.in-preview) .codicon.icon-hide-cells,
+.hc-black .notebookEditor :not(.in-preview) .codicon.icon-hide-cells {
 	background-image: url("./media/dark/hide_code_inverse.svg");
 }
 
-.notebookEditor :not(.in-preview) .notebook-button.icon-clear-results {
+.notebookEditor :not(.in-preview) .codicon.icon-clear-results {
 	background-image: url("./media/light/clear_results.svg");
 }
 
-.vs-dark .notebookEditor :not(.in-preview) .notebook-button.icon-clear-results,
-.hc-black .notebookEditor :not(.in-preview) .notebook-button.icon-clear-results {
+.vs-dark .notebookEditor :not(.in-preview) .codicon.icon-clear-results,
+.hc-black .notebookEditor :not(.in-preview) .codicon.icon-clear-results {
 	background-image: url("./media/dark/clear_results_inverse.svg");
 }
 
-.notebookEditor .in-preview .notebook-button.masked-icon,
-.vs-dark .notebookEditor .in-preview .notebook-button.icon-clear-results,
-.hc-black .notebookEditor .in-preview .notebook-button.icon-clear-results {
+.notebookEditor .in-preview .codicon.masked-icon,
+.vs-dark .notebookEditor .in-preview .codicon.icon-clear-results,
+.hc-black .notebookEditor .in-preview .codicon.icon-clear-results {
 	background-image: none;
 }
 /* non-preview */

@@ -343,7 +343,9 @@ export class BookTocManager implements IBookTocManager {
 
 		if (this._sourceBook) {
 			const sectionTOC = this._sourceBook.bookItems[0].findChildSection(notebook.uri);
-			this.newSection = sectionTOC;
+			if (sectionTOC) {
+				this.newSection = sectionTOC;
+			}
 		}
 		fileName = fileName === undefined ? notebookPath.name : path.parse(fileName).name;
 		this.newSection.file = path.sep.concat(fileName).replace(/\\/g, '/');

@@ -17,7 +17,6 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { Button } from 'sql/base/browser/ui/button/button';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { localize } from 'vs/nls';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
@@ -27,6 +26,10 @@ import { IThemable } from 'vs/base/common/styler';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { alert } from 'vs/base/browser/ui/aria/aria';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { editorWidgetForeground, editorBackground } from 'vs/platform/theme/common/colorRegistry';
+import { notebookToolbarLines } from 'sql/platform/theme/common/colorRegistry';
+import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 
 export enum MessageLevel {
 	Error = 0,
@@ -56,9 +59,21 @@ export interface IModalDialogStyles {
 }
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
+export type DialogStyle = 'normal' | 'flyout' | 'callout';
+export type DialogPosition = 'left' | 'below';
+
+export interface IDialogProperties {
+	xPos: number,
+	yPos: number,
+	width: number,
+	height: number
+}
 
 export interface IModalOptions {
-	isFlyout?: boolean;
+	dialogStyle?: DialogStyle;
+	dialogPosition?: DialogPosition;
+	positionX?: number;
+	positionY?: number;
 	width?: DialogWidth;
 	isAngular?: boolean;
 	hasBackButton?: boolean;
@@ -66,16 +81,25 @@ export interface IModalOptions {
 	hasErrors?: boolean;
 	hasSpinner?: boolean;
 	spinnerTitle?: string;
+	renderHeader?: boolean;
+	renderFooter?: boolean;
+	dialogProperties?: IDialogProperties;
 }
 
 const defaultOptions: IModalOptions = {
-	isFlyout: true,
+	dialogStyle: 'flyout',
+	dialogPosition: undefined,
+	positionX: undefined,
+	positionY: undefined,
 	width: 'narrow',
 	isAngular: false,
 	hasBackButton: false,
 	hasTitleIcon: false,
 	hasErrors: false,
-	hasSpinner: false
+	hasSpinner: false,
+	renderHeader: true,
+	renderFooter: true,
+	dialogProperties: undefined
 };
 
 const tabbableElementsQuerySelector = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]';
@@ -106,6 +130,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _dialogBorder?: Color;
 	private _dialogHeaderAndFooterBackground?: Color;
 	private _dialogBodyBackground?: Color;
+	private _footerBorderTopColor?: Color;
 
 	private _modalDialog?: HTMLElement;
 	private _modalContent?: HTMLElement;
@@ -168,18 +193,31 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	/**
 	 * Build and render the modal, will call {@link Modal#renderBody}
+	 *
 	 */
 	public render() {
+		let top: number;
 		let builderClass = '.modal.fade';
-		if (this._modalOptions.isFlyout) {
-			builderClass += '.flyout-dialog';
-		}
+		builderClass += this._modalOptions.dialogStyle === 'flyout' ? '.flyout-dialog'
+			: this._modalOptions.dialogStyle === 'callout' ? '.callout-dialog'
+				: '';
 
 		this._bodyContainer = DOM.$(`${builderClass}`, { role: 'dialog', 'aria-label': this._title });
-		const top = this.layoutService.offset?.top ?? 0;
+
+		if (this._modalOptions.dialogStyle === 'callout') {
+			top = 0;
+		} else {
+			top = this.layoutService.offset?.top ?? 0;
+		}
 		this._bodyContainer.style.top = `${top}px`;
 		this._modalDialog = DOM.append(this._bodyContainer, DOM.$('.modal-dialog'));
-		this._modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
+
+		if (this._modalOptions.dialogStyle === 'callout') {
+			let arrowClass = `.callout-arrow.from-${this._modalOptions.dialogPosition}`;
+			this._modalContent = DOM.append(this._modalDialog, DOM.$(`.modal-content${arrowClass}`));
+		} else {
+			this._modalContent = DOM.append(this._modalDialog, DOM.$('.modal-content'));
+		}
 
 		if (typeof this._modalOptions.width === 'number') {
 			this._modalDialog.style.width = `${this._modalOptions.width}px`;
@@ -187,23 +225,29 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalDialog.classList.add(`${this._modalOptions.width}-dialog`);
 		}
 
+		if (this._modalOptions.dialogStyle === 'callout') {
+			this._register(DOM.addDisposableListener(this._bodyContainer, DOM.EventType.CLICK, (e) => this.handleClickOffModal(e)));
+		}
+
 		if (!isUndefinedOrNull(this._title)) {
-			this._modalHeaderSection = DOM.append(this._modalContent, DOM.$('.modal-header'));
-			if (this._modalOptions.hasBackButton) {
-				const container = DOM.append(this._modalHeaderSection, DOM.$('.modal-go-back'));
-				this._backButton = new Button(container, { secondary: true });
-				this._backButton.icon = {
-					classNames: 'backButtonIcon'
-				};
-				this._backButton.title = localize('modal.back', "Back");
-			}
+			if (this._modalOptions.renderHeader || this._modalOptions.renderHeader === undefined) {
+				this._modalHeaderSection = DOM.append(this._modalContent, DOM.$('.modal-header'));
+				if (this._modalOptions.hasBackButton) {
+					const container = DOM.append(this._modalHeaderSection, DOM.$('.modal-go-back'));
+					this._backButton = new Button(container, { secondary: true });
+					this._backButton.icon = {
+						classNames: 'backButtonIcon'
+					};
+					this._backButton.title = localize('modal.back', "Back");
+				}
 
-			if (this._modalOptions.hasTitleIcon) {
-				this._modalTitleIcon = DOM.append(this._modalHeaderSection, DOM.$('.modal-title-icon'));
-			}
+				if (this._modalOptions.hasTitleIcon) {
+					this._modalTitleIcon = DOM.append(this._modalHeaderSection, DOM.$('.modal-title-icon'));
+				}
 
-			this._modalTitle = DOM.append(this._modalHeaderSection, DOM.$('h1.modal-title'));
-			this._modalTitle.innerText = this._title;
+				this._modalTitle = DOM.append(this._modalHeaderSection, DOM.$('h1.modal-title'));
+				this._modalTitle.innerText = this._title;
+			}
 		}
 
 		if (!this._modalOptions.isAngular && this._modalOptions.hasErrors) {
@@ -249,16 +293,17 @@ export abstract class Modal extends Disposable implements IThemable {
 		this._modalBodySection = DOM.append(this._modalContent, DOM.$(`.${modalBodyClass}`));
 		this.renderBody(this._modalBodySection);
 
-		// This modal footer section refers to the footer of of the dialog
-		if (!this._modalOptions.isAngular) {
-			this._modalFooterSection = DOM.append(this._modalContent, DOM.$('.modal-footer'));
-			if (this._modalOptions.hasSpinner) {
-				this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.codicon.in-progress'));
-				this._spinnerElement.setAttribute('title', this._modalOptions.spinnerTitle ?? '');
-				DOM.hide(this._spinnerElement);
+		if (this._modalOptions.renderFooter !== false) {
+			if (!this._modalOptions.isAngular) {
+				this._modalFooterSection = DOM.append(this._modalContent, DOM.$('.modal-footer'));
+				if (this._modalOptions.hasSpinner) {
+					this._spinnerElement = DOM.append(this._modalFooterSection, DOM.$('.codicon.in-progress'));
+					this._spinnerElement.setAttribute('title', this._modalOptions.spinnerTitle ?? '');
+					DOM.hide(this._spinnerElement);
+				}
+				this._leftFooter = DOM.append(this._modalFooterSection, DOM.$('.left-footer'));
+				this._rightFooter = DOM.append(this._modalFooterSection, DOM.$('.right-footer'));
 			}
-			this._leftFooter = DOM.append(this._modalFooterSection, DOM.$('.left-footer'));
-			this._rightFooter = DOM.append(this._modalFooterSection, DOM.$('.right-footer'));
 		}
 	}
 
@@ -273,6 +318,20 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected onClose(e?: StandardKeyboardEvent) {
 		this.hide();
+	}
+
+	/**
+	 * Used to close modal when a click occurs outside the modal.
+	 * This is exclusive to the Callout.
+	 * @param e The Callout modal click event
+	 */
+	private handleClickOffModal(e: MouseEvent): void {
+		const target = e.target as HTMLElement;
+		if (target.closest('.modal-content')) {
+			return;
+		} else {
+			this.hide();
+		}
 	}
 
 	/**
@@ -357,16 +416,56 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 	}
 
+
+	/**
+	 * Tasks to perform before dialog is shown
+	 * Includes: positioning of dialog
+	 */
+	protected positionDialog(): void {
+		/**
+		 * In the case of 'below', dialog will be positioned beneath the trigger and arrow aligned with trigger.
+		 * In the case of 'left', dialog will be positioned left of the trigger and arrow aligned with trigger.
+		 */
+		if (this._modalOptions.dialogStyle === 'callout') {
+			let dialogWidth;
+			if (typeof this._modalOptions.width === 'number') {
+				dialogWidth = this._modalOptions.width;
+			}
+
+			if (this._modalOptions.dialogPosition === 'below') {
+				if (this._modalOptions.dialogProperties) {
+					this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - this._modalOptions.dialogProperties.width}px`;
+					this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos + (this._modalOptions.dialogProperties.height)}px`;
+				} else {
+					this._modalDialog.style.left = `${this._modalOptions.positionX}px`;
+					this._modalDialog.style.top = `${this._modalOptions.positionY}px`;
+				}
+			}
+
+			if (this._modalOptions.dialogPosition === 'left') {
+				if (this._modalOptions.dialogProperties) {
+					this._modalDialog.style.left = `${this._modalOptions.positionX - (dialogWidth + this._modalOptions.dialogProperties.width)}px`;
+					this._modalDialog.style.top = `${this._modalOptions.positionY - this._modalOptions.dialogProperties.height * 2}px`;
+				} else {
+					this._modalDialog.style.left = `${this._modalOptions.positionX - (dialogWidth)}px`;
+					this._modalDialog.style.top = `${this._modalOptions.positionY}px`;
+				}
+			}
+			this._modalDialog.style.width = `${dialogWidth}px`;
+		}
+	}
+
 	/**
 	 * Shows the modal and attaches key listeners
 	 */
 	protected show() {
+		this.positionDialog();
 		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
 		this._modalShowingContext.get()!.push(this._staticKey);
 		DOM.append(this.layoutService.container, this._bodyContainer!);
 		this.setInitialFocusedElement();
 
-		this.disposableStore.add(DOM.addDisposableListener(document, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+		this.disposableStore.add(DOM.addDisposableListener(document, DOM.EventType.KEY_UP, (e: KeyboardEvent) => {
 			let context = this._modalShowingContext.get()!;
 			if (context[context.length - 1] === this._staticKey) {
 				let event = new StandardKeyboardEvent(e);
@@ -423,6 +522,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Adds a button to the footer of the modal
 	 * @param label Label to show on the button
 	 * @param onSelect The callback to call when the button is selected
+	 * @param isSecondary Set the css class if true
 	 */
 	protected addFooterButton(label: string, onSelect: () => void, orientation: 'left' | 'right' = 'right', isSecondary: boolean = false): Button {
 		let footerButton = DOM.$('.footer-button');
@@ -434,6 +534,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		} else {
 			DOM.append(this._rightFooter!, footerButton);
 		}
+
 		this._footerButtons.push(button);
 		return button;
 	}
@@ -541,8 +642,8 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Return background color of header and footer
 	 */
-	protected get headerAndFooterBackground(): string | null {
-		return this._dialogHeaderAndFooterBackground ? this._dialogHeaderAndFooterBackground.toString() : null;
+	protected get headerAndFooterBackground(): string | undefined {
+		return this._dialogHeaderAndFooterBackground ? this._dialogHeaderAndFooterBackground.toString() : undefined;
 	}
 
 	/**
@@ -575,10 +676,15 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Called by the theme registry on theme change to style the component
 	 */
 	public style(styles: IModalDialogStyles): void {
-		this._dialogForeground = styles.dialogForeground;
-		this._dialogBorder = styles.dialogBorder;
-		this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground;
-		this._dialogBodyBackground = styles.dialogBodyBackground;
+		this._dialogForeground = styles.dialogForeground ? styles.dialogForeground : this._themeService.getColorTheme().getColor(editorWidgetForeground);
+		this._dialogBorder = styles.dialogBorder ? styles.dialogBorder : this._themeService.getColorTheme().getColor(notebookToolbarLines);
+		if (this._modalOptions.dialogStyle === 'callout') {
+			this._dialogHeaderAndFooterBackground = styles.dialogBodyBackground ? styles.dialogBodyBackground : this._themeService.getColorTheme().getColor(SIDE_BAR_BACKGROUND);
+		} else {
+			this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground ? styles.dialogHeaderAndFooterBackground : this._themeService.getColorTheme().getColor(SIDE_BAR_BACKGROUND);
+		}
+		this._dialogBodyBackground = styles.dialogBodyBackground ? styles.dialogBodyBackground : this._themeService.getColorTheme().getColor(editorBackground);
+		this._footerBorderTopColor = styles.footerBorderTopColor ? styles.footerBorderTopColor : this._themeService.getColorTheme().getColor(notebookToolbarLines);
 		this.applyStyles();
 	}
 
@@ -587,8 +693,10 @@ export abstract class Modal extends Disposable implements IThemable {
 		const border = this._dialogBorder ? this._dialogBorder.toString() : '';
 		const headerAndFooterBackground = this._dialogHeaderAndFooterBackground ? this._dialogHeaderAndFooterBackground.toString() : '';
 		const bodyBackground = this._dialogBodyBackground ? this._dialogBodyBackground.toString() : '';
-		const footerBorderTopWidth = border ? '1px' : '';
-		const footerBorderTopStyle = border ? 'solid' : '';
+		const calloutStyle: CSSStyleDeclaration = this._modalDialog.style;
+		const footerTopBorderColor = this._footerBorderTopColor ? this._footerBorderTopColor.toString() : '';
+
+		const foregroundRgb: Color = Color.Format.CSS.parseHex(foreground);
 
 		if (this._closeButtonInHeader) {
 			this._closeButtonInHeader.style.color = foreground;
@@ -598,12 +706,25 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalDialog.style.borderWidth = border ? '1px' : '';
 			this._modalDialog.style.borderStyle = border ? 'solid' : '';
 			this._modalDialog.style.borderColor = border;
+
+			calloutStyle.setProperty('--border', `${border}`);
+			calloutStyle.setProperty('--bodybackground', `${bodyBackground}`);
+			if (foregroundRgb) {
+				calloutStyle.setProperty('--foreground', `
+				${foregroundRgb.rgba.r},
+				${foregroundRgb.rgba.g},
+				${foregroundRgb.rgba.b},
+				0.08
+			`);
+			}
 		}
 
 		if (this._modalHeaderSection) {
 			this._modalHeaderSection.style.backgroundColor = headerAndFooterBackground;
-			this._modalHeaderSection.style.borderBottomWidth = border ? '1px' : '';
-			this._modalHeaderSection.style.borderBottomStyle = border ? 'solid' : '';
+			if (!(this._modalOptions.dialogStyle === 'callout')) {
+				this._modalHeaderSection.style.borderBottomWidth = border ? '1px' : '';
+				this._modalHeaderSection.style.borderBottomStyle = border ? 'solid' : '';
+			}
 			this._modalHeaderSection.style.borderBottomColor = border;
 		}
 
@@ -620,9 +741,9 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		if (this._modalFooterSection) {
 			this._modalFooterSection.style.backgroundColor = headerAndFooterBackground;
-			this._modalFooterSection.style.borderTopWidth = footerBorderTopWidth;
-			this._modalFooterSection.style.borderTopStyle = footerBorderTopStyle;
-			this._modalFooterSection.style.borderTopColor = border;
+			this._modalFooterSection.style.borderTopWidth = border ? '1px' : '';
+			this._modalFooterSection.style.borderTopStyle = border ? 'solid' : '';
+			this._modalFooterSection.style.borderTopColor = footerTopBorderColor;
 		}
 	}
 
