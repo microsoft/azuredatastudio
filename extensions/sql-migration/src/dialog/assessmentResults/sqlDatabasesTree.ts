@@ -58,22 +58,31 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		let mapRowIssue = new Map<number, DbIssues>();
 		const styleLeft: azdata.CssStyles = {
 			'border': 'none',
-			'text-align': 'left'
+			'text-align': 'left',
+			'white-space': 'nowrap',
+			'text-overflow': 'ellipsis',
+			'overflow': 'hidden'
 		};
 		const styleRight: azdata.CssStyles = {
 			'border': 'none',
-			'text-align': 'right'
+			'text-align': 'right',
+			'white-space': 'nowrap',
+			'text-overflow': 'ellipsis',
+			'overflow': 'hidden'
 		};
 
 		this.databaseTable = view.modelBuilder.declarativeTable().withProps(
 			{
 				selectEffect: true,
-				width: '200px',
+				width: '350px',
+				CSSStyles: {
+					'table-layout': 'fixed'
+				},
 				columns: [
 					{
 						displayName: '',
 						valueType: azdata.DeclarativeDataType.boolean,
-						width: 1,
+						width: '10%',
 						isReadOnly: false,
 						showCheckAll: true,
 						headerCssStyles: styleLeft,
@@ -82,14 +91,14 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					{
 						displayName: 'Databases', // TODO localize
 						valueType: azdata.DeclarativeDataType.string,
-						width: 5,
+						width: '80%',
 						isReadOnly: true,
 						headerCssStyles: styleLeft
 					},
 					{
 						displayName: 'Issues', // Incidents
 						valueType: azdata.DeclarativeDataType.string,
-						width: 1,
+						width: '10%',
 						isReadOnly: true,
 						headerCssStyles: styleRight,
 						ariaLabel: 'Issue Count' // TODO localize
