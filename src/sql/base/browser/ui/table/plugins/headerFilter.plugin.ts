@@ -5,6 +5,7 @@ import { IButtonStyles } from 'vs/base/browser/ui/button/button';
 import { localize } from 'vs/nls';
 
 import { Button } from 'sql/base/browser/ui/button/button';
+import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
 import { escape } from 'sql/base/common/strings';
 import { addDisposableListener } from 'vs/base/browser/dom';
 import { DisposableStore } from 'vs/base/common/lifecycle';
@@ -19,6 +20,8 @@ export interface CommandEventArgs<T extends Slick.SlickData> {
 	column: Slick.Column<T>,
 	command: string
 }
+
+const ShowFilterText: string = localize('headerFilter.showFilter', "Show Filter");
 
 export class HeaderFilter<T extends Slick.SlickData> {
 
@@ -84,25 +87,18 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		if (column.id === '_detail_selector') {
 			return;
 		}
-		if ((<any>column).filterable === false) {
+		if ((<FilterableColumn<T>>column).filterable === false) {
 			return;
 		}
-		const $el = jQuery('<div tabIndex="0"></div>')
+		args.node.classList.add('slick-header-with-filter');
+		const $el = jQuery(`<button aria-label="${ShowFilterText}" title="${ShowFilterText}"></button>`)
 			.addClass('slick-header-menubutton')
 			.data('column', column);
 
-		$el.bind('click', (e: KeyboardEvent) => {
-			this.showFilter(e);
-			e.preventDefault();
-			e.stopPropagation();
-		}).appendTo(args.node);
-		$el.bind('keydown', (e: KeyboardEvent) => {
-			if (e.key === 'Enter' || e.keyCode === 13) {
-				this.showFilter(e);
-				e.preventDefault();
-				e.stopPropagation();
-			}
-		}).appendTo(args.node);
+		$el.click(() => {
+			this.showFilter($el[0]);
+		});
+		$el.appendTo(args.node);
 	}
 
 	private handleBeforeHeaderCellDestroy(e: Event, args: Slick.OnBeforeHeaderCellDestroyEventArgs<T>) {
@@ -165,8 +161,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		});
 	}
 
-	private showFilter(e: KeyboardEvent) {
-		const target = withNullAsUndefined(e.target);
+	private showFilter(element: HTMLElement) {
+		const target = withNullAsUndefined(element);
 		const $menuButton = jQuery(target);
 		this.columnDef = $menuButton.data('column');
 
