@@ -65,7 +65,7 @@ export class ProjectDashboard {
 				await projectAction.run(this.treeItem);
 			});
 
-			buttons.push({ component: button, toolbarSeparatorAfter: projectAction.toolbarSeparatorAfter ? projectAction.toolbarSeparatorAfter : false });
+			buttons.push({ component: button, toolbarSeparatorAfter: projectAction.toolbarSeparatorAfter });
 		});
 
 		return this.modelView!.modelBuilder.toolbarContainer()
@@ -81,11 +81,6 @@ export class ProjectDashboard {
 				width: '100%',
 				height: '100%'
 			}).component();
-
-		const projectNameLabel = this.modelView!.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ value: projectName, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '10px' } })
-			.component();
-		rootContainer.addItem(projectNameLabel, { CSSStyles: { 'margin-top': '15px', 'padding-left': '10px' } });
 
 		return rootContainer;
 	}

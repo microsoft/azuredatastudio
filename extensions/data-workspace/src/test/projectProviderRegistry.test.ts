@@ -7,7 +7,7 @@ import 'mocha';
 import * as vscode from 'vscode';
 import * as should from 'should';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
-import { IProjectProvider, IProjectType, IProjectAction, WorkspaceTreeItem } from 'dataworkspace';
+import { IProjectProvider, IProjectType, IProjectAction } from 'dataworkspace';
 
 export class MockTreeDataProvider implements vscode.TreeDataProvider<any>{
 	onDidChangeTreeData?: vscode.Event<any> | undefined;
