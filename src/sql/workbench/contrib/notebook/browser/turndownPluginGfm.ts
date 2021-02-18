@@ -98,7 +98,6 @@ rules['table'] = {
 	replacement: function (content, node) {
 		// Ensure there are no blank lines
 		content = content.replace('\n\n', '\n');
-		// if the headings are empty, add border line and headings to keep table format
 		return '\n\n' + content + '\n\n';
 	}
 };
