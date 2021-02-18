@@ -5,13 +5,13 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { createMigrationController, getMigrationControllerRegions, getMigrationController, getResourceGroups, getMigrationControllerAuthKeys, getMigrationControllerMonitoringData } from '../api/azure';
-import { MigrationStateModel } from '../models/stateMachine';
-import * as constants from '../models/strings';
+import { createMigrationController, getMigrationControllerRegions, getMigrationController, getResourceGroups, getMigrationControllerAuthKeys, getMigrationControllerMonitoringData } from '../../api/azure';
+import { MigrationStateModel } from '../../models/stateMachine';
+import * as constants from '../../models/strings';
 import * as os from 'os';
 import { azureResource } from 'azureResource';
-import { IntergrationRuntimePage } from './integrationRuntimePage';
-import { IconPathHelper } from '../constants/iconPathHelper';
+import { IntergrationRuntimePage } from '../../wizard/integrationRuntimePage';
+import { IconPathHelper } from '../../constants/iconPathHelper';
 
 export class CreateMigrationControllerDialog {
 
@@ -464,7 +464,7 @@ export class CreateMigrationControllerDialog {
 						value: constants.CONTROLLER_KEY1_LABEL
 					},
 					{
-						value: keys.keyName1
+						value: keys.authKey1
 					},
 					{
 						value: this._copyKey1Button
@@ -478,7 +478,7 @@ export class CreateMigrationControllerDialog {
 						value: constants.CONTROLLER_KEY2_LABEL
 					},
 					{
-						value: keys.keyName2
+						value: keys.authKey2
 					},
 					{
 						value: this._copyKey2Button

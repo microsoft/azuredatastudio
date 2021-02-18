@@ -127,8 +127,8 @@ export async function getMigrationControllerAuthKeys(account: azdata.Account, su
 		throw new Error(response.errors.toString());
 	}
 	return {
-		keyName1: response?.response?.data?.keyName1 ?? '',
-		keyName2: response?.response?.data?.keyName2 ?? ''
+		authKey1: response?.response?.data?.authKey1 ?? '',
+		authKey2: response?.response?.data?.authKey2 ?? ''
 	};
 }
 
@@ -157,7 +157,7 @@ export async function getMigrationControllerMonitoringData(account: azdata.Accou
 	return response.response.data;
 }
 
-export async function startDatabaseMigration(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, managedInstance: string, migrationControllerName: string, requestBody: StartDatabaseMigrationRequest): Promise<any> {
+export async function startDatabaseMigration(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, managedInstance: string, migrationControllerName: string, requestBody: StartDatabaseMigrationRequest): Promise<StartDatabaseMigrationResponse> {
 	const api = await getAzureCoreAPI();
 	const host = `https://${regionName}.management.azure.com`;
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.Sql/managedInstances/${managedInstance}/providers/Microsoft.DataMigration/databaseMigrations/${migrationControllerName}?api-version=2020-09-01-preview`;
@@ -166,12 +166,23 @@ export async function startDatabaseMigration(account: azdata.Account, subscripti
 		throw new Error(response.errors.toString());
 	}
 	return {
-		errors: response.errors,
 		status: response.response.status,
 		databaseMigration: response.response.data
 	};
 }
 
+export async function getMigrationStatus(account: azdata.Account, subscription: Subscription, migration: DatabaseMigration): Promise<any> {
+	const api = await getAzureCoreAPI();
+	const host = `https://eastus2euap.management.azure.com`;
+	const path = `${migration.id}?$expand=MigrationStatusDetails&api-version=2020-09-01-preview`;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.toString());
+	}
+	return {
+		result: response.response.data
+	};
+}
 
 /**
  * For now only east us euap is supported. Actual API calls will be added in the public release.
@@ -223,8 +234,8 @@ export interface MigrationController {
 }
 
 export interface GetMigrationControllerAuthKeysResult {
-	keyName1: string,
-	keyName2: string
+	authKey1: string,
+	authKey2: string
 }
 
 export interface GetStorageAccountAccessKeysResult {
@@ -284,4 +295,9 @@ export interface DatabaseMigration {
 	id: string,
 	name: string,
 	type: string
+}
+
+export interface StartDatabaseMigrationResponse {
+	status: number,
+	databaseMigration: DatabaseMigration
 }

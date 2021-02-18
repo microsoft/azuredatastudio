@@ -149,7 +149,7 @@ export const CANCEL = localize('sql.migration.cancel', "Cancel");
 export const TYPE = localize('sql.migration.type', "Type");
 export const PATH = localize('sql.migration.path', "Path");
 export const USER_ACCOUNT = localize('sql.migration.path.user.account', "User Account");
-
+export const VIEW_ALL = localize('sql.migration.view.all', "View All");
 
 //Summary Page
 export const SUMMARY_PAGE_TITLE = localize('sql.migration.summary.page.title', "Summary");
@@ -171,3 +171,20 @@ export const NOTEBOOK_QUICK_PICK_PLACEHOLDER = localize('sql.migration.quick.pic
 export const NOTEBOOK_INLINE_MIGRATION_TITLE = localize('sql.migration.inline.migration.notebook.title', "Inline migration");
 export const NOTEBOOK_SQL_MIGRATION_ASSESSMENT_TITLE = localize('sql.migration.sql.assessment.notebook.title', "SQL migration assessment");
 export const NOTEBOOK_OPEN_ERROR = localize('sql.migration.notebook.open.error', "Error opening migration notebook");
+
+// Dashboard
+export const DASHBOARD_TITLE = localize('sql.migration.dashboard.title', "Azure SQL Migration");
+export const DASHBOARD_DESCRIPTION = localize('sql.migration.dashboard.description', "Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance or SQL Server on Azure Virtual Machines.");
+export const DASHBOARD_MIGRATE_TASK_BUTTON_TITLE = localize('sql.migration.dashboard.migrate.task.button', "Migrate to Azure SQL");
+export const DASHBOARD_MIGRATE_TASK_BUTTON_DESCRIPTION = localize('sql.migration.dashboard.migrate.task.button.description', "Migrate SQL Server instance to Azure SQL.");
+export const DATABASE_MIGRATION_STATUS = localize('sql.migration.database.migration.status', "Database Migration Status");
+export const HELP_VIDEO1_TITLE = localize('sql.migration.dashboard.video1.title', "Migrate to SQL Server to SQL Managed Instance");
+export const HELP_VIDEO2_TITLE = localize('sql.migration.dashboard.video2.title', "Migrate to SQL Server to SQL Virtual Machine");
+export const HELP_LINK1_TITLE = localize('sql.migration.dashboard.link1.title', "Migrating your SQL Server to cloud");
+export const HELP_LINK1_DESCRIPTION = localize('sql.migration.dashboard.link1.description', "Lorem ipsum dolor sit amet, consectetur adipi. Lorem ipsum dolor sit amet, consectetur adipi. Lorem ipsum.");
+export const HELP_TITLE = localize('sql.migration.dashboard.help.title', "Help Articles and Video Links");
+export const PRE_REQ_TITLE = localize('sql.migration.pre.req.title', "Things you need before starting migration:");
+export const PRE_REQ_1 = localize('sql.migration.pre.req.1', "Azure account details");
+export const PRE_REQ_2 = localize('sql.migration.pre.req.2', "Azure SQL Managed Instance or SQL Server on Azure Virtual Machine");
+export const PRE_REQ_3 = localize('sql.migration.pre.req.3', "Backup location details");
+
