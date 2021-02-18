@@ -40,8 +40,6 @@ import { coalesce } from 'vs/base/common/arrays';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { EmbeddedCodeEditorWidget } from 'vs/editor/browser/widget/embeddedCodeEditorWidget';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentity';
 import { openEditorWith } from 'vs/workbench/services/editor/common/editorOpenWith';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
@@ -357,13 +355,11 @@ CommandsRegistry.registerCommand({
 	handler: async (accessor, resource: URI | object) => {
 		const editorService = accessor.get(IEditorService);
 		const editorGroupsService = accessor.get(IEditorGroupsService);
-		const configurationService = accessor.get(IConfigurationService);
-		const quickInputService = accessor.get(IQuickInputService);
 
 		const uri = getResourceForCommand(resource, accessor.get(IListService), accessor.get(IEditorService));
 		if (uri) {
 			const input = editorService.createEditorInput({ resource: uri });
-			openEditorWith(input, undefined, undefined, editorGroupsService.activeGroup, editorService, configurationService, quickInputService);
+			openEditorWith(accessor, input, undefined, undefined, editorGroupsService.activeGroup);
 		}
 	}
 });
@@ -670,12 +666,10 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 		if (typeof args?.viewType === 'string') {
 			const editorGroupsService = accessor.get(IEditorGroupsService);
-			const configurationService = accessor.get(IConfigurationService);
-			const quickInputService = accessor.get(IQuickInputService);
 
 			const textInput = editorService.createEditorInput({ options: { pinned: true } });
 			const group = editorGroupsService.activeGroup;
-			await openEditorWith(textInput, args.viewType, { pinned: true }, group, editorService, configurationService, quickInputService);
+			await openEditorWith(accessor, textInput, args.viewType, { pinned: true }, group);
 		} else {
 			await editorService.openEditor({ options: { pinned: true } }); // untitled are always pinned
 		}
@@ -691,12 +685,9 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 		if (viewType) {
 			const editorGroupsService = accessor.get(IEditorGroupsService);
-			const configurationService = accessor.get(IConfigurationService);
-			const quickInputService = accessor.get(IQuickInputService);
-
 			const textInput = editorService.createEditorInput({ options: { pinned: true }, mode: 'txt' });
 			const group = editorGroupsService.activeGroup;
-			await openEditorWith(textInput, viewType, { pinned: true }, group, editorService, configurationService, quickInputService);
+			await openEditorWith(accessor, textInput, NEW_UNTITLED_PLAIN_FILE_COMMAND_ID, { pinned: true }, group);
 		} else {
 			await editorService.openEditor({ options: { pinned: true }, mode: 'txt' }); // untitled are always pinned
 		}
