@@ -143,7 +143,7 @@
     "css-loader": "^3.2.0",
     "debounce": "^1.0.0",
     "deemon": "^1.4.0",
-    "electron": "11.2.3",
+    "electron": "9.4.3",
     "electron-rebuild": "2.0.3",
     "eslint": "6.8.0",
     "eslint-plugin-jsdoc": "^32.0.2",
