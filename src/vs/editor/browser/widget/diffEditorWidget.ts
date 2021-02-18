@@ -1206,7 +1206,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		this._overviewViewportDomElement.setHeight(30);
 
 		this._originalEditor.layout({ width: splitPoint, height: (height - reviewHeight) });
-		this._modifiedEditor.layout({ width: width - splitPoint - DiffEditorWidget.ENTIRE_DIFF_OVERVIEW_WIDTH, height: (height - reviewHeight) });
+		this._modifiedEditor.layout({ width: width - splitPoint - (this._renderOverviewRuler ? DiffEditorWidget.ENTIRE_DIFF_OVERVIEW_WIDTH : 0), height: (height - reviewHeight) });
 
 		if (this._originalOverviewRuler || this._modifiedOverviewRuler) {
 			this._layoutOverviewRulers();
@@ -1258,6 +1258,12 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 
 			getHeight: () => {
 				return (this._elementSizeObserver.getHeight() - this._getReviewHeight());
+			},
+
+			getOptions: () => {
+				return {
+					renderOverviewRuler: this._renderOverviewRuler
+				};
 			},
 
 			getContainerDomNode: () => {
@@ -1389,6 +1395,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 interface IDataSource {
 	getWidth(): number;
 	getHeight(): number;
+	getOptions(): { renderOverviewRuler: boolean; };
 	getContainerDomNode(): HTMLElement;
 	relayoutEditors(): void;
 
@@ -1860,7 +1867,7 @@ class DiffEditorWidgetSideBySide extends DiffEditorWidgetStyle implements IVerti
 
 	public layout(sashRatio: number | null = this._sashRatio): number {
 		const w = this._dataSource.getWidth();
-		const contentWidth = w - DiffEditorWidget.ENTIRE_DIFF_OVERVIEW_WIDTH;
+		const contentWidth = w - (this._dataSource.getOptions().renderOverviewRuler ? DiffEditorWidget.ENTIRE_DIFF_OVERVIEW_WIDTH : 0);
 
 		let sashPosition = Math.floor((sashRatio || 0.5) * contentWidth);
 		const midPoint = Math.floor(0.5 * contentWidth);
@@ -1893,7 +1900,7 @@ class DiffEditorWidgetSideBySide extends DiffEditorWidgetStyle implements IVerti
 
 	private _onSashDrag(e: ISashEvent): void {
 		const w = this._dataSource.getWidth();
-		const contentWidth = w - DiffEditorWidget.ENTIRE_DIFF_OVERVIEW_WIDTH;
+		const contentWidth = w - (this._dataSource.getOptions().renderOverviewRuler ? DiffEditorWidget.ENTIRE_DIFF_OVERVIEW_WIDTH : 0);
 		const sashPosition = this.layout((this._startSashPosition! + (e.currentX - e.startX)) / contentWidth);
 
 		this._sashRatio = sashPosition / contentWidth;
