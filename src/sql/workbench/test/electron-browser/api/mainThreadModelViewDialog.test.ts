@@ -112,6 +112,11 @@ suite('MainThreadModelViewDialog Tests', () => {
 		dialogDetails = {
 			title: 'dialog1',
 			width: 'narrow',
+			dialogStyle: 'callout',
+			dialogPosition: 'left',
+			renderHeader: true,
+			renderFooter: true,
+			dialogProperties: { xPos: 1200, yPos: 100, width: 20, height: 20 },
 			content: [tab1Handle, tab2Handle],
 			okButton: okButtonHandle,
 			cancelButton: cancelButtonHandle,

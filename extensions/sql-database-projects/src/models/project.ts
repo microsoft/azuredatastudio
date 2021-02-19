@@ -376,7 +376,7 @@ export class Project {
 			// update any system db references
 			const systemDbReferences = this.databaseReferences.filter(r => r instanceof SystemDatabaseReferenceProjectEntry) as SystemDatabaseReferenceProjectEntry[];
 			if (systemDbReferences.length > 0) {
-				systemDbReferences.forEach((r) => {
+				for (let r of systemDbReferences) {
 					// remove old entry in sqlproj
 					this.removeDatabaseReferenceFromProjFile(r);
 
@@ -385,8 +385,8 @@ export class Project {
 					r.ssdtUri = this.getSystemDacpacSsdtUri(`${r.databaseName}.dacpac`);
 
 					// add updated system db reference to sqlproj
-					this.addDatabaseReferenceToProjFile(r);
-				});
+					await this.addDatabaseReferenceToProjFile(r);
+				}
 			}
 
 			await this.serializeToProjFile(this.projFileXmlDoc);

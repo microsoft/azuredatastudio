@@ -11,7 +11,7 @@ import { IOptionsSourceProvider } from 'resource-deployment';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { getDateTimeString, getErrorMessage, isUserCancelledError, throwUnless } from '../common/utils';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, instanceOfDynamicEnablementInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, InitialVariableValues, instanceOfDynamicEnablementInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
 import { valueProviderService } from '../services/valueProviderService';
@@ -126,6 +126,7 @@ interface ContextBase {
 	container: azdata.window.Dialog | azdata.window.Wizard;
 	toolsService: IToolsService,
 	inputComponents: InputComponents;
+	initialVariableValues?: InitialVariableValues;
 	onNewValidatorCreated: (validator: Validator) => void;
 	onNewDisposableCreated: (disposable: vscode.Disposable) => void;
 	onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo<InputComponent>) => void;
@@ -170,9 +171,10 @@ interface InputBoxInfo {
  */
 function createInputBoxField({ context, inputBoxType = 'text' }: { context: FieldContext; inputBoxType?: azdata.InputBoxInputType; }) {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
+	const defaultValue = context.initialVariableValues?.[context.fieldInfo.variableName || '']?.toString() || context.fieldInfo.defaultValue;
 	const input = createInputBoxInputInfo(context.view, {
 		type: inputBoxType,
-		defaultValue: context.fieldInfo.defaultValue,
+		defaultValue: defaultValue,
 		ariaLabel: context.fieldInfo.label,
 		required: context.fieldInfo.required,
 		min: context.fieldInfo.min,
@@ -329,6 +331,7 @@ export function initializeWizardPage(context: WizardPageContext): void {
 				container: context.container,
 				toolsService: context.toolsService,
 				inputComponents: context.inputComponents,
+				initialVariableValues: context.initialVariableValues,
 				onNewDisposableCreated: context.onNewDisposableCreated,
 				onNewInputComponentCreated: context.onNewInputComponentCreated,
 				onNewValidatorCreated: context.onNewValidatorCreated,
@@ -483,6 +486,7 @@ async function processFields(fieldInfoArray: FieldInfo[], components: azdata.Com
 			fieldInfo: fieldInfo,
 			container: context.container,
 			inputComponents: context.inputComponents,
+			initialVariableValues: context.initialVariableValues,
 			components: components,
 			toolsService: context.toolsService
 		});

@@ -25,7 +25,6 @@ import LoadingComponent from 'sql/workbench/browser/modelComponents/loadingCompo
 import FileBrowserTreeComponent from 'sql/workbench/browser/modelComponents/fileBrowserTree.component';
 import EditorComponent from 'sql/workbench/browser/modelComponents/editor.component';
 import DiffEditorComponent from 'sql/workbench/browser/modelComponents/diffeditor.component';
-import DomComponent from 'sql/workbench/browser/modelComponents/dom.component';
 import { registerComponentType } from 'sql/platform/dashboard/browser/modelComponentRegistry';
 import HyperlinkComponent from 'sql/workbench/browser/modelComponents/hyperlink.component';
 import SplitViewContainer from 'sql/workbench/browser/modelComponents/splitviewContainer.component';
@@ -106,9 +105,6 @@ registerComponentType(EDITOR_COMPONENT, ModelComponentTypes.Editor, EditorCompon
 
 export const DIFF_EDITOR_COMPONENT = 'diff-editor-component';
 registerComponentType(DIFF_EDITOR_COMPONENT, ModelComponentTypes.DiffEditor, DiffEditorComponent);
-
-export const DOM_COMPONENT = 'dom-component';
-registerComponentType(DOM_COMPONENT, ModelComponentTypes.Dom, DomComponent);
 
 export const HYPERLINK_COMPONENT = 'hyperlink-component';
 registerComponentType(HYPERLINK_COMPONENT, ModelComponentTypes.Hyperlink, HyperlinkComponent);

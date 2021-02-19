@@ -8,7 +8,7 @@ import 'vs/css!./media/chartView';
 import { IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { Insight } from './insight';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { ICellValue } from 'sql/workbench/services/query/common/query';
+import { ICellValue, VisualizationOptions } from 'sql/workbench/services/query/common/query';
 import { ChartOptions, IChartOption, ControlType } from './chartOptions';
 import { Extensions, IInsightRegistry, IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -24,7 +24,7 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { CreateInsightAction, CopyAction, SaveImageAction, IChartActionContext, ConfigureChartAction } from 'sql/workbench/contrib/charts/browser/actions';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
-import { IInsightOptions, ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IInsightOptions, ChartType, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { ChartState } from 'sql/workbench/common/editor/query/chartState';
 import * as nls from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -451,6 +451,18 @@ export class ChartView extends Disposable implements IPanelView {
 					(this.optionMap[key] as any).set(newOptions[key as keyof IInsightOptions]);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Set the visualization options, this method handles the conversion from VisualizationOptions(defined in azdata typing) to IInsightOptions
+	 * @param options visualization options returned by query
+	 */
+	public setVisualizationOptions(options: VisualizationOptions): void {
+		if (options?.type) {
+			this.options = {
+				type: options.type as (ChartType | InsightType)
+			};
 		}
 	}
 }

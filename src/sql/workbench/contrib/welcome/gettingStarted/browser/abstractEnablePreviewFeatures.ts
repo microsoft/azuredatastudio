@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
 import { onUnexpectedError } from 'vs/base/common/errors';
@@ -44,7 +44,7 @@ export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContrib
 					label: localize('enablePreviewFeatures.yes', "Yes (recommended)"),
 					run: () => {
 						this.configurationService.updateValue('workbench.enablePreviewFeatures', true).catch(e => onUnexpectedError(e));
-						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);
+						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
 					}
 				}, {
 					label: localize('enablePreviewFeatures.no', "No"),
@@ -55,7 +55,7 @@ export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContrib
 					label: localize('enablePreviewFeatures.never', "No, don't show again"),
 					run: () => {
 						this.configurationService.updateValue('workbench.enablePreviewFeatures', false).catch(e => onUnexpectedError(e));
-						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);
+						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
 					},
 					isSecondary: true
 				}]

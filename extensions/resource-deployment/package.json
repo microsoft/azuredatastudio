@@ -262,7 +262,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.2.6"
+                "version": "20.3.0"
               }
             ],
             "when": "target=new-aks&&version=bdc2019"
@@ -279,7 +279,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.2.6"
+                "version": "20.3.0"
               }
             ],
             "when": "target=existing-aks&&version=bdc2019"
@@ -296,7 +296,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.2.6"
+                "version": "20.3.0"
               }
             ],
             "when": "target=existing-kubeadm&&version=bdc2019"
@@ -313,7 +313,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.2.6"
+                "version": "20.3.0"
               }
             ],
             "when": "target=existing-aro&&version=bdc2019"
@@ -330,7 +330,7 @@
               },
               {
                 "name": "azdata-old",
-                "version": "20.2.6"
+                "version": "20.3.0"
               }
             ],
             "when": "target=existing-openshift&&version=bdc2019"
@@ -604,6 +604,7 @@
     ]
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "linux-release-info": "^2.0.0",
     "promisify-child-process": "^3.1.1",
     "semver": "^7.3.2",
@@ -616,7 +617,7 @@
     "@types/semver": "^7.3.1",
     "@types/sinon": "^9.0.8",
     "@types/yamljs": "0.2.30",
-    "azdata-test": "^1.1.1",
+    "@microsoft/azdata-test": "^1.4.0",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",

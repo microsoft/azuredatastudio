@@ -24,8 +24,8 @@ import { Schemas } from 'vs/base/common/network';
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
 import { getInstalledExtensions, IExtensionStatus, onExtensionChanged, isKeymapExtension } from 'vs/workbench/contrib/extensions/common/extensionsUtils';
 import { IExtensionManagementService, IExtensionGalleryService, ILocalExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionRecommendationsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
-import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lifecycle';
+import { IWorkbenchExtensionEnablementService, EnablementState } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { ILifecycleService, StartupKind } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
 import { IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
@@ -52,6 +52,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ICommandAction, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IExtensionRecommendationsService } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
@@ -298,7 +299,8 @@ class WelcomePage extends Disposable {
 			attributes: true,
 			attributeFilter: ['style']
 		});
-		const defaultBreakpoints = { SM: 480, MD: 640, LG: 1024, XL: 1365 };
+
+		const defaultBreakpoints = { XS: 435, SM: 608, MD: 824, LG: 906, XL: 1192 };
 		const startingWidth = parseInt(welcomeContainerContainer.style.width);
 		adsHomepage.classList.add('XS');
 		Object.keys(defaultBreakpoints).forEach(function (breakpoint) {
@@ -328,13 +330,17 @@ class WelcomePage extends Disposable {
 			workspaces = workspaces.filter(recent => !this.contextService.isCurrentWorkspace(isRecentWorkspace(recent) ? recent.workspace : recent.folderUri));
 			if (!workspaces.length) {
 				const recent = container.querySelector('.welcomePage') as HTMLElement;
+				const moreRecent = container.querySelector('.moreRecent') as HTMLElement;
+				moreRecent.remove();
 				recent.classList.add('emptyRecent');
+
 				return;
 			}
 			const ul = container.querySelector('.recent ul') as HTMLElement;
 			if (!ul) {
 				return;
 			}
+
 			const workspacesToShow = workspaces.slice(0, 5);
 			clearNode(ul);
 			await this.mapListEntries(workspacesToShow, container, ul);
@@ -436,7 +442,6 @@ class WelcomePage extends Disposable {
 		guidedTourNotificationContainer.classList.add('guided-tour-banner');
 		containerLeft.classList.add(...flexClassesLeft);
 		containerRight.classList.add(...flexClassesRight);
-		icon.classList.add('diamond-icon');
 		removeTourBtn.classList.add(...removeBtnClasses);
 		p.appendChild(b);
 		p.innerText = localize('WelcomePage.TakeATour', "Would you like to take a quick tour of Azure Data Studio?");
