@@ -1641,7 +1641,7 @@ export class SearchView extends ViewPane {
 		this.openerService.open(URI.parse('https://go.microsoft.com/fwlink/?linkid=853977'));
 	};
 
-	protected updateSearchResultCount(disregardExcludesAndIgnores?: boolean, showOpenInEditor = true): void { // {{SQL CARBON EDIT}} - Hide Open in Editor in Notebooks viewlet
+	protected updateSearchResultCount(disregardExcludesAndIgnores?: boolean, showOpenInEditor: boolean = true): void { // {{SQL CARBON EDIT}} - Hide Open in Editor in Notebooks viewlet
 		const fileCount = this.viewModel.searchResult.fileCount();
 		this.hasSearchResultsKey.set(fileCount > 0);
 
