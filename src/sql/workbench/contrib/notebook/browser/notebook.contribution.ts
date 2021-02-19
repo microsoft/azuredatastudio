@@ -50,6 +50,8 @@ import { NotebookExplorerViewletViewsContribution, OpenNotebookExplorerViewletAc
 import 'vs/css!./media/notebook.contribution';
 import { isMacintosh } from 'vs/base/common/platform';
 import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
+import { ServicesAccessor } from 'vs/editor/browser/editorExtensions';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(FileNotebookInput.ID, FileNoteBookEditorInputFactory);
@@ -150,6 +152,20 @@ CommandsRegistry.registerCommand({
 	}
 });
 
+const LAUNCH_FIND_IN_NOTEBOOK = 'notebook.action.launchFindInNotebook';
+
+CommandsRegistry.registerCommand({
+	id: LAUNCH_FIND_IN_NOTEBOOK,
+	handler: async (accessor: ServicesAccessor, arg: string) => {
+		const activeEditor = accessor.get(IEditorService).activeEditorPane;
+		if (activeEditor instanceof NotebookEditor) {
+			if (activeEditor) {
+				await activeEditor.setNotebookModel();
+				await activeEditor.launchFind(arg);
+			}
+		}
+	}
+});
 
 MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 	command: {
