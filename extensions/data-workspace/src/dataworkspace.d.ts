@@ -15,8 +15,9 @@ declare module 'dataworkspace' {
 	export interface IExtension {
 		/**
 		 * Returns all the projects in the workspace
+		 * @param ext extension type to filter on
 		 */
-		getProjectsInWorkspace(): vscode.Uri[];
+		getProjectsInWorkspace(ext?: string): vscode.Uri[];
 
 		/**
 		 * Add projects to the workspace
