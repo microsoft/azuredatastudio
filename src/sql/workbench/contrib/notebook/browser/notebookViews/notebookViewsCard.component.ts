@@ -127,7 +127,7 @@ export class NotebookViewsCardComponent implements OnInit {
 	}
 
 	public get height(): number {
-		return this.data.height ? this.data.height : DEFAULT_VIEW_CARD_HEIGHT;
+		return this.data?.height ? this.data.height : DEFAULT_VIEW_CARD_HEIGHT;
 	}
 
 	public get x(): number {
