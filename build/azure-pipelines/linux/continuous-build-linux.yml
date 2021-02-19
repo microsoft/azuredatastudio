@@ -16,10 +16,15 @@ steps:
     inputs:
       versionSpec: "1.x"
 
+  - script: |
+      mkdir -p .build
+      node build/azure-pipelines/common/computeNodeModulesCacheKey.js > .build/yarnlockhash
+    displayName: Prepare yarn cache flags
+
   - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
   displayName: Restore Cache - Node Modules # {{SQL CARBON EDIT}}
     inputs:
-      keyfile: "build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock"
+      keyfile: ".yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock"
       targetfolder: "**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules"
       vstsFeed: "npm-cache" # {{SQL CARBON EDIT}} update build cache
 
@@ -31,7 +36,7 @@ steps:
   - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
   displayName: Save Cache - Node Modules # {{SQL CARBON EDIT}}
     inputs:
-      keyfile: "build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock"
+      keyfile: ".yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock"
       targetfolder: "**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules"
       vstsFeed: "npm-cache" # {{SQL CARBON EDIT}} update build cache
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))

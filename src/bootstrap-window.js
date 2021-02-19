@@ -26,6 +26,7 @@
 	const webFrame = preloadGlobals.webFrame;
 	const safeProcess = preloadGlobals.process;
 	const configuration = parseWindowConfiguration();
+	const useCustomProtocol = sandbox || typeof safeProcess.env['ENABLE_VSCODE_BROWSER_CODE_LOADING'] === 'string';
 
 	// Start to resolve process.env before anything gets load
 	// so that we can run loading and resolving in parallel
@@ -76,13 +77,13 @@
 		window.document.documentElement.setAttribute('lang', locale);
 
 		// do not advertise AMD to avoid confusing UMD modules loaded with nodejs (TODO@sandbox non-sandboxed only)
-		if (!sandbox) {
+		if (!useCustomProtocol) {
 			window['define'] = undefined;
 		}
 
 		// replace the patched electron fs with the original node fs for all AMD code (TODO@sandbox non-sandboxed only)
 		if (!sandbox) {
-			require.define('fs', ['original-fs'], function (originalFS) { return originalFS; });
+			require.define('fs', [], function () { return require.__$__nodeRequire('original-fs'); });
 		}
 
 		window['MonacoEnvironment'] = {};

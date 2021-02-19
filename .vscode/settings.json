@@ -79,5 +79,6 @@
 	"[typescript]": {
 		"editor.defaultFormatter": "vscode.typescript-language-features"
 	},
+	"typescript.format.semicolons": "insert",
 	"typescript.tsc.autoDetect": "off"
 }

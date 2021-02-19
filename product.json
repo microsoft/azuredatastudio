@@ -76,6 +76,7 @@
 		"ms-vscode.github-richnav"
 	],
 	"extensionsGallery": {
+			"version": "0.0.76",
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
 	},
 	"builtInExtensions": [

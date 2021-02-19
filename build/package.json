@@ -18,7 +18,6 @@
     "@types/gulp-json-editor": "^2.2.31",
     "@types/gulp-rename": "^0.0.33",
     "@types/gulp-sourcemaps": "^0.0.32",
-    "@types/gulp-uglify": "^3.0.5",
     "@types/mime": "0.0.29",
     "@types/minimatch": "^3.0.3",
     "@types/minimist": "^1.2.1",
@@ -27,7 +26,6 @@
     "@types/pump": "^1.0.1",
     "@types/request": "^2.47.0",
     "@types/rimraf": "^2.0.4",
-    "@types/terser": "^3.12.0",
     "@types/through": "^0.0.29",
     "@types/through2": "^2.0.34",
     "@types/underscore": "^1.8.9",
@@ -38,10 +36,10 @@
     "azure-storage": "^2.1.0",
     "documentdb": "1.13.0",
     "electron-osx-sign": "^0.4.16",
+    "esbuild": "^0.8.30",
     "iconv-lite-umd": "0.6.8",
     "jsonc-parser": "^2.3.0",
     "mime": "^1.4.1",
-    "rollup": "^1.20.3",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "typescript": "4.2.0-dev.20201207",
@@ -50,7 +48,7 @@
   "scripts": {
     "compile": "tsc -p tsconfig.build.json",
     "watch": "tsc -p tsconfig.build.json --watch",
-    "postinstall": "npm run compile",
     "npmCheckJs": "tsc --noEmit"
-  }
+  },
+  "dependencies": {}
 }

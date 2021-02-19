@@ -22,9 +22,6 @@ import { INativeHostService } from 'vs/platform/native/electron-sandbox/native';
 import { IJSONContributionRegistry, Extensions as JSONExtensions } from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 import product from 'vs/platform/product/common/product';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
-import { Extensions as WorkbenchExtensions, IWorkbenchContributionsRegistry } from 'vs/workbench/common/contributions';
-import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
-import { LoaderCyclicChecker } from 'vs/workbench/electron-sandbox/loaderCyclicChecker';
 
 // eslint-disable-next-line code-import-patterns
 import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions'; // {{SQL CARBON EDIT}} add import
@@ -103,9 +100,6 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 			primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_I,
 			mac: { primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_I }
 		});
-
-		Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(LoaderCyclicChecker, LifecyclePhase.Ready);
-
 	})();
 
 	// Actions: Runtime Arguments
@@ -251,7 +245,8 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 			'window.zoomLevel': {
 				'type': 'number',
 				'default': 0,
-				'description': nls.localize('zoomLevel', "Adjust the zoom level of the window. The original size is 0 and each increment above (e.g. 1) or below (e.g. -1) represents zooming 20% larger or smaller. You can also enter decimals to adjust the zoom level with a finer granularity.")
+				'description': nls.localize('zoomLevel', "Adjust the zoom level of the window. The original size is 0 and each increment above (e.g. 1) or below (e.g. -1) represents zooming 20% larger or smaller. You can also enter decimals to adjust the zoom level with a finer granularity."),
+				ignoreSync: true
 			},
 			'window.newWindowDimensions': {
 				'type': 'string',
