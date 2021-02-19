@@ -285,20 +285,20 @@ export class Project {
 	 * @param contents Contents to be written to the new file
 	 */
 	public async addScriptItem(relativeFilePath: string, contents?: string, itemType?: string): Promise<FileProjectEntry> {
-		// check if file already exists
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
 
+		// check if file already exists if content was passed to write to a new file
 		if (contents !== undefined && contents !== '' && await utils.exists(absoluteFilePath)) {
 			throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
 		}
 
-		// create the file
+		// create the file if contents were passed in
 		if (contents) {
 			await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
 			await fs.writeFile(absoluteFilePath, contents);
 		}
 
-		// check that file was successfully created
+		// check that file exists
 		let exists = await utils.exists(absoluteFilePath);
 		if (!exists) {
 			throw new Error(constants.noFileExist(absoluteFilePath));
@@ -928,10 +928,9 @@ export class Project {
 
 	/**
 	 * Adds the list of sql files and directories to the project, and saves the project file
-	 * @param absolutePath Absolute path of the folder
+	 * @param list list of files and folder paths
 	 */
 	public async addToProject(list: string[]): Promise<void> {
-
 		for (let i = 0; i < list.length; i++) {
 			let file: string = list[i];
 			const relativePath = utils.trimChars(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(file)), '/');

@@ -74,4 +74,14 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 
 		return vscode.Uri.file(projectFile);
 	}
+
+	/**
+	* Adds the list of files and directories to the project, and saves the project file
+	* @param projectFile The Uri of the project file
+	* @param list list of file and folder paths to add
+	*/
+	async addToProject(projectFile: vscode.Uri, list: string[]): Promise<void> {
+		const project = await Project.openProject(projectFile.fsPath);
+		await project.addToProject(list);
+	}
 }

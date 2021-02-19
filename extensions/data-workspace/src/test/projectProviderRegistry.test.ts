@@ -31,6 +31,9 @@ export function createProjectProvider(projectTypes: IProjectType[]): IProjectPro
 		},
 		createProject: (name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri> => {
 			return Promise.resolve(location);
+		},
+		addToProject: (projectFile: vscode.Uri, list: string[]): Promise<void> => {
+			return Promise.resolve();
 		}
 	};
 	return projectProvider;
