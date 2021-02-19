@@ -384,7 +384,7 @@ export class NotebookSearchView extends SearchView {
 	}
 
 	protected async refreshAndUpdateCount(event?: IChangeEvent): Promise<void> {
-		this.updateSearchResultCount(this.viewModel.searchResult.query!.userDisabledExcludesAndIgnoreFiles);
+		this.updateSearchResultCount(this.viewModel.searchResult.query!.userDisabledExcludesAndIgnoreFiles, false);
 		return this.refreshTree(event);
 	}
 

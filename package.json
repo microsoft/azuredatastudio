@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
-  "version": "1.26.0",
-  "distro": "dcbbf1f1ca37475a4eba64fb7f9c29191d45f039",
+  "version": "1.27.0",
+  "distro": "bd3f837b488907e3b5e55043ba79e7bf218e1dff",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -89,7 +89,7 @@
     "spdlog": "^0.11.1",
     "sudo-prompt": "9.1.1",
     "tas-client-umd": "0.1.2",
-    "turndown": "^6.0.0",
+    "turndown": "^7.0.0",
     "v8-inspect-profiler": "^0.0.20",
     "vscode-nsfw": "1.2.9",
     "vscode-oniguruma": "1.3.1",
@@ -142,7 +142,7 @@
     "css-loader": "^3.2.0",
     "debounce": "^1.0.0",
     "deemon": "^1.4.0",
-    "electron": "9.3.5",
+    "electron": "9.4.3",
     "electron-rebuild": "2.0.3",
     "eslint": "6.8.0",
     "eslint-plugin-jsdoc": "^19.1.0",

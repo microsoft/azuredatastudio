@@ -37,14 +37,15 @@
 .slick-header-menubutton {
 	background-position: center center;
 	background-repeat: no-repeat;
-	bottom: 0;
 	cursor: pointer;
 	display: inline-block;
-	position: absolute;
-	right: 10px;
-	top: 0;
-	width: 18px;
+	width: 16px;
 	background-image: url('down.svg');
+	flex: 0 0 auto;
+	margin-right: 2px;
+	background-color: transparent;
+	border: 0px;
+	padding: 0px;
 }
 
 .vs-dark .slick-header-menubutton,

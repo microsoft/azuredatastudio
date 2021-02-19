@@ -13,7 +13,6 @@ import { SchemaCompareOptionsModel } from '../models/schemaCompareOptionsModel';
 
 export class SchemaCompareOptionsDialog {
 	public dialog: azdata.window.Dialog;
-	public deploymentOptions: mssql.DeploymentOptions;
 
 	private generalOptionsTab: azdata.window.DialogTab;
 	private objectTypesTab: azdata.window.DialogTab;
@@ -31,7 +30,6 @@ export class SchemaCompareOptionsDialog {
 	private optionsModel: SchemaCompareOptionsModel;
 
 	constructor(defaultOptions: mssql.DeploymentOptions, private schemaComparison: SchemaCompareMainWindow) {
-		this.deploymentOptions = defaultOptions;
 		this.optionsModel = new SchemaCompareOptionsModel(defaultOptions);
 	}
 
@@ -66,7 +64,7 @@ export class SchemaCompareOptionsDialog {
 	protected execute(): void {
 		this.optionsModel.setDeploymentOptions();
 		this.optionsModel.setObjectTypeOptions();
-		this.schemaComparison.setDeploymentOptions(this.deploymentOptions);
+		this.schemaComparison.setDeploymentOptions(this.optionsModel.deploymentOptions);
 
 		if (this.optionsChanged) {
 			vscode.window.showWarningMessage(loc.OptionsChangedMessage, loc.YesButtonText, loc.NoButtonText).then((result) => {
@@ -85,7 +83,7 @@ export class SchemaCompareOptionsDialog {
 	private async reset(): Promise<void> {
 		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		let result = await service.schemaCompareGetDefaultOptions();
-		this.deploymentOptions = result.defaultDeploymentOptions;
+		this.optionsModel.deploymentOptions = result.defaultDeploymentOptions;
 		this.optionsChanged = true;
 
 		await this.updateOptionsTable();

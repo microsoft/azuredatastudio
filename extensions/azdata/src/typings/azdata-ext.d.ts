@@ -17,7 +17,7 @@ declare module 'azdata-ext' {
 		name = 'Microsoft.azdata'
 	}
 
-	export type AdditionalEnvVars = { [key: string]: string};
+	export type AdditionalEnvVars = { [key: string]: string };
 
 	export interface ErrorWithLink extends Error {
 		messageWithLink: string;
@@ -222,6 +222,17 @@ declare module 'azdata-ext' {
 			state: string, // "Ready"
 			logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:pg1'))
 			metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=pg1
+			podsStatus: {
+				conditions: {
+					lastTransitionTime: string, // "2020-08-19T17:05:39Z"
+					message?: string, // "containers with unready status: [fluentbit postgres telegraf]"
+					reason?: string, // "ContainersNotReady"
+					status: string, // "True"
+					type: string // "Ready"
+				}[],
+				name: string, // "pg-instancew-0",
+				role: string // "worker"
+			}[]
 		}
 	}
 

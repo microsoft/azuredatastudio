@@ -313,7 +313,19 @@ export class ActionViewItem extends BaseActionViewItem {
 			if (this.label) {
 				this.label.classList.add('codicon');
 				if (this.cssClass) {
-					this.label.classList.add(...this.cssClass.split(' '));
+					// {{SQL CARBON EDIT}} - avoid exception if class contains empty elements
+					let classList = this.cssClass.split(' ');
+					let containsEmpty = false;
+					if (classList && classList.length > 0) {
+						for (let i = 0; i < classList.length; ++i) {
+							if (classList[i] === undefined || classList[i] === '') {
+								containsEmpty = true;
+							}
+						}
+						if (!containsEmpty) {
+							this.label.classList.add(...this.cssClass.split(' '));
+						}
+					}
 				}
 			}
 

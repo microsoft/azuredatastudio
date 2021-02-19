@@ -13,18 +13,123 @@
 	z-index: 500;
 }
 
-.modal:not(.flyout-dialog) .modal-dialog {
+.modal .btn-secondary {
+	border-style: solid;
+	border-width: 1px;
+}
+
+.modal:not(.flyout-dialog):not(.callout-dialog) .modal-dialog {
 	margin: auto;
 	width: 640px;
 	height: 480px;
 }
 
+.modal.callout-dialog {
+	background-color: transparent;
+}
+.modal.callout-dialog .modal-dialog {
+	border-radius: 2px;
+	box-shadow: 0px 3px 8px rgba(var(--foreground));
+	max-height: 300px;
+	position: absolute;
+}
+
+.modal.callout-dialog .modal-content .insert-image .flex-container {
+	display: flex;
+}
+.modal.callout-dialog .modal-content .insert-image .flex-container > div {
+	flex: 1;
+}
+.modal.callout-dialog .modal-content p {
+	margin: 0;
+}
+.modal.callout-dialog .modal-content .button-icon {
+	cursor: pointer;
+	margin-left: 10px;
+}
+.modal.callout-dialog .modal-content .insert-image .monaco-inputbox {
+	min-width: 380px;
+}
+.modal.callout-dialog .modal-content .row  {
+	margin-bottom: 16px;
+}
+.modal.callout-dialog .modal-content .radio-group input {
+	margin-right: 8px;
+}
+.modal.callout-dialog .modal-content .radio-group span {
+	margin-right: 15px;
+}
+
+.hc-black .modal.callout-dialog .modal-dialog {
+	box-shadow: none;
+}
+
+/* Correct the arrow appearance for HC theme */
+.callout-arrow:before {
+	border-width: 1px;
+	border-style: solid;
+	border-color:
+		transparent
+		transparent
+		var(--bodybackground)
+		var(--bodybackground);
+	box-shadow: -3px 3px 3px 0 rgba(var(--foreground));
+	content: '';
+	display: block;
+	height: 0;
+	position: absolute;
+	width: 0;
+}
+.callout-arrow.from-below:before {
+	border-width: 0.5em;
+	left: 2em;
+	top: -0.2em;
+	transform: rotate(135deg);
+}
+.callout-arrow.from-left:before {
+	background-color: var(--bodybackground);
+	height: 26px;
+	right: -13px;
+	top: 26px;
+	transform: rotate(-135deg);
+	width: 26px;
+}
+
+.hc-black .callout-arrow:before {
+	background-color: var(--bodybackground);
+	border-color:
+		transparent
+		transparent
+		var(--border)
+		var(--border);
+	border-width: 0.1em;
+	box-shadow: none;
+	height: 0.8em;
+	width: 0.8em;
+}
+.hc-black .callout-arrow.from-below:before {
+	top: -0.4em;
+}
+.hc-black .callout-arrow.from-left:before {
+	height: 2em;
+	right: -1.2em;
+	width: 2em;
+}
+
+
 .modal .modal-header {
 	padding: 15px;
 }
 
+.modal.callout-dialog .modal-header {
+	padding: 18px 24px 8px 24px;
+}
+
 .modal .modal-footer {
 	padding: 15px;
+}
+.modal.callout-dialog .modal-footer {
+	padding: 15px 24px 15px 24px;
 }
 
 .modal .codicon.in-progress {
@@ -32,6 +137,7 @@
 	height: 25px;
 }
 
+/** FLYOUT **/
 .modal.flyout-dialog .modal-dialog {
 	margin: auto auto auto auto;
 	height: 100%;
@@ -83,6 +189,17 @@
 	overflow: hidden;
 }
 
+.modal.callout-dialog .modal-body {
+	padding: 8px 24px;
+}
+
+.modal.callout-dialog.compact .modal-header {
+	padding: 16px 24px 4px 24px;
+}
+.modal.callout-dialog.compact .modal-body {
+	padding: 4px 24px 16px 24px;
+}
+
 /* modl body content style(excluding dialogErrorMessage section) for angulr component dialog */
 .angular-modal-body-content {
 	overflow-x: hidden;
@@ -114,25 +231,16 @@
 	padding-left: 4px;
 }
 
-.vs-dark .modal.flyout-dialog .input {
-	background-color: #3C3C3C;
-}
-
-.vs-dark .modal.flyout-dialog input:disabled {
-	background-color: #E1E1E1;
-	color:  #3C3C3C;
-}
-
 .modal .select-box,
 .modal .monaco-select-box {
 	width: 100%;
 	height: 25px;
-	color: #6C6C6C;
 	font-size: 11px;
 	border: 1px solid transparent;
 }
 
 .modal .modal-footer {
+	border-top: 1px solid #E1E1E1;
 	display: flex;
 }
 
@@ -149,9 +257,11 @@
 }
 
 .modal .footer-button a.monaco-button.monaco-text-button {
-	min-width: 100px;
+	border-radius: 2px;
+	height: 24px;
 	padding-left: 20px;
 	padding-right: 20px;
+	min-width: 80px;
 }
 
 .vs .monaco-text-button:focus {
@@ -159,13 +269,12 @@
 }
 
 .modal .footer-button {
-	margin-left: 5px;
+	margin-left: 8px;
 }
 
 .modal .right-footer .footer-button:last-of-type {
 	margin-right: none;
 }
-
 
 .modal.flyout-dialog .dialog-message {
 	padding: 6px 10px 10px 10px;
@@ -176,20 +285,20 @@
 
 .vs .modal.flyout-dialog .dialog-message.error,
 .vs-dark .modal.flyout-dialog .dialog-message.error {
-	background-color:#B62E00 !important;
-	color:#FFFFFF !important;
+	background-color: #B62E00 !important;
+	color: #FFFFFF !important;
 }
 
 .vs .modal.flyout-dialog .dialog-message.warning,
 .vs-dark .modal.flyout-dialog .dialog-message.warning {
-	background-color:#F9E385 !important;
-	color:#4A4A4A !important;
+	background-color: #F9E385 !important;
+	color: #4A4A4A !important;
 }
 
 .vs .modal.flyout-dialog .dialog-message.info,
 .vs-dark .modal.flyout-dialog .dialog-message.info {
-	background-color:#096CC9 !important;
-	color:#FFFFFF !important;
+	background-color: #096CC9 !important;
+	color: #FFFFFF !important;
 }
 
 .modal.flyout-dialog .dialog-message-header {
@@ -226,18 +335,18 @@
 }
 
 .modal.flyout-dialog .dialog-message.info .dialog-message-button > a:focus,
-.modal.flyout-dialog .dialog-message.error .dialog-message-button > a:focus{
+.modal.flyout-dialog .dialog-message.error .dialog-message-button > a:focus {
 	outline-color: #FFFFFF;
 }
 
-.modal.flyout-dialog .dialog-message.warning .dialog-message-button > a:focus{
+.modal.flyout-dialog .dialog-message.warning .dialog-message-button > a:focus {
 	outline-color: #000000;
 }
 
 .modal.flyout-dialog .dialog-message-button > a {
 	background-position-x: 2px !important;
 	background-color: inherit !important;
-	color:inherit !important;
+	color: inherit !important;
 	padding-left: 22px !important;
 	background-size: 16px 16px !important;
 	text-align: left !important;
@@ -288,7 +397,7 @@
 	background: url('show_details.svg') center center no-repeat;
 }
 
-.dialog-message.info .dialog-message-icon  {
+.dialog-message.info .dialog-message-icon {
 	background: url('info_notification_inverse.svg') center center no-repeat;
 }
 
@@ -302,4 +411,19 @@
 
 .dialog-message.error .dialog-message-icon {
 	background: url('error_notification_inverse.svg') center center no-repeat;
+}
+
+.codicon.masked-icon.browse-local {
+	display: inline-block;
+	height: 25px;
+	width: 25px;
+}
+.codicon.masked-icon.browse-local:before {
+	height: 25px;
+	width: 25px;
+	background-image: none;
+	-webkit-mask-image: url('browse-local.svg');
+	mask-image: url('browse-local.svg');
+	-webkit-mask-size: 100%;
+	mask-size: 100%;
 }

@@ -118,15 +118,13 @@ export function createViewContext(): ViewTestContext {
 	let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent, azdata.ButtonProperties> = {
 		component: () => button,
 		withProperties: (properties: any) => {
-			if ((properties as any).label === '•••') {
-				button.label = '•••';
+			if ((properties as any).title === loc.selectFile) {
 				button.onDidClick = fileButtonOnClick.event;
 			}
 			return buttonBuilder;
 		},
 		withProps: (properties) => {
-			if ((properties as any).label === '•••') {
-				button.label = '•••';
+			if ((properties as any).title === loc.selectFile) {
 				button.onDidClick = fileButtonOnClick.event;
 			}
 			return buttonBuilder;
@@ -287,7 +285,6 @@ export function createViewContext(): ViewTestContext {
 			divContainer: () => divBuilder,
 			flexContainer: () => flexBuilder,
 			splitViewContainer: undefined!,
-			dom: undefined!,
 			card: () => undefined!,
 			inputBox: () => inputBoxBuilder,
 			checkBox: () => checkBoxBuilder!,
