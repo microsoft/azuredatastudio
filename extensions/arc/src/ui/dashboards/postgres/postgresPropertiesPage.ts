@@ -102,10 +102,9 @@ export class PostgresPropertiesPage extends DashboardPage {
 			new InputKeyValue(this.modelView.modelBuilder, loc.postgresAdminUsername, 'postgres'),
 			new InputKeyValue(this.modelView.modelBuilder, loc.subscriptionId, this._controllerModel.controllerConfig?.spec.settings.azure.subscription ?? ''),
 			new TextKeyValue(this.modelView.modelBuilder, loc.resourceGroup, this._controllerModel.controllerConfig?.spec.settings.azure.resourceGroup ?? ''),
-			new LinkKeyValue(this.modelView.modelBuilder, loc.dataController, this._controllerModel.controllerConfig?.metadata.namespace ?? '', () => controllerDashboard.showDashboard()),
-			new TextKeyValue(this.modelView.modelBuilder, loc.status, status ? `${status.state} (${status.readyPods} ${loc.podsReady})` : loc.unknown),
-			//new TextKeyValue(this.modelView.modelBuilder, loc.dataController, this._controllerModel.controllerConfig?.metadata.namespace ?? ''),
+			new LinkKeyValue(this.modelView.modelBuilder, loc.dataController, this._controllerModel.controllerConfig?.metadata.name ?? '', () => controllerDashboard.showDashboard()),
 			new TextKeyValue(this.modelView.modelBuilder, loc.nodeConfiguration, this._postgresModel.scaleConfiguration ?? ''),
+			new TextKeyValue(this.modelView.modelBuilder, loc.status, status ? `${status.state} (${status.readyPods} ${loc.podsReady})` : loc.unknown),
 			new TextKeyValue(this.modelView.modelBuilder, loc.postgresVersion, this._postgresModel.engineVersion ?? ''),
 		];
 	}
