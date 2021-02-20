@@ -157,11 +157,11 @@ const LAUNCH_FIND_IN_NOTEBOOK = 'notebook.action.launchFindInNotebook';
 CommandsRegistry.registerCommand({
 	id: LAUNCH_FIND_IN_NOTEBOOK,
 	handler: async (accessor: ServicesAccessor, arg: string) => {
-		const activeEditor = accessor.get(IEditorService).activeEditorPane;
-		if (activeEditor instanceof NotebookEditor) {
-			if (activeEditor) {
-				await activeEditor.setNotebookModel();
-				await activeEditor.launchFind(arg);
+		const notebookEditor = accessor.get(IEditorService).activeEditorPane;
+		if (notebookEditor instanceof NotebookEditor) {
+			if (notebookEditor) {
+				await notebookEditor.setNotebookModel();
+				await notebookEditor.launchFind(arg);
 			}
 		}
 	}

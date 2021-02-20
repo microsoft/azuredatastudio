@@ -231,7 +231,7 @@ export class NotebookSearchView extends SearchView {
 				if (resource.fsPath.endsWith('.md')) {
 					await this.commandService.executeCommand('markdown.showPreview', resource);
 				} else {
-					await this.open(this.tree.getSelection()[0] as Match, true, false, false);
+					await this.commandService.executeCommand('bookTreeView.openNotebook', resource.fsPath);
 				}
 				this.commandService.executeCommand('notebook.action.launchFindInNotebook', this.viewModel.searchResult.query?.contentPattern?.pattern);
 			}
