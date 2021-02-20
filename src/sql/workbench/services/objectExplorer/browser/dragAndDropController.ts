@@ -114,10 +114,17 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		if (supportsFolderNodeNameDrop(element.nodeTypeId, element.label)) {
 			// get children
 			let returnString = '';
+			let providerName = this.getProviderNameFromElement(element);
 			for (let child of element.children) {
 				escapedSchema = escapeString(child.metadata.schema);
 				escapedName = escapeString(child.metadata.name);
-				finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+				if (providerName === 'MSSQL') {
+					finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+				} else if (providerName === 'PGSQL') {
+					finalString = escapedSchema ? `"${escapedSchema}"."${escapedName}"` : `"${escapedName}"`;
+				} else {
+					finalString = escapedSchema ? `${escapedSchema}.${escapedName}` : `${escapedName}`;
+				}
 				returnString = returnString ? `${returnString},${finalString}` : `${finalString}`;
 			}
 
