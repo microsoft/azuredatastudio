@@ -60,18 +60,12 @@ export class ProjectDashboard {
 				buttons.push({ component: button });
 			} else {
 				const groupLength = action.actions.length;
-				let lastAction = 0;
-				let toolbarSeparatorAfter = false;
+				let currentElement = { count: 0 };
 
 				action.actions.forEach(groupAction => {
 					let button = this.createButton(groupAction);
 
-					lastAction++;
-					if (groupLength === lastAction) {
-						toolbarSeparatorAfter = true;
-					}
-
-					buttons.push({ component: button, toolbarSeparatorAfter: toolbarSeparatorAfter });
+					buttons.push({ component: button, toolbarSeparatorAfter: this.toolbarSeparator(groupLength, currentElement) });
 				});
 			}
 		});
@@ -99,6 +93,20 @@ export class ProjectDashboard {
 		});
 
 		return button;
+	}
+
+	/**
+	 * Add a toolbar separator at the end of the group actions
+	 * @param length Total number of actions in a group
+	 * @param currentElement Count of current element
+	 */
+	private toolbarSeparator(length: number, currentElement: { count: number }): boolean {
+		currentElement.count++;
+		if (length === currentElement.count) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private createContainer(projectName: string): azdata.FlexContainer {
