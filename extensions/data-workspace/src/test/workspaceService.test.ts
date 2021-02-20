@@ -131,7 +131,15 @@ suite('WorkspaceService Tests', function (): void {
 				icon: '',
 				displayName: 'test project 1'
 			}
-		]);
+		],
+		[{
+			id: 'ta1',
+			run: async (): Promise<any> => { return Promise.resolve(); }
+		},
+		{
+			id: 'ta2',
+			run: async (): Promise<any> => { return Promise.resolve(); }
+		}]);
 		const provider2 = createProjectProvider([
 			{
 				id: 'sp1',
@@ -140,7 +148,27 @@ suite('WorkspaceService Tests', function (): void {
 				icon: '',
 				displayName: 'sql project'
 			}
-		]);
+		],
+		[{
+			id: 'Add',
+			run: async (): Promise<any> => { return Promise.resolve(); }
+		},
+		{
+			id: 'Schema Compare',
+			run: async (): Promise<any> => { return Promise.resolve(); }
+		},
+		{
+			id: 'Build',
+			run: async (): Promise<any> => { return Promise.resolve(); }
+		},
+		{
+			id: 'Publish',
+			run: async (): Promise<any> => { return Promise.resolve(); }
+		},
+		{
+			id: 'Target Version',
+			run: async (): Promise<any> => { return Promise.resolve(); }
+		}]);
 		sinon.stub(ProjectProviderRegistry, 'providers').value([provider1, provider2]);
 		const consoleErrorStub = sinon.stub(console, 'error');
 		const projectTypes = await service.getAllProjectTypes();
@@ -173,7 +201,27 @@ suite('WorkspaceService Tests', function (): void {
 				icon: '',
 				displayName: 'test project'
 			}
-		]));
+		],
+		[{
+			id: 'Add',
+			run: async (): Promise<any> => { return Promise.resolve(); }
+		},
+		{
+			id: 'Schema Compare',
+			run: async (): Promise<any> => { return Promise.resolve(); }
+		},
+		{
+			id: 'Build',
+			run: async (): Promise<any> => { return Promise.resolve(); }
+		},
+		{
+			id: 'Publish',
+			run: async (): Promise<any> => { return Promise.resolve(); }
+		},
+		{
+			id: 'Target Version',
+			run: async (): Promise<any> => { return Promise.resolve(); }
+		}]));
 		let provider = await service.getProjectProvider(vscode.Uri.file('abc.sqlproj'));
 		should.notStrictEqual(provider, undefined, 'Provider should be returned for sqlproj');
 		should.strictEqual(provider!.supportedProjectTypes[0].projectFileExtension, 'sqlproj');
@@ -188,6 +236,10 @@ suite('WorkspaceService Tests', function (): void {
 			projectFileExtension: 'csproj',
 			icon: '',
 			displayName: 'test cs project'
+		}],
+		[{
+			id: 'ta2',
+			run: async (): Promise<any> => { return Promise.resolve(); }
 		}]));
 		provider = await service.getProjectProvider(vscode.Uri.file('abc.csproj'));
 		should.notStrictEqual(provider, undefined, 'Provider should be returned for csproj');

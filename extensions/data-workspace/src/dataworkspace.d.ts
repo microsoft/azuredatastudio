@@ -73,7 +73,7 @@ declare module 'dataworkspace' {
 		/**
 		 * Gets the project actions to be placed on the dashboard toolbar
 		 */
-		getProjectToolbarActions(): IProjectAction[];
+		readonly projectActions: (IProjectAction | IProjectActionGroup)[];
 	}
 
 	/**
@@ -133,14 +133,16 @@ declare module 'dataworkspace' {
 		readonly icon?: string | vscode.Uri | { light: string | vscode.Uri, dark: string | vscode.Uri };
 
 		/**
-		 * boolean to specify if a toolbar separator should be added after this action
-		 */
-		readonly toolbarSeparatorAfter?: boolean;
-
-		/**
 		 * Run context for each project action
 		 * @param treeItem The treeItem in a project's hierarchy, to be used to obtain a Project
 		 */
 		run(treeItem: WorkspaceTreeItem): Promise<any>;
+	}
+
+	/**
+	 * List of project actions that should be grouped and have a separator after the last action
+	 */
+	export interface IProjectActionGroup {
+		actions: IProjectAction[];
 	}
 }

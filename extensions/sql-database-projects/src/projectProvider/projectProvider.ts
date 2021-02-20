@@ -78,32 +78,39 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	/**
 	 * Gets the supported project types
 	 */
-	getProjectToolbarActions(): dataworkspace.IProjectAction[] {
-		return [{
+	get projectActions(): (dataworkspace.IProjectAction | dataworkspace.IProjectActionGroup)[] {
+		const action1: dataworkspace.IProjectAction = {
 			id: constants.addItemAction,
 			icon: IconPathHelper.add,
-			run: async (treeItem): Promise<any> => await this.projectController.addItemPromptFromNode(treeItem)
-		},
-		{
+			run: async (treeItem: dataworkspace.WorkspaceTreeItem): Promise<any> => await this.projectController.addItemPromptFromNode(treeItem)
+		};
+
+		const action2: dataworkspace.IProjectAction = {
 			id: constants.schemaCompareAction,
 			icon: IconPathHelper.schemaCompare,
-			run: async (treeItem): Promise<any> => await this.projectController.schemaCompare(treeItem)
-		},
-		{
+			run: async (treeItem: dataworkspace.WorkspaceTreeItem): Promise<any> => await this.projectController.schemaCompare(treeItem)
+		};
+
+		const action3: dataworkspace.IProjectAction = {
 			id: constants.buildAction,
 			icon: IconPathHelper.build,
-			run: async (treeItem): Promise<any> => await this.projectController.buildProject(treeItem)
-		},
-		{
+			run: async (treeItem: dataworkspace.WorkspaceTreeItem): Promise<any> => await this.projectController.buildProject(treeItem)
+		};
+
+		const action4: dataworkspace.IProjectAction = {
 			id: constants.publishAction,
 			icon: IconPathHelper.publish,
-			toolbarSeparatorAfter: true,
-			run: async (treeItem): Promise<any> => await this.projectController.publishProject(treeItem)
-		},
-		{
+			run: async (treeItem: dataworkspace.WorkspaceTreeItem): Promise<any> => this.projectController.publishProject(treeItem)
+		};
+
+		const action5: dataworkspace.IProjectAction = {
 			id: constants.targetPlatformAction,
 			icon: IconPathHelper.targetPlatform,
 			run: async (treeItem): Promise<any> => await this.projectController.changeTargetPlatform(treeItem)
-		}];
+		};
+
+		let group: dataworkspace.IProjectActionGroup = { actions: [action1, action2, action3, action4] };
+
+		return [group, action5];
 	}
 }

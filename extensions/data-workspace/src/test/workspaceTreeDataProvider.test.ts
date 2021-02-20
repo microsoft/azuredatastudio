@@ -10,7 +10,7 @@ import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import { WorkspaceTreeDataProvider } from '../common/workspaceTreeDataProvider';
 import { WorkspaceService } from '../services/workspaceService';
-import { IProjectProvider, WorkspaceTreeItem, IProjectAction } from 'dataworkspace';
+import { IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import { MockTreeDataProvider } from './projectProviderRegistry.test';
 
 suite('workspaceTreeDataProvider Tests', function (): void {
@@ -87,28 +87,26 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 			createProject: (name: string, location: vscode.Uri): Promise<vscode.Uri> => {
 				return Promise.resolve(location);
 			},
-			getProjectToolbarActions: (): IProjectAction[] => {
-				return [{
-					id: 'Add',
-					run: async (): Promise<any> => { return Promise.resolve(); }
-				},
-				{
-					id: 'Schema Compare',
-					run: async (): Promise<any> => { return Promise.resolve(); }
-				},
-				{
-					id: 'Build',
-					run: async (): Promise<any> => { return Promise.resolve(); }
-				},
-				{
-					id: 'Publish',
-					run: async (): Promise<any> => { return Promise.resolve(); }
-				},
-				{
-					id: 'Target Version',
-					run: async (): Promise<any> => { return Promise.resolve(); }
-				} ];
-			}
+			projectActions: [{
+				id: 'Add',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Schema Compare',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Build',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Publish',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Target Version',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}]
 		};
 		const getProjectProviderStub = sinon.stub(workspaceService, 'getProjectProvider');
 		getProjectProviderStub.onFirstCall().resolves(undefined);
