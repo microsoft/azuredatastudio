@@ -102,8 +102,12 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			let providerName = this.getProviderNameFromElement(element);
 			if (providerName === 'KUSTO') {
 				finalString = element.nodeTypeId !== 'Function' && escapedName.indexOf(' ') > 0 ? `[@"${escapedName}"]` : escapedName;
-			} else {
+			} else if (providerName === 'MSSQL') {
 				finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
+			} else if (providerName === 'PGSQL') {
+				finalString = escapedSchema ? `"${escapedSchema}"."${escapedName}"` : `"${escapedName}"`;
+			} else {
+				finalString = escapedSchema ? `${escapedSchema}.${escapedName}` : `${escapedName}`;
 			}
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${finalString}`]));
 		}
