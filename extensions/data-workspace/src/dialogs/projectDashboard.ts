@@ -38,8 +38,8 @@ export class ProjectDashboard {
 			this.overviewTab = {
 				title: '',
 				id: 'overview-tab',
-				content: this.createContainer(title),
-				toolbar: await this.createToolbarContainer()
+				content: this.createContainer(),
+				toolbar: this.createToolbarContainer()
 			};
 			return [
 				this.overviewTab
@@ -109,7 +109,7 @@ export class ProjectDashboard {
 		}
 	}
 
-	private createContainer(projectName: string): azdata.FlexContainer {
+	private createContainer(): azdata.FlexContainer {
 		const rootContainer = this.modelView!.modelBuilder.flexContainer().withLayout(
 			{
 				flexFlow: 'column',
