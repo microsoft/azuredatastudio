@@ -42,7 +42,8 @@ export enum AuthenticationType {
 	Integrated = 'Integrated',
 	AzureMFA = 'AzureMFA',
 	AzureMFAAndUser = 'AzureMFAAndUser',
-	dSTSAuth = 'dstsAuth'
+	dSTSAuth = 'dstsAuth',
+	NoAuth = 'NoAuth'
 }
 
 export class ConnectionWidget extends lifecycle.Disposable {
@@ -78,7 +79,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _databaseNameInputBox: Dropdown;
 	protected _advancedButton: Button;
 	private static readonly _authTypes: AuthenticationType[] =
-		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.dSTSAuth];
+		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.dSTSAuth, AuthenticationType.NoAuth];
 	private static readonly _osByName = {
 		Windows: OperatingSystem.Windows,
 		Macintosh: OperatingSystem.Macintosh,
@@ -520,6 +521,14 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					});
 				}
 			});
+			this._tableContainer.classList.add('hide-username');
+			this._tableContainer.classList.add('hide-password');
+			this._tableContainer.classList.add('hide-azure-accounts');
+		} else if (currentAuthType === AuthenticationType.NoAuth) {
+			this._azureAccountDropdown.disable();
+			this._azureAccountDropdown.hideMessage();
+			this._azureTenantDropdown.disable();
+			this._azureTenantDropdown.hideMessage();
 			this._tableContainer.classList.add('hide-username');
 			this._tableContainer.classList.add('hide-password');
 			this._tableContainer.classList.add('hide-azure-accounts');
