@@ -99,6 +99,22 @@
 	white-space: nowrap;
 	width: 200px;
 	display: grid;
+	align-content: flex-start;
+}
+
+.slick-header-menu .filter .filter-option {
+	display: flex;
+	align-items: center;
+}
+
+.slick-header-menu .filter-menu-button-container {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+}
+
+.slick-header-menu .filter-menu-button {
+	flex: 0 0 auto;
 }
 
 .monaco-table label {
