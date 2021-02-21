@@ -8,7 +8,7 @@ import 'vs/css!./media/gridPanel';
 import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
-import { ResultSetSummary, IColumn } from 'sql/workbench/services/query/common/query';
+import { ResultSetSummary, IColumn, ICellValue } from 'sql/workbench/services/query/common/query';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
@@ -50,6 +50,7 @@ import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -376,7 +377,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		@IEditorService private readonly editorService: IEditorService,
 		@IUntitledTextEditorService private readonly untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IQueryModelService private readonly queryModelService: IQueryModelService
+		@IQueryModelService private readonly queryModelService: IQueryModelService,
+		@IThemeService private readonly themeService: IThemeService
 	) {
 		super();
 		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
@@ -486,12 +488,13 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
-		this.table.registerPlugin(new HeaderFilter());
 		this._register(this.table.onContextMenu(this.contextMenu, this));
 		this._register(this.table.onClick(this.onTableClick, this));
 		//This listener is used for correcting auto-scroling when clicking on the header for reszing.
 		this._register(this.table.onHeaderClick(this.onHeaderClick, this));
-
+		const filter = new HeaderFilter((data: ICellValue): string => { return data.displayValue; });
+		attachButtonStyler(filter, this.themeService);
+		this.table.registerPlugin(filter);
 		if (this.styles) {
 			this.table.style(this.styles);
 		}
@@ -789,9 +792,10 @@ class GridTable<T> extends GridTableBase<T> {
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IQueryModelService queryModelService: IQueryModelService
+		@IQueryModelService queryModelService: IQueryModelService,
+		@IThemeService themeService: IThemeService
 	) {
-		super(state, resultSet, undefined, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService);
+		super(state, resultSet, undefined, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 	}
 
