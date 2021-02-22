@@ -39,13 +39,6 @@ declare module 'dataworkspace' {
 	 	* Verifies that a workspace is open or if it should be automatically created
 	 	*/
 		validateWorkspace(): Promise<boolean>;
-
-		/**
-		* Adds the list of files and directories to the project file, and saves the project file
-		* @param projectFile The Uri of the project file
-		* @param list list of file and folder paths to add
-		*/
-		addToProject(projectFile: vscode.Uri, list: string[]): Promise<void>;
 	}
 
 	/**
@@ -71,13 +64,6 @@ declare module 'dataworkspace' {
 		 * @param projectTypeId the identifier of the selected project type
 		 */
 		createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
-
-		/**
-		* Adds the list of files and directories to the project, and saves the project file
-		* @param projectFile The Uri of the project file
-		* @param list list of sql
-		*/
-		addToProject(projectFile: vscode.Uri, list: string[]): Promise<void>;
 
 		/**
 		 * Gets the supported project types

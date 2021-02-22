@@ -90,9 +90,6 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 			},
 			createProject: (name: string, location: vscode.Uri): Promise<vscode.Uri> => {
 				return Promise.resolve(location);
-			},
-			addToProject: (projectFile: vscode.Uri, list: string[]): Promise<void> => {
-				return Promise.resolve();
 			}
 		};
 		const getProjectProviderStub = sinon.stub(workspaceService, 'getProjectProvider');

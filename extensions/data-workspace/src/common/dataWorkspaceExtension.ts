@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as constants from './constants';
 import { IExtension } from 'dataworkspace';
 import { WorkspaceService } from '../services/workspaceService';
 import { defaultProjectSaveLocation } from './projectLocationHelper';
@@ -31,15 +30,5 @@ export class DataWorkspaceExtension implements IExtension {
 
 	validateWorkspace(): Promise<boolean> {
 		return this.workspaceService.validateWorkspace();
-	}
-
-	async addToProject(projectFile: vscode.Uri, list: string[]): Promise<void> {
-		// get project provider
-		const projectProvider = await this.workspaceService.getProjectProvider(projectFile);
-		if (!projectProvider) {
-			throw new Error(constants.ProviderNotFoundForProjectTypeError(projectFile.fsPath));
-		}
-
-		await projectProvider.addToProject(projectFile, list);
 	}
 }
