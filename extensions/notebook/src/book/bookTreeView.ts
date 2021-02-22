@@ -296,7 +296,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	@debounce(1500)
+	@debounce(this, 1500)
 	async initializeBookContents(book: BookModel): Promise<void> {
 		await book.initializeContents().then(() => {
 			this._onDidChangeTreeData.fire(undefined);
