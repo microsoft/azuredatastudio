@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as dataworkspace from 'dataworkspace';
+import * as sqldbproj from 'sqldbproj';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
@@ -12,7 +13,7 @@ import { ProjectsController } from '../controllers/projectController';
 import { Project } from '../models/project';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 
-export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvider {
+export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvider, sqldbproj.IExtension {
 	constructor(private projectController: ProjectsController) {
 
 	}
