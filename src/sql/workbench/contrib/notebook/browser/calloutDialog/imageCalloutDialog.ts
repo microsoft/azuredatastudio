@@ -26,6 +26,8 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+
 
 export class ImageCalloutDialog extends CalloutDialog {
 	private _selectionComplete: Deferred<ICalloutDialogOptions>;
@@ -38,6 +40,8 @@ export class ImageCalloutDialog extends CalloutDialog {
 	private _imageBrowseButton: HTMLAnchorElement;
 	private _imageEmbedLabel: HTMLElement;
 	private _imageEmbedCheckbox: Checkbox;
+	private readonly insertButtonText = localize('callout.insertButton', "Insert");
+	private readonly cancelButtonText = localize('callout.cancelButton', "Cancel");
 	private readonly locationLabel = localize('callout.locationLabel', "Image location");
 	private readonly localImageLabel = localize('callout.localImageLabel', "This computer");
 	private readonly remoteImageLabel = localize('callout.remoteImageLabel', "Online");
@@ -82,11 +86,15 @@ export class ImageCalloutDialog extends CalloutDialog {
 	 * Opens the dialog and returns a promise for what options the user chooses.
 	 */
 	public open(): Promise<ICalloutDialogOptions> {
-		//this.show();
+		this.show();
 		return this._selectionComplete.promise;
 	}
 
 	public render() {
+		super.render();
+		attachModalDialogStyler(this, this._themeService);
+		this.addFooterButton(this.insertButtonText, () => this.insert());
+		this.addFooterButton(this.cancelButtonText, () => this.cancel(), undefined, true);
 		this.registerListeners();
 	}
 
@@ -186,23 +194,23 @@ export class ImageCalloutDialog extends CalloutDialog {
 	}
 
 	public insert() {
-		//this.hide();
+		this.hide();
 		this._selectionComplete.resolve({
 			insertMarkup: `<img src="${strings.escape(this._imageUrlInputBox.value)}">`,
 			imagePath: this._imageUrlInputBox.value,
 			embedImage: this._imageEmbedCheckbox.checked
 		});
-		//this.dispose();
+		this.dispose();
 	}
 
 	public cancel() {
-		//this.hide();
+		this.hide();
 		this._selectionComplete.resolve({
 			insertMarkup: '',
 			imagePath: undefined,
 			embedImage: undefined
 		});
-		//this.dispose();
+		this.dispose();
 	}
 
 	private async getUserHome(): Promise<string> {

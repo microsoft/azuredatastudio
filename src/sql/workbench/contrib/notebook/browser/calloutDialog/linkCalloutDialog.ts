@@ -21,6 +21,8 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+
 
 export class LinkCalloutDialog extends CalloutDialog {
 	private _selectionComplete: Deferred<ICalloutDialogOptions>;
@@ -28,6 +30,8 @@ export class LinkCalloutDialog extends CalloutDialog {
 	private _linkTextInputBox: InputBox;
 	private _linkAddressLabel: HTMLElement;
 	private _linkUrlInputBox: InputBox;
+	private readonly insertButtonText = localize('callout.insertButton', "Insert");
+	private readonly cancelButtonText = localize('callout.cancelButton', "Cancel");
 	private readonly linkTextLabel = localize('callout.linkTextLabel', "Text to display");
 	private readonly linkTextPlaceholder = localize('callout.linkTextPlaceholder', "Text to display");
 	private readonly linkAddressLabel = localize('callout.linkAddressLabel', "Address");
@@ -66,11 +70,15 @@ export class LinkCalloutDialog extends CalloutDialog {
 	 * Opens the dialog and returns a promise for what options the user chooses.
 	 */
 	public open(): Promise<ICalloutDialogOptions> {
-		//this.show();
+		this.show();
 		return this._selectionComplete.promise;
 	}
 
 	public render() {
+		super.render();
+		attachModalDialogStyler(this, this._themeService);
+		this.addFooterButton(this.insertButtonText, () => this.insert());
+		this.addFooterButton(this.cancelButtonText, () => this.cancel(), undefined, true);
 		this.registerListeners();
 	}
 
@@ -122,20 +130,20 @@ export class LinkCalloutDialog extends CalloutDialog {
 	}
 
 	public insert() {
-		//this.hide();
+		this.hide();
 		this._selectionComplete.resolve({
 			insertMarkup: `<a href="${strings.escape(this._linkUrlInputBox.value)}">${strings.escape(this._linkTextInputBox.value)}</a>`,
 		});
-		//this.dispose();
+		this.dispose();
 	}
 
 	public cancel() {
-		//this.hide();
+		this.hide();
 		this._selectionComplete.resolve({
 			insertMarkup: '',
 			imagePath: undefined,
 			embedImage: undefined
 		});
-		//this.dispose();
+		this.dispose();
 	}
 }
