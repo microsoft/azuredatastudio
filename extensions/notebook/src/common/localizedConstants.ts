@@ -93,6 +93,6 @@ export const name = localize('name', "Name");
 export const saveLocation = localize('saveLocation', "Save location");
 export const contentFolder = localize('contentFolder', "Content folder (Optional)");
 export const msgContentFolderError = localize('msgContentFolderError', "Content folder path does not exist");
-export const msgSaveFolderError = localize('msgSaveFolderError', "Save location path is not valid");
+export const msgSaveFolderError = localize('msgSaveFolderError', "Save location path does not exist");
 
 
