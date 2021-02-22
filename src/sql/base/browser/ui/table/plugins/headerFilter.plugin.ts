@@ -21,6 +21,12 @@ export interface CommandEventArgs<T extends Slick.SlickData> {
 	command: string
 }
 
+export type CellValueGetter = (data: any) => string;
+
+function GetCellValue(data: any): string {
+	return data?.toString();
+}
+
 const ShowFilterText: string = localize('headerFilter.showFilter', "Show Filter");
 
 export class HeaderFilter<T extends Slick.SlickData> {
@@ -40,6 +46,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private buttonStyles?: IButtonStyles;
 
 	private disposableStore = new DisposableStore();
+
+	constructor(private cellValueExtrator: CellValueGetter = GetCellValue) {
+	}
 
 	public init(grid: Slick.Grid<T>): void {
 		this.grid = grid;
@@ -95,7 +104,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.addClass('slick-header-menubutton')
 			.data('column', column);
 
-		$el.click(() => {
+		$el.click((e: JQuery.Event) => {
+			e.stopPropagation();
+			e.preventDefault();
 			this.showFilter($el[0]);
 		});
 		$el.appendTo(args.node);
@@ -197,7 +208,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		for (let i = 0; i < filterItems.length; i++) {
 			const filtered = this.workingFilters.some(x => x === filterItems[i]);
 			if (filterItems[i] && filterItems[i].indexOf('Error:') < 0) {
-				filterOptions += '<label><input type="checkbox" value="' + i + '"'
+				filterOptions += '<label class="filter-option"><input type="checkbox" value="' + i + '"'
 					+ (filtered ? ' checked="checked"' : '')
 					+ '/>' + escape(filterItems[i]) + '</label>';
 			}
@@ -206,7 +217,11 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.append(jQuery(filterOptions))
 			.appendTo(this.$menu);
 
-		this.okButton = new Button(this.$menu.get(0));
+		const $buttonContainer = jQuery('<div class="filter-menu-button-container">').appendTo(this.$menu);
+		const $okButtonDiv = jQuery('<div class="filter-menu-button">').appendTo($buttonContainer);
+		const $clearButtonDiv = jQuery('<div class="filter-menu-button">').appendTo($buttonContainer);
+		const $cancelButtonDiv = jQuery('<div class="filter-menu-button">').appendTo($buttonContainer);
+		this.okButton = new Button($okButtonDiv.get(0));
 		this.okButton.label = localize('headerFilter.ok', "OK");
 		this.okButton.title = localize('headerFilter.ok', "OK");
 		this.okButton.element.id = 'filter-ok-button';
@@ -217,7 +232,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			this.handleApply(ev, this.columnDef);
 		});
 
-		this.clearButton = new Button(this.$menu.get(0), { secondary: true });
+		this.clearButton = new Button($clearButtonDiv.get(0), { secondary: true });
 		this.clearButton.label = localize('headerFilter.clear', "Clear");
 		this.clearButton.title = localize('headerFilter.clear', "Clear");
 		this.clearButton.element.id = 'filter-clear-button';
@@ -228,7 +243,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			this.handleApply(ev, this.columnDef);
 		});
 
-		this.cancelButton = new Button(this.$menu.get(0), { secondary: true });
+		this.cancelButton = new Button($cancelButtonDiv.get(0), { secondary: true });
 		this.cancelButton.label = localize('headerFilter.cancel', "Cancel");
 		this.cancelButton.title = localize('headerFilter.cancel', "Cancel");
 		this.cancelButton.element.id = 'filter-cancel-button';
@@ -249,8 +264,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		if (menutop + offset.top > jQuery(window).height()) {
 			menutop -= (this.$menu.height() + jQuery(target).height() + 8);
 		}
-		this.$menu.css('top', menutop)
-			.css('left', (left > 0 ? left : 0));
+		this.$menu.css('top', menutop).css('left', (left > 0 ? left : 0));
+		this.okButton.focus();
 	}
 
 	public style(styles: IButtonStyles): void {
@@ -337,7 +352,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		dataView.getItems().forEach(items => {
 			const value = items[column.field!];
 			const valueArr = value instanceof Array ? value : [value];
-			valueArr.forEach(v => seen.add(v));
+			valueArr.forEach(v => seen.add(this.cellValueExtrator(v)));
 		});
 
 		return Array.from(seen);
