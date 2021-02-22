@@ -3,13 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/calloutDialog';
+import 'vs/css!./media/imageCalloutDialog';
 import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
 import * as styler from 'vs/platform/theme/common/styler';
 import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
-import { CalloutDialog, ICalloutDialogOptions } from 'sql/workbench/browser/modal/calloutDialog';
+import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
+import { CalloutDialog } from 'sql/workbench/browser/modal/calloutDialog';
 import { IFileDialogService, IOpenDialogOptions } from 'vs/platform/dialogs/common/dialogs';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IDialogProperties } from 'sql/workbench/browser/modal/modal';
@@ -28,9 +29,15 @@ import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 
+export interface ICalloutDialogOptions {
+	insertTitle?: string,
+	insertMarkup?: string,
+	imagePath?: string,
+	embedImage?: boolean
+}
 
 export class ImageCalloutDialog extends CalloutDialog {
-	private _selectionComplete: Deferred<ICalloutDialogOptions>;
+	private _selectionComplete: Deferred<ICalloutDialogOptions> = new Deferred<ICalloutDialogOptions>();
 	private _imageLocationLabel: HTMLElement;
 	private _imageLocalRadioButton: RadioButton;
 	private _editorImageLocationGroup: string = 'editorImageLocationGroup';
@@ -40,8 +47,8 @@ export class ImageCalloutDialog extends CalloutDialog {
 	private _imageBrowseButton: HTMLAnchorElement;
 	private _imageEmbedLabel: HTMLElement;
 	private _imageEmbedCheckbox: Checkbox;
-	private readonly insertButtonText = localize('callout.insertButton', "Insert");
-	private readonly cancelButtonText = localize('callout.cancelButton', "Cancel");
+
+
 	private readonly locationLabel = localize('callout.locationLabel', "Image location");
 	private readonly localImageLabel = localize('callout.localImageLabel', "This computer");
 	private readonly remoteImageLabel = localize('callout.remoteImageLabel', "Online");
@@ -50,6 +57,8 @@ export class ImageCalloutDialog extends CalloutDialog {
 	private readonly urlPlaceholder = localize('callout.urlPlaceholder', "Enter image URL");
 	private readonly browseAltText = localize('callout.browseAltText', "Browse");
 	private readonly embedImageLabel = localize('callout.embedImageLabel', "Attach image to notebook");
+	private readonly locationLocal = localize('local', "Local");
+	private readonly locationRemote = localize('remote', "Remote");
 
 	constructor(
 		title: string,
@@ -57,7 +66,7 @@ export class ImageCalloutDialog extends CalloutDialog {
 		dialogProperties: IDialogProperties,
 		@IPathService private readonly _pathService: IPathService,
 		@IFileDialogService private readonly _fileDialogService: IFileDialogService,
-		@IContextViewService private _contextViewService: IContextViewService,
+		@IContextViewService private readonly _contextViewService: IContextViewService,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
@@ -78,8 +87,6 @@ export class ImageCalloutDialog extends CalloutDialog {
 			logService,
 			textResourcePropertiesService
 		);
-
-		this._selectionComplete = new Deferred<ICalloutDialogOptions>();
 	}
 
 	/**
@@ -90,19 +97,15 @@ export class ImageCalloutDialog extends CalloutDialog {
 		return this._selectionComplete.promise;
 	}
 
-	public render() {
+	public render(): void {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-		this.addFooterButton(this.insertButtonText, () => this.insert());
-		this.addFooterButton(this.cancelButtonText, () => this.cancel(), undefined, true);
+		this.addFooterButton(constants.insertButtonText, () => this.insert());
+		this.addFooterButton(constants.cancelButtonText, () => this.cancel(), undefined, true);
 		this.registerListeners();
 	}
 
 	protected renderBody(container: HTMLElement) {
-		this.buildInsertImageCallout(container);
-	}
-
-	private buildInsertImageCallout(container: HTMLElement): void {
 		let imageContentColumn = DOM.$('.column.insert-image');
 		DOM.append(container, imageContentColumn);
 
@@ -124,10 +127,11 @@ export class ImageCalloutDialog extends CalloutDialog {
 			enabled: true,
 			checked: false
 		});
-		this._imageLocalRadioButton.value = localize('local', "Local");
 		this._imageLocalRadioButton.name = this._editorImageLocationGroup;
-		this._imageRemoteRadioButton.value = localize('remote', "Remote");
+		this._imageLocalRadioButton.value = this.locationLocal;
 		this._imageRemoteRadioButton.name = this._editorImageLocationGroup;
+		this._imageRemoteRadioButton.value = this.locationRemote;
+
 		DOM.append(locationRow, radioButtonGroup);
 
 		let pathRow = DOM.$('.row');
@@ -188,12 +192,11 @@ export class ImageCalloutDialog extends CalloutDialog {
 	}
 
 	private registerListeners(): void {
-		// Theme styler
 		this._register(styler.attachInputBoxStyler(this._imageUrlInputBox, this._themeService));
 		this._register(styler.attachCheckboxStyler(this._imageEmbedCheckbox, this._themeService));
 	}
 
-	public insert() {
+	public insert(): void {
 		this.hide();
 		this._selectionComplete.resolve({
 			insertMarkup: `<img src="${strings.escape(this._imageUrlInputBox.value)}">`,
@@ -203,7 +206,7 @@ export class ImageCalloutDialog extends CalloutDialog {
 		this.dispose();
 	}
 
-	public cancel() {
+	public cancel(): void {
 		this.hide();
 		this._selectionComplete.resolve({
 			insertMarkup: '',

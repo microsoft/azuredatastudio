@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.modal.callout-dialog .modal-content .insert-image .flex-container {
+	display: flex;
+}
+.modal.callout-dialog .modal-content .insert-image .flex-container > div {
+	flex: 1;
+}
+.modal.callout-dialog .modal-content .radio-group input {
+	margin-right: 8px;
+}
+.modal.callout-dialog .modal-content .radio-group span {
+	margin-right: 15px;
+}
+

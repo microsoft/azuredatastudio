@@ -3,12 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/calloutDialog';
+import 'vs/css!./media/linkCalloutDialog';
 import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
 import * as styler from 'vs/platform/theme/common/styler';
 import { localize } from 'vs/nls';
-import { CalloutDialog, ICalloutDialogOptions } from 'sql/workbench/browser/modal/calloutDialog';
+import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
+
+import { CalloutDialog } from 'sql/workbench/browser/modal/calloutDialog';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IDialogProperties } from 'sql/workbench/browser/modal/modal';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -23,15 +25,19 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 
+export interface ICalloutDialogOptions {
+	insertTitle?: string,
+	insertMarkup?: string
+}
 
 export class LinkCalloutDialog extends CalloutDialog {
-	private _selectionComplete: Deferred<ICalloutDialogOptions>;
+	private _selectionComplete: Deferred<ICalloutDialogOptions> = new Deferred<ICalloutDialogOptions>();
 	private _linkTextLabel: HTMLElement;
 	private _linkTextInputBox: InputBox;
 	private _linkAddressLabel: HTMLElement;
 	private _linkUrlInputBox: InputBox;
-	private readonly insertButtonText = localize('callout.insertButton', "Insert");
-	private readonly cancelButtonText = localize('callout.cancelButton', "Cancel");
+
+
 	private readonly linkTextLabel = localize('callout.linkTextLabel', "Text to display");
 	private readonly linkTextPlaceholder = localize('callout.linkTextPlaceholder', "Text to display");
 	private readonly linkAddressLabel = localize('callout.linkAddressLabel', "Address");
@@ -41,7 +47,7 @@ export class LinkCalloutDialog extends CalloutDialog {
 		title: string,
 		width: DialogWidth,
 		dialogProperties: IDialogProperties,
-		@IContextViewService private _contextViewService: IContextViewService,
+		@IContextViewService private readonly _contextViewService: IContextViewService,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
@@ -62,8 +68,6 @@ export class LinkCalloutDialog extends CalloutDialog {
 			logService,
 			textResourcePropertiesService
 		);
-
-		this._selectionComplete = new Deferred<ICalloutDialogOptions>();
 	}
 
 	/**
@@ -74,19 +78,15 @@ export class LinkCalloutDialog extends CalloutDialog {
 		return this._selectionComplete.promise;
 	}
 
-	public render() {
+	public render(): void {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-		this.addFooterButton(this.insertButtonText, () => this.insert());
-		this.addFooterButton(this.cancelButtonText, () => this.cancel(), undefined, true);
+		this.addFooterButton(constants.insertButtonText, () => this.insert());
+		this.addFooterButton(constants.cancelButtonText, () => this.cancel(), undefined, true);
 		this.registerListeners();
 	}
 
 	protected renderBody(container: HTMLElement) {
-		this.buildInsertLinkCallout(container);
-	}
-
-	private buildInsertLinkCallout(container: HTMLElement): void {
 		let linkContentColumn = DOM.$('.column.insert-link');
 		DOM.append(container, linkContentColumn);
 
@@ -129,7 +129,7 @@ export class LinkCalloutDialog extends CalloutDialog {
 		this._register(styler.attachInputBoxStyler(this._linkUrlInputBox, this._themeService));
 	}
 
-	public insert() {
+	public insert(): void {
 		this.hide();
 		this._selectionComplete.resolve({
 			insertMarkup: `<a href="${strings.escape(this._linkUrlInputBox.value)}">${strings.escape(this._linkTextInputBox.value)}</a>`,
@@ -137,12 +137,10 @@ export class LinkCalloutDialog extends CalloutDialog {
 		this.dispose();
 	}
 
-	public cancel() {
+	public cancel(): void {
 		this.hide();
 		this._selectionComplete.resolve({
-			insertMarkup: '',
-			imagePath: undefined,
-			embedImage: undefined
+			insertMarkup: ''
 		});
 		this.dispose();
 	}

@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/calloutDialog';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IDialogProperties, Modal, DialogWidth } from 'sql/workbench/browser/modal/modal';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -11,18 +12,9 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
-export interface ICalloutDialogOptions {
-	insertTitle?: string,
-	insertMarkup?: string,
-	imagePath?: string,
-	embedImage?: boolean
-}
-export class CalloutDialog extends Modal {
-
-
+export abstract class CalloutDialog extends Modal {
 
 	constructor(
 		title: string,
@@ -54,30 +46,8 @@ export class CalloutDialog extends Modal {
 			});
 	}
 
-	/**
-	 * Opens the dialog and returns a promise for what options the user chooses.
-	 */
-	public open(): void {
-		this.show();
-	}
-
-	public render() {
-		super.render();
-	}
-
-	protected renderBody(container: HTMLElement) {
-	}
+	protected abstract renderBody(container: HTMLElement): void;
 
 	protected layout(height?: number): void {
-	}
-
-	public insert(): void {
-		this.hide();
-		this.dispose();
-	}
-
-	public cancel(): void {
-		this.hide();
-		this.dispose();
 	}
 }

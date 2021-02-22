@@ -13,12 +13,6 @@
 	position: absolute;
 }
 
-.modal.callout-dialog .modal-content .insert-image .flex-container {
-	display: flex;
-}
-.modal.callout-dialog .modal-content .insert-image .flex-container > div {
-	flex: 1;
-}
 .modal.callout-dialog .modal-content p {
 	margin: 0;
 }
@@ -26,19 +20,9 @@
 	cursor: pointer;
 	margin-left: 10px;
 }
-.modal.callout-dialog .modal-content .insert-image .monaco-inputbox {
-	min-width: 380px;
-}
 .modal.callout-dialog .modal-content .row  {
 	margin-bottom: 16px;
 }
-.modal.callout-dialog .modal-content .radio-group input {
-	margin-right: 8px;
-}
-.modal.callout-dialog .modal-content .radio-group span {
-	margin-right: 15px;
-}
-
 .hc-black .modal.callout-dialog .modal-dialog {
 	box-shadow: none;
 }
@@ -94,7 +78,6 @@
 	right: -1.2em;
 	width: 2em;
 }
-
 
 .modal.callout-dialog .modal-header {
 	padding: 18px 24px 8px 24px;
