@@ -13,7 +13,7 @@ import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, JupyterBookSection } from '../contracts/content';
 import { convertFrom, getContentPath, BookVersion } from './bookVersionHandler';
-
+import { debounce } from '../common/utils';
 const fsPromises = fileServices.promises;
 const content = 'content';
 
@@ -32,6 +32,7 @@ export class BookModel {
 		public readonly openAsUntitled: boolean,
 		public readonly isNotebook: boolean,
 		private _extensionContext: vscode.ExtensionContext,
+		private _bookTreeViewEvent: vscode.EventEmitter<BookTreeItem | undefined>,
 		public readonly notebookRootPath?: string) {
 		this._bookItems = [];
 	}
@@ -43,9 +44,15 @@ export class BookModel {
 	public watchTOC(): void {
 		fs.watchFile(this.tableOfContentsPath, async (curr, prev) => {
 			if (curr.mtime > prev.mtime) {
-				await this.initializeContents();
+				await this.reInitializeContents();
 			}
 		});
+	}
+
+	@debounce(1500)
+	public async reInitializeContents(): Promise<void> {
+		await this.initializeContents();
+		this._bookTreeViewEvent.fire(undefined);
 	}
 
 	public async initializeContents(): Promise<void> {
