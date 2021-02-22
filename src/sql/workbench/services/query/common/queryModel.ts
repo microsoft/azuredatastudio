@@ -48,6 +48,9 @@ export interface IQueryEvent {
 export interface IQueryModelService {
 	_serviceBrand: undefined;
 
+	onCellSelectionChanged: Event<string[]>;
+	notifyCellSelectionChanged(selectedValues: string[]): void;
+
 	getQueryRunner(uri: string): QueryRunner | undefined;
 
 	getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Promise<ResultSetSubset | undefined>;

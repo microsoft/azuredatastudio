@@ -36,6 +36,7 @@ import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { values } from 'vs/base/common/collections';
 import { URI } from 'vs/base/common/uri';
@@ -198,9 +199,10 @@ class DataResourceTable extends GridTableBase<any> {
 		@IInstantiationService protected instantiationService: IInstantiationService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IQueryModelService queryModelService: IQueryModelService
 	) {
-		super(state, createResultSet(source), { actionOrientation: ActionsOrientation.HORIZONTAL }, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
+		super(state, createResultSet(source), { actionOrientation: ActionsOrientation.HORIZONTAL }, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel);
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 
