@@ -6,10 +6,16 @@
 import * as azdata from 'azdata';
 import { MigrationStateModel } from '../../models/stateMachine';
 import { SqlDatabaseTree } from './sqlDatabasesTree';
-import { SqlAssessmentResultList } from './sqlAssessmentResultsList';
-import { SqlAssessmentResult } from './sqlAssessmentResult';
+// import { SqlAssessmentResultList } from './sqlAssessmentResultsList';
+import { SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
 
-
+export type Issues = {
+	description: string,
+	recommendation: string,
+	moreInfo: string,
+	impactedObjects: SqlMigrationImpactedObjectInfo[],
+	rowNumber: number
+};
 export class AssessmentResultsDialog {
 
 	private static readonly OkButtonText: string = 'OK';
@@ -17,33 +23,45 @@ export class AssessmentResultsDialog {
 
 	private _isOpen: boolean = false;
 	private dialog: azdata.window.Dialog | undefined;
+	private _model: MigrationStateModel;
 
 	// Dialog Name for Telemetry
 	public dialogName: string | undefined;
 
 	private _tree: SqlDatabaseTree;
-	private _list: SqlAssessmentResultList;
-	private _result: SqlAssessmentResult;
+	// private _list: SqlAssessmentResultList;
+
 
 	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string) {
-		this._tree = new SqlDatabaseTree();
-		this._list = new SqlAssessmentResultList();
-		this._result = new SqlAssessmentResult();
+		this._model = model;
+		let assessmentData = this.parseData(this._model);
+		this._tree = new SqlDatabaseTree(assessmentData);
+		// this._list = new SqlAssessmentResultList();
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			dialog.registerContent(async (view) => {
 				try {
+					const resultComponent = await this._tree.createComponentResult(view);
 					const treeComponent = await this._tree.createComponent(view);
-					const separator1 = view.modelBuilder.separator().component();
-					const listComponent = await this._list.createComponent(view);
-					const separator2 = view.modelBuilder.separator().component();
-					const resultComponent = await this._result.createComponent(view);
+					// const separator1 = this.buildSeparator(view);
+					// const listComponent = await this._list.createComponent(view);
+					// const separator2 = view.modelBuilder.separator().component();
 
-					const flex = view.modelBuilder.flexContainer().withItems([treeComponent, separator1, listComponent, separator2, resultComponent]);
+					const flex = view.modelBuilder.flexContainer().withLayout({
+						flexFlow: 'row',
+						height: '100%',
+						width: '100%'
+					}).withProps({
+						CSSStyles: {
+							'margin-top': '10px'
+						}
+					}).component();
+					flex.addItem(treeComponent, { flex: '0 0 auto' });
+					flex.addItem(resultComponent, { flex: '1 1 auto' });
 
-					view.initializeModel(flex.component());
+					view.initializeModel(flex);
 					resolve();
 				} catch (ex) {
 					reject(ex);
@@ -70,6 +88,34 @@ export class AssessmentResultsDialog {
 
 			await Promise.all(dialogSetupPromises);
 		}
+	}
+
+
+	private parseData(model: MigrationStateModel): Map<string, Issues[]> {
+		// if there are multiple issues for the same DB, need to consolidate
+		// map DB name -> Assessment result items (issues)
+		// map assessment result items to description, recommendation, more info & impacted objects
+
+		let dbMap = new Map<string, Issues[]>();
+
+		model.assessmentResults?.forEach((element) => {
+			let issues: Issues;
+			issues = {
+				description: element.description,
+				recommendation: element.message,
+				moreInfo: element.helpLink,
+				impactedObjects: element.impactedObjects,
+				rowNumber: 0
+			};
+			let dbIssues = dbMap.get(element.targetName);
+			if (dbIssues) {
+				dbMap.set(element.targetName, dbIssues.concat([issues]));
+			} else {
+				dbMap.set(element.targetName, [issues]);
+			}
+		});
+
+		return dbMap;
 	}
 
 	protected async execute() {

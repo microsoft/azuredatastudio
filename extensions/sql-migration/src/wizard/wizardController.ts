@@ -40,7 +40,6 @@ export class WizardController {
 		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
 		// const subscriptionSelectionPage = new SubscriptionSelectionPage(wizard, stateModel);
 		const azureAccountsPage = new AccountsSelectionPage(wizard, stateModel);
-		const tempTargetSelectionPage = new TempTargetSelectionPage(wizard, stateModel);
 		const databaseBackupPage = new DatabaseBackupPage(wizard, stateModel);
 		const integrationRuntimePage = new IntergrationRuntimePage(wizard, stateModel);
 		const summaryPage = new SummaryPage(wizard, stateModel);
@@ -48,7 +47,6 @@ export class WizardController {
 		const pages: MigrationWizardPage[] = [
 			// subscriptionSelectionPage,
 			azureAccountsPage,
-			tempTargetSelectionPage,
 			sourceConfigurationPage,
 			skuRecommendationPage,
 			databaseBackupPage,
