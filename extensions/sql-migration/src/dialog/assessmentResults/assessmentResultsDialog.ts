@@ -43,7 +43,7 @@ export class AssessmentResultsDialog {
 		return new Promise<void>((resolve, reject) => {
 			dialog.registerContent(async (view) => {
 				try {
-					const resultComponent = await this._tree.createComponentResult(view);
+					// const resultComponent = await this._tree.createComponentResult(view);
 					const treeComponent = await this._tree.createComponent(view);
 
 					const flex = view.modelBuilder.flexContainer().withLayout({
@@ -56,7 +56,7 @@ export class AssessmentResultsDialog {
 						}
 					}).component();
 					flex.addItem(treeComponent, { flex: '0 0 auto' });
-					flex.addItem(resultComponent, { flex: '1 1 auto' });
+					// flex.addItem(resultComponent, { flex: '1 1 auto' });
 
 					view.initializeModel(flex);
 					resolve();
