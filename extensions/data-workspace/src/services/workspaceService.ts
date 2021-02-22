@@ -160,7 +160,7 @@ export class WorkspaceService implements IWorkspaceService {
 
 		// filter by specified extension
 		if (ext) {
-			projects = projects.filter(p => p.fsPath.endsWith(ext));
+			projects = projects.filter(p => p.fsPath.toLowerCase().endsWith(ext.toLowerCase()));
 		}
 
 		return projects;
