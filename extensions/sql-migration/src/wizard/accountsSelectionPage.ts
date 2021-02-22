@@ -50,6 +50,8 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			if (value.selected) {
 				this.migrationStateModel.azureAccount = this.migrationStateModel.getAccount(value.index);
 				this.migrationStateModel.subscriptions = undefined!;
+				this.migrationStateModel._targetSubscription = undefined!;
+				this.migrationStateModel.databaseBackup.subscription = undefined!;
 			}
 		});
 

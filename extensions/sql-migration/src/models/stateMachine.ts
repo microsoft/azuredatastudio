@@ -233,9 +233,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async getManagedInstanceValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
 		let managedInstanceValues: azdata.CategoryValue[] = [];
 		try {
-			if (!this._targetManagedInstances) {
-				this._targetManagedInstances = await getAvailableManagedInstanceProducts(this.azureAccount, subscription);
-			}
+			this._targetManagedInstances = await getAvailableManagedInstanceProducts(this.azureAccount, subscription);
 			this._targetManagedInstances.forEach((managedInstance) => {
 				managedInstanceValues.push({
 					name: managedInstance.id,
@@ -270,9 +268,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async getStorageAccountValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
 		let storageAccountValues: azdata.CategoryValue[] = [];
 		try {
-			if (!this._storageAccounts) {
-				this._storageAccounts = await getAvailableStorageAccounts(this.azureAccount, subscription);
-			}
+			this._storageAccounts = await getAvailableStorageAccounts(this.azureAccount, subscription);
 			this._storageAccounts.forEach((storageAccount) => {
 				storageAccountValues.push({
 					name: storageAccount.id,
@@ -307,9 +303,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async getFileShareValues(subscription: azureResource.AzureResourceSubscription, storageAccount: StorageAccount): Promise<azdata.CategoryValue[]> {
 		let fileShareValues: azdata.CategoryValue[] = [];
 		try {
-			if (!this._fileShares) {
-				this._fileShares = await getFileShares(this.azureAccount, subscription, storageAccount);
-			}
+			this._fileShares = await getFileShares(this.azureAccount, subscription, storageAccount);
 			this._fileShares.forEach((fileShare) => {
 				fileShareValues.push({
 					name: fileShare.id,
@@ -344,9 +338,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async getBlobContainerValues(subscription: azureResource.AzureResourceSubscription, storageAccount: StorageAccount): Promise<azdata.CategoryValue[]> {
 		let blobContainerValues: azdata.CategoryValue[] = [];
 		try {
-			if (!this._blobContainers) {
-				this._blobContainers = await getBlobContainers(this.azureAccount, subscription, storageAccount);
-			}
+			this._blobContainers = await getBlobContainers(this.azureAccount, subscription, storageAccount);
 			this._blobContainers.forEach((blobContainer) => {
 				blobContainerValues.push({
 					name: blobContainer.id,
@@ -382,9 +374,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async getMigrationControllerValues(subscription: azureResource.AzureResourceSubscription, managedInstance: SqlManagedInstance): Promise<azdata.CategoryValue[]> {
 		let migrationControllerValues: azdata.CategoryValue[] = [];
 		try {
-			if (!this.migrationControllers) {
-				this.migrationControllers = await getMigrationControllers(this.azureAccount, subscription, managedInstance.resourceGroup!, managedInstance.location);
-			}
+			this.migrationControllers = await getMigrationControllers(this.azureAccount, subscription, managedInstance.resourceGroup!, managedInstance.location);
 			this.migrationControllers.forEach((migrationController) => {
 				migrationControllerValues.push({
 					name: migrationController.id,
