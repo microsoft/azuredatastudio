@@ -45,9 +45,6 @@ export class AssessmentResultsDialog {
 				try {
 					const resultComponent = await this._tree.createComponentResult(view);
 					const treeComponent = await this._tree.createComponent(view);
-					// const separator1 = this.buildSeparator(view);
-					// const listComponent = await this._list.createComponent(view);
-					// const separator2 = view.modelBuilder.separator().component();
 
 					const flex = view.modelBuilder.flexContainer().withLayout({
 						flexFlow: 'row',
