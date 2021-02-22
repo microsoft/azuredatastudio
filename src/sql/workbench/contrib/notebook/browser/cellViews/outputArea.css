@@ -9,7 +9,7 @@ output-area-component {
 output-area-component .notebook-output {
 	border-top-width: 0px;
 	user-select: text;
-	padding: 0px 0px 0px;
+	padding: 5px 20px 0px;
 }
 
 .output-userselect.actionselect {

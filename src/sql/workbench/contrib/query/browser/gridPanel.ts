@@ -321,6 +321,7 @@ export interface IDataSet {
 
 export interface IGridTableOptions {
 	actionOrientation: ActionsOrientation;
+	displayActions?: boolean;
 }
 
 export abstract class GridTableBase<T> extends Disposable implements IView {
@@ -368,7 +369,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	constructor(
 		state: GridTableState,
 		protected _resultSet: ResultSetSummary,
-		private readonly options: IGridTableOptions = { actionOrientation: ActionsOrientation.VERTICAL },
+		private readonly options: IGridTableOptions = { actionOrientation: ActionsOrientation.VERTICAL, displayActions: true },
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IInstantiationService protected readonly instantiationService: IInstantiationService,
 		@IEditorService private readonly editorService: IEditorService,
@@ -512,8 +513,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.actionBar.context = this.generateContext();
 		});
 
-		this.clearActionBar();
-
 		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
 			if (this.state) {
 				this.state.selection = this.selectionModel.getSelectedRanges();
@@ -564,7 +563,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 		this.restoreScrollState();
 
-		this.clearActionBar();
+		this.rebuildActionBar();
 
 		// Setting the active cell resets the selection so save it here
 		let savedSelection = this.state.selection;
@@ -632,11 +631,19 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	public rebuildActionBar() {
 		let actions = this.getCurrentActions();
 		this.actionBar.clear();
-		this.actionBar.push(actions, { icon: true, label: false });
+		if (this.options.displayActions ?? true) {
+			this.actionBar.push(actions, { icon: true, label: false });
+		}
 	}
 
-	public clearActionBar() {
-		this.actionBar.clear();
+	public displayActionBar() {
+		this.options.displayActions = true;
+		this.rebuildActionBar();
+	}
+
+	public hideActionBar() {
+		this.options.displayActions = false;
+		this.rebuildActionBar();
 	}
 
 	protected abstract getCurrentActions(): IAction[];

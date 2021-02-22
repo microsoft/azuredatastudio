@@ -126,9 +126,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			this._table.onDidInsert();
 			this.layout();
 			this._initialized = true;
-			if (this.cellModel.isInView !== true) {
-				this._table.rebuildActionBar();
-			}
+			this._table.rebuildActionBar();
 		}
 	}
 
@@ -203,7 +201,7 @@ class DataResourceTable extends GridTableBase<any> {
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService
 	) {
-		super(state, createResultSet(source), { actionOrientation: ActionsOrientation.HORIZONTAL }, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
+		super(state, createResultSet(source), { actionOrientation: ActionsOrientation.HORIZONTAL, displayActions: cellOutput?.metadata?.displayActionBar }, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel);
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 
@@ -262,9 +260,6 @@ class DataResourceTable extends GridTableBase<any> {
 
 			this.element.appendChild(this._chartContainer);
 			this._chart.render(this._chartContainer);
-			if (this.cellModel.isInView !== true) {
-				this._chart.showActionBar();
-			}
 		}
 	}
 

@@ -524,7 +524,6 @@ export interface ICellModel {
 	sendChangeToNotebook(change: NotebookChangeType): void;
 	cellSourceChanged: boolean;
 	readonly savedConnectionName: string | undefined;
-	isInView: boolean;
 }
 
 export interface IModelFactory {

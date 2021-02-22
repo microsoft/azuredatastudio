@@ -415,3 +415,7 @@
 	top:15px;
 	bottom:15px
 }
+
+.nb-grid-stack.grid-stack output-area-component .notebook-output {
+	padding: 0px 0px 0px;
+}
