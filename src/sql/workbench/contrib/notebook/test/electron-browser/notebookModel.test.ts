@@ -132,7 +132,7 @@ suite('notebook model', function (): void {
 		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = new TestCapabilitiesService();
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
-		memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
+		memento.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
 		queryConnectionService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
 		queryConnectionService.callBase = true;
 		let serviceCollection = new ServiceCollection();
@@ -827,6 +827,42 @@ suite('notebook model', function (): void {
 
 		// I expect the connection profile matching the saved connection name to be used
 		assert.ok(spy.calledWith(connectionName, expectedConnectionProfile));
+	});
+
+	test('should read and write multi_connection_mode to notebook metadata correctly', async function () {
+		// Given a notebook with multi_connection_mode: true in metadata
+		let notebook: nb.INotebookContents = {
+			cells: [],
+			metadata: {
+				multi_connection_mode: true
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(notebook));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		// I expect multiConnectionMode to be set to true
+		assert.equal(model.multiConnectionMode, true, 'multi_connection_mode not read correctly from notebook metadata');
+
+		// When I change multiConnectionMode to false
+		model.multiConnectionMode = false;
+
+		// I expect multi_connection_mode to not be in the notebook metadata
+		let output: nb.INotebookContents = model.toJSON();
+		assert.equal(output.metadata['multi_connection_mode'], undefined, 'multi_connection_mode saved in notebook metadata when it should not be');
+
+		// When I change multiConnectionMode to true
+		model.multiConnectionMode = true;
+
+		// I expect multi_connection_mode to be in the notebook metadata
+		output = model.toJSON();
+		assert.equal(output.metadata['multi_connection_mode'], true, 'multi_connection_mode not saved correctly to notebook metadata');
 	});
 
 	async function loadModelAndStartClientSession(): Promise<NotebookModel> {

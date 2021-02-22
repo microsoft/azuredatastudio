@@ -2587,7 +2587,6 @@ declare module 'azdata' {
 		divContainer(): DivBuilder;
 		flexContainer(): FlexBuilder;
 		splitViewContainer(): SplitViewBuilder;
-		dom(): ComponentBuilder<DomComponent, DomProperties>;
 		/**
 		 * @deprecated please use radioCardGroup component.
 		 */
@@ -3370,13 +3369,6 @@ declare module 'azdata' {
 		options?: vscode.WebviewOptions;
 	}
 
-	export interface DomProperties extends ComponentProperties {
-		/**
-		 * Contents of the DOM component.
-		 */
-		html?: string;
-	}
-
 	/**
 	 * Editor properties for the editor component
 	 */
@@ -3476,9 +3468,6 @@ declare module 'azdata' {
 	export interface CardComponent extends Component, CardProperties {
 		onDidActionClick: vscode.Event<ActionDescriptor>;
 		onCardSelectedChanged: vscode.Event<any>;
-	}
-
-	export interface DomComponent extends Component, DomProperties {
 	}
 
 	export interface TextComponent extends Component, TextComponentProperties {

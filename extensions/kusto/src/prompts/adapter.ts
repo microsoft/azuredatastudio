@@ -66,7 +66,7 @@ export default class CodeAdapter implements IPrompter {
 	}
 
 	// Helper to make it possible to prompt using callback pattern. Generally Promise is a preferred flow
-	public promptCallback(questions: IQuestion[], callback: IPromptCallback): void {
+	public promptCallback(questions: IQuestion[], callback: IPromptCallback | undefined): void {
 		// Collapse multiple questions into a set of prompt steps
 		this.prompt(questions).then(answers => {
 			if (callback && answers) {

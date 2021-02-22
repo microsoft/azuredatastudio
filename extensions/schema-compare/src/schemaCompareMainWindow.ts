@@ -888,7 +888,8 @@ export class SchemaCompareMainWindow {
 		this.selectSourceButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
 			title: loc.selectSource,
-			ariaLabel: loc.selectSource
+			ariaLabel: loc.selectSource,
+			secondary: true
 		}).component();
 
 		this.selectSourceButton.onDidClick(async () => {
@@ -901,7 +902,8 @@ export class SchemaCompareMainWindow {
 		this.selectTargetButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
 			title: loc.selectTarget,
-			ariaLabel: loc.selectTarget
+			ariaLabel: loc.selectTarget,
+			secondary: true
 		}).component();
 
 		this.selectTargetButton.onDidClick(async () => {

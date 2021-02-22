@@ -18,7 +18,7 @@ import { IEditorRegistry, Extensions as EditorExtensions, EditorDescriptor } fro
 import { LogViewer, LogViewerInput } from 'vs/workbench/contrib/output/browser/logViewer';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { ViewContainer, IViewContainersRegistry, ViewContainerLocation, Extensions as ViewContainerExtensions, IViewsRegistry, IViewsService, IViewDescriptorService } from 'vs/workbench/common/views';
@@ -33,6 +33,8 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { ContextKeyEqualsExpr, ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ToggleViewAction } from 'vs/workbench/browser/actions/layoutActions';
 import { Codicon } from 'vs/base/common/codicons';
+import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
+import { CATEGORIES } from 'vs/workbench/common/actions';
 
 // Register Service
 registerSingleton(IOutputService, OutputService);
@@ -59,10 +61,13 @@ const toggleOutputActionKeybindings = {
 		primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_H)  // On Ubuntu Ctrl+Shift+U is taken by some global OS command
 	}
 };
+
+const outputViewIcon = registerIcon('output-view-icon', Codicon.output, nls.localize('outputViewIcon', 'View icon of the output view.'));
+
 const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: OUTPUT_VIEW_ID,
 	name: nls.localize('output', "Output"),
-	icon: Codicon.output.classNames,
+	icon: outputViewIcon,
 	order: 1,
 	ctorDescriptor: new SyncDescriptor(ViewPaneContainer, [OUTPUT_VIEW_ID, { mergeViewWithContainerWhenSingleView: true, donotShowContainerTitleWhenMergedWithContainer: true }]),
 	storageId: OUTPUT_VIEW_ID,
@@ -73,7 +78,7 @@ const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewC
 Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
 	id: OUTPUT_VIEW_ID,
 	name: nls.localize('output', "Output"),
-	containerIcon: Codicon.output.classNames,
+	containerIcon: outputViewIcon,
 	canMoveView: true,
 	canToggleVisibility: false,
 	ctorDescriptor: new SyncDescriptor(OutputViewPane),
@@ -126,7 +131,7 @@ registerAction2(class extends Action2 {
 		super({
 			id: `workbench.output.action.clearOutput`,
 			title: { value: nls.localize('clearOutput.label', "Clear Output"), original: 'Clear Output' },
-			category: nls.localize('viewCategory', "View"),
+			category: CATEGORIES.View,
 			menu: [{
 				id: MenuId.ViewTitle,
 				when: ContextKeyEqualsExpr.create('view', OUTPUT_VIEW_ID),
@@ -138,7 +143,7 @@ registerAction2(class extends Action2 {
 				id: MenuId.EditorContext,
 				when: CONTEXT_IN_OUTPUT
 			}],
-			icon: { id: 'codicon/clear-all' }
+			icon: Codicon.clearAll
 		});
 	}
 	async run(accessor: ServicesAccessor): Promise<void> {
@@ -162,10 +167,10 @@ registerAction2(class extends Action2 {
 				group: 'navigation',
 				order: 3,
 			},
-			icon: { id: 'codicon/unlock' },
+			icon: Codicon.unlock,
 			toggled: {
 				condition: CONTEXT_OUTPUT_SCROLL_LOCK,
-				icon: { id: 'codicon/lock' },
+				icon: Codicon.lock,
 				tooltip: { value: nls.localize('outputScrollOn', "Turn Auto Scrolling On"), original: 'Turn Auto Scrolling On' }
 			}
 		});
@@ -189,7 +194,7 @@ registerAction2(class extends Action2 {
 				id: MenuId.CommandPalette,
 				when: CONTEXT_ACTIVE_LOG_OUTPUT,
 			}],
-			icon: { id: 'codicon/go-to-file' },
+			icon: Codicon.goToFile,
 			precondition: CONTEXT_ACTIVE_LOG_OUTPUT
 		});
 	}
@@ -199,7 +204,7 @@ registerAction2(class extends Action2 {
 		const instantiationService = accessor.get(IInstantiationService);
 		const logFileOutputChannelDescriptor = this.getLogFileOutputChannelDescriptor(outputService);
 		if (logFileOutputChannelDescriptor) {
-			await editorService.openEditor(instantiationService.createInstance(LogViewerInput, logFileOutputChannelDescriptor));
+			await editorService.openEditor(instantiationService.createInstance(LogViewerInput, logFileOutputChannelDescriptor), { pinned: true });
 		}
 	}
 	private getLogFileOutputChannelDescriptor(outputService: IOutputService): IFileOutputChannelDescriptor | null {
@@ -220,7 +225,7 @@ registerAction2(class extends Action2 {
 		super({
 			id: toggleOutputAcitonId,
 			title: { value: nls.localize('toggleOutput', "Toggle Output"), original: 'Toggle Output' },
-			category: { value: nls.localize('viewCategory', "View"), original: 'View' },
+			category: CATEGORIES.View,
 			menu: {
 				id: MenuId.CommandPalette,
 			},
@@ -246,13 +251,12 @@ registerAction2(class extends Action2 {
 	}
 });
 
-const devCategory = { value: nls.localize({ key: 'developer', comment: ['A developer on Code itself or someone diagnosing issues in Code'] }, "Developer"), original: 'Developer' };
 registerAction2(class extends Action2 {
 	constructor() {
 		super({
 			id: 'workbench.action.showLogs',
 			title: { value: nls.localize('showLogs', "Show Logs..."), original: 'Show Logs...' },
-			category: devCategory,
+			category: CATEGORIES.Developer,
 			menu: {
 				id: MenuId.CommandPalette,
 			},
@@ -280,7 +284,7 @@ registerAction2(class extends Action2 {
 		super({
 			id: 'workbench.action.openLogFile',
 			title: { value: nls.localize('openLogFile', "Open Log File..."), original: 'Open Log File...' },
-			category: devCategory,
+			category: CATEGORIES.Developer,
 			menu: {
 				id: MenuId.CommandPalette,
 			},
@@ -298,7 +302,7 @@ registerAction2(class extends Action2 {
 		const entry = await quickInputService.pick(entries, { placeHolder: nls.localize('selectlogFile', "Select Log file") });
 		if (entry) {
 			assertIsDefined(entry.channel.file);
-			await editorService.openEditor(instantiationService.createInstance(LogViewerInput, (entry.channel as IFileOutputChannelDescriptor)));
+			await editorService.openEditor(instantiationService.createInstance(LogViewerInput, (entry.channel as IFileOutputChannelDescriptor)), { pinned: true });
 		}
 	}
 });

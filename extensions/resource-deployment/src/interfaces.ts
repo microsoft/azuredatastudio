@@ -498,3 +498,8 @@ export interface Command {
 	additionalEnvironmentVariables?: NodeJS.ProcessEnv;
 	ignoreError?: boolean;
 }
+
+/**
+ * Map of the set of variables and the values to assign to them upon initialization - overriding the base default.
+ */
+export type InitialVariableValues = { [key: string]: string | boolean };

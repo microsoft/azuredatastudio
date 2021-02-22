@@ -93,7 +93,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	setFileWatcher(book: BookModel): void {
 		fs.watchFile(book.tableOfContentsPath, async (curr, prev) => {
 			if (curr.mtime > prev.mtime) {
-				this.fireBookRefresh(book);
+				await this.initializeBookContents(book);
 			}
 		});
 	}
@@ -213,9 +213,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			const sourceBook = this.books.find(book => book.bookPath === movingElement.book.root);
 			const targetBook = this.books.find(book => book.bookPath === updateBook.book.root);
 			this.bookTocManager = new BookTocManager(targetBook, sourceBook);
-			// remove watch on toc file from both books.
+			// remove watch on toc file from source book.
 			if (sourceBook) {
-				fs.unwatchFile(movingElement.tableOfContentsPath);
+				fs.unwatchFile(sourceBook.tableOfContentsPath);
 			}
 			try {
 				await this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
@@ -223,16 +223,19 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				await this.bookTocManager.recovery();
 				vscode.window.showErrorMessage(loc.editBookError(updateBook.book.contentPath, e instanceof Error ? e.message : e));
 			} finally {
-				this.fireBookRefresh(targetBook);
-				if (sourceBook) {
-					// refresh source book model to pick up latest changes
-					this.fireBookRefresh(sourceBook);
+				try {
+					await targetBook.initializeContents();
+				} finally {
+					if (sourceBook && sourceBook.bookPath !== targetBook.bookPath) {
+						// refresh source book model to pick up latest changes
+						await sourceBook.initializeContents();
+					}
+					this._onDidChangeTreeData.fire(undefined);
+					// even if it fails, we still need to watch the toc file again.
+					if (sourceBook) {
+						this.setFileWatcher(sourceBook);
+					}
 				}
-				// even if it fails, we still need to watch the toc file again.
-				if (sourceBook) {
-					this.setFileWatcher(sourceBook);
-				}
-				this.setFileWatcher(targetBook);
 			}
 		}
 	}
@@ -263,7 +266,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					if (curr.mtime > prev.mtime) {
 						let book = this.books.find(book => book.bookPath === bookPath);
 						if (book) {
-							this.fireBookRefresh(book);
+							await this.initializeBookContents(book);
 						}
 					}
 				});
@@ -294,7 +297,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	@debounce(1500)
-	async fireBookRefresh(book: BookModel): Promise<void> {
+	async initializeBookContents(book: BookModel): Promise<void> {
 		await book.initializeContents().then(() => {
 			this._onDidChangeTreeData.fire(undefined);
 		});

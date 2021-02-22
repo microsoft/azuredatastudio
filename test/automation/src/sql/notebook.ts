@@ -61,7 +61,7 @@ export class Notebook {
 
 	async clearResults(): Promise<void> {
 		await this.code.waitAndClick('.notebookEditor');
-		const clearResultsButton = '.editor-toolbar a[class="action-label codicon notebook-button icon-clear-results masked-icon"]';
+		const clearResultsButton = '.editor-toolbar a[class="action-label codicon icon-clear-results masked-icon"]';
 		await this.code.waitAndClick(clearResultsButton);
 	}
 
@@ -153,10 +153,10 @@ export class Notebook {
 export class NotebookToolbar {
 
 	private static readonly toolbarSelector = '.notebookEditor .editor-toolbar .actions-container';
-	private static readonly toolbarButtonSelector = `${NotebookToolbar.toolbarSelector} a.action-label.codicon.notebook-button.masked-icon`;
-	private static readonly trustedButtonClass = 'action-label codicon notebook-button masked-icon icon-shield';
+	private static readonly toolbarButtonSelector = `${NotebookToolbar.toolbarSelector} a.action-label.codicon.masked-icon`;
+	private static readonly trustedButtonClass = 'action-label codicon masked-icon icon-shield';
 	private static readonly trustedButtonSelector = `${NotebookToolbar.toolbarSelector} a[class="${NotebookToolbar.trustedButtonClass}"]`;
-	private static readonly notTrustedButtonClass = 'action-label codicon notebook-button masked-icon icon-shield-x';
+	private static readonly notTrustedButtonClass = 'action-label codicon masked-icon icon-shield-x';
 	private static readonly notTrustedButtonSelector = `${NotebookToolbar.toolbarSelector} a[class="${NotebookToolbar.notTrustedButtonClass}"]`;
 
 	constructor(private code: Code) { }

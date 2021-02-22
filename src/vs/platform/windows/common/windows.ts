@@ -4,14 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { isMacintosh, isLinux, isWeb, IProcessEnvironment } from 'vs/base/common/platform';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkspaceIdentifier, ISingleFolderWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 import { LogLevel } from 'vs/platform/log/common/log';
 import { ExportData } from 'vs/base/common/performance';
-import { ColorScheme } from 'vs/platform/theme/common/theme';
+
+export const WindowMinimumSize = {
+	WIDTH: 400,
+	WIDTH_WITH_VERTICAL_PANEL: 600,
+	HEIGHT: 270
+};
 
 export interface IBaseOpenWindowsOptions {
 	forceReuseWindow?: boolean;
@@ -80,8 +84,8 @@ export function isFileToOpen(uriToOpen: IWindowOpenable): uriToOpen is IFileToOp
 
 export type MenuBarVisibility = 'default' | 'visible' | 'toggle' | 'hidden' | 'compact';
 
-export function getMenuBarVisibility(configurationService: IConfigurationService, environment: IEnvironmentService, isExtensionDevelopment = environment.isExtensionDevelopment): MenuBarVisibility {
-	const titleBarStyle = getTitleBarStyle(configurationService, environment, isExtensionDevelopment);
+export function getMenuBarVisibility(configurationService: IConfigurationService): MenuBarVisibility {
+	const titleBarStyle = getTitleBarStyle(configurationService);
 	const menuBarVisibility = configurationService.getValue<MenuBarVisibility>('window.menuBarVisibility');
 
 	if (titleBarStyle === 'native' && menuBarVisibility === 'compact') {
@@ -99,7 +103,7 @@ export interface IWindowSettings {
 	openFilesInNewWindow: 'on' | 'off' | 'default';
 	openFoldersInNewWindow: 'on' | 'off' | 'default';
 	openWithoutArgumentsInNewWindow: 'on' | 'off';
-	restoreWindows: 'all' | 'folders' | 'one' | 'none';
+	restoreWindows: 'preserve' | 'all' | 'folders' | 'one' | 'none';
 	restoreFullscreen: boolean;
 	zoomLevel: number;
 	titleBarStyle: 'native' | 'custom';
@@ -111,19 +115,15 @@ export interface IWindowSettings {
 	enableMenuBarMnemonics: boolean;
 	closeWhenEmpty: boolean;
 	clickThroughInactive: boolean;
+	enableExperimentalProxyLoginDialog: boolean;
 }
 
-export function getTitleBarStyle(configurationService: IConfigurationService, environment: IEnvironmentService, isExtensionDevelopment = environment.isExtensionDevelopment): 'native' | 'custom' {
+export function getTitleBarStyle(configurationService: IConfigurationService): 'native' | 'custom' {
 	if (isWeb) {
 		return 'custom';
 	}
 
-	const configuration = configurationService.getValue<IWindowSettings>('window');
-
-	const isDev = !environment.isBuilt || isExtensionDevelopment;
-	if (isMacintosh && isDev) {
-		return 'native'; // not enabled when developing due to https://github.com/electron/electron/issues/3647
-	}
+	const configuration = configurationService.getValue<IWindowSettings | undefined>('window');
 
 	if (configuration) {
 		const useNativeTabs = isMacintosh && configuration.nativeTabs === true;
@@ -133,7 +133,7 @@ export function getTitleBarStyle(configurationService: IConfigurationService, en
 
 		const useSimpleFullScreen = isMacintosh && configuration.nativeFullScreen === false;
 		if (useSimpleFullScreen) {
-			return 'native'; // simple fullscreen does not work well with custom title style (https://github.com/Microsoft/vscode/issues/63291)
+			return 'native'; // simple fullscreen does not work well with custom title style (https://github.com/microsoft/vscode/issues/63291)
 		}
 
 		const style = configuration.titleBarStyle;
@@ -207,16 +207,25 @@ export interface INativeRunKeybindingInWindowRequest {
 	userSettingsLabel: string;
 }
 
+export interface IColorScheme {
+	dark: boolean;
+	highContrast: boolean;
+}
+
 export interface IWindowConfiguration {
 	sessionId: string;
 
 	remoteAuthority?: string;
 
-	colorScheme: ColorScheme;
+	colorScheme: IColorScheme;
 	autoDetectHighContrast?: boolean;
 
 	filesToOpenOrCreate?: IPath[];
 	filesToDiff?: IPath[];
+}
+
+export interface IOSConfiguration {
+	release: string;
 }
 
 export interface INativeWindowConfiguration extends IWindowConfiguration, NativeParsedArgs {
@@ -245,6 +254,8 @@ export interface INativeWindowConfiguration extends IWindowConfiguration, Native
 
 	userEnv: IProcessEnvironment;
 	filesToWait?: IPathsToWaitFor;
+
+	os: IOSConfiguration;
 }
 
 /**
