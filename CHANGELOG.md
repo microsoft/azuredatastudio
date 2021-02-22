@@ -1,7 +1,7 @@
 # Change Log
 
 ## Version 1.26.0
-* Release date: February 18, 2021
+* Release date: February 22, 2021
 * Release status: General Availability
 * Added edit Jupyter book UI support
 * Improved Jupyter server start-up time by 50% on windows
