@@ -6,7 +6,6 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { MigrationStateModel } from '../models/stateMachine';
-import { SourceConfigurationPage } from './sourceConfigurationPage';
 import { WIZARD_TITLE } from '../models/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SKURecommendationPage } from './skuRecommendationPage';
@@ -14,7 +13,6 @@ import { SKURecommendationPage } from './skuRecommendationPage';
 import { DatabaseBackupPage } from './databaseBackupPage';
 import { AccountsSelectionPage } from './accountsSelectionPage';
 import { IntergrationRuntimePage } from './integrationRuntimePage';
-import { TempTargetSelectionPage } from './tempTargetSelectionPage';
 import { SummaryPage } from './summaryPage';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '400px';
@@ -36,7 +34,6 @@ export class WizardController {
 		const wizard = azdata.window.createWizard(WIZARD_TITLE, 'wide');
 		wizard.generateScriptButton.enabled = false;
 		wizard.generateScriptButton.hidden = true;
-		const sourceConfigurationPage = new SourceConfigurationPage(wizard, stateModel);
 		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
 		// const subscriptionSelectionPage = new SubscriptionSelectionPage(wizard, stateModel);
 		const azureAccountsPage = new AccountsSelectionPage(wizard, stateModel);
@@ -47,7 +44,6 @@ export class WizardController {
 		const pages: MigrationWizardPage[] = [
 			// subscriptionSelectionPage,
 			azureAccountsPage,
-			sourceConfigurationPage,
 			skuRecommendationPage,
 			databaseBackupPage,
 			integrationRuntimePage,
