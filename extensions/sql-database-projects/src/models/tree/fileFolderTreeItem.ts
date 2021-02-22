@@ -29,7 +29,7 @@ export class FolderNode extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		const folderItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Collapsed);
+		const folderItem = new vscode.TreeItem(this.fileSystemUri, vscode.TreeItemCollapsibleState.Collapsed);
 		folderItem.contextValue = DatabaseProjectItemType.folder;
 		folderItem.iconPath = IconPathHelper.folder;
 
@@ -57,7 +57,7 @@ export class FileNode extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		const treeItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.None);
+		const treeItem = new vscode.TreeItem(this.fileSystemUri, vscode.TreeItemCollapsibleState.None);
 
 		treeItem.command = {
 			title: 'Open file',

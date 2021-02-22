@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as constants from '../common/constants';
-import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
+import { IPrompter } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
 import { BookModel } from './bookModel';
@@ -16,9 +16,10 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { getPinnedNotebooks } from '../common/utils';
+import { getPinnedNotebooks, confirmReplace } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
+import { CreateBookDialog } from '../dialog/createBookDialog';
 import { getContentPath } from './bookVersionHandler';
 import { TelemetryReporter, BookTelemetryView, NbTelemetryActions } from '../telemetry';
 
@@ -52,6 +53,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books);
+		this.bookTocManager = new BookTocManager();
 
 		this._extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
 	}
@@ -134,10 +136,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async createBook(bookPath: string, contentPath: string): Promise<void> {
-		bookPath = path.normalize(bookPath);
-		contentPath = path.normalize(contentPath);
-		await this.bookTocManager.createBook(bookPath, contentPath);
+	async createBook(): Promise<void> {
+		const dialog = new CreateBookDialog(this.bookTocManager);
+		dialog.createDialog();
 		TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.CreateBook).send();
 	}
 
@@ -483,7 +484,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(this.currentBook.bookPath)));
 				if (destinationUri) {
 					if (await fs.pathExists(destinationUri.fsPath)) {
-						let doReplace = await this.confirmReplace();
+						let doReplace = await confirmReplace(this.prompter);
 						if (!doReplace) {
 							return undefined;
 						}
@@ -655,15 +656,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			this.currentBook.getAllNotebooks().set(path.basename(untitledFileName.fsPath), notebook);
 		}
 		return untitledFileName;
-	}
-
-	//Confirmation message dialog
-	private async confirmReplace(): Promise<boolean> {
-		return await this.prompter.promptSingle<boolean>(<IQuestion>{
-			type: QuestionTypes.confirm,
-			message: loc.confirmReplace,
-			default: false
-		});
 	}
 
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
