@@ -267,27 +267,16 @@ export function getIgnoreSslVerificationConfigSetting(): boolean {
 	return true;
 }
 
-export function debounce(func: Function, delay: number): Function {
+export function debounce(delay: number): Function {
 	return decorate((fn, key) => {
-		const timeout = `$debounce$${key}`;
-		return function (...args: any[]) {
-			const context = func;
-			clearTimeout(this[timeout]);
-			this[timeout] = setTimeout(() => fn.apply(context, args), delay);
+		const timerKey = `$debounce$${key}`;
+
+		return function (this: any, ...args: any[]) {
+			clearTimeout(this[timerKey]);
+			this[timerKey] = setTimeout(() => fn.apply(this, args), delay);
 		};
 	});
 }
-
-// export function debounce2(func: Function, delay: number): Function {
-// 	return decorate((fn, key) => {
-// 		const timeout = `$debounce$${key}`;
-// 		return function(...args: any[]) {
-// 			const context = func;
-// 			clearTimeout(this[timeout])
-// 			this[timeout] = setTimeout(() => fn.apply(context, args), delay)
-// 		}
-// 	});
-// }
 
 export function generateGuid(): string {
 	let hexValues: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];

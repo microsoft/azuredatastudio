@@ -16,7 +16,7 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { debounce, getPinnedNotebooks } from '../common/utils';
+import { getPinnedNotebooks } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { getContentPath } from './bookVersionHandler';
@@ -88,14 +88,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	set _visitedNotebooks(value: string[]) {
 		this._extensionContext.globalState.update(constants.visitedNotebooksMementoKey, value);
-	}
-
-	setFileWatcher(book: BookModel): void {
-		fs.watchFile(book.tableOfContentsPath, async (curr, prev) => {
-			if (curr.mtime > prev.mtime) {
-				await this.initializeBookContents(book);
-			}
-		});
 	}
 
 	trustBook(bookTreeItem?: BookTreeItem): void {
@@ -215,7 +207,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			this.bookTocManager = new BookTocManager(targetBook, sourceBook);
 			// remove watch on toc file from source book.
 			if (sourceBook) {
-				fs.unwatchFile(sourceBook.tableOfContentsPath);
+				sourceBook.unwatchTOC();
 			}
 			try {
 				await this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
@@ -224,16 +216,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				vscode.window.showErrorMessage(loc.editBookError(updateBook.book.contentPath, e instanceof Error ? e.message : e));
 			} finally {
 				try {
-					await targetBook.initializeContents();
+					await this.initializeBookContents(targetBook);
 				} finally {
 					if (sourceBook && sourceBook.bookPath !== targetBook.bookPath) {
 						// refresh source book model to pick up latest changes
-						await sourceBook.initializeContents();
+						await this.initializeBookContents(sourceBook);
 					}
-					this._onDidChangeTreeData.fire(undefined);
-					// even if it fails, we still need to watch the toc file again.
 					if (sourceBook) {
-						this.setFileWatcher(sourceBook);
+						sourceBook.watchTOC();
 					}
 				}
 			}
@@ -262,14 +252,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.OpenBook).send();
 			// add file watcher on toc file.
 			if (!isNotebook) {
-				fs.watchFile(this.currentBook.tableOfContentsPath, async (curr, prev) => {
-					if (curr.mtime > prev.mtime) {
-						let book = this.books.find(book => book.bookPath === bookPath);
-						if (book) {
-							await this.initializeBookContents(book);
-						}
-					}
-				});
+				this.currentBook.watchTOC();
 			}
 		} catch (e) {
 			// if there is an error remove book from context
@@ -296,11 +279,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	@debounce(this, 1500)
 	async initializeBookContents(book: BookModel): Promise<void> {
-		await book.initializeContents().then(() => {
-			this._onDidChangeTreeData.fire(undefined);
-		});
+		await book.initializeContents();
+		this._onDidChangeTreeData.fire(undefined);
 	}
 
 	async closeBook(book: BookTreeItem): Promise<void> {
@@ -323,7 +304,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} finally {
 			// remove watch on toc file.
 			if (deletedBook && !deletedBook.isNotebook) {
-				fs.unwatchFile(deletedBook.tableOfContentsPath);
+				deletedBook.unwatchTOC();
 			}
 		}
 	}

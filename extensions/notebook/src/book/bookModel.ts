@@ -36,6 +36,18 @@ export class BookModel {
 		this._bookItems = [];
 	}
 
+	public unwatchTOC(): void {
+		fs.unwatchFile(this.tableOfContentsPath);
+	}
+
+	public watchTOC(): void {
+		fs.watchFile(this.tableOfContentsPath, async (curr, prev) => {
+			if (curr.mtime > prev.mtime) {
+				await this.initializeContents();
+			}
+		});
+	}
+
 	public async initializeContents(): Promise<void> {
 		this._bookItems = [];
 		this._allNotebooks = new Map<string, BookTreeItem>();
