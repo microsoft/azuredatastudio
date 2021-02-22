@@ -53,6 +53,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books);
+		this.bookTocManager = new BookTocManager();
 
 		this._extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
 	}
@@ -144,8 +145,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async createBook(): Promise<void> {
-		const bookTocManager = new BookTocManager();
-		const dialog = new CreateBookDialog(bookTocManager);
+		const dialog = new CreateBookDialog(this.bookTocManager);
 		dialog.createDialog();
 		TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.CreateBook).send();
 	}

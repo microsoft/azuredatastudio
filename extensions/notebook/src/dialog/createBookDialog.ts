@@ -8,7 +8,7 @@ import * as path from 'path';
 import { pathExists, remove } from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IconPathHelper } from '../common/iconHelper';
-import { BookTocManager } from '../book/bookTocManager';
+import { IBookTocManager } from '../book/bookTocManager';
 import { confirmReplace } from '../common/utils';
 import { IPrompter } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
@@ -23,7 +23,7 @@ export class CreateBookDialog {
 	private contentFolderInputBox: azdata.InputBoxComponent;
 	private prompter: IPrompter;
 
-	constructor(private tocManager: BookTocManager) {
+	constructor(private tocManager: IBookTocManager) {
 		this.prompter = new CodeAdapter();
 	}
 
