@@ -42,7 +42,7 @@ export interface IConnectionComponentCallbacks {
 	onCreateNewServerGroup?: () => void;
 	onAdvancedProperties?: () => void;
 	onSetAzureTimeOut?: () => void;
-	onFetchDatabases?: (serverName: string, authenticationType: string, userName?: string, password?: string, azureAccount?: string) => Promise<string[]>;
+	onFetchDatabases?: (serverName: string, authenticationType: string, userName?: string, password?: string, token?: string) => Promise<string[]>;
 	onAzureTenantSelection?: (azureTenantId?: string) => void;
 }
 

@@ -73,7 +73,7 @@ suite('MarkdownTextTransformer', () => {
 
 		cellModel = new CellModel(undefined, undefined, mockNotebookService.object);
 		notebookEditor = new NotebookEditorStub({ cellGuid: cellModel.cellGuid, instantiationService: instantiationService });
-		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel, notebookEditor);
+		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel, instantiationService, notebookEditor);
 		mockNotebookService.setup(s => s.findNotebookEditor(TypeMoq.It.isAny())).returns(() => notebookEditor);
 
 		let editor = notebookEditor.cellEditors[0].getEditor();
@@ -91,87 +91,87 @@ suite('MarkdownTextTransformer', () => {
 		assert(!isUndefinedOrNull(widget.getModel()), 'Text model is undefined');
 	});
 
-	test('Transform text with no previous selection', () => {
-		testWithNoSelection(MarkdownButtonType.BOLD, '****', true);
-		testWithNoSelection(MarkdownButtonType.BOLD, '');
-		testWithNoSelection(MarkdownButtonType.ITALIC, '__', true);
-		testWithNoSelection(MarkdownButtonType.ITALIC, '');
-		testWithNoSelection(MarkdownButtonType.CODE, '```\n\n```', true);
-		testWithNoSelection(MarkdownButtonType.CODE, '');
-		testWithNoSelection(MarkdownButtonType.HIGHLIGHT, '<mark></mark>', true);
-		testWithNoSelection(MarkdownButtonType.HIGHLIGHT, '');
-		testWithNoSelection(MarkdownButtonType.LINK, '[]()', true);
-		testWithNoSelection(MarkdownButtonType.LINK, '');
-		testWithNoSelection(MarkdownButtonType.UNORDERED_LIST, '- ', true);
-		testWithNoSelection(MarkdownButtonType.UNORDERED_LIST, '');
-		testWithNoSelection(MarkdownButtonType.ORDERED_LIST, '1. ', true);
-		testWithNoSelection(MarkdownButtonType.ORDERED_LIST, '');
-		testWithNoSelection(MarkdownButtonType.IMAGE, '![]()', true);
-		testWithNoSelection(MarkdownButtonType.IMAGE, '');
-		testWithNoSelection(MarkdownButtonType.HEADING1, '# ', true);
-		testWithNoSelection(MarkdownButtonType.HEADING1, '');
-		testWithNoSelection(MarkdownButtonType.HEADING2, '## ', true);
-		testWithNoSelection(MarkdownButtonType.HEADING2, '');
-		testWithNoSelection(MarkdownButtonType.HEADING3, '### ', true);
-		testWithNoSelection(MarkdownButtonType.HEADING3, '');
+	test('Transform text with no previous selection', async () => {
+		await testWithNoSelection(MarkdownButtonType.BOLD, '****', true);
+		await testWithNoSelection(MarkdownButtonType.BOLD, '');
+		await testWithNoSelection(MarkdownButtonType.ITALIC, '__', true);
+		await testWithNoSelection(MarkdownButtonType.ITALIC, '');
+		await testWithNoSelection(MarkdownButtonType.CODE, '```\n\n```', true);
+		await testWithNoSelection(MarkdownButtonType.CODE, '');
+		await testWithNoSelection(MarkdownButtonType.HIGHLIGHT, '<mark></mark>', true);
+		await testWithNoSelection(MarkdownButtonType.HIGHLIGHT, '');
+		await testWithNoSelection(MarkdownButtonType.LINK, '[]()', true);
+		await testWithNoSelection(MarkdownButtonType.LINK, '');
+		await testWithNoSelection(MarkdownButtonType.UNORDERED_LIST, '- ', true);
+		await testWithNoSelection(MarkdownButtonType.UNORDERED_LIST, '');
+		await testWithNoSelection(MarkdownButtonType.ORDERED_LIST, '1. ', true);
+		await testWithNoSelection(MarkdownButtonType.ORDERED_LIST, '');
+		await testWithNoSelection(MarkdownButtonType.IMAGE, '![]()', true);
+		await testWithNoSelection(MarkdownButtonType.IMAGE, '');
+		await testWithNoSelection(MarkdownButtonType.HEADING1, '# ', true);
+		await testWithNoSelection(MarkdownButtonType.HEADING1, '');
+		await testWithNoSelection(MarkdownButtonType.HEADING2, '## ', true);
+		await testWithNoSelection(MarkdownButtonType.HEADING2, '');
+		await testWithNoSelection(MarkdownButtonType.HEADING3, '### ', true);
+		await testWithNoSelection(MarkdownButtonType.HEADING3, '');
 	});
 
-	test('Transform text with one word selected', () => {
-		testWithSingleWordSelected(MarkdownButtonType.CODE, '```\nWORD\n```');
+	test('Transform text with one word selected', async () => {
+		await testWithSingleWordSelected(MarkdownButtonType.CODE, '```\nWORD\n```');
 	});
 
-	test('Transform text with multiple words selected', () => {
-		testWithMultipleWordsSelected(MarkdownButtonType.BOLD, '**Multi Words**');
-		testWithMultipleWordsSelected(MarkdownButtonType.ITALIC, '_Multi Words_');
-		testWithMultipleWordsSelected(MarkdownButtonType.CODE, '```\nMulti Words\n```');
-		testWithMultipleWordsSelected(MarkdownButtonType.HIGHLIGHT, '<mark>Multi Words</mark>');
-		testWithMultipleWordsSelected(MarkdownButtonType.LINK, '[Multi Words]()');
-		testWithMultipleWordsSelected(MarkdownButtonType.UNORDERED_LIST, '- Multi Words');
-		testWithMultipleWordsSelected(MarkdownButtonType.ORDERED_LIST, '1. Multi Words');
-		testWithMultipleWordsSelected(MarkdownButtonType.IMAGE, '![Multi Words]()');
+	test('Transform text with multiple words selected', async () => {
+		await testWithMultipleWordsSelected(MarkdownButtonType.BOLD, '**Multi Words**');
+		await testWithMultipleWordsSelected(MarkdownButtonType.ITALIC, '_Multi Words_');
+		await testWithMultipleWordsSelected(MarkdownButtonType.CODE, '```\nMulti Words\n```');
+		await testWithMultipleWordsSelected(MarkdownButtonType.HIGHLIGHT, '<mark>Multi Words</mark>');
+		await testWithMultipleWordsSelected(MarkdownButtonType.LINK, '[Multi Words]()');
+		await testWithMultipleWordsSelected(MarkdownButtonType.UNORDERED_LIST, '- Multi Words');
+		await testWithMultipleWordsSelected(MarkdownButtonType.ORDERED_LIST, '1. Multi Words');
+		await testWithMultipleWordsSelected(MarkdownButtonType.IMAGE, '![Multi Words]()');
 	});
 
-	test('Transform text with multiple lines selected', () => {
-		testWithMultipleLinesSelected(MarkdownButtonType.BOLD, '**Multi\nLines\nSelected**');
-		testWithMultipleLinesSelected(MarkdownButtonType.ITALIC, '_Multi\nLines\nSelected_');
-		testWithMultipleLinesSelected(MarkdownButtonType.CODE, '```\nMulti\nLines\nSelected\n```');
-		testWithMultipleLinesSelected(MarkdownButtonType.HIGHLIGHT, '<mark>Multi\nLines\nSelected</mark>');
-		testWithMultipleLinesSelected(MarkdownButtonType.LINK, '[Multi\nLines\nSelected]()');
-		testWithMultipleLinesSelected(MarkdownButtonType.UNORDERED_LIST, '- Multi\n- Lines\n- Selected');
-		testWithMultipleLinesSelected(MarkdownButtonType.ORDERED_LIST, '1. Multi\n1. Lines\n1. Selected');
-		testWithMultipleLinesSelected(MarkdownButtonType.IMAGE, '![Multi\nLines\nSelected]()');
-		testWithMultipleLinesSelected(MarkdownButtonType.HEADING1, '# Multi\n# Lines\n# Selected');
-		testWithMultipleLinesSelected(MarkdownButtonType.HEADING2, '## Multi\n## Lines\n## Selected');
-		testWithMultipleLinesSelected(MarkdownButtonType.HEADING3, '### Multi\n### Lines\n### Selected');
+	test('Transform text with multiple lines selected', async () => {
+		await testWithMultipleLinesSelected(MarkdownButtonType.BOLD, '**Multi\nLines\nSelected**');
+		await testWithMultipleLinesSelected(MarkdownButtonType.ITALIC, '_Multi\nLines\nSelected_');
+		await testWithMultipleLinesSelected(MarkdownButtonType.CODE, '```\nMulti\nLines\nSelected\n```');
+		await testWithMultipleLinesSelected(MarkdownButtonType.HIGHLIGHT, '<mark>Multi\nLines\nSelected</mark>');
+		await testWithMultipleLinesSelected(MarkdownButtonType.LINK, '[Multi\nLines\nSelected]()');
+		await testWithMultipleLinesSelected(MarkdownButtonType.UNORDERED_LIST, '- Multi\n- Lines\n- Selected');
+		await testWithMultipleLinesSelected(MarkdownButtonType.ORDERED_LIST, '1. Multi\n1. Lines\n1. Selected');
+		await testWithMultipleLinesSelected(MarkdownButtonType.IMAGE, '![Multi\nLines\nSelected]()');
+		await testWithMultipleLinesSelected(MarkdownButtonType.HEADING1, '# Multi\n# Lines\n# Selected');
+		await testWithMultipleLinesSelected(MarkdownButtonType.HEADING2, '## Multi\n## Lines\n## Selected');
+		await testWithMultipleLinesSelected(MarkdownButtonType.HEADING3, '### Multi\n### Lines\n### Selected');
 	});
 
-	test('Ensure notebook editor returns expected object', () => {
+	test('Ensure notebook editor returns expected object', async () => {
 		assert.deepEqual(notebookEditor, markdownTextTransformer.notebookEditor, 'Notebook editor does not match expected value');
 		// Set markdown text transformer to not have a notebook editor passed in
-		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel);
+		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel, instantiationService);
 		assert.equal(markdownTextTransformer.notebookEditor, undefined, 'No notebook editor should be returned');
 		// Even after text is attempted to be transformed, there should be no editor, and therefore nothing on the text model
-		markdownTextTransformer.transformText(MarkdownButtonType.BOLD);
+		await markdownTextTransformer.transformText(MarkdownButtonType.BOLD);
 		assert.equal(markdownTextTransformer.notebookEditor, undefined, 'Notebook model does not have a valid uri, so no editor should be returned');
 		assert.equal(textModel.getValue(), '', 'No text should exist on the textModel');
 	});
 
-	function testWithNoSelection(type: MarkdownButtonType, expectedValue: string, setValue = false): void {
+	async function testWithNoSelection(type: MarkdownButtonType, expectedValue: string, setValue = false): Promise<void> {
 		if (setValue) {
 			textModel.setValue('');
 		}
-		markdownTextTransformer.transformText(type);
+		await markdownTextTransformer.transformText(type);
 		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with no selection failed (setValue ${setValue})`);
 	}
 
-	function testWithSingleWordSelected(type: MarkdownButtonType, expectedValue: string): void {
+	async function testWithSingleWordSelected(type: MarkdownButtonType, expectedValue: string): Promise<void> {
 		let value = 'WORD';
 		textModel.setValue(value);
 
 		// Test transformation (adding text)
 		widget.setSelection({ startColumn: 1, startLineNumber: 1, endColumn: value.length + 1, endLineNumber: 1 });
 		assert.equal(textModel.getValueInRange(widget.getSelection()), value, 'Expected selection is not found');
-		markdownTextTransformer.transformText(type);
+		await markdownTextTransformer.transformText(type);
 		const textModelValue = textModel.getValue();
 		assert.equal(textModelValue, expectedValue, `${MarkdownButtonType[type]} with single word selection failed`);
 
@@ -179,32 +179,32 @@ suite('MarkdownTextTransformer', () => {
 		const valueRange = getValueRange(textModel, value);
 		assert.notEqual(valueRange, undefined, 'Could not find value in model after transformation');
 		widget.setSelection(valueRange);
-		markdownTextTransformer.transformText(type);
+		await markdownTextTransformer.transformText(type);
 		assert.equal(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with single word selection failed`);
 	}
 
-	function testWithMultipleWordsSelected(type: MarkdownButtonType, expectedValue: string): void {
+	async function testWithMultipleWordsSelected(type: MarkdownButtonType, expectedValue: string): Promise<void> {
 		let value = 'Multi Words';
 		textModel.setValue(value);
 		widget.setSelection({ startColumn: 1, startLineNumber: 1, endColumn: 12, endLineNumber: 1 });
 		assert.equal(textModel.getValueInRange(widget.getSelection()), value, 'Expected multi-word selection is not found');
-		markdownTextTransformer.transformText(type);
+		await markdownTextTransformer.transformText(type);
 		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with multiple word selection failed`);
 
 		// Test undo (removing text)
 		const valueRange = getValueRange(textModel, value);
 		assert.notEqual(valueRange, undefined, 'Could not find value in model after transformation');
 		widget.setSelection(valueRange);
-		markdownTextTransformer.transformText(type);
+		await markdownTextTransformer.transformText(type);
 		assert.equal(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with multiple word selection failed`);
 	}
 
-	function testWithMultipleLinesSelected(type: MarkdownButtonType, expectedValue: string): void {
+	async function testWithMultipleLinesSelected(type: MarkdownButtonType, expectedValue: string): Promise<void> {
 		let value = 'Multi\nLines\nSelected';
 		textModel.setValue(value);
 		widget.setSelection({ startColumn: 1, startLineNumber: 1, endColumn: 9, endLineNumber: 3 });
 		assert.equal(textModel.getValueInRange(widget.getSelection()), value, 'Expected multi-line selection is not found');
-		markdownTextTransformer.transformText(type);
+		await markdownTextTransformer.transformText(type);
 		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with multiple line selection failed`);
 
 		// Test undo (removing text)
@@ -213,7 +213,7 @@ suite('MarkdownTextTransformer', () => {
 		valueRange = new Range(valueRange.startLineNumber, valueRange.startColumn, valueRange.endLineNumber + 2, 9);
 		assert.notEqual(valueRange, undefined, 'Could not find value in model after transformation');
 		widget.setSelection(valueRange);
-		markdownTextTransformer.transformText(type);
+		await markdownTextTransformer.transformText(type);
 		assert.equal(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with multiple line selection failed`);
 	}
 });

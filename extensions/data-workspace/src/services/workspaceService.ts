@@ -12,7 +12,7 @@ import * as glob from 'fast-glob';
 import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
-import { TelemetryReporter, TelemetryViews, calculateRelativity } from '../common/telemetry';
+import { TelemetryReporter, TelemetryViews, calculateRelativity, TelemetryActions } from '../common/telemetry';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
@@ -117,7 +117,7 @@ export class WorkspaceService implements IWorkspaceService {
 				currentProjects.push(projectFile);
 				newProjectFileAdded = true;
 
-				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, 'ProjectAddedToWorkspace')
+				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectAddedToWorkspace)
 					.withAdditionalProperties({
 						workspaceProjectRelativity: calculateRelativity(projectFile.fsPath),
 						projectType: path.extname(projectFile.fsPath)
@@ -155,8 +155,15 @@ export class WorkspaceService implements IWorkspaceService {
 		return projectTypes;
 	}
 
-	getProjectsInWorkspace(): vscode.Uri[] {
-		return vscode.workspace.workspaceFile ? this.getWorkspaceConfigurationValue<string[]>(ProjectsConfigurationName).map(project => this.toUri(project)) : [];
+	getProjectsInWorkspace(ext?: string): vscode.Uri[] {
+		let projects = vscode.workspace.workspaceFile ? this.getWorkspaceConfigurationValue<string[]>(ProjectsConfigurationName).map(project => this.toUri(project)) : [];
+
+		// filter by specified extension
+		if (ext) {
+			projects = projects.filter(p => p.fsPath.toLowerCase().endsWith(ext.toLowerCase()));
+		}
+
+		return projects;
 	}
 
 	/**
@@ -234,7 +241,7 @@ export class WorkspaceService implements IWorkspaceService {
 			if (projectIdx !== -1) {
 				currentProjects.splice(projectIdx, 1);
 
-				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, 'ProjectRemovedFromWorkspace')
+				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectRemovedFromWorkspace)
 					.withAdditionalProperties({
 						projectType: path.extname(projectFile.fsPath)
 					}).send();
@@ -290,7 +297,7 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 
 		if (extension.isActive && extension.exports && !ProjectProviderRegistry.providers.includes(extension.exports)) {
-			ProjectProviderRegistry.registerProvider(extension.exports);
+			ProjectProviderRegistry.registerProvider(extension.exports, extension.id);
 		}
 	}
 

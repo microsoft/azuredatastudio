@@ -8,9 +8,9 @@
 	],
 	"dacFx.databaseNameTextBox": "Datenbankname",
 	"dacFx.databaseNameDropdown": "Datenbankname",
-	"dacFxDeploy.openFile": "Eröffnungskurs",
+	"dacFxDeploy.openFile": "Öffnen",
 	"dacFxDeploy.fileTextboxTitle": "Dateispeicherort",
-	"dacFx.upgradeRadioButtonLabel": "Vorhandene Datenbank upgraden",
+	"dacFx.upgradeRadioButtonLabel": "Vorhandene Datenbank aktualisieren",
 	"dacFx.newRadioButtonLabel": "Neue Datenbank",
 	"dacFx.targetDatabaseRadioButtonsTitle": "Zieldatenbank",
 	"dacFx.targetDatabaseDropdownTitle": "Datenbankname"

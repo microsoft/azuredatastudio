@@ -66,12 +66,13 @@ export class LanguageContentView extends LanguageViewBase {
 			value: '',
 			width: parent.componentMaxLength - parent.browseButtonMaxLength - parent.spaceBetweenComponentsLength
 		}).component();
-		let fileBrowser = this._modelBuilder.button().withProperties({
+		let fileBrowser = this._modelBuilder.button().withProps({
 			label: '...',
 			width: parent.browseButtonMaxLength,
 			CSSStyles: {
 				'text-align': 'end'
-			}
+			},
+			secondary: true
 		}).component();
 
 		let flexFilePathModel = this._modelBuilder.flexContainer()

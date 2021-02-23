@@ -14,13 +14,6 @@ let packageInfo = utils.getPackageInfo(packageJson)!;
 
 export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 
-export enum TelemetryViews {
-	WorkspaceTreePane = 'WorkspaceTreePane',
-	OpenExistingDialog = 'OpenExistingDialog',
-	NewProjectDialog = 'NewProjectDialog',
-	ProviderRegistration = 'ProviderRegistration'
-}
-
 export function calculateRelativity(projectPath: string, workspacePath?: string): string {
 	workspacePath = workspacePath ?? vscode.workspace.workspaceFile?.fsPath;
 
@@ -41,4 +34,23 @@ export function calculateRelativity(projectPath: string, workspacePath?: string)
 	}
 
 	return 'other'; // sibling, cousin, descendant, etc.
+}
+
+
+export enum TelemetryViews {
+	WorkspaceTreePane = 'WorkspaceTreePane',
+	OpenExistingDialog = 'OpenExistingDialog',
+	NewProjectDialog = 'NewProjectDialog',
+	ProviderRegistration = 'ProviderRegistration'
+}
+
+export enum TelemetryActions {
+	ProviderRegistered = 'ProviderRegistered',
+	ProjectAddedToWorkspace = 'ProjectAddedToWorkspace',
+	ProjectRemovedFromWorkspace = 'ProjectRemovedFromWorkspace',
+	OpeningProject = 'OpeningProject',
+	NewProjectDialogLaunched = 'NewProjectDialogLaunched',
+	OpeningWorkspace = 'OpeningWorkspace',
+	OpenExistingDialogLaunched = 'OpenExistingDialogLaunched',
+	NewProjectDialogCompleted = 'NewProjectDialogCompleted'
 }

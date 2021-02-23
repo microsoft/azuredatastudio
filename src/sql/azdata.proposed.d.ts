@@ -75,6 +75,7 @@ declare module 'azdata' {
 
 		export interface INotebookMetadata {
 			connection_name?: string;
+			multi_connection_mode?: boolean;
 		}
 
 		export interface ICellMetadata {
@@ -300,6 +301,11 @@ declare module 'azdata' {
 
 	export interface DeclarativeTableComponent extends Component, DeclarativeTableProperties {
 		onRowSelected: vscode.Event<DeclarativeTableRowSelectedEvent>;
+		/**
+		 * Sets the filter currently applied to this table - only rows with index in the given array will be visible. undefined
+		 * will clear the filter
+		 */
+		setFilter(rowIndexes: number[] | undefined): void;
 	}
 
 	/*
@@ -655,9 +661,35 @@ declare module 'azdata' {
 
 		export interface Dialog {
 			/**
-			 * Width of the dialog
+			 * Width of the dialog.
+			 * Default is 'narrrow'.
 			 */
 			width?: DialogWidth;
+			/**
+			 * Dialog style type: normal, flyout, callout.
+			 * Default is 'flyout'.
+			 */
+			dialogStyle?: DialogStyle;
+			/**
+			 * Dialog position type: left, below and undefined.
+			 * Default is undefined.
+			 */
+			dialogPosition?: DialogPosition;
+			/**
+			 * Specify whether or not to render the Dialog header.
+			 * Default is true.
+			 */
+			renderHeader?: boolean;
+			/**
+			 * Specify whether or not to render the Dialog footer.
+			 * Default is true.
+			 */
+			renderFooter?: boolean;
+			/**
+			 * Positional data prior to opening of dialog.
+			 * Default is undefined.
+			 */
+			dialogProperties?: IDialogProperties;
 		}
 
 		export interface Wizard {
@@ -681,12 +713,39 @@ declare module 'azdata' {
 		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 
 		/**
-		 * Create a dialog with the given title
-		 * @param title The title of the dialog, displayed at the top
-		 * @param dialogName the name of the dialog
-		 * @param width width of the dialog, default is 'wide'
+		 * These dialog styles affect how the dialog dispalys in the application.
+		 * normal: Positioned top and centered.
+		 * flyout (default): Existing panel appearance - positioned full screen height, opens from the right side of the application.
+		 * callout: Opens below or beside button clicked, contains footer section with buttons.
 		 */
-		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth): Dialog;
+		export type DialogStyle = 'normal' | 'flyout' | 'callout';
+
+		export type DialogPosition = 'left' | 'below';
+
+		/**
+		 * These are positional data prior to opening of dialog.
+		 * They are needed for positioning relative to the button which triggers the opening of the dialog.
+		 * Default is undefined.
+		 */
+		export interface IDialogProperties {
+			xPos: number,
+			yPos: number,
+			width: number,
+			height: number
+		}
+
+		/**
+		 * Create a dialog with the given title
+		 * @param title Title of the dialog, displayed at the top.
+		 * @param dialogName Name of the dialog.
+		 * @param width Width of the dialog, default is 'narrow'.
+		 * @param dialogStyle Defines the dialog style, default is 'flyout'.
+		 * @param dialogPosition Defines the dialog position, default is undefined
+		 * @param renderHeader Specify whether or not to render the Dialog header, default is true.
+		 * @param renderFooter Specify whether or not to render the Dialog footer, default is true.
+		 * @param dialogProperties Positional data prior to opening of dialog, default is undefined.
+		 */
+		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogProperties?: IDialogProperties): Dialog;
 
 		/**
 		 * Create a wizard with the given title and width
@@ -702,6 +761,13 @@ declare module 'azdata' {
 		 * @param pageName The optional page name parameter will be used for telemetry
 		 */
 		export function createWizardPage(title: string, pageName?: string): WizardPage;
+
+		export interface Button {
+			/**
+			 * Specifies whether this is a secondary button. Default is false.
+			 */
+			secondary?: boolean;
+		}
 	}
 
 	export namespace workspace {
@@ -803,7 +869,7 @@ declare module 'azdata' {
 		generateAssessmentScript(items: SqlAssessmentResultItem[]): Promise<ResultStatus>;
 	}
 
-	export interface TreeItem2 extends vscode.TreeItem2 {
+	export interface TreeItem2 extends vscode.TreeItem {
 		payload?: IConnectionProfile;
 		childProvider?: string;
 		type?: ExtensionNodeType;
@@ -847,6 +913,10 @@ declare module 'azdata' {
 		* Description text to display inside button element.
 		*/
 		description?: string;
+		/**
+		 * Specifies whether this is a secondary button. Default value is false.
+		 */
+		secondary?: boolean;
 	}
 
 	export enum ButtonType {
@@ -965,5 +1035,24 @@ declare module 'azdata' {
 		 * Microsoft Graph
 		 */
 		MsGraph = 7
+	}
+
+	export interface ResultSetSummary {
+		/**
+		 * The visualization options for the result set.
+		 */
+		visualization?: VisualizationOptions;
+	}
+
+	/**
+	 * Defines all the supported visualization types
+	 */
+	export type VisualizationType = 'bar' | 'count' | 'doughnut' | 'horizontalBar' | 'image' | 'line' | 'pie' | 'scatter' | 'table' | 'timeSeries';
+
+	/**
+	 * Defines the configuration options for visualization
+	 */
+	export interface VisualizationOptions {
+		type: VisualizationType;
 	}
 }

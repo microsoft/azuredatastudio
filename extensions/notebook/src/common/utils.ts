@@ -11,6 +11,8 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as crypto from 'crypto';
 import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey, AUTHTYPE, INTEGRATED_AUTH, KNOX_ENDPOINT_PORT, KNOX_ENDPOINT_SERVER } from './constants';
+import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
+import * as loc from '../common/localizedConstants';
 
 const localize = nls.loadMessageBundle();
 
@@ -389,4 +391,13 @@ export async function setPinnedBookPathsInConfig(pinnedNotebookPaths: IBookNoteb
 export interface IBookNotebook {
 	bookPath?: string;
 	notebookPath: string;
+}
+
+//Confirmation message dialog
+export async function confirmReplace(prompter: IPrompter): Promise<boolean> {
+	return await prompter.promptSingle<boolean>(<IQuestion>{
+		type: QuestionTypes.confirm,
+		message: loc.confirmReplace,
+		default: false
+	});
 }

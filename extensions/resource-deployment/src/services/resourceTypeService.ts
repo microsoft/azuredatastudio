@@ -9,7 +9,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption, ResourceSubType, AgreementInfo } from '../interfaces';
+import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption, ResourceSubType, AgreementInfo, HelpText, InitialVariableValues } from '../interfaces';
 import { AzdataService } from './azdataService';
 import { KubeService } from './kubeService';
 import { INotebookService } from './notebookService';
@@ -56,6 +56,7 @@ export class ResourceTypeService implements IResourceTypeService {
 					resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
 					resourceType.getOkButtonText = (selectedOptions) => { return this.getOkButtonText(resourceType, selectedOptions); };
 					resourceType.getAgreementInfo = (selectedOptions) => { return this.getAgreementInfo(resourceType, selectedOptions); };
+					resourceType.getHelpText = (selectedOptions) => { return this.getHelpText(resourceType, selectedOptions); };
 					this.getResourceSubTypes(resourceType);
 					this._resourceTypes.push(resourceType);
 				});
@@ -131,7 +132,7 @@ export class ResourceTypeService implements IResourceTypeService {
 			const extensionResourceSubTypes = extension.packageJSON.contributes?.resourceDeploymentSubTypes as ResourceSubType[];
 			extensionResourceSubTypes?.forEach((extensionResourceSubType: ResourceSubType) => {
 				const resourceSubType = deepClone(extensionResourceSubType);
-				if (resourceSubType.name === resourceType.name) {
+				if (resourceSubType.resourceName === resourceType.name) {
 					this.updateProviderPathProperties(resourceSubType.provider, extension.extensionPath);
 					resourceSubTypes.push(resourceSubType);
 					const tagSet = new Set(resourceType.tags);
@@ -152,6 +153,9 @@ export class ResourceTypeService implements IResourceTypeService {
 					}
 					if (resourceSubType.agreement) {
 						resourceType.agreements?.push(resourceSubType.agreement!);
+					}
+					if (resourceSubType.helpText) {
+						resourceType.helpTexts.push(resourceSubType.helpText);
 					}
 				}
 			});
@@ -307,8 +311,19 @@ export class ResourceTypeService implements IResourceTypeService {
 		return undefined;
 	}
 
-	public startDeployment(resourceType: ResourceType, optionValuesFilter?: OptionValuesFilter): void {
-		const wizard = new ResourceTypeWizard(resourceType, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this, optionValuesFilter);
+	private getHelpText(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): HelpText | undefined {
+		if (resourceType.helpTexts) {
+			for (const possibleOption of resourceType.helpTexts) {
+				if (processWhenClause(possibleOption.when, selectedOptions)) {
+					return possibleOption;
+				}
+			}
+		}
+		return undefined;
+	}
+
+	public startDeployment(resourceType: ResourceType, optionValuesFilter?: OptionValuesFilter, initialVariableValues?: InitialVariableValues): void {
+		const wizard = new ResourceTypeWizard(resourceType, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this, optionValuesFilter, initialVariableValues);
 		wizard.open();
 	}
 

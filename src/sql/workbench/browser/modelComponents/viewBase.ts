@@ -75,7 +75,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 					initial: true
 				};
 			});
-			this.addToContainer(component.id, items);
+			this.addToContainer(component.id, items, true);
 		}
 
 		return descriptor;

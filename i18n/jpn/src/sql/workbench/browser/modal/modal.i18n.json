@@ -10,8 +10,8 @@
 	"warningAltText": "警告",
 	"errorAltText": "エラー",
 	"showMessageDetails": "詳細の表示",
-	"hideMessageDetails": "詳細を表示しない",
 	"copyMessage": "コピー",
 	"closeMessage": "閉じる",
-	"modalBack": "戻る"
+	"modal.back": "戻る",
+	"hideMessageDetails": "詳細を表示しない"
 }

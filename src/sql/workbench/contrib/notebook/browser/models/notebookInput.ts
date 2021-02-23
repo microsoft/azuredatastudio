@@ -122,6 +122,9 @@ export class NotebookEditorModel extends EditorModel {
 			this._isFirstKernelChange = false;
 			return;
 		}
+		if (!contentChange?.isDirty) {
+			return;
+		}
 		this._lastEditFullReplacement = false;
 		if (contentChange && contentChange.changeType === NotebookChangeType.Saved) {
 			// We send the saved events out, so ignore. Otherwise we double-count this as a change

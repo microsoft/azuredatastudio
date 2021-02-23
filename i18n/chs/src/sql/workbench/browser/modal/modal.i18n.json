@@ -10,8 +10,8 @@
 	"warningAltText": "警告",
 	"errorAltText": "错误",
 	"showMessageDetails": "显示详细信息",
-	"hideMessageDetails": "隐藏详细信息",
 	"copyMessage": "复制",
 	"closeMessage": "关闭",
-	"modalBack": "上一步"
+	"modal.back": "返回",
+	"hideMessageDetails": "隐藏详细信息"
 }

@@ -199,7 +199,7 @@ const excludedExtensions = [
     'ms-vscode.node-debug',
     'ms-vscode.node-debug2',
     'vscode-notebook-tests',
-    'integration-tests',
+    'integration-tests', // {{SQL CARBON EDIT}}
 ];
 // {{SQL CARBON EDIT}}
 const externalExtensions = [

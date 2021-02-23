@@ -8,7 +8,8 @@
 	],
 	"query.ExecutionFailedError": "예기치 않은 오류로 인해 실행하지 못했습니다. {0}\t{1}",
 	"query.message.executionTime": "총 실행 시간: {0}",
-	"query.message.startQuery": "{0}번째 줄에서 쿼리 실행이 시작됨",
-	"query.initEditExecutionFailed": "초기화 편집 실행 실패: ",
-	"elapsedBatchTime": "일괄 처리 실행 시간: {0}"
+	"query.message.startQuery": "줄 {0}에서 쿼리 실행을 시작함",
+	"query.initEditExecutionFailed": "편집 데이터 세션 초기화 실패: ",
+	"elapsedBatchTime": "일괄 처리 실행 시간: {0}",
+	"copyFailed": "{0} 오류를 나타내며 복사 실패"
 }

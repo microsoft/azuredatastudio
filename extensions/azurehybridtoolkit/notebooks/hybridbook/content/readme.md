@@ -26,7 +26,7 @@ The **Azure SQL Hybrid Toolkit** is a [Jupyter Book](https://jupyterbook.org/int
 ## Goals and Methodology
 The toolkit better positions a customer with regards to planning, migrating, and thriving in a hybrid cloud environment by:
 
-* Providing SQL'zure users with reliable free software and content that is well-written and executable
+* Providing SQL Azure users with reliable free software and content that is well-written and executable
 * Greatly simplifying the integration of Azure Data services into an existing environment
 * Positioning Azure to be the natural cloud services choice with a low-friction experience
 * Notebooks are executable by a normal user (unless otherwise specificed) on minimal hardware
