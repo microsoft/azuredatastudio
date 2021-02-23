@@ -14,12 +14,17 @@ export class IconPathHelper {
 	private static extensionContext: vscode.ExtensionContext;
 
 	public static delete: IconPath;
+	public static folder: IconPath;
 
 	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
 		IconPathHelper.extensionContext = extensionContext;
 		IconPathHelper.delete = {
 			dark: IconPathHelper.extensionContext.asAbsolutePath('resources/dark/delete_inverse.svg'),
 			light: IconPathHelper.extensionContext.asAbsolutePath('resources/light/delete.svg')
+		};
+		IconPathHelper.folder = {
+			dark: IconPathHelper.extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
+			light: IconPathHelper.extensionContext.asAbsolutePath('resources/light/folder.svg')
 		};
 	}
 }

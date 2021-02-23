@@ -68,16 +68,16 @@ describe('Project Tree tests', function (): void {
 
 		const tree = new ProjectRootTreeItem(proj);
 		should(tree.children.map(x => x.uri.path)).deepEqual([
-			'/TestProj/Database References',
-			'/TestProj/duplicateFolder',
-			'/TestProj/someFolder',
-			'/TestProj/duplicate.sql']);
+			'/TestProj.sqlproj/Database References',
+			'/TestProj.sqlproj/duplicateFolder',
+			'/TestProj.sqlproj/someFolder',
+			'/TestProj.sqlproj/duplicate.sql']);
 
-		should(tree.children.find(x => x.uri.path === '/TestProj/someFolder')?.children.map(y => y.uri.path)).deepEqual([
-			'/TestProj/someFolder/aNestedFolder',
-			'/TestProj/someFolder/bNestedFolder',
-			'/TestProj/someFolder/aNestedTest.sql',
-			'/TestProj/someFolder/bNestedTest.sql']);
+		should(tree.children.find(x => x.uri.path === '/TestProj.sqlproj/someFolder')?.children.map(y => y.uri.path)).deepEqual([
+			'/TestProj.sqlproj/someFolder/aNestedFolder',
+			'/TestProj.sqlproj/someFolder/bNestedFolder',
+			'/TestProj.sqlproj/someFolder/aNestedTest.sql',
+			'/TestProj.sqlproj/someFolder/bNestedTest.sql']);
 
 		should(tree.children.map(x => x.treeItem.contextValue)).deepEqual([
 			DatabaseProjectItemType.referencesRoot,
@@ -85,7 +85,7 @@ describe('Project Tree tests', function (): void {
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.file]);
 
-		should(tree.children.find(x => x.uri.path === '/TestProj/someFolder')?.children.map(y => y.treeItem.contextValue)).deepEqual([
+		should(tree.children.find(x => x.uri.path === '/TestProj.sqlproj/someFolder')?.children.map(y => y.treeItem.contextValue)).deepEqual([
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.file,
@@ -104,11 +104,11 @@ describe('Project Tree tests', function (): void {
 
 		const tree = new ProjectRootTreeItem(proj);
 		should(tree.children.map(x => x.uri.path)).deepEqual([
-			'/TestProj/Database References',
-			'/TestProj/someFolder1']);
+			'/TestProj.sqlproj/Database References',
+			'/TestProj.sqlproj/someFolder1']);
 
 		// Why are we only matching names - https://github.com/microsoft/azuredatastudio/issues/11026
-		should(tree.children.find(x => x.uri.path === '/TestProj/someFolder1')?.children.map(y => path.basename(y.uri.path))).deepEqual([
+		should(tree.children.find(x => x.uri.path === '/TestProj.sqlproj/someFolder1')?.children.map(y => path.basename(y.uri.path))).deepEqual([
 			'MyNestedFolder1',
 			'MyNestedFolder2',
 			'MyFile2.sql']);
@@ -126,8 +126,8 @@ describe('Project Tree tests', function (): void {
 
 		const tree = new ProjectRootTreeItem(proj);
 		should(tree.children.map(x => x.uri.path)).deepEqual([
-			'/TestProj/Database References',
-			'/TestProj/MyFile1.sql',
-			'/TestProj/MyFile2.sql']);
+			'/Root/Level1/Level2/TestProj.sqlproj/Database References',
+			'/Root/Level1/Level2/TestProj.sqlproj/MyFile1.sql',
+			'/Root/Level1/Level2/TestProj.sqlproj/MyFile2.sql']);
 	});
 });
