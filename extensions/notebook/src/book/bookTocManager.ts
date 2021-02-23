@@ -53,9 +53,10 @@ export class BookTocManager implements IBookTocManager {
 
 	async getAllFiles(toc: JupyterBookSection[], directory: string, filesInDir: string[], rootDirectory: string): Promise<JupyterBookSection[]> {
 		await Promise.all(filesInDir.map(async file => {
-			let isDirectory = (await fs.promises.stat(path.join(directory, file))).isDirectory();
+			const newDirectory = path.join(directory, file);
+			let isDirectory = (await fs.promises.stat(newDirectory)).isDirectory();
 			if (isDirectory) {
-				let files = await fs.promises.readdir(path.join(directory, file));
+				let files = await fs.promises.readdir(newDirectory);
 				let initFile: string = '';
 				//Add files named as readme or index within the directory as the first file of the section.
 				files.some((f, index) => {
@@ -64,24 +65,43 @@ export class BookTocManager implements IBookTocManager {
 						files.splice(index, 1);
 					}
 				});
-				let jupyterSection: JupyterBookSection = {
+
+				if (initFile === '') {
+					files.some((f, index) => {
+						const parsedPath = path.parse(f);
+						if (allowedFileExtensions.includes(parsedPath.ext)) {
+							initFile = parsedPath.name;
+							files.splice(index, 1);
+						}
+					});
+				}
+				const jupyterSection: JupyterBookSection = {
 					title: file,
-					file: path.join(file, initFile),
+					file: path.join(path.relative(rootDirectory, newDirectory), initFile),
 					expand_sections: true,
 					numbered: false,
 					sections: []
 				};
-				toc.push(jupyterSection);
-				await this.getAllFiles(toc, path.join(directory, file), files, rootDirectory);
+
+				//find if the section is a subsection from another section.
+				//TODO: replace this for findSection method
+				let indexToc = toc.findIndex(parent => path.dirname(parent.file) === path.relative(rootDirectory, directory));
+				if (indexToc !== -1) {
+					toc[indexToc].sections.push(jupyterSection);
+				} else {
+					toc.push(jupyterSection);
+				}
+				await this.getAllFiles(toc, newDirectory, files, rootDirectory);
 			} else if (allowedFileExtensions.includes(path.extname(file))) {
 				// if the file is in the book root we don't include the directory.
-				const filePath = directory === rootDirectory ? path.parse(file).name : path.join(path.basename(directory), path.parse(file).name);
+				const filePath = directory === rootDirectory ? path.parse(file).name : path.join(path.relative(rootDirectory, directory), path.parse(file).name);
 				const addFile: JupyterBookSection = {
 					title: path.parse(file).name,
-					file: filePath
+					file: path.join(path.sep, filePath)
 				};
 				//find if the directory (section) of the file exists else just add the file at the end of the table of contents
-				let indexToc = toc.findIndex(parent => parent.title === path.basename(directory));
+				//TODO: replace this for findSection method
+				let indexToc = toc.findIndex(parent => path.dirname(parent.file) === path.relative(rootDirectory, directory));
 				//if there is not init markdown file then add the first notebook or markdown file that is found
 				if (indexToc !== -1) {
 					if (toc[indexToc].file === '') {
