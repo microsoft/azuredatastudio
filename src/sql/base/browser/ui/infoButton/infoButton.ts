@@ -3,12 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./infoButton';
 import { Button as sqlButton } from 'sql/base/browser/ui/button/button';
-import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { IButtonOptions, IButtonStyles } from 'vs/base/browser/ui/button/button';
 import { Color } from 'vs/base/common/color';
-
-import 'vs/css!./infoButton';
 
 export interface IInfoButtonOptions extends IButtonOptions {
 	buttonMaxHeight: number,
@@ -83,11 +81,6 @@ export class InfoButton extends sqlButton {
 		this.element.style.background = 'none';
 
 		this.infoButtonOptions = options;
-		this._register(addDisposableListener(this.element, EventType.MOUSE_OVER, e => {
-			if (this._buttonHoverBackground) {
-				this.element.style.backgroundColor = this._buttonHoverBackground.toString();
-			}
-		}));
 	}
 
 	public get title(): string {
@@ -171,9 +164,13 @@ export class InfoButton extends sqlButton {
 		this.applyStyles();
 	}
 
-	applyStyles() {
+	applyStyles(): void {
 		this.element.style.backgroundColor = this._buttonBackground?.toString();
 		this.element.style.color = this._buttonForeground?.toString();
 		this.element.style.borderColor = this._buttonBorder?.toString();
+	}
+
+	setHoverBackground(): void {
+		this.element.style.backgroundColor = this._buttonHoverBackground?.toString();
 	}
 }
