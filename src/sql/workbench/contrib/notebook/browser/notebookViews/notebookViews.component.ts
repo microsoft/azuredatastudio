@@ -297,7 +297,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 				action.tooltip = action.label;
 				action.label = '';
 			}
-			return new LabeledMenuItemActionItem(action, this.keybindingService, this.contextMenuService, this.notificationService, 'notebook-button fixed-width');
+			return new LabeledMenuItemActionItem(action, this.keybindingService, this.notificationService, 'notebook-button fixed-width');
 		}
 		return undefined;
 	}

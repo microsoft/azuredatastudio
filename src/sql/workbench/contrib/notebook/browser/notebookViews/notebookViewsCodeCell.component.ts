@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
-import { deepClone } from 'vs/base/common/objects';
 import { ChangeDetectorRef, Component, forwardRef, Inject } from '@angular/core';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { localize } from 'vs/nls';

@@ -15,7 +15,7 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
-import { attachButtonStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
+import { attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { ServiceOption } from 'azdata';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
@@ -27,6 +27,7 @@ import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/no
 import { inputBorder, inputValidationInfoBorder } from 'vs/platform/theme/common/colorRegistry';
 import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 const html2canvas: any = _html2canvas;
 
