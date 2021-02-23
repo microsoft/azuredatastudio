@@ -69,7 +69,7 @@ export class CreateMigrationControllerDialog {
 				}
 
 				try {
-					const createdController = await createMigrationController(this.migrationStateModel.azureAccount, subscription, resourceGroup, region, controllerName!);
+					const createdController = await createMigrationController(this.migrationStateModel._azureAccount, subscription, resourceGroup, region, controllerName!);
 					if (createdController.error) {
 						this.setDialogMessage(`${createdController.error.code} : ${createdController.error.message}`);
 						this._statusLoadingComponent.loading = false;
@@ -79,7 +79,7 @@ export class CreateMigrationControllerDialog {
 					this._dialogObject.message = {
 						text: ''
 					};
-					this.migrationStateModel.migrationController = createdController;
+					this.migrationStateModel._migrationController = createdController;
 					await this.refreshAuthTable();
 					await this.refreshStatus();
 					this._setupContainer.display = 'inline';
@@ -130,7 +130,7 @@ export class CreateMigrationControllerDialog {
 		this._dialogObject.okButton.enabled = false;
 		azdata.window.openDialog(this._dialogObject);
 		this._dialogObject.cancelButton.onClick((e) => {
-			this.migrationStateModel.migrationController = undefined!;
+			this.migrationStateModel._migrationController = undefined!;
 		});
 		this._dialogObject.okButton.onClick((e) => {
 			this.irPage.populateMigrationController();
@@ -242,7 +242,7 @@ export class CreateMigrationControllerDialog {
 	private async populateResourceGroups(): Promise<void> {
 		this.migrationControllerResourceGroupDropdown.loading = true;
 		let subscription = this.migrationStateModel._targetSubscription;
-		const resourceGroups = await getResourceGroups(this.migrationStateModel.azureAccount, subscription);
+		const resourceGroups = await getResourceGroups(this.migrationStateModel._azureAccount, subscription);
 		let resourceGroupDropdownValues: azdata.CategoryValue[] = [];
 		if (resourceGroups && resourceGroups.length > 0) {
 			resourceGroups.forEach((resourceGroup) => {
@@ -392,8 +392,8 @@ export class CreateMigrationControllerDialog {
 		const subscription = this.migrationStateModel._targetSubscription;
 		const resourceGroup = (this.migrationControllerResourceGroupDropdown.value as azdata.CategoryValue).name;
 		const region = (this.migrationControllerRegionDropdown.value as azdata.CategoryValue).name;
-		const controllerStatus = await getMigrationController(this.migrationStateModel.azureAccount, subscription, resourceGroup, region, this.migrationStateModel.migrationController!.name);
-		const controllerMonitoringStatus = await getMigrationControllerMonitoringData(this.migrationStateModel.azureAccount, subscription, resourceGroup, region, this.migrationStateModel.migrationController!.name);
+		const controllerStatus = await getMigrationController(this.migrationStateModel._azureAccount, subscription, resourceGroup, region, this.migrationStateModel._migrationController!.name);
+		const controllerMonitoringStatus = await getMigrationControllerMonitoringData(this.migrationStateModel._azureAccount, subscription, resourceGroup, region, this.migrationStateModel._migrationController!.name);
 		this.migrationStateModel._nodeNames = controllerMonitoringStatus.nodes.map((node) => {
 			return node.nodeName;
 		});
@@ -402,14 +402,14 @@ export class CreateMigrationControllerDialog {
 
 			if (state === 'Online') {
 				this._connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
-					text: constants.CONTROLLER_READY(this.migrationStateModel.migrationController!.name, this.migrationStateModel._nodeNames.join(', ')),
+					text: constants.CONTROLLER_READY(this.migrationStateModel._migrationController!.name, this.migrationStateModel._nodeNames.join(', ')),
 					style: 'success'
 				});
 				this._dialogObject.okButton.enabled = true;
 			} else {
-				this._connectionStatus.text = constants.CONTROLLER_NOT_READY(this.migrationStateModel.migrationController!.name);
+				this._connectionStatus.text = constants.CONTROLLER_NOT_READY(this.migrationStateModel._migrationController!.name);
 				this._connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
-					text: constants.CONTROLLER_NOT_READY(this.migrationStateModel.migrationController!.name),
+					text: constants.CONTROLLER_NOT_READY(this.migrationStateModel._migrationController!.name),
 					style: 'warning'
 				});
 				this._dialogObject.okButton.enabled = false;
@@ -421,7 +421,7 @@ export class CreateMigrationControllerDialog {
 		const subscription = this.migrationStateModel._targetSubscription;
 		const resourceGroup = (this.migrationControllerResourceGroupDropdown.value as azdata.CategoryValue).name;
 		const region = (this.migrationControllerRegionDropdown.value as azdata.CategoryValue).name;
-		const keys = await getMigrationControllerAuthKeys(this.migrationStateModel.azureAccount, subscription, resourceGroup, region, this.migrationStateModel.migrationController!.name);
+		const keys = await getMigrationControllerAuthKeys(this.migrationStateModel._azureAccount, subscription, resourceGroup, region, this.migrationStateModel._migrationController!.name);
 
 		this._copyKey1Button = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.copy
@@ -445,16 +445,14 @@ export class CreateMigrationControllerDialog {
 			iconPath: IconPathHelper.refresh
 		}).component();
 
-		this._refreshKey1Button.onDidClick((e) => {
-			this.refreshAuthTable();
+		this._refreshKey1Button.onDidClick((e) => {//TODO: add refresh logic
 		});
 
 		this._refreshKey2Button = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.refresh
 		}).component();
 
-		this._refreshKey2Button.onDidClick((e) => {
-			this.refreshAuthTable();
+		this._refreshKey2Button.onDidClick((e) => { //TODO: add refresh logic
 		});
 
 		this.migrationControllerAuthKeyTable.updateProperties({
