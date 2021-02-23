@@ -1,5 +1,25 @@
 # Change Log
 
+## Version 1.26.0
+* Release date: February 22, 2021
+* Release status: General Availability
+* Added edit Jupyter book UI support
+* Improved Jupyter server start-up time by 50% on windows
+* Extension Updates:
+    * Azure Arc
+        * PG dashboard enhancements
+        * Multi-controller support
+        * MIAA Dashboard will no longer prompt for SQL Server connection immediately upon opening
+    * Azure Data CLI
+    * Kusto
+    * Machine Learning
+    * Profiler
+    * Server Reports
+    * Schema Compare
+    * SQL Server Dacpac
+    * SQL Database Projects
+* Bug Fixes
+
 ## Version 1.25.3
 * Release date: February 10, 2021
 * Release status: General Availability
