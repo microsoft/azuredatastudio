@@ -31,7 +31,7 @@ export interface OptionValuesFilter {
 export interface IResourceTypeService {
 	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
 	validateResourceTypes(resourceTypes: ResourceType[]): string[];
-	startDeployment(resourceType: ResourceType, optionValuesFilter?: OptionValuesFilter): void;
+	startDeployment(resourceType: ResourceType, optionValuesFilter?: OptionValuesFilter, initialVariableValues?: InitialVariableValues): void;
 }
 
 export class ResourceTypeService implements IResourceTypeService {
