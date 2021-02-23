@@ -96,12 +96,12 @@ export async function getMigrationController(account: azdata.Account, subscripti
 export async function getMigrationControllers(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string): Promise<MigrationController[]> {
 	const api = await getAzureCoreAPI();
 	const host = `https://${regionName}.management.azure.com`;
-	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/Controllers?api-version=2020-09-01-preview`;
+	const path = `/subscriptions/${subscription.id}/providers/Microsoft.DataMigration/Controllers?api-version=2020-09-01-preview`;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
-	return response.response.data;
+	return response.response.data.value;
 }
 
 export async function createMigrationController(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<MigrationController> {
