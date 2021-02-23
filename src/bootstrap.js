@@ -23,9 +23,9 @@
 		}
 	}
 }(this, function () {
-	const Module = require('module');
-	const path = require('path');
-	const fs = require('fs');
+	const Module = typeof require === 'function' ? require('module') : undefined;
+	const path = typeof require === 'function' ? require('path') : undefined;
+	const fs = typeof require === 'function' ? require('fs') : undefined;
 
 	//#region global bootstrapping
 
@@ -34,9 +34,11 @@
 
 	// Workaround for Electron not installing a handler to ignore SIGPIPE
 	// (https://github.com/electron/electron/issues/13254)
-	process.on('SIGPIPE', () => {
-		console.error(new Error('Unexpected SIGPIPE'));
-	});
+	if (typeof process !== 'undefined') {
+		process.on('SIGPIPE', () => {
+			console.error(new Error('Unexpected SIGPIPE'));
+		});
+	}
 
 	//#endregion
 
@@ -249,6 +251,9 @@
 		global['diagnosticsSource'] = {}; // Prevents diagnostic channel (which patches "require") from initializing entirely
 	}
 
+	/**
+	 * @returns {typeof import('./vs/base/parts/sandbox/electron-sandbox/globals') | undefined}
+	 */
 	function safeGlobals() {
 		const globals = (typeof self === 'object' ? self : typeof global === 'object' ? global : {});
 
@@ -256,7 +261,7 @@
 	}
 
 	/**
-	 * @returns {NodeJS.Process | undefined}
+	 * @returns {import('./vs/base/parts/sandbox/electron-sandbox/globals').IPartialNodeProcess | NodeJS.Process}
 	 */
 	function safeProcess() {
 		if (typeof process !== 'undefined') {
@@ -267,16 +272,20 @@
 		if (globals) {
 			return globals.process; // Native environment (sandboxed)
 		}
+
+		return undefined;
 	}
 
 	/**
-	 * @returns {Electron.IpcRenderer | undefined}
+	 * @returns {import('./vs/base/parts/sandbox/electron-sandbox/electronTypes').IpcRenderer | undefined}
 	 */
 	function safeIpcRenderer() {
 		const globals = safeGlobals();
 		if (globals) {
 			return globals.ipcRenderer;
 		}
+
+		return undefined;
 	}
 
 	/**

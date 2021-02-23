@@ -10,6 +10,7 @@ declare namespace monaco {
 	export type Thenable<T> = PromiseLike<T>;
 
 	export interface Environment {
+		globalAPI?: boolean;
 		baseUrl?: string;
 		getWorker?(workerId: string, label: string): Worker;
 		getWorkerUrl?(workerId: string, label: string): string;
@@ -896,6 +897,12 @@ declare namespace monaco.editor {
 		resource?: Uri;
 		take?: number;
 	}): IMarker[];
+
+	/**
+	 * Emitted when markers change for a model.
+	 * @event
+	 */
+	export function onDidChangeMarkers(listener: (e: readonly Uri[]) => void): IDisposable;
 
 	/**
 	 * Get the model that has `uri` if it exists.
@@ -3181,6 +3188,10 @@ declare namespace monaco.editor {
 		 * Controls strikethrough deprecated variables.
 		 */
 		showDeprecated?: boolean;
+		/**
+		 * Control the behavior and rendering of the inline hints.
+		 */
+		inlineHints?: IEditorInlineHintsOptions;
 	}
 
 	/**
@@ -3535,6 +3546,29 @@ declare namespace monaco.editor {
 	}
 
 	export type EditorLightbulbOptions = Readonly<Required<IEditorLightbulbOptions>>;
+
+	/**
+	 * Configuration options for editor inlineHints
+	 */
+	export interface IEditorInlineHintsOptions {
+		/**
+		 * Enable the inline hints.
+		 * Defaults to true.
+		 */
+		enabled?: boolean;
+		/**
+		 * Font size of inline hints.
+		 * Default to 90% of the editor font size.
+		 */
+		fontSize?: number;
+		/**
+		 * Font family of inline hints.
+		 * Defaults to editor font family.
+		 */
+		fontFamily?: string;
+	}
+
+	export type EditorInlineHintsOptions = Readonly<Required<IEditorInlineHintsOptions>>;
 
 	/**
 	 * Configuration options for editor minimap
@@ -4037,11 +4071,12 @@ declare namespace monaco.editor {
 		wrappingIndent = 117,
 		wrappingStrategy = 118,
 		showDeprecated = 119,
-		editorClassName = 120,
-		pixelRatio = 121,
-		tabFocusMode = 122,
-		layoutInfo = 123,
-		wrappingInfo = 124
+		inlineHints = 120,
+		editorClassName = 121,
+		pixelRatio = 122,
+		tabFocusMode = 123,
+		layoutInfo = 124,
+		wrappingInfo = 125
 	}
 	export const EditorOptions: {
 		acceptSuggestionOnCommitCharacter: IEditorOption<EditorOption.acceptSuggestionOnCommitCharacter, boolean>;
@@ -4142,6 +4177,7 @@ declare namespace monaco.editor {
 		showFoldingControls: IEditorOption<EditorOption.showFoldingControls, 'always' | 'mouseover'>;
 		showUnused: IEditorOption<EditorOption.showUnused, boolean>;
 		showDeprecated: IEditorOption<EditorOption.showDeprecated, boolean>;
+		inlineHints: IEditorOption<EditorOption.inlineHints, any>;
 		snippetSuggestions: IEditorOption<EditorOption.snippetSuggestions, 'none' | 'top' | 'bottom' | 'inline'>;
 		smartSelect: IEditorOption<EditorOption.smartSelect, any>;
 		smoothScrolling: IEditorOption<EditorOption.smoothScrolling, boolean>;
@@ -5392,7 +5428,7 @@ declare namespace monaco.languages {
 		/**
 		 * This rule will only execute if the text above the this line matches this regular expression.
 		 */
-		oneLineAboveText?: RegExp;
+		previousLineText?: RegExp;
 		/**
 		 * The action to execute.
 		 */
@@ -6378,6 +6414,19 @@ declare namespace monaco.languages {
 		resolveCodeLens?(model: editor.ITextModel, codeLens: CodeLens, token: CancellationToken): ProviderResult<CodeLens>;
 	}
 
+	export interface InlineHint {
+		text: string;
+		range: IRange;
+		description?: string | IMarkdownString;
+		whitespaceBefore?: boolean;
+		whitespaceAfter?: boolean;
+	}
+
+	export interface InlineHintsProvider {
+		onDidChangeInlineHints?: IEvent<void> | undefined;
+		provideInlineHints(model: editor.ITextModel, range: Range, token: CancellationToken): ProviderResult<InlineHint[]>;
+	}
+
 	export interface SemanticTokensLegend {
 		readonly tokenTypes: string[];
 		readonly tokenModifiers: string[];
@@ -6460,6 +6509,10 @@ declare namespace monaco.languages {
 		 * Defaults to false
 		 */
 		includeLF?: boolean;
+		/**
+		 * Other keys that can be referred to by the tokenizer.
+		 */
+		[key: string]: any;
 	}
 
 	/**

@@ -1451,6 +1451,21 @@ declare module 'vscode' {
 	}
 
 	/**
+	 * An error type that should be used to signal cancellation of an operation.
+	 *
+	 * This type can be used in response to a [cancellation token](#CancellationToken)
+	 * being cancelled or when an operation is being cancelled by the
+	 * executor of that operation.
+	 */
+	export class CancellationError extends Error {
+
+		/**
+		 * Creates a new cancellation error.
+		 */
+		constructor();
+	}
+
+	/**
 	 * Represents a type which can release resources, such
 	 * as event listening or a timer.
 	 */
@@ -4683,6 +4698,10 @@ declare module 'vscode' {
 		 */
 		afterText?: RegExp;
 		/**
+		 * This rule will only execute if the text above the current line matches this regular expression.
+		 */
+		previousLineText?: RegExp;
+		/**
 		 * The action to execute.
 		 */
 		action: EnterAction;
@@ -5807,6 +5826,11 @@ declare module 'vscode' {
 		};
 
 		/**
+		 * A storage utility for secrets.
+		 */
+		readonly secrets: SecretStorage;
+
+		/**
 		 * The uri of the directory containing the extension.
 		 */
 		readonly extensionUri: Uri;
@@ -5941,6 +5965,48 @@ declare module 'vscode' {
 		 * @param value A value. MUST not contain cyclic references.
 		 */
 		update(key: string, value: any): Thenable<void>;
+	}
+
+	/**
+	 * The event data that is fired when a secret is added or removed.
+	 */
+	export interface SecretStorageChangeEvent {
+		/**
+		 * The key of the secret that has changed.
+		 */
+		readonly key: string;
+	}
+
+	/**
+	 * Represents a storage utility for secrets, information that is
+	 * sensitive.
+	 */
+	export interface SecretStorage {
+		/**
+		 * Retrieve a secret that was stored with key. Returns undefined if there
+		 * is no password matching that key.
+		 * @param key The key the secret was stored under.
+		 * @returns The stored value or `undefined`.
+		 */
+		get(key: string): Thenable<string | undefined>;
+
+		/**
+		 * Store a secret under a given key.
+		 * @param key The key to store the secret under.
+		 * @param value The secret.
+		 */
+		store(key: string, value: string): Thenable<void>;
+
+		/**
+		 * Remove a secret from storage.
+		 * @param key The key the secret was stored under.
+		 */
+		delete(key: string): Thenable<void>;
+
+		/**
+		 * Fires when a secret is stored or deleted.
+		 */
+		onDidChange: Event<SecretStorageChangeEvent>;
 	}
 
 	/**
@@ -9207,7 +9273,7 @@ declare module 'vscode' {
 		 * Implement to handle when the number of rows and columns that fit into the terminal panel
 		 * changes, for example when font size changes or when the panel is resized. The initial
 		 * state of a terminal's dimensions should be treated as `undefined` until this is triggered
-		 * as the size of a terminal isn't know until it shows up in the user interface.
+		 * as the size of a terminal isn't known until it shows up in the user interface.
 		 *
 		 * When dimensions are overridden by
 		 * [onDidOverrideDimensions](#Pseudoterminal.onDidOverrideDimensions), `setDimensions` will
@@ -11878,8 +11944,6 @@ declare module 'vscode' {
 		export const onDidChange: Event<void>;
 	}
 
-	//#region Comments
-
 	/**
 	 * Collapsible state of a [comment thread](#CommentThread)
 	 */
@@ -12146,7 +12210,7 @@ declare module 'vscode' {
 		/**
 		 * Optional reaction handler for creating and deleting reactions on a [comment](#Comment).
 		 */
-		reactionHandler?: (comment: Comment, reaction: CommentReaction) => Promise<void>;
+		reactionHandler?: (comment: Comment, reaction: CommentReaction) => Thenable<void>;
 
 		/**
 		 * Dispose this comment controller.

@@ -233,9 +233,13 @@ const rebuildExtensions = [
     'big-data-cluster',
     'mssql'
 ];
-const marketplaceWebExtensions = [
-    'ms-vscode.references-view'
-];
+const marketplaceWebExtensionsExclude = new Set([
+    'ms-vscode.node-debug',
+    'ms-vscode.node-debug2',
+    'ms-vscode.js-debug-companion',
+    'ms-vscode.js-debug',
+    'ms-vscode.vscode-js-profile-table'
+]);
 const productJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../../product.json'), 'utf8'));
 const builtInExtensions = productJson.builtInExtensions || [];
 const webBuiltInExtensions = productJson.webBuiltInExtensions || [];
@@ -279,7 +283,7 @@ function packageLocalExtensionsStream(forWeb) {
 exports.packageLocalExtensionsStream = packageLocalExtensionsStream;
 function packageMarketplaceExtensionsStream(forWeb) {
     const marketplaceExtensionsDescriptions = [
-        ...builtInExtensions.filter(({ name }) => (forWeb ? marketplaceWebExtensions.indexOf(name) >= 0 : true)),
+        ...builtInExtensions.filter(({ name }) => (forWeb ? !marketplaceWebExtensionsExclude.has(name) : true)),
         ...(forWeb ? webBuiltInExtensions : [])
     ];
     const marketplaceExtensionsStream = minifyExtensionResources(es.merge(...marketplaceExtensionsDescriptions

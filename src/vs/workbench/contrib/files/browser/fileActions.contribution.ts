@@ -228,6 +228,8 @@ appendToCommandPalette(NEW_UNTITLED_PLAIN_FILE_COMMAND_ID, { value: NEW_UNTITLED
 
 // Menu registration - open editors
 
+const isFileOrUntitledResourceContextKey = ContextKeyExpr.or(ResourceContextKey.IsFileSystemResource, ResourceContextKey.Scheme.isEqualTo(Schemas.untitled));
+
 const openToSideCommand = {
 	id: OPEN_TO_SIDE_COMMAND_ID,
 	title: nls.localize('openToSide', "Open to the Side")
@@ -236,7 +238,7 @@ MenuRegistry.appendMenuItem(MenuId.OpenEditorsContext, {
 	group: 'navigation',
 	order: 10,
 	command: openToSideCommand,
-	when: ContextKeyExpr.or(ResourceContextKey.IsFileSystemResource, ResourceContextKey.Scheme.isEqualTo(Schemas.untitled))
+	when: isFileOrUntitledResourceContextKey
 });
 
 MenuRegistry.appendMenuItem(MenuId.OpenEditorsContext, {
@@ -327,7 +329,7 @@ MenuRegistry.appendMenuItem(MenuId.OpenEditorsContext, {
 	group: '3_compare',
 	order: 20,
 	command: compareResourceCommand,
-	when: ContextKeyExpr.and(ResourceContextKey.HasResource, ResourceSelectedForCompareContext, WorkbenchListDoubleSelection.toNegated())
+	when: ContextKeyExpr.and(ResourceContextKey.HasResource, ResourceSelectedForCompareContext, isFileOrUntitledResourceContextKey, WorkbenchListDoubleSelection.toNegated())
 });
 
 const selectForCompareCommand = {
@@ -338,7 +340,7 @@ MenuRegistry.appendMenuItem(MenuId.OpenEditorsContext, {
 	group: '3_compare',
 	order: 30,
 	command: selectForCompareCommand,
-	when: ContextKeyExpr.and(ResourceContextKey.HasResource, WorkbenchListDoubleSelection.toNegated())
+	when: ContextKeyExpr.and(ResourceContextKey.HasResource, isFileOrUntitledResourceContextKey, WorkbenchListDoubleSelection.toNegated())
 });
 
 const compareSelectedCommand = {
@@ -349,7 +351,7 @@ MenuRegistry.appendMenuItem(MenuId.OpenEditorsContext, {
 	group: '3_compare',
 	order: 30,
 	command: compareSelectedCommand,
-	when: ContextKeyExpr.and(ResourceContextKey.HasResource, WorkbenchListDoubleSelection)
+	when: ContextKeyExpr.and(ResourceContextKey.HasResource, WorkbenchListDoubleSelection, isFileOrUntitledResourceContextKey)
 });
 
 MenuRegistry.appendMenuItem(MenuId.OpenEditorsContext, {

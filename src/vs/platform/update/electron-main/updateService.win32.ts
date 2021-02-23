@@ -57,7 +57,7 @@ export class Win32UpdateService extends AbstractUpdateService {
 	get cachePath(): Promise<string> {
 		// {{SQL CARBON EDIT}}
 		const result = path.join(tmpdir(), `sqlops-update-${product.target}-${process.arch}`);
-		return pfs.mkdirp(result, undefined).then(() => result);
+		return pfs.mkdirp(result).then(() => result);
 	}
 
 	constructor(

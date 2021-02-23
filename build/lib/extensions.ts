@@ -271,9 +271,13 @@ const rebuildExtensions = [
 	'mssql'
 ];
 
-const marketplaceWebExtensions = [
-	'ms-vscode.references-view'
-];
+const marketplaceWebExtensionsExclude = new Set([
+	'ms-vscode.node-debug',
+	'ms-vscode.node-debug2',
+	'ms-vscode.js-debug-companion',
+	'ms-vscode.js-debug',
+	'ms-vscode.vscode-js-profile-table'
+]);
 
 interface IBuiltInExtension {
 	name: string;
@@ -341,7 +345,7 @@ export function packageLocalExtensionsStream(forWeb: boolean): Stream {
 
 export function packageMarketplaceExtensionsStream(forWeb: boolean): Stream {
 	const marketplaceExtensionsDescriptions = [
-		...builtInExtensions.filter(({ name }) => (forWeb ? marketplaceWebExtensions.indexOf(name) >= 0 : true)),
+		...builtInExtensions.filter(({ name }) => (forWeb ? !marketplaceWebExtensionsExclude.has(name) : true)),
 		...(forWeb ? webBuiltInExtensions : [])
 	];
 	const marketplaceExtensionsStream = minifyExtensionResources(
