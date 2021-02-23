@@ -3,9 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./infoButton';
 import { Button as sqlButton } from 'sql/base/browser/ui/button/button';
-import { IButtonOptions } from 'vs/base/browser/ui/button/button';
+import { addDisposableListener, EventType } from 'vs/base/browser/dom';
+import { IButtonOptions, IButtonStyles } from 'vs/base/browser/ui/button/button';
+import { Color } from 'vs/base/common/color';
+
+import 'vs/css!./infoButton';
 
 export interface IInfoButtonOptions extends IButtonOptions {
 	buttonMaxHeight: number,
@@ -33,6 +36,11 @@ export class InfoButton extends sqlButton {
 	private _iconHeight?: number;
 	private _iconWidth?: number;
 	private _title?: string;
+
+	private _buttonBackground: Color;
+	private _buttonHoverBackground: Color;
+	private _buttonForeground: Color;
+	private _buttonBorder: Color;
 
 	constructor(container: HTMLElement, options?: IInfoButtonOptions) {
 		super(container, options);
@@ -75,6 +83,11 @@ export class InfoButton extends sqlButton {
 		this.element.style.background = 'none';
 
 		this.infoButtonOptions = options;
+		this._register(addDisposableListener(this.element, EventType.MOUSE_OVER, e => {
+			if (this._buttonHoverBackground) {
+				this.element.style.backgroundColor = this._buttonHoverBackground.toString();
+			}
+		}));
 	}
 
 	public get title(): string {
@@ -148,5 +161,19 @@ export class InfoButton extends sqlButton {
 		this.iconWidth = options.iconWidth;
 		this.iconClass = options.iconClass;
 		this.title = options.title;
+	}
+
+	style(styles: IButtonStyles): void {
+		this._buttonBackground = styles.buttonBackground;
+		this._buttonForeground = styles.buttonForeground;
+		this._buttonBorder = styles.buttonBorder;
+		this._buttonHoverBackground = styles.buttonHoverBackground;
+		this.applyStyles();
+	}
+
+	applyStyles() {
+		this.element.style.backgroundColor = this._buttonBackground?.toString();
+		this.element.style.color = this._buttonForeground?.toString();
+		this.element.style.borderColor = this._buttonBorder?.toString();
 	}
 }
