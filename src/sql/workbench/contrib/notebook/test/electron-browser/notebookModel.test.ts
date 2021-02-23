@@ -44,12 +44,11 @@ let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
 		cell_type: CellTypes.Code,
 		source: ['insert into t1 values (c1, c2)'],
-		metadata: { language: 'python' },
+		metadata: { language: 'sql' },
 		execution_count: 1
 	}, {
 		cell_type: CellTypes.Markdown,
 		source: ['I am *markdown*'],
-		metadata: { language: 'python' },
 		execution_count: 1
 	}],
 	metadata: {
@@ -57,6 +56,9 @@ let expectedNotebookContent: nb.INotebookContents = {
 			name: 'mssql',
 			language: 'sql',
 			display_name: 'SQL'
+		},
+		language_info: {
+			name: 'sql'
 		}
 	},
 	nbformat: 4,
@@ -81,7 +83,31 @@ let expectedNotebookContentOneCell: nb.INotebookContents = {
 	nbformat_minor: 5
 };
 
+let expectedParameterizedNotebookContent: nb.INotebookContents = {
+	cells: [{
+		cell_type: CellTypes.Code,
+		source: ['x = 1 \ny = 2'],
+		metadata: { language: 'python', tags: ['parameters'] },
+		execution_count: 1
+	}, {
+		cell_type: CellTypes.Code,
+		source: ['x = 2 \ny = 5)'],
+		metadata: { language: 'python', tags: ['injected-parameters'] },
+		execution_count: 2
+	}],
+	metadata: {
+		kernelspec: {
+			name: 'python3',
+			language: 'python',
+			display_name: 'Python 3'
+		}
+	},
+	nbformat: 4,
+	nbformat_minor: 5
+};
+
 let defaultUri = URI.file('/some/path.ipynb');
+let notebookUriParams = URI.parse('https://hello.ipynb?x=1&y=2');
 
 let mockClientSession: IClientSession;
 let clientSessionOptions: IClientSessionOptions;
@@ -106,7 +132,7 @@ suite('notebook model', function (): void {
 		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = new TestCapabilitiesService();
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
-		memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
+		memento.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
 		queryConnectionService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
 		queryConnectionService.callBase = true;
 		let serviceCollection = new ServiceCollection();
@@ -318,6 +344,139 @@ suite('notebook model', function (): void {
 		assert.equal(activeCellChangeCount, 5, 'Active cell change count is incorrect; should be 5');
 	});
 
+	test('Should set notebook parameter and injected parameter cell correctly', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedParameterizedNotebookContent));
+		defaultModelOptions.notebookUri = defaultUri;
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
+
+		// Set parameter cell and injected parameters cell
+		let notebookParamsCell = model.cells[0];
+		let notebookInjectedParamsCell = model.cells[1];
+
+		// Parameters Cell Validation
+		assert.equal(model.cells.indexOf(notebookParamsCell), 0, 'Notebook parameters cell should be first cell in notebook');
+		assert.equal(notebookParamsCell.isParameter, true, 'Notebook parameters cell should be tagged parameter');
+		assert.equal(notebookParamsCell.isInjectedParameter, false, 'Notebook parameters cell should not be tagged injected parameter');
+
+		// Injected Parameters Cell Validation
+		assert.equal(model.cells.indexOf(notebookInjectedParamsCell), 1, 'Notebook injected parameters cell should be second cell in notebook');
+		assert.equal(notebookInjectedParamsCell.isParameter, false, 'Notebook injected parameters cell should not be tagged parameter cell');
+		assert.equal(notebookInjectedParamsCell.isInjectedParameter, true, 'Notebook injected parameters cell should be tagged injected parameter');
+	});
+
+	test('Should set notebookUri parameters to new cell correctly', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContentOneCell));
+		defaultModelOptions.notebookUri = notebookUriParams;
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
+
+		// Validate notebookUri parameter cell is set as the only parameter cell
+		let notebookUriParamsCell = model.cells[0];
+		assert.equal(model.cells.indexOf(notebookUriParamsCell), 0, 'NotebookURI parameters cell should be first cell in notebook');
+		assert.equal(notebookUriParamsCell.isParameter, true, 'NotebookURI parameters cell should be tagged parameter');
+		assert.equal(notebookUriParamsCell.isInjectedParameter, false, 'NotebookURI parameters Cell should not be injected parameter');
+	});
+
+	test('Should set notebookUri parameters to new cell after parameters cell correctly', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let expectedNotebookContentParameterCell = expectedNotebookContentOneCell;
+		//Set the cell to be tagged as parameter cell
+		expectedNotebookContentParameterCell.cells[0].metadata.tags = ['parameters'];
+
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContentParameterCell));
+		defaultModelOptions.notebookUri = notebookUriParams;
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
+
+		// Validate notebookUri parameter cell is set as injected parameter
+		let notebookUriParamsCell = model.cells[1];
+		assert.equal(model.cells.indexOf(notebookUriParamsCell), 1, 'NotebookURI parameters cell should be second cell in notebook');
+		assert.equal(notebookUriParamsCell.isParameter, false, 'NotebookURI parameters cell should not be tagged parameter cell');
+		assert.equal(notebookUriParamsCell.isInjectedParameter, true, 'NotebookURI parameters Cell should be injected parameter');
+	});
+
+	test('Should set notebookUri parameters to new cell after injected parameters cell correctly', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedParameterizedNotebookContent));
+		defaultModelOptions.notebookUri = notebookUriParams;
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.equal(model.cells.length, 3, 'Cell count in notebook model is not correct');
+
+		// Validate notebookUri parameter cell is set as an injected parameter after parameter and injected parameter cells
+		let notebookUriParamsCell = model.cells[2];
+		assert.equal(model.cells.indexOf(notebookUriParamsCell), 2, 'NotebookURI parameters cell should be third cell in notebook');
+		assert.equal(notebookUriParamsCell.isParameter, false, 'NotebookURI parameters cell should not be tagged parameter cell');
+		assert.equal(notebookUriParamsCell.isInjectedParameter, true, 'NotebookURI parameters Cell should be injected parameter');
+	});
+
+	test('Should move first cell below second cell correctly', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
+
+		let firstCell = model.cells[0];
+		let secondCell = model.cells[1];
+		// Move First Cell down
+		model.moveCell(firstCell, 1);
+		assert.equal(model.cells.indexOf(firstCell), 1, 'First Cell did not move down correctly');
+		assert.equal(model.cells.indexOf(secondCell), 0, 'Second Cell did not move up correctly');
+	});
+
+	test('Should move second cell up above the first cell correctly', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
+
+		let firstCell = model.cells[0];
+		let secondCell = model.cells[1];
+		// Move Second Cell up
+		model.moveCell(secondCell, 0);
+		assert.equal(model.cells.indexOf(firstCell), 1, 'First Cell did not move down correctly');
+		assert.equal(model.cells.indexOf(secondCell), 0, 'Second Cell did not move up correctly');
+	});
+
 	test('Should delete cells correctly', async function (): Promise<void> {
 		// Given a notebook with 2 cells
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
@@ -385,6 +544,34 @@ suite('notebook model', function (): void {
 		model.cells[0].metadata = { 'test-field': 'test-value' };
 		assert(!isUndefinedOrNull(notebookContentChange));
 		assert.equal(notebookContentChange.changeType, NotebookChangeType.CellMetadataUpdated, 'notebookContentChange changeType should indicate ');
+	});
+
+	test('Should set cell language correctly after cell type conversion', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		let newCell: ICellModel;
+		model.onCellTypeChanged(c => newCell = c);
+
+		let firstCell = model.cells[0];
+		let secondCell = model.cells[1];
+
+		assert.equal(firstCell.cellType, CellTypes.Code, 'Initial cell type for first cell should be code');
+		assert.equal(firstCell.language, 'sql', 'Initial language should be sql for first cell');
+
+		model.convertCellType(firstCell);
+		assert.equal(firstCell.cellType, CellTypes.Markdown, 'Failed to convert cell type after conversion');
+		assert.equal(firstCell.language, 'markdown', 'Language should be markdown for text cells');
+		assert.deepEqual(newCell, firstCell);
+
+		model.convertCellType(secondCell);
+		assert.equal(secondCell.cellType, CellTypes.Code, 'Failed to convert second cell type');
+		assert.equal(secondCell.language, 'sql', 'Language should be sql again for second cell');
+		assert.deepEqual(newCell, secondCell);
 	});
 
 	test('Should load contents but then go to error state if client session startup fails', async function (): Promise<void> {
@@ -640,6 +827,42 @@ suite('notebook model', function (): void {
 
 		// I expect the connection profile matching the saved connection name to be used
 		assert.ok(spy.calledWith(connectionName, expectedConnectionProfile));
+	});
+
+	test('should read and write multi_connection_mode to notebook metadata correctly', async function () {
+		// Given a notebook with multi_connection_mode: true in metadata
+		let notebook: nb.INotebookContents = {
+			cells: [],
+			metadata: {
+				multi_connection_mode: true
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(notebook));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		// I expect multiConnectionMode to be set to true
+		assert.equal(model.multiConnectionMode, true, 'multi_connection_mode not read correctly from notebook metadata');
+
+		// When I change multiConnectionMode to false
+		model.multiConnectionMode = false;
+
+		// I expect multi_connection_mode to not be in the notebook metadata
+		let output: nb.INotebookContents = model.toJSON();
+		assert.equal(output.metadata['multi_connection_mode'], undefined, 'multi_connection_mode saved in notebook metadata when it should not be');
+
+		// When I change multiConnectionMode to true
+		model.multiConnectionMode = true;
+
+		// I expect multi_connection_mode to be in the notebook metadata
+		output = model.toJSON();
+		assert.equal(output.metadata['multi_connection_mode'], true, 'multi_connection_mode not saved correctly to notebook metadata');
 	});
 
 	async function loadModelAndStartClientSession(): Promise<NotebookModel> {

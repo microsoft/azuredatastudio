@@ -28,6 +28,8 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -83,7 +85,8 @@ export class CellModel extends Disposable implements ICellModel {
 		private _options: ICellModelOptions,
 		@optional(INotebookService) private _notebookService?: INotebookService,
 		@optional(ICommandService) private _commandService?: ICommandService,
-		@optional(IConfigurationService) private _configurationService?: IConfigurationService
+		@optional(IConfigurationService) private _configurationService?: IConfigurationService,
+		@optional(IAdsTelemetryService) private _telemetryService?: IAdsTelemetryService,
 	) {
 		super();
 		this.id = `${modelId++}`;
@@ -483,6 +486,9 @@ export class CellModel extends Disposable implements ICellModel {
 			if (!kernel) {
 				return false;
 			}
+			this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunCell)
+				.withAdditionalProperties({ cell_language: kernel.name })
+				.send();
 			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
 			// This matches the same behavior as JupyterLab
 			if (this.future && this.future.inProgress) {
@@ -708,6 +714,21 @@ export class CellModel extends Disposable implements ICellModel {
 			case 'display_data':
 				output = msg.content as nb.ICellOutput;
 				output.output_type = msgType;
+				// Display message outputs before grid outputs
+				if (this._outputs.length > 0) {
+					for (let i = 0; i < this._outputs.length; i++) {
+						if (this._outputs[i].output_type === 'execute_result') {
+							// Deletes transient node in the serialized JSON
+							// "Optional transient data introduced in 5.1. Information not to be persisted to a notebook or other documents."
+							// (https://jupyter-client.readthedocs.io/en/stable/messaging.html)
+							delete output['transient'];
+							this._outputs.splice(i, 0, this.rewriteOutputUrls(output));
+							this.fireOutputsChanged();
+							added = true;
+							break;
+						}
+					}
+				}
 				break;
 			case 'stream':
 			case 'error':

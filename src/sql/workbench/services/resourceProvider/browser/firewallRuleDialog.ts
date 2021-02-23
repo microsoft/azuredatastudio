@@ -10,7 +10,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { buttonBackground } from 'vs/platform/theme/common/colorRegistry';
-import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
+import { attachButtonStyler, attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -22,7 +22,6 @@ import * as azdata from 'azdata';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { FirewallRuleViewModel } from 'sql/platform/accounts/common/firewallRuleViewModel';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IAccountPickerService } from 'sql/workbench/services/accountManagement/browser/accountPicker';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
@@ -88,7 +87,7 @@ export class FirewallRuleDialog extends Modal {
 			textResourcePropertiesService,
 			contextKeyService,
 			{
-				isFlyout: true,
+				dialogStyle: 'flyout',
 				hasBackButton: true,
 				hasSpinner: true
 			}
@@ -108,7 +107,7 @@ export class FirewallRuleDialog extends Modal {
 		this.backButton!.onDidClick(() => this.cancel());
 		this._register(attachButtonStyler(this.backButton!, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));
 		this._createButton = this.addFooterButton(localize('firewall.ok', "OK"), () => this.createFirewallRule());
-		this._closeButton = this.addFooterButton(localize('firewall.cancel', "Cancel"), () => this.cancel());
+		this._closeButton = this.addFooterButton(localize('firewall.cancel', "Cancel"), () => this.cancel(), 'right', true);
 		this.registerListeners();
 	}
 

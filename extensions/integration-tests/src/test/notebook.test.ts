@@ -55,7 +55,7 @@ suite('Notebook integration test suite', function () {
 		assert(actualOutput2[0] === '1', `Expected result: 1, Actual: '${actualOutput2[0]}'`);
 	});
 
-	test('Sql NB multiple cells test @UNSTABLE@', async function () {
+	test('Sql NB multiple cells test', async function () {
 		let notebook = await openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
 		await runCells(notebook);
 		const expectedOutput0 = '(1 row affected)';
@@ -128,8 +128,7 @@ suite('Notebook integration test suite', function () {
 		});
 	});
 
-	// TODO: Need to make this test more reliable.
-	test('should not be dirty after saving notebook test @UNSTABLE@', async function () {
+	test('should not be dirty after saving notebook test', async function () {
 		// Given a notebook that's been edited (in this case, open notebook runs the 1st cell and adds an output)
 		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title);
 		await runCell(notebook);

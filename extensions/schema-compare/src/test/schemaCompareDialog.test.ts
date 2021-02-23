@@ -42,7 +42,7 @@ describe('SchemaCompareDialog.openDialog @DacFx@', function (): void {
 	});
 
 	it('Simulate ok button- with both endpoints set to dacpac', async function (): Promise<void> {
-		let schemaCompareResult = new SchemaCompareMainWindowTest(undefined, mockExtensionContext.object);
+		let schemaCompareResult = new SchemaCompareMainWindowTest(undefined, mockExtensionContext.object, undefined);
 		await schemaCompareResult.start(undefined);
 		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
 		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);

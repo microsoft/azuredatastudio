@@ -2,14 +2,14 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.25.0"
+    "azdata": ">=1.26.0"
   },
   "activationEvents": [
     "onCommand:arc.connectToController",
@@ -292,11 +292,13 @@
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
                             "value": "direct"
                           },
-                          "validations" : [{
-                            "type": "regex_match",
-                            "regex": "^[0-9A-Fa-f]{8}-([0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}$",
-                            "description": "%arc.data.controller.spclientid.validation.description%"
-                          }]
+                          "validations": [
+                            {
+                              "type": "regex_match",
+                              "regex": "^[0-9A-Fa-f]{8}-([0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}$",
+                              "description": "%arc.data.controller.spclientid.validation.description%"
+                            }
+                          ]
                         },
                         {
                           "label": "%arc.data.controller.spclientsecret%",
@@ -322,11 +324,13 @@
                             "providerId": "subscription-id-to-tenant-id",
                             "triggerField": "AZDATA_NB_VAR_ARC_SUBSCRIPTION"
                           },
-                          "validations" : [{
-                            "type": "regex_match",
-                            "regex": "^[0-9A-Fa-f]{8}-([0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}$",
-                            "description": "%arc.data.controller.sptenantid.validation.description%"
-                          }]
+                          "validations": [
+                            {
+                              "type": "regex_match",
+                              "regex": "^[0-9A-Fa-f]{8}-([0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}$",
+                              "description": "%arc.data.controller.sptenantid.validation.description%"
+                            }
+                          ]
                         }
                       ]
                     }
@@ -346,11 +350,13 @@
                         {
                           "type": "text",
                           "label": "%arc.data.controller.namespace%",
-                          "validations" : [{
-                            "type": "regex_match",
-                            "regex": "^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$",
-                            "description": "%arc.data.controller.namespace.validation.description%"
-                          }],
+                          "validations": [
+                            {
+                              "type": "regex_match",
+                              "regex": "^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$",
+                              "description": "%arc.data.controller.namespace.validation.description%"
+                            }
+                          ],
                           "defaultValue": "arc",
                           "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE"
@@ -358,11 +364,13 @@
                         {
                           "type": "text",
                           "label": "%arc.data.controller.name%",
-                          "validations" : [{
-                            "type": "regex_match",
-                            "regex": "^[a-z0-9]([-.a-z0-9]{0,251}[a-z0-9])?$",
-                            "description": "%arc.data.controller.name.validation.description%"
-                          }],
+                          "validations": [
+                            {
+                              "type": "regex_match",
+                              "regex": "^[a-z0-9]([-.a-z0-9]{0,251}[a-z0-9])?$",
+                              "description": "%arc.data.controller.name.validation.description%"
+                            }
+                          ],
                           "defaultValue": "arc-dc",
                           "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME"
@@ -610,206 +618,12 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.5"
+                "version": "20.3.0"
               }
             ],
             "when": true
           }
         ]
-      },
-      {
-        "name": "arc.sql",
-        "displayName": "%resource.type.arc.sql.display.name%",
-        "description": "%resource.type.arc.sql.description%",
-        "platforms": "*",
-        "icon": "./images/miaa.svg",
-        "tags": [
-          "Hybrid",
-          "SQL Server"
-        ],
-        "providers": [
-          {
-            "notebookWizard": {
-              "notebook": "./notebooks/arcDeployment/deploy.sql.existing.arc.ipynb",
-              "doneAction": {
-                "label": "%deploy.done.action%"
-              },
-              "scriptAction": {
-                "label": "%deploy.script.action%"
-              },
-              "codeCellInsertionPosition": 5,
-              "title": "%arc.sql.wizard.title%",
-              "name": "arc.sql.wizard",
-              "labelPosition": "left",
-              "generateSummaryPage": false,
-              "pages": [
-                {
-                  "title": "%arc.sql.wizard.page1.title%",
-                  "labelWidth": "175px",
-                  "inputWidth": "280px",
-                  "sections": [
-                    {
-                      "title": "%arc.sql.connection.settings.section.title%",
-                      "fields": [
-                        {
-                          "label": "%arc.controller%",
-                          "variableName": "",
-                          "type": "options",
-                          "editable": false,
-                          "required": true,
-                          "options": {
-                            "source": {
-                              "providerId": "arc.controllers",
-                              "variableNames": {
-                                "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
-                                "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
-                                "kubeConfig": "AZDATA_NB_VAR_CONTROLLER_KUBECONFIG",
-                                "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT",
-                                "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
-                              }
-                            },
-                            "optionsType": "dropdown"
-                          }
-                        },
-                        {
-                          "label": "%arc.sql.instance.name%",
-                          "variableName": "AZDATA_NB_VAR_SQL_INSTANCE_NAME",
-                          "type": "text",
-                          "defaultValue": "sqlinstance1",
-                          "required": true,
-                          "validations" : [{
-                            "type": "regex_match",
-                            "regex": "^[a-z]([-a-z0-9]{0,11}[a-z0-9])?$",
-                            "description": "%arc.sql.invalid.instance.name%"
-                          }]
-                        },
-                        {
-                          "label": "%arc.sql.username%",
-                          "variableName": "AZDATA_NB_VAR_SQL_USERNAME",
-                          "type": "text",
-                          "required": true,
-                          "validations" : [{
-                            "type": "regex_match",
-                            "regex": "^(?!sa$)",
-                            "description": "%arc.sql.invalid.username%"
-                          }]
-                        },
-                        {
-                          "label": "%arc.password%",
-                          "variableName": "AZDATA_NB_VAR_SQL_PASSWORD",
-                          "type": "sql_password",
-                          "userName": "sa",
-                          "confirmationRequired": true,
-                          "confirmationLabel": "%arc.confirm.password%",
-                          "defaultValue": "",
-                          "required": true
-                        }
-                      ]
-                    },
-                    {
-                      "title": "%arc.sql.instance.settings.section.title%",
-                      "fields": [
-                        {
-                          "label": "%arc.storage-class.data.label%",
-                          "description": "%arc.sql.storage-class.data.description%",
-                          "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_DATA",
-                          "type": "kube_storage_class",
-                          "required": true
-                        },
-                        {
-                          "label": "%arc.storage-class.logs.label%",
-                          "description": "%arc.sql.storage-class.logs.description%",
-                          "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_LOGS",
-                          "type": "kube_storage_class",
-                          "required": true
-                        },
-                        {
-                          "label": "%arc.cores-request.label%",
-                          "description": "%arc.sql.cores-request.description%",
-                          "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
-                          "type": "number",
-                          "min": 1,
-                          "required": false,
-                          "validations": [
-                            {
-                              "type": "<=",
-                              "target": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
-                              "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
-                            }
-                          ]
-                        },
-                        {
-                          "label": "%arc.cores-limit.label%",
-                          "description": "%arc.sql.cores-limit.description%",
-                          "variableName": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
-                          "type": "number",
-                          "min": 1,
-                          "required": false,
-                          "validations": [
-                            {
-                              "type": ">=",
-                              "target": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
-                              "description": "%cores.limit.greater.than.or.equal.to.requested.cores%"
-                            }
-                          ]
-                        },
-                        {
-                          "label": "%arc.memory-request.label%",
-                          "description": "%arc.sql.memory-request.description%",
-                          "variableName": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
-                          "type": "number",
-                          "min": 2,
-                          "required": false,
-                          "validations": [{
-                            "type": "<=",
-                            "target": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
-                            "description": "%requested.memory.less.than.or.equal.to.memory.limit%"
-                          }]
-                        },
-                        {
-                          "label": "%arc.memory-limit.label%",
-                          "description": "%arc.sql.memory-limit.description%",
-                          "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
-                          "type": "number",
-                          "min": 2,
-                          "required": false,
-                          "validations": [{
-                            "type": ">=",
-                            "target": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
-                            "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
-                          }]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            },
-            "requiredTools": [
-              {
-                "name": "kubectl"
-              },
-              {
-                "name": "azdata",
-                "version": "20.2.5"
-              }
-            ],
-            "when": "true"
-          }
-        ],
-        "agreement": {
-          "template": "%arc.agreement%",
-          "links": [
-            {
-              "text": "%microsoft.agreement.privacy.statement%",
-              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
-            },
-            {
-              "text": "%arc.agreement.sql.terms.conditions%",
-              "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
-            }
-          ]
-        }
       },
       {
         "name": "arc.postgres",
@@ -870,11 +684,13 @@
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_NAME",
                           "type": "text",
                           "description": "%arc.postgres.server.group.name.validation.description%",
-                          "validations" : [{
-                            "type": "regex_match",
-                            "regex": "^[a-z]([-a-z0-9]{0,9}[a-z0-9])?$",
-                            "description": "%arc.postgres.server.group.name.validation.description%"
-                          }],
+                          "validations": [
+                            {
+                              "type": "regex_match",
+                              "regex": "^[a-z]([-a-z0-9]{0,9}[a-z0-9])?$",
+                              "description": "%arc.postgres.server.group.name.validation.description%"
+                            }
+                          ],
                           "required": true
                         },
                         {
@@ -891,10 +707,12 @@
                           "description": "%arc.postgres.server.group.workers.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS",
                           "type": "number",
-                          "validations": [{
-                            "type": "is_integer",
-                            "description": "%should.be.integer%"
-                          }],
+                          "validations": [
+                            {
+                              "type": "is_integer",
+                              "description": "%should.be.integer%"
+                            }
+                          ],
                           "defaultValue": "0",
                           "min": 0
                         },
@@ -902,10 +720,12 @@
                           "label": "%arc.postgres.server.group.port%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_PORT",
                           "type": "number",
-                          "validations": [{
-                            "type": "is_integer",
-                            "description": "%should.be.integer%"
-                          }],
+                          "validations": [
+                            {
+                              "type": "is_integer",
+                              "description": "%should.be.integer%"
+                            }
+                          ],
                           "defaultValue": "5432",
                           "min": 1,
                           "max": 65535
@@ -987,11 +807,13 @@
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_REQUEST",
                           "type": "number",
                           "min": 1,
-                          "validations": [{
-                            "type": "<=",
-                            "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_LIMIT",
-                            "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
-                          }]
+                          "validations": [
+                            {
+                              "type": "<=",
+                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_LIMIT",
+                              "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
+                            }
+                          ]
                         },
                         {
                           "label": "%arc.postgres.server.group.cores.limit.label%",
@@ -999,11 +821,13 @@
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_LIMIT",
                           "type": "number",
                           "min": 1,
-                          "validations": [{
-                            "type": ">=",
-                            "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_REQUEST",
-                            "description": "%cores.limit.greater.than.or.equal.to.requested.cores%"
-                          }]
+                          "validations": [
+                            {
+                              "type": ">=",
+                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_REQUEST",
+                              "description": "%cores.limit.greater.than.or.equal.to.requested.cores%"
+                            }
+                          ]
                         },
                         {
                           "label": "%arc.postgres.server.group.memory.request.label%",
@@ -1011,11 +835,13 @@
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_REQUEST",
                           "type": "number",
                           "min": 0.25,
-                          "validations": [{
-                            "type": "<=",
-                            "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_LIMIT",
-                            "description": "%requested.memory.less.than.or.equal.to.memory.limit%"
-                          }]
+                          "validations": [
+                            {
+                              "type": "<=",
+                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_LIMIT",
+                              "description": "%requested.memory.less.than.or.equal.to.memory.limit%"
+                            }
+                          ]
                         },
                         {
                           "label": "%arc.postgres.server.group.memory.limit.label%",
@@ -1023,11 +849,13 @@
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_LIMIT",
                           "type": "number",
                           "min": 0.25,
-                          "validations": [{
-                            "type": ">=",
-                            "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_REQUEST",
-                            "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
-                          }]
+                          "validations": [
+                            {
+                              "type": ">=",
+                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_REQUEST",
+                              "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
+                            }
+                          ]
                         }
                       ]
                     }
@@ -1041,12 +869,224 @@
               },
               {
                 "name": "azdata",
-                "version": "20.2.5"
+                "version": "20.3.0"
               }
             ],
             "when": "true"
           }
         ],
+        "agreements": [
+          {
+            "template": "%arc.agreement%",
+            "links": [
+              {
+                "text": "%microsoft.agreement.privacy.statement%",
+                "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+              },
+              {
+                "text": "%arc.agreement.postgres.terms.conditions%",
+                "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
+              }
+            ],
+            "when": "true"
+          }
+        ]
+      }
+    ],
+    "resourceDeploymentSubTypes": [
+      {
+        "resourceName": "azure-sql-mi",
+        "options": [
+          {
+            "name": "mi-type",
+            "values": [
+              {
+                "name": "arc-mi",
+                "displayName": "%resource.type.arc.sql.display.name%"
+              }
+            ]
+          }
+        ],
+        "tags": [
+          "Hybrid",
+          "SQL Server"
+        ],
+        "provider": {
+          "notebookWizard": {
+            "notebook": "./notebooks/arcDeployment/deploy.sql.existing.arc.ipynb",
+            "doneAction": {
+              "label": "%deploy.done.action%"
+            },
+            "scriptAction": {
+              "label": "%deploy.script.action%"
+            },
+            "codeCellInsertionPosition": 5,
+            "title": "%arc.sql.wizard.title%",
+            "name": "arc.sql.wizard",
+            "labelPosition": "left",
+            "generateSummaryPage": false,
+            "pages": [
+              {
+                "title": "%arc.sql.wizard.page1.title%",
+                "labelWidth": "175px",
+                "inputWidth": "280px",
+                "sections": [
+                  {
+                    "title": "%arc.sql.connection.settings.section.title%",
+                    "fields": [
+                      {
+                        "label": "%arc.controller%",
+                        "variableName": "",
+                        "type": "options",
+                        "editable": false,
+                        "required": true,
+                        "options": {
+                          "source": {
+                            "providerId": "arc.controllers",
+                            "variableNames": {
+                              "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
+                              "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
+                              "kubeConfig": "AZDATA_NB_VAR_CONTROLLER_KUBECONFIG",
+                              "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT",
+                              "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
+                            }
+                          },
+                          "optionsType": "dropdown"
+                        }
+                      },
+                      {
+                        "label": "%arc.sql.instance.name%",
+                        "variableName": "AZDATA_NB_VAR_SQL_INSTANCE_NAME",
+                        "type": "text",
+                        "defaultValue": "sqlinstance1",
+                        "required": true,
+                        "validations": [
+                          {
+                            "type": "regex_match",
+                            "regex": "^[a-z]([-a-z0-9]{0,11}[a-z0-9])?$",
+                            "description": "%arc.sql.invalid.instance.name%"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "%arc.sql.username%",
+                        "variableName": "AZDATA_NB_VAR_SQL_USERNAME",
+                        "type": "text",
+                        "required": true,
+                        "validations": [
+                          {
+                            "type": "regex_match",
+                            "regex": "^(?!sa$)",
+                            "description": "%arc.sql.invalid.username%"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "%arc.password%",
+                        "variableName": "AZDATA_NB_VAR_SQL_PASSWORD",
+                        "type": "sql_password",
+                        "userName": "sa",
+                        "confirmationRequired": true,
+                        "confirmationLabel": "%arc.confirm.password%",
+                        "defaultValue": "",
+                        "required": true
+                      }
+                    ]
+                  },
+                  {
+                    "title": "%arc.sql.instance.settings.section.title%",
+                    "fields": [
+                      {
+                        "label": "%arc.storage-class.data.label%",
+                        "description": "%arc.sql.storage-class.data.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_DATA",
+                        "type": "kube_storage_class",
+                        "required": true
+                      },
+                      {
+                        "label": "%arc.storage-class.logs.label%",
+                        "description": "%arc.sql.storage-class.logs.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_LOGS",
+                        "type": "kube_storage_class",
+                        "required": true
+                      },
+                      {
+                        "label": "%arc.cores-request.label%",
+                        "description": "%arc.sql.cores-request.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
+                        "type": "number",
+                        "min": 1,
+                        "required": false,
+                        "validations": [
+                          {
+                            "type": "<=",
+                            "target": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
+                            "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "%arc.cores-limit.label%",
+                        "description": "%arc.sql.cores-limit.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
+                        "type": "number",
+                        "min": 1,
+                        "required": false,
+                        "validations": [
+                          {
+                            "type": ">=",
+                            "target": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
+                            "description": "%cores.limit.greater.than.or.equal.to.requested.cores%"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "%arc.memory-request.label%",
+                        "description": "%arc.sql.memory-request.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
+                        "type": "number",
+                        "min": 2,
+                        "required": false,
+                        "validations": [
+                          {
+                            "type": "<=",
+                            "target": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
+                            "description": "%requested.memory.less.than.or.equal.to.memory.limit%"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "%arc.memory-limit.label%",
+                        "description": "%arc.sql.memory-limit.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
+                        "type": "number",
+                        "min": 2,
+                        "required": false,
+                        "validations": [
+                          {
+                            "type": ">=",
+                            "target": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
+                            "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "requiredTools": [
+            {
+              "name": "kubectl"
+            },
+            {
+              "name": "azdata",
+              "version": "20.3.0"
+            }
+          ],
+          "when": "mi-type=arc-mi"
+        },
         "agreement": {
           "template": "%arc.agreement%",
           "links": [
@@ -1055,10 +1095,21 @@
               "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
             },
             {
-              "text": "%arc.agreement.postgres.terms.conditions%",
+              "text": "%arc.agreement.sql.terms.conditions%",
               "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
             }
-          ]
+          ],
+          "when": "mi-type=arc-mi"
+        },
+        "helpText": {
+          "template": "%arc.agreement.sql.help.text%",
+          "links": [
+            {
+              "text": "%arc.agreement.sql.help.text.learn.more%",
+              "url": "https://go.microsoft.com/fwlink/?linkid=2141849"
+            }
+          ],
+          "when": "mi-type=arc-mi"
         }
       }
     ]
@@ -1076,7 +1127,7 @@
     "@types/sinon": "^9.0.4",
     "@types/uuid": "^8.3.0",
     "@types/yamljs": "^0.2.31",
-    "azdata-test": "^1.0.0",
+    "@microsoft/azdata-test": "^1.4.0",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",

@@ -6,7 +6,7 @@
 import { Application } from '../../../../../automation';
 
 export function setup() {
-	describe('Notebook', () => {
+	describe.skip('Notebook', () => {
 
 		it('can open new notebook, configure Python, and execute one cell', async function () {
 			const app = this.app as Application;
@@ -46,13 +46,19 @@ export function setup() {
 			await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
 			await app.workbench.sqlNotebook.waitForKernel('SQL');
 			await app.workbench.sqlNotebook.waitForNotTrustedIcon();
+			await app.workbench.sqlNotebook.waitForTrustedElementsGone();
+
 			await app.workbench.sqlNotebook.trustNotebook();
 			await app.workbench.sqlNotebook.waitForTrustedIcon();
+			await app.workbench.sqlNotebook.waitForTrustedElements();
+
 			await app.workbench.quickaccess.runCommand('workbench.action.files.save');
 			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
 
 			await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
 			await app.workbench.sqlNotebook.waitForTrustedIcon();
+			await app.workbench.sqlNotebook.waitForTrustedElements();
+
 			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
 		});
 	});

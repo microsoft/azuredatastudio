@@ -13,68 +13,71 @@ export default () => `
 	<div class="welcomePage">
 		<div class="ads-homepage splash">
 			<div class="gradient">
-				<div class="ads-homepage-section tool-tip">
-					<div class="tool-tip-container" id="tool-tip-container-wide">
-						<a role="img" tabindex=0 class="ads-welcome-page-link" aria-label="${previewImgDescription}" title="${previewImgDescription}" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>Preview</p><i class="icon-info themed-icon"></i></a>
+				<div class="content-container">
+					<div class="ads-homepage-section tool-tip">
+						<div class="tool-tip-container" id="tool-tip-container-wide">
+							<a role="img" tabindex=0 class="ads-welcome-page-link" aria-label="${previewImgDescription}" title="${previewImgDescription}" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>${escape(localize('welcomePage.preview', "Preview"))}</p><i class="icon-info themed-icon"></i></a>
+						</div>
 					</div>
-				</div>
-				<div class="ads-homepage-section section header hero">
-					<div class="row start">
-						<div class="header-top-nav">
-							<div class="flex">
-								<div class="icon sm"></div>
-								<div class="title">
-									<div class="caption-container">
-										<span class="icon xs"></span><h1 class="caption"></h1>
-									</div>
-									<div id="welcome-page-button-container" class="flex btn-container">
+					<div class="ads-homepage-section section header hero">
+						<div class="row start">
+							<div class="header-top-nav">
+								<div class="flex">
+									<div class="caption-container" style="display: flex;">
+										<div class="icon"></div>
+										<div class="flex flex-d-column title">
+											<h1 class="caption flex flex-w-wrap"></h1>
+											<div>
+												<div id="welcome-page-button-container" class="flex btn-container"></div>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					<div class="row header-bottom-nav-tiles ads-grid">
-						<div class="col">
-							<a role="button" class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:registeredServers.addConnection">
-								<div class="header-bottom-nav-tile tile tile-connection">
-									<h3>${escape(localize('welcomePage.createConnection', "Create a connection"))}</h3>
-									<p>${escape(localize('welcomePage.createConnectionBody', "Connect to a database instance through the connection dialog."))}</p>
-									<div class="icon connection"></div>
-								</div>
-							</a>
-						</div>
-						<div class="col">
-							<a role="button" class="header-bottom-nav-tile-link ads-welcome-page-link"
-								href="command:workbench.action.files.newUntitledFile">
-								<div class="header-bottom-nav-tile tile tile-query">
-									<h3>${escape(localize('welcomePage.runQuery', "Run a query"))}</h3>
-									<p>${escape(localize('welcomePage.runQueryBody', "Interact with data through a query editor."))}</p>
-									<div class="icon query"></div>
-								</div>
-							</a>
-						</div>
-						<div class="col">
-							<a role="button" class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:notebook.command.new">
-								<div class="header-bottom-nav-tile tile tile-notebook">
-									<h3>${escape(localize('welcomePage.createNotebook', "Create a notebook"))}</h3>
-									<p>${escape(localize('welcomePage.createNotebookBody', "Build a new notebook using a native notebook editor."))}</p>
-									<div class="icon notebook"></div>
-								</div>
-							</a>
-						</div>
-						<div class="col">
-							<a role="button" class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:azdata.resource.deploy">
-								<div class="header-bottom-nav-tile tile tile-server">
-									<h3>${escape(localize('welcomePage.deployServer', "Deploy a server"))}</h3>
-									<p>${escape(localize('welcomePage.deployServerBody', "Create a new instance of a relational data service on the platform of your choice."))}</p>
-									<div class="icon server"></div>
-								</div>
-							</a>
+						<div class="row header-bottom-nav-tiles ads-grid">
+							<div class="col">
+								<a role="button" class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:registeredServers.addConnection">
+									<div class="header-bottom-nav-tile tile tile-connection">
+										<h3>${escape(localize('welcomePage.createConnection', "Create a connection"))}</h3>
+										<p>${escape(localize('welcomePage.createConnectionBody', "Connect to a database instance through the connection dialog."))}</p>
+										<div class="icon connection"></div>
+									</div>
+								</a>
+							</div>
+							<div class="col">
+								<a role="button" class="header-bottom-nav-tile-link ads-welcome-page-link"
+									href="command:workbench.action.files.newUntitledFile">
+									<div class="header-bottom-nav-tile tile tile-query">
+										<h3>${escape(localize('welcomePage.runQuery', "Run a query"))}</h3>
+										<p>${escape(localize('welcomePage.runQueryBody', "Interact with data through a query editor."))}</p>
+										<div class="icon query"></div>
+									</div>
+								</a>
+							</div>
+							<div class="col">
+								<a role="button" class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:notebook.command.new">
+									<div class="header-bottom-nav-tile tile tile-notebook">
+										<h3>${escape(localize('welcomePage.createNotebook', "Create a notebook"))}</h3>
+										<p>${escape(localize('welcomePage.createNotebookBody', "Build a new notebook using a native notebook editor."))}</p>
+										<div class="icon notebook"></div>
+									</div>
+								</a>
+							</div>
+							<div class="col">
+								<a role="button" class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:azdata.resource.deploy">
+									<div class="header-bottom-nav-tile tile tile-server">
+										<h3>${escape(localize('welcomePage.deployServer', "Deploy a server"))}</h3>
+										<p>${escape(localize('welcomePage.deployServerBody', "Create a new instance of a relational data service on the platform of your choice."))}</p>
+										<div class="icon server"></div>
+									</div>
+								</a>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="ads-homepage-section middle-section content row ads-grid">
+			<div class="ads-homepage-section middle-section content row content-container">
 				<div class="resources-container">
 					<h2>${escape(localize('welcomePage.resources', "Resources"))}</h2>
 					<div class="tabs">
@@ -146,7 +149,7 @@ export default () => `
 					</div>
 				</div>
 			</div>
-			<div class="ads-homepage-section content extensions">
+			<div class="ads-homepage-section content extensions content-container">
 				<div class="flex flex-j-between">
 					<h2>${escape(localize('welcomePage.extensions', "Extensions"))}</h2>
 					<a role="button" class="link-show-all flex ads-welcome-page-link" href="command:workbench.view.extensions">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>

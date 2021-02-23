@@ -109,7 +109,7 @@ export function getDatabaseStateDisplayText(state: string): string {
  * @returns Promise resolving to the user's input if it passed validation,
  * or undefined if the input box was closed for any other reason
  */
-async function promptInputBox(title: string, options: vscode.InputBoxOptions): Promise<string> {
+async function promptInputBox(title: string, options: vscode.InputBoxOptions): Promise<string | undefined> {
 	const inputBox = vscode.window.createInputBox();
 	inputBox.title = title;
 	inputBox.prompt = options.prompt;
@@ -198,12 +198,16 @@ export function getErrorMessage(error: any, useMessageWithLink: boolean = false)
 
 /**
  * Parses an address into its separate ip and port values. Address must be in the form <ip>:<port>
+ * or <ip>,<port>
  * @param address The address to parse
  */
 export function parseIpAndPort(address: string): { ip: string, port: string } {
-	const sections = address.split(':');
+	let sections = address.split(':');
 	if (sections.length !== 2) {
-		throw new Error(`Invalid address format for ${address}. Address must be in the form <ip>:<port>`);
+		sections = address.split(',');
+		if (sections.length !== 2) {
+			throw new Error(`Invalid address format for ${address}. Address must be in the form <ip>:<port> or <ip>,<port>`);
+		}
 	}
 	return {
 		ip: sections[0],
@@ -294,4 +298,36 @@ export async function tryExecuteAction<T>(action: () => T | PromiseLike<T>): Pro
 		error = e;
 	}
 	return { result, error };
+}
+
+function decorate(decorator: (fn: Function, key: string) => Function): Function {
+	return (_target: any, key: string, descriptor: any) => {
+		let fnKey: string | null = null;
+		let fn: Function | null = null;
+
+		if (typeof descriptor.value === 'function') {
+			fnKey = 'value';
+			fn = descriptor.value;
+		} else if (typeof descriptor.get === 'function') {
+			fnKey = 'get';
+			fn = descriptor.get;
+		}
+
+		if (!fn || !fnKey) {
+			throw new Error('not supported');
+		}
+
+		descriptor[fnKey] = decorator(fn, key);
+	};
+}
+
+export function debounce(delay: number): Function {
+	return decorate((fn, key) => {
+		const timerKey = `$debounce$${key}`;
+
+		return function (this: any, ...args: any[]) {
+			clearTimeout(this[timerKey]);
+			this[timerKey] = setTimeout(() => fn.apply(this, args), delay);
+		};
+	});
 }

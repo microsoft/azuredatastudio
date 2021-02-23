@@ -11,6 +11,8 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as crypto from 'crypto';
 import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey, AUTHTYPE, INTEGRATED_AUTH, KNOX_ENDPOINT_PORT, KNOX_ENDPOINT_SERVER } from './constants';
+import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
+import * as loc from '../common/localizedConstants';
 
 const localize = nls.loadMessageBundle();
 
@@ -22,13 +24,13 @@ export function getLivyUrl(serverName: string, port: string): string {
 	return this.getKnoxUrl(serverName, port) + '/default/livy/v1/';
 }
 
-export async function mkDir(dirPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
-	if (!await fs.pathExists(dirPath)) {
-		if (outputChannel) {
-			outputChannel.appendLine(localize('mkdirOutputMsg', "... Creating {0}", dirPath));
-		}
-		await fs.ensureDir(dirPath);
-	}
+export async function ensureDir(dirPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
+	outputChannel?.appendLine(localize('ensureDirOutputMsg', "... Ensuring {0} exists", dirPath));
+	await fs.ensureDir(dirPath);
+}
+export function ensureDirSync(dirPath: string, outputChannel?: vscode.OutputChannel): void {
+	outputChannel?.appendLine(localize('ensureDirOutputMsg', "... Ensuring {0} exists", dirPath));
+	fs.ensureDirSync(dirPath);
 }
 
 export function getErrorMessage(error: Error | string): string {
@@ -389,4 +391,13 @@ export async function setPinnedBookPathsInConfig(pinnedNotebookPaths: IBookNoteb
 export interface IBookNotebook {
 	bookPath?: string;
 	notebookPath: string;
+}
+
+//Confirmation message dialog
+export async function confirmReplace(prompter: IPrompter): Promise<boolean> {
+	return await prompter.promptSingle<boolean>(<IQuestion>{
+		type: QuestionTypes.confirm,
+		message: loc.confirmReplace,
+		default: false
+	});
 }

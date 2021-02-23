@@ -30,7 +30,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { attachButtonStyler, attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
+import { attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/workbench/services/restore/browser/restoreViewModel';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
@@ -45,6 +45,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler, attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { fileFiltersSet } from 'sql/workbench/services/restore/common/constants';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -159,9 +160,9 @@ export class RestoreDialog extends Modal {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 		let cancelLabel = localize('restoreDialog.cancel', "Cancel");
-		this._scriptButton = this.addFooterButton(localize('restoreDialog.script', "Script"), () => this.restore(true));
+		this._scriptButton = this.addFooterButton(localize('restoreDialog.script', "Script"), () => this.restore(true), 'right', true);
 		this._restoreButton = this.addFooterButton(this._restoreLabel, () => this.restore(false));
-		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
+		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel(), 'right', true);
 		this.registerListeners();
 		this._destinationRestoreToInputBox!.disable();
 	}
@@ -186,7 +187,7 @@ export class RestoreDialog extends Modal {
 
 		this._filePathInputBox = new InputBox(DOM.append(filePathInputContainer, DOM.$('.dialog-input')), this._contextViewService, validationOptions);
 
-		this._browseFileButton = new Button(DOM.append(filePathInputContainer, DOM.$('.file-browser')));
+		this._browseFileButton = new Button(DOM.append(filePathInputContainer, DOM.$('.file-browser')), { secondary: true });
 		this._browseFileButton.label = '...';
 
 		const sourceDatabasesElement = DOM.$('.source-database-list');
@@ -633,9 +634,12 @@ export class RestoreDialog extends Modal {
 	}
 
 	private onSourceDatabaseChanged(selectedDatabase: string) {
-		this.viewModel.sourceDatabaseName = selectedDatabase;
-		this.viewModel.selectedBackupSets = undefined;
-		this.validateRestore(true);
+		// This check is to avoid any unnecessary even firing (to remove flickering)
+		if (this.viewModel.sourceDatabaseName !== selectedDatabase) {
+			this.viewModel.sourceDatabaseName = selectedDatabase;
+			this.viewModel.selectedBackupSets = undefined;
+			this.validateRestore(true);
+		}
 	}
 
 	private onRestoreFromChanged(selectedRestoreFrom: string) {

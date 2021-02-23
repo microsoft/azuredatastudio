@@ -8,7 +8,6 @@ import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
 import { UserCancelledError } from '../common/api';
 import { getCurrentClusterContext, getKubeConfigClusterContexts } from '../common/kubeUtils';
-import { Deferred } from '../common/promise';
 import * as loc from '../localizedConstants';
 import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
@@ -24,7 +23,6 @@ export class ControllerModel {
 	private _endpoints: azdataExt.DcEndpointListResult[] = [];
 	private _registrations: Registration[] = [];
 	private _controllerConfig: azdataExt.DcConfigShowResult | undefined = undefined;
-	private static _refreshInProgress: Deferred<void> | undefined = undefined;
 
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.DcConfigShowResult | undefined>();
 	private readonly _onEndpointsUpdated = new vscode.EventEmitter<azdataExt.DcEndpointListResult[]>();
@@ -61,10 +59,11 @@ export class ControllerModel {
 	}
 
 	/**
-	 * Calls azdata login to set the context to this controller
+	 * Calls azdata login to set the context to this controller and acquires a login session to prevent other
+	 * calls from changing the context while commands for this session are being executed.
 	 * @param promptReconnect
 	 */
-	public async azdataLogin(promptReconnect: boolean = false): Promise<void> {
+	public async acquireAzdataSession(promptReconnect: boolean = false): Promise<azdataExt.AzdataSession> {
 		let promptForValidClusterContext: boolean = false;
 		try {
 			const contexts = await getKubeConfigClusterContexts(this.info.kubeConfigFilePath);
@@ -102,7 +101,7 @@ export class ControllerModel {
 			}
 		}
 
-		await this._azdataApi.azdata.login(this.info.url, this.info.username, this._password, this.azdataAdditionalEnvVars);
+		return this._azdataApi.azdata.acquireSession(this.info.url, this.info.username, this._password, this.azdataAdditionalEnvVars);
 	}
 
 	/**
@@ -117,70 +116,66 @@ export class ControllerModel {
 		}
 	}
 	public async refresh(showErrors: boolean = true, promptReconnect: boolean = false): Promise<void> {
-		//wait for any previous refresh that might be in progress to finish
-		if (ControllerModel._refreshInProgress) {
-			await ControllerModel._refreshInProgress;
-		}
-		// create a new in progress promise object
-		ControllerModel._refreshInProgress = new Deferred<void>();
-		await this.azdataLogin(promptReconnect);
+		const session = await this.acquireAzdataSession(promptReconnect);
 		const newRegistrations: Registration[] = [];
-		await Promise.all([
-			this._azdataApi.azdata.arc.dc.config.show().then(result => {
-				this._controllerConfig = result.result;
-				this.configLastUpdated = new Date();
-				this._onConfigUpdated.fire(this._controllerConfig);
-			}).catch(err => {
-				// If an error occurs show a message so the user knows something failed but still
-				// fire the event so callers can know to update (e.g. so dashboards don't show the
-				// loading icon forever)
-				if (showErrors) {
-					vscode.window.showErrorMessage(loc.fetchConfigFailed(this.info.name, err));
-				}
-				this._onConfigUpdated.fire(this._controllerConfig);
-				throw err;
-			}),
-			this._azdataApi.azdata.arc.dc.endpoint.list(this.azdataAdditionalEnvVars).then(result => {
-				this._endpoints = result.result;
-				this.endpointsLastUpdated = new Date();
-				this._onEndpointsUpdated.fire(this._endpoints);
-			}).catch(err => {
-				// If an error occurs show a message so the user knows something failed but still
-				// fire the event so callers can know to update (e.g. so dashboards don't show the
-				// loading icon forever)
-				if (showErrors) {
-					vscode.window.showErrorMessage(loc.fetchEndpointsFailed(this.info.name, err));
-				}
-				this._onEndpointsUpdated.fire(this._endpoints);
-				throw err;
-			}),
-			Promise.all([
-				this._azdataApi.azdata.arc.postgres.server.list(this.azdataAdditionalEnvVars).then(result => {
-					newRegistrations.push(...result.result.map(r => {
-						return {
-							instanceName: r.name,
-							state: r.state,
-							instanceType: ResourceType.postgresInstances
-						};
-					}));
+		try {
+			await Promise.all([
+				this._azdataApi.azdata.arc.dc.config.show(this.azdataAdditionalEnvVars, session).then(result => {
+					this._controllerConfig = result.result;
+					this.configLastUpdated = new Date();
+					this._onConfigUpdated.fire(this._controllerConfig);
+				}).catch(err => {
+					// If an error occurs show a message so the user knows something failed but still
+					// fire the event so callers hooking into this can handle the error (e.g. so dashboards don't show the
+					// loading icon forever)
+					if (showErrors) {
+						vscode.window.showErrorMessage(loc.fetchConfigFailed(this.info.name, err));
+					}
+					this._onConfigUpdated.fire(this._controllerConfig);
+					throw err;
 				}),
-				this._azdataApi.azdata.arc.sql.mi.list().then(result => {
-					newRegistrations.push(...result.result.map(r => {
-						return {
-							instanceName: r.name,
-							state: r.state,
-							instanceType: ResourceType.sqlManagedInstances
-						};
-					}));
+				this._azdataApi.azdata.arc.dc.endpoint.list(this.azdataAdditionalEnvVars, session).then(result => {
+					this._endpoints = result.result;
+					this.endpointsLastUpdated = new Date();
+					this._onEndpointsUpdated.fire(this._endpoints);
+				}).catch(err => {
+					// If an error occurs show a message so the user knows something failed but still
+					// fire the event so callers can know to update (e.g. so dashboards don't show the
+					// loading icon forever)
+					if (showErrors) {
+						vscode.window.showErrorMessage(loc.fetchEndpointsFailed(this.info.name, err));
+					}
+					this._onEndpointsUpdated.fire(this._endpoints);
+					throw err;
+				}),
+				Promise.all([
+					this._azdataApi.azdata.arc.postgres.server.list(this.azdataAdditionalEnvVars, session).then(result => {
+						newRegistrations.push(...result.result.map(r => {
+							return {
+								instanceName: r.name,
+								state: r.state,
+								instanceType: ResourceType.postgresInstances
+							};
+						}));
+					}),
+					this._azdataApi.azdata.arc.sql.mi.list(this.azdataAdditionalEnvVars, session).then(result => {
+						newRegistrations.push(...result.result.map(r => {
+							return {
+								instanceName: r.name,
+								state: r.state,
+								instanceType: ResourceType.sqlManagedInstances
+							};
+						}));
+					})
+				]).then(() => {
+					this._registrations = newRegistrations;
+					this.registrationsLastUpdated = new Date();
+					this._onRegistrationsUpdated.fire(this._registrations);
 				})
-			]).then(() => {
-				this._registrations = newRegistrations;
-				this.registrationsLastUpdated = new Date();
-				this._onRegistrationsUpdated.fire(this._registrations);
-			})
-		]);
-		ControllerModel._refreshInProgress.resolve();
-		ControllerModel._refreshInProgress = undefined;
+			]);
+		} finally {
+			session.dispose();
+		}
 	}
 
 	public get endpoints(): azdataExt.DcEndpointListResult[] {

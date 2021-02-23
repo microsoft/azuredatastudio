@@ -68,7 +68,11 @@ export class SchemaCompareMainWindow {
 	public sourceEndpointInfo: mssql.SchemaCompareEndpointInfo;
 	public targetEndpointInfo: mssql.SchemaCompareEndpointInfo;
 
-	constructor(private schemaCompareService?: mssql.ISchemaCompareService, private extensionContext?: vscode.ExtensionContext) {
+	public promise;
+
+	public schemaCompareDialog: SchemaCompareDialog;
+
+	constructor(private schemaCompareService?: mssql.ISchemaCompareService, private extensionContext?: vscode.ExtensionContext, private view?: azdata.ModelView) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Delete] = loc.deleteAction;
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Change] = loc.changeAction;
@@ -117,52 +121,56 @@ export class SchemaCompareMainWindow {
 
 	private async registerContent(): Promise<void> {
 		return new Promise<void>((resolve) => {
-			this.editor.registerContent(async view => {
-				this.differencesTable = view.modelBuilder.table().withProperties({
+			this.editor.registerContent(async (view) => {
+				if (isNullOrUndefined(this.view)) {
+					this.view = view;
+				}
+
+				this.differencesTable = this.view.modelBuilder.table().withProperties({
 					data: [],
 					title: loc.differencesTableTitle
 				}).component();
 
-				this.diffEditor = view.modelBuilder.diffeditor().withProperties({
+				this.diffEditor = this.view.modelBuilder.diffeditor().withProperties({
 					contentLeft: os.EOL,
 					contentRight: os.EOL,
 					height: 500,
 					title: loc.diffEditorTitle
 				}).component();
 
-				this.splitView = view.modelBuilder.splitViewContainer().component();
+				this.splitView = this.view.modelBuilder.splitViewContainer().component();
 
-				let sourceTargetLabels = view.modelBuilder.flexContainer()
+				let sourceTargetLabels = this.view.modelBuilder.flexContainer()
 					.withProperties({
 						alignItems: 'stretch',
 						horizontal: true
 					}).component();
 
-				this.sourceTargetFlexLayout = view.modelBuilder.flexContainer()
+				this.sourceTargetFlexLayout = this.view.modelBuilder.flexContainer()
 					.withProperties({
 						alignItems: 'stretch',
 						horizontal: true
 					}).component();
 
-				this.createSwitchButton(view);
-				this.createCompareButton(view);
-				this.createCancelButton(view);
-				this.createGenerateScriptButton(view);
-				this.createApplyButton(view);
-				this.createOptionsButton(view);
-				this.createOpenScmpButton(view);
-				this.createSaveScmpButton(view);
-				this.createSourceAndTargetButtons(view);
+				this.createSwitchButton();
+				this.createCompareButton();
+				this.createCancelButton();
+				this.createGenerateScriptButton();
+				this.createApplyButton();
+				this.createOptionsButton();
+				this.createOpenScmpButton();
+				this.createSaveScmpButton();
+				this.createSourceAndTargetButtons();
 
 				this.sourceName = getEndpointName(this.sourceEndpointInfo);
 				this.targetName = ' ';
-				this.sourceNameComponent = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+				this.sourceNameComponent = this.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 					value: this.sourceName,
 					title: this.sourceName,
 					enabled: false
 				}).component();
 
-				this.targetNameComponent = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+				this.targetNameComponent = this.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 					value: this.targetName,
 					title: this.targetName,
 					enabled: false
@@ -170,7 +178,7 @@ export class SchemaCompareMainWindow {
 
 				this.resetButtons(ResetButtonState.noSourceTarget);
 
-				let toolBar = view.modelBuilder.toolbarContainer();
+				let toolBar = this.view.modelBuilder.toolbarContainer();
 				toolBar.addToolbarItems([{
 					component: this.compareButton
 				}, {
@@ -191,17 +199,17 @@ export class SchemaCompareMainWindow {
 					component: this.saveScmpButton
 				}]);
 
-				let sourceLabel = view.modelBuilder.text().withProperties({
+				let sourceLabel = this.view.modelBuilder.text().withProperties({
 					value: loc.sourceTitle,
 					CSSStyles: { 'margin-bottom': '0px' }
 				}).component();
 
-				let targetLabel = view.modelBuilder.text().withProperties({
+				let targetLabel = this.view.modelBuilder.text().withProperties({
 					value: loc.targetTitle,
 					CSSStyles: { 'margin-bottom': '0px' }
 				}).component();
 
-				let arrowLabel = view.modelBuilder.text().withProperties({
+				let arrowLabel = this.view.modelBuilder.text().withProperties({
 					value: '➔'
 				}).component();
 
@@ -213,20 +221,20 @@ export class SchemaCompareMainWindow {
 				this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '40%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px', 'margin-right': '10px' } });
 				this.sourceTargetFlexLayout.addItem(this.selectTargetButton, { CSSStyles: { 'margin-top': '10px' } });
 
-				this.loader = view.modelBuilder.loadingComponent().component();
-				this.waitText = view.modelBuilder.text().withProperties({
+				this.loader = this.view.modelBuilder.loadingComponent().component();
+				this.waitText = this.view.modelBuilder.text().withProperties({
 					value: loc.waitText
 				}).component();
 
-				this.startText = view.modelBuilder.text().withProperties({
+				this.startText = this.view.modelBuilder.text().withProperties({
 					value: loc.startText
 				}).component();
 
-				this.noDifferencesLabel = view.modelBuilder.text().withProperties({
+				this.noDifferencesLabel = this.view.modelBuilder.text().withProperties({
 					value: loc.noDifferencesText
 				}).component();
 
-				this.flexModel = view.modelBuilder.flexContainer().component();
+				this.flexModel = this.view.modelBuilder.flexContainer().component();
 				this.flexModel.addItem(toolBar.component(), { flex: 'none' });
 				this.flexModel.addItem(sourceTargetLabels, { flex: 'none' });
 				this.flexModel.addItem(this.sourceTargetFlexLayout, { flex: 'none' });
@@ -237,7 +245,7 @@ export class SchemaCompareMainWindow {
 					height: '100%'
 				});
 
-				await view.initializeModel(this.flexModel);
+				await this.view.initializeModel(this.flexModel);
 				resolve();
 			});
 		});
@@ -268,13 +276,15 @@ export class SchemaCompareMainWindow {
 		this.deploymentOptions = deploymentOptions;
 	}
 
-	public async execute(): Promise<void> {
+	public async execute() {
 		TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonStarted');
 		const service = await this.getService();
+
 		if (!this.operationId) {
 			// create once per page
 			this.operationId = generateGuid();
 		}
+
 		this.comparisonResult = await service.schemaCompare(this.operationId, this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions);
 		if (!this.comparisonResult || !this.comparisonResult.success) {
 			TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFailed', undefined, getTelemetryErrorType(this.comparisonResult?.errorMessage))
@@ -362,8 +372,8 @@ export class SchemaCompareMainWindow {
 		// explicitly exclude things that were excluded in previous compare
 		const thingsToExclude = this.sourceTargetSwitched ? this.originalTargetExcludes : this.originalSourceExcludes;
 		if (thingsToExclude) {
-			thingsToExclude.forEach(item => {
-				service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, item, false, azdata.TaskExecutionMode.execute);
+			thingsToExclude.forEach(async (item) => {
+				await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, item, false, azdata.TaskExecutionMode.execute);
 			});
 
 			// disable apply and generate script buttons if no changes are included
@@ -586,7 +596,7 @@ export class SchemaCompareMainWindow {
 		return script;
 	}
 
-	public startCompare(): void {
+	public async startCompare(): Promise<void> {
 		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
 		this.flexModel.removeItem(this.startText);
@@ -604,11 +614,12 @@ export class SchemaCompareMainWindow {
 			this.tablelistenersToDispose.forEach(x => x.dispose());
 		}
 		this.resetButtons(ResetButtonState.comparing);
-		this.execute();
+		this.promise = this.execute();
+		await this.promise;
 	}
 
-	private createCompareButton(view: azdata.ModelView): void {
-		this.compareButton = view.modelBuilder.button().withProperties({
+	private createCompareButton(): void {
+		this.compareButton = this.view.modelBuilder.button().withProperties({
 			label: loc.compare,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'compare.svg'),
@@ -618,12 +629,12 @@ export class SchemaCompareMainWindow {
 		}).component();
 
 		this.compareButton.onDidClick(async (click) => {
-			this.startCompare();
+			await this.startCompare();
 		});
 	}
 
-	private createCancelButton(view: azdata.ModelView): void {
-		this.cancelCompareButton = view.modelBuilder.button().withProperties({
+	private createCancelButton(): void {
+		this.cancelCompareButton = this.view.modelBuilder.button().withProperties({
 			label: loc.stop,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'stop.svg'),
@@ -671,8 +682,8 @@ export class SchemaCompareMainWindow {
 		}
 	}
 
-	private createGenerateScriptButton(view: azdata.ModelView): void {
-		this.generateScriptButton = view.modelBuilder.button().withProperties({
+	private createGenerateScriptButton(): void {
+		this.generateScriptButton = this.view.modelBuilder.button().withProperties({
 			label: loc.generateScript,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'generate-script.svg'),
@@ -707,8 +718,8 @@ export class SchemaCompareMainWindow {
 			}).send();
 	}
 
-	private createOptionsButton(view: azdata.ModelView) {
-		this.optionsButton = view.modelBuilder.button().withProperties({
+	private createOptionsButton() {
+		this.optionsButton = this.view.modelBuilder.button().withProperties({
 			label: loc.options,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'options.svg'),
@@ -725,9 +736,9 @@ export class SchemaCompareMainWindow {
 		});
 	}
 
-	private createApplyButton(view: azdata.ModelView) {
+	private createApplyButton() {
 
-		this.applyButton = view.modelBuilder.button().withProperties({
+		this.applyButton = this.view.modelBuilder.button().withProperties({
 			label: loc.apply,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'start.svg'),
@@ -837,8 +848,8 @@ export class SchemaCompareMainWindow {
 		this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
 	}
 
-	private createSwitchButton(view: azdata.ModelView): void {
-		this.switchButton = view.modelBuilder.button().withProperties({
+	private createSwitchButton(): void {
+		this.switchButton = this.view.modelBuilder.button().withProperties({
 			label: loc.switchDirection,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'switch-directions.svg'),
@@ -868,39 +879,43 @@ export class SchemaCompareMainWindow {
 
 			// only compare if both source and target are set
 			if (this.sourceEndpointInfo && this.targetEndpointInfo) {
-				this.startCompare();
+				await this.startCompare();
 			}
 		});
 	}
 
-	private createSourceAndTargetButtons(view: azdata.ModelView): void {
-		this.selectSourceButton = view.modelBuilder.button().withProperties({
+	private createSourceAndTargetButtons(): void {
+		this.selectSourceButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
 			title: loc.selectSource,
-			ariaLabel: loc.selectSource
+			ariaLabel: loc.selectSource,
+			secondary: true
 		}).component();
 
-		this.selectSourceButton.onDidClick(() => {
+		this.selectSourceButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSelectSource');
-			let dialog = new SchemaCompareDialog(this);
-			dialog.openDialog();
+			this.schemaCompareDialog = new SchemaCompareDialog(this);
+			this.promise = this.schemaCompareDialog.openDialog();
+			await this.promise;
 		});
 
-		this.selectTargetButton = view.modelBuilder.button().withProperties({
+		this.selectTargetButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
 			title: loc.selectTarget,
-			ariaLabel: loc.selectTarget
+			ariaLabel: loc.selectTarget,
+			secondary: true
 		}).component();
 
-		this.selectTargetButton.onDidClick(() => {
+		this.selectTargetButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSelectTarget');
-			let dialog = new SchemaCompareDialog(this);
-			dialog.openDialog();
+			this.schemaCompareDialog = new SchemaCompareDialog(this);
+			this.promise = await this.schemaCompareDialog.openDialog();
+			await this.promise;
 		});
 	}
 
-	private createOpenScmpButton(view: azdata.ModelView) {
-		this.openScmpButton = view.modelBuilder.button().withProperties({
+	private createOpenScmpButton() {
+		this.openScmpButton = this.view.modelBuilder.button().withProperties({
 			label: loc.openScmp,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'open-scmp.svg'),
@@ -987,8 +1002,8 @@ export class SchemaCompareMainWindow {
 		return endpointInfo;
 	}
 
-	private createSaveScmpButton(view: azdata.ModelView): void {
-		this.saveScmpButton = view.modelBuilder.button().withProperties({
+	private createSaveScmpButton(): void {
+		this.saveScmpButton = this.view.modelBuilder.button().withProperties({
 			label: loc.saveScmp,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'save-scmp.svg'),
@@ -1068,7 +1083,7 @@ export class SchemaCompareMainWindow {
 
 	private async getService(): Promise<mssql.ISchemaCompareService> {
 		if (this.schemaCompareService === null || this.schemaCompareService === undefined) {
-			this.schemaCompareService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
+			this.schemaCompareService = (await vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		}
 		return this.schemaCompareService;
 	}

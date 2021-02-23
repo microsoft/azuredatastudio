@@ -2,7 +2,7 @@
   "name": "dacpac",
   "displayName": "SQL Server Dacpac",
   "description": "SQL Server Dacpac for Azure Data Studio.",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
@@ -86,7 +86,7 @@
     }
   },
   "dependencies": {
-    "ads-extension-telemetry": "^1.0.0",
+    "@microsoft/ads-extension-telemetry": "^1.1.3",
     "htmlparser2": "^3.10.1",
     "vscode-nls": "^4.0.0"
   },

@@ -54,7 +54,7 @@
 	"azure-sqlvm-agreement": "I accept {0}, {1} and {2}.",
 	"azure-sqlvm-agreement-sqlvm-eula": "Azure SQL VM License Terms",
 	"azure-sqlvm-agreement-azdata-eula": "azdata License Terms",
-	"azure-sqlvm-azure-account-page-label":"Azure information",
+	"azure-sqlvm-azure-account-page-label": "Azure information",
 	"azure-sqlvm-azure-location-label": "Azure locations",
 	"azure-sqlvm-vm-information-page-label": "VM information",
 	"azure-sqlvm-image-label": "Image",
@@ -80,5 +80,13 @@
 	"sql-azure-database-server-display-name": "Database Server",
 	"azure-sqldb-agreement": "I accept {0}, {1} and {2}.",
 	"azure-sqldb-agreement-sqldb-eula": "Azure SQL DB License Terms",
-	"azure-sqldb-agreement-azdata-eula": "azdata License Terms"
+	"azure-sqldb-agreement-azdata-eula": "azdata License Terms",
+	"azure-sql-mi-display-name": "Azure SQL managed instance",
+	"azure-sql-mi-display-description": "Create a SQL Managed Instance in either Azure or a customer-managed environment",
+	"azure-sql-mi-okButton-text": "Open in Portal",
+	"azure-sql-mi-resource-type-option-label": "Resource Type",
+	"azure-sql-mi-agreement": "I accept {0} and {1}.",
+	"azure-sql-mi-agreement-eula": "Azure SQL MI License Terms",
+	"azure-sql-mi-help-text": "Azure SQL Managed Instance provides full SQL Server access and feature compatibility for migrating SQL Servers to Azure, or developing new applications. {0}.",
+	"azure-sql-mi-help-text-learn-more" : "Learn More"
 }

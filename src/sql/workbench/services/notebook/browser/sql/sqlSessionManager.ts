@@ -70,6 +70,26 @@ export interface NotebookConfig {
 	useExistingPython: boolean;
 }
 
+export interface NotebookConfig {
+	cellToolbarLocation: string;
+	collapseBookItems: boolean;
+	diff: { enablePreview: boolean };
+	displayOrder: Array<string>;
+	kernelProviderAssociations: Array<string>;
+	maxBookSearchDepth: number;
+	maxTableRows: number;
+	overrideEditorTheming: boolean;
+	pinnedNotebooks: Array<string>;
+	pythonPath: string;
+	remoteBookDownloadTimeout: number;
+	showAllKernels: boolean;
+	showCellStatusBar: boolean;
+	showNotebookConvertActions: boolean;
+	sqlStopOnError: boolean;
+	trustedBooks: Array<string>;
+	useExistingPython: boolean;
+}
+
 export class SqlSessionManager implements nb.SessionManager {
 	private static _sessions: nb.ISession[] = [];
 

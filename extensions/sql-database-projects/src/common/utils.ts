@@ -236,7 +236,7 @@ export async function getSqlProjectFilesInFolder(folderPath: string): Promise<st
  */
 export function getSqlProjectsInWorkspace(): vscode.Uri[] {
 	const api = getDataWorkspaceExtensionApi();
-	return api.getProjectsInWorkspace().filter((p: vscode.Uri) => path.extname(p.fsPath) === constants.sqlprojExtension);
+	return api.getProjectsInWorkspace(constants.sqlprojExtension);
 }
 
 export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
@@ -256,14 +256,20 @@ export async function GetDefaultDeploymentOptions(): Promise<mssql.DeploymentOpt
 
 export interface IPackageInfo {
 	name: string;
+	fullName: string;
 	version: string;
 	aiKey: string;
 }
 
-export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
+export function getPackageInfo(packageJson?: any): IPackageInfo | undefined {
+	if (!packageJson) {
+		packageJson = require('../../package.json');
+	}
+
 	if (packageJson) {
 		return {
 			name: packageJson.name,
+			fullName: `${packageJson.publisher}.${packageJson.name}`,
 			version: packageJson.version,
 			aiKey: packageJson.aiKey
 		};

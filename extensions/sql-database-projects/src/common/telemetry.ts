@@ -3,15 +3,34 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import AdsTelemetryReporter from 'ads-extension-telemetry';
+import AdsTelemetryReporter from '@microsoft/ads-extension-telemetry';
 
-import * as Utils from './utils';
+import { getPackageInfo } from './utils';
 
-const packageJson = require('../package.json');
-
-let packageInfo = Utils.getPackageInfo(packageJson)!;
+const packageInfo = getPackageInfo()!;
 
 export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 
+
 export enum TelemetryViews {
+	ProjectController = 'ProjectController',
+	SqlProjectPublishDialog = 'SqlProjectPublishDialog',
+	ProjectTree = 'ProjectTree'
+}
+
+export enum TelemetryActions {
+	createNewProject = 'createNewProject',
+	addDatabaseReference = 'addDatabaseReference',
+	runStreamingJobValidation = 'runStreamingJobValidation',
+	generateScriptClicked = 'generateScriptClicked',
+	deleteObjectFromProject = 'deleteObjectFromProject',
+	editProjectFile = 'editProjectFile',
+	addItemFromTree = 'addItemFromTree',
+	excludeFromProject = 'excludeFromProject',
+	projectSchemaCompareCommandInvoked = 'projectSchemaCompareCommandInvoked',
+	publishProject = 'publishProject',
+	build = 'build',
+	updateProjectForRoundtrip = 'updateProjectForRoundtrip',
+	changePlatformType = 'changePlatformType',
+	updateSystemDatabaseReferencesInProjFile = 'updateSystemDatabaseReferencesInProjFile'
 }

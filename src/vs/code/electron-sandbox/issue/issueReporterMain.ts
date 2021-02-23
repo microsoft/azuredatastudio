@@ -5,10 +5,11 @@
 
 import 'vs/css!./media/issueReporter';
 import 'vs/base/browser/ui/codicons/codiconStyles'; // make sure codicon css is loaded
-import { ElectronService, IElectronService } from 'vs/platform/electron/electron-sandbox/electron';
+import { INativeHostService } from 'vs/platform/native/electron-sandbox/native';
+import { NativeHostService } from 'vs/platform/native/electron-sandbox/nativeHostService';
 import { ipcRenderer, process } from 'vs/base/parts/sandbox/electron-sandbox/globals';
 import { applyZoom, zoomIn, zoomOut } from 'vs/platform/windows/electron-sandbox/window';
-import { $, reset, windowOpenNoOpener, addClass } from 'vs/base/browser/dom';
+import { $, reset, safeInnerHtml, windowOpenNoOpener } from 'vs/base/browser/dom';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { CodiconLabel } from 'vs/base/browser/ui/codicons/codiconLabel';
 import * as collections from 'vs/base/common/collections';
@@ -55,9 +56,10 @@ export interface IssueReporterConfiguration extends IWindowConfiguration {
 
 export function startup(configuration: IssueReporterConfiguration) {
 	const platformClass = platform.isWindows ? 'windows' : platform.isLinux ? 'linux' : 'mac';
-	addClass(document.body, platformClass); // used by our fonts
+	document.body.classList.add(platformClass); // used by our fonts
 
-	document.body.innerHTML = BaseHtml();
+	safeInnerHtml(document.body, BaseHtml());
+
 	const issueReporter = new IssueReporter(configuration);
 	issueReporter.render();
 	document.body.style.display = 'block';
@@ -65,7 +67,7 @@ export function startup(configuration: IssueReporterConfiguration) {
 }
 
 export class IssueReporter extends Disposable {
-	private electronService!: IElectronService;
+	private nativeHostService!: INativeHostService;
 	private readonly issueReporterModel: IssueReporterModel;
 	private numberOfSearchResultsDisplayed = 0;
 	private receivedSystemInfo = false;
@@ -148,6 +150,7 @@ export class IssueReporter extends Disposable {
 		applyZoom(configuration.data.zoomLevel);
 		this.applyStyles(configuration.data.styles);
 		this.handleExtensionData(configuration.data.enabledExtensions);
+		this.updateExperimentsInfo(configuration.data.experiments);
 	}
 
 	render(): void {
@@ -267,8 +270,8 @@ export class IssueReporter extends Disposable {
 		const mainProcessService = new MainProcessService(configuration.windowId);
 		serviceCollection.set(IMainProcessService, mainProcessService);
 
-		this.electronService = new ElectronService(configuration.windowId, mainProcessService) as IElectronService;
-		serviceCollection.set(IElectronService, this.electronService);
+		this.nativeHostService = new NativeHostService(configuration.windowId, mainProcessService) as INativeHostService;
+		serviceCollection.set(INativeHostService, this.nativeHostService);
 	}
 
 	private setEventHandlers(): void {
@@ -283,7 +286,7 @@ export class IssueReporter extends Disposable {
 			this.render();
 		});
 
-		(['includeSystemInfo', 'includeProcessInfo', 'includeWorkspaceInfo', 'includeExtensions', 'includeSearchedExtensions', 'includeSettingsSearchDetails'] as const).forEach(elementId => {
+		(['includeSystemInfo', 'includeProcessInfo', 'includeWorkspaceInfo', 'includeExtensions', 'includeExperiments'] as const).forEach(elementId => {
 			this.addEventListener(elementId, 'click', (event: Event) => {
 				event.stopPropagation();
 				this.issueReporterModel.update({ [elementId]: !this.issueReporterModel.getData()[elementId] });
@@ -691,8 +694,7 @@ export class IssueReporter extends Disposable {
 		const processBlock = document.querySelector('.block-process');
 		const workspaceBlock = document.querySelector('.block-workspace');
 		const extensionsBlock = document.querySelector('.block-extensions');
-		const searchedExtensionsBlock = document.querySelector('.block-searchedExtensions');
-		const settingsSearchResultsBlock = document.querySelector('.block-settingsSearchResults');
+		const experimentsBlock = document.querySelector('.block-experiments');
 
 		const problemSource = this.getElementById('problem-source')!;
 		const descriptionTitle = this.getElementById('issue-description-label')!;
@@ -705,8 +707,7 @@ export class IssueReporter extends Disposable {
 		hide(processBlock);
 		hide(workspaceBlock);
 		hide(extensionsBlock);
-		hide(searchedExtensionsBlock);
-		hide(settingsSearchResultsBlock);
+		hide(experimentsBlock);
 		hide(problemSource);
 		hide(extensionSelector);
 
@@ -714,6 +715,7 @@ export class IssueReporter extends Disposable {
 			show(blockContainer);
 			show(systemBlock);
 			show(problemSource);
+			show(experimentsBlock);
 
 			if (fileOnExtension) {
 				show(extensionSelector);
@@ -728,6 +730,7 @@ export class IssueReporter extends Disposable {
 			show(processBlock);
 			show(workspaceBlock);
 			show(problemSource);
+			show(experimentsBlock);
 
 			if (fileOnExtension) {
 				show(extensionSelector);
@@ -827,7 +830,7 @@ export class IssueReporter extends Disposable {
 		return new Promise((resolve, reject) => {
 			ipcRenderer.once('vscode:issueReporterClipboardResponse', async (event: unknown, shouldWrite: boolean) => {
 				if (shouldWrite) {
-					await this.electronService.writeClipboardText(issueBody);
+					await this.nativeHostService.writeClipboardText(issueBody);
 					resolve(baseUrl + `&body=${encodeURIComponent(localize('pasteData', "We have written the needed data into your clipboard because it was too large to send. Please paste."))}`);
 				} else {
 					reject();
@@ -861,7 +864,7 @@ export class IssueReporter extends Disposable {
 			}
 		}
 
-		const queryStringPrefix = this.configuration.product.reportIssueUrl && this.configuration.product.reportIssueUrl.indexOf('?') === -1 ? '?' : '&';
+		const queryStringPrefix = repositoryUrl && repositoryUrl.indexOf('?') === -1 ? '?' : '&'; // {{ SQL CARBON EDIT }}
 		return `${repositoryUrl}${queryStringPrefix}title=${encodeURIComponent(issueTitle)}`;
 	}
 
@@ -1079,6 +1082,14 @@ export class IssueReporter extends Disposable {
 			}
 
 			reset(target, this.getExtensionTableHtml(extensions), document.createTextNode(themeExclusionStr));
+		}
+	}
+
+	private updateExperimentsInfo(experimentInfo: string | undefined) {
+		this.issueReporterModel.update({ experimentInfo });
+		const target = document.querySelector<HTMLElement>('.block-experiments .block-info');
+		if (target) {
+			target.textContent = experimentInfo ? experimentInfo : localize('noCurrentExperiments', "No current experiments.");
 		}
 	}
 

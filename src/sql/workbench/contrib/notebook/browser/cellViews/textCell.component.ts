@@ -18,7 +18,7 @@ import { URI } from 'vs/base/common/uri';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { toDisposable } from 'vs/base/common/lifecycle';
-import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
+import { IMarkdownRenderResult } from 'vs/editor/browser/core/markdownRenderer';
 
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
@@ -29,10 +29,13 @@ import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/
 import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
-
+const findHighlightClass = 'rangeHighlight';
+const findRangeSpecificClass = 'rangeSpecificHighlight';
 @Component({
 	selector: TEXT_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./textCell.component.html'))
@@ -51,15 +54,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._activeCellId = value;
 	}
 
-	@HostListener('document:keydown.escape', ['$event'])
-	handleKeyboardEvent() {
-		if (this.isEditMode) {
-			this.toggleEditMode(false);
-		}
-		this.cellModel.active = false;
-		this._model.updateActiveCell(undefined);
-	}
-
 	// Double click to edit text cell in notebook
 	@HostListener('dblclick', ['$event']) onDblClick() {
 		this.enableActiveCellEditOnDoubleClick();
@@ -71,7 +65,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			// select the active .
 			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
 				preventDefaultAndExecCommand(e, 'selectAll');
-			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y')) {
+			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y') && !this.markdownMode) {
 				preventDefaultAndExecCommand(e, 'redo');
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
 				preventDefaultAndExecCommand(e, 'undo');
@@ -95,6 +89,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private markdownRenderer: NotebookMarkdownRenderer;
 	private markdownResult: IMarkdownRenderResult;
 	private _htmlMarkdownConverter: HTMLMarkdownConverter;
+	private markdownPreviewLineHeight: number;
 	public readonly onDidClickLink = this._onDidClickLink.event;
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
@@ -105,11 +100,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 		@Inject(INotebookService) private _notebookService: INotebookService,
-
 	) {
 		super();
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
 		this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
+		this.markdownPreviewLineHeight = this._configurationService.getValue('notebook.markdownPreviewLineHeight');
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {
 				this.markdownResult.dispose();
@@ -117,9 +112,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
-		}));
-		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
+			if (e.affectsConfiguration('notebook.markdownPreviewLineHeight')) {
+				this.markdownPreviewLineHeight = this._configurationService.getValue('notebook.markdownPreviewLineHeight');
+				this.updatePreview();
+			}
 		}));
 	}
 
@@ -241,6 +238,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (this._previewMode) {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
+				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 				outputElement.focus();
 			}
@@ -360,31 +358,41 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private addDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
+			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
 			let elements = this.getHtmlElements();
 			if (elements?.length >= range.startLineNumber) {
 				let elementContainingText = elements[range.startLineNumber - 1];
-				let mark = new Mark(elementContainingText);
+				let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
 				let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
 				if (editor) {
 					let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
 					if (findModel?.findMatches?.length > 0) {
 						let searchString = findModel.findExpression;
-						mark.mark(searchString, {
-							className: 'rangeHighlight'
+						markAllOccurances.mark(searchString, {
+							className: findHighlightClass
 						});
 						elementContainingText.scrollIntoView({ behavior: 'smooth' });
 					}
 				}
+				markCurrent.markRanges([{
+					start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
+					length: range.endColumn - range.startColumn
+				}], {
+					className: findRangeSpecificClass
+				});
+				elementContainingText.scrollIntoView({ behavior: 'smooth' });
 			}
 		}
 	}
 
 	private removeDecoration(range: NotebookRange): void {
 		if (range && this.output && this.output.nativeElement) {
+			let markAllOccurances = new Mark(this.output.nativeElement);
 			let elements = this.getHtmlElements();
 			let elementContainingText = elements[range.startLineNumber - 1];
-			let mark = new Mark(elementContainingText);
-			mark.unmark({ acrossElements: true, className: 'rangeHighlight' });
+			let markCurrent = new Mark(elementContainingText);
+			markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
+			markCurrent.unmark({ acrossElements: true, className: findRangeSpecificClass });
 		}
 	}
 
@@ -429,8 +437,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		let textOutput: string[] = [];
 		let elements = this.getHtmlElements();
 		elements.forEach(element => {
-			if (element && element.innerText) {
-				textOutput.push(element.innerText);
+			if (element && element.textContent) {
+				textOutput.push(element.textContent);
 			} else {
 				textOutput.push('');
 			}
@@ -445,6 +453,17 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 		this.cellModel.active = true;
 		this._model.updateActiveCell(this.cellModel);
+	}
+
+	public onKey(e: KeyboardEvent) {
+		let event = new StandardKeyboardEvent(e);
+		if (event.equals(KeyCode.Escape)) {
+			if (this.isEditMode) {
+				this.toggleEditMode(false);
+			}
+			this.cellModel.active = false;
+			this._model.updateActiveCell(undefined);
+		}
 	}
 }
 

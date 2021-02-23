@@ -13,7 +13,6 @@ import { Project } from '../models/project';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 
 export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvider {
-
 	constructor(private projectController: ProjectsController) {
 
 	}

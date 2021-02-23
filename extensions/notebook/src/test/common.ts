@@ -347,6 +347,7 @@ class TestDeclarativeTableComponent extends TestComponentBase implements azdata.
 	}
 	onDataChanged: vscode.Event<any> = this.onClick.event;
 	onRowSelected: vscode.Event<any> = this.onClick.event;
+	setFilter: undefined;
 	data: any[][];
 	columns: azdata.DeclarativeTableColumn[];
 }
@@ -359,10 +360,11 @@ class TestButtonComponent extends TestComponentBase implements azdata.ButtonComp
 }
 
 class TestRadioButtonComponent extends TestComponentBase implements azdata.RadioButtonComponent {
-	constructor(private onClick: vscode.EventEmitter<any>) {
+	constructor(private onClick: vscode.EventEmitter<any>, private onChange: vscode.EventEmitter<boolean>) {
 		super();
 	}
 	onDidClick: vscode.Event<any> = this.onClick.event;
+	onDidChangeCheckedState: vscode.Event<boolean> = this.onChange.event;
 }
 
 class TestTextComponent extends TestComponentBase implements azdata.TextComponent {
@@ -460,11 +462,12 @@ class TestLoadingBuilder extends TestComponentBuilder<azdata.LoadingComponent, a
 
 export function createViewContext(): TestContext {
 	let onClick: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	let onChange: vscode.EventEmitter<boolean> = new vscode.EventEmitter<boolean>();
 
 	let form: azdata.FormContainer = new TestFormContainer();
 	let textBuilder: azdata.ComponentBuilder<azdata.TextComponent, azdata.TextComponentProperties> = new TestComponentBuilder(new TestTextComponent());
 	let buttonBuilder: azdata.ComponentBuilder<azdata.ButtonComponent, azdata.ButtonProperties> = new TestComponentBuilder(new TestButtonComponent(onClick));
-	let radioButtonBuilder: azdata.ComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties> = new TestComponentBuilder(new TestRadioButtonComponent(onClick));
+	let radioButtonBuilder: azdata.ComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties> = new TestComponentBuilder(new TestRadioButtonComponent(onClick, onChange));
 	let declarativeTableBuilder: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties> = new TestComponentBuilder(new TestDeclarativeTableComponent(onClick));
 	let loadingBuilder: azdata.LoadingComponentBuilder = new TestLoadingBuilder(new TestLoadingComponent());
 	let dropdownBuilder: azdata.ComponentBuilder<azdata.DropDownComponent, azdata.DropDownProperties> = new TestComponentBuilder(new TestDropdownComponent(onClick));

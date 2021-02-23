@@ -32,6 +32,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { values } from 'vs/base/common/collections';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { isUUID } from 'vs/base/common/uuid';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -48,7 +49,21 @@ export class ErrorInfo {
 	}
 }
 
+interface INotebookMetadataInternal extends nb.INotebookMetadata {
+	azdata_notebook_guid?: string;
+}
+
+type NotebookMetadataKeys = Required<nb.INotebookMetadata>;
+const expectedMetadataKeys: NotebookMetadataKeys = {
+	kernelspec: undefined,
+	language_info: undefined,
+	tags: undefined,
+	connection_name: undefined,
+	multi_connection_mode: undefined
+};
+
 const saveConnectionNameConfigName = 'notebook.saveConnectionName';
+const injectedParametersMsg = localize('injectedParametersMsg', '# Injected-Parameters\n');
 
 export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsChangedEmitter = new Emitter<void>();
@@ -92,8 +107,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _kernelAliases: string[] = [];
 	private _currentKernelAlias: string | undefined;
 	private _selectedKernelDisplayName: string | undefined;
+	private _multiConnectionMode: boolean = false;
 
 	public requestConnectionHandler: (() => Promise<boolean>) | undefined;
+	private _isLoading: boolean = false;
 
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
@@ -211,6 +228,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get savedConnectionName(): string | undefined {
 		return this._savedConnectionName;
+	}
+
+	public get multiConnectionMode(): boolean {
+		return this._multiConnectionMode;
+	}
+
+	public set multiConnectionMode(isMultiConnection: boolean) {
+		this._multiConnectionMode = isMultiConnection;
 	}
 
 	public get specs(): nb.IAllKernels | undefined {
@@ -361,6 +386,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public async loadContents(isTrusted = false, forceLayoutChange = false): Promise<void> {
 		try {
+			this._isLoading = true;
 			this._trustedMode = isTrusted;
 
 			let contents: nb.INotebookContents | undefined;
@@ -372,37 +398,23 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			// if cells already exist, create them with language info (if it is saved)
 			this._cells = [];
 			if (contents) {
-				this._defaultLanguageInfo = contents.metadata?.language_info;
-				// If language info was serialized in the notebook, attempt to use that to decrease time
-				// required until colorization occurs
-				if (this._defaultLanguageInfo) {
-					this.updateLanguageInfo(this._defaultLanguageInfo);
-				}
-				this._savedKernelInfo = this.getSavedKernelInfo(contents);
-				this._savedConnectionName = this.getSavedConnectionName(contents);
 				if (contents.metadata) {
-					//Telemetry of loading notebook
-					let metadata: any = contents.metadata;
-					if (metadata.azdata_notebook_guid && metadata.azdata_notebook_guid.length === 36) {
-						//Verify if it is actual GUID and then send it to the telemetry
-						let regex = new RegExp('(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}');
-						if (regex.test(metadata.azdata_notebook_guid)) {
-							this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.Open)
-								.withAdditionalProperties({ azdata_notebook_guid: metadata.azdata_notebook_guid })
-								.send();
-						}
-					}
-					Object.keys(contents.metadata).forEach(key => {
-						let expectedKeys = ['kernelspec', 'language_info', 'tags', 'connection_name'];
-						// If custom metadata is defined, add to the _existingMetadata object
-						if (expectedKeys.indexOf(key) < 0) {
-							this._existingMetadata[key] = contents.metadata[key];
-						}
-					});
+					this.loadContentMetadata(contents.metadata);
 				}
+				// Modify Notebook URI Params format from URI query to string space delimited format
+				let notebookUriParams: string = this.notebookUri.query;
+				notebookUriParams = notebookUriParams.replace(/&/g, '\n').replace(/=/g, ' = ');
+				// Get parameter cell and index to place new notebookUri parameters accordingly
+				let parameterCellIndex = 0;
+				let hasParameterCell = false;
+				let hasInjectedCell = false;
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => {
 						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
+						if (cellModel.isParameter) {
+							parameterCellIndex = contents.cells.indexOf(c);
+							hasParameterCell = true;
+						}
 						/*
 						In a parameterized notebook there will be an injected parameter cell.
 						Papermill originally inserts the injected parameter with the comment "# Parameters"
@@ -410,12 +422,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						So to make it clear we edit the injected parameters comment to indicate it is the Injected-Parameters cell.
 						*/
 						if (cellModel.isInjectedParameter) {
-							cellModel.source = cellModel.source.slice(1);
-							cellModel.source = ['# Injected-Parameters\n'].concat(cellModel.source);
+							hasInjectedCell = true;
+							cellModel.source = [injectedParametersMsg].concat(cellModel.source.slice(1));
 						}
 						this.trackMarkdownTelemetry(<nb.ICellContents>c, cellModel);
 						return cellModel;
 					});
+				}
+				// Only add new parameter cell if notebookUri Parameters are found
+				if (notebookUriParams) {
+					this.addUriParameterCell(notebookUriParams, hasParameterCell, parameterCellIndex, hasInjectedCell);
 				}
 			}
 
@@ -429,8 +445,39 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		} catch (error) {
 			this._inErrorState = true;
 			throw error;
+		} finally {
+			this._isLoading = false;
 		}
 	}
+
+	private loadContentMetadata(metadata: INotebookMetadataInternal): void {
+		this._savedKernelInfo = metadata.kernelspec;
+		this._defaultLanguageInfo = metadata.language_info;
+		// If language info was serialized in the notebook, attempt to use that to decrease time
+		// required until colorization occurs
+		if (this._defaultLanguageInfo) {
+			this.updateLanguageInfo(this._defaultLanguageInfo);
+		}
+		this._savedConnectionName = metadata.connection_name;
+		this._multiConnectionMode = !!metadata.multi_connection_mode;
+
+		//Telemetry of loading notebook
+		if (metadata.azdata_notebook_guid && metadata.azdata_notebook_guid.length === 36) {
+			//Verify if it is actual GUID and then send it to the telemetry
+			if (isUUID(metadata.azdata_notebook_guid)) {
+				this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.Open)
+					.withAdditionalProperties({ azdata_notebook_guid: metadata.azdata_notebook_guid })
+					.send();
+			}
+		}
+		Object.keys(metadata).forEach(key => {
+			// If custom metadata is defined, add to the _existingMetadata object
+			if (!Object.keys(expectedMetadataKeys).includes(key)) {
+				this._existingMetadata[key] = metadata[key];
+			}
+		});
+	}
+
 	public async requestModelLoad(): Promise<void> {
 		try {
 			this.setDefaultKernelAndProviderId();
@@ -487,6 +534,33 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return cell;
 	}
 
+	/**
+	 * Adds Parameters cell based on Notebook URI parameters
+	 * @param notebookUriParams contains the parameters from Notebook URI
+	 * @param hasParameterCell notebook contains a parameter cell
+	 * @param parameterCellIndex index of the parameter cell in notebook
+	 * @param hasInjectedCell notebook contains a injected parameter cell
+	 */
+	private addUriParameterCell(notebookUriParams: string, hasParameterCell: boolean, parameterCellIndex: number, hasInjectedCell: boolean): void {
+		let uriParamsIndex = parameterCellIndex;
+		// Set new uri parameters as a Injected Parameters cell after original parameter cell
+		if (hasParameterCell) {
+			uriParamsIndex = parameterCellIndex + 1;
+			// Set the uri parameters after the injected parameter cell
+			if (hasInjectedCell) {
+				uriParamsIndex = uriParamsIndex + 1;
+			}
+			this.addCell('code', uriParamsIndex);
+			this.cells[uriParamsIndex].isInjectedParameter = true;
+			this.cells[uriParamsIndex].source = [injectedParametersMsg].concat(notebookUriParams);
+		} else {
+			// Set new parameters as the parameters cell as the first cell in the notebook
+			this.addCell('code', uriParamsIndex);
+			this.cells[uriParamsIndex].isParameter = true;
+			this.cells[uriParamsIndex].source = [notebookUriParams];
+		}
+	}
+
 	moveCell(cell: ICellModel, direction: MoveDirection): void {
 		if (this.inErrorState) {
 			return;
@@ -536,6 +610,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (cell) {
 			let index = this.findCellIndex(cell);
 			if (index > -1) {
+				// Ensure override language is reset
+				cell.setOverrideLanguage('');
 				cell.cellType = cell.cellType === CellTypes.Markdown ? CellTypes.Code : CellTypes.Markdown;
 				this._onCellTypeChanged.fire(cell);
 				this._contentChangedEmitter.fire({
@@ -962,16 +1038,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return values(connections).find(connection => connection.connectionName === connectionName);
 	}
 
-	// Get saved connection name if saved in notebook file
-	private getSavedConnectionName(notebook: nb.INotebookContents): string | undefined {
-		return notebook?.metadata?.connection_name ? notebook.metadata.connection_name : undefined;
-	}
-
-	// Get default kernel info if saved in notebook file
-	private getSavedKernelInfo(notebook: nb.INotebookContents): nb.IKernelSpec | undefined {
-		return (notebook && notebook.metadata && notebook.metadata.kernelspec) ? notebook.metadata.kernelspec : undefined;
-	}
-
 	private getKernelSpecFromDisplayName(displayName: string): nb.IKernelSpec | undefined {
 		let kernel: nb.IKernelSpec = this.specs.kernels.find(k => k.display_name.toLowerCase() === displayName.toLowerCase());
 		if (!kernel) {
@@ -1204,6 +1270,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		metadata.kernelspec = this._savedKernelInfo;
 		metadata.language_info = this.languageInfo;
 		metadata.tags = this._tags;
+		metadata.multi_connection_mode = this._multiConnectionMode ? this._multiConnectionMode : undefined;
 		if (this.configurationService.getValue(saveConnectionNameConfigName)) {
 			metadata.connection_name = this._savedConnectionName;
 		}
@@ -1228,7 +1295,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			case NotebookChangeType.CellSourceUpdated:
 			case NotebookChangeType.CellInputVisibilityChanged:
 			case NotebookChangeType.CellMetadataUpdated:
-				changeInfo.isDirty = true;
+				changeInfo.isDirty = this._isLoading ? false : true;
 				changeInfo.modelContentChangedEvent = cell.modelContentChangedEvent;
 				break;
 			default:

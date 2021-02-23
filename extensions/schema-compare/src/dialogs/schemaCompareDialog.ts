@@ -282,13 +282,15 @@ export class SchemaCompareDialog {
 			this.targetFileButton = this.view.modelBuilder.button().withProperties({
 				label: '•••',
 				title: loc.selectTargetFile,
-				ariaLabel: loc.selectTargetFile
+				ariaLabel: loc.selectTargetFile,
+				secondary: true
 			}).component();
 		} else {
 			this.sourceFileButton = this.view.modelBuilder.button().withProperties({
 				label: '•••',
 				title: loc.selectSourceFile,
-				ariaLabel: loc.selectSourceFile
+				ariaLabel: loc.selectSourceFile,
+				secondary: true
 			}).component();
 		}
 

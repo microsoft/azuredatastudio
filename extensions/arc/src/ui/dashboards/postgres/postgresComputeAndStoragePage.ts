@@ -155,18 +155,23 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
+							let session: azdataExt.AzdataSession | undefined = undefined;
 							try {
-								await this._postgresModel.controllerModel.azdataLogin();
+								session = await this._postgresModel.controllerModel.acquireAzdataSession();
 								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name,
 									this.saveArgs,
-									this._postgresModel.engineVersion
+									this._postgresModel.engineVersion,
+									this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+									session
 								);
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since
 								// the edit wasn't successfully applied
 								this.saveButton!.enabled = true;
 								throw err;
+							} finally {
+								session?.dispose();
 							}
 							await this._postgresModel.refresh();
 						}
@@ -336,8 +341,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		const information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			iconPath: IconPathHelper.information,
 			title: loc.workerNodesInformation,
-			width: '12px',
-			height: '12px',
+			width: '15px',
+			height: '15px',
 			enabled: false
 		}).component();
 
@@ -429,8 +434,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		const information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			iconPath: IconPathHelper.information,
 			title: loc.postgresConfigurationInformation,
-			width: '12px',
-			height: '12px',
+			width: '15px',
+			height: '15px',
 			enabled: false
 		}).component();
 

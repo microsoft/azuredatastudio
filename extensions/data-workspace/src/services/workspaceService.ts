@@ -8,9 +8,11 @@ import * as vscode from 'vscode';
 import * as dataworkspace from 'dataworkspace';
 import * as path from 'path';
 import * as constants from '../common/constants';
+import * as glob from 'fast-glob';
 import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
+import { TelemetryReporter, TelemetryViews, calculateRelativity, TelemetryActions } from '../common/telemetry';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
@@ -115,6 +117,12 @@ export class WorkspaceService implements IWorkspaceService {
 				currentProjects.push(projectFile);
 				newProjectFileAdded = true;
 
+				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectAddedToWorkspace)
+					.withAdditionalProperties({
+						workspaceProjectRelativity: calculateRelativity(projectFile.fsPath),
+						projectType: path.extname(projectFile.fsPath)
+					}).send();
+
 				// if the relativePath and the original path is the same, that means the project file is not under
 				// any workspace folders, we should add the parent folder of the project file to the workspace
 				const relativePath = vscode.workspace.asRelativePath(projectFile, false);
@@ -147,8 +155,74 @@ export class WorkspaceService implements IWorkspaceService {
 		return projectTypes;
 	}
 
-	getProjectsInWorkspace(): vscode.Uri[] {
-		return vscode.workspace.workspaceFile ? this.getWorkspaceConfigurationValue<string[]>(ProjectsConfigurationName).map(project => this.toUri(project)) : [];
+	getProjectsInWorkspace(ext?: string): vscode.Uri[] {
+		let projects = vscode.workspace.workspaceFile ? this.getWorkspaceConfigurationValue<string[]>(ProjectsConfigurationName).map(project => this.toUri(project)) : [];
+
+		// filter by specified extension
+		if (ext) {
+			projects = projects.filter(p => p.fsPath.toLowerCase().endsWith(ext.toLowerCase()));
+		}
+
+		return projects;
+	}
+
+	/**
+	 * Check for projects that are in the workspace folders but have not been added to the workspace through the dialog or by editing the .code-workspace file
+	 */
+	async checkForProjectsNotAddedToWorkspace(): Promise<void> {
+		const config = vscode.workspace.getConfiguration(constants.projectsConfigurationKey);
+
+		// only check if the user hasn't selected not to show this prompt again
+		if (!config[constants.showNotAddedProjectsMessageKey]) {
+			return;
+		}
+
+		// look for any projects that haven't been added to the workspace
+		const projectsInWorkspace = this.getProjectsInWorkspace();
+		const workspaceFolders = vscode.workspace.workspaceFolders;
+
+		if (!workspaceFolders) {
+			return;
+		}
+
+		for (const folder of workspaceFolders) {
+			const results = await this.getAllProjectsInWorkspaceFolder(folder);
+
+			let containsNotAddedProject = false;
+			for (const projFile of results) {
+				// if any of the found projects aren't already in the workspace's projects, we can stop checking and show the info message
+				if (!projectsInWorkspace.find(p => p.fsPath === projFile)) {
+					containsNotAddedProject = true;
+					break;
+				}
+			}
+
+			if (containsNotAddedProject) {
+				const result = await vscode.window.showInformationMessage(constants.WorkspaceContainsNotAddedProjects, constants.LaunchOpenExisitingDialog, constants.DoNotShowAgain);
+				if (result === constants.LaunchOpenExisitingDialog) {
+					// open settings
+					await vscode.commands.executeCommand('projects.openExisting');
+				} else if (result === constants.DoNotShowAgain) {
+					await config.update(constants.showNotAddedProjectsMessageKey, false, true);
+				}
+
+				return;
+			}
+		}
+	}
+
+	async getAllProjectsInWorkspaceFolder(folder: vscode.WorkspaceFolder): Promise<string[]> {
+		// get the unique supported project extensions
+		const supportedProjectExtensions = [...new Set((await this.getAllProjectTypes()).map(p => { return p.projectFileExtension; }))];
+
+		// path needs to use forward slashes for glob to work
+		const escapedPath = glob.escapePath(folder.uri.fsPath.replace(/\\/g, '/'));
+
+		// can filter for multiple file extensions using folder/**/*.{sqlproj,csproj} format, but this notation doesn't work if there's only one extension
+		// so the filter needs to be in the format folder/**/*.sqlproj if there's only one supported projectextension
+		const projFilter = supportedProjectExtensions.length > 1 ? path.posix.join(escapedPath, '**', `*.{${supportedProjectExtensions.toString()}}`) : path.posix.join(escapedPath, '**', `*.${supportedProjectExtensions[0]}`);
+
+		return await glob(projFilter);
 	}
 
 	async getProjectProvider(projectFile: vscode.Uri): Promise<dataworkspace.IProjectProvider | undefined> {
@@ -166,6 +240,12 @@ export class WorkspaceService implements IWorkspaceService {
 			const projectIdx = currentProjects.findIndex((p: vscode.Uri) => p.fsPath === projectFile.fsPath);
 			if (projectIdx !== -1) {
 				currentProjects.splice(projectIdx, 1);
+
+				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectRemovedFromWorkspace)
+					.withAdditionalProperties({
+						projectType: path.extname(projectFile.fsPath)
+					}).send();
+
 				await this.setWorkspaceConfigurationValue(ProjectsConfigurationName, currentProjects.map(project => this.toRelativePath(project)));
 				this._onDidWorkspaceProjectsChange.fire();
 			}
@@ -217,7 +297,7 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 
 		if (extension.isActive && extension.exports && !ProjectProviderRegistry.providers.includes(extension.exports)) {
-			ProjectProviderRegistry.registerProvider(extension.exports);
+			ProjectProviderRegistry.registerProvider(extension.exports, extension.id);
 		}
 	}
 
