@@ -6,7 +6,6 @@
 import 'vs/css!./infoButton';
 import { Button as sqlButton } from 'sql/base/browser/ui/button/button';
 import { IButtonOptions, IButtonStyles } from 'vs/base/browser/ui/button/button';
-import { Color } from 'vs/base/common/color';
 
 export interface IInfoButtonOptions extends IButtonOptions {
 	buttonMaxHeight: number,
@@ -35,10 +34,7 @@ export class InfoButton extends sqlButton {
 	private _iconWidth?: number;
 	private _title?: string;
 
-	private _buttonBackground: Color;
-	private _buttonHoverBackground: Color;
-	private _buttonForeground: Color;
-	private _buttonBorder: Color;
+	private _styles: IButtonStyles;
 
 	constructor(container: HTMLElement, options?: IInfoButtonOptions) {
 		super(container, options);
@@ -157,20 +153,17 @@ export class InfoButton extends sqlButton {
 	}
 
 	style(styles: IButtonStyles): void {
-		this._buttonBackground = styles.buttonBackground;
-		this._buttonForeground = styles.buttonForeground;
-		this._buttonBorder = styles.buttonBorder;
-		this._buttonHoverBackground = styles.buttonHoverBackground;
+		this._styles = styles;
 		this.applyStyles();
 	}
 
 	applyStyles(): void {
-		this.element.style.backgroundColor = this._buttonBackground?.toString();
-		this.element.style.color = this._buttonForeground?.toString();
-		this.element.style.borderColor = this._buttonBorder?.toString();
+		this.element.style.backgroundColor = this._styles?.buttonBackground?.toString();
+		this.element.style.color = this._styles?.buttonForeground?.toString();
+		this.element.style.borderColor = this._styles?.buttonBorder?.toString();
 	}
 
 	setHoverBackground(): void {
-		this.element.style.backgroundColor = this._buttonHoverBackground?.toString();
+		this.element.style.backgroundColor = this._styles?.buttonHoverBackground?.toString();
 	}
 }
