@@ -18,7 +18,7 @@
 	"createProxy.ReplicationTransactionLog": "Replikationstransaktionsprotokoll-Leser",
 	"createProxy.ReplicationDistributor": "Replikationsverteiler",
 	"createProxy.ReplicationMerge": "Replikationsmerge",
-	"createProxy.ReplicationQueueReader": "Replikation-Warteschlangenleser",
+	"createProxy.ReplicationQueueReader": "Replikations-Warteschlangenleser",
 	"createProxy.SSASQueryLabel": "SQL Server Analysis Services-Abfrage",
 	"createProxy.SSASCommandLabel": "SQL Server Analysis Services-Befehl",
 	"createProxy.SSISPackage": "SQL Server Integration Services-Paket",

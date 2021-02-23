@@ -13,6 +13,7 @@
 	"installingService": "Installazione del servizio",
 	"serviceInstalled": "Installato",
 	"downloadingService": "Download di {0}",
+	"downloadingServiceSize": "({0} KB)",
 	"downloadingServiceStatus": "Download del servizio",
 	"downloadingServiceComplete": "Operazione completata."
 }

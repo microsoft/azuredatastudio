@@ -11,7 +11,7 @@
 	"flatFileImport.serverName": "Nome do servidor",
 	"flatFileImport.databaseName": "Nome do banco de dados",
 	"flatFileImport.tableName": "Nome da tabela",
-	"flatFileImport.tableSchema": "Esquema de tabela",
+	"flatFileImport.tableSchema": "Esquema da tabela",
 	"flatFileImport.fileImport": "Arquivo a ser importado",
 	"flatFileImport.success.norows": "✔ Dados inseridos na tabela corretamente."
 }

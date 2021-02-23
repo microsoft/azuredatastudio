@@ -10,9 +10,9 @@
 	"carbon.extension.contributes.notebook.fileExtensions": "このノートブック プロバイダーにどのファイル拡張子を登録する必要があるか",
 	"carbon.extension.contributes.notebook.standardKernels": "このノートブック プロバイダーへの標準装備が必要なカーネル",
 	"vscode.extension.contributes.notebook.providers": "ノートブック プロバイダーを提供します。",
-	"carbon.extension.contributes.notebook.magic": "セル マジックの名前 (例: \"%%sql\")。",
+	"carbon.extension.contributes.notebook.magic": "'%%sql' などのセル マジックの名前。",
 	"carbon.extension.contributes.notebook.language": "このセル マジックがセルに含まれる場合に使用されるセルの言語",
-	"carbon.extension.contributes.notebook.executionTarget": "Spark vs SQL など、このマジックが示すオプションの実行対象",
-	"carbon.extension.contributes.notebook.kernels": "カーネルのオプションのセット。たとえば、python3、pyspark3、sql に対して有効です。",
+	"carbon.extension.contributes.notebook.executionTarget": "Spark / SQL など、このマジックが示すオプションの実行対象",
+	"carbon.extension.contributes.notebook.kernels": "これが有効なカーネルのオプションのセット (python3、pyspark、sql など)",
 	"vscode.extension.contributes.notebook.languagemagics": "ノートブックの言語を提供します。"
 }
