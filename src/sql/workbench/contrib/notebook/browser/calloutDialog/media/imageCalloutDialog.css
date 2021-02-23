@@ -8,6 +8,7 @@
 }
 .modal.callout-dialog .modal-content .insert-image .flex-container > div {
 	flex: 1;
+	min-width: 380px;
 }
 .modal.callout-dialog .modal-content .radio-group input {
 	margin-right: 8px;

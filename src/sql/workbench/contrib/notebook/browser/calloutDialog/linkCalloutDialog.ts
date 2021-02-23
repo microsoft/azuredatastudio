@@ -7,9 +7,7 @@ import 'vs/css!./media/linkCalloutDialog';
 import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
 import * as styler from 'vs/platform/theme/common/styler';
-import { localize } from 'vs/nls';
 import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
-
 import { CalloutDialog } from 'sql/workbench/browser/modal/calloutDialog';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IDialogProperties } from 'sql/workbench/browser/modal/modal';
@@ -25,23 +23,17 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 
-export interface ICalloutDialogOptions {
+export interface ILinkCalloutDialogOptions {
 	insertTitle?: string,
 	insertMarkup?: string
 }
 
-export class LinkCalloutDialog extends CalloutDialog {
-	private _selectionComplete: Deferred<ICalloutDialogOptions> = new Deferred<ICalloutDialogOptions>();
+export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> {
+	private _selectionComplete: Deferred<ILinkCalloutDialogOptions> = new Deferred<ILinkCalloutDialogOptions>();
 	private _linkTextLabel: HTMLElement;
 	private _linkTextInputBox: InputBox;
 	private _linkAddressLabel: HTMLElement;
 	private _linkUrlInputBox: InputBox;
-
-
-	private readonly linkTextLabel = localize('callout.linkTextLabel', "Text to display");
-	private readonly linkTextPlaceholder = localize('callout.linkTextPlaceholder', "Text to display");
-	private readonly linkAddressLabel = localize('callout.linkAddressLabel', "Address");
-	private readonly linkAddressPlaceholder = localize('callout.linkAddressPlaceholder', "Link to an existing file or web page");
 
 	constructor(
 		title: string,
@@ -73,7 +65,7 @@ export class LinkCalloutDialog extends CalloutDialog {
 	/**
 	 * Opens the dialog and returns a promise for what options the user chooses.
 	 */
-	public open(): Promise<ICalloutDialogOptions> {
+	public open(): Promise<ILinkCalloutDialogOptions> {
 		this.show();
 		return this._selectionComplete.promise;
 	}
@@ -94,7 +86,7 @@ export class LinkCalloutDialog extends CalloutDialog {
 		DOM.append(linkContentColumn, linkTextRow);
 
 		this._linkTextLabel = DOM.$('p');
-		this._linkTextLabel.innerText = this.linkTextLabel;
+		this._linkTextLabel.innerText = constants.linkTextLabel;
 		DOM.append(linkTextRow, this._linkTextLabel);
 
 		const linkTextInputContainer = DOM.$('.input-field');
@@ -102,15 +94,15 @@ export class LinkCalloutDialog extends CalloutDialog {
 			linkTextInputContainer,
 			this._contextViewService,
 			{
-				placeholder: this.linkTextPlaceholder,
-				ariaLabel: this.linkTextLabel
+				placeholder: constants.linkTextPlaceholder,
+				ariaLabel: constants.linkTextLabel
 			});
 		DOM.append(linkTextRow, linkTextInputContainer);
 
 		let linkAddressRow = DOM.$('.row');
 		DOM.append(linkContentColumn, linkAddressRow);
 		this._linkAddressLabel = DOM.$('p');
-		this._linkAddressLabel.innerText = this.linkAddressLabel;
+		this._linkAddressLabel.innerText = constants.linkAddressLabel;
 		DOM.append(linkAddressRow, this._linkAddressLabel);
 
 		const linkAddressInputContainer = DOM.$('.input-field');
@@ -118,8 +110,8 @@ export class LinkCalloutDialog extends CalloutDialog {
 			linkAddressInputContainer,
 			this._contextViewService,
 			{
-				placeholder: this.linkAddressPlaceholder,
-				ariaLabel: this.linkAddressLabel
+				placeholder: constants.linkAddressPlaceholder,
+				ariaLabel: constants.linkAddressLabel
 			});
 		DOM.append(linkAddressRow, linkAddressInputContainer);
 	}
@@ -138,10 +130,9 @@ export class LinkCalloutDialog extends CalloutDialog {
 	}
 
 	public cancel(): void {
-		this.hide();
+		super.cancel();
 		this._selectionComplete.resolve({
 			insertMarkup: ''
 		});
-		this.dispose();
 	}
 }

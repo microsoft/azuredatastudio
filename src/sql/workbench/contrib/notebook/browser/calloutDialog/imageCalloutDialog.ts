@@ -8,7 +8,6 @@ import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
 import * as styler from 'vs/platform/theme/common/styler';
 import { URI } from 'vs/base/common/uri';
-import { localize } from 'vs/nls';
 import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
 import { CalloutDialog } from 'sql/workbench/browser/modal/calloutDialog';
 import { IFileDialogService, IOpenDialogOptions } from 'vs/platform/dialogs/common/dialogs';
@@ -29,15 +28,15 @@ import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 
-export interface ICalloutDialogOptions {
+export interface IImageCalloutDialogOptions {
 	insertTitle?: string,
 	insertMarkup?: string,
 	imagePath?: string,
 	embedImage?: boolean
 }
 
-export class ImageCalloutDialog extends CalloutDialog {
-	private _selectionComplete: Deferred<ICalloutDialogOptions> = new Deferred<ICalloutDialogOptions>();
+export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions> {
+	private _selectionComplete: Deferred<IImageCalloutDialogOptions> = new Deferred<IImageCalloutDialogOptions>();
 	private _imageLocationLabel: HTMLElement;
 	private _imageLocalRadioButton: RadioButton;
 	private _editorImageLocationGroup: string = 'editorImageLocationGroup';
@@ -47,18 +46,6 @@ export class ImageCalloutDialog extends CalloutDialog {
 	private _imageBrowseButton: HTMLAnchorElement;
 	private _imageEmbedLabel: HTMLElement;
 	private _imageEmbedCheckbox: Checkbox;
-
-
-	private readonly locationLabel = localize('callout.locationLabel', "Image location");
-	private readonly localImageLabel = localize('callout.localImageLabel', "This computer");
-	private readonly remoteImageLabel = localize('callout.remoteImageLabel', "Online");
-	private readonly pathInputLabel = localize('callout.pathInputLabel', "Image URL");
-	private readonly pathPlaceholder = localize('callout.pathPlaceholder', "Enter image path");
-	private readonly urlPlaceholder = localize('callout.urlPlaceholder', "Enter image URL");
-	private readonly browseAltText = localize('callout.browseAltText', "Browse");
-	private readonly embedImageLabel = localize('callout.embedImageLabel', "Attach image to notebook");
-	private readonly locationLocal = localize('local', "Local");
-	private readonly locationRemote = localize('remote', "Remote");
 
 	constructor(
 		title: string,
@@ -92,7 +79,7 @@ export class ImageCalloutDialog extends CalloutDialog {
 	/**
 	 * Opens the dialog and returns a promise for what options the user chooses.
 	 */
-	public open(): Promise<ICalloutDialogOptions> {
+	public open(): Promise<IImageCalloutDialogOptions> {
 		this.show();
 		return this._selectionComplete.promise;
 	}
@@ -113,24 +100,24 @@ export class ImageCalloutDialog extends CalloutDialog {
 		DOM.append(imageContentColumn, locationRow);
 
 		this._imageLocationLabel = DOM.$('p');
-		this._imageLocationLabel.innerText = this.locationLabel;
+		this._imageLocationLabel.innerText = constants.locationLabel;
 		DOM.append(locationRow, this._imageLocationLabel);
 
 		let radioButtonGroup = DOM.$('.radio-group');
 		this._imageLocalRadioButton = new RadioButton(radioButtonGroup, {
-			label: this.localImageLabel,
+			label: constants.localImageLabel,
 			enabled: true,
 			checked: true
 		});
 		this._imageRemoteRadioButton = new RadioButton(radioButtonGroup, {
-			label: this.remoteImageLabel,
+			label: constants.remoteImageLabel,
 			enabled: true,
 			checked: false
 		});
 		this._imageLocalRadioButton.name = this._editorImageLocationGroup;
-		this._imageLocalRadioButton.value = this.locationLocal;
+		this._imageLocalRadioButton.value = constants.locationLocal;
 		this._imageRemoteRadioButton.name = this._editorImageLocationGroup;
-		this._imageRemoteRadioButton.value = this.locationRemote;
+		this._imageRemoteRadioButton.value = constants.locationRemote;
 
 		DOM.append(locationRow, radioButtonGroup);
 
@@ -138,9 +125,9 @@ export class ImageCalloutDialog extends CalloutDialog {
 		DOM.append(imageContentColumn, pathRow);
 		this._imageUrlLabel = DOM.$('p');
 		if (this._imageLocalRadioButton.checked === true) {
-			this._imageUrlLabel.innerText = this.pathPlaceholder;
+			this._imageUrlLabel.innerText = constants.pathPlaceholder;
 		} else {
-			this._imageUrlLabel.innerText = this.urlPlaceholder;
+			this._imageUrlLabel.innerText = constants.urlPlaceholder;
 		}
 		DOM.append(pathRow, this._imageUrlLabel);
 
@@ -149,12 +136,12 @@ export class ImageCalloutDialog extends CalloutDialog {
 			inputContainer,
 			this._contextViewService,
 			{
-				placeholder: this.pathPlaceholder,
-				ariaLabel: this.pathInputLabel
+				placeholder: constants.pathPlaceholder,
+				ariaLabel: constants.pathInputLabel
 			});
 		let browseButtonContainer = DOM.$('.button-icon');
 		this._imageBrowseButton = DOM.$('a.codicon.masked-icon.browse-local');
-		this._imageBrowseButton.title = this.browseAltText;
+		this._imageBrowseButton.title = constants.browseAltText;
 		DOM.append(inputContainer, browseButtonContainer);
 		DOM.append(browseButtonContainer, this._imageBrowseButton);
 
@@ -167,13 +154,13 @@ export class ImageCalloutDialog extends CalloutDialog {
 
 		this._register(this._imageRemoteRadioButton.onClicked(e => {
 			this._imageBrowseButton.style.display = 'none';
-			this._imageUrlLabel.innerText = this.urlPlaceholder;
-			this._imageUrlInputBox.setPlaceHolder(this.urlPlaceholder);
+			this._imageUrlLabel.innerText = constants.urlPlaceholder;
+			this._imageUrlInputBox.setPlaceHolder(constants.urlPlaceholder);
 		}));
 		this._register(this._imageLocalRadioButton.onClicked(e => {
 			this._imageBrowseButton.style.display = 'block';
-			this._imageUrlLabel.innerText = this.pathPlaceholder;
-			this._imageUrlInputBox.setPlaceHolder(this.pathPlaceholder);
+			this._imageUrlLabel.innerText = constants.pathPlaceholder;
+			this._imageUrlInputBox.setPlaceHolder(constants.pathPlaceholder);
 		}));
 		DOM.append(pathRow, inputContainer);
 
@@ -183,10 +170,10 @@ export class ImageCalloutDialog extends CalloutDialog {
 		this._imageEmbedCheckbox = new Checkbox(
 			this._imageEmbedLabel,
 			{
-				label: this.embedImageLabel,
+				label: constants.embedImageLabel,
 				checked: false,
 				onChange: (viaKeyboard) => { },
-				ariaLabel: this.embedImageLabel
+				ariaLabel: constants.embedImageLabel
 			});
 		DOM.append(embedRow, this._imageEmbedLabel);
 	}
@@ -207,13 +194,12 @@ export class ImageCalloutDialog extends CalloutDialog {
 	}
 
 	public cancel(): void {
-		this.hide();
+		super.cancel();
 		this._selectionComplete.resolve({
 			insertMarkup: '',
 			imagePath: undefined,
 			embedImage: undefined
 		});
-		this.dispose();
 	}
 
 	private async getUserHome(): Promise<string> {

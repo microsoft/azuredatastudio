@@ -14,7 +14,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
-export abstract class CalloutDialog extends Modal {
+export abstract class CalloutDialog<T> extends Modal {
 
 	constructor(
 		title: string,
@@ -47,6 +47,13 @@ export abstract class CalloutDialog extends Modal {
 	}
 
 	protected abstract renderBody(container: HTMLElement): void;
+
+	public abstract open(): Promise<T>;
+
+	public cancel(): void {
+		this.hide();
+		this.dispose();
+	}
 
 	protected layout(height?: number): void {
 	}

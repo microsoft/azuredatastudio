@@ -27,7 +27,6 @@
 	box-shadow: none;
 }
 
-/* Correct the arrow appearance for HC theme */
 .callout-arrow:before {
 	border-width: 1px;
 	border-style: solid;
