@@ -120,7 +120,6 @@ export function createHeadingTextComponent(view: azdata.ModelView, value: string
 export function creaetLabelTextComponent(view: azdata.ModelView, value: string): azdata.TextComponent {
 	const component = createTextCompononent(view, value);
 	component.updateCssStyles({
-		'color': '#595959',
 		'width': '250px'
 	});
 	return component;

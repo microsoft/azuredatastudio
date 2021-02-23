@@ -33,7 +33,7 @@ export class TempTargetSelectionPage extends MigrationWizardPage {
 			if (e.selected) {
 				this.migrationStateModel._targetSubscription = this.migrationStateModel.getSubscription(e.index);
 				this.migrationStateModel._targetManagedInstance = undefined!;
-				this.migrationStateModel.migrationController = undefined!;
+				this.migrationStateModel._migrationController = undefined!;
 				this.populateManagedInstanceDropdown();
 			}
 		});
@@ -48,7 +48,7 @@ export class TempTargetSelectionPage extends MigrationWizardPage {
 			}).component();
 		this._managedInstanceDropdown.onValueChanged((e) => {
 			if (e.selected) {
-				this.migrationStateModel.migrationControllers = undefined!;
+				this.migrationStateModel._migrationControllers = undefined!;
 				this.migrationStateModel._targetManagedInstance = this.migrationStateModel.getManagedInstance(e.index);
 			}
 		});
@@ -88,14 +88,10 @@ export class TempTargetSelectionPage extends MigrationWizardPage {
 			this._managedInstanceDropdown.loading = true;
 			try {
 				this._managedInstanceSubscriptionDropdown.values = await this.migrationStateModel.getSubscriptionsDropdownValues();
-				this.migrationStateModel._targetSubscription = this.migrationStateModel.getSubscription(0);
 			} catch (e) {
 				console.log(e);
 			} finally {
-				this.migrationStateModel._targetManagedInstance = undefined!;
-				this.populateManagedInstanceDropdown();
 				this._managedInstanceSubscriptionDropdown.loading = false;
-				this._managedInstanceDropdown.loading = false;
 			}
 		}
 	}
@@ -105,7 +101,6 @@ export class TempTargetSelectionPage extends MigrationWizardPage {
 			this._managedInstanceDropdown.loading = true;
 			try {
 				this._managedInstanceDropdown.values = await this.migrationStateModel.getManagedInstanceValues(this.migrationStateModel._targetSubscription);
-				this.migrationStateModel._targetManagedInstance = this.migrationStateModel.getManagedInstance(0);
 			} catch (e) {
 				console.log(e);
 			} finally {

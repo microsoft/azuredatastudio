@@ -37,7 +37,7 @@ export class SummaryPage extends MigrationWizardPage {
 		this._flexContainer.addItems(
 			[
 				createHeadingTextComponent(this._view, constants.AZURE_ACCOUNT_LINKED),
-				createHeadingTextComponent(this._view, this.migrationStateModel.azureAccount.displayInfo.displayName),
+				createHeadingTextComponent(this._view, this.migrationStateModel._azureAccount.displayInfo.displayName),
 				createHeadingTextComponent(this._view, constants.MIGRATION_TARGET),
 				createInformationRow(this._view, constants.TYPE, constants.SUMMARY_MI_TYPE),
 				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
@@ -46,7 +46,7 @@ export class SummaryPage extends MigrationWizardPage {
 				createHeadingTextComponent(this._view, constants.DATABASE_BACKUP_PAGE_TITLE),
 				this.createNetworkContainerRows(),
 				createHeadingTextComponent(this._view, constants.IR_PAGE_TITLE),
-				createInformationRow(this._view, constants.IR_PAGE_TITLE, this.migrationStateModel.migrationController?.name!),
+				createInformationRow(this._view, constants.IR_PAGE_TITLE, this.migrationStateModel._migrationController?.name!),
 				createInformationRow(this._view, constants.SUMMARY_IR_NODE, this.migrationStateModel._nodeNames.join(', ')),
 
 			]
@@ -67,15 +67,15 @@ export class SummaryPage extends MigrationWizardPage {
 		const flexContainer = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
 		}).component();
-		switch (this.migrationStateModel.databaseBackup.networkContainerType) {
+		switch (this.migrationStateModel._databaseBackup.networkContainerType) {
 			case NetworkContainerType.NETWORK_SHARE:
 				flexContainer.addItems(
 					[
 						createInformationRow(this._view, constants.TYPE, constants.NETWORK_SHARE),
-						createInformationRow(this._view, constants.PATH, this.migrationStateModel.databaseBackup.networkShareLocation),
-						createInformationRow(this._view, constants.USER_ACCOUNT, this.migrationStateModel.databaseBackup.windowsUser),
-						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel.databaseBackup.subscription.name),
-						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel.databaseBackup.storageAccount.name),
+						createInformationRow(this._view, constants.PATH, this.migrationStateModel._databaseBackup.networkShareLocation),
+						createInformationRow(this._view, constants.USER_ACCOUNT, this.migrationStateModel._databaseBackup.windowsUser),
+						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name),
+						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel._databaseBackup.storageAccount.name),
 					]
 				);
 				break;
@@ -83,9 +83,9 @@ export class SummaryPage extends MigrationWizardPage {
 				flexContainer.addItems(
 					[
 						createInformationRow(this._view, constants.TYPE, constants.FILE_SHARE),
-						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel.databaseBackup.subscription.name),
-						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel.databaseBackup.storageAccount.name),
-						createInformationRow(this._view, constants.FILE_SHARE, this.migrationStateModel.databaseBackup.fileShare.name),
+						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name),
+						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel._databaseBackup.storageAccount.name),
+						createInformationRow(this._view, constants.FILE_SHARE, this.migrationStateModel._databaseBackup.fileShare.name),
 					]
 				);
 				break;
@@ -93,9 +93,9 @@ export class SummaryPage extends MigrationWizardPage {
 				flexContainer.addItems(
 					[
 						createInformationRow(this._view, constants.TYPE, constants.BLOB_CONTAINER),
-						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel.databaseBackup.blobContainer.subscription.name),
-						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel.databaseBackup.storageAccount.name),
-						createInformationRow(this._view, constants.BLOB_CONTAINER, this.migrationStateModel.databaseBackup.blobContainer.name),
+						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.blobContainer.subscription.name),
+						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel._databaseBackup.storageAccount.name),
+						createInformationRow(this._view, constants.BLOB_CONTAINER, this.migrationStateModel._databaseBackup.blobContainer.name),
 					]
 				);
 		}

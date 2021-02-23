@@ -99,7 +99,7 @@ export const CUSTOM_SETUP_BUTTON = localize('sql.migration.custom.setup.button',
 export const MIGRATION_CONTROLLER_NOT_FOUND_ERROR = localize('sql.migration.ir.page.migration.controller.not.found', "No Migration Controllers found. Please create a new one");
 export const CREATE_NEW = localize('sql.migration.create.new', "Create new");
 export const INVALID_CONTROLLER_ERROR = localize('sql.migration.invalid.controller.error', "Please select a valid controller");
-export const CONTROLLER_OFFLINE_ERROR = localize('sql.migration.invalid.controller.offline.error', "Please select a controller which is connected to a node");
+export const CONTROLLER_OFFLINE_ERROR = localize('sql.migration.invalid.controller.offline.error', "Please select a controller that is connected to a node");
 export const AUTHENTICATION_KEYS = localize('sql.migration.authentication.types', "Authentication Keys");
 export function CONTROLLER_DETAILS_HEADER(controllerName: string) {
 	return localize('sql.migration.controller.header', "Migration Controller \"{0}\" details:`", controllerName);
