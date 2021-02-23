@@ -299,7 +299,7 @@
 
 
 .nb-grid-stack.grid-stack {
-	margin: 0 8px;
+	margin: 0 2px;
 }
 
 .nb-grid-stack.grid-stack + .empty-message{
