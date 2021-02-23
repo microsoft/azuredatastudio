@@ -63,43 +63,6 @@ import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storag
 import product from 'vs/platform/product/common/product';
 import { mnemonicButtonLabel } from 'vs/base/common/labels';
 
-const promptDownloadManually = (extension: IGalleryExtension | undefined, message: string, error: Error, instantiationService: IInstantiationService): Promise<any> => {
-	return instantiationService.invokeFunction(accessor => {
-		if (isPromiseCanceledError(error)) {
-			return Promise.resolve();
-		}
-
-		const productService = accessor.get(IProductService);
-		const openerService = accessor.get(IOpenerService);
-		const notificationService = accessor.get(INotificationService);
-		const dialogService = accessor.get(IDialogService);
-		const erorrsToShows = [INSTALL_ERROR_INCOMPATIBLE, INSTALL_ERROR_MALICIOUS, INSTALL_ERROR_NOT_SUPPORTED];
-		if (!extension || erorrsToShows.indexOf(error.name) !== -1 || !productService.extensionsGallery) {
-			return dialogService.show(Severity.Error, error.message, []);
-		} else {
-			const downloadUrl = (extension.assets.downloadPage && extension.assets.downloadPage.uri) || extension.assets.download.uri; // {{SQL CARBON EDIT}} Use the URI directly since we don't have a marketplace hosting the packages
-			notificationService.prompt(Severity.Error, message, !InstallVSIXAction.AVAILABLE ? [] : [{
-				label: localize('download2', "Try Downloading Manually..."),
-				run: () => openerService.open(URI.parse(downloadUrl)).then(() => {
-					notificationService.prompt(
-						Severity.Info,
-						localize('install vsix', 'Once downloaded, please manually install the downloaded VSIX of \'{0}\'.', extension.identifier.id),
-						[{
-							label: InstallVSIXAction.LABEL,
-							run: () => {
-								const action = instantiationService.createInstance(InstallVSIXAction, InstallVSIXAction.ID, InstallVSIXAction.LABEL);
-								action.run();
-								action.dispose();
-							}
-						}]
-					);
-				})
-			}]);
-			return Promise.resolve();
-		}
-	});
-};
-
 function getRelativeDateLabel(date: Date): string {
 	const delta = new Date().getTime() - date.getTime();
 
@@ -334,7 +297,7 @@ export abstract class AbstractInstallAction extends ExtensionAction {
 
 			console.error(error);
 
-			await this.instantiationService.createInstance(PromptExtensionInstallFailureAction, extension, InstallOperation.Install, error).run();
+			await this.instantiationService.createInstance(PromptExtensionInstallFailureAction, extension, extension.latestVersion, InstallOperation.Install, error).run();
 			return undefined;
 		}
 	}
@@ -778,7 +741,7 @@ export class UpdateAction extends ExtensionAction {
 
 			console.error(err);
 
-			this.instantiationService.createInstance(PromptExtensionInstallFailureAction, extension, InstallOperation.Update, err).run();
+			this.instantiationService.createInstance(PromptExtensionInstallFailureAction, extension, extension.latestVersion, InstallOperation.Update, err).run();
 		}
 	}
 

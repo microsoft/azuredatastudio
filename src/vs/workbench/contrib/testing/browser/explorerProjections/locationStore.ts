@@ -30,7 +30,7 @@ export class TestLocationStore<T extends { location?: ModeLocation, depth: numbe
 	public getTestAtPosition(uri: URI, position: Position) {
 		const tests = this.itemsByUri.get(uri.toString());
 		if (!tests) {
-			return;
+			return undefined;
 		}
 
 		return tests.find(test => {

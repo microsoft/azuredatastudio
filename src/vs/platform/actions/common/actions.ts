@@ -44,7 +44,7 @@ export interface ICommandAction {
 	tooltip?: string;
 	icon?: Icon;
 	precondition?: ContextKeyExpression;
-	toggled?: ContextKeyExpression | { condition: ContextKeyExpression, icon?: Icon, tooltip?: string };
+	toggled?: ContextKeyExpression | { condition: ContextKeyExpression, icon?: Icon, tooltip?: string; };
 }
 
 export type ISerializableCommandAction = UriDto<ICommandAction>;
@@ -198,7 +198,7 @@ export interface IMenuRegistry {
 	addCommand(userCommand: ICommandAction): IDisposable;
 	getCommand(id: string): ICommandAction | undefined;
 	getCommands(): ICommandsMap;
-	appendMenuItems(items: Iterable<{ id: MenuId, item: IMenuItem | ISubmenuItem }>): IDisposable;
+	appendMenuItems(items: Iterable<{ id: MenuId, item: IMenuItem | ISubmenuItem; }>): IDisposable;
 	appendMenuItem(menu: MenuId, item: IMenuItem | ISubmenuItem): IDisposable;
 	getMenuItems(loc: MenuId): Array<IMenuItem | ISubmenuItem>;
 }
@@ -249,7 +249,7 @@ export const MenuRegistry: IMenuRegistry = new class implements IMenuRegistry {
 		return this.appendMenuItems(Iterable.single({ id, item }));
 	}
 
-	appendMenuItems(items: Iterable<{ id: MenuId, item: IMenuItem | ISubmenuItem }>): IDisposable {
+	appendMenuItems(items: Iterable<{ id: MenuId, item: IMenuItem | ISubmenuItem; }>): IDisposable {
 
 		const changedIds = new Set<MenuId>();
 		const toRemove = new LinkedList<Function>();
@@ -365,15 +365,17 @@ export class MenuItemAction implements IAction {
 
 	readonly item: ICommandAction;
 	readonly alt: MenuItemAction | undefined;
-
 	private readonly _options: IMenuActionOptions | undefined;
 
 	readonly id: string;
-	readonly label: string;
-	readonly tooltip: string;
+
+	// {{SQL CARBON EDIT}} -- remove readonly since notebook component sets these
+	label: string;
+	tooltip: string;
 	readonly class: string | undefined;
 	readonly enabled: boolean;
 	readonly checked: boolean;
+	readonly expanded: boolean = false;
 
 	constructor(
 		item: ICommandAction,
@@ -389,8 +391,8 @@ export class MenuItemAction implements IAction {
 		this.checked = false;
 
 		if (item.toggled) {
-			const toggled = ((item.toggled as { condition: ContextKeyExpression }).condition ? item.toggled : { condition: item.toggled }) as {
-				condition: ContextKeyExpression, icon?: Icon, tooltip?: string | ILocalizedString
+			const toggled = ((item.toggled as { condition: ContextKeyExpression; }).condition ? item.toggled : { condition: item.toggled }) as {
+				condition: ContextKeyExpression, icon?: Icon, tooltip?: string | ILocalizedString;
 			};
 			this.checked = contextKeyService.contextMatchesRules(toggled.condition);
 			if (this.checked && toggled.tooltip) {
@@ -422,6 +424,8 @@ export class MenuItemAction implements IAction {
 
 		return this._commandService.executeCommand(this.id, ...runArgs);
 	}
+
+
 }
 
 export class SyncActionDescriptor {
@@ -434,7 +438,7 @@ export class SyncActionDescriptor {
 	private readonly _keybindingContext: ContextKeyExpression | undefined;
 	private readonly _keybindingWeight: number | undefined;
 
-	public static create<Services extends BrandedService[]>(ctor: { new(id: string, label: string, ...services: Services): Action },
+	public static create<Services extends BrandedService[]>(ctor: { new(id: string, label: string, ...services: Services): Action; },
 		id: string, label: string | undefined, keybindings?: IKeybindings, keybindingContext?: ContextKeyExpression, keybindingWeight?: number
 	): SyncActionDescriptor {
 		return new SyncActionDescriptor(ctor as IConstructorSignature2<string, string | undefined, Action>, id, label, keybindings, keybindingContext, keybindingWeight);
@@ -501,7 +505,7 @@ export interface IAction2Options extends ICommandAction {
 	/**
 	 * One or many menu items.
 	 */
-	menu?: OneOrN<{ id: MenuId } & Omit<IMenuItem, 'command'>>;
+	menu?: OneOrN<{ id: MenuId; } & Omit<IMenuItem, 'command'>>;
 
 	/**
 	 * One keybinding.
@@ -520,7 +524,7 @@ export abstract class Action2 {
 	abstract run(accessor: ServicesAccessor, ...args: any[]): any;
 }
 
-export function registerAction2(ctor: { new(): Action2 }): IDisposable {
+export function registerAction2(ctor: { new(): Action2; }): IDisposable {
 	const disposables = new DisposableStore();
 	const action = new ctor();
 

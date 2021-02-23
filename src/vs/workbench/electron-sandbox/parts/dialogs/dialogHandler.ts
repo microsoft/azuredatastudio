@@ -173,7 +173,7 @@ export class NativeDialogHandler implements IDialogHandler {
 				process.versions['chrome'],
 				process.versions['node'],
 				process.versions['v8'],
-				`${osProps.type} ${osProps.arch} ${osProps.release}${isSnap ? ' snap' : ''}`,
+				`${osProps.type} ${osProps.arch} ${osProps.release}${isLinuxSnap ? ' snap' : ''}`,
 				this.productService.vscodeVersion  // {{SQL CARBON EDIT}}
 			);
 		};

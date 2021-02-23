@@ -9,7 +9,7 @@ import * as os from 'os';
 import * as path from 'vs/base/common/path';
 import * as pfs from 'vs/base/node/pfs';
 import { URI } from 'vs/base/common/uri';
-import { flakySuite, getRandomTestPath } from 'vs/base/test/node/testUtils';
+import { getRandomTestPath } from 'vs/base/test/node/testUtils';
 import { hashPath } from 'vs/workbench/services/backup/electron-browser/backupFileService';
 import { NativeBackupTracker } from 'vs/workbench/contrib/backup/electron-sandbox/backupTracker';
 import { TextFileEditorModelManager } from 'vs/workbench/services/textfile/common/textFileEditorModelManager';
@@ -99,7 +99,6 @@ suite('BackupTracker', function () {
 	let accessor: TestServiceAccessor;
 	let disposables: IDisposable[] = [];
 
-	let self: any = this;
 	this.retries(3);
 	this.timeout(1000 * 20);
 	setup(async () => {

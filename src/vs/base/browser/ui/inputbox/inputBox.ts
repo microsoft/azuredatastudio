@@ -422,7 +422,7 @@ export class InputBox extends Widget {
 		return !!this.validation && !this.validation(this.value);
 	}
 
-	public validate(): MessageType | undefined {
+	public validate(): MessageType | boolean | undefined {
 		let errorMsg: IMessage | null = null;
 
 		if (this.validation) {

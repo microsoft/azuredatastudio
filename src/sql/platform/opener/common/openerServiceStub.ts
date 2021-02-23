@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { URI } from 'vs/base/common/uri';
-import { IOpenerService, IOpener, IValidator, IExternalUriResolver, IExternalOpener, ResolveExternalUriOptions, IResolvedExternalUri } from 'vs/platform/opener/common/opener';
+import { IOpenerService, IOpener, IValidator, IExternalUriResolver, IExternalOpener, ResolveExternalUriOptions, IResolvedExternalUri, IExternalOpenerProvider } from 'vs/platform/opener/common/opener';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 
@@ -25,4 +25,10 @@ export class OpenerServiceStub implements IOpenerService {
 	}
 	_serviceBrand: undefined;
 	async open(resource: URI | string, options?: any): Promise<boolean> { return Promise.resolve(true); }
+	setDefaultExternalOpener(opener: IExternalOpener): void {
+		throw new Error('Method not implemented.');
+	}
+	registerExternalOpenerProvider(provider: IExternalOpenerProvider): IDisposable {
+		throw new Error('Method not implemented.');
+	}
 }

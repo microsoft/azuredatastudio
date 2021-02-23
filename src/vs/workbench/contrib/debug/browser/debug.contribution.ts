@@ -200,7 +200,7 @@ function registerDebugMenu(): void {
 			title: nls.localize({ key: 'miViewRun', comment: ['&& denotes a mnemonic'] }, "&&Run")
 		},
 		order: 4
-	});
+	}); {{SQL CARBON EDIT}} - Disable unusued menus */
 
 	// Debug menu
 
@@ -489,3 +489,4 @@ function registerConfiguration(): void {
 		}
 	});
 }
+

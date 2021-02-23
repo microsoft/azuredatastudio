@@ -14,8 +14,8 @@ export interface ITelemetryData {
 }
 
 export type WorkbenchActionExecutedClassification = {
-	id: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	from: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+	id: { classification: 'SystemMetaData', purpose: 'FeatureInsight'; };
+	from: { classification: 'SystemMetaData', purpose: 'FeatureInsight'; };
 };
 
 export type WorkbenchActionExecutedEvent = {
@@ -294,6 +294,15 @@ export class SubmenuAction implements IAction {
 	}
 
 	async run(): Promise<any> { }
+
+	// {{SQL CARBON EDIT}}
+	get expanded(): boolean {
+		return false;
+	}
+	set expanded(value: boolean) {
+	}
+	protected _setExpanded(value: boolean): void {
+	}
 }
 
 export class EmptySubmenuAction extends Action {

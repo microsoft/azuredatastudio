@@ -244,13 +244,6 @@ export class MainThreadAuthentication extends Disposable implements MainThreadAu
 		this._register(this.authenticationService.onDidChangeDeclaredProviders(e => {
 			this._proxy.$setProviders(e);
 		}));
-
-		// {{SQL CARBON EDIT}} - avoid null reference exception
-		if (this.credentialsService.onDidChangePassword) {
-			this._register(this.credentialsService.onDidChangePassword(_ => {
-				this._proxy.$onDidChangePassword();
-			}));
-		}
 	}
 
 	$getProviderIds(): Promise<string[]> {

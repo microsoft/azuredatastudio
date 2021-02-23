@@ -21,6 +21,7 @@ import { IExtensionDescription } from 'vs/platform/extensions/common/extensions'
 import { MarkdownString } from 'vs/workbench/api/common/extHostTypeConverters';
 import { IMarkdownString } from 'vs/base/common/htmlContent';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
+import { Command } from 'vs/editor/common/modes';
 
 // {{SQL CARBON EDIT}}
 import * as azdata from 'azdata';
@@ -378,7 +379,7 @@ export class ExtHostTreeView<T> extends Disposable {
 		return !!this.dataProvider.resolveTreeItem;
 	}
 
-	async resolveTreeItem(treeItemHandle: string): Promise<ITreeItem | undefined> {
+	async resolveTreeItem(treeItemHandle: string, token: vscode.CancellationToken): Promise<ITreeItem | undefined> {
 		if (!this.dataProvider.resolveTreeItem) {
 			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 		}
