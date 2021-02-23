@@ -228,13 +228,6 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
-	dom(): azdata.ComponentBuilder<azdata.DomComponent, azdata.DomProperties> {
-		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.DomComponent, azdata.DomProperties> = this.getComponentBuilder(new DomComponentWrapper(this._proxy, this._handle, id), id);
-		this._componentBuilders.set(id, builder);
-		return builder;
-	}
-
 	hyperlink(): azdata.ComponentBuilder<azdata.HyperlinkComponent, azdata.HyperlinkComponentProperties> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.HyperlinkComponent, azdata.HyperlinkComponentProperties> = this.getComponentBuilder(new HyperlinkComponentWrapper(this._proxy, this._handle, id), id);
@@ -1133,21 +1126,6 @@ class WebViewWrapper extends ComponentWrapper implements azdata.WebViewComponent
 	}
 }
 
-class DomComponentWrapper extends ComponentWrapper implements azdata.DomComponent {
-
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.Dom, id);
-		this.properties = {};
-	}
-
-	public get html(): string {
-		return this.properties['html'];
-	}
-	public set html(html: string) {
-		this.setProperty('html', html);
-	}
-}
-
 class EditorWrapper extends ComponentWrapper implements azdata.EditorComponent {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Editor, id);
@@ -1583,6 +1561,10 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 
 	public set selectEffect(v: boolean | undefined) {
 		this.setProperty('selectEffect', v);
+	}
+
+	public setFilter(rowIndexes: number[]): void {
+		this._proxy.$doAction(this._handle, this._id, ModelViewAction.Filter, rowIndexes);
 	}
 
 	public toComponentShape(): IComponentShape {

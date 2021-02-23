@@ -8,6 +8,6 @@
 	],
 	"dacFx.targetServerDropdownTitle": "Servidor de destino",
 	"dacFx.sourceServerDropdownTitle": "Servidor de origen",
-	"dacFx.databaseNameTextBox": "Base de datos destino",
+	"dacFx.databaseNameTextBox": "Base de datos de destino",
 	"dacFx.sourceDatabaseDropdownTitle": "Base de datos de origen"
 }

@@ -15,6 +15,7 @@ import { Uri, window } from 'vscode';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 /**
  * Class representing a Project, and providing functions for operating on it
@@ -195,6 +196,8 @@ export class Project {
 			return;
 		}
 
+		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectForRoundtrip);
+
 		if (!this.importedTargets.includes(constants.NetCoreTargets)) {
 			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
 			if (result === constants.yesString) {
@@ -373,7 +376,7 @@ export class Project {
 			// update any system db references
 			const systemDbReferences = this.databaseReferences.filter(r => r instanceof SystemDatabaseReferenceProjectEntry) as SystemDatabaseReferenceProjectEntry[];
 			if (systemDbReferences.length > 0) {
-				systemDbReferences.forEach((r) => {
+				for (let r of systemDbReferences) {
 					// remove old entry in sqlproj
 					this.removeDatabaseReferenceFromProjFile(r);
 
@@ -382,11 +385,18 @@ export class Project {
 					r.ssdtUri = this.getSystemDacpacSsdtUri(`${r.databaseName}.dacpac`);
 
 					// add updated system db reference to sqlproj
-					this.addDatabaseReferenceToProjFile(r);
-				});
+					await this.addDatabaseReferenceToProjFile(r);
+				}
 			}
 
 			await this.serializeToProjFile(this.projFileXmlDoc);
+
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.changePlatformType)
+				.withAdditionalProperties({
+					from: this.getProjectTargetVersion(),
+					to: compatLevel
+				})
+				.send();
 		}
 	}
 
@@ -730,10 +740,10 @@ export class Project {
 		referenceNode.appendChild(privateElement);
 	}
 
-	public addSqlCmdVariableToProjFile(entry: SqlCmdVariableProjectEntry): void {
+	public async addSqlCmdVariableToProjFile(entry: SqlCmdVariableProjectEntry): Promise<void> {
 		// Remove any entries with the same variable name. It'll be replaced with a new one
 		if (Object.keys(this.sqlCmdVariables).includes(entry.variableName)) {
-			this.removeFromProjFile(entry);
+			await this.removeFromProjFile(entry);
 		}
 
 		const sqlCmdVariableNode = this.projFileXmlDoc.createElement(constants.SqlCmdVariable);
@@ -854,6 +864,10 @@ export class Project {
 				await this.addSystemDatabaseReference({ databaseName: databaseVariableName, systemDb: systemDb, suppressMissingDependenciesErrors: suppressMissingDependences });
 			}
 		}
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateSystemDatabaseReferencesInProjFile)
+			.withAdditionalMeasurements({ referencesCount: this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length })
+			.send();
 	}
 
 	private async addToProjFile(entry: ProjectEntry, xmlTag?: string, attributes?: Map<string, string>): Promise<void> {
@@ -868,7 +882,7 @@ export class Project {
 				await this.addDatabaseReferenceToProjFile(<IDatabaseReferenceProjectEntry>entry);
 				break;
 			case EntryType.SqlCmdVariable:
-				this.addSqlCmdVariableToProjFile(<SqlCmdVariableProjectEntry>entry);
+				await this.addSqlCmdVariableToProjFile(<SqlCmdVariableProjectEntry>entry);
 				break; // not required but adding so that we dont miss when we add new items
 		}
 

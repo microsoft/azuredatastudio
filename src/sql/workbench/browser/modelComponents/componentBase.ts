@@ -200,12 +200,12 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 		this.setPropertyFromUI<boolean>((props, value) => props.ariaHidden = value, newValue);
 	}
 
-	public get CSSStyles(): { [key: string]: string } {
-		return this.getPropertyOrDefault<{ [key: string]: string }>((props) => props.CSSStyles, {});
+	public get CSSStyles(): azdata.CssStyles {
+		return this.getPropertyOrDefault<azdata.CssStyles>((props) => props.CSSStyles, {});
 	}
 
-	public set CSSStyles(newValue: { [key: string]: string }) {
-		this.setPropertyFromUI<{ [key: string]: string }>((properties, CSSStyles) => { properties.CSSStyles = CSSStyles; }, newValue);
+	public set CSSStyles(newValue: azdata.CssStyles) {
+		this.setPropertyFromUI<azdata.CssStyles>((properties, CSSStyles) => { properties.CSSStyles = CSSStyles; }, newValue);
 	}
 
 	protected getWidth(): string {
@@ -264,6 +264,17 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 
 	protected onkeydown(domNode: HTMLElement, listener: (e: StandardKeyboardEvent) => void): void {
 		this._register(addDisposableListener(domNode, EventType.KEY_DOWN, (e: KeyboardEvent) => listener(new StandardKeyboardEvent(e))));
+	}
+
+	protected mergeCss(...styles: azdata.CssStyles[]): azdata.CssStyles {
+		const x = styles.reduce((previous, current) => {
+			if (current) {
+				return Object.assign(previous, current);
+			}
+			return previous;
+		}, {});
+
+		return x;
 	}
 }
 
@@ -378,17 +389,6 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 			throw new Error(`Unable to set item layout - unknown item ${componentDescriptor.id}`);
 		}
 		return;
-	}
-
-	public mergeCss(...styles: azdata.CssStyles[]): azdata.CssStyles {
-		const x = styles.reduce((previous, current) => {
-			if (current) {
-				return Object.assign(previous, current);
-			}
-			return previous;
-		}, {});
-
-		return x;
 	}
 
 	protected onItemsUpdated(): void {

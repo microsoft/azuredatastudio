@@ -11,12 +11,19 @@ export interface IColumn {
 	isJson?: boolean;
 }
 
+export type VisualizationType = 'bar' | 'count' | 'doughnut' | 'horizontalBar' | 'image' | 'line' | 'pie' | 'scatter' | 'table' | 'timeSeries';
+
+export interface VisualizationOptions {
+	type: VisualizationType
+}
+
 export interface ResultSetSummary {
 	id: number;
 	batchId: number;
 	rowCount: number;
 	columnInfo: IColumn[];
 	complete: boolean;
+	visualization?: VisualizationOptions;
 }
 
 export interface BatchStartSummary {

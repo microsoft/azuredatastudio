@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/connectionDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { IConnectionManagementService, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
@@ -299,7 +298,7 @@ export class ConnectionDialogWidget extends Modal {
 		const cancelLabel = localize('connectionDialog.cancel', "Cancel");
 		this._connectButton = this.addFooterButton(connectLabel, () => this.connect());
 		this._connectButton.enabled = false;
-		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
+		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel(), 'right', true);
 		this.registerListeners();
 		this.onProviderTypeSelected(this._providerTypeSelectBox.value);
 	}
@@ -320,8 +319,8 @@ export class ConnectionDialogWidget extends Modal {
 	private registerListeners(): void {
 		// Theme styler
 		this._register(styler.attachSelectBoxStyler(this._providerTypeSelectBox, this._themeService));
-		this._register(attachButtonStyler(this._connectButton, this._themeService));
-		this._register(attachButtonStyler(this._closeButton, this._themeService));
+		this._register(styler.attachButtonStyler(this._connectButton, this._themeService));
+		this._register(styler.attachButtonStyler(this._closeButton, this._themeService));
 
 		this._register(this._providerTypeSelectBox.onDidSelect(selectedProviderType => {
 			this.onProviderTypeSelected(selectedProviderType.selected);

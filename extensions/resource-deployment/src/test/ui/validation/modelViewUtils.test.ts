@@ -11,9 +11,9 @@ import { initializeWizardPage, InputComponent, InputComponentInfo, Validator, Wi
 import { FieldType } from '../../../interfaces';
 import { IToolsService } from '../../../services/toolsService';
 import { Deferred } from '../../utils';
-import { createModelViewMock } from 'azdata-test/out/mocks/modelView/modelViewMock';
-import { StubCheckbox } from 'azdata-test/out/stubs/modelView/stubCheckbox';
-import { StubInputBox } from 'azdata-test/out/stubs/modelView/stubInputBox';
+import { createModelViewMock } from '@microsoft/azdata-test/out/mocks/modelView/modelViewMock';
+import { StubCheckbox } from '@microsoft/azdata-test/out/stubs/modelView/stubCheckbox';
+import { StubInputBox } from '@microsoft/azdata-test/out/stubs/modelView/stubInputBox';
 import * as should from 'should';
 import * as sinon from 'sinon';
 

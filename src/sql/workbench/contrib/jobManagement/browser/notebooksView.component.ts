@@ -30,11 +30,11 @@ import { escape } from 'sql/base/common/strings';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { tableBackground, cellBackground, cellBorderColor } from 'sql/platform/theme/common/colors';
 import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 
 export const NOTEBOOKSVIEW_SELECTOR: string = 'notebooksview-component';

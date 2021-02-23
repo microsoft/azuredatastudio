@@ -35,6 +35,7 @@ const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python in
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 function msgPackageRetrievalFailed(errorMessage: string): string { return localize('msgPackageRetrievalFailed', "Encountered an error when trying to retrieve list of installed packages: {0}", errorMessage); }
+function msgGetPythonUserDirFailed(errorMessage: string): string { return localize('msgGetPythonUserDirFailed', "Encountered an error when getting Python user path: {0}", errorMessage); }
 
 export interface PythonInstallSettings {
 	installPath: string;
@@ -43,7 +44,12 @@ export interface PythonInstallSettings {
 	packageUpgradeOnly?: boolean;
 }
 export interface IJupyterServerInstallation {
-	installCondaPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
+	/**
+	 * Installs the specified packages using conda
+	 * @param packages The list of packages to install
+	 * @param useMinVersionDefault Whether we install each package as a min version (>=) or exact version (==) by default
+	 */
+	installCondaPackages(packages: PythonPkgDetails[], useMinVersionDefault: boolean): Promise<void>;
 	configurePackagePaths(): Promise<void>;
 	startInstallProcess(forceInstall: boolean, installSettings?: PythonInstallSettings): Promise<void>;
 	getInstalledPipPackages(): Promise<PythonPkgDetails[]>;
@@ -53,11 +59,43 @@ export interface IJupyterServerInstallation {
 	getCondaExePath(): string;
 	executeBufferedCommand(command: string): Promise<string>;
 	executeStreamedCommand(command: string): Promise<void>;
-	installPipPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void>;
+	/**
+	 * Installs the specified packages using pip
+	 * @param packages The list of packages to install
+	 * @param useMinVersionDefault Whether we install each package as a min version (>=) or exact version (==) by default
+	 */
+	installPipPackages(packages: PythonPkgDetails[], useMinVersionDefault: boolean): Promise<void>;
 	uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void>;
 	pythonExecutable: string;
 	pythonInstallationPath: string;
 }
+
+export const requiredJupyterPkg: PythonPkgDetails = {
+	name: 'jupyter',
+	version: '1.0.0'
+};
+
+export const requiredPowershellPkg: PythonPkgDetails = {
+	name: 'powershell-kernel',
+	version: '0.1.4'
+};
+
+export const requiredSparkPackages: PythonPkgDetails[] = [
+	requiredJupyterPkg,
+	{
+		name: 'cryptography',
+		version: '3.2.1',
+		installExactVersion: true
+	},
+	{
+		name: 'sparkmagic',
+		version: '0.12.9'
+	}, {
+		name: 'pandas',
+		version: '0.24.2'
+	}
+];
+
 export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public extensionPath: string;
 	public pythonBinPath: string;
@@ -101,32 +139,13 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this._kernelSetupCache = new Map<string, boolean>();
 		this._requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
 
-		let jupyterPkg = {
-			name: 'jupyter',
-			version: '1.0.0'
-		};
-		this._requiredKernelPackages.set(constants.python3DisplayName, [jupyterPkg]);
+		this._requiredKernelPackages.set(constants.python3DisplayName, [requiredJupyterPkg]);
+		this._requiredKernelPackages.set(constants.powershellDisplayName, [requiredJupyterPkg, requiredPowershellPkg]);
+		this._requiredKernelPackages.set(constants.pysparkDisplayName, requiredSparkPackages);
+		this._requiredKernelPackages.set(constants.sparkScalaDisplayName, requiredSparkPackages);
+		this._requiredKernelPackages.set(constants.sparkRDisplayName, requiredSparkPackages);
 
-		let powershellPkg = {
-			name: 'powershell-kernel',
-			version: '0.1.4'
-		};
-		this._requiredKernelPackages.set(constants.powershellDisplayName, [jupyterPkg, powershellPkg]);
-
-		let sparkPackages = [
-			jupyterPkg,
-			{
-				name: 'sparkmagic',
-				version: '0.12.9'
-			}, {
-				name: 'pandas',
-				version: '0.24.2'
-			}];
-		this._requiredKernelPackages.set(constants.pysparkDisplayName, sparkPackages);
-		this._requiredKernelPackages.set(constants.sparkScalaDisplayName, sparkPackages);
-		this._requiredKernelPackages.set(constants.sparkRDisplayName, sparkPackages);
-
-		let allPackages = sparkPackages.concat(powershellPkg);
+		let allPackages = requiredSparkPackages.concat(requiredPowershellPkg);
 		this._requiredKernelPackages.set(constants.allKernelsName, allPackages);
 
 		this._requiredPackagesSet = new Set<string>();
@@ -517,13 +536,16 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 	}
 
-	public installPipPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void> {
+	public installPipPackages(packages: PythonPkgDetails[], useMinVersionDefault: boolean): Promise<void> {
 		if (!packages || packages.length === 0) {
 			return Promise.resolve();
 		}
 
-		let versionSpecifier = useMinVersion ? '>=' : '==';
-		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
+		let versionSpecifierDefault = useMinVersionDefault ? '>=' : '==';
+		let packagesStr = packages.map(pkg => {
+			const pkgVersionSpecifier = pkg.installExactVersion ? '==' : versionSpecifierDefault;
+			return `"${pkg.name}${pkgVersionSpecifier}${pkg.version}"`;
+		}).join(' ');
 		let cmd = `"${this.pythonExecutable}" -m pip install --user ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
@@ -566,13 +588,16 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 	}
 
-	public installCondaPackages(packages: PythonPkgDetails[], useMinVersion: boolean): Promise<void> {
+	public installCondaPackages(packages: PythonPkgDetails[], useMinVersionDefault: boolean): Promise<void> {
 		if (!packages || packages.length === 0) {
 			return Promise.resolve();
 		}
 
-		let versionSpecifier = useMinVersion ? '>=' : '==';
-		let packagesStr = packages.map(pkg => `"${pkg.name}${versionSpecifier}${pkg.version}"`).join(' ');
+		let versionSpecifierDefault = useMinVersionDefault ? '>=' : '==';
+		let packagesStr = packages.map(pkg => {
+			const pkgVersionSpecifier = pkg.installExactVersion ? '==' : versionSpecifierDefault;
+			return `"${pkg.name}${pkgVersionSpecifier}${pkg.version}"`;
+		}).join(' ');
 		let condaExe = this.getCondaExePath();
 		let cmd = `"${condaExe}" install -c conda-forge -y ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
@@ -681,24 +706,28 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	private async getPythonUserDir(pythonExecutable: string): Promise<string> {
-		let sitePath: string;
-		if (process.platform === constants.winPlatform) {
-			sitePath = 'USER_SITE';
-		} else {
-			sitePath = 'USER_BASE';
-		}
-		let cmd = `"${pythonExecutable}" -c "import site;print(site.${sitePath})"`;
-
-		let packagesDir = await utils.executeBufferedCommand(cmd, {});
-		if (packagesDir && packagesDir.length > 0) {
-			packagesDir = packagesDir.trim();
+		try {
+			let sitePath: string;
 			if (process.platform === constants.winPlatform) {
-				packagesDir = path.resolve(path.join(packagesDir, '..', 'Scripts'));
+				sitePath = 'USER_SITE';
 			} else {
-				packagesDir = path.join(packagesDir, 'bin');
+				sitePath = 'USER_BASE';
 			}
+			let cmd = `"${pythonExecutable}" -c "import site;print(site.${sitePath})"`;
 
-			return packagesDir;
+			let packagesDir = await utils.executeBufferedCommand(cmd, {});
+			if (packagesDir && packagesDir.length > 0) {
+				packagesDir = packagesDir.trim();
+				if (process.platform === constants.winPlatform) {
+					packagesDir = path.resolve(path.join(packagesDir, '..', 'Scripts'));
+				} else {
+					packagesDir = path.join(packagesDir, 'bin');
+				}
+
+				return packagesDir;
+			}
+		} catch (err) {
+			this.outputChannel.appendLine(msgGetPythonUserDirFailed(utils.getErrorMessage(err)));
 		}
 
 		return undefined;
@@ -736,6 +765,10 @@ export interface PythonPkgDetails {
 	name: string;
 	version: string;
 	channel?: string;
+	/**
+	 * Whether to always install the exact version of the package (==)
+	 */
+	installExactVersion?: boolean
 }
 
 export interface PipPackageOverview {
