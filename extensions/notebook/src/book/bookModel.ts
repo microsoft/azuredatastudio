@@ -32,7 +32,7 @@ export class BookModel {
 		public readonly openAsUntitled: boolean,
 		public readonly isNotebook: boolean,
 		private _extensionContext: vscode.ExtensionContext,
-		private _bookTreeViewEvent: vscode.EventEmitter<BookTreeItem | undefined>,
+		private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined>,
 		public readonly notebookRootPath?: string) {
 		this._bookItems = [];
 	}
@@ -44,15 +44,15 @@ export class BookModel {
 	public watchTOC(): void {
 		fs.watchFile(this.tableOfContentsPath, async (curr, prev) => {
 			if (curr.mtime > prev.mtime) {
-				await this.reInitializeContents();
+				this.reinitializeContents();
 			}
 		});
 	}
 
 	@debounce(1500)
-	public async reInitializeContents(): Promise<void> {
+	public async reinitializeContents(): Promise<void> {
 		await this.initializeContents();
-		this._bookTreeViewEvent.fire(undefined);
+		this._onDidChangeTreeData.fire(undefined);
 	}
 
 	public async initializeContents(): Promise<void> {
@@ -61,33 +61,33 @@ export class BookModel {
 		if (this.isNotebook) {
 			this.readNotebook();
 		} else {
-			await this.readBookStructure(this.bookPath);
+			await this.readBookStructure();
 			await this.loadTableOfContentFiles();
 			await this.readBooks();
 		}
 	}
 
-	public async readBookStructure(folderPath: string): Promise<void> {
+	public async readBookStructure(): Promise<void> {
 		// check book structure to determine version
 		let isOlderVersion: boolean;
-		this._configPath = path.posix.join(folderPath, '_config.yml');
+		this._configPath = path.posix.join(this.bookPath, '_config.yml');
 		try {
-			isOlderVersion = (await fs.stat(path.posix.join(folderPath, '_data'))).isDirectory() && (await fs.stat(path.posix.join(folderPath, content))).isDirectory();
+			isOlderVersion = (await fs.stat(path.posix.join(this.bookPath, '_data'))).isDirectory() && (await fs.stat(path.posix.join(this.bookPath, content))).isDirectory();
 		} catch {
 			isOlderVersion = false;
 		}
 
 		if (isOlderVersion) {
-			let isTocFile = (await fs.stat(path.posix.join(folderPath, '_data', 'toc.yml'))).isFile();
+			let isTocFile = (await fs.stat(path.posix.join(this.bookPath, '_data', 'toc.yml'))).isFile();
 			if (isTocFile) {
-				this._tableOfContentsPath = path.posix.join(folderPath, '_data', 'toc.yml');
+				this._tableOfContentsPath = path.posix.join(this.bookPath, '_data', 'toc.yml');
 			}
 			this._bookVersion = BookVersion.v1;
-			this._contentFolderPath = path.posix.join(folderPath, content, '');
+			this._contentFolderPath = path.posix.join(this.bookPath, content, '');
 			this._rootPath = path.dirname(path.dirname(this._tableOfContentsPath));
 		} else {
-			this._contentFolderPath = folderPath;
-			this._tableOfContentsPath = path.posix.join(folderPath, '_toc.yml');
+			this._contentFolderPath = this.bookPath;
+			this._tableOfContentsPath = path.posix.join(this.bookPath, '_toc.yml');
 			this._rootPath = path.dirname(this._tableOfContentsPath);
 			this._bookVersion = BookVersion.v2;
 		}
@@ -108,6 +108,7 @@ export class BookModel {
 
 		if (await fs.pathExists(this._tableOfContentsPath)) {
 			vscode.commands.executeCommand('setContext', 'bookOpened', true);
+			this.watchTOC();
 		} else {
 			this._errorMessage = loc.missingTocError;
 			throw new Error(loc.missingTocError);

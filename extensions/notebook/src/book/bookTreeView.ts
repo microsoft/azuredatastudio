@@ -217,11 +217,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				vscode.window.showErrorMessage(loc.editBookError(updateBook.book.contentPath, e instanceof Error ? e.message : e));
 			} finally {
 				try {
-					await targetBook.reInitializeContents();
+					await targetBook.reinitializeContents();
 				} finally {
 					if (sourceBook && sourceBook.bookPath !== targetBook.bookPath) {
 						// refresh source book model to pick up latest changes
-						await sourceBook.reInitializeContents();
+						await sourceBook.reinitializeContents();
 					}
 					if (sourceBook) {
 						sourceBook.watchTOC();
@@ -251,10 +251,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 
 			TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.OpenBook).send();
-			// add file watcher on toc file.
-			if (!isNotebook) {
-				this.currentBook.watchTOC();
-			}
 		} catch (e) {
 			// if there is an error remove book from context
 			const index = this.books.findIndex(book => book.bookPath === bookPath);
