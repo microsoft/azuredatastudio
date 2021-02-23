@@ -143,7 +143,7 @@ describe('Project: sqlproj content operations', function (): void {
 		const nonexistentFile = path.join(testFolderPath, 'nonexistentFile.sql');
 		list.push(Uri.file(nonexistentFile));
 
-		await testUtils.shouldThrowSpecificError(async () => await project.addToProject(list), constants.fileOrFolderDoesNotExist(nonexistentFile));
+		await testUtils.shouldThrowSpecificError(async () => await project.addToProject(list), constants.fileOrFolderDoesNotExist(Uri.file(nonexistentFile).fsPath));
 	});
 
 	it('Should choose correct master dacpac', async function (): Promise<void> {
