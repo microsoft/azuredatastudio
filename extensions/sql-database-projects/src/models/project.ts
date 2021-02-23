@@ -928,20 +928,27 @@ export class Project {
 
 	/**
 	 * Adds the list of sql files and directories to the project, and saves the project file
-	 * @param list list of files and folder paths
+	 * @param list list of files and folder Uris. Files and folders must already exist. No files or folders will be added if any do not exist.
 	 */
 	public async addToProject(list: Uri[]): Promise<void> {
-		for (let i = 0; i < list.length; i++) {
-			let file: Uri = list[i];
+		// verify all files/folders exist. If not all exist, none will be added
+		for (let file of list) {
+			const exists = await utils.exists(file.fsPath);
+
+			if (!exists) {
+				throw new Error(constants.fileOrFolderDoesNotExist(file.fsPath));
+			}
+		}
+
+		for (let file of list) {
 			const relativePath = utils.trimChars(utils.trimUri(Uri.file(this.projectFilePath), file), '/');
 
 			if (relativePath.length > 0) {
-				let fileStat = await fs.stat(file.fsPath);
+				const fileStat = await fs.stat(file.fsPath);
 
 				if (fileStat.isFile() && file.fsPath.toLowerCase().endsWith(constants.sqlFileExtension)) {
 					await this.addScriptItem(relativePath);
-				}
-				else if (fileStat.isDirectory()) {
+				} else if (fileStat.isDirectory()) {
 					await this.addFolderItem(relativePath);
 				}
 			}
