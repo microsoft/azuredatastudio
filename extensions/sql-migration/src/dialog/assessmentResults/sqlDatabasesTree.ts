@@ -163,11 +163,12 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					]
 
 				);
+				let impactedObjects: SqlMigrationImpactedObjectInfo[] = [];
 				let issue: Issues[] = [{
 					description: 'No Issues',
 					recommendation: 'No Issues',
 					moreInfo: 'No Issues',
-					impactedObjects: null,
+					impactedObjects: impactedObjects,
 					rowNumber: rowNumber
 				}];
 				let noIssues = {

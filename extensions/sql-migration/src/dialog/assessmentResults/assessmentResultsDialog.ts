@@ -13,7 +13,7 @@ export type Issues = {
 	description: string,
 	recommendation: string,
 	moreInfo: string,
-	impactedObjects: SqlMigrationImpactedObjectInfo[] | null,
+	impactedObjects: SqlMigrationImpactedObjectInfo[],
 	rowNumber: number
 };
 export class AssessmentResultsDialog {
