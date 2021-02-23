@@ -25,8 +25,8 @@ declare module 'sqldbproj' {
 		/**
 		* Adds the list of files and directories to the project, and saves the project file
 		* @param projectFile The Uri of the project file
-		* @param list list of file and folder paths to add. Files and folders must already exist
+		* @param list list of uris of files and folders to add. Files and folders must already exist
 		*/
-		addToProject(projectFile: vscode.Uri, list: string[]): Promise<void>;
+		addToProject(projectFile: vscode.Uri, list: vscode.Uri[]): Promise<void>;
 	}
 }

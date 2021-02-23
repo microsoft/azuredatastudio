@@ -930,15 +930,15 @@ export class Project {
 	 * Adds the list of sql files and directories to the project, and saves the project file
 	 * @param list list of files and folder paths
 	 */
-	public async addToProject(list: string[]): Promise<void> {
+	public async addToProject(list: Uri[]): Promise<void> {
 		for (let i = 0; i < list.length; i++) {
-			let file: string = list[i];
-			const relativePath = utils.trimChars(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(file)), '/');
+			let file: Uri = list[i];
+			const relativePath = utils.trimChars(utils.trimUri(Uri.file(this.projectFilePath), file), '/');
 
 			if (relativePath.length > 0) {
-				let fileStat = await fs.stat(file);
+				let fileStat = await fs.stat(file.fsPath);
 
-				if (fileStat.isFile() && file.toLowerCase().endsWith(constants.sqlFileExtension)) {
+				if (fileStat.isFile() && file.fsPath.toLowerCase().endsWith(constants.sqlFileExtension)) {
 					await this.addScriptItem(relativePath);
 				}
 				else if (fileStat.isDirectory()) {
