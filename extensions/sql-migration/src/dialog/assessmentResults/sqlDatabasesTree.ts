@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import { SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
+import { MigrationStateModel } from '../../models/stateMachine';
 import { Issues } from './assessmentResultsDialog';
 import { AssessmentDialogComponent } from './model/assessmentDialogComponent';
 
@@ -13,6 +14,7 @@ type DbIssues = {
 };
 export class SqlDatabaseTree extends AssessmentDialogComponent {
 
+	private _model!: MigrationStateModel;
 	private instanceTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
 	private databaseTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
 	private _assessmentResultsTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
@@ -32,9 +34,10 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private _moreInfo!: azdata.TextComponent;
 	// private _recommendationMap!: Map<string, Issues[]>;
 
-	constructor(assessmentData: Map<string, Issues[]>) {
+	constructor(model: MigrationStateModel, assessmentData: Map<string, Issues[]>) {
 		super();
 		this._assessmentData = assessmentData;
+		this._model = model;
 	}
 
 	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
@@ -49,11 +52,11 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 		component.addItem(this.createSearchComponent(view), { flex: '0 0 auto' });
 		component.addItem(this.createInstanceComponent(view), { flex: '0 0 auto' });
-		component.addItem(this.createDatabaseComponent(view), { flex: '1 1 auto' });
+		component.addItem(await this.createDatabaseComponent(view), { flex: '1 1 auto' });
 		return component;
 	}
 
-	private createDatabaseComponent(view: azdata.ModelView): azdata.DivContainer {
+	private async createDatabaseComponent(view: azdata.ModelView): Promise<azdata.DivContainer> {
 
 		let mapRowIssue = new Map<number, DbIssues>();
 		const styleLeft: azdata.CssStyles = {
@@ -110,7 +113,9 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			}
 		);
 
-		if (this._assessmentData.size > 0) {
+		let dbList = await azdata.connection.listDatabases(this._model.sourceConnectionId);
+
+		if (dbList.length > 0) {
 			let rowNumber = 0;
 			this._assessmentData.forEach((value, key) => {
 				this.databaseTable.component().dataValues?.push(
@@ -135,6 +140,41 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					issues: value
 				};
 				mapRowIssue.set(rowNumber, dbIssues);
+				dbList = dbList.filter(obj => obj !== key);
+
+				rowNumber = rowNumber + 1;
+			});
+
+			dbList.forEach((value) => {
+				this.databaseTable.component().dataValues?.push(
+					[
+						{
+							value: false,
+							style: styleLeft
+						},
+						{
+							value: value,
+							style: styleLeft
+						},
+						{
+							value: 0,
+							style: styleRight
+						}
+					]
+
+				);
+				let issue: Issues[] = [{
+					description: 'No Issues',
+					recommendation: 'No Issues',
+					moreInfo: 'No Issues',
+					impactedObjects: null,
+					rowNumber: rowNumber
+				}];
+				let noIssues = {
+					name: value,
+					issues: issue
+				};
+				mapRowIssue.set(rowNumber, noIssues);
 				rowNumber = rowNumber + 1;
 			});
 			// fill in table fields
