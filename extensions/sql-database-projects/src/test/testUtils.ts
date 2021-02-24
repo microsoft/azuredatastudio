@@ -11,6 +11,7 @@ import { promises as fs } from 'fs';
 import should = require('should');
 import { AssertionError } from 'assert';
 import { Project } from '../models/project';
+import { Uri } from 'vscode';
 
 export async function shouldThrowSpecificError(block: Function, expectedMessage: string, details?: string) {
 	let succeeded = false;
@@ -77,14 +78,14 @@ export async function createTestFile(contents: string, fileName: string, folderP
  * @param createList Boolean specifying to create a list of the files and folders been created
  * @param list List of files and folders that are been created
  */
-export async function createDummyFileStructure(createList?: boolean, list?: string[], testFolderPath?: string): Promise<string> {
+export async function createDummyFileStructure(createList?: boolean, list?: Uri[], testFolderPath?: string): Promise<string> {
 	testFolderPath = testFolderPath ?? await generateTestFolderPath();
 
 	let filePath = path.join(testFolderPath, 'file1.sql');
 	await fs.writeFile(filePath, '');
 	if (createList) {
-		list?.push(testFolderPath);
-		list?.push(filePath);
+		list?.push(Uri.file(testFolderPath));
+		list?.push(Uri.file(filePath));
 	}
 
 	for (let dirCount = 1; dirCount <= 2; dirCount++) {
@@ -92,14 +93,14 @@ export async function createDummyFileStructure(createList?: boolean, list?: stri
 		await fs.mkdir(dirName, { recursive: true });
 
 		if (createList) {
-			list?.push(dirName);
+			list?.push(Uri.file(dirName));
 		}
 
 		for (let fileCount = 1; fileCount <= 5; fileCount++) {
 			let fileName = path.join(dirName, `file${fileCount}.sql`);
 			await fs.writeFile(fileName, '');
 			if (createList) {
-				list?.push(fileName);
+				list?.push(Uri.file(fileName));
 			}
 		}
 	}
@@ -108,14 +109,14 @@ export async function createDummyFileStructure(createList?: boolean, list?: stri
 	//await touchFile(filePath);
 	await fs.writeFile(filePath, '');
 	if (createList) {
-		list?.push(filePath);
+		list?.push(Uri.file(filePath));
 	}
 
 	return testFolderPath;
 }
 
-export async function createListOfFiles(filePath?: string): Promise<string[]> {
-	let fileFolderList: string[] = [];
+export async function createListOfFiles(filePath?: string): Promise<Uri[]> {
+	let fileFolderList: Uri[] = [];
 
 	await createDummyFileStructure(true, fileFolderList, filePath);
 
