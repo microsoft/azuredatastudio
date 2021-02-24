@@ -288,14 +288,14 @@ export class QueryResultSelectionSummaryStatusBarContribution extends Disposable
 	}
 
 	private onCellSelectionChanged(data: string[]): void {
-		const numericValues = data?.filter(value => !isNaN(parseFloat(value))).map(value => parseFloat(value));
+		const numericValues = data?.filter(value => !Number.isNaN(Number(value))).map(value => Number(value));
 		if (numericValues?.length < 2 || !(this.editorService.activeEditor instanceof QueryEditorInput)) {
 			this.hide();
 			return;
 		}
 
 		const sum = numericValues.reduce((previous, current, idx, array) => previous + current);
-		const summaryText = localize('status.query.summaryText', "Average: {0}  Count: {1}  Sum: {2}", sum / numericValues.length, data.length, sum);
+		const summaryText = localize('status.query.summaryText', "Average: {0}  Count: {1}  Sum: {2}", Number((sum / numericValues.length).toFixed(3)), data.length, sum);
 		this.statusItem.update({
 			text: summaryText,
 			ariaLabel: summaryText
