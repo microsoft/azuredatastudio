@@ -13,6 +13,7 @@ import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, JupyterBookSection } from '../contracts/content';
 import { convertFrom, getContentPath, BookVersion } from './bookVersionHandler';
+import { Deferred } from '../common/promise';
 
 const fsPromises = fileServices.promises;
 const content = 'content';
@@ -26,6 +27,8 @@ export class BookModel {
 	private _bookVersion: BookVersion;
 	private _rootPath: string;
 	private _errorMessage: string;
+	private _bookLoadDeferred: Deferred<void> = new Deferred<void>();
+
 
 	constructor(
 		public readonly bookPath: string,
@@ -258,6 +261,7 @@ export class BookModel {
 				}
 			}
 		}
+		this._bookLoadDeferred.resolve();
 		return notebooks;
 	}
 
@@ -296,5 +300,9 @@ export class BookModel {
 
 	public get version(): string {
 		return this._bookVersion;
+	}
+
+	public get bookLoaded(): Promise<void> {
+		return this._bookLoadDeferred.promise;
 	}
 }
