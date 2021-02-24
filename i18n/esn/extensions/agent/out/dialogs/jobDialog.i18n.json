@@ -11,7 +11,7 @@
 	"jobDialog.schedules": "Programaciones",
 	"jobDialog.alerts": "Alertas",
 	"jobDialog.notifications": "Notificaciones",
-	"jobDialog.blankJobNameError": "El nombre del trabajo no puede estar en vacío.",
+	"jobDialog.blankJobNameError": "El nombre del trabajo no puede estar en blanco.",
 	"jobDialog.name": "Nombre",
 	"jobDialog.owner": "Propietario",
 	"jobDialog.category": "Categoría",

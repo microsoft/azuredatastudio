@@ -82,3 +82,45 @@ export class WizardController {
 		});
 	}
 }
+
+export function createInformationRow(view: azdata.ModelView, label: string, value: string): azdata.FlexContainer {
+	return view.modelBuilder.flexContainer()
+		.withLayout(
+			{
+				flexFlow: 'row',
+				alignItems: 'center',
+			})
+		.withItems(
+			[
+				creaetLabelTextComponent(view, label),
+				createTextCompononent(view, value)
+			],
+			{
+				CSSStyles: { 'margin-right': '5px' }
+			})
+		.component();
+}
+
+export function createHeadingTextComponent(view: azdata.ModelView, value: string): azdata.TextComponent {
+	const component = createTextCompononent(view, value);
+	component.updateCssStyles({
+		'font-size': '13px',
+		'font-weight': 'bold'
+	});
+	return component;
+}
+
+
+export function creaetLabelTextComponent(view: azdata.ModelView, value: string): azdata.TextComponent {
+	const component = createTextCompononent(view, value);
+	component.updateCssStyles({
+		'width': '250px'
+	});
+	return component;
+}
+
+export function createTextCompononent(view: azdata.ModelView, value: string): azdata.TextComponent {
+	return view.modelBuilder.text().withProps({
+		value: value
+	}).component();
+}

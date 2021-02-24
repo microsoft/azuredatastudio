@@ -15,11 +15,12 @@
 	"noneServerGroup": "<Non salvare>",
 	"connectionWidget.missingRequireField": "{0} è obbligatorio.",
 	"connectionWidget.fieldWillBeTrimmed": "{0} verrà tagliato.",
-	"rememberPassword": "Ricorda password",
+	"rememberPassword": "Memorizza password",
 	"connection.azureAccountDropdownLabel": "Account",
 	"connectionWidget.refreshAzureCredentials": "Aggiorna credenziali dell'account",
 	"connection.azureTenantDropdownLabel": "Tenant di Azure AD",
-	"connectionWidget.toggleDatabaseNameDropdown": "Menu a tendina per la selezione del Database",
+	"connectionWidget.toggleDatabaseNameDropdown": "Elenco a discesa per attivazione/disattivazione della selezione del database",
+	"connectionName": "Nome (facoltativo)",
 	"advanced": "Avanzate...",
 	"connectionWidget.invalidAzureAccount": "È necessario selezionare un account"
 }

@@ -661,7 +661,7 @@
                       "fields": [
                         {
                           "label": "%arc.controller%",
-                          "variableName": "",
+                          "variableName": "CONTROLLER_NAME",
                           "type": "options",
                           "editable": false,
                           "required": true,
@@ -936,7 +936,7 @@
                     "fields": [
                       {
                         "label": "%arc.controller%",
-                        "variableName": "",
+                        "variableName": "CONTROLLER_NAME",
                         "type": "options",
                         "editable": false,
                         "required": true,
