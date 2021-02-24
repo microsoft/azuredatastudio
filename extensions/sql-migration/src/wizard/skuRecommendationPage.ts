@@ -26,21 +26,21 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		await this.initialState(view);
 	}
 
-	private igComponent: azdata.FormComponent<azdata.TextComponent> | undefined;
-	private detailsComponent: azdata.FormComponent<azdata.TextComponent> | undefined;
-	private chooseTargetComponent: azdata.FormComponent<azdata.DivContainer> | undefined;
-	private azureSubscriptionText: azdata.FormComponent<azdata.TextComponent> | undefined;
+	private _igComponent: azdata.FormComponent<azdata.TextComponent> | undefined;
+	private _detailsComponent: azdata.FormComponent<azdata.TextComponent> | undefined;
+	private _chooseTargetComponent: azdata.FormComponent<azdata.DivContainer> | undefined;
+	private _azureSubscriptionText: azdata.FormComponent<azdata.TextComponent> | undefined;
 	private _managedInstanceSubscriptionDropdown!: azdata.DropDownComponent;
 	private _managedInstanceDropdown!: azdata.DropDownComponent;
 	private _subscriptionDropdownValues: azdata.CategoryValue[] = [];
 	private _subscriptionMap: Map<string, Subscription> = new Map();
-	private view: azdata.ModelView | undefined;
+	private _view: azdata.ModelView | undefined;
 
 	private async initialState(view: azdata.ModelView) {
-		this.igComponent = this.createStatusComponent(view); // The first component giving basic information
-		this.detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
-		this.chooseTargetComponent = this.createChooseTargetComponent(view);
-		this.azureSubscriptionText = this.createAzureSubscriptionText(view);
+		this._igComponent = this.createStatusComponent(view); // The first component giving basic information
+		this._detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
+		this._chooseTargetComponent = this.createChooseTargetComponent(view);
+		this._azureSubscriptionText = this.createAzureSubscriptionText(view);
 
 		const managedInstanceSubscriptionDropdownLabel = view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION
@@ -65,21 +65,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			flexFlow: 'column'
 		}).component();
 
-		// this.assessmentLink = view.modelBuilder.hyperlink()
-		// 	.withProperties<azdata.HyperlinkComponentProperties>({
-		// 		label: 'View Assessment Results',
-		// 		url: ''
-		// 	}).component();
-		// this.assessmentLink.onDidClick(async () => {
-		// 	let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog');
-		// 	await dialog.openDialog();
-		// });
-
-		// const assessmentFormLink = {
-		// 	title: '',
-		// 	component: assessmentLink,
-		// };
-
 		let connectionUri: string = await azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId);
 		this.migrationStateModel.migrationService.getAssessments(connectionUri).then(results => {
 			if (results) {
@@ -87,13 +72,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		});
 
-		this.view = view;
+		this._view = view;
 		const formContainer = view.modelBuilder.formContainer().withFormItems(
 			[
-				this.igComponent,
-				this.detailsComponent,
-				this.chooseTargetComponent,
-				this.azureSubscriptionText,
+				this._igComponent,
+				this._detailsComponent,
+				this._chooseTargetComponent,
+				this._azureSubscriptionText,
 				{
 					component: targetContainer
 				},
@@ -138,23 +123,21 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private constructDetails(): void {
-		this.chooseTargetComponent?.component.clearItems();
+		this._chooseTargetComponent?.component.clearItems();
 
-		//TODO: Need to take assessment result and insert here
-		//*** What service do I need to call to get the assessment results?
 		if (this.migrationStateModel.assessmentResults) {
 
 		}
-		this.igComponent!.component.value = constants.CONGRATULATIONS;
+		this._igComponent!.component.value = constants.CONGRATULATIONS;
 		// either: SKU_RECOMMENDATION_ALL_SUCCESSFUL or SKU_RECOMMENDATION_SOME_SUCCESSFUL or SKU_RECOMMENDATION_NONE_SUCCESSFUL
-		this.detailsComponent!.component.value = constants.SKU_RECOMMENDATION_SOME_SUCCESSFUL(1, 1);
+		this._detailsComponent!.component.value = constants.SKU_RECOMMENDATION_SOME_SUCCESSFUL(1, 1);
 		this.constructTargets();
 	}
 
 	private constructTargets(): void {
 		const products: Product[] = Object.values(ProductLookupTable);
 
-		const rbg = this.view!.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
+		const rbg = this._view!.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
 			cards: [],
 			cardWidth: '600px',
 			cardHeight: '60px',
@@ -162,10 +145,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			iconHeight: '30px',
 			iconWidth: '30px'
 		});
-		// rbg.component().cards = [];
-		// rbg.component().orientation = azdata.Orientation.Vertical;
-		// rbg.component().iconHeight = '30px';
-		// rbg.component().iconWidth = '30px';
 
 		products.forEach((product) => {
 			const imagePath = path.resolve(this.migrationStateModel.getExtensionPath(), 'media', product.icon ?? 'ads.svg');
@@ -210,7 +189,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			await dialog.openDialog();
 		});
 
-		this.chooseTargetComponent?.component.addItem(rbg.component());
+		this._chooseTargetComponent?.component.addItem(rbg.component());
 	}
 
 	private createAzureSubscriptionText(view: azdata.ModelView): azdata.FormComponent<azdata.TextComponent> {

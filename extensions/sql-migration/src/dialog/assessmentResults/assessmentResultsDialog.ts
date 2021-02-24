@@ -6,7 +6,6 @@
 import * as azdata from 'azdata';
 import { MigrationStateModel } from '../../models/stateMachine';
 import { SqlDatabaseTree } from './sqlDatabasesTree';
-// import { SqlAssessmentResultList } from './sqlAssessmentResultsList';
 import { SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
 
 export type Issues = {
@@ -29,14 +28,12 @@ export class AssessmentResultsDialog {
 	public dialogName: string | undefined;
 
 	private _tree: SqlDatabaseTree;
-	// private _list: SqlAssessmentResultList;
 
 
 	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string) {
 		this._model = model;
 		let assessmentData = this.parseData(this._model);
 		this._tree = new SqlDatabaseTree(this._model, assessmentData);
-		// this._list = new SqlAssessmentResultList();
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
