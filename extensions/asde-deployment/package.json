@@ -59,6 +59,7 @@
         ],
         "providers": [
           {
+            "name": "sql-edge_local",
             "dialog": {
               "notebook": "./notebooks/edge/deploy-sql-edge-local.ipynb",
               "title": "%sql-edge-local-title%",
@@ -152,6 +153,7 @@
             "when": "type=local"
           },
           {
+            "name": "sql-edge_remote",
             "dialog": {
               "notebook": "./notebooks/edge/deploy-sql-edge-remote.ipynb",
               "title": "%sql-edge-remote-title%",
@@ -269,6 +271,7 @@
             "when": "type=remote"
           },
           {
+            "name": "sql-edge_azure-create-new",
             "dialog": {
               "notebook": "./notebooks/edge/deploy-sql-edge-azure.ipynb",
               "title": "%sql-edge-azure-title%",
@@ -399,6 +402,7 @@
             "when": "type=azure-create-new"
           },
           {
+            "name": "sql-edge_azure-single-device",
             "dialog": {
               "notebook": "./notebooks/edge/deploy-sql-edge-single-device.ipynb",
               "title": "%sql-edge-azure-single-device-title%",
@@ -489,6 +493,7 @@
             "when": "type=azure-single-device"
           },
           {
+            "name": "sql-edge_azure-multi-device",
             "dialog": {
               "notebook": "./notebooks/edge/deploy-sql-edge-multi-device.ipynb",
               "title": "%sql-edge-azure-multi-device-title%",
