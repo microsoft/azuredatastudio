@@ -187,6 +187,6 @@
   },
   "devDependencies": {
     "@types/request": "^2.48.3",
-    "vscode": "^1.1.36"
+		"@types/vscode": "^1.53.0"
   }
 }
