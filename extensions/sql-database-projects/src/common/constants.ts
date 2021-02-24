@@ -30,6 +30,12 @@ export const edgeSqlDatabaseProjectTypeId = 'SqlDbEdgeProj';
 export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "SQL Edge");
 export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription', "Start with the core pieces to develop and publish schemas for SQL Edge");
 
+export const addItemAction = localize('addItemAction', "Add Item");
+export const schemaCompareAction = localize('schemaCompareAction', "Schema Compare");
+export const buildAction = localize('buildAction', "Build");
+export const publishAction = localize('publishAction', "Publish");
+export const changeTargetPlatformAction = localize('changeTargetPlatformAction', "Change Target Platform");
+
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';
 export const schemaCompareStartCommand = 'schemaCompare.start';

@@ -90,7 +90,27 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 			},
 			createProject: (name: string, location: vscode.Uri): Promise<vscode.Uri> => {
 				return Promise.resolve(location);
-			}
+			},
+			projectActions: [{
+				id: 'Add',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Schema Compare',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Build',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Publish',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Target Version',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}]
 		};
 		const getProjectProviderStub = sinon.stub(workspaceService, 'getProjectProvider');
 		getProjectProviderStub.onFirstCall().resolves(undefined);

@@ -77,7 +77,45 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	}
 
 	/**
-	* Adds the list of files and directories to the project, and saves the project file
+	 * Gets the supported project types
+	 */
+	get projectActions(): (dataworkspace.IProjectAction | dataworkspace.IProjectActionGroup)[] {
+		const addItemAction: dataworkspace.IProjectAction = {
+			id: constants.addItemAction,
+			icon: IconPathHelper.add,
+			run: (treeItem: dataworkspace.WorkspaceTreeItem) => this.projectController.addItemPromptFromNode(treeItem)
+		};
+
+		const schemaCompareAction: dataworkspace.IProjectAction = {
+			id: constants.schemaCompareAction,
+			icon: IconPathHelper.schemaCompare,
+			run: (treeItem: dataworkspace.WorkspaceTreeItem) => this.projectController.schemaCompare(treeItem)
+		};
+
+		const buildAction: dataworkspace.IProjectAction = {
+			id: constants.buildAction,
+			icon: IconPathHelper.build,
+			run: (treeItem: dataworkspace.WorkspaceTreeItem) => this.projectController.buildProject(treeItem)
+		};
+
+		const publishAction: dataworkspace.IProjectAction = {
+			id: constants.publishAction,
+			icon: IconPathHelper.publish,
+			run: (treeItem: dataworkspace.WorkspaceTreeItem) => this.projectController.publishProject(treeItem)
+		};
+
+		const changeTargetPlatformAction: dataworkspace.IProjectAction = {
+			id: constants.changeTargetPlatformAction,
+			icon: IconPathHelper.targetPlatform,
+			run: (treeItem: dataworkspace.WorkspaceTreeItem) => this.projectController.changeTargetPlatform(treeItem)
+		};
+
+		let group: dataworkspace.IProjectActionGroup = { actions: [addItemAction, schemaCompareAction, buildAction, publishAction] };
+
+		return [group, changeTargetPlatformAction];
+	}
+
+	/** Adds the list of files and directories to the project, and saves the project file
 	* @param projectFile The Uri of the project file
 	* @param list list of uris of files and folders to add. Files and folders must already exist. Files and folders must already exist. No files or folders will be added if any do not exist.
 	*/
