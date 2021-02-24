@@ -22,7 +22,7 @@ import { IMarkdownRenderResult } from 'vs/editor/browser/core/markdownRenderer';
 
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/services/notebook/browser/outputs/sanitizer';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
@@ -61,7 +61,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	@HostListener('document:keydown', ['$event'])
 	onkeydown(e: KeyboardEvent) {
-		if (this.isActive() && this.isWYSIWYGMode()) {
+		if (this.isActive() && this.cellModel?.currentMode === CellEditModes.WYSIWYG) {
 			// select the active .
 			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
 				preventDefaultAndExecCommand(e, 'selectAll');
@@ -460,10 +460,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this.cellModel.active = false;
 			this._model.updateActiveCell(undefined);
 		}
-	}
-
-	private isWYSIWYGMode(): boolean {
-		return this.cellModel && this.cellModel.showPreview && !this.cellModel.showMarkdown && this.cellModel.isEditMode;
 	}
 }
 
