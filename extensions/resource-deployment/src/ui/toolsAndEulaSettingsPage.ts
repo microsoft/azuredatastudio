@@ -35,10 +35,6 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	private _isInitialized = false;
 	private _resourceType: ResourceType;
 
-	public set resourceProvider(provider: DeploymentProvider) {
-		this.wizard.provider = provider;
-	}
-
 	public get toolsService(): IToolsService {
 		return this.wizard.toolsService;
 	}
@@ -190,7 +186,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 				if (this._resourceType.options) {
 					let resourceTypeOptions: ResourceTypeOptionValue[] = [];
 					const optionsTitle = this.view.modelBuilder.text().withProps({
-						value: 'Options',
+						value: loc.optionsText,
 						CSSStyles: {
 							'font-size': '14px',
 							'padding': '0'
@@ -308,7 +304,6 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 
 		const options = this.getSelectedOptions();
 
-		this.resourceProvider = this._resourceType.getProvider(options)!;
 		return this._resourceType.getProvider(options)!;
 	}
 
