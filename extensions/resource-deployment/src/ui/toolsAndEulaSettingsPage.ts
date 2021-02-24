@@ -14,6 +14,7 @@ import { getErrorMessage } from '../common/utils';
 import { ResourceTypePage } from './resourceTypePage';
 import { ResourceTypeWizard } from './resourceTypeWizard';
 import { OptionValuesFilter as OptionValuesFilter } from '../services/resourceTypeService';
+import { TelemetryAction, TelemetryReporter, TelemetryView } from '../services/telemetryService';
 
 const localize = nls.loadMessageBundle();
 
@@ -81,6 +82,11 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			this.wizard.wizardObject.message = {
 				text: ''
 			};
+			TelemetryReporter.createActionEvent(TelemetryView.ResourceTypeWizard, TelemetryAction.SelectedDeploymentType)
+				.withAdditionalProperties({
+					'resourceType': this._resourceType.name,
+					'provider': this.getCurrentProvider().name
+				}).send();
 			return true;
 		});
 	}

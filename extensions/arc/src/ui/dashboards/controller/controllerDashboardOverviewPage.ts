@@ -150,7 +150,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 				const node = this._controllerModel.treeDataProvider.getControllerNode(this._controllerModel);
 				await vscode.commands.executeCommand('azdata.resource.deploy',
 					'azure-sql-mi', // Default option
-					['azure-sql-mi', 'arc.postgres'], // Type filter
+					['azure-sql-mi', 'arc-postgres'], // Type filter
 					{ 'azure-sql-mi': { 'mi-type': ['arc-mi'] } }, // Options filter
 					{ 'CONTROLLER_NAME': node?.label });
 			}));
