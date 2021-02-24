@@ -485,14 +485,14 @@ describe('BooksTreeViewTests', function () {
 
 				if (run.it === 'v1') {
 					it('should ignore toc.yml files not in _data folder', async () => {
-						await bookTreeViewProvider.currentBook.readBookStructure(rootFolderPath);
+						await bookTreeViewProvider.currentBook.readBookStructure();
 						await bookTreeViewProvider.currentBook.loadTableOfContentFiles();
 						let path = bookTreeViewProvider.currentBook.tableOfContentsPath;
 						should(vscode.Uri.file(path).fsPath).equal(vscode.Uri.file(run.folderPaths.tableOfContentsFile).fsPath);
 					});
 				} else if (run.it === 'v2') {
 					it('should ignore toc.yml files not under the root book folder', async () => {
-						await bookTreeViewProvider.currentBook.readBookStructure(rootFolderPath);
+						await bookTreeViewProvider.currentBook.readBookStructure();
 						await bookTreeViewProvider.currentBook.loadTableOfContentFiles();
 						let path = bookTreeViewProvider.currentBook.tableOfContentsPath;
 						should(vscode.Uri.file(path).fsPath).equal(vscode.Uri.file(run.folderPaths.tableOfContentsFile).fsPath);

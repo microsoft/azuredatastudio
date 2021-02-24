@@ -20,7 +20,6 @@ import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { NavigationProviders } from '../../common/constants';
 import * as loc from '../../common/localizedConstants';
 
-
 export function equalTOC(actualToc: IJupyterBookSectionV2[], expectedToc: IJupyterBookSectionV2[]): boolean {
 	for (let [i, section] of actualToc.entries()) {
 		if (section.title !== expectedToc[i].title || section.file !== expectedToc[i].file) {
@@ -475,8 +474,8 @@ describe('BookTocManagerTests', function () {
 
 					const mockExtensionContext = new MockExtensionContext();
 
-					sourceBookModel = new BookModel(run.sourceBook.rootBookFolderPath, false, false, mockExtensionContext);
-					targetBookModel = new BookModel(run.targetBook.rootBookFolderPath, false, false, mockExtensionContext);
+					sourceBookModel = new BookModel(run.sourceBook.rootBookFolderPath, false, false, mockExtensionContext, undefined);
+					targetBookModel = new BookModel(run.targetBook.rootBookFolderPath, false, false, mockExtensionContext, undefined);
 					// create book model mock objects
 					sinon.stub(sourceBookModel, 'bookItems').value([sectionA]);
 					sinon.stub(targetBookModel, 'bookItems').value([targetBook]);
