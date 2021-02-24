@@ -94,18 +94,18 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					{
 						displayName: 'Databases', // TODO localize
 						valueType: azdata.DeclarativeDataType.string,
-						width: '80%',
+						width: '75%',
 						isReadOnly: true,
 						headerCssStyles: styleLeft
 					},
 					{
 						displayName: 'Issues', // Incidents
 						valueType: azdata.DeclarativeDataType.string,
-						width: '10%',
+						width: '15%',
 						isReadOnly: true,
 						headerCssStyles: styleRight,
-						ariaLabel: 'Issue Count' // TODO localize
-
+						ariaLabel: 'Issue Count', // TODO localize
+						rowCssStyles: styleRight
 					}
 				],
 				dataValues: [

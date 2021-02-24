@@ -200,10 +200,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				icon: imagePath,
 				descriptions
 			});
-			rbg.component().onLinkClick(async () => {
-				let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog');
-				await dialog.openDialog();
-			});
+		});
+
+		rbg.component().onLinkClick(async (value) => {
+
+			//check which card is being selected, and open correct dialog based on link
+			console.log(value);
+			let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog');
+			await dialog.openDialog();
 		});
 
 		this.chooseTargetComponent?.component.addItem(rbg.component());
