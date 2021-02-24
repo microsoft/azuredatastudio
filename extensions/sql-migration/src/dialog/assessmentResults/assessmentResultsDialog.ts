@@ -104,12 +104,24 @@ export class AssessmentResultsDialog {
 				impactedObjects: element.impactedObjects,
 				rowNumber: 0
 			};
-			let dbIssues = dbMap.get(element.targetName);
-			if (dbIssues) {
-				dbMap.set(element.targetName, dbIssues.concat([issues]));
+			if (element.targetName.includes(':')) {
+				let spliceIndex = element.targetName.indexOf(':');
+				let dbName = element.targetName.slice(spliceIndex + 1);
+				let dbIssues = dbMap.get(element.targetName);
+				if (dbIssues) {
+					dbMap.set(dbName, dbIssues.concat([issues]));
+				} else {
+					dbMap.set(dbName, [issues]);
+				}
 			} else {
-				dbMap.set(element.targetName, [issues]);
+				let dbIssues = dbMap.get(element.targetName);
+				if (dbIssues) {
+					dbMap.set(element.targetName, dbIssues.concat([issues]));
+				} else {
+					dbMap.set(element.targetName, [issues]);
+				}
 			}
+
 		});
 
 		return dbMap;
