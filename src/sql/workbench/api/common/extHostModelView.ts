@@ -540,7 +540,7 @@ function createFromTabs(items: (azdata.Tab | azdata.TabGroup)[]): InternalItemCo
 	return itemConfigs;
 }
 
-function toTabItemConfig(content: azdata.Component, title: string, id?: string, group?: string, icon?: string | URI | { light: string | URI; dark: string | URI }): InternalItemConfig {
+function toTabItemConfig(content: azdata.Component, title: string, id?: string, group?: string, icon?: azdata.IconPath): InternalItemConfig {
 	return new InternalItemConfig(content as ComponentWrapper, {
 		title: title,
 		group: group,
@@ -860,10 +860,10 @@ class ComponentWithIconWrapper extends ComponentWrapper {
 		super(proxy, handle, type, id);
 	}
 
-	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
+	public get iconPath(): azdata.IconPath {
 		return this.properties['iconPath'];
 	}
-	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
+	public set iconPath(v: azdata.IconPath) {
 		this.setProperty('iconPath', v);
 	}
 
@@ -927,10 +927,10 @@ class CardWrapper extends ComponentWrapper implements azdata.CardComponent {
 	public set actions(a: azdata.ActionDescriptor[]) {
 		this.setProperty('actions', a);
 	}
-	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
+	public get iconPath(): azdata.IconPath {
 		return this.properties['iconPath'];
 	}
-	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
+	public set iconPath(v: azdata.IconPath) {
 		this.setProperty('iconPath', v);
 	}
 
