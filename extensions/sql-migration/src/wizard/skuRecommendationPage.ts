@@ -200,10 +200,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				icon: imagePath,
 				descriptions
 			});
-			rbg.component().onLinkClick(async () => {
-				let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog');
-				await dialog.openDialog();
-			});
+		});
+
+		rbg.component().onLinkClick(async (value) => {
+
+			//check which card is being selected, and open correct dialog based on link
+			console.log(value);
+			let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog');
+			await dialog.openDialog();
 		});
 
 		this.chooseTargetComponent?.component.addItem(rbg.component());
@@ -226,7 +230,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._managedInstanceDropdown.loading = true;
 		let subscriptions: azureResource.AzureResourceSubscription[] = [];
 		try {
-			subscriptions = await getSubscriptions(this.migrationStateModel.azureAccount);
+			subscriptions = await getSubscriptions(this.migrationStateModel._azureAccount);
 			subscriptions.forEach((subscription) => {
 				this._subscriptionMap.set(subscription.id, subscription);
 				this._subscriptionDropdownValues.push({
@@ -260,7 +264,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		try {
 			const subscriptionId = (<azdata.CategoryValue>this._managedInstanceSubscriptionDropdown.value).name;
 
-			mis = await getAvailableManagedInstanceProducts(this.migrationStateModel.azureAccount, this._subscriptionMap.get(subscriptionId)!);
+			mis = await getAvailableManagedInstanceProducts(this.migrationStateModel._azureAccount, this._subscriptionMap.get(subscriptionId)!);
 			mis.forEach((mi) => {
 				miValues.push({
 					name: mi.name,
