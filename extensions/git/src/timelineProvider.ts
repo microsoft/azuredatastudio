@@ -240,6 +240,6 @@ export class GitTimelineProvider implements TimelineProvider {
 
 	@debounce(500)
 	private fireChanged() {
-		this._onDidChange.fire(undefined);
+		this._onDidChange.fire(undefined as any);
 	}
 }
