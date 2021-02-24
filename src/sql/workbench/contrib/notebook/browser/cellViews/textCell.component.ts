@@ -61,7 +61,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	@HostListener('document:keydown', ['$event'])
 	onkeydown(e: KeyboardEvent) {
-		if (this.isActive()) {
+		if (this.isActive() && this.isWYSIWYGMode()) {
 			// select the active .
 			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
 				preventDefaultAndExecCommand(e, 'selectAll');
@@ -460,6 +460,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this.cellModel.active = false;
 			this._model.updateActiveCell(undefined);
 		}
+	}
+
+	private isWYSIWYGMode(): boolean {
+		return this.cellModel && this.cellModel.showPreview && !this.cellModel.showMarkdown && this.cellModel.isEditMode;
 	}
 }
 
