@@ -692,9 +692,14 @@ async function configureOptionsSourceSubfields(context: FieldContext, optionsSou
 function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDownComponent {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const options = context.fieldInfo.options as OptionsInfo;
+	// If we have an initial value then set it now - otherwise just default to the original default value.
+	// Note we don't currently check that the value actually exists in the list - if it doesn't then it'll
+	// just default to the first one anyways
+	const initialValue = context.fieldInfo.variableName && context.initialVariableValues?.[context.fieldInfo.variableName]?.toString();
+	const defaultValue = initialValue || options.defaultValue;
 	const dropdown = createDropdownInputInfo(context.view, {
 		values: options.values,
-		defaultValue: options.defaultValue,
+		defaultValue: defaultValue,
 		width: context.fieldInfo.inputWidth,
 		editable: context.fieldInfo.editable,
 		required: context.fieldInfo.required,

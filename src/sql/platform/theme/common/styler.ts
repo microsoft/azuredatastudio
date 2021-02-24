@@ -299,12 +299,30 @@ export interface IInfoBoxStyleOverrides {
 }
 
 export const defaultInfoBoxStyles: IInfoBoxStyleOverrides = {
-	informationBackground: sqlcr.InfoBoxInformationBackground,
-	warningBackground: sqlcr.InfoBoxWarningBackground,
-	errorBackground: sqlcr.InfoBoxErrorBackground,
-	successBackground: sqlcr.InfoBoxSuccessBackground
+	informationBackground: sqlcr.infoBoxInformationBackground,
+	warningBackground: sqlcr.infoBoxWarningBackground,
+	errorBackground: sqlcr.infoBoxErrorBackground,
+	successBackground: sqlcr.infoBoxSuccessBackground
 };
 
 export function attachInfoBoxStyler(widget: IThemable, themeService: IThemeService, style?: IInfoBoxStyleOverrides): IDisposable {
 	return attachStyler(themeService, { ...defaultInfoBoxStyles, ...style }, widget);
+}
+
+export interface IInfoButtonStyleOverrides {
+	buttonBackground: cr.ColorIdentifier,
+	buttonForeground: cr.ColorIdentifier,
+	buttonBorder: cr.ColorIdentifier,
+	buttonHoverBackground: cr.ColorIdentifier
+}
+
+export const defaultInfoButtonStyles: IInfoButtonStyleOverrides = {
+	buttonBackground: sqlcr.infoButtonBackground,
+	buttonForeground: sqlcr.infoButtonForeground,
+	buttonBorder: sqlcr.infoButtonBorder,
+	buttonHoverBackground: sqlcr.infoButtonHoverBackground
+};
+
+export function attachInfoButtonStyler(widget: IThemable, themeService: IThemeService, style?: IInfoButtonStyleOverrides): IDisposable {
+	return attachStyler(themeService, { ...defaultInfoButtonStyles, ...style }, widget);
 }
