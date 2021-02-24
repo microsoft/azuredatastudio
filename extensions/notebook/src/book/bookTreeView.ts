@@ -348,12 +348,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				let openDocument = azdata.nb.activeNotebookEditor;
 				let notebookPath = openDocument?.document.uri;
 				// call reveal only once on the correct view
-				if (e.visible && ((!this._openAsUntitled && notebookPath?.scheme !== 'untitled') || (this._openAsUntitled && notebookPath?.scheme === 'untitled'))) {
-					if (notebookPath.fsPath.indexOf(book.bookPath) > -1) {
-						let bookItem = await this.revealActiveDocumentInViewlet(notebookPath);
-						await this._bookViewer.reveal(bookItem, { select: true, focus: true, expand: true });
-
-					}
+				if (e.visible && notebookPath.fsPath.replace(/\\/g, '/').indexOf(book.bookPath) > -1 && ((!this._openAsUntitled && notebookPath?.scheme !== 'untitled') || (this._openAsUntitled && notebookPath?.scheme === 'untitled'))) {
+					await this.revealActiveDocumentInViewlet(notebookPath);
 				}
 			});
 		}
@@ -427,10 +423,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (!uri) {
 			let openDocument = azdata.nb.activeNotebookEditor;
 			if (openDocument) {
-				notebookPath = openDocument.document.uri.fsPath;
+				notebookPath = openDocument.document.uri.fsPath.replace(/\\/g, '/');
 			}
 		} else if (uri.fsPath) {
-			notebookPath = uri.fsPath;
+			notebookPath = uri.fsPath.replace(/\\/g, '/');
 		}
 
 		if (shouldReveal || this._bookViewer?.visible) {
@@ -446,34 +442,32 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async findAndExpandParentNode(notebookPath: string): Promise<BookTreeItem> {
 		let bookItem: BookTreeItem = this.currentBook?.getNotebook(notebookPath);
-		this.currentBook = this.books.find(b => notebookPath.indexOf(b.bookPath) > -1);
+		this.currentBook = this.books.length > 1 ? this.books.find(b => notebookPath.indexOf(b.bookPath) > -1) : this.currentBook;
 		// if the node is not expanded getNotebook returns undefined, try to expand the parent node or getChildren of
 		// the root node.
 		if (!bookItem && this.currentBook) {
-			// number of levels to expand
-			let depthoNotebookInBook: number = path.relative(notebookPath, this.currentBook.bookPath)?.split(path.sep)?.length ?? 0;
 			// get the parent node and expand it if it's not already
 			let allNodes = this.currentBook?.getAllNotebooks();
 			if (allNodes.size === 0) {
 				let bookItems = await this.getChildren(this.currentBook.bookItems[0]);
-				if (depthoNotebookInBook > 1) {
-					//if book is not expanded, allNodes doesn't have it, we need to expand it to get to the notebook
+				// number of levels to expand
+				let depthoNotebookInBook: number = path.relative(notebookPath, this.currentBook.bookPath)?.split(path.sep)?.length ?? 0;
+				if (bookItems && depthoNotebookInBook > 1) {
+					//if book is not expanded to that level, bookItems doesn't have it, we need to expand it to get to the notebook
 					while (depthoNotebookInBook > 1) {
 						bookItem = bookItems.find(b => b.tooltip === notebookPath);
 						if (bookItem) {
 							break;
 						}
-						let bookPath = Array.from(allNodes?.keys())?.find(x => x.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf(path.sep))) > -1);
-						let book = bookItems.find(b => b.tooltip === bookPath);
+						let book = bookItems.find(b => b.tooltip.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf(path.posix.sep))) > -1);
 						bookItems = await this.getChildren(book);
-						await this._bookViewer.reveal(book, { select: false, focus: false, expand: 3 });
+						await this._bookViewer.reveal(book, { select: true, focus: false, expand: 3 });
 						depthoNotebookInBook--;
 					}
 				}
 			} else {
-				allNodes = this.currentBook.getAllNotebooks();
-				let book = allNodes ? Array.from(allNodes?.keys())?.filter(x => x.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf(path.sep))) > -1) : undefined;
-				let bookNode = book?.length > 0 ? this.currentBook?.getNotebook(book.find(x => x.substring(0, x.lastIndexOf(path.sep)) === notebookPath.substring(0, notebookPath.lastIndexOf(path.sep)))) : undefined;
+				let book = allNodes ? Array.from(allNodes?.keys())?.filter(x => x.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf(path.posix.sep))) > -1) : undefined;
+				let bookNode = book?.length > 0 ? this.currentBook?.getNotebook(book.find(x => x.substring(0, x.lastIndexOf(path.posix.sep)) === notebookPath.substring(0, notebookPath.lastIndexOf(path.sep)))) : undefined;
 				if (bookNode) {
 					if (this._bookViewer?.visible) {
 						await this._bookViewer.reveal(bookNode, { select: true, focus: false, expand: 3 });
@@ -690,6 +684,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 */
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
 		// Remove it for perf issues.
+		return undefined;
 		if (element?.uri) {
 			let parentPath: string;
 			let contentFolder = element.book.version === BookVersion.v1 ? path.join(element.book.root, 'content') : element.book.root;
