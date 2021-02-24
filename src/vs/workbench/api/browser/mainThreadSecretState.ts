@@ -8,11 +8,11 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { ICredentialsService } from 'vs/workbench/services/credentials/common/credentials';
 import { IEncryptionService } from 'vs/workbench/services/encryption/common/encryptionService';
-import { ExtHostContext, ExtHostSecretStateShape, IExtHostContext, MainContext, MainThreadSecretStateShape } from '../common/extHost.protocol';
+import { IExtHostContext, MainContext, MainThreadSecretStateShape } from '../common/extHost.protocol';
 
 @extHostNamedCustomer(MainContext.MainThreadSecretState)
 export class MainThreadSecretState extends Disposable implements MainThreadSecretStateShape {
-	private readonly _proxy: ExtHostSecretStateShape;
+	// private readonly _proxy: ExtHostSecretStateShape;
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -21,12 +21,13 @@ export class MainThreadSecretState extends Disposable implements MainThreadSecre
 		@IProductService private readonly productService: IProductService
 	) {
 		super();
-		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostSecretState);
+		// this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostSecretState);
 
-		this._register(this.credentialsService.onDidChangePassword(e => {
+		// {{SQL CARBON EDIT}} - throws null
+		/* this._register(this.credentialsService.onDidChangePassword(e => {
 			const extensionId = e.service.substring(this.productService.urlProtocol.length);
 			this._proxy.$onDidChangePassword({ extensionId, key: e.account });
-		}));
+		})); */
 	}
 
 	private getFullKey(extensionId: string): string {

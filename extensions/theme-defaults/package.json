@@ -1,34 +1,30 @@
 {
-  "name": "theme-defaults",
-  "displayName": "%displayName%",
-  "description": "%description%",
-  "categories": [
-    "Themes"
-  ],
-  "version": "1.0.0",
-  "publisher": "vscode",
-  "license": "MIT",
-  "engines": {
-    "vscode": "*"
-  },
-  "contributes": {
-    "themes": [
-      {
-				"label": "High Contrast",
-        "uiTheme": "hc-black",
-        "path": "./themes/hc_black.json"
-      }
-		]
-	},
-		"iconThemes": [
+	"name": "theme-defaults",
+	"displayName": "%displayName%",
+	"description": "%description%",
+	"categories": [ "Themes" ],
+	"version": "1.0.0",
+	"publisher": "vscode",
+	"license": "MIT",
+	"engines": { "vscode": "*" },
+	"contributes": {
+		"themes": [
 			{
-				"id": "vs-minimal",
-			"label": "Minimal (Azure Data Studio)",
-				"path": "./fileicons/vs_minimal-icon-theme.json"
+				"label": "High Contrast",
+				"uiTheme": "hc-black",
+				"path": "./themes/hc_black.json"
 			}
 		]
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/microsoft/vscode.git"
+	},
+	"iconThemes": [
+		{
+			"id": "vs-minimal",
+			"label": "Minimal (Azure Data Studio)",
+			"path": "./fileicons/vs_minimal-icon-theme.json"
+		}
+	],
+	"repository": {
+	    "type": "git",
+	    "url": "https://github.com/microsoft/azuredatastudio.git"
+	}
 }

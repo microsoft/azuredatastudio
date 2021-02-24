@@ -74,7 +74,7 @@
 		{
 			"type": "pwa-chrome",
 			"request": "launch",
-			"name": "Launch VS Code",
+			"name": "Launch azuredatastudio",
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
 			},
@@ -105,10 +105,7 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			],
-			"browserLaunchLocation": "workspace",
-			"presentation": {
-				"hidden": true,
-			}
+			"browserLaunchLocation": "workspace"
 		},
 		{
 			"type": "node",
@@ -310,7 +307,7 @@
 			"name": "Azure Data Studio",
 			"stopAll": true,
 			"configurations": [
-				"Launch VS Code",
+				"Launch azuredatastudio",
 				"Attach to Main Process",
 				"Attach to Extension Host",
 				"Attach to Shared Process",
@@ -324,9 +321,8 @@
 		{
 			"name": "Debug azuredatastudio Main, Renderer & Extension Host",
 			"configurations": [
-				"Launch VS Code",
+				"Launch azuredatastudio",
 				"Attach to Main Process",
-				"Launch VS Code",
 				"Attach to Extension Host"
 			],
 			"presentation": {
@@ -366,14 +362,6 @@
 				"group": "1_vscode",
 				"order": 2
 			}
-		},
-		{
-			"name": "Launch VS Code",
-			"stopAll": true,
-			"configurations": [
-				"Launch VS Code Internal",
-			],
-			"preLaunchTask": "Ensure Prelaunch Dependencies"
-		},
+		}
 	]
 }

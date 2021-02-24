@@ -145,4 +145,4 @@ export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainer
 	icon: { id: 'dataExplorer' },
 	order: 0,
 	storageId: `${VIEWLET_ID}.state`
-}, ViewContainerLocation.Sidebar);
+}, ViewContainerLocation.Sidebar, { isDefault: true });
