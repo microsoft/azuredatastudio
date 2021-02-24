@@ -37,8 +37,8 @@ declare module 'dataworkspace' {
 		defaultProjectSaveLocation: vscode.Uri | undefined;
 
 		/**
-	 	* Verifies that a workspace is open or if it should be automatically created
-	 	*/
+		  * Verifies that a workspace is open or if it should be automatically created
+		  */
 		validateWorkspace(): Promise<boolean>;
 	}
 
@@ -70,6 +70,11 @@ declare module 'dataworkspace' {
 		 * Gets the supported project types
 		 */
 		readonly supportedProjectTypes: IProjectType[];
+
+		/**
+		 * Gets the project actions to be placed on the dashboard toolbar
+		 */
+		readonly projectActions: (IProjectAction | IProjectActionGroup)[];
 	}
 
 	/**
@@ -115,5 +120,30 @@ declare module 'dataworkspace' {
 		 * Gets the raw element returned by the tree data provider
 		 */
 		element: any;
+	}
+
+	export interface IProjectAction {
+		/**
+		 * id of the project action
+		 */
+		readonly id: string;
+
+		/**
+		 * icon path of the project action
+		 */
+		readonly icon?: string | vscode.Uri | { light: string | vscode.Uri, dark: string | vscode.Uri };
+
+		/**
+		 * Run context for each project action
+		 * @param treeItem The treeItem in a project's hierarchy, to be used to obtain a Project
+		 */
+		run(treeItem: WorkspaceTreeItem): void;
+	}
+
+	/**
+	 * List of project actions that should be grouped and have a separator after the last action
+	 */
+	export interface IProjectActionGroup {
+		actions: IProjectAction[];
 	}
 }

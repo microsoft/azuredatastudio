@@ -71,6 +71,10 @@
       {
         "command": "projects.removeProject",
         "title": "%remove-project-command%"
+      },
+      {
+        "command": "projects.manageProject",
+        "title": "%manage-project-command%"
       }
     ],
     "menus": {
@@ -114,9 +118,18 @@
         },
         {
           "command": "projects.openExisting"
+        },
+        {
+          "command": "projects.manageProject",
+          "when": "false"
         }
       ],
       "view/item/context": [
+        {
+          "command": "projects.manageProject",
+          "when": "view == dataworkspace.views.main",
+          "group": "0_projectsFirst@1"
+        },
         {
           "command": "projects.removeProject",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
