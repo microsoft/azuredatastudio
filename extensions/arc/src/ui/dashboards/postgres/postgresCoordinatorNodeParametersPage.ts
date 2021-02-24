@@ -34,11 +34,12 @@ export class PostgresCoordinatorNodeParametersPage extends DashboardPage {
 	private _parameters: ParametersModel[] = [];
 	private parameterUpdates: Map<string, string> = new Map();
 
-	private readonly _azdataApi: azdataExt.IExtension;
+	// TODO add back in once making command calls
+	// private readonly _azdataApi: azdataExt.IExtension;
 
 	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
 		super(modelView);
-		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+		// this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
 		this.initializeConnectButton();
 		this.initializeSearchBox();
