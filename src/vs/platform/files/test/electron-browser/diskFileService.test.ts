@@ -147,7 +147,7 @@ suite.skip('Disk File Service', function () { // {{SQL CARBON EDIT}} Disable occ
 
 		const sourceDir = getPathFromAmdModule(require, './fixtures/service');
 
-		await copy(sourceDir, testDir);
+		await copy(sourceDir, testDir, { preserveSymlinks: false });
 	});
 
 	teardown(() => {
