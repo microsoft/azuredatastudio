@@ -126,14 +126,14 @@
       ],
       "view/item/context": [
         {
-          "command": "projects.removeProject",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
-          "group": "9_dbProjectsLast@9"
-        },
-        {
           "command": "projects.manageProject",
           "when": "view == dataworkspace.views.main",
           "group": "0_projectsFirst@1"
+        },
+        {
+          "command": "projects.removeProject",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "group": "9_dbProjectsLast@9"
         }
       ]
     },

@@ -34,7 +34,7 @@ export const addItemAction = localize('addItemAction', "Add Item");
 export const schemaCompareAction = localize('schemaCompareAction', "Schema Compare");
 export const buildAction = localize('buildAction', "Build");
 export const publishAction = localize('publishAction', "Publish");
-export const targetPlatformAction = localize('targetPlatformAction', "Change Target Platform");
+export const changeTargetPlatformAction = localize('changeTargetPlatformAction', "Change Target Platform");
 
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';

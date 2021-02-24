@@ -79,38 +79,38 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * Gets the supported project types
 	 */
 	get projectActions(): (dataworkspace.IProjectAction | dataworkspace.IProjectActionGroup)[] {
-		const action1: dataworkspace.IProjectAction = {
+		const addItemAction: dataworkspace.IProjectAction = {
 			id: constants.addItemAction,
 			icon: IconPathHelper.add,
-			run: async (treeItem: dataworkspace.WorkspaceTreeItem): Promise<any> => await this.projectController.addItemPromptFromNode(treeItem)
+			run: (treeItem: dataworkspace.WorkspaceTreeItem) => this.projectController.addItemPromptFromNode(treeItem)
 		};
 
-		const action2: dataworkspace.IProjectAction = {
+		const schemaCompareAction: dataworkspace.IProjectAction = {
 			id: constants.schemaCompareAction,
 			icon: IconPathHelper.schemaCompare,
-			run: async (treeItem: dataworkspace.WorkspaceTreeItem): Promise<any> => await this.projectController.schemaCompare(treeItem)
+			run: (treeItem: dataworkspace.WorkspaceTreeItem) => this.projectController.schemaCompare(treeItem)
 		};
 
-		const action3: dataworkspace.IProjectAction = {
+		const buildAction: dataworkspace.IProjectAction = {
 			id: constants.buildAction,
 			icon: IconPathHelper.build,
-			run: async (treeItem: dataworkspace.WorkspaceTreeItem): Promise<any> => await this.projectController.buildProject(treeItem)
+			run: (treeItem: dataworkspace.WorkspaceTreeItem) => this.projectController.buildProject(treeItem)
 		};
 
-		const action4: dataworkspace.IProjectAction = {
+		const publishAction: dataworkspace.IProjectAction = {
 			id: constants.publishAction,
 			icon: IconPathHelper.publish,
-			run: async (treeItem: dataworkspace.WorkspaceTreeItem): Promise<any> => this.projectController.publishProject(treeItem)
+			run: (treeItem: dataworkspace.WorkspaceTreeItem) => this.projectController.publishProject(treeItem)
 		};
 
-		const action5: dataworkspace.IProjectAction = {
-			id: constants.targetPlatformAction,
+		const changeTargetPlatformAction: dataworkspace.IProjectAction = {
+			id: constants.changeTargetPlatformAction,
 			icon: IconPathHelper.targetPlatform,
-			run: async (treeItem): Promise<any> => await this.projectController.changeTargetPlatform(treeItem)
+			run: (treeItem: dataworkspace.WorkspaceTreeItem) => this.projectController.changeTargetPlatform(treeItem)
 		};
 
-		let group: dataworkspace.IProjectActionGroup = { actions: [action1, action2, action3, action4] };
+		let group: dataworkspace.IProjectActionGroup = { actions: [addItemAction, schemaCompareAction, buildAction, publishAction] };
 
-		return [group, action5];
+		return [group, changeTargetPlatformAction];
 	}
 }

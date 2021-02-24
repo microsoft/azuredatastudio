@@ -36,8 +36,8 @@ declare module 'dataworkspace' {
 		defaultProjectSaveLocation: vscode.Uri | undefined;
 
 		/**
-	 	* Verifies that a workspace is open or if it should be automatically created
-	 	*/
+		  * Verifies that a workspace is open or if it should be automatically created
+		  */
 		validateWorkspace(): Promise<boolean>;
 	}
 
@@ -123,7 +123,7 @@ declare module 'dataworkspace' {
 
 	export interface IProjectAction {
 		/**
-		 * id and display name of the project action
+		 * id of the project action
 		 */
 		readonly id: string;
 
@@ -136,7 +136,7 @@ declare module 'dataworkspace' {
 		 * Run context for each project action
 		 * @param treeItem The treeItem in a project's hierarchy, to be used to obtain a Project
 		 */
-		run(treeItem: WorkspaceTreeItem): Promise<any>;
+		run(treeItem: WorkspaceTreeItem): void;
 	}
 
 	/**

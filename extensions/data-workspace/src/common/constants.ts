@@ -20,6 +20,8 @@ export const EnterWorkspaceConfirmation = localize('dataworkspace.enterWorkspace
 export const WorkspaceContainsNotAddedProjects = localize('dataworkspace.workspaceContainsNotAddedProjects', "The current workspace contains one or more projects that have not been added to the workspace. Use the 'Open existing' dialog to add projects to the projects pane.");
 export const LaunchOpenExisitingDialog = localize('dataworkspace.launchOpenExistingDialog', "Launch Open existing dialog");
 export const DoNotShowAgain = localize('dataworkspace.doNotShowAgain', "Do not show again");
+export const fileDoesNotExist = (name: string): string => { return localize('fileDoesNotExist', "File '{0}' doesn't exist", name); };
+export const projectNameNull = localize('projectNameNull', "Project name is null");
 
 // config settings
 export const projectsConfigurationKey = 'projects';

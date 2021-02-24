@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { IProjectAction, IProjectActionGroup, IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import { IWorkspaceService } from '../common/interfaces';
+import { fileExist } from '../common/utils';
 
 export class ProjectDashboard {
 
@@ -16,12 +17,21 @@ export class ProjectDashboard {
 	private projectProvider: IProjectProvider | undefined;
 	private overviewTab: azdata.DashboardTab | undefined;
 
-	constructor(private workspaceService: IWorkspaceService, private treeItem: WorkspaceTreeItem) {
+	constructor(private _workspaceService: IWorkspaceService, private _treeItem: WorkspaceTreeItem) {
 	}
 
 	public async showDashboard(): Promise<void> {
-		const project = this.treeItem.element.project;
-		this.projectProvider = await this.workspaceService.getProjectProvider(vscode.Uri.file(project.projectFilePath));
+		const project = this._treeItem.element.project;
+
+		if (!(await fileExist(project.projectFilePath)) || project.projectFileName === null) {
+			throw new Error(constants.fileDoesNotExist(project.projectFilePath));
+		}
+
+		if (project.projectFileName === null) {
+			throw new Error(constants.projectNameNull);
+		}
+
+		this.projectProvider = await this._workspaceService.getProjectProvider(vscode.Uri.file(project.projectFilePath));
 		if (!this.projectProvider) {
 			throw new Error(constants.ProviderNotFoundForProjectTypeError(project.projectFilePath));
 		}
@@ -38,7 +48,12 @@ export class ProjectDashboard {
 			this.overviewTab = {
 				title: '',
 				id: 'overview-tab',
-				content: this.createContainer(),
+				content: this.modelView!.modelBuilder.flexContainer().withLayout(
+					{
+						flexFlow: 'column',
+						width: '100%',
+						height: '100%'
+					}).component(),
 				toolbar: this.createToolbarContainer()
 			};
 			return [
@@ -53,19 +68,20 @@ export class ProjectDashboard {
 		// Add actions as buttons
 		const buttons: azdata.ToolbarComponent[] = [];
 
-		projectActions.forEach(action => {
+		const projectActionsLength = projectActions.length;
+
+		projectActions.forEach((action, actionIndex) => {
 			if (this.isProjectAction(action)) {
 				let button = this.createButton(action);
 
 				buttons.push({ component: button });
 			} else {
 				const groupLength = action.actions.length;
-				let currentElement = { count: 0 };
 
-				action.actions.forEach(groupAction => {
+				action.actions.forEach((groupAction, index) => {
 					let button = this.createButton(groupAction);
 
-					buttons.push({ component: button, toolbarSeparatorAfter: this.toolbarSeparator(groupLength, currentElement) });
+					buttons.push({ component: button, toolbarSeparatorAfter: ((groupLength - 1 === index) && (projectActionsLength - 1 !== actionIndex)) });	// Add toolbar separator at the end of the group, if the group is not the last in the list
 				});
 			}
 		});
@@ -89,36 +105,9 @@ export class ProjectDashboard {
 			}).component();
 
 		button.onDidClick(async () => {
-			await projectAction.run(this.treeItem);
+			await projectAction.run(this._treeItem);
 		});
 
 		return button;
 	}
-
-	/**
-	 * Add a toolbar separator at the end of the group actions
-	 * @param length Total number of actions in a group
-	 * @param currentElement Count of current element
-	 */
-	private toolbarSeparator(length: number, currentElement: { count: number }): boolean {
-		currentElement.count++;
-		if (length === currentElement.count) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private createContainer(): azdata.FlexContainer {
-		const rootContainer = this.modelView!.modelBuilder.flexContainer().withLayout(
-			{
-				flexFlow: 'column',
-				width: '100%',
-				height: '100%'
-			}).component();
-
-		return rootContainer;
-	}
-
-
 }
