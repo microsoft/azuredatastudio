@@ -11,7 +11,7 @@
 	"dacfx.noDataLossText": "Las acciones de implementación enumeradas no darán lugar a la pérdida de datos.",
 	"dacfx.dataLossText": "Las acciones de implementación pueden dar lugar a la pérdida de datos. Asegúrese de que tiene una copia de seguridad o una instantánea por si hay algún problema con la implementación.",
 	"dacfx.operationColumn": "Operación",
-	"dacfx.operationTooltip": "Operación (Create, Alter, Delete) que tendrá lugar durante la implementación",
+	"dacfx.operationTooltip": "Operación (crear, modificar, eliminar) que tendrá lugar durante la implementación",
 	"dacfx.typeColumn": "Tipo",
 	"dacfx.typeTooltip": "Tipo de objeto que se verá afectado por la implementación",
 	"dacfx.objectColumn": "Objeto",

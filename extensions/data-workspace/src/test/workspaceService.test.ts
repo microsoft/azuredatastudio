@@ -63,9 +63,13 @@ function createMockExtension(id: string, isActive: boolean, projectTypes: string
 	};
 }
 
+interface ExtensionGlobalMemento extends vscode.Memento {
+	setKeysForSync(keys: string[]): void;
+}
+
 suite('WorkspaceService Tests', function (): void {
 	const mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-	const mockGlobalState = TypeMoq.Mock.ofType<vscode.Memento>();
+	const mockGlobalState = TypeMoq.Mock.ofType<ExtensionGlobalMemento>();
 	mockGlobalState.setup(x => x.update(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
 	mockExtensionContext.setup(x => x.globalState).returns(() => mockGlobalState.object);
 

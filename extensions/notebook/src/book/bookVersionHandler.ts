@@ -38,7 +38,7 @@ export function convertFrom(version: string, section: JupyterBookSection): Jupyt
 			divider: (section as IJupyterBookSectionV1).divider,
 			header: (section as IJupyterBookSectionV1).header,
 			external: (section as IJupyterBookSectionV1).external,
-			numbered: !(section as IJupyterBookSectionV1).not_numbered,
+			numbered: (section as IJupyterBookSectionV1).not_numbered !== undefined ? !(section as IJupyterBookSectionV1).not_numbered : undefined,
 			not_numbered: undefined
 		});
 	} else {
@@ -57,7 +57,21 @@ export function convertFrom(version: string, section: JupyterBookSection): Jupyt
 }
 
 /**
+ * This method is used by JupyterBookSection to convert it's numbered property to
+ * not_numberered.
+ * Or it's used by an JupyterBookSectionV1 to make a deep copy of an object.
+ * @param section The section that'll be converted.
+*/
+function convertNotNumbered(section: JupyterBookSection): boolean | undefined {
+	if (section.numbered !== undefined) {
+		return !section.numbered;
+	}
+	return section.not_numbered !== undefined ? section.not_numbered : undefined;
+}
+
+/**
  * Converts the JupyterSection to either Jupyter Book v1 or v2.
+ * This method is also used to make a deep copy of a section object.
  * @param version Version of the section that will be converted
  * @param section The section that'll be converted.
 */
@@ -68,7 +82,7 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 			temp.title = section.title;
 			temp.url = section.url ? section.url : section.file;
 			temp.expand_sections = section.expand_sections;
-			temp.not_numbered = !section.numbered;
+			temp.not_numbered = convertNotNumbered(section);
 			temp.search = section.search;
 			temp.divider = section.divider;
 			temp.header = section.header;
@@ -84,7 +98,7 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 			newSection.title = section.title;
 			newSection.url = section.url ? section.url : section.file;
 			newSection.sections = section.sections;
-			newSection.not_numbered = !section.numbered;
+			newSection.not_numbered = convertNotNumbered(section);
 			newSection.expand_sections = section.expand_sections;
 			newSection.search = section.search;
 			newSection.divider = section.divider;

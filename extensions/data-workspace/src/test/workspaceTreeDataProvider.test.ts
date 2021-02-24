@@ -13,9 +13,13 @@ import { WorkspaceService } from '../services/workspaceService';
 import { IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import { MockTreeDataProvider } from './projectProviderRegistry.test';
 
+interface ExtensionGlobalMemento extends vscode.Memento {
+	setKeysForSync(keys: string[]): void;
+}
+
 suite('workspaceTreeDataProvider Tests', function (): void {
 	const mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-	const mockGlobalState = TypeMoq.Mock.ofType<vscode.Memento>();
+	const mockGlobalState = TypeMoq.Mock.ofType<ExtensionGlobalMemento>();
 	mockGlobalState.setup(x => x.update(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
 	mockExtensionContext.setup(x => x.globalState).returns(() => mockGlobalState.object);
 

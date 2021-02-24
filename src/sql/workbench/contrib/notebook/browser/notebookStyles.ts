@@ -150,8 +150,8 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		//Notebook toolbar masked icons
 		const notebookToolbarIconColor = theme.getColor(notebookToolbarIcon);
 		if (notebookToolbarIconColor) {
-			collector.addRule(`.notebookEditor .notebook-button.masked-icon:before { background-color: ${notebookToolbarIconColor};}`);
-			collector.addRule(`.notebookEditor .notebook-button.masked-pseudo:before { background-color: ${notebookToolbarIconColor};}`);
+			collector.addRule(`.masked-icon:before { background-color: ${notebookToolbarIconColor};}`);
+			collector.addRule(`.masked-pseudo:before { background-color: ${notebookToolbarIconColor};}`);
 		}
 		const notebookToolbarLinesColor = theme.getColor(notebookToolbarLines);
 		if (notebookToolbarLinesColor) {
@@ -164,7 +164,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		}
 		const buttonMenuArrowColor = theme.getColor(buttonMenuArrow);
 		if (buttonMenuArrowColor) {
-			collector.addRule(`.notebookEditor .notebook-button.masked-pseudo-after:after { background-color: ${buttonMenuArrowColor};}`);
+			collector.addRule(`.notebookEditor .masked-pseudo-after:after { background-color: ${buttonMenuArrowColor};}`);
 		}
 
 		// Active cell border, cell toolbar border, cell toolbar icons, view toggle active button bottom border

@@ -10,7 +10,7 @@ import { List } from 'vs/base/browser/ui/list/listWidget';
 import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachButtonStyler, attachListStyler } from 'vs/platform/theme/common/styler';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IListVirtualDelegate, IListRenderer } from 'vs/base/browser/ui/list/list';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -18,7 +18,6 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/workbench/services/dashboard/browser/newDashboardTabViewModel';
 import { IDashboardTab } from 'sql/workbench/services/dashboard/browser/common/interfaces';
@@ -147,7 +146,7 @@ export class NewDashboardTabDialog extends Modal {
 		attachModalDialogStyler(this, this._themeService);
 
 		this._addNewTabButton = this.addFooterButton(localize('newDashboardTab.ok', "OK"), () => this.addNewTabs());
-		this._cancelButton = this.addFooterButton(localize('newDashboardTab.cancel', "Cancel"), () => this.cancel());
+		this._cancelButton = this.addFooterButton(localize('newDashboardTab.cancel', "Cancel"), () => this.cancel(), 'right', true);
 		this.registerListeners();
 	}
 

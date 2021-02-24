@@ -8,11 +8,11 @@
 	],
 	"connection": "连接",
 	"connectType": "连接类型",
-	"recentConnectionTitle": "最新连接",
-	"savedConnectionTitle": "已保存连接",
+	"recentConnectionTitle": "最近的连接",
+	"savedConnectionTitle": "保存的连接",
 	"connectionDetailsTitle": "连接详细信息",
 	"connectionDialog.connect": "连接",
 	"connectionDialog.cancel": "取消",
-	"noRecentConnections": "没有最新连接",
+	"noRecentConnections": "没有最近的连接",
 	"noSavedConnections": "没有保存的连接"
 }

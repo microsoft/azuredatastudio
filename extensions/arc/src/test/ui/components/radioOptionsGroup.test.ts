@@ -7,8 +7,8 @@ import * as azdata from 'azdata';
 import * as should from 'should';
 import { getErrorMessage } from '../../../common/utils';
 import { RadioOptionsGroup, RadioOptionsInfo } from '../../../ui/components/radioOptionsGroup';
-import { createModelViewMock } from 'azdata-test/out/mocks/modelView/modelViewMock';
-import { StubRadioButton } from 'azdata-test/out/stubs/modelView/stubRadioButton';
+import { createModelViewMock } from '@microsoft/azdata-test/out/mocks/modelView/modelViewMock';
+import { StubRadioButton } from '@microsoft/azdata-test/out/stubs/modelView/stubRadioButton';
 
 
 const loadingError = new Error('Error loading options');

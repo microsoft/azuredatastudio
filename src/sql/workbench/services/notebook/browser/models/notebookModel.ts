@@ -110,6 +110,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _multiConnectionMode: boolean = false;
 
 	public requestConnectionHandler: (() => Promise<boolean>) | undefined;
+	private _isLoading: boolean = false;
 
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
@@ -385,6 +386,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public async loadContents(isTrusted = false, forceLayoutChange = false): Promise<void> {
 		try {
+			this._isLoading = true;
 			this._trustedMode = isTrusted;
 
 			let contents: nb.INotebookContents | undefined;
@@ -421,8 +423,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						*/
 						if (cellModel.isInjectedParameter) {
 							hasInjectedCell = true;
-							cellModel.source = cellModel.source.slice(1);
-							cellModel.source = [injectedParametersMsg].concat(cellModel.source);
+							cellModel.source = [injectedParametersMsg].concat(cellModel.source.slice(1));
 						}
 						this.trackMarkdownTelemetry(<nb.ICellContents>c, cellModel);
 						return cellModel;
@@ -444,6 +445,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		} catch (error) {
 			this._inErrorState = true;
 			throw error;
+		} finally {
+			this._isLoading = false;
 		}
 	}
 
@@ -1292,7 +1295,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			case NotebookChangeType.CellSourceUpdated:
 			case NotebookChangeType.CellInputVisibilityChanged:
 			case NotebookChangeType.CellMetadataUpdated:
-				changeInfo.isDirty = true;
+				changeInfo.isDirty = this._isLoading ? false : true;
 				changeInfo.modelContentChangedEvent = cell.modelContentChangedEvent;
 				break;
 			default:

@@ -58,25 +58,31 @@ export class DialogModal extends Modal {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
-		if (this.backButton) {
+		if (this._modalOptions.renderFooter !== false) {
+			this._modalOptions.renderFooter = true;
+		}
+
+		if (this._modalOptions.renderFooter && this.backButton) {
 			this.backButton.onDidClick(() => this.cancel());
 			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
 
-		if (this._dialog.customButtons) {
+		if (this._modalOptions.renderFooter && this._dialog.customButtons) {
 			this._dialog.customButtons.forEach(button => {
 				let buttonElement = this.addDialogButton(button);
 				this.updateButtonElement(buttonElement, button);
 			});
 		}
 
-		this._doneButton = this.addDialogButton(this._dialog.okButton, () => this.done(), false, true);
-		this._dialog.okButton.registerClickEvent(this._onDone.event);
-		this._dialog.onValidityChanged(valid => {
-			this._doneButton.enabled = valid && this._dialog.okButton.enabled;
-		});
-		this.addDialogButton(this._dialog.cancelButton, () => this.cancel(), false);
-		this._dialog.cancelButton.registerClickEvent(this._onCancel.event);
+		if (this._modalOptions.renderFooter) {
+			this._doneButton = this.addDialogButton(this._dialog.okButton, () => this.done(), false, true);
+			this._dialog.okButton.registerClickEvent(this._onDone.event);
+			this._dialog.onValidityChanged(valid => {
+				this._doneButton.enabled = valid && this._dialog.okButton.enabled;
+			});
+			this.addDialogButton(this._dialog.cancelButton, () => this.cancel(), false);
+			this._dialog.cancelButton.registerClickEvent(this._onCancel.event);
+		}
 
 		let messageChangeHandler = (message: DialogMessage) => {
 			if (message && message.text) {
@@ -91,7 +97,7 @@ export class DialogModal extends Modal {
 	}
 
 	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true, requireDialogValid: boolean = false): Button {
-		let buttonElement = this.addFooterButton(button.label, onSelect, button.position);
+		let buttonElement = this.addFooterButton(button.label, onSelect, button.position, button.secondary);
 		buttonElement.enabled = button.enabled;
 		if (registerClickEvent) {
 			button.registerClickEvent(buttonElement.onDidClick);

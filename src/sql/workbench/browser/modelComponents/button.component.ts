@@ -3,27 +3,26 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./media/button';
-import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef,
-	ViewChild, ElementRef, OnDestroy
-} from '@angular/core';
-
+import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy, ViewChild } from '@angular/core';
 import * as azdata from 'azdata';
 
-import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
-
-import { SIDE_BAR_BACKGROUND, SIDE_BAR_TITLE_FOREGROUND } from 'vs/workbench/common/theme';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { focusBorder, foreground } from 'vs/platform/theme/common/colorRegistry';
+import { convertSize } from 'sql/base/browser/dom';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { InfoButton } from 'sql/base/browser/ui/infoButton/infoButton';
-import { Color } from 'vs/base/common/color';
-import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
-import { convertSize } from 'sql/base/browser/dom';
+import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { attachInfoButtonStyler } from 'sql/platform/theme/common/styler';
+import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
-import { ILogService } from 'vs/platform/log/common/log';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import { ILogService } from 'vs/platform/log/common/log';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+
+enum ButtonType {
+	File = 'File',
+	Normal = 'Normal',
+	Informational = 'Informational'
+}
 
 @Component({
 	selector: 'modelview-button',
@@ -46,7 +45,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 	@Input() modelStore: IModelStore;
 	private _button: Button | InfoButton;
 	public fileType: string = '.sql';
-	private _currentButtonType?: azdata.ButtonType = undefined;
+	private _currentButtonType?: ButtonType = undefined;
 	private _buttonStyler: IDisposable | undefined = undefined;
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
@@ -78,7 +77,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		this._currentButtonType = this.buttonType;
 		const elementToRemove = this._button?.element;
 		if (this._inputContainer) {
-			this._button = new Button(this._inputContainer.nativeElement);
+			this._button = new Button(this._inputContainer.nativeElement, { secondary: this.secondary });
 		} else if (this._infoButtonContainer) {
 			this._button = new InfoButton(this._infoButtonContainer.nativeElement);
 		}
@@ -177,7 +176,9 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		if (this.iconPath) {
 			if (!this._iconClass) {
 				super.updateIcon();
-				this._button.icon = this._iconClass + ' icon';
+				this._button.icon = {
+					classNames: this._iconClass + ' icon'
+				};
 				this.updateStyler();
 			} else {
 				super.updateIcon();
@@ -192,22 +193,11 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 	 */
 	private updateStyler(): void {
 		this._buttonStyler?.dispose();
-		if (this.iconPath) {
-			this._buttonStyler = this._register(attachButtonStyler(this._button, this.themeService, {
-				buttonBackground: Color.transparent.toString(),
-				buttonHoverBackground: Color.transparent.toString(),
-				buttonFocusOutline: focusBorder,
-				buttonForeground: foreground
-			}));
+		if (this.buttonType === ButtonType.Informational) {
+			this._buttonStyler = this._register(attachInfoButtonStyler(this._button, this.themeService));
 		} else {
-			this._buttonStyler = this._register(attachButtonStyler(this._button, this.themeService, {
-				buttonBackground: SIDE_BAR_BACKGROUND,
-				buttonHoverBackground: SIDE_BAR_BACKGROUND,
-				buttonForeground: SIDE_BAR_TITLE_FOREGROUND
-			}));
+			this._buttonStyler = this._register(attachButtonStyler(this._button, this.themeService));
 		}
-
-
 	}
 
 	protected get defaultIconHeight(): number {
@@ -228,11 +218,11 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		this.setPropertyFromUI<string>(this.setValueProperties, newValue);
 	}
 
-	public get buttonType(): azdata.ButtonType {
+	public get buttonType(): ButtonType {
 		if (this.isFile === true) {
-			return 'File' as azdata.ButtonType;
+			return ButtonType.File;
 		} else {
-			return this.getPropertyOrDefault((props) => props.buttonType, 'Normal' as azdata.ButtonType);
+			return this.getPropertyOrDefault((props) => props.buttonType, ButtonType.Normal);
 		}
 	}
 
@@ -266,5 +256,9 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 
 	private setFileProperties(properties: azdata.ButtonProperties, isFile: boolean): void {
 		properties.isFile = isFile;
+	}
+
+	private get secondary(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.secondary, false);
 	}
 }

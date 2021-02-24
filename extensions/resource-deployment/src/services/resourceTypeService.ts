@@ -9,7 +9,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption, ResourceSubType, AgreementInfo, HelpText } from '../interfaces';
+import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption, ResourceSubType, AgreementInfo, HelpText, InitialVariableValues } from '../interfaces';
 import { AzdataService } from './azdataService';
 import { KubeService } from './kubeService';
 import { INotebookService } from './notebookService';
@@ -31,7 +31,7 @@ export interface OptionValuesFilter {
 export interface IResourceTypeService {
 	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
 	validateResourceTypes(resourceTypes: ResourceType[]): string[];
-	startDeployment(resourceType: ResourceType, optionValuesFilter?: OptionValuesFilter): void;
+	startDeployment(resourceType: ResourceType, optionValuesFilter?: OptionValuesFilter, initialVariableValues?: InitialVariableValues): void;
 }
 
 export class ResourceTypeService implements IResourceTypeService {
@@ -322,8 +322,8 @@ export class ResourceTypeService implements IResourceTypeService {
 		return undefined;
 	}
 
-	public startDeployment(resourceType: ResourceType, optionValuesFilter?: OptionValuesFilter): void {
-		const wizard = new ResourceTypeWizard(resourceType, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this, optionValuesFilter);
+	public startDeployment(resourceType: ResourceType, optionValuesFilter?: OptionValuesFilter, initialVariableValues?: InitialVariableValues): void {
+		const wizard = new ResourceTypeWizard(resourceType, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this, optionValuesFilter, initialVariableValues);
 		wizard.open();
 	}
 

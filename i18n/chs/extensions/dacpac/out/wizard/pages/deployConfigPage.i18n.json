@@ -11,7 +11,7 @@
 	"dacFxDeploy.openFile": "打开",
 	"dacFxDeploy.fileTextboxTitle": "文件位置",
 	"dacFx.upgradeRadioButtonLabel": "升级现有数据库",
-	"dacFx.newRadioButtonLabel": "新数据库",
+	"dacFx.newRadioButtonLabel": "新建数据库",
 	"dacFx.targetDatabaseRadioButtonsTitle": "目标数据库",
 	"dacFx.targetDatabaseDropdownTitle": "数据库名称"
 }

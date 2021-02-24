@@ -380,7 +380,7 @@ export class PostgresParametersPage extends DashboardPage {
 	private filterParameters(search: string): void {
 		const filteredRowIndexes: number[] = [];
 		this.parametersTable.data?.forEach((row, index) => {
-			if (row[0]?.search(search) !== -1 || row[2]?.search(search) !== -1) {
+			if (row[0].toUpperCase()?.search(search.toUpperCase()) !== -1 || row[2].toUpperCase()?.search(search.toUpperCase()) !== -1) {
 				filteredRowIndexes.push(index);
 			}
 		});

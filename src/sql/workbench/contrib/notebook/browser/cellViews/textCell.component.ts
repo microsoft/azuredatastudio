@@ -18,7 +18,7 @@ import { URI } from 'vs/base/common/uri';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { toDisposable } from 'vs/base/common/lifecycle';
-import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
+import { IMarkdownRenderResult } from 'vs/editor/browser/core/markdownRenderer';
 
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
@@ -29,6 +29,8 @@ import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/
 import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -50,15 +52,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	@Input() set activeCellId(value: string) {
 		this._activeCellId = value;
-	}
-
-	@HostListener('document:keydown.escape', ['$event'])
-	handleKeyboardEvent() {
-		if (this.isEditMode) {
-			this.toggleEditMode(false);
-		}
-		this.cellModel.active = false;
-		this._model.updateActiveCell(undefined);
 	}
 
 	// Double click to edit text cell in notebook
@@ -456,6 +449,17 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 		this.cellModel.active = true;
 		this._model.updateActiveCell(this.cellModel);
+	}
+
+	public onKey(e: KeyboardEvent) {
+		let event = new StandardKeyboardEvent(e);
+		if (event.equals(KeyCode.Escape)) {
+			if (this.isEditMode) {
+				this.toggleEditMode(false);
+			}
+			this.cellModel.active = false;
+			this._model.updateActiveCell(undefined);
+		}
 	}
 }
 

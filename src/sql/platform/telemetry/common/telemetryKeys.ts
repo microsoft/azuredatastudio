@@ -43,6 +43,7 @@ export const FireWallRule = 'FirewallRule';
 export const AutoOAuth = 'AutoOAuth';
 export const AddNewDashboardTab = 'AddNewDashboardTab';
 export const ProfilerFilter = 'ProfilerFilter';
+export const CalloutDialog = 'CalloutDialog';
 
 
 export enum TelemetryView {
