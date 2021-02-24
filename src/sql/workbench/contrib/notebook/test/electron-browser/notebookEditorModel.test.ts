@@ -72,13 +72,11 @@ suite('Notebook Editor Model', function (): void {
 	const logService = new NullLogService();
 	const notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
 	let memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
-	memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
+	memento.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
 	let testinstantiationService = new TestInstantiationService();
 	testinstantiationService.stub(IStorageService, new TestStorageService());
 	testinstantiationService.stub(IProductService, { quality: 'stable' });
 	const queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose,
-		undefined, // connection store
-		undefined, // connection status manager
 		undefined, // connection dialog service
 		testinstantiationService, // instantiation service
 		undefined, // editor service
@@ -193,6 +191,7 @@ suite('Notebook Editor Model', function (): void {
 
 		let contentChange: NotebookContentChange = {
 			changeType: NotebookChangeType.CellsModified,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -217,6 +216,7 @@ suite('Notebook Editor Model', function (): void {
 
 		let contentChange: NotebookContentChange = {
 			changeType: NotebookChangeType.CellsModified,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -228,6 +228,7 @@ suite('Notebook Editor Model', function (): void {
 		newCell.executionCount = 1;
 		contentChange = {
 			changeType: NotebookChangeType.CellExecuted,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -245,6 +246,7 @@ suite('Notebook Editor Model', function (): void {
 		newCell.executionCount = 10;
 		contentChange = {
 			changeType: NotebookChangeType.CellExecuted,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -256,6 +258,7 @@ suite('Notebook Editor Model', function (): void {
 		newCell.executionCount = 15;
 		contentChange = {
 			changeType: NotebookChangeType.CellExecuted,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -267,6 +270,7 @@ suite('Notebook Editor Model', function (): void {
 		newCell.executionCount = 105;
 		contentChange = {
 			changeType: NotebookChangeType.CellExecuted,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -285,6 +289,7 @@ suite('Notebook Editor Model', function (): void {
 
 		let contentChange: NotebookContentChange = {
 			changeType: NotebookChangeType.CellsModified,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -295,6 +300,7 @@ suite('Notebook Editor Model', function (): void {
 
 		contentChange = {
 			changeType: NotebookChangeType.CellOutputCleared,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -319,6 +325,7 @@ suite('Notebook Editor Model', function (): void {
 
 		let contentChange: NotebookContentChange = {
 			changeType: NotebookChangeType.CellsModified,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -329,6 +336,7 @@ suite('Notebook Editor Model', function (): void {
 
 		contentChange = {
 			changeType: NotebookChangeType.CellSourceUpdated,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0,
 			modelContentChangedEvent: {
@@ -365,6 +373,7 @@ suite('Notebook Editor Model', function (): void {
 
 		let contentChange: NotebookContentChange = {
 			changeType: NotebookChangeType.CellsModified,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -375,6 +384,7 @@ suite('Notebook Editor Model', function (): void {
 
 		contentChange = {
 			changeType: NotebookChangeType.CellSourceUpdated,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0,
 			modelContentChangedEvent: {
@@ -409,6 +419,7 @@ suite('Notebook Editor Model', function (): void {
 
 		let contentChange: NotebookContentChange = {
 			changeType: NotebookChangeType.CellsModified,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -421,6 +432,7 @@ suite('Notebook Editor Model', function (): void {
 
 		contentChange = {
 			changeType: NotebookChangeType.CellSourceUpdated,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0,
 			modelContentChangedEvent: undefined
@@ -449,6 +461,7 @@ suite('Notebook Editor Model', function (): void {
 
 		let contentChange: NotebookContentChange = {
 			changeType: NotebookChangeType.CellsModified,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -461,6 +474,7 @@ suite('Notebook Editor Model', function (): void {
 
 		contentChange = {
 			changeType: NotebookChangeType.CellSourceUpdated,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0,
 			modelContentChangedEvent: undefined
@@ -490,6 +504,7 @@ suite('Notebook Editor Model', function (): void {
 
 		let contentChange: NotebookContentChange = {
 			changeType: NotebookChangeType.CellsModified,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -503,6 +518,7 @@ suite('Notebook Editor Model', function (): void {
 
 		contentChange = {
 			changeType: NotebookChangeType.CellSourceUpdated,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0,
 			modelContentChangedEvent: {
@@ -520,6 +536,7 @@ suite('Notebook Editor Model', function (): void {
 
 		contentChange = {
 			changeType: NotebookChangeType.CellSourceUpdated,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0,
 			modelContentChangedEvent: {
@@ -554,6 +571,7 @@ suite('Notebook Editor Model', function (): void {
 
 		let contentChange: NotebookContentChange = {
 			changeType: NotebookChangeType.CellsModified,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -563,6 +581,7 @@ suite('Notebook Editor Model', function (): void {
 
 		contentChange = {
 			changeType: NotebookChangeType.CellSourceUpdated,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0,
 			modelContentChangedEvent: {
@@ -587,6 +606,7 @@ suite('Notebook Editor Model', function (): void {
 
 		contentChange = {
 			changeType: NotebookChangeType.CellSourceUpdated,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0,
 			modelContentChangedEvent: {
@@ -626,6 +646,7 @@ suite('Notebook Editor Model', function (): void {
 
 			contentChange = {
 				changeType: NotebookChangeType.CellsModified,
+				isDirty: true,
 				cells: [cell],
 				cellIndex: 0
 			};
@@ -635,6 +656,7 @@ suite('Notebook Editor Model', function (): void {
 
 		contentChange = {
 			changeType: NotebookChangeType.CellSourceUpdated,
+			isDirty: true,
 			cells: [newCell],
 			modelContentChangedEvent: {
 				changes: [{ range: new Range(1, 1, 1, 1), rangeLength: 0, rangeOffset: 0, text: 'This is a test' }],
@@ -673,6 +695,7 @@ suite('Notebook Editor Model', function (): void {
 
 		let contentChange: NotebookContentChange = {
 			changeType: NotebookChangeType.CellsModified,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -685,6 +708,7 @@ suite('Notebook Editor Model', function (): void {
 
 		contentChange = {
 			changeType: NotebookChangeType.CellOutputUpdated,
+			isDirty: true,
 			cells: [newCell]
 		};
 
@@ -710,6 +734,7 @@ suite('Notebook Editor Model', function (): void {
 
 		let contentChange: NotebookContentChange = {
 			changeType: NotebookChangeType.CellsModified,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -724,6 +749,7 @@ suite('Notebook Editor Model', function (): void {
 
 		contentChange = {
 			changeType: NotebookChangeType.CellOutputUpdated,
+			isDirty: true,
 			cells: [newCell]
 		};
 
@@ -746,6 +772,7 @@ suite('Notebook Editor Model', function (): void {
 
 		contentChange = {
 			changeType: NotebookChangeType.CellOutputUpdated,
+			isDirty: true,
 			cells: [newCell]
 		};
 
@@ -774,6 +801,7 @@ suite('Notebook Editor Model', function (): void {
 
 		let contentChange: NotebookContentChange = {
 			changeType: NotebookChangeType.CellsModified,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -788,6 +816,7 @@ suite('Notebook Editor Model', function (): void {
 
 		contentChange = {
 			changeType: NotebookChangeType.CellOutputUpdated,
+			isDirty: true,
 			cells: [newCell]
 		};
 
@@ -988,6 +1017,7 @@ suite('Notebook Editor Model', function (): void {
 
 		let contentChange: NotebookContentChange = {
 			changeType: NotebookChangeType.CellsModified,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0
 		};
@@ -1001,6 +1031,7 @@ suite('Notebook Editor Model', function (): void {
 	function addTextToBeginningOfTextEditorModel(notebookEditorModel: NotebookEditorModel, newCell: ICellModel, textToAdd: string) {
 		let contentChange: NotebookContentChange = {
 			changeType: NotebookChangeType.CellSourceUpdated,
+			isDirty: true,
 			cells: [newCell],
 			cellIndex: 0,
 			modelContentChangedEvent: {

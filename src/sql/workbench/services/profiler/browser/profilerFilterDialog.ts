@@ -7,7 +7,7 @@ import 'vs/css!./media/profilerFilterDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { attachButtonStyler, attachInputBoxStyler } from 'sql/platform/theme/common/styler';
+import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -16,7 +16,7 @@ import { localize } from 'vs/nls';
 import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInput';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+import { attachButtonStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
@@ -83,7 +83,7 @@ export class ProfilerFilterDialog extends Modal {
 		@IProfilerService private profilerService: IProfilerService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', TelemetryKeys.ProfilerFilter, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.ProfilerFilter, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 	}
 
 	public open(input: ProfilerInput) {
@@ -102,11 +102,11 @@ export class ProfilerFilterDialog extends Modal {
 		this.title = DialogTitle;
 		this.titleIconClassName = TitleIconClass;
 		this._register(attachModalDialogStyler(this, this._themeService));
-		this._saveFilterButton = this.addFooterButton(SaveFilterText, () => this.saveFilter(), 'left');
-		this._loadFilterButton = this.addFooterButton(LoadFilterText, () => this.loadSavedFilter(), 'left');
-		this._applyButton = this.addFooterButton(ApplyText, () => this.filterSession());
+		this._saveFilterButton = this.addFooterButton(SaveFilterText, () => this.saveFilter(), 'left', true);
+		this._loadFilterButton = this.addFooterButton(LoadFilterText, () => this.loadSavedFilter(), 'left', true);
+		this._applyButton = this.addFooterButton(ApplyText, () => this.filterSession(), 'right', true);
 		this._okButton = this.addFooterButton(OkText, () => this.handleOkButtonClick());
-		this._cancelButton = this.addFooterButton(CancelText, () => this.hide('cancel'));
+		this._cancelButton = this.addFooterButton(CancelText, () => this.hide('cancel'), 'right', true);
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
 		this._register(attachButtonStyler(this._applyButton, this._themeService));

@@ -9,9 +9,9 @@
 	"jobData.whenJobCompletes": "작업 완료 시",
 	"jobData.whenJobFails": "작업 실패 시",
 	"jobData.whenJobSucceeds": "작업 성공 시",
-	"jobData.jobNameRequired": "작업 이름을 입력해야 합니다.",
-	"jobData.saveErrorMessage": "작업 업데이트 실패 ' {0} '",
-	"jobData.newJobErrorMessage": "작업 생성 실패 '{0}'",
+	"jobData.jobNameRequired": "작업 이름을 지정해야 합니다.",
+	"jobData.saveErrorMessage": "'{0}' 작업을 업데이트하지 못했습니다.",
+	"jobData.newJobErrorMessage": "'{0}' 작업을 만들지 못했습니다.",
 	"jobData.saveSucessMessage": "'{0}' 작업을 업데이트했습니다.",
 	"jobData.newJobSuccessMessage": "'{0}' 작업을 만들었습니다."
 }

@@ -15,7 +15,7 @@ import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBa
 
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { attachTableStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension, isAncestor } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
@@ -28,12 +28,13 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
 import { ButtonCellValue, ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
-import { IUserFriendlyIcon, createIconCssClass, getIconKey } from 'sql/workbench/browser/modelComponents/iconUtils';
+import { IconPath, createIconCssClass, getIconKey } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { TableCellClickEventArgs } from 'sql/base/browser/ui/table/plugins/tableColumn';
 import { HyperlinkCellValue, HyperlinkColumn } from 'sql/base/browser/ui/table/plugins/hyperlinkColumn.plugin';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -206,7 +207,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 	}
 
-	private createIconCssClassInternal(icon: IUserFriendlyIcon): string {
+	private createIconCssClassInternal(icon: IconPath): string {
 		const iconKey: string = getIconKey(icon);
 		const iconCssClass = this._iconCssMap[iconKey] ?? createIconCssClass(icon);
 		if (!this._iconCssMap[iconKey]) {
@@ -429,7 +430,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	private createButtonPlugin(col: azdata.ButtonColumn) {
 		let name = col.value;
 		if (!this._buttonColumns[col.value]) {
-			const icon = <IUserFriendlyIcon>(col.options ? (<any>col.options).icon : col.icon);
+			const icon = <IconPath>(col.options ? (<any>col.options).icon : col.icon);
 			this._buttonColumns[col.value] = new ButtonColumn({
 				title: col.value,
 				iconCssClass: icon ? this.createIconCssClassInternal(icon) : undefined,

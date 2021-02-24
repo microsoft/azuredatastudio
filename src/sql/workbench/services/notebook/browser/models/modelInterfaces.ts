@@ -308,6 +308,12 @@ export interface INotebookModel {
 	 * or undefined if none.
 	 */
 	readonly savedConnectionName: string | undefined;
+
+	/**
+	 * The connection mode of the notebook (single vs multiple connections)
+	 */
+	multiConnectionMode: boolean;
+
 	/**
 	 * Event fired on first initialization of the cells and
 	 * on subsequent change events

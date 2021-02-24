@@ -109,7 +109,7 @@ export function getDatabaseStateDisplayText(state: string): string {
  * @returns Promise resolving to the user's input if it passed validation,
  * or undefined if the input box was closed for any other reason
  */
-async function promptInputBox(title: string, options: vscode.InputBoxOptions): Promise<string> {
+async function promptInputBox(title: string, options: vscode.InputBoxOptions): Promise<string | undefined> {
 	const inputBox = vscode.window.createInputBox();
 	inputBox.title = title;
 	inputBox.prompt = options.prompt;
@@ -198,12 +198,16 @@ export function getErrorMessage(error: any, useMessageWithLink: boolean = false)
 
 /**
  * Parses an address into its separate ip and port values. Address must be in the form <ip>:<port>
+ * or <ip>,<port>
  * @param address The address to parse
  */
 export function parseIpAndPort(address: string): { ip: string, port: string } {
-	const sections = address.split(':');
+	let sections = address.split(':');
 	if (sections.length !== 2) {
-		throw new Error(`Invalid address format for ${address}. Address must be in the form <ip>:<port>`);
+		sections = address.split(',');
+		if (sections.length !== 2) {
+			throw new Error(`Invalid address format for ${address}. Address must be in the form <ip>:<port> or <ip>,<port>`);
+		}
 	}
 	return {
 		ip: sections[0],

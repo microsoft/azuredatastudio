@@ -21,10 +21,11 @@ export interface ResourceType {
 	agreements?: AgreementInfo[];
 	displayIndex?: number;
 	okButtonText?: OkButtonTextValue[];
+	helpTexts: HelpText[];
 	getOkButtonText(selectedOptions: { option: string, value: string }[]): string | undefined;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
 	getAgreementInfo(selectedOptions: { option: string, value: string }[]): AgreementInfo | undefined;
-	getHelpText(selectedOption: { option: string, value: string }[]): string | undefined;
+	getHelpText(selectedOption: { option: string, value: string }[]): HelpText | undefined;
 	tags?: string[];
 }
 
@@ -41,12 +42,19 @@ export interface ResourceSubType {
 	provider: DeploymentProvider;
 	okButtonText?: OkButtonTextValue;
 	agreement?: AgreementInfo;
+	helpText?: HelpText;
+}
+
+export interface HelpText {
+	template: string;
+	links?: azdata.LinkArea[];
+	when?: string;
 }
 
 export interface AgreementInfo {
 	template: string;
-	links: azdata.LinkArea[];
-	when: string;
+	links?: azdata.LinkArea[];
+	when?: string;
 }
 
 export interface ResourceTypeOption {
@@ -490,3 +498,8 @@ export interface Command {
 	additionalEnvironmentVariables?: NodeJS.ProcessEnv;
 	ignoreError?: boolean;
 }
+
+/**
+ * Map of the set of variables and the values to assign to them upon initialization - overriding the base default.
+ */
+export type InitialVariableValues = { [key: string]: string | boolean };

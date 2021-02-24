@@ -6,7 +6,7 @@ import * as path from 'vs/base/common/path';
 
 import { URI } from 'vs/base/common/uri';
 import { IMarkdownString, removeMarkdownEscapes } from 'vs/base/common/htmlContent';
-import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
+import { IMarkdownRenderResult } from 'vs/editor/browser/core/markdownRenderer';
 import * as marked from 'vs/base/common/marked/marked';
 import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
@@ -56,7 +56,7 @@ export class NotebookMarkdownRenderer {
 
 		// signal to code-block render that the element has been created
 		let signalInnerHTML: () => void;
-		const withInnerHTML = new Promise(c => signalInnerHTML = c);
+		const withInnerHTML = new Promise<void>(c => signalInnerHTML = c);
 
 		let notebookFolder = this._notebookURI ? path.join(path.dirname(this._notebookURI.fsPath), path.sep) : '';
 		if (!this._baseUrls.some(x => x === notebookFolder)) {
@@ -150,15 +150,15 @@ export class NotebookMarkdownRenderer {
 					withInnerHTML.then(e => {
 						const span = element.querySelector(`div[data-code="${id}"]`);
 						if (span) {
-							span.innerHTML = strValue;
+							span.innerHTML = strValue.innerHTML;
 						}
 					}).catch(err => {
 						// ignore
 					});
 				});
 
-				if (options.codeBlockRenderCallback) {
-					promise.then(options.codeBlockRenderCallback);
+				if (options.asyncRenderCallback) {
+					promise.then(options.asyncRenderCallback);
 				}
 
 				return `<div class="code" data-code="${id}">${escape(code)}</div>`;

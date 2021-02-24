@@ -7,7 +7,6 @@ import 'vs/css!./media/errorMessageDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -24,6 +23,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 const maxActions = 1;
 
@@ -52,7 +52,7 @@ export class ErrorMessageDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', TelemetryKeys.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 		this._okLabel = localize('errorMessageDialog.ok', "OK");
 		this._closeLabel = localize('errorMessageDialog.close', "Close");
 	}
@@ -79,14 +79,16 @@ export class ErrorMessageDialog extends Modal {
 			if (this._messageDetails) {
 				this._clipboardService.writeText(this._messageDetails!).catch(err => onUnexpectedError(err));
 			}
-		}, 'left');
-		this._copyButton!.icon = 'codicon scriptToClipboard';
+		}, 'left', true);
+		this._copyButton!.icon = {
+			classNames: 'codicon scriptToClipboard'
+		};
 		this._copyButton!.element.title = copyButtonLabel;
 		this._register(attachButtonStyler(this._copyButton!, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_FOREGROUND }));
 	}
 
 	private createStandardButton(label: string, onSelect: () => void): Button {
-		let button = this.addFooterButton(label, onSelect, 'right');
+		let button = this.addFooterButton(label, onSelect, 'right', true);
 		this._register(attachButtonStyler(button, this._themeService));
 		return button;
 	}

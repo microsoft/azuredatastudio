@@ -170,7 +170,7 @@ describe('BooksTreeViewTests', function () {
 
 			this.beforeAll(async () => {
 				bookTreeViewProvider = appContext.bookTreeViewProvider;
-				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+				let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
 				await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 				await bookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
 			});
@@ -242,7 +242,7 @@ describe('BooksTreeViewTests', function () {
 			});
 
 			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
-				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
+				let notebook1Path = vscode.Uri.file(path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb')).fsPath;
 				let currentSelection = await bookTreeViewProvider.findAndExpandParentNode(notebook1Path);
 				equalBookItems(currentSelection, expectedNotebook1);
 			});
@@ -276,7 +276,7 @@ describe('BooksTreeViewTests', function () {
 
 			this.beforeAll(async () => {
 				providedbookTreeViewProvider = appContext.providedBookTreeViewProvider;
-				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+				let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
 				await Promise.race([providedbookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('ProvidedBooksTreeViewProvider did not initialize in time'); })]);
 				await providedbookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
 			});
@@ -359,7 +359,7 @@ describe('BooksTreeViewTests', function () {
 			this.beforeAll(async () => {
 				pinnedTreeViewProvider = appContext.pinnedBookTreeViewProvider;
 				bookTreeViewProvider = appContext.bookTreeViewProvider;
-				let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+				let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
 				await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 				await Promise.race([pinnedTreeViewProvider.initialized, errorCase.then(() => { throw new Error('PinnedTreeViewProvider did not initialize in time'); })]);
 				await bookTreeViewProvider.openBook(bookFolderPath, undefined, false, false);
@@ -478,21 +478,21 @@ describe('BooksTreeViewTests', function () {
 						index: 0
 					};
 					bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
-					let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+					let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
 					await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 					await bookTreeViewProvider.openBook(rootFolderPath, undefined, false, false);
 				});
 
 				if (run.it === 'v1') {
 					it('should ignore toc.yml files not in _data folder', async () => {
-						await bookTreeViewProvider.currentBook.readBookStructure(rootFolderPath);
+						await bookTreeViewProvider.currentBook.readBookStructure();
 						await bookTreeViewProvider.currentBook.loadTableOfContentFiles();
 						let path = bookTreeViewProvider.currentBook.tableOfContentsPath;
 						should(vscode.Uri.file(path).fsPath).equal(vscode.Uri.file(run.folderPaths.tableOfContentsFile).fsPath);
 					});
 				} else if (run.it === 'v2') {
 					it('should ignore toc.yml files not under the root book folder', async () => {
-						await bookTreeViewProvider.currentBook.readBookStructure(rootFolderPath);
+						await bookTreeViewProvider.currentBook.readBookStructure();
 						await bookTreeViewProvider.currentBook.loadTableOfContentFiles();
 						let path = bookTreeViewProvider.currentBook.tableOfContentsPath;
 						should(vscode.Uri.file(path).fsPath).equal(vscode.Uri.file(run.folderPaths.tableOfContentsFile).fsPath);
@@ -556,7 +556,7 @@ describe('BooksTreeViewTests', function () {
 						index: 0
 					};
 					bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
-					let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+					let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
 					await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 				});
 
@@ -585,7 +585,7 @@ describe('BooksTreeViewTests', function () {
 					}
 				});
 			});
-		})
+		});
 	});
 
 	describe('BookTreeViewProvider.getSections', function () {
@@ -646,23 +646,25 @@ describe('BooksTreeViewTests', function () {
 						index: 0
 					}];
 					bookTreeViewProvider = new BookTreeViewProvider(folder, mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
-					let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+					let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
 					await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 				});
 
 				it('should show error if notebook or markdown file is missing', async function (): Promise<void> {
 					let books: BookTreeItem[] = bookTreeViewProvider.currentBook.bookItems;
 					let children = await bookTreeViewProvider.currentBook.getSections({ sections: [] }, books[0].sections, rootFolderPath, books[0].book);
-					should(bookTreeViewProvider.currentBook.errorMessage).equal('Missing file : Notebook1 from '.concat(bookTreeViewProvider.currentBook.bookPath));
+					should(bookTreeViewProvider.currentBook.errorMessage).equal('Missing file : Notebook1 from '.concat(bookTreeViewProvider.currentBook.bookItems[0].title));
 					// rest of book should be detected correctly even with a missing file
 					equalBookItems(children[0], expectedNotebook2);
 				});
 
 				after(async function (): Promise<void> {
-					if (await exists(rootFolderPath)) await promisify(rimraf)(rootFolderPath);
+					if (await exists(rootFolderPath)) {
+						await promisify(rimraf)(rootFolderPath);
+					}
 				});
 			});
-		})
+		});
 	});
 
 	describe('BookTreeViewProvider.Commands', function () {
@@ -716,7 +718,7 @@ describe('BooksTreeViewTests', function () {
 
 					const mockExtensionContext = new MockExtensionContext();
 					bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
-					let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+					let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
 					await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 				});
 
@@ -750,7 +752,7 @@ describe('BooksTreeViewTests', function () {
 					should(showNotebookSpy.calledWith(vscode.Uri.file(notebookPath))).be.true(`Should have opened the notebook from ${notebookPath} in the editor.`);
 				});
 
-				it('openNotebookAsUntitled should open a notebook as untitled file in the editor', async () => {
+				it('openNotebookAsUntitled should open a notebook as untitled file in the editor @UNSTABLE@', async () => {
 					let notebookPath = run.folderPaths.notebook2File;
 					await bookTreeViewProvider.openNotebookAsUntitled(notebookPath);
 					should(azdata.nb.notebookDocuments.find(doc => doc.uri.scheme === 'untitled')).not.be.undefined();
@@ -798,11 +800,12 @@ describe('BooksTreeViewTests', function () {
 				});
 
 				it('openNotebookFolder without folderPath should prompt for folder path and invoke loadNotebooksInFolder', async () => {
-					sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([vscode.Uri.file(rootFolderPath)]));
+					const uri = vscode.Uri.file(rootFolderPath);
+					sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([uri]));
 					let loadNotebooksSpy = sinon.spy(bookTreeViewProvider, 'loadNotebooksInFolder');
 					await bookTreeViewProvider.openNotebookFolder();
 
-					should(loadNotebooksSpy.calledWith(rootFolderPath)).be.true('openNotebookFolder should have called loadNotebooksInFolder passing the folderPath');
+					should(loadNotebooksSpy.calledWith(uri.fsPath)).be.true('openNotebookFolder should have called loadNotebooksInFolder passing the folderPath');
 				});
 
 				it('openNotebookFolder with folderPath shouldn\'t prompt for folder path but invoke loadNotebooksInFolder with the provided folderPath', async () => {
@@ -912,7 +915,7 @@ describe('BooksTreeViewTests', function () {
 
 					const mockExtensionContext = new MockExtensionContext();
 					bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
-					let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
+					let errorCase = new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 5000));
 					await Promise.race([bookTreeViewProvider.initialized, errorCase.then(() => { throw new Error('BookTreeViewProvider did not initialize in time'); })]);
 				});
 

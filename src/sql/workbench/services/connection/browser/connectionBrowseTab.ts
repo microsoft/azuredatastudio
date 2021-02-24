@@ -191,7 +191,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 				const primary: IAction[] = [];
 				const secondary: IAction[] = [];
 				const result = { primary, secondary };
-				createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, this.contextMenuService);
+				createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result);
 
 				this.contextMenuService.showContextMenu({
 					getAnchor: () => e.anchor,

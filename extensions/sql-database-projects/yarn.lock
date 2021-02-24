@@ -205,10 +205,10 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
-"@microsoft/ads-extension-telemetry@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-1.1.2.tgz#ca6df0593f16d7b050fc2e95fa09532c6fd7bff7"
-  integrity sha512-1kWmJhGTkwJV13K/Zk/GH2Cp6fVSHNAgpSE8xnAAtLOadd+dSuosnI5Y2eXfwhNj2CdjQNaFvSsJ5sg03J/kNg==
+"@microsoft/ads-extension-telemetry@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-1.1.3.tgz#54160eefa21f2a536622b0617f3c3f2018cf9c87"
+  integrity sha512-+h6hM9oOA6Zj/N0nCGPzRgydR0YHiHpNJoNlv6a/ziWXO3RYSbQX+3U/PpT3gEA6+8RwByf6RVICo7uIGBy1LQ==
   dependencies:
     vscode-extension-telemetry "^0.1.6"
 

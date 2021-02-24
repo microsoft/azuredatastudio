@@ -13,6 +13,7 @@
 	"installingService": "サービスをインストールしています",
 	"serviceInstalled": "インストール済み",
 	"downloadingService": "{0} をダウンロードしています",
-	"downloadingServiceStatus": "ダウンロード サービス",
+	"downloadingServiceSize": "({0} KB)",
+	"downloadingServiceStatus": "サービスをダウンロードしています",
 	"downloadingServiceComplete": "完了"
 }

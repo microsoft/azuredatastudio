@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
-import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ResourceTypeOptionValue, ToolRequirementInfo, ToolStatus } from '../interfaces';
+import { AgreementInfo, DeploymentProvider, HelpText, ITool, ResourceType, ResourceTypeOptionValue, ToolRequirementInfo, ToolStatus } from '../interfaces';
 import { createFlexContainer } from './modelViewUtils';
 import * as loc from '../localizedConstants';
 import { IToolsService } from '../services/toolsService';
@@ -26,6 +26,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 	private _toolsLoadingComponent!: azdata.LoadingComponent;
 	private _agreementContainer!: azdata.DivContainer;
+	private _helpTextContainer!: azdata.DivContainer;
 	private _agreementCheckBox!: azdata.CheckBoxComponent;
 	private _installToolButton!: azdata.ButtonComponent;
 	private _installationInProgress: boolean = false;
@@ -33,10 +34,6 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	private _eulaValidationSucceeded: boolean = false;
 	private _isInitialized = false;
 	private _resourceType: ResourceType;
-
-	public set resourceProvider(provider: DeploymentProvider) {
-		this.wizard.provider = provider;
-	}
 
 	public get toolsService(): IToolsService {
 		return this.wizard.toolsService;
@@ -94,6 +91,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			const tableWidth = 1060;
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
+			this._helpTextContainer = view.modelBuilder.divContainer().component();
 			const toolColumn: azdata.TableColumn = {
 				value: loc.toolText,
 				width: 105
@@ -140,6 +138,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					'display': 'none',
 				},
 				width: '100px',
+				secondary: true
 			}).component();
 
 			this.wizard.registerDisposable(this._installToolButton.onDidClick(() => {
@@ -149,6 +148,8 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			this.form = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
+						component: this._helpTextContainer,
+					}, {
 						component: this._optionsContainer,
 					}, {
 						component: this._agreementContainer,
@@ -185,7 +186,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 				if (this._resourceType.options) {
 					let resourceTypeOptions: ResourceTypeOptionValue[] = [];
 					const optionsTitle = this.view.modelBuilder.text().withProps({
-						value: 'Options',
+						value: loc.optionsText,
 						CSSStyles: {
 							'font-size': '14px',
 							'padding': '0'
@@ -234,9 +235,16 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					});
 				}
 
-				if (this._resourceType.agreements) {
-					this._agreementContainer.addItem(this.createAgreementCheckbox());
+				const agreementInfo = this._resourceType.getAgreementInfo(this.getSelectedOptions());
+				if (agreementInfo) {
+					this._agreementContainer.addItem(this.createAgreementCheckbox(agreementInfo));
 				}
+
+				const helpText = this._resourceType.getHelpText(this.getSelectedOptions());
+				if (helpText) {
+					this._helpTextContainer.addItem(this.createHelpText(helpText));
+				}
+
 				this.updateOkButtonText();
 				this.updateToolsDisplayTable();
 			});
@@ -245,8 +253,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	}
 
 
-	private createAgreementCheckbox(): azdata.FlexContainer {
-		const agreementInfo = this._resourceType.getAgreementInfo(this.getSelectedOptions())!;
+	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
 		this._agreementCheckBox = this.view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
 			ariaLabel: this.getAgreementDisplayText(agreementInfo),
 			required: true
@@ -259,12 +266,20 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		return createFlexContainer(this.view, [this._agreementCheckBox, text]);
 	}
 
+	private createHelpText(helpText: HelpText): azdata.FlexContainer {
+		const helpTextComponent = this.view.modelBuilder.text().withProps({
+			value: helpText.template,
+			links: helpText.links,
+		}).component();
+		return createFlexContainer(this.view, [helpTextComponent]);
+	}
+
 	private getAgreementDisplayText(agreementInfo: AgreementInfo): string {
 		// the agreement template will have {index} as placeholder for hyperlinks
 		// this method will get the display text after replacing the placeholders
 		let text = agreementInfo.template;
-		for (let i: number = 0; i < agreementInfo.links.length; i++) {
-			text = text.replace(`{${i}}`, agreementInfo.links[i].text);
+		for (let i: number = 0; i < agreementInfo.links!.length; i++) {
+			text = text.replace(`{${i}}`, agreementInfo.links![i].text);
 		}
 		return text;
 	}
@@ -289,7 +304,6 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 
 		const options = this.getSelectedOptions();
 
-		this.resourceProvider = this._resourceType.getProvider(options)!;
 		return this._resourceType.getProvider(options)!;
 	}
 
