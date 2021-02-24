@@ -28,7 +28,7 @@ export class CreateBookDialog {
 	}
 
 	protected createHorizontalContainer(view: azdata.ModelView, items: azdata.Component[]): azdata.FlexContainer {
-		return view.modelBuilder.flexContainer().withItems(items, { CSSStyles: { 'margin-right': '10px', 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row' }).component();
+		return view.modelBuilder.flexContainer().withItems(items, { CSSStyles: { 'margin-right': '5px', 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 	}
 
 	public async selectFolder(): Promise<string | undefined> {
@@ -140,7 +140,7 @@ export class CreateBookDialog {
 						},
 					],
 					title: ''
-				}]).withLayout({ width: '100%' }).component();
+				}]).component();
 			await this.view.initializeModel(this.formModel);
 		});
 		this.dialog.okButton.label = loc.create;
