@@ -35,7 +35,7 @@ export class AssessmentResultsDialog {
 	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string) {
 		this._model = model;
 		let assessmentData = this.parseData(this._model);
-		this._tree = new SqlDatabaseTree(assessmentData);
+		this._tree = new SqlDatabaseTree(this._model, assessmentData);
 		// this._list = new SqlAssessmentResultList();
 	}
 
@@ -43,7 +43,7 @@ export class AssessmentResultsDialog {
 		return new Promise<void>((resolve, reject) => {
 			dialog.registerContent(async (view) => {
 				try {
-					// const resultComponent = await this._tree.createComponentResult(view);
+					const resultComponent = await this._tree.createComponentResult(view);
 					const treeComponent = await this._tree.createComponent(view);
 
 					const flex = view.modelBuilder.flexContainer().withLayout({
@@ -56,7 +56,7 @@ export class AssessmentResultsDialog {
 						}
 					}).component();
 					flex.addItem(treeComponent, { flex: '0 0 auto' });
-					// flex.addItem(resultComponent, { flex: '1 1 auto' });
+					flex.addItem(resultComponent, { flex: '1 1 auto' });
 
 					view.initializeModel(flex);
 					resolve();
@@ -104,18 +104,31 @@ export class AssessmentResultsDialog {
 				impactedObjects: element.impactedObjects,
 				rowNumber: 0
 			};
-			let dbIssues = dbMap.get(element.targetName);
-			if (dbIssues) {
-				dbMap.set(element.targetName, dbIssues.concat([issues]));
+			if (element.targetName.includes(':')) {
+				let spliceIndex = element.targetName.indexOf(':');
+				let dbName = element.targetName.slice(spliceIndex + 1);
+				let dbIssues = dbMap.get(element.targetName);
+				if (dbIssues) {
+					dbMap.set(dbName, dbIssues.concat([issues]));
+				} else {
+					dbMap.set(dbName, [issues]);
+				}
 			} else {
-				dbMap.set(element.targetName, [issues]);
+				let dbIssues = dbMap.get(element.targetName);
+				if (dbIssues) {
+					dbMap.set(element.targetName, dbIssues.concat([issues]));
+				} else {
+					dbMap.set(element.targetName, [issues]);
+				}
 			}
+
 		});
 
 		return dbMap;
 	}
 
 	protected async execute() {
+		this.model._migrationDbs = this._tree.selectedDbs();
 		this._isOpen = false;
 	}
 
