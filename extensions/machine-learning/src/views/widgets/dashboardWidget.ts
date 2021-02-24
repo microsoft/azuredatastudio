@@ -14,7 +14,7 @@ interface IActionMetadata {
 	title?: string,
 	description?: string,
 	link?: string,
-	iconPath?: azdata.IconPath,
+	iconPath?: azdata.ThemedIconPath,
 	command?: string
 }
 
