@@ -244,7 +244,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		]).component();
 	}
 
-	private initializeConfigurationBoxes() {
+	private initializeConfigurationBoxes(): void {
 		this.workerBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			validationErrorMessage: loc.workerValidationErrorMessage,
@@ -465,7 +465,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}
 
 		return [
-			this.createCoresMemorySection(loc.configurationCoordinatorNode, loc.coordinatorNodeConfigurationInformation),
+			this.createCoresMemorySection(loc.configuration, loc.coordinatorNodeConfigurationInformation),
 			this.createConfigurationSectionContainer(loc.coresRequest, this.coordinatorCoresRequestBox!),
 			this.createConfigurationSectionContainer(loc.coresLimit, this.coordinatorCoresLimitBox!),
 			this.createConfigurationSectionContainer(loc.memoryRequest, this.coordinatorMemoryRequestBox!),
@@ -519,7 +519,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}
 	}
 
-	private editWorkerNodeCount() {
+	private editWorkerNodeCount(): void {
 		// scale.shards was renamed to scale.workers. Check both for backwards compatibility.
 		let scale = this._postgresModel.config?.spec.scale;
 		let currentWorkers = scale?.workers ?? scale?.shards ?? 0;
@@ -564,7 +564,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		return configurationSection;
 	}
 
-	private editWorkerCores() {
+	private editWorkerCores(): void {
 		let currentCPUSize = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
 
 		if (!currentCPUSize) {
@@ -588,7 +588,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.saveWorkerArgs.coresLimit = undefined;
 	}
 
-	private editCoordinatorCores() {
+	private editCoordinatorCores(): void {
 		// TODO get current cpu size for coordinator
 		let currentCPUSize = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
 
@@ -614,7 +614,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.saveCoordinatorArgs.coresLimit = undefined;
 	}
 
-	private editWorkerMemory() {
+	private editWorkerMemory(): void {
 		let currentMemSizeConversion: string;
 		let currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
 
@@ -643,7 +643,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.saveWorkerArgs.memoryLimit = undefined;
 	}
 
-	private editCoordinatorMemory() {
+	private editCoordinatorMemory(): void {
 		let currentMemSizeConversion: string;
 		// TODO get current memory size for coordinator
 		let currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
@@ -674,7 +674,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.saveCoordinatorArgs.memoryLimit = undefined;
 	}
 
-	private handleServiceUpdated() {
+	private handleServiceUpdated(): void {
 		this.editWorkerNodeCount();
 		this.editWorkerCores();
 		this.editWorkerMemory();
