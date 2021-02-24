@@ -58,7 +58,7 @@ export class PostgresCoordinatorNodeParametersPage extends DashboardPage {
 	}
 
 	protected get icon(): { dark: string; light: string; } {
-		return IconPathHelper.gear;
+		return IconPathHelper.gearBlack;
 	}
 
 	protected get container(): azdata.Component {
@@ -162,12 +162,14 @@ export class PostgresCoordinatorNodeParametersPage extends DashboardPage {
 								});
 								const session = await this._postgresModel.controllerModel.acquireAzdataSession();
 								try {
-									await this._azdataApi.azdata.arc.postgres.server.edit(
-										this._postgresModel.info.name,
-										{ engineSettings: engineSettings.toString() },
-										this._postgresModel.engineVersion,
-										this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-										session);
+									/* TODO add correct azdata call for editing coordinator parameters
+										await this._azdataApi.azdata.arc.postgres.server.edit(
+											this._postgresModel.info.name,
+											{ engineSettings: engineSettings.toString() },
+											this._postgresModel.engineVersion,
+											this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+											session);
+									*/
 								} finally {
 									session.dispose();
 								}
@@ -239,12 +241,14 @@ export class PostgresCoordinatorNodeParametersPage extends DashboardPage {
 							let session: azdataExt.AzdataSession | undefined = undefined;
 							try {
 								session = await this._postgresModel.controllerModel.acquireAzdataSession();
-								await this._azdataApi.azdata.arc.postgres.server.edit(
-									this._postgresModel.info.name,
-									{ engineSettings: `''`, replaceEngineSettings: true },
-									this._postgresModel.engineVersion,
-									this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-									session);
+								/* TODO add correct azdata call for editing coordinator parameters
+									await this._azdataApi.azdata.arc.postgres.server.edit(
+										this._postgresModel.info.name,
+										{ engineSettings: `''`, replaceEngineSettings: true },
+										this._postgresModel.engineVersion,
+										this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+										session);
+								*/
 							} catch (err) {
 								// If an error occurs while resetting the instance then re-enable the reset button since
 								// the edit wasn't successfully applied
@@ -540,12 +544,14 @@ export class PostgresCoordinatorNodeParametersPage extends DashboardPage {
 						async (_progress, _token): Promise<void> => {
 							const session = await this._postgresModel.controllerModel.acquireAzdataSession();
 							try {
-								await this._azdataApi.azdata.arc.postgres.server.edit(
-									this._postgresModel.info.name,
-									{ engineSettings: engineSetting.parameterName + '=' },
-									this._postgresModel.engineVersion,
-									this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-									session);
+								/* TODO add correct azdata call for editing coordinator parameters
+									await this._azdataApi.azdata.arc.postgres.server.edit(
+										this._postgresModel.info.name,
+										{ engineSettings: engineSetting.parameterName + '=' },
+										this._postgresModel.engineVersion,
+										this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+										session);
+								*/
 							} finally {
 								session.dispose();
 							}
