@@ -44,8 +44,6 @@ import { CATEGORIES } from 'vs/workbench/common/actions';
 import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
 import { StringSHA1 } from 'vs/base/common/hash';
 
-import { AccountsActionViewItem } from 'sql/workbench/browser/parts/activitybar/activitybarActions'; // {{ SQL CARBON EDIT }} - use the ADS account management action
-
 interface IPlaceholderViewContainer {
 	readonly id: string;
 	readonly name?: string;
@@ -178,6 +176,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 						tooltip: localize('homeButton', "Home Button"),
 						checked: this.homeBarVisibilityPreference,
 						enabled: true,
+						expanded: false,
 						run: async () => this.homeBarVisibilityPreference = !this.homeBarVisibilityPreference,
 						dispose: () => { }
 					});
@@ -193,6 +192,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 						tooltip: localize('menu', "Menu"),
 						checked: menuBarVisibility === 'compact',
 						enabled: true,
+						expanded: false,
 						run: async () => this.layoutService.toggleMenuBar(),
 						dispose: () => { }
 					});
@@ -211,6 +211,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 					tooltip: localize('accounts', "Accounts"),
 					checked: this.accountsVisibilityPreference,
 					enabled: true,
+					expanded: false,
 					run: async () => this.accountsVisibilityPreference = !this.accountsVisibilityPreference,
 					dispose: () => { }
 				});

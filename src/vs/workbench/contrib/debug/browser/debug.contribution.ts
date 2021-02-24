@@ -372,14 +372,13 @@ function registerDebugView(): void {
 			id: VIEWLET_ID,
 			mnemonicTitle: nls.localize({ key: 'miViewRun', comment: ['&& denotes a mnemonic'] }, "&&Run"),
 			keybindings: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_D },
-			order: 3
+			order: 13
 		},
 		ctorDescriptor: new SyncDescriptor(DebugViewPaneContainer),
 		icon: icons.runViewIcon,
 		alwaysUseContainerInfo: true,
 		order: 13 // {{SQL CARBON EDIT}}
 	}, ViewContainerLocation.Sidebar);
-	registry.registerWorkbenchAction(SyncActionDescriptor.from(OpenDebugViewletAction, { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_D }), 'View: Show Run and Debug', CATEGORIES.View.value);
 
 	// Register default debug views
 	const viewsRegistry = Registry.as<IViewsRegistry>(ViewExtensions.ViewsRegistry);

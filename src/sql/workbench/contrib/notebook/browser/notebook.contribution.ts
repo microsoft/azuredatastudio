@@ -46,7 +46,6 @@ import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } fr
 import { NotebookThemingContribution } from 'sql/workbench/contrib/notebook/browser/notebookThemingContribution';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { ToggleTabFocusModeAction } from 'vs/editor/contrib/toggleTabFocusMode/toggleTabFocusMode';
-import { NotebookExplorerViewletViewsContribution, OpenNotebookExplorerViewletAction } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import 'vs/css!./media/notebook.contribution';
 import { isMacintosh } from 'vs/base/common/platform';
 import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
@@ -378,19 +377,6 @@ registerComponentType({
 	selector: MimeRendererComponent.SELECTOR
 });
 registerCellComponent(TextCellComponent);
-
-const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
-workbenchRegistry.registerWorkbenchContribution(NotebookExplorerViewletViewsContribution, LifecyclePhase.Starting);
-const registry = Registry.as<IWorkbenchActionRegistry>(WorkbenchActionsExtensions.WorkbenchActions);
-registry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		OpenNotebookExplorerViewletAction,
-		OpenNotebookExplorerViewletAction.ID,
-		OpenNotebookExplorerViewletAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_B }),
-	'View: Show Notebook Explorer',
-	localize('notebookExplorer.view', "View")
-);
 
 // Configuration
 configurationRegistry.registerConfiguration({

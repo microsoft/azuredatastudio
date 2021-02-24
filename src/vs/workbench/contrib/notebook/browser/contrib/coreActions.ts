@@ -554,11 +554,11 @@ registerAction2(class extends NotebookAction {
 		const editorService = accessor.get(IEditorService);
 		const editor = getActiveNotebookEditor(editorService);
 		if (!editor) {
-			return;
+			return undefined;
 		}
 
 		if (!editor.hasModel()) {
-			return;
+			return undefined;
 		}
 
 		const activeCell = editor.getActiveCell();
@@ -629,11 +629,11 @@ registerAction2(class extends NotebookAction {
 		const editorService = accessor.get(IEditorService);
 		const editor = getActiveNotebookEditor(editorService);
 		if (!editor) {
-			return;
+			return undefined;
 		}
 
 		if (!editor.hasModel()) {
-			return;
+			return undefined;
 		}
 
 		const activeCell = editor.getActiveCell();

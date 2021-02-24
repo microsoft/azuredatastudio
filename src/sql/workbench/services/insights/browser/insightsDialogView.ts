@@ -62,7 +62,7 @@ export class InsightsDetailPaneContainer extends ViewPaneContainer { }
 
 export const INSIGHTS_DETAIL_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
-	name: nls.localize('insightsDetailView.name', "Insight Details"),
+	title: nls.localize('insightsDetailView.name', "Insight Details"),
 	ctorDescriptor: new SyncDescriptor(InsightsDetailPaneContainer),
 	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Dialog);

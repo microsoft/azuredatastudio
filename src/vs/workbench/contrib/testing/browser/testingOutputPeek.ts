@@ -133,7 +133,7 @@ export class TestingOutputPeekController extends Disposable implements IEditorCo
 
 		const test = await this.testService.lookupTest({ providerId: parts.providerId, testId: parts.testId });
 		if (!test) {
-			return;
+			return undefined;
 		}
 
 		return {

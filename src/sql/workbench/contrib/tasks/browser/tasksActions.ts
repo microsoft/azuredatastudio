@@ -5,7 +5,7 @@
 
 import { localize } from 'vs/nls';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-import { ToggleViewAction } from 'vs/workbench/browser/actions/layoutActions';
+import { ToggleViewAction } from 'sql/workbench/browser/actions/layoutActions';
 import { IViewsService, IViewDescriptorService } from 'vs/workbench/common/views';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { TASKS_VIEW_ID } from 'sql/workbench/contrib/tasks/common/tasks';

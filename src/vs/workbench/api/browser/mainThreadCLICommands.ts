@@ -45,7 +45,7 @@ CommandsRegistry.registerCommand('_remoteCLI.manageExtensions', async function (
 	const extensionManagementServerService = accessor.get(IExtensionManagementServerService);
 	const remoteExtensionManagementService = extensionManagementServerService.remoteExtensionManagementServer?.extensionManagementService;
 	if (!remoteExtensionManagementService) {
-		return;
+		return undefined;
 	}
 
 	const cliService = instantiationService.createChild(new ServiceCollection([IExtensionManagementService, remoteExtensionManagementService])).createInstance(RemoteExtensionCLIManagementService);

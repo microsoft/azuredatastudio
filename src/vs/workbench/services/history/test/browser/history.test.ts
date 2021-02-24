@@ -17,32 +17,32 @@ import { DisposableStore } from 'vs/base/common/lifecycle';
 import { IHistoryService } from 'vs/workbench/services/history/common/history';
 import { timeout } from 'vs/base/common/async';
 
-const TEST_EDITOR_ID = 'MyTestEditorForEditorHistory';
-const TEST_EDITOR_INPUT_ID = 'testEditorInputForHistoyService';
+suite.skip('HistoryService', function () {
 
-async function createServices(): Promise<[EditorPart, HistoryService, EditorService]> {
-	const instantiationService = workbenchInstantiationService();
+	const TEST_EDITOR_ID = 'MyTestEditorForEditorHistory';
+	const TEST_EDITOR_INPUT_ID = 'testEditorInputForHistoyService';
 
-	const part = instantiationService.createInstance(EditorPart);
-	part.create(document.createElement('div'));
-	part.layout(400, 300);
+	async function createServices(): Promise<[EditorPart, HistoryService, EditorService]> {
+		const instantiationService = workbenchInstantiationService();
 
-	await part.whenRestored;
+		const part = disposables.add(instantiationService.createInstance(EditorPart));
+		part.create(document.createElement('div'));
+		part.layout(400, 300);
 
-	instantiationService.stub(IEditorGroupsService, part);
+		await part.whenRestored;
 
-	const editorService = instantiationService.createInstance(EditorService);
-	instantiationService.stub(IEditorService, editorService);
+		instantiationService.stub(IEditorGroupsService, part);
 
-	const historyService = instantiationService.createInstance(HistoryService);
-	instantiationService.stub(IHistoryService, historyService);
+		const editorService = instantiationService.createInstance(EditorService);
+		instantiationService.stub(IEditorService, editorService);
 
-	return [part, historyService, editorService];
-}
+		const historyService = instantiationService.createInstance(HistoryService);
+		instantiationService.stub(IHistoryService, historyService);
 
-suite.skip('HistoryService', function () { // {{SQL CARBON EDIT}} TODO @anthonydresser these tests are failing due to tabColorMode, should investigate and fix
+		return [part, historyService, editorService];
+	}
 
-	let disposables: IDisposable[] = [];
+	const disposables = new DisposableStore();
 
 	setup(() => {
 		disposables.add(registerTestEditor(TEST_EDITOR_ID, [new SyncDescriptor(TestFileEditorInput)]));

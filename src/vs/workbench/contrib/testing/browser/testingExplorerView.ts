@@ -386,7 +386,7 @@ export class TestingExplorerViewModel extends Disposable {
 
 		const index = item.test.item.state.messages.findIndex(m => !!m.location);
 		if (index === -1) {
-			return;
+			return undefined;
 		}
 
 		const message = item.test.item.state.messages[index];

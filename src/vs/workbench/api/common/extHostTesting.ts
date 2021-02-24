@@ -258,12 +258,12 @@ export class ExtHostTesting implements ExtHostTestingShape {
 
 	private createDefaultDocumentTestHierarchy(provider: vscode.TestProvider, document: vscode.TextDocument, folder: vscode.WorkspaceFolder | undefined): vscode.TestHierarchy<vscode.TestItem> | undefined {
 		if (!folder) {
-			return;
+			return undefined;
 		}
 
 		const workspaceHierarchy = provider.createWorkspaceTestHierarchy?.(folder);
 		if (!workspaceHierarchy) {
-			return;
+			return undefined;
 		}
 
 		const onDidChangeTest = new Emitter<vscode.TestItem>();

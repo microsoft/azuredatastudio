@@ -13,12 +13,12 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { MockScopableContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 
-const TEST_EDITOR_ID = 'MyFileEditorForEditorGroupService';
-const TEST_EDITOR_INPUT_ID = 'testEditorInputForEditorGroupService';
+suite.skip('EditorGroupsService', () => {
 
-suite.skip('EditorGroupsService', () => { // {{SQL CARBON EDIT}} skip suite
+	const TEST_EDITOR_ID = 'MyFileEditorForEditorGroupService';
+	const TEST_EDITOR_INPUT_ID = 'testEditorInputForEditorGroupService';
 
-	let disposables: IDisposable[] = [];
+	const disposables = new DisposableStore();
 
 	setup(() => {
 		disposables.add(registerTestEditor(TEST_EDITOR_ID, [new SyncDescriptor(TestFileEditorInput)], TEST_EDITOR_INPUT_ID));

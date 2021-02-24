@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { URI } from 'vs/base/common/uri';
-import { IOpenerService, IOpener, IValidator, IExternalUriResolver, IExternalOpener, ResolveExternalUriOptions, IResolvedExternalUri, IExternalOpenerProvider } from 'vs/platform/opener/common/opener';
+import { IOpenerService, IOpener, IValidator, IExternalUriResolver, IExternalOpener, ResolveExternalUriOptions, IResolvedExternalUri } from 'vs/platform/opener/common/opener';
+import { IExternalOpenerProvider } from 'vs/workbench/contrib/externalUriOpener/common/externalUriOpenerService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 
@@ -29,6 +30,9 @@ export class OpenerServiceStub implements IOpenerService {
 		throw new Error('Method not implemented.');
 	}
 	registerExternalOpenerProvider(provider: IExternalOpenerProvider): IDisposable {
+		throw new Error('Method not implemented.');
+	}
+	registerExternalOpener(opener: IExternalOpener): IDisposable {
 		throw new Error('Method not implemented.');
 	}
 }

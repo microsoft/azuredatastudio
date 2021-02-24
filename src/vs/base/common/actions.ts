@@ -317,6 +317,8 @@ export function toAction(props: { id: string, label: string, enabled?: boolean, 
 		id: props.id,
 		label: props.label,
 		class: undefined,
+		// {{SQL CARBON EDIT}} - add expanded type
+		expanded: false,
 		enabled: props.enabled ?? true,
 		checked: props.checked ?? false,
 		run: async () => props.run(),

@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./menuEntryActionViewItem';
-import { asCSSUrl, ModifierKeyEmitter } from 'vs/base/browser/dom';
+import { asCSSUrl, createCSSRule, ModifierKeyEmitter } from 'vs/base/browser/dom';
 import { domEvent } from 'vs/base/browser/event';
 import { IAction, Separator } from 'vs/base/common/actions';
-import { IDisposable, toDisposable, MutableDisposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { IdGenerator } from 'vs/base/common/idGenerator'; // {{SQL CARBON EDIT}}
+import { IDisposable, toDisposable, MutableDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle'; // {{SQL CARBON EDIT}}
 import { localize } from 'vs/nls';
 import { ICommandAction, IMenu, IMenuActionOptions, MenuItemAction, SubmenuItemAction, Icon } from 'vs/platform/actions/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -66,6 +67,10 @@ export function fillInActions(groups: ReadonlyArray<[string, ReadonlyArray<MenuI
 		}
 	}
 }
+
+const ids = new IdGenerator('menu-item-action-item-icon-'); // {{SQL CARBON EDIT}} - add back since custom toolbar menu is using below
+
+const ICON_PATH_TO_CSS_RULES = new Map<string /* path*/, string /* CSS rule */>(); // {{SQL CARBON EDIT}} - add back since custom toolbar menu is using below
 
 export class MenuEntryActionViewItem extends ActionViewItem {
 

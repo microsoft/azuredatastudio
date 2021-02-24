@@ -24,7 +24,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { OpenerServiceStub } from 'sql/platform/opener/common/openerServiceStub';
+import { OpenerServiceStub } from 'sql/workbench/contrib/opener/common/openerServiceStub';
 import { SqlAssessmentTargetType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestFileService, TestEnvironmentService, TestFileDialogService } from 'vs/workbench/test/browser/workbenchTestServices';

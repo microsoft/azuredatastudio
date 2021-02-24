@@ -104,7 +104,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 			group: '5.1_installExtension',
 			command: {
 				id: InstallVSIXAction.ID,
-				title: nls.localize({ key: 'miinstallVsix', comment: ['&& denotes a mnemonic'] }, "Install Extension from VSIX Package")
+				title: localize({ key: 'miinstallVsix', comment: ['&& denotes a mnemonic'] }, "Install Extension from VSIX Package")
 			}
 		});
 	}

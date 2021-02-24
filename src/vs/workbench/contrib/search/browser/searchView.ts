@@ -105,9 +105,9 @@ export class SearchView extends ViewPane {
 	private matchFocused: IContextKey<boolean>;
 	protected hasSearchResultsKey: IContextKey<boolean>; // {{SQL CARBON EDIT}}
 	private lastFocusState: 'input' | 'tree' = 'input';
-        
+
 	// {{SQL CARBON EDIT}}
-	protected state: SearchUIState = SearchUIState.Idle;
+	protected searchStateKey: IContextKey<SearchUIState>;
 	protected hasSearchPatternKey: IContextKey<boolean>;
 	protected hasReplacePatternKey: IContextKey<boolean>;
 	protected hasFilePatternKey: IContextKey<boolean>;
@@ -133,7 +133,6 @@ export class SearchView extends ViewPane {
 
 	private delayedRefresh: Delayer<void>;
 	private changedWhileHidden: boolean = false;
-	private updatedActionsWhileHidden = false;
 
 	protected searchWithoutFolderMessageElement: HTMLElement | undefined; // {{SQL CARBON EDIT}}
 
@@ -235,11 +234,13 @@ export class SearchView extends ViewPane {
 		this.treeAccessibilityProvider = this.instantiationService.createInstance(SearchAccessibilityProvider, this.viewModel);
 	}
 
-	private get state(): SearchUIState {
+	// {{SQL CARBON EDIT}}
+	protected get state(): SearchUIState {
 		return this.searchStateKey.get() ?? SearchUIState.Idle;
 	}
 
-	private set state(v: SearchUIState) {
+	// {{SQL CARBON EDIT}}
+	protected set state(v: SearchUIState) {
 		this.searchStateKey.set(v);
 	}
 
@@ -1626,7 +1627,7 @@ export class SearchView extends ViewPane {
 
 			this.messageDisposables.push(dom.addDisposableListener(openInEditorLink, dom.EventType.CLICK, (e: MouseEvent) => {
 				dom.EventHelper.stop(e, false);
-				this.instantiationService.invokeFunction(createEditorFromSearchResult, this.searchResult, this.searchIncludePattern.getValue(), this.searchExcludePattern.getValue());
+				this.instantiationService.invokeFunction(createEditorFromSearchResult, this.searchResult, this.searchIncludePattern.getValue(), this.searchExcludePattern.getValue(), this.searchIncludePattern.onlySearchInOpenEditors());
 			}));
 
 			this.reLayout();

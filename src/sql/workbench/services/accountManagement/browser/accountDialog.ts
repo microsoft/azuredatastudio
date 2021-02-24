@@ -54,7 +54,7 @@ export class AccountPaneContainer extends ViewPaneContainer {
 
 export const ACCOUNT_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
-	name: localize('accountExplorer.name', "Accounts"),
+	title: localize('accountExplorer.name', "Accounts"),
 	ctorDescriptor: new SyncDescriptor(AccountPaneContainer),
 	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Dialog);

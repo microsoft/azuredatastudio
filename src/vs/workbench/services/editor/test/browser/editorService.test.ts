@@ -9,20 +9,19 @@ import { URI } from 'vs/base/common/uri';
 import { Event } from 'vs/base/common/event';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { EditorInput, EditorsOrder, SideBySideEditorInput } from 'vs/workbench/common/editor';
-import { workbenchInstantiationService, TestServiceAccessor, registerTestEditor, TestFileEditorInput, ITestInstantiationService, registerTestResourceEditor, registerTestSideBySideEditor } from 'vs/workbench/test/browser/workbenchTestServices';
+import { workbenchInstantiationService, TestServiceAccessor, TestFileEditorInput, ITestInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { EditorService, DelegatingEditorService } from 'vs/workbench/services/editor/browser/editorService';
 import { IEditorGroup, IEditorGroupsService, GroupDirection, GroupsArrangement } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { EditorPart } from 'vs/workbench/browser/parts/editor/editorPart';
 import { IEditorService, SIDE_GROUP } from 'vs/workbench/services/editor/common/editorService';
-import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { timeout } from 'vs/base/common/async';
 import { toResource } from 'vs/base/test/common/utils';
 import { IFileService, FileOperationEvent, FileOperation } from 'vs/platform/files/common/files';
-import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { ModesRegistry } from 'vs/editor/common/modes/modesRegistry';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { NullFileSystemProvider } from 'vs/platform/files/test/common/nullFileSystemProvider';
@@ -44,20 +43,9 @@ class FileServiceProvider extends Disposable {
 
 suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} skip suite
 
-	let disposables: IDisposable[] = [];
-
-	setup(() => {
-		disposables.add(registerTestEditor(TEST_EDITOR_ID, [new SyncDescriptor(TestFileEditorInput)], TEST_EDITOR_INPUT_ID));
-		disposables.add(registerTestResourceEditor());
-		disposables.add(registerTestSideBySideEditor());
-	});
-
-	teardown(() => {
-		disposables.clear();
-	});
 
 	function createEditorService(instantiationService: ITestInstantiationService = workbenchInstantiationService()): [EditorPart, EditorService, TestServiceAccessor] {
-		const part = disposables.add(instantiationService.createInstance(EditorPart));
+		const part = instantiationService.createInstance(EditorPart);
 		part.create(document.createElement('div'));
 		part.layout(400, 300);
 

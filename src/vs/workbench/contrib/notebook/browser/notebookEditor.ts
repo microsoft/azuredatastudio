@@ -131,7 +131,7 @@ export class NotebookEditor extends EditorPane {
 		const activeElement = document.activeElement;
 		const value = this._widget.value;
 
-		return !!value && (DOM.isAncestor(activeElement, value.getDomNode() || DOM.isAncestor(activeElement, value.getOverflowContainerDomNode())));
+		return !!value && (DOM.isAncestor(activeElement, <any>(value.getDomNode() || DOM.isAncestor(activeElement, value.getOverflowContainerDomNode()))));
 	}
 
 	async setInput(input: NotebookEditorInput, options: EditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {

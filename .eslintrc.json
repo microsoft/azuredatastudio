@@ -98,7 +98,7 @@
                 "target": "**/{vs,sql}/base/common/**",
                 "restrictions": [
                     "vs/nls",
-				"restrictions": ["vs/nls", "**/vs/base/common/**"]
+                    "**/{vs,sql}/base/common/**"
                 ]
             },
             {
@@ -481,7 +481,7 @@
                     "vscode",
                     "azdata",
                     "vs/nls",
-				"restrictions": ["vscode", "vs/nls", "**/vs/**/{common,worker}/**"]
+                    "**/{vs,sql}/**/{common,worker}/**"
                 ]
             },
             {
@@ -952,13 +952,6 @@
                 ]
             },
             {
-				"restrictions": ["**/vs/**", "assert", "sinon", "crypto", "vscode"]
-					"**/vs/**",
-					"assert",
-					"sinon",
-					"crypto",
-					"vscode"
-				]
                 "target": "**/{node,electron-browser,electron-main}/**/*.test.ts",
                 "restrictions": [
                     "**/{vs,sql}/**",
@@ -982,16 +975,19 @@
             {
                 "target": "**/**.test.ts",
                 "restrictions": [
+                    "**/{vs,sql}/**",
 					"assert",
 					"typemoq",
                     "sinon",
                     "crypto",
+					"xterm*",
 					"azdata"
                 ]
             },
             {
                 "target": "**/test/**",
                 "restrictions": [
+                    "**/{vs,sql}/**",
                     "assert",
 					"typemoq",
                     "sinon",
@@ -1029,8 +1025,6 @@
                 "vscode-dts-create-func": "warn",
                 "vscode-dts-literal-or-types": "warn",
                 "vscode-dts-interface-naming": "warn",
-				"vscode-dts-use-thenable": "warn",
-				"vscode-dts-region-comments": "warn",
                 "vscode-dts-event-naming": [
                     "warn",
                     {
@@ -1038,10 +1032,6 @@
                             "onCancellationRequested",
                             "event"
                         ],
-						"allowed": [
-						"allowed": ["onCancellationRequested", "event"],
-							"event"
-						],
                         "verbs": [
                             "accept",
                             "change",
