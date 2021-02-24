@@ -91,7 +91,8 @@ export class ConnectionStore {
 				});
 		} else if (credentialsItem.authenticationType === 'AzureMFA' || credentialsItem.authenticationType === 'dstsAuth' && credentialsItem.azureAccount) {
 			return Promise.resolve({ profile: credentialsItem, savedCred: true });
-		} else if (credentialsItem.authenticationType === 'NoAuth') {
+		} else if (credentialsItem.authenticationType === 'None') {
+			// Kusto supports no authentication
 			return Promise.resolve({ profile: credentialsItem, savedCred: true });
 		} else {
 			// No need to look up the password

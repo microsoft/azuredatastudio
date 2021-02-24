@@ -293,8 +293,12 @@
               "name": "AzureMFA"
             },
             {
-              "displayName": "%kusto.connectionOptions.authType.categoryValues.noAuth%",
-              "name": "NoAuth"
+              "displayName": "%kusto.connectionOptions.authType.categoryValues.none%",
+              "name": "None"
+            },
+            {
+              "displayName": "%kusto.connectionOptions.authType.categoryValues.sqlLogin%",
+              "name": "SqlLogin"
             }
           ],
           "isRequired": true,

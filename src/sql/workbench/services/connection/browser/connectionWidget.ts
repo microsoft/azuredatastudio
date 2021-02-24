@@ -43,7 +43,7 @@ export enum AuthenticationType {
 	AzureMFA = 'AzureMFA',
 	AzureMFAAndUser = 'AzureMFAAndUser',
 	dSTSAuth = 'dstsAuth',
-	NoAuth = 'NoAuth'
+	None = 'None' // Kusto supports no authentication
 }
 
 export class ConnectionWidget extends lifecycle.Disposable {
@@ -79,7 +79,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _databaseNameInputBox: Dropdown;
 	protected _advancedButton: Button;
 	private static readonly _authTypes: AuthenticationType[] =
-		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.dSTSAuth, AuthenticationType.NoAuth];
+		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.dSTSAuth, AuthenticationType.None];
 	private static readonly _osByName = {
 		Windows: OperatingSystem.Windows,
 		Macintosh: OperatingSystem.Macintosh,
@@ -524,7 +524,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._tableContainer.classList.add('hide-username');
 			this._tableContainer.classList.add('hide-password');
 			this._tableContainer.classList.add('hide-azure-accounts');
-		} else if (currentAuthType === AuthenticationType.NoAuth) {
+		} else if (currentAuthType === AuthenticationType.None) {
 			this._azureAccountDropdown.disable();
 			this._azureAccountDropdown.hideMessage();
 			this._azureTenantDropdown.disable();
