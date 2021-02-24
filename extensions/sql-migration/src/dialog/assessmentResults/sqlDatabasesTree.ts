@@ -694,4 +694,16 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 		return this._assessmentResultsTable.component();
 	}
+
+	public selectedDbs(): string[] {
+		let result: string[] = [];
+
+		this.databaseTable.component().dataValues?.forEach((arr) => {
+			if (arr[0].value === true) {
+				result.push(arr[1].value.toString());
+			}
+		});
+
+		return result;
+	}
 }

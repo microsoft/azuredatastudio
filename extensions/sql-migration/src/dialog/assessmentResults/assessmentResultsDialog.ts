@@ -128,6 +128,7 @@ export class AssessmentResultsDialog {
 	}
 
 	protected async execute() {
+		this.model._migrationDbs = this._tree.selectedDbs();
 		this._isOpen = false;
 	}
 
