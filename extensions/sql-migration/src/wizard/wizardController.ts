@@ -46,7 +46,6 @@ export class WizardController {
 		const pages: MigrationWizardPage[] = [
 			// subscriptionSelectionPage,
 			azureAccountsPage,
-			tempTargetSelectionPage,
 			// sourceConfigurationPage,
 			skuRecommendationPage,
 			databaseBackupPage,

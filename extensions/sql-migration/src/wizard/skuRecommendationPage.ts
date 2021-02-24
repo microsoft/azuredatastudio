@@ -226,7 +226,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._managedInstanceDropdown.loading = true;
 		let subscriptions: azureResource.AzureResourceSubscription[] = [];
 		try {
-			subscriptions = await getSubscriptions(this.migrationStateModel.azureAccount);
+			subscriptions = await getSubscriptions(this.migrationStateModel._azureAccount);
 			subscriptions.forEach((subscription) => {
 				this._subscriptionMap.set(subscription.id, subscription);
 				this._subscriptionDropdownValues.push({
@@ -260,7 +260,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		try {
 			const subscriptionId = (<azdata.CategoryValue>this._managedInstanceSubscriptionDropdown.value).name;
 
-			mis = await getAvailableManagedInstanceProducts(this.migrationStateModel.azureAccount, this._subscriptionMap.get(subscriptionId)!);
+			mis = await getAvailableManagedInstanceProducts(this.migrationStateModel._azureAccount, this._subscriptionMap.get(subscriptionId)!);
 			mis.forEach((mi) => {
 				miValues.push({
 					name: mi.name,
