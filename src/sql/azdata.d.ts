@@ -3180,7 +3180,8 @@ declare module 'azdata' {
 		CSSStyles?: { [key: string]: string };
 	}
 
-	export type IconPath = string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+	export type ThemedIconPath = { light: string | vscode.Uri; dark: string | vscode.Uri };
+	export type IconPath = string | vscode.Uri | ThemedIconPath;
 
 	export interface ComponentWithIcon {
 		/**
