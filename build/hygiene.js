@@ -34,6 +34,7 @@ const { all, copyrightFilter, indentationFilter, jsHygieneFilter, tsHygieneFilte
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
 	'!resources/linux/snap/electron-launch',
+	'!resources/xlf/LocProject.json', // {{SQL CARBON EDIT}}
 	'!build/**/*' // {{SQL CARBON EDIT}}
 	'!scripts/code-web.js',
 	'!resources/serverless/code-web.js',
