@@ -161,7 +161,7 @@ export class ExtHostTask extends ExtHostTaskBase {
 				paths
 			);
 		}
-		return result;*/ // {{ SQL CARBON EDIT }}
+		return result;*/ // {{SQL CARBON EDIT}}
 		return undefined;
 	}
 
