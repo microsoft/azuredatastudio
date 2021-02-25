@@ -221,14 +221,22 @@ export class BookTocManager implements IBookTocManager {
 	/**
 	 * Follows the same logic as the JupyterBooksCreate.ipynb. It receives a path that contains a notebooks and
 	 * a path where it creates the book. It copies the contents from one folder to another and creates a table of contents.
-	 * @param bookContentPath The path to the book folder, the basename of the path is the name of the book
-	 * @param contentFolder The path to the folder that contains the notebooks and markdown files to be added to the created book.
+	 * @param bookContentPath - The path to the book folder, the basename of the path is the name of the book
+	 * @param contentFolder - (Optional) The path to the folder that contains the notebooks and markdown files to be added to the created book.
+	 * If it's undefined then a blank notebook is attached to the book.
 	*/
-	public async createBook(bookContentPath: string, contentFolder: string): Promise<void> {
-		await fs.promises.mkdir(bookContentPath);
-		await fs.copy(contentFolder, bookContentPath);
-		let filesinDir = await fs.readdir(bookContentPath);
-		this.tableofContents = await this.getAllFiles([], bookContentPath, filesinDir, bookContentPath);
+	public async createBook(bookContentPath: string, contentFolder?: string): Promise<void> {
+		let filesinDir: string[];
+		await fs.promises.mkdir(bookContentPath, { recursive: true });
+		if (contentFolder) {
+			await fs.copy(contentFolder, bookContentPath);
+			filesinDir = await fs.readdir(bookContentPath);
+			this.tableofContents = await this.getAllFiles([], bookContentPath, filesinDir, bookContentPath);
+		} else {
+			await fs.writeFile(path.join(bookContentPath, 'README.md'), '');
+			filesinDir = ['readme.md'];
+			this.tableofContents = await this.getAllFiles([], bookContentPath, filesinDir, bookContentPath);
+		}
 		await fs.writeFile(path.join(bookContentPath, '_config.yml'), yaml.safeDump({ title: path.basename(bookContentPath) }));
 		await fs.writeFile(path.join(bookContentPath, '_toc.yml'), yaml.safeDump(this.tableofContents, { lineWidth: Infinity }));
 		await vscode.commands.executeCommand('notebook.command.openNotebookFolder', bookContentPath, undefined, true);

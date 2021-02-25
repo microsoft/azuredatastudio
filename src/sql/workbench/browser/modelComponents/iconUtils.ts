@@ -9,7 +9,7 @@ import { URI } from 'vs/base/common/uri';
 
 const ids = new IdGenerator('model-view-component-icon-');
 
-export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
+export type IconPath = string | URI | { light: string | URI; dark: string | URI };
 
 /**
  * Create a CSS class for the specified icon, if a class with the name already exists, it will be deleted first.
@@ -17,7 +17,7 @@ export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: stri
  * @param className optional, the class name you want to reuse.
  * @returns the CSS class name
  */
-export function createIconCssClass(iconPath: IUserFriendlyIcon, className?: string): string {
+export function createIconCssClass(iconPath: IconPath, className?: string): string {
 	let iconClass = className;
 	if (!iconClass) {
 		iconClass = ids.nextId();
@@ -30,7 +30,7 @@ export function createIconCssClass(iconPath: IUserFriendlyIcon, className?: stri
 	return iconClass;
 }
 
-function getLightIconUri(iconPath: IUserFriendlyIcon): URI {
+function getLightIconUri(iconPath: IconPath): URI {
 	if (iconPath && iconPath['light']) {
 		return getIconUri(iconPath['light']);
 	} else {
@@ -38,7 +38,7 @@ function getLightIconUri(iconPath: IUserFriendlyIcon): URI {
 	}
 }
 
-function getDarkIconUri(iconPath: IUserFriendlyIcon): URI {
+function getDarkIconUri(iconPath: IconPath): URI {
 	if (iconPath && iconPath['dark']) {
 		return getIconUri(iconPath['dark']);
 	}
@@ -53,6 +53,6 @@ function getIconUri(iconPath: string | URI): URI {
 	}
 }
 
-export function getIconKey(iconPath: IUserFriendlyIcon): string {
+export function getIconKey(iconPath: IconPath): string {
 	return getLightIconUri(iconPath).toString(true) + getDarkIconUri(iconPath)?.toString(true);
 }

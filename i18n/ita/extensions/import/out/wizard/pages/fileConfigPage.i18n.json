@@ -11,6 +11,6 @@
 	"flatFileImport.browseFiles": "Sfoglia",
 	"flatFileImport.openFile": "Apri",
 	"flatFileImport.fileTextboxTitle": "Percorso del file da importare",
-	"flatFileImport.tableTextboxTitle": "Nuovo nome di tabella",
+	"flatFileImport.tableTextboxTitle": "Nuovo nome della tabella",
 	"flatFileImport.schemaTextboxTitle": "Schema della tabella"
 }

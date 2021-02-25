@@ -1641,7 +1641,7 @@ export class SearchView extends ViewPane {
 		this.openerService.open(URI.parse('https://go.microsoft.com/fwlink/?linkid=853977'));
 	};
 
-	protected updateSearchResultCount(disregardExcludesAndIgnores?: boolean): void { // {{SQL CARBON EDIT}}
+	protected updateSearchResultCount(disregardExcludesAndIgnores?: boolean, showOpenInEditor: boolean = true): void { // {{SQL CARBON EDIT}} - Hide Open in Editor in Notebooks viewlet
 		const fileCount = this.viewModel.searchResult.fileCount();
 		this.hasSearchResultsKey.set(fileCount > 0);
 
@@ -1656,18 +1656,25 @@ export class SearchView extends ViewPane {
 				resultMsg += nls.localize('useIgnoresAndExcludesDisabled', " - exclude settings and ignore files are disabled");
 			}
 
-			dom.append(messageEl, $('span', undefined, resultMsg + ' - '));
+			if (showOpenInEditor) { // {{SQL CARBON EDIT}} - Hide Open in Editor in Notebooks viewlet
+				dom.append(messageEl, $('span', undefined, resultMsg + ' - '));
+			} else {
+				dom.append(messageEl, $('span', undefined, resultMsg));
+			}
 			const span = dom.append(messageEl, $('span'));
-			const openInEditorLink = dom.append(span, $('a.pointer.prominent', undefined, nls.localize('openInEditor.message', "Open in editor")));
 
-			openInEditorLink.title = appendKeyBindingLabel(
-				nls.localize('openInEditor.tooltip', "Copy current search results to an editor"),
-				this.keybindingService.lookupKeybinding(Constants.OpenInEditorCommandId), this.keybindingService);
+			if (showOpenInEditor) { // {{SQL CARBON EDIT}} - Hide Open in Editor in Notebooks viewlet
+				const openInEditorLink = dom.append(span, $('a.pointer.prominent', undefined, nls.localize('openInEditor.message', "Open in editor")));
 
-			this.messageDisposables.push(dom.addDisposableListener(openInEditorLink, dom.EventType.CLICK, (e: MouseEvent) => {
-				dom.EventHelper.stop(e, false);
-				this.instantiationService.invokeFunction(createEditorFromSearchResult, this.searchResult, this.searchIncludePattern?.getValue(), this.searchExcludePattern?.getValue()); // {{SQL CARBON EDIT}}
-			}));
+				openInEditorLink.title = appendKeyBindingLabel(
+					nls.localize('openInEditor.tooltip', "Copy current search results to an editor"),
+					this.keybindingService.lookupKeybinding(Constants.OpenInEditorCommandId), this.keybindingService);
+
+				this.messageDisposables.push(dom.addDisposableListener(openInEditorLink, dom.EventType.CLICK, (e: MouseEvent) => {
+					dom.EventHelper.stop(e, false);
+					this.instantiationService.invokeFunction(createEditorFromSearchResult, this.searchResult, this.searchIncludePattern?.getValue(), this.searchExcludePattern?.getValue()); // {{SQL CARBON EDIT}}
+				}));
+			}
 
 			this.reLayout();
 		} else if (!msgWasHidden) {

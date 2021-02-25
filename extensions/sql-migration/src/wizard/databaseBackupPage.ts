@@ -128,8 +128,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}).component();
 		this._fileShareSubscriptionDropdown.onValueChanged(async (value) => {
 			if (value.selected) {
-				this.migrationStateModel.databaseBackup.subscription = this.migrationStateModel.getSubscription(value.index);
-				this.migrationStateModel._storageAccounts = undefined!;
+				this.migrationStateModel._databaseBackup.subscription = this.migrationStateModel.getSubscription(value.index);
+				this.migrationStateModel._databaseBackup.storageAccount = undefined!;
 				await this.loadFileShareStorageDropdown();
 			}
 		});
@@ -145,8 +145,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._fileShareStorageAccountDropdown.onValueChanged(async (value) => {
 			if (value.selected) {
-				this.migrationStateModel.databaseBackup.storageAccount = this.migrationStateModel.getStorageAccount(value.index);
-				this.migrationStateModel._fileShares = undefined!;
+				this.migrationStateModel._databaseBackup.storageAccount = this.migrationStateModel.getStorageAccount(value.index);
+				this.migrationStateModel._databaseBackup.fileShare = undefined!;
 				await this.loadFileShareDropdown();
 			}
 		});
@@ -162,7 +162,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._fileShareFileShareDropdown.onValueChanged((value) => {
 			if (value.selected) {
-				this.migrationStateModel.databaseBackup.fileShare = this.migrationStateModel.getFileShare(value.index);
+				this.migrationStateModel._databaseBackup.fileShare = this.migrationStateModel.getFileShare(value.index);
 			}
 		});
 
@@ -198,8 +198,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._blobContainerSubscriptionDropdown.onValueChanged(async (value) => {
 			if (value.selected) {
-				this.migrationStateModel.databaseBackup.subscription = this.migrationStateModel.getSubscription(value.index);
-				this.migrationStateModel._storageAccounts = undefined!;
+				this.migrationStateModel._databaseBackup.subscription = this.migrationStateModel.getSubscription(value.index);
+				this.migrationStateModel._databaseBackup.storageAccount = undefined!;
 				await this.loadblobStorageDropdown();
 			}
 		});
@@ -215,8 +215,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._blobContainerStorageAccountDropdown.onValueChanged(async (value) => {
 			if (value.selected) {
-				this.migrationStateModel.databaseBackup.storageAccount = this.migrationStateModel.getStorageAccount(value.index);
-				this.migrationStateModel._blobContainers = undefined!;
+				this.migrationStateModel._databaseBackup.storageAccount = this.migrationStateModel.getStorageAccount(value.index);
+				this.migrationStateModel._databaseBackup.blobContainer = undefined!;
 				await this.loadBlobContainerDropdown();
 			}
 		});
@@ -231,7 +231,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._blobContainerBlobDropdown.onValueChanged((value) => {
 			if (value.selected) {
-				this.migrationStateModel.databaseBackup.blobContainer = this.migrationStateModel.getBlobContainer(value.index);
+				this.migrationStateModel._databaseBackup.blobContainer = this.migrationStateModel.getBlobContainer(value.index);
 			}
 		});
 
@@ -272,7 +272,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				validationErrorMessage: constants.INVALID_NETWORK_SHARE_LOCATION
 			})
 			.withValidation((component) => {
-				if (this.migrationStateModel.databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
+				if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
 					if (component.value) {
 						if (!/(?<=\\\\)[^\\]*/.test(component.value)) {
 							return false;
@@ -282,7 +282,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				return true;
 			}).component();
 		this._networkShareLocationText.onTextChanged((value) => {
-			this.migrationStateModel.databaseBackup.networkShareLocation = value;
+			this.migrationStateModel._databaseBackup.networkShareLocation = value;
 		});
 
 		const windowsUserAccountLabel = view.modelBuilder.text()
@@ -297,7 +297,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				validationErrorMessage: constants.INVALID_USER_ACCOUNT
 			})
 			.withValidation((component) => {
-				if (this.migrationStateModel.databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
+				if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
 					if (component.value) {
 						if (!/(?<=\\).*$/.test(component.value)) {
 							return false;
@@ -307,7 +307,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				return true;
 			}).component();
 		this._windowsUserAccountText.onTextChanged((value) => {
-			this.migrationStateModel.databaseBackup.windowsUser = value;
+			this.migrationStateModel._databaseBackup.windowsUser = value;
 		});
 
 		const passwordLabel = view.modelBuilder.text()
@@ -322,7 +322,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				required: true
 			}).component();
 		this._passwordText.onTextChanged((value) => {
-			this.migrationStateModel.databaseBackup.password = value;
+			this.migrationStateModel._databaseBackup.password = value;
 		});
 
 		const azureAccountHelpText = view.modelBuilder.text()
@@ -341,8 +341,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._networkShareContainerSubscriptionDropdown.onValueChanged(async (value) => {
 			if (value.selected) {
-				this.migrationStateModel.databaseBackup.subscription = this.migrationStateModel.getSubscription(value.index);
-				this.migrationStateModel._storageAccounts = undefined!;
+				this.migrationStateModel._databaseBackup.subscription = this.migrationStateModel.getSubscription(value.index);
+				this.migrationStateModel._databaseBackup.storageAccount = undefined!;
 				await this.loadNetworkShareStorageDropdown();
 			}
 		});
@@ -358,7 +358,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._networkShareContainerStorageAccountDropdown.onValueChanged((value) => {
 			if (value.selected) {
-				this.migrationStateModel.databaseBackup.storageAccount = this.migrationStateModel.getStorageAccount(value.index);
+				this.migrationStateModel._databaseBackup.storageAccount = this.migrationStateModel.getStorageAccount(value.index);
 			}
 		});
 
@@ -399,11 +399,11 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			checked: true
 		}).component();
 
-		this.migrationStateModel.databaseBackup.migrationCutover = MigrationCutover.ONLINE;
+		this.migrationStateModel._databaseBackup.migrationCutover = MigrationCutover.ONLINE;
 
 		onlineButton.onDidChangeCheckedState((e) => {
 			if (e) {
-				this.migrationStateModel.databaseBackup.migrationCutover = MigrationCutover.ONLINE;
+				this.migrationStateModel._databaseBackup.migrationCutover = MigrationCutover.ONLINE;
 			}
 		});
 
@@ -414,7 +414,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		offlineButton.onDidChangeCheckedState((e) => {
 			if (e) {
-				this.migrationStateModel.databaseBackup.migrationCutover = MigrationCutover.OFFLINE;
+				this.migrationStateModel._databaseBackup.migrationCutover = MigrationCutover.OFFLINE;
 			}
 		});
 
@@ -443,7 +443,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 			const errors: string[] = [];
 
-			switch (this.migrationStateModel.databaseBackup.networkContainerType) {
+			switch (this.migrationStateModel._databaseBackup.networkContainerType) {
 				case NetworkContainerType.NETWORK_SHARE:
 					if ((<azdata.CategoryValue>this._networkShareContainerSubscriptionDropdown.value).displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
 						errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
@@ -488,15 +488,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	public async onPageLeave(): Promise<void> {
-		this.migrationStateModel.databaseBackup.storageKey = (await getStorageAccountAccessKeys(this.migrationStateModel.azureAccount, this.migrationStateModel.databaseBackup.subscription, this.migrationStateModel.databaseBackup.storageAccount)).keyName1;
-		console.log(this.migrationStateModel.databaseBackup);
+		this.migrationStateModel._databaseBackup.storageKey = (await getStorageAccountAccessKeys(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.storageAccount)).keyName1;
+		console.log(this.migrationStateModel._databaseBackup);
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
 	}
 
 	private toggleNetworkContainerFields(containerType: NetworkContainerType): void {
-		this.migrationStateModel.databaseBackup.networkContainerType = containerType;
+		this.migrationStateModel._databaseBackup.networkContainerType = containerType;
 		this._fileShareContainer.updateCssStyles({ 'display': (containerType === NetworkContainerType.FILE_SHARE) ? 'inline' : 'none' });
 		this._blobContainer.updateCssStyles({ 'display': (containerType === NetworkContainerType.BLOB_CONTAINER) ? 'inline' : 'none' });
 		this._networkShareContainer.updateCssStyles({ 'display': (containerType === NetworkContainerType.NETWORK_SHARE) ? 'inline' : 'none' });
@@ -525,89 +525,92 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	private async getSubscriptionValues(): Promise<void> {
-		this._networkShareContainerSubscriptionDropdown.loading = true;
-		this._fileShareSubscriptionDropdown.loading = true;
-		this._blobContainerSubscriptionDropdown.loading = true;
-		try {
-			this._fileShareSubscriptionDropdown.values = await this.migrationStateModel.getSubscriptionsDropdownValues();
-			this._networkShareContainerSubscriptionDropdown.values = await this.migrationStateModel.getSubscriptionsDropdownValues();
-			this._blobContainerSubscriptionDropdown.values = await this.migrationStateModel.getSubscriptionsDropdownValues();
-			this.migrationStateModel.databaseBackup.subscription = this.migrationStateModel.getSubscription(0);
-		} catch (error) {
-			this.migrationStateModel._storageAccounts = undefined!;
-		} finally {
-			await this.loadNetworkShareStorageDropdown();
-			await this.loadFileShareStorageDropdown();
-			await this.loadblobStorageDropdown();
-			this._networkShareContainerSubscriptionDropdown.loading = false;
-			this._fileShareSubscriptionDropdown.loading = false;
-			this._blobContainerSubscriptionDropdown.loading = false;
+		if (!this.migrationStateModel._databaseBackup.subscription) {
+			this._networkShareContainerSubscriptionDropdown.loading = true;
+			this._fileShareSubscriptionDropdown.loading = true;
+			this._blobContainerSubscriptionDropdown.loading = true;
+			try {
+				const subscriptionDropdownValues = await this.migrationStateModel.getSubscriptionsDropdownValues();
+				this._fileShareSubscriptionDropdown.values = subscriptionDropdownValues;
+				this._networkShareContainerSubscriptionDropdown.values = subscriptionDropdownValues;
+				this._blobContainerSubscriptionDropdown.values = subscriptionDropdownValues;
+			} catch (error) {
+				console.log(error);
+			} finally {
+				this._networkShareContainerSubscriptionDropdown.loading = false;
+				this._fileShareSubscriptionDropdown.loading = false;
+				this._blobContainerSubscriptionDropdown.loading = false;
+			}
 		}
 	}
 
 	private async loadNetworkShareStorageDropdown(): Promise<void> {
-		this._networkShareContainerStorageAccountDropdown.loading = true;
-		try {
-			this._networkShareContainerStorageAccountDropdown.values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel.databaseBackup.subscription);
-			this.migrationStateModel.databaseBackup.storageAccount = this.migrationStateModel.getStorageAccount(0);
-		} finally {
-			this._networkShareContainerStorageAccountDropdown.loading = false;
+		if (!this.migrationStateModel._databaseBackup.storageAccount) {
+			this._networkShareContainerStorageAccountDropdown.loading = true;
+			try {
+				this._networkShareContainerStorageAccountDropdown.values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription);
+			} catch (error) {
+				console.log(error);
+			} finally {
+				this._networkShareContainerStorageAccountDropdown.loading = false;
+			}
 		}
 	}
 
 	private async loadFileShareStorageDropdown(): Promise<void> {
-		this._fileShareStorageAccountDropdown.loading = true;
-		this._fileShareFileShareDropdown.loading = true;
-		try {
-			this._fileShareStorageAccountDropdown.values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel.databaseBackup.subscription);
-			this.migrationStateModel.databaseBackup.storageAccount = this.migrationStateModel.getStorageAccount(0);
-		} catch (error) {
-			this.migrationStateModel._fileShares = undefined!;
-		} finally {
-			await this.loadFileShareDropdown();
-			this._fileShareStorageAccountDropdown.loading = false;
-			this._fileShareFileShareDropdown.loading = false;
-
+		if (!this.migrationStateModel._databaseBackup.storageAccount) {
+			this._fileShareStorageAccountDropdown.loading = true;
+			this._fileShareFileShareDropdown.loading = true;
+			try {
+				this._fileShareStorageAccountDropdown.values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription);
+			} catch (error) {
+				console.log(error);
+			} finally {
+				this._fileShareStorageAccountDropdown.loading = false;
+				this._fileShareFileShareDropdown.loading = false;
+			}
 		}
 	}
 
 	private async loadblobStorageDropdown(): Promise<void> {
-		this._blobContainerStorageAccountDropdown.loading = true;
-		this._blobContainerBlobDropdown.loading = true;
-		try {
-			this._blobContainerStorageAccountDropdown.values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel.databaseBackup.subscription);
-			this.migrationStateModel.databaseBackup.storageAccount = this.migrationStateModel.getStorageAccount(0);
-		} catch (error) {
-			this.migrationStateModel._blobContainers = undefined!;
-		} finally {
-			await this.loadBlobContainerDropdown();
-			this._blobContainerStorageAccountDropdown.loading = false;
+		if (!this.migrationStateModel._databaseBackup.storageAccount) {
+			this._blobContainerStorageAccountDropdown.loading = true;
 			this._blobContainerBlobDropdown.loading = true;
+			try {
+				this._blobContainerStorageAccountDropdown.values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription);
+			} catch (error) {
+				console.log(error);
+			} finally {
+				this._blobContainerStorageAccountDropdown.loading = false;
+				this._blobContainerBlobDropdown.loading = true;
 
+			}
 		}
 	}
 
 	private async loadFileShareDropdown(): Promise<void> {
-		this._fileShareFileShareDropdown.loading = true;
-		try {
-			this._fileShareFileShareDropdown.values = await this.migrationStateModel.getFileShareValues(this.migrationStateModel.databaseBackup.subscription, this.migrationStateModel.databaseBackup.storageAccount);
-			this.migrationStateModel.databaseBackup.fileShare = this.migrationStateModel.getFileShare(0);
-		} catch (error) {
-			console.log(error);
-		} finally {
-			this._fileShareFileShareDropdown.loading = false;
+		if (!this.migrationStateModel._fileShares) {
+			this._fileShareFileShareDropdown.loading = true;
+			try {
+				this._fileShareFileShareDropdown.values = await this.migrationStateModel.getFileShareValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.storageAccount);
+			} catch (error) {
+				console.log(error);
+			} finally {
+				this._fileShareFileShareDropdown.loading = false;
+			}
 		}
 	}
 
 	private async loadBlobContainerDropdown(): Promise<void> {
-		this._blobContainerBlobDropdown.loading = true;
-		try {
-			this._blobContainerBlobDropdown.values = await this.migrationStateModel.getBlobContainerValues(this.migrationStateModel.databaseBackup.subscription, this.migrationStateModel.databaseBackup.storageAccount);
-			this.migrationStateModel.databaseBackup.blobContainer = this.migrationStateModel.getBlobContainer(0);
-		} catch (error) {
-			console.log(error);
-		} finally {
-			this._blobContainerBlobDropdown.loading = false;
+		if (!this.migrationStateModel._blobContainers) {
+			this._blobContainerBlobDropdown.loading = true;
+			try {
+				this._blobContainerBlobDropdown.values = await this.migrationStateModel.getBlobContainerValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.storageAccount);
+			} catch (error) {
+				console.log(error);
+			} finally {
+				this._blobContainerBlobDropdown.loading = false;
+			}
 		}
 	}
 }
