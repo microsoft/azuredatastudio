@@ -275,7 +275,6 @@ describe('Manage Package Dialog', () => {
 				divContainer: undefined!,
 				flexContainer: () => flexBuilder,
 				splitViewContainer: undefined!,
-				dom: undefined!,
 				card: undefined!,
 				inputBox: () => inputBoxBuilder,
 				checkBox: undefined!,
