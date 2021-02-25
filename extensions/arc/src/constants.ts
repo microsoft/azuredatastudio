@@ -148,7 +148,7 @@ export class IconPathHelper {
 		};
 		IconPathHelper.gearBlack = {
 			light: context.asAbsolutePath('images/gear-black.svg'),
-			dark: context.asAbsolutePath('images/gear-black.svg'),
+			dark: context.asAbsolutePath('images/gear-white.svg'),
 		};
 	}
 }
