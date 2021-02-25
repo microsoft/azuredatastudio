@@ -259,7 +259,7 @@ export class NotebookMarkdownRenderer {
 	 *  }
 	 */
 	findAttachmentIfExists(href: string, cellAttachments: { [key: string]: { [key: string]: string } }): string {
-		if (href.startsWith('attachment:')) {
+		if (href.startsWith('attachment:') && cellAttachments) {
 			const imageName = href.replace('attachment:', '');
 			const imageDefinition = cellAttachments[imageName];
 			if (imageDefinition) {
