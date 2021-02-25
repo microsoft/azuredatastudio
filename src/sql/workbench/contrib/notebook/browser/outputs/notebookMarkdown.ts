@@ -10,9 +10,8 @@ import { IMarkdownRenderResult } from 'vs/editor/browser/core/markdownRenderer';
 import * as marked from 'vs/base/common/marked/marked';
 import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
-import { MarkdownRenderOptions } from 'vs/base/browser/markdownRenderer';
 import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
-import { IMarkdownStringWithCellAttachments } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
+import { IMarkdownStringWithCellAttachments, MarkdownRenderOptionsWithCellAttachments } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
@@ -24,14 +23,14 @@ export class NotebookMarkdownRenderer {
 	}
 
 	render(markdown: IMarkdownStringWithCellAttachments): IMarkdownRenderResult {
-		const element: HTMLElement = markdown ? this.renderMarkdown(markdown, undefined, markdown.cellAttachments) : document.createElement('span');
+		const element: HTMLElement = markdown ? this.renderMarkdown(markdown, { cellAttachments: markdown.cellAttachments }) : document.createElement('span');
 		return {
 			element,
 			dispose: () => { }
 		};
 	}
 
-	createElement(options: MarkdownRenderOptions): HTMLElement {
+	createElement(options: MarkdownRenderOptionsWithCellAttachments): HTMLElement {
 		const tagName = options.inline ? 'span' : 'div';
 		const element = document.createElement(tagName);
 		if (options.className) {
@@ -53,7 +52,7 @@ export class NotebookMarkdownRenderer {
 	 * respects the trusted state of a notebook, and allows command links to
 	 * be clickable.
 	 */
-	renderMarkdown(markdown: IMarkdownString, options: MarkdownRenderOptions = {}, cellAttachments?: { [key: string]: { [key: string]: string } }): HTMLElement {
+	renderMarkdown(markdown: IMarkdownString, options: MarkdownRenderOptionsWithCellAttachments = {}): HTMLElement {
 		const element = this.createElement(options);
 
 		// signal to code-block render that the element has been created
@@ -66,7 +65,7 @@ export class NotebookMarkdownRenderer {
 		}
 		const renderer = new marked.Renderer({ baseUrl: notebookFolder });
 		renderer.image = (href: string, title: string, text: string) => {
-			const attachment = this.findAttachmentIfExists(href, cellAttachments);
+			const attachment = this.findAttachmentIfExists(href, options.cellAttachments);
 			// Attachments are already properly formed, so do not need cleaning
 			// Attachments are always shown, regardless of notebook trust
 			href = attachment ? attachment : this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
