@@ -85,7 +85,9 @@
 	"dependencies": {
 		"vscode-nls": "^3.2.1"
 	},
-	"devDependencies": { },
+	"devDependencies": {
+		"vscode": "1.0.1"
+	},
 	"__metadata": {
 		"id": "18",
 		"publisherDisplayName": "Microsoft",
