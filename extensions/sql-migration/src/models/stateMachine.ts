@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { azureResource } from 'azureResource';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
-import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getMigrationControllers, getSubscriptions, MigrationController, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount } from '../api/azure';
+import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getMigrationControllers, getSubscriptions, SqlMigrationController, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount } from '../api/azure';
 import { SKURecommendations } from './externalContract';
 import * as constants from '../models/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
@@ -89,8 +89,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _fileShares!: azureResource.FileShare[];
 	public _blobContainers!: azureResource.BlobContainer[];
 
-	public _migrationController!: MigrationController;
-	public _migrationControllers!: MigrationController[];
+	public _migrationController!: SqlMigrationController;
+	public _migrationControllers!: SqlMigrationController[];
 	public _nodeNames!: string[];
 
 	private _stateChangeEventEmitter = new vscode.EventEmitter<StateChangeEvent>();
@@ -402,7 +402,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return migrationControllerValues;
 	}
 
-	public getMigrationController(index: number): MigrationController {
+	public getMigrationController(index: number): SqlMigrationController {
 		return this._migrationControllers[index];
 	}
 
@@ -450,7 +450,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			this._targetManagedInstance.resourceGroup!,
 			this._migrationController?.properties.location!,
 			this._targetManagedInstance.name,
-			this._migrationController?.name!,
+			currentConnection?.databaseName!,
 			requestBody
 		);
 

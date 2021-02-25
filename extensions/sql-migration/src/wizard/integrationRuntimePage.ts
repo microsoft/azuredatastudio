@@ -147,7 +147,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		return flexContainer;
 	}
 
-	public async populateMigrationController(controllerStatus?: string): Promise<void> {
+	public async populateMigrationController(): Promise<void> {
 		this.migrationControllerDropdown.loading = true;
 		try {
 			this.migrationControllerDropdown.values = await this.migrationStateModel.getMigrationControllerValues(this.migrationStateModel._targetSubscription, this.migrationStateModel._targetManagedInstance);
