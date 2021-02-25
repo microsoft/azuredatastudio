@@ -14,7 +14,7 @@ interface IActionMetadata {
 	title?: string,
 	description?: string,
 	link?: string,
-	iconPath?: { light: string | vscode.Uri; dark: string | vscode.Uri },
+	iconPath?: azdata.ThemedIconPath,
 	command?: string
 }
 

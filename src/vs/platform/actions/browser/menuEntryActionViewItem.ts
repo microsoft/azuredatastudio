@@ -289,10 +289,14 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 				}
 
 				if (this.label) {
-					this.label.classList.add('codicon', this._defaultCSSClassToAdd, ...iconClass.split(' '));
+					const iconClasses = iconClass.split(' ');
+					if (this._defaultCSSClassToAdd) {
+						iconClasses.push(this._defaultCSSClassToAdd);
+					}
+					this.label.classList.add('codicon', ...iconClasses);
 					this._labeledItemClassDispose = toDisposable(() => {
 						if (this.label) {
-							this.label.classList.remove('codicon', this._defaultCSSClassToAdd, ...iconClass.split(' '));
+							this.label.classList.remove('codicon', ...iconClasses);
 						}
 					});
 				}

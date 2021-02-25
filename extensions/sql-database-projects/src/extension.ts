@@ -5,11 +5,11 @@
 
 import * as vscode from 'vscode';
 import MainController from './controllers/mainController';
-import { IProjectProvider } from 'dataworkspace';
+import { SqlDatabaseProjectProvider } from './projectProvider/projectProvider';
 
 let controllers: MainController[] = [];
 
-export function activate(context: vscode.ExtensionContext): Promise<IProjectProvider> {
+export function activate(context: vscode.ExtensionContext): Promise<SqlDatabaseProjectProvider> {
 	// Start the main controller
 	const mainController = new MainController(context);
 	controllers.push(mainController);
