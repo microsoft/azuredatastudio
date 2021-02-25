@@ -28,8 +28,8 @@ export type EngineSettingsModel = {
 
 export class PostgresModel extends ResourceModel {
 	private _config?: azdataExt.PostgresServerShowResult;
-	public _workerNodesEngineSettings: EngineSettingsModel[] = [];
-	public _coordinatorNodeEngineSettings: EngineSettingsModel[] = [];
+	public workerNodesEngineSettings: EngineSettingsModel[] = [];
+	public coordinatorNodeEngineSettings: EngineSettingsModel[] = [];
 	private readonly _azdataApi: azdataExt.IExtension;
 
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.PostgresServerShowResult>();
@@ -152,7 +152,7 @@ export class PostgresModel extends ResourceModel {
 			'shared_preload_libraries', 'synchronous_commit', 'ssl', 'unix_socket_permissions', 'wal_level'
 		];
 
-		this._workerNodesEngineSettings = [];
+		this.workerNodesEngineSettings = [];
 
 		engineSettings.rows.forEach(row => {
 			let rowValues = row.map(c => c.displayValue);
@@ -168,12 +168,12 @@ export class PostgresModel extends ResourceModel {
 					type: rowValues.shift()
 				};
 
-				this._workerNodesEngineSettings.push(result);
+				this.workerNodesEngineSettings.push(result);
 			}
 		});
 
 		this.engineSettingsLastUpdated = new Date();
-		this._onEngineSettingsUpdated.fire(this._workerNodesEngineSettings);
+		this._onEngineSettingsUpdated.fire(this.workerNodesEngineSettings);
 	}
 
 	protected createConnectionProfile(): azdata.IConnectionProfile {

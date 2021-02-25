@@ -3,28 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azdataExt from 'azdata-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper } from '../../../constants';
-import { PostgresServerParametersPage } from './postgresServerParameters';
+import { PostgresParametersPage } from './postgresParameters';
 import { PostgresModel } from '../../../models/postgresModel';
 
-export class PostgresWorkerNodesParametersPage extends PostgresServerParametersPage {
-	private readonly _azdataApi: azdataExt.IExtension;
+export class PostgresWorkerNodesParametersPage extends PostgresParametersPage {
 
 	constructor(protected modelView: azdata.ModelView, _postgresModel: PostgresModel) {
-		super(_postgresModel, modelView);
-		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
-
-		this.initializeConnectButton();
-		this.initializeSearchBox();
-
-		this.disposables.push(
-			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())),
-			this._postgresModel.onEngineSettingsUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshParametersTable()))
-		);
+		super(modelView, _postgresModel);
 	}
 
 	protected get title(): string {
@@ -36,7 +25,7 @@ export class PostgresWorkerNodesParametersPage extends PostgresServerParametersP
 	}
 
 	protected get icon(): { dark: string; light: string; } {
-		return IconPathHelper.gear;
+		return IconPathHelper.gearBlue;
 	}
 
 	protected get description(): string {
@@ -74,7 +63,7 @@ export class PostgresWorkerNodesParametersPage extends PostgresServerParametersP
 	}
 
 	protected refreshParametersTable(): void {
-		this._parameters = this._postgresModel._workerNodesEngineSettings.map(engineSetting => this.createParameterComponents(engineSetting));
-		this.parametersTable.data = this._parameters.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
+		this._parameters = this._postgresModel.workerNodesEngineSettings.map(engineSetting => this.createParameterComponents(engineSetting));
+		this._parametersTable.data = this._parameters.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
 	}
 }

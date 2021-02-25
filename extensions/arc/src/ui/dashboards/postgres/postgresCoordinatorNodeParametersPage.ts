@@ -6,24 +6,13 @@
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper } from '../../../constants';
-import { PostgresServerParametersPage } from './postgresServerParameters';
+import { PostgresParametersPage } from './postgresParameters';
 import { PostgresModel } from '../../../models/postgresModel';
 
-export class PostgresCoordinatorNodeParametersPage extends PostgresServerParametersPage {
-	// TODO add back in once making command calls
-	// private readonly _azdataApi: azdataExt.IExtension;
+export class PostgresCoordinatorNodeParametersPage extends PostgresParametersPage {
 
 	constructor(protected modelView: azdata.ModelView, _postgresModel: PostgresModel) {
-		super(_postgresModel, modelView);
-		// this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
-
-		this.initializeConnectButton();
-		this.initializeSearchBox();
-
-		this.disposables.push(
-			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())),
-			this._postgresModel.onEngineSettingsUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshParametersTable()))
-		);
+		super(modelView, _postgresModel);
 	}
 
 	protected get title(): string {
@@ -35,7 +24,7 @@ export class PostgresCoordinatorNodeParametersPage extends PostgresServerParamet
 	}
 
 	protected get icon(): { dark: string; light: string; } {
-		return IconPathHelper.gearBlack;
+		return IconPathHelper.gear;
 	}
 
 	protected get description(): string {
@@ -76,7 +65,7 @@ export class PostgresCoordinatorNodeParametersPage extends PostgresServerParamet
 	}
 
 	protected refreshParametersTable(): void {
-		this._parameters = this._postgresModel._coordinatorNodeEngineSettings.map(engineSetting => this.createParameterComponents(engineSetting));
-		this.parametersTable.data = this._parameters.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
+		this._parameters = this._postgresModel.coordinatorNodeEngineSettings.map(engineSetting => this.createParameterComponents(engineSetting));
+		this._parametersTable.data = this._parameters.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
 	}
 }

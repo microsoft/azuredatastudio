@@ -20,11 +20,11 @@ export type ParametersModel = {
 	resetButton: azdata.ButtonComponent
 };
 
-export abstract class PostgresServerParametersPage extends DashboardPage {
+export abstract class PostgresParametersPage extends DashboardPage {
 	private searchBox!: azdata.InputBoxComponent;
-	protected parametersTable!: azdata.DeclarativeTableComponent;
+	protected _parametersTable!: azdata.DeclarativeTableComponent;
 	private parameterContainer?: azdata.DivContainer;
-	private _parametersTableLoading!: azdata.LoadingComponent;
+	private parametersTableLoading!: azdata.LoadingComponent;
 
 	private discardButton!: azdata.ButtonComponent;
 	private saveButton!: azdata.ButtonComponent;
@@ -34,8 +34,20 @@ export abstract class PostgresServerParametersPage extends DashboardPage {
 	protected _parameters: ParametersModel[] = [];
 	private parameterUpdates: Map<string, string> = new Map();
 
-	constructor(public _postgresModel: PostgresModel, protected modelView: azdata.ModelView) {
+	protected readonly _azdataApi: azdataExt.IExtension;
+
+	constructor(protected modelView: azdata.ModelView, protected _postgresModel: PostgresModel) {
 		super(modelView);
+
+		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+
+		this.initializeConnectButton();
+		this.initializeSearchBox();
+
+		this.disposables.push(
+			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())),
+			this._postgresModel.onEngineSettingsUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshParametersTable()))
+		);
 	}
 
 	protected abstract get description(): string;
@@ -62,7 +74,7 @@ export abstract class PostgresServerParametersPage extends DashboardPage {
 
 		content.addItem(this.searchBox!, { CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'margin-bottom': '20px' } });
 
-		this.parametersTable = this.modelView.modelBuilder.declarativeTable().withProps({
+		this._parametersTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
 			columns: [
 				{
@@ -103,7 +115,7 @@ export abstract class PostgresServerParametersPage extends DashboardPage {
 			data: []
 		}).component();
 
-		this._parametersTableLoading = this.modelView.modelBuilder.loadingComponent().component();
+		this.parametersTableLoading = this.modelView.modelBuilder.loadingComponent().component();
 
 		this.parameterContainer = this.modelView.modelBuilder.divContainer().component();
 		this.selectComponent();
@@ -280,12 +292,12 @@ export abstract class PostgresServerParametersPage extends DashboardPage {
 					vscode.window.showInformationMessage(loc.extensionInstalled(loc.postgresExtension));
 				}
 
-				this._parametersTableLoading!.loading = true;
-				await this.callGetEngineSettings().finally(() => this._parametersTableLoading!.loading = false);
+				this.parametersTableLoading!.loading = true;
+				await this.callGetEngineSettings().finally(() => this.parametersTableLoading!.loading = false);
 				this.searchBox!.enabled = true;
 				this.resetAllButton!.enabled = true;
 				this.parameterContainer!.clearItems();
-				this.parameterContainer!.addItem(this.parametersTable);
+				this.parameterContainer!.addItem(this._parametersTable);
 			})
 		);
 	}
@@ -297,11 +309,11 @@ export abstract class PostgresServerParametersPage extends DashboardPage {
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component());
 			this.parameterContainer!.addItem(this.connectToServerButton!, { CSSStyles: { 'max-width': '125px' } });
-			this.parameterContainer!.addItem(this._parametersTableLoading!);
+			this.parameterContainer!.addItem(this.parametersTableLoading!);
 		} else {
 			this.searchBox!.enabled = true;
 			this.resetAllButton!.enabled = true;
-			this.parameterContainer!.addItem(this.parametersTable!);
+			this.parameterContainer!.addItem(this._parametersTable!);
 			this.refreshParametersTable();
 		}
 	}
@@ -337,7 +349,7 @@ export abstract class PostgresServerParametersPage extends DashboardPage {
 	@debounce(500)
 	private onSearchFilter(): void {
 		if (!this.searchBox!.value) {
-			this.parametersTable.setFilter(undefined);
+			this._parametersTable.setFilter(undefined);
 		} else {
 			this.filterParameters(this.searchBox!.value);
 		}
@@ -345,12 +357,12 @@ export abstract class PostgresServerParametersPage extends DashboardPage {
 
 	private filterParameters(search: string): void {
 		const filteredRowIndexes: number[] = [];
-		this.parametersTable.data?.forEach((row, index) => {
+		this._parametersTable.data?.forEach((row, index) => {
 			if (row[0].toUpperCase()?.search(search.toUpperCase()) !== -1 || row[2].toUpperCase()?.search(search.toUpperCase()) !== -1) {
 				filteredRowIndexes.push(index);
 			}
 		});
-		this.parametersTable.setFilter(filteredRowIndexes);
+		this._parametersTable.setFilter(filteredRowIndexes);
 	}
 
 	private handleOnTextChanged(component: azdata.InputBoxComponent, currentValue: string | undefined): boolean {
@@ -542,7 +554,7 @@ export abstract class PostgresServerParametersPage extends DashboardPage {
 	protected async handleServiceUpdated(): Promise<void> {
 		if (this._postgresModel.configLastUpdated && !this._postgresModel.engineSettingsLastUpdated) {
 			this.connectToServerButton!.enabled = true;
-			this._parametersTableLoading!.loading = false;
+			this.parametersTableLoading!.loading = false;
 		} else if (this._postgresModel.engineSettingsLastUpdated) {
 			await this.callGetEngineSettings();
 			this.discardButton!.enabled = false;

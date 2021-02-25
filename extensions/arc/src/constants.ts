@@ -45,8 +45,8 @@ export class IconPathHelper {
 	public static discard: IconPath;
 	public static fail: IconPath;
 	public static information: IconPath;
+	public static gearBlue: IconPath;
 	public static gear: IconPath;
-	public static gearBlack: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.context = context;
@@ -142,11 +142,11 @@ export class IconPathHelper {
 			light: context.asAbsolutePath('images/information.svg'),
 			dark: context.asAbsolutePath('images/information.svg'),
 		};
-		IconPathHelper.gear = {
-			light: context.asAbsolutePath('images/gear.svg'),
-			dark: context.asAbsolutePath('images/gear.svg'),
+		IconPathHelper.gearBlue = {
+			light: context.asAbsolutePath('images/gear-blue.svg'),
+			dark: context.asAbsolutePath('images/gear-blue.svg'),
 		};
-		IconPathHelper.gearBlack = {
+		IconPathHelper.gear = {
 			light: context.asAbsolutePath('images/gear-black.svg'),
 			dark: context.asAbsolutePath('images/gear-white.svg'),
 		};
