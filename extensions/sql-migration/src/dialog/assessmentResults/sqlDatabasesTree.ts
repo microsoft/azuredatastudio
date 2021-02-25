@@ -21,7 +21,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private _impactedObjectsTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
 	private _assessmentData: Map<string, Issues[]>;
 
-	// private _title!: azdata.TextComponent;
 	private _recommendation!: azdata.TextComponent;
 	private _dbName!: azdata.TextComponent;
 	private _recommendationText!: azdata.TextComponent;
@@ -32,7 +31,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private _objectDetailsName!: azdata.TextComponent;
 	private _objectDetailsSample!: azdata.TextComponent;
 	private _moreInfo!: azdata.TextComponent;
-	// private _recommendationMap!: Map<string, Issues[]>;
 
 	constructor(model: MigrationStateModel, assessmentData: Map<string, Issues[]>) {
 		super();
@@ -178,11 +176,9 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				mapRowIssue.set(rowNumber, noIssues);
 				rowNumber = rowNumber + 1;
 			});
-			// fill in table fields
 		}
 
 		this.databaseTable.component().onRowSelected(({ row }) => {
-			// deselect instance table
 			const rowInfo = mapRowIssue.get(row);
 			if (rowInfo) {
 				this._assessmentResultsTable.component().dataValues = [];
@@ -190,7 +186,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				this._recommendation.value = `Assessment Results (${rowInfo.issues.length} issues found)`;
 				// Need some kind of refresh method for declarative tables
 				let dataValues: string[][] = [];
-				// this._recommendationMap = new Map<string, Issues[]>();
 				rowInfo.issues.forEach(async (issue) => {
 					dataValues.push([
 						issue.description
@@ -204,7 +199,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 			}
 
-			// }
 		});
 
 
@@ -280,11 +274,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				]
 			});
 
-		this.instanceTable.component().onRowSelected(({ row }) => {
-			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected
-			//deselect database table
-		});
-
 		const instanceContainer = view.modelBuilder.divContainer().withItems([this.instanceTable.component()]).withProps({
 			CSSStyles: {
 				'margin-left': '15px',
@@ -321,12 +310,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		const recommendation = this.createRecommendationComponent(view);
 		const assessmentResults = this.createAssessmentResultsTitle(view);
 
-		// assessmentResults.CSSStyles =
-		// {
-		// 	'border-bottom': 'solid 1px'
-		// };
-
-
 		const container = view.modelBuilder.flexContainer().withItems([title, impact, recommendation, assessmentResults]).withLayout({
 			flexFlow: 'column'
 		}).component();
@@ -335,7 +318,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	}
 
 	private createBottomContainer(view: azdata.ModelView): azdata.FlexContainer {
-		// need a left and right container here
 
 		const impactedObjects = this.createImpactedObjectsTable(view);
 		const rightContainer = this.createAssessmentContainer(view);
@@ -577,7 +559,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private createPlatformComponent(view: azdata.ModelView): azdata.TextComponent {
 		const impact = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			title: 'Platform', // TODO localize
-			value: 'Azure SQL Managed Instance', // TODO: Get this string from the actual results
+			value: 'Azure SQL Managed Instance',
 			CSSStyles: {
 				'font-size': '18px',
 				'margin-block-start': '0px',
@@ -591,7 +573,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private createRecommendationComponent(view: azdata.ModelView): azdata.TextComponent {
 		this._dbName = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			title: 'Recommendation', // TODO localize
-			value: 'SQL Server 1', // TODO: Get this string from the actual results
+			value: 'SQL Server 1',
 			CSSStyles: {
 				'font-size': '14px',
 				'font-weight': 'bold'
@@ -604,7 +586,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private createAssessmentResultsTitle(view: azdata.ModelView): azdata.TextComponent {
 		this._recommendation = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			title: 'Recommendation', // TODO localize
-			value: 'Assessment Results', // TODO: Get this string from the actual results
+			value: 'Assessment Results',
 			CSSStyles: {
 				'font-size': '14px',
 				'font-weight': 'bold',
@@ -666,7 +648,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		);
 
 		this._assessmentResultsTable.component().onRowSelected(({ row }) => {
-			console.log(row); //TODO: Put data for each row so it can be displayed as each DB entry is selected, need some kind of dictionary
 			this._descriptionText.value = this._assessmentResultsTable.component().data![row][0];
 
 			if (this._dbName.value) {
