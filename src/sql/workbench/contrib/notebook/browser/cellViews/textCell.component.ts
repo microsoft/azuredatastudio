@@ -93,7 +93,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public readonly onDidClickLink = this._onDidClickLink.event;
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
-	private highlightRange: NotebookRange;
+	private _highlightRange: NotebookRange;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -346,18 +346,18 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
 		if (oldDecorationRange) {
-			this.highlightRange = oldDecorationRange === this.highlightRange ? null : this.highlightRange;
+			this._highlightRange = oldDecorationRange === this._highlightRange ? undefined : this._highlightRange;
 			this.removeDecoration(oldDecorationRange);
 		}
 
 		if (newDecorationRange) {
-			this.highlightRange = newDecorationRange;
+			this._highlightRange = newDecorationRange;
 			this.addDecoration(newDecorationRange);
 		}
 	}
 
 	private addDecoration(range?: NotebookRange): void {
-		range = range ?? this.highlightRange;
+		range = range ?? this._highlightRange;
 		if (range && this.output && this.output.nativeElement) {
 			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
 			let elements = this.getHtmlElements();
