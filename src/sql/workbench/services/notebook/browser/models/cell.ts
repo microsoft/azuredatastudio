@@ -850,6 +850,8 @@ export class CellModel extends Disposable implements ICellModel {
 			if (this._configurationService?.getValue('notebook.saveConnectionName')) {
 				metadata.connection_name = this._savedConnectionName;
 			}
+		} else if (this._cellType === CellTypes.Markdown) {
+			cellJson.attachments = this._attachments;
 		}
 		return cellJson as nb.ICellContents;
 	}

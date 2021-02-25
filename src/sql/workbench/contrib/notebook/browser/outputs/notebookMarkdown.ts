@@ -11,6 +11,7 @@ import * as marked from 'vs/base/common/marked/marked';
 import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
 import { MarkdownRenderOptions } from 'vs/base/browser/markdownRenderer';
+import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
@@ -21,7 +22,7 @@ export class NotebookMarkdownRenderer {
 
 	}
 
-	render(markdown: IMarkdownString, cellAttachments: { [key: string]: any }): IMarkdownRenderResult {
+	render(markdown: IMarkdownString, cellAttachments?: { [key: string]: any }): IMarkdownRenderResult {
 		const element: HTMLElement = markdown ? this.renderMarkdown(markdown, undefined, cellAttachments) : document.createElement('span');
 		return {
 			element,
@@ -51,7 +52,7 @@ export class NotebookMarkdownRenderer {
 	 * respects the trusted state of a notebook, and allows command links to
 	 * be clickable.
 	 */
-	renderMarkdown(markdown: IMarkdownString, options: MarkdownRenderOptions = {}, cellAttachments: { [key: string]: any }): HTMLElement {
+	renderMarkdown(markdown: IMarkdownString, options: MarkdownRenderOptions = {}, cellAttachments?: { [key: string]: any }): HTMLElement {
 		const element = this.createElement(options);
 
 		// signal to code-block render that the element has been created
@@ -64,7 +65,12 @@ export class NotebookMarkdownRenderer {
 		}
 		const renderer = new marked.Renderer({ baseUrl: notebookFolder });
 		renderer.image = (href: string, title: string, text: string) => {
-			href = this.findAttachment(href, cellAttachments) || this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
+			const attachmentResult = this.findAttachment(href, cellAttachments);
+			if (attachmentResult) {
+				href = attachmentResult;
+			} else {
+				this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
+			}
 			let dimensions: string[] = [];
 			if (href) {
 				const splitted = href.split('|').map(s => s.trim());
@@ -240,16 +246,24 @@ export class NotebookMarkdownRenderer {
 		}
 	}
 
-	findAttachment(href: string, cellAttachments: { [key: string]: any }): string {
-		if (href.startsWith('attachment:')) {
-			return cellAttachments[href.replace('attachment:', '')] || '';
-		}
-		return '';
-	}
-
 	// end marked.js adaptation
 
 	setNotebookURI(val: URI) {
 		this._notebookURI = val;
+	}
+
+	findAttachment(href: string, cellAttachments: { [key: string]: any }): string {
+		if (href.startsWith('attachment:')) {
+			const imageName = href.replace('attachment:', '');
+			const imageDefinition = cellAttachments[imageName];
+			if (imageDefinition) {
+				for (let i = 0; i < ImageMimeTypes.length; i++) {
+					if (imageDefinition[ImageMimeTypes[i]]) {
+						return `data:${ImageMimeTypes[i]};base64,${imageDefinition[ImageMimeTypes[i]]}`;
+					}
+				}
+			}
+		}
+		return '';
 	}
 }
