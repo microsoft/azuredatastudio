@@ -9,7 +9,7 @@ import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interf
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, IColumn, ICellValue } from 'sql/workbench/services/query/common/query';
-import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
+import { VirtualizedCollection } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
@@ -51,6 +51,7 @@ import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -324,6 +325,8 @@ export interface IDataSet {
 
 export interface IGridTableOptions {
 	actionOrientation: ActionsOrientation;
+	alwaysUseLocalData?: boolean;
+	localDataCountThreshold?: number;
 }
 
 export abstract class GridTableBase<T> extends Disposable implements IView {
@@ -333,7 +336,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private selectionModel = new CellSelectionModel<T>();
 	private styles: ITableStyles;
 	private currentHeight: number;
-	private dataProvider: AsyncDataProvider<T>;
+	private dataProvider: HybridDataProvider<T>;
 
 	private columns: Slick.Column<T>[];
 
@@ -354,6 +357,14 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private rowHeight: number;
 
 	public isOnlyTable: boolean = true;
+
+	private filterData(data: T[]): T[] {
+		return data;
+	}
+
+	private sortData(args: Slick.OnSortEventArgs<T>, data: T[]): T[] {
+		return data;
+	}
 
 	// this handles if the row count is small, like 4-5 rows
 	protected get maxSize(): number {
@@ -479,7 +490,14 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			forceFitColumns: false,
 			defaultColumnWidth: 120
 		};
-		this.dataProvider = new AsyncDataProvider(collection);
+		this.dataProvider = new HybridDataProvider(collection, (data) => {
+			return this.filterData(data);
+		}, (args, data) => {
+			return this.sortData(args, data);
+		}, {
+			alwaysUseLocalData: this.options.alwaysUseLocalData,
+			localDataCountThreshold: this.options.localDataCountThreshold
+		}); //TODO
 		this.table = this._register(new Table(this.tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);

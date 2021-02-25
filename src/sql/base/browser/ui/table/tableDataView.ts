@@ -41,6 +41,10 @@ function defaultSort<T extends { [key: string]: any }>(args: Slick.OnSortEventAr
 	return data.sort((a, b) => comparer(a, b) * sign);
 }
 
+export type TableFilterFunc<T extends Slick.SlickData> = (data: Array<T>) => Array<T>;
+export type TableSortFunc<T extends Slick.SlickData> = (args: Slick.OnSortEventArgs<T>, data: Array<T>) => Array<T>;
+export type TableFindFunc<T extends Slick.SlickData> = (val: T, exp: string) => Array<number>;
+
 export class TableDataView<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
 	//The data exposed publicly, when filter is enabled, _data holds the filtered data.
 	private _data: Array<T>;
@@ -59,14 +63,11 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 	private _onFilterStateChange = new Emitter<void>();
 	get onFilterStateChange(): Event<void> { return this._onFilterStateChange.event; }
 
-	private _filterFn: (data: Array<T>) => Array<T>;
-	private _sortFn: (args: Slick.OnSortEventArgs<T>, data: Array<T>) => Array<T>;
-
 	constructor(
 		data?: Array<T>,
-		private _findFn?: (val: T, exp: string) => Array<number>,
-		_sortFn?: (args: Slick.OnSortEventArgs<T>, data: Array<T>) => Array<T>,
-		_filterFn?: (data: Array<T>) => Array<T>
+		private _findFn?: TableFindFunc<T>,
+		private _sortFn?: TableSortFunc<T>,
+		private _filterFn?: TableFilterFunc<T>
 	) {
 		if (data) {
 			this._data = data;

@@ -228,6 +228,6 @@ export class AsyncDataProvider<T extends Slick.SlickData> implements IDisposable
 	}
 
 	getItems(): T[] {
-		return this.dataRows.getRange(0, this.length);
+		throw new Error('Method not implemented.');
 	}
 }
