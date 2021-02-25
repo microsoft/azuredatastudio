@@ -90,9 +90,10 @@ export class BookTocManager implements IBookTocManager {
 			const contentStat = (await fs.promises.stat(path.join(directory, content)));
 			const parsedFile = path.parse(content);
 			if (contentStat.isFile() && allowedFileExtensions.includes(parsedFile.ext)) {
+				let filePath = directory === rootDirectory ? path.join(path.sep, parsedFile.name) : path.join(path.sep, path.relative(rootDirectory, directory), parsedFile.name);
 				const section: JupyterBookSection = {
 					title: parsedFile.name,
-					file: directory === rootDirectory ? path.join(path.sep, parsedFile.name) : path.join(path.sep, path.relative(rootDirectory, directory), parsedFile.name),
+					file: filePath.replace(/\\/g, '/')
 				};
 				toc.push(section);
 			} else if (contentStat.isDirectory()) {
@@ -103,9 +104,10 @@ export class BookTocManager implements IBookTocManager {
 					if (indexToRemove !== -1) {
 						files.splice(indexToRemove, 1);
 					}
+					let filePath = directory === rootDirectory ? path.join(path.sep, parsedFile.name, initFile.name) : path.join(path.sep, path.relative(rootDirectory, directory), parsedFile.name, initFile.name);
 					const section: JupyterBookSection = {
 						title: parsedFile.name,
-						file: directory === rootDirectory ? path.join(path.sep, parsedFile.name, initFile.name) : path.join(path.sep, path.relative(rootDirectory, directory), parsedFile.name, initFile.name),
+						file: filePath.replace(/\\/g, '/'),
 						expand_sections: true,
 						numbered: false,
 						sections: await this.createTocFromDir(files, path.join(directory, content), rootDirectory)
