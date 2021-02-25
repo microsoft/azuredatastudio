@@ -66,12 +66,10 @@ export class NotebookMarkdownRenderer {
 		}
 		const renderer = new marked.Renderer({ baseUrl: notebookFolder });
 		renderer.image = (href: string, title: string, text: string) => {
-			const attachmentResult = this.findAttachment(href, cellAttachments);
-			if (attachmentResult) {
-				href = attachmentResult;
-			} else {
-				this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
-			}
+			const attachment = this.findAttachmentIfExists(href, cellAttachments);
+			// Attachments are already properly formed, so do not need cleaning
+			// Attachments are always shown, regardless of notebook trust
+			href = attachment ? attachment : this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
 			let dimensions: string[] = [];
 			if (href) {
 				const splitted = href.split('|').map(s => s.trim());
@@ -253,7 +251,17 @@ export class NotebookMarkdownRenderer {
 		this._notebookURI = val;
 	}
 
-	findAttachment(href: string, cellAttachments: { [key: string]: any }): string {
+	/**
+	 * The following is a sample cell attachment from JSON:
+	 *  "attachments": {
+	 *     "test.png": {
+	 *        "image/png": "iVBORw0KGgoAAAANggg==="
+	 *     }
+	 *  }
+	 * @param href
+	 * @param cellAttachments
+	 */
+	findAttachmentIfExists(href: string, cellAttachments: { [key: string]: any }): string {
 		if (href.startsWith('attachment:')) {
 			const imageName = href.replace('attachment:', '');
 			const imageDefinition = cellAttachments[imageName];
