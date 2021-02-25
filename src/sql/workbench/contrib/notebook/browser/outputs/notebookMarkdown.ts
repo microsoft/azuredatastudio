@@ -53,7 +53,7 @@ export class NotebookMarkdownRenderer {
 	 * respects the trusted state of a notebook, and allows command links to
 	 * be clickable.
 	 */
-	renderMarkdown(markdown: IMarkdownString, options: MarkdownRenderOptions = {}, cellAttachments?: { [key: string]: any }): HTMLElement {
+	renderMarkdown(markdown: IMarkdownString, options: MarkdownRenderOptions = {}, cellAttachments?: { [key: string]: { [key: string]: string } }): HTMLElement {
 		const element = this.createElement(options);
 
 		// signal to code-block render that the element has been created
@@ -258,10 +258,8 @@ export class NotebookMarkdownRenderer {
 	 *        "image/png": "iVBORw0KGgoAAAANggg==="
 	 *     }
 	 *  }
-	 * @param href
-	 * @param cellAttachments
 	 */
-	findAttachmentIfExists(href: string, cellAttachments: { [key: string]: any }): string {
+	findAttachmentIfExists(href: string, cellAttachments: { [key: string]: { [key: string]: string } }): string {
 		if (href.startsWith('attachment:')) {
 			const imageName = href.replace('attachment:', '');
 			const imageDefinition = cellAttachments[imageName];

@@ -80,7 +80,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
 	private _isInjectedParameter: boolean;
-	private _attachments: { [key: string]: any; };
+	private _attachments: { [key: string]: { [key: string]: string } };
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,

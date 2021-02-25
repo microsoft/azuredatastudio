@@ -530,7 +530,7 @@ export interface ICellModel {
 	sendChangeToNotebook(change: NotebookChangeType): void;
 	cellSourceChanged: boolean;
 	readonly savedConnectionName: string | undefined;
-	readonly attachments: { [key: string]: any };
+	readonly attachments: { [key: string]: { [key: string]: string } };
 }
 
 export interface IModelFactory {

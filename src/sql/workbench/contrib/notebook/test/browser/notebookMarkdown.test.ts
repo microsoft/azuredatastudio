@@ -61,4 +61,11 @@ suite('NotebookMarkdownRenderer', () => {
 			assert.strictEqual(result.innerHTML, `<p><a href="/maddy/test/.build/someimageurl" data-href="/maddy/test/.build/someimageurl" title="/maddy/test/.build/someimageurl">Link to relative path</a></p>`);
 		}
 	});
+
+	test('cell attachment image', () => {
+		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads.png)`, isTrusted: true }, undefined, JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}'));
+		assert.strictEqual(result.innerHTML, `<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAggg==" alt="altText"></p>`, 'Cell attachment basic test failed when trusted');
+		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads.png)`, isTrusted: false }, undefined, JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}'));
+		assert.strictEqual(result.innerHTML, `<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAggg==" alt="altText"></p>`, 'Cell attachment basic test failed when not trusted');
+	});
 });

@@ -32,5 +32,5 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 }
 
 export interface IMarkdownStringWithCellAttachments extends IMarkdownString {
-	readonly cellAttachments?: { [key: string]: any }
+	readonly cellAttachments?: { [key: string]: { [key: string]: string } }
 }

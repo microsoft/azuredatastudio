@@ -83,7 +83,7 @@ declare module 'azdata' {
 		}
 
 		export interface ICellContents {
-			attachments?: { [key: string]: any };
+			attachments?: { [key: string]: { [key: string]: string } };
 		}
 	}
 
