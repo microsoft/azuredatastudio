@@ -168,6 +168,32 @@ describe('Project: sqlproj content operations', function (): void {
 		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', 'AzureV12', 'SqlSchemas', constants.masterDacpac)).fsPath);
 	});
 
+
+	it('Should update system dacpac paths in sqlproj when target platform is changed', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+		await project.addSystemDatabaseReference({
+			systemDb: SystemDatabase.master,
+			suppressMissingDependenciesErrors: false
+		});
+
+		let projFileText = await fs.readFile(projFilePath);
+
+		should.equal(project.databaseReferences.length, 1, 'System db reference should have been added');
+		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db reference path should be 150');
+		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '150', 'SqlSchemas', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db SSDT reference path should be 150');
+
+		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlServer2016)!);
+		projFileText = await fs.readFile(projFilePath);
+		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db reference path should have been updated to 130');
+		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '130', 'SqlSchemas', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db SSDT reference path should be 130');
+
+		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlAzure)!);
+		projFileText = await fs.readFile(projFilePath);
+		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db reference path should have been updated to AzureV12');
+		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', 'AzureV12', 'SqlSchemas', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db SSDT reference path should be AzureV12');
+	});
+
 	it('Should choose correct msdb dacpac', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
@@ -182,12 +208,6 @@ describe('Project: sqlproj content operations', function (): void {
 		ssdtUri = project.getSystemDacpacSsdtUri(constants.msdbDacpac);
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.msdbDacpac)).fsPath);
 		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '130', 'SqlSchemas', constants.msdbDacpac)).fsPath);
-
-		project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlAzure)!);
-		uri = project.getSystemDacpacUri(constants.msdbDacpac);
-		ssdtUri = project.getSystemDacpacSsdtUri(constants.msdbDacpac);
-		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12', constants.msdbDacpac)).fsPath);
-		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', 'AzureV12', 'SqlSchemas', constants.msdbDacpac)).fsPath);
 	});
 
 	it('Should throw error when choosing correct master dacpac if invalid DSP', async function (): Promise<void> {
