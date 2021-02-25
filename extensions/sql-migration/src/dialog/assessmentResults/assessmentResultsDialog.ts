@@ -23,7 +23,6 @@ export class AssessmentResultsDialog {
 	private _isOpen: boolean = false;
 	private dialog: azdata.window.Dialog | undefined;
 	private _model: MigrationStateModel;
-	private _serverName: string;
 
 	// Dialog Name for Telemetry
 	public dialogName: string | undefined;
@@ -33,9 +32,8 @@ export class AssessmentResultsDialog {
 
 	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string) {
 		this._model = model;
-		this._serverName = '';
 		let assessmentData = this.parseData(this._model);
-		this._tree = new SqlDatabaseTree(this._model, assessmentData, this._serverName);
+		this._tree = new SqlDatabaseTree(this._model, assessmentData);
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
@@ -93,12 +91,8 @@ export class AssessmentResultsDialog {
 		// map assessment result items to description, recommendation, more info & impacted objects
 
 		let dbMap = new Map<string, Issues[]>();
-		if (!model.assessmentResults![0].targetName.includes(':')) {
-			this._serverName = model.assessmentResults![0].targetName;
-		}
 
 		model.assessmentResults?.forEach((element) => {
-
 			let issues: Issues;
 			issues = {
 				description: element.description,

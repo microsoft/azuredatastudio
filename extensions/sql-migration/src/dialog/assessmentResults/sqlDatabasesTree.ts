@@ -31,13 +31,11 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private _objectDetailsName!: azdata.TextComponent;
 	private _objectDetailsSample!: azdata.TextComponent;
 	private _moreInfo!: azdata.TextComponent;
-	private _serverName: string;
 
-	constructor(model: MigrationStateModel, assessmentData: Map<string, Issues[]>, serverFlag: string) {
+	constructor(model: MigrationStateModel, assessmentData: Map<string, Issues[]>) {
 		super();
 		this._assessmentData = assessmentData;
 		this._model = model;
-		this._serverName = serverFlag;
 	}
 
 	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
@@ -116,28 +114,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		let dbList = await azdata.connection.listDatabases(this._model.sourceConnectionId);
 
 		if (dbList.length > 0) {
-			if (this._serverName) {
-				this.instanceTable.component().dataValues?.push(
-					[
-						{
-							value: false,
-							style: styleLeft
-						},
-						{
-							value: this._serverName,
-							style: styleLeft
-						},
-						{
-							value: this._assessmentData.get(this._serverName)!.length,
-							style: styleRight
-						}
-					]
-
-				);
-
-				this._assessmentData.delete(this._serverName);
-			}
-
 			let rowNumber = 0;
 			this._assessmentData.forEach((value, key) => {
 				this.databaseTable.component().dataValues?.push(
@@ -286,7 +262,14 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				],
 				dataValues: [
 					[
-
+						{
+							value: 'SQL Server 1',
+							style: styleLeft
+						},
+						{
+							value: 2,
+							style: styleRight
+						}
 					]
 				]
 			});
