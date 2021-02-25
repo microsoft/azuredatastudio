@@ -33,14 +33,14 @@ export class AssessmentResultsDialog {
 	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string) {
 		this._model = model;
 		let assessmentData = this.parseData(this._model);
-		this._tree = new SqlDatabaseTree(assessmentData);
+		this._tree = new SqlDatabaseTree(this._model, assessmentData);
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			dialog.registerContent(async (view) => {
 				try {
-					// const resultComponent = await this._tree.createComponentResult(view);
+					const resultComponent = await this._tree.createComponentResult(view);
 					const treeComponent = await this._tree.createComponent(view);
 
 					const flex = view.modelBuilder.flexContainer().withLayout({
@@ -53,7 +53,7 @@ export class AssessmentResultsDialog {
 						}
 					}).component();
 					flex.addItem(treeComponent, { flex: '0 0 auto' });
-					// flex.addItem(resultComponent, { flex: '1 1 auto' });
+					flex.addItem(resultComponent, { flex: '1 1 auto' });
 
 					view.initializeModel(flex);
 					resolve();
@@ -125,7 +125,7 @@ export class AssessmentResultsDialog {
 	}
 
 	protected async execute() {
-		// this.model._migrationDbs = this._tree.selectedDbs();
+		this.model._migrationDbs = this._tree.selectedDbs();
 		this._isOpen = false;
 	}
 

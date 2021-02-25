@@ -588,7 +588,7 @@ export class ExtHostTreeView<T> extends Disposable {
 		const disposable = new DisposableStore();
 		const handle = this.createHandle(element, extensionTreeItem, parent);
 		const icon = this.getLightIconPath(extensionTreeItem);
-		// {{ SQL CARBON EDIT }}
+		// {{SQL CARBON EDIT}}
 		const item = {
 			handle,
 			parentHandle: parent ? parent.item.handle : undefined,

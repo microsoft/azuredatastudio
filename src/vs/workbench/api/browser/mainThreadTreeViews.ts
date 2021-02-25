@@ -228,7 +228,7 @@ export class TreeViewDataProvider implements ITreeViewDataProvider {
 	}
 
 	protected async postGetChildren(elements: ITreeItem[]): Promise<ITreeItem[]> { // {{SQL CARBON EDIT}} For use by Component Tree View
-		const result: ITreeItem[] = []; //{{SQL CARBON EDIT}}
+		const result: ITreeItem[] = []; // {{SQL CARBON EDIT}}
 		const hasResolve = await this.hasResolve;
 		if (elements) {
 			for (const element of elements) {
