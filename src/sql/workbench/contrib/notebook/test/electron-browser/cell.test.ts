@@ -1073,20 +1073,4 @@ suite('Cell Model', function (): void {
 		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 		assert.deepEqual(model.attachments, {});
 	});
-
-	test('Should read attachments name from notebook attachments', async function () {
-		const cellAttachment = JSON.parse('{"ads.png":"image/png"}');
-		let notebookModel = new NotebookModelStub({
-			name: '',
-			version: '',
-			mimetype: ''
-		});
-		let contents: nb.ICellContents = {
-			cell_type: CellTypes.Code,
-			source: '',
-			attachments: cellAttachment
-		};
-		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
-		assert.deepEqual(model.attachments, contents.attachments);
-	});
 });
