@@ -6,6 +6,7 @@
 import { OnDestroy } from '@angular/core';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ICellEditorProvider, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IMarkdownString } from 'vs/base/common/htmlContent';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 
 export abstract class CellView extends AngularDisposable implements OnDestroy, ICellEditorProvider {
@@ -28,4 +29,8 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
 
 	}
+}
+
+export interface IMarkdownStringWithCellAttachments extends IMarkdownString {
+	readonly cellAttachments?: { [key: string]: any }
 }

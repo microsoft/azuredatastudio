@@ -12,6 +12,7 @@ import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
 import { MarkdownRenderOptions } from 'vs/base/browser/markdownRenderer';
 import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { IMarkdownStringWithCellAttachments } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
@@ -22,8 +23,8 @@ export class NotebookMarkdownRenderer {
 
 	}
 
-	render(markdown: IMarkdownString, cellAttachments?: { [key: string]: any }): IMarkdownRenderResult {
-		const element: HTMLElement = markdown ? this.renderMarkdown(markdown, undefined, cellAttachments) : document.createElement('span');
+	render(markdown: IMarkdownStringWithCellAttachments): IMarkdownRenderResult {
+		const element: HTMLElement = markdown ? this.renderMarkdown(markdown, undefined, markdown.cellAttachments) : document.createElement('span');
 		return {
 			element,
 			dispose: () => { }
