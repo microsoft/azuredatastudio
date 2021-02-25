@@ -85,6 +85,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetManagedInstance!: SqlManagedInstance;
 
 	public _databaseBackup!: DatabaseBackupModel;
+	public _migrationDbs!: string[];
 	public _storageAccounts!: StorageAccount[];
 	public _fileShares!: azureResource.FileShare[];
 	public _blobContainers!: azureResource.BlobContainer[];

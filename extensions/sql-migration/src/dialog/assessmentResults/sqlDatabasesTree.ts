@@ -706,4 +706,5 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 		return result;
 	}
+
 }
