@@ -32,7 +32,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private _objectDetailsSample!: azdata.TextComponent;
 	private _moreInfo!: azdata.TextComponent;
 	private _serverName: string;
-	private _serverMapIssue!: Map<number, DbIssues>;
 
 	constructor(model: MigrationStateModel, assessmentData: Map<string, Issues[]>, serverFlag: string) {
 		super();
@@ -60,7 +59,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private async createDatabaseComponent(view: azdata.ModelView): Promise<azdata.DivContainer> {
 
 		let mapRowIssue = new Map<number, DbIssues>();
-		this._serverMapIssue = new Map<number, DbIssues>();
 		const styleLeft: azdata.CssStyles = {
 			'border': 'none',
 			'text-align': 'left',
@@ -118,7 +116,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		let dbList = await azdata.connection.listDatabases(this._model.sourceConnectionId);
 
 		if (dbList.length > 0) {
-			let rowNumber = 0;
 			if (this._serverName) {
 				this.instanceTable.component().dataValues?.push(
 					[
@@ -138,14 +135,10 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 				);
 
-				let dbIssues = {
-					name: this._serverName,
-					issues: this._assessmentData.get(this._serverName)!
-				};
-				this._serverMapIssue.set(rowNumber, dbIssues);
-
 				this._assessmentData.delete(this._serverName);
 			}
+
+			let rowNumber = 0;
 			this._assessmentData.forEach((value, key) => {
 				this.databaseTable.component().dataValues?.push(
 					[
@@ -297,30 +290,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					]
 				]
 			});
-
-		this.instanceTable.component().onRowSelected(({ row }) => {
-			const rowInfo = this._serverMapIssue.get(row);
-			if (rowInfo) {
-				this._assessmentResultsTable.component().dataValues = [];
-				this._dbName.value = rowInfo.name;
-				this._recommendation.value = `Assessment Results (${rowInfo.issues.length} issues found)`;
-				// Need some kind of refresh method for declarative tables
-				let dataValues: string[][] = [];
-				rowInfo.issues.forEach(async (issue) => {
-					dataValues.push([
-						issue.description
-					]);
-
-				});
-
-				this._assessmentResultsTable.component().updateProperties({
-					data: dataValues
-				});
-
-			}
-		});
-
-
 
 		const instanceContainer = view.modelBuilder.divContainer().withItems([this.instanceTable.component()]).withProps({
 			CSSStyles: {
