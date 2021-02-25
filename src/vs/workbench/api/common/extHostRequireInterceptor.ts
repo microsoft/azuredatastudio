@@ -27,7 +27,7 @@ interface LoadFunction {
 	(request: string): any;
 }
 
-export interface INodeModuleFactory { //{{SQL CARBON EDIT}} export interface
+export interface INodeModuleFactory { // {{SQL CARBON EDIT}} export interface
 	readonly nodeModuleName: string | string[];
 	load(request: string, parent: URI, original: LoadFunction): any;
 	alternativeModuleName?(name: string): string | undefined;

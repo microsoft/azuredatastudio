@@ -8,7 +8,7 @@ import * as dom from 'vs/base/browser/dom';
 const $ = dom.$;
 
 suite('dom', () => {
-	test.skip('hasClass', () => { //{{SQL CARBON EDIT}} skip test
+	test.skip('hasClass', () => { // {{SQL CARBON EDIT}} skip test
 
 		let element = document.createElement('div');
 		element.className = 'foobar boo far';
@@ -21,7 +21,7 @@ suite('dom', () => {
 		assert(!element.classList.contains(''));
 	});
 
-	test.skip('removeClass', () => { //{{SQL CARBON EDIT}} skip test
+	test.skip('removeClass', () => { // {{SQL CARBON EDIT}} skip test
 
 		let element = document.createElement('div');
 		element.className = 'foobar boo far';
@@ -54,7 +54,7 @@ suite('dom', () => {
 		assert.equal(element.className, '');
 	});
 
-	test.skip('removeClass should consider hyphens', function () { //{{SQL CARBON EDIT}} skip test
+	test.skip('removeClass should consider hyphens', function () { // {{SQL CARBON EDIT}} skip test
 		let element = document.createElement('div');
 
 		element.classList.add('foo-bar');
