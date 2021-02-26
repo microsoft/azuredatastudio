@@ -6,7 +6,7 @@
 import { Application } from '../../../../../automation';
 
 export function setup() {
-	describe('Notebook', () => {
+	describe.skip('Notebook', () => {
 
 		it('can open new notebook, configure Python, and execute one cell', async function () {
 			const app = this.app as Application;
