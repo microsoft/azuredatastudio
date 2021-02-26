@@ -658,19 +658,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
 		// Remove it for perf issues.
 		return undefined;
-		if (element?.uri) {
-			let parentPath: string;
-			let contentFolder = element.book.version === BookVersion.v1 ? path.join(element.book.root, 'content') : element.book.root;
-			parentPath = path.join(contentFolder, element.uri.substring(0, element.uri.lastIndexOf(path.posix.sep)));
-			if (parentPath === element.root) {
-				return undefined;
-			}
-			let book = this.books.find(b => b.bookPath.indexOf(element.root) > -1);
-			//let parentPaths = Array.from(book.getAllNotebooks()?.keys()).filter(x => x.indexOf(parentPath) > -1);
-			return book?.bookItems[0];
-		} else {
-			return undefined;
-		}
 	}
 
 	getUntitledNotebookUri(resource: string): vscode.Uri {
