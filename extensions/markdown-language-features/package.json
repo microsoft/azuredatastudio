@@ -26,7 +26,7 @@
     "onCommand:markdown.showSource",
     "onCommand:markdown.showPreviewSecuritySelector",
     "onCommand:markdown.api.render",
-		"onCommand:notebook.showPreview",
+    "onCommand:notebook.showPreview",
     "onWebviewPanel:markdown.preview",
     "onCustomEditor:vscode.markdown.preview.editor"
   ],
@@ -337,6 +337,9 @@
     "@types/markdown-it": "0.0.2",
     "@types/node": "^12.19.9",
     "lodash.throttle": "^4.1.1"
-		"vscode": "^1.1.10",
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/microsoft/vscode.git"
   }
 }
