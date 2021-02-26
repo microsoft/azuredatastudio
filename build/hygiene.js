@@ -12,7 +12,6 @@ const vfs = require('vinyl-fs');
 const path = require('path');
 const fs = require('fs');
 const pall = require('p-all');
-const { all, copyrightFilter, indentationFilter, jsHygieneFilter, tsHygieneFilter } = require('./filters');
 
 /**
  * Hygiene works by creating cascading subsets of all our files and
