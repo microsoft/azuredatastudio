@@ -24,7 +24,7 @@ export class PostgresCoordinatorNodeParametersPage extends PostgresParametersPag
 	}
 
 	protected get icon(): { dark: string; light: string; } {
-		return IconPathHelper.gear;
+		return IconPathHelper.gearGray;
 	}
 
 	protected get description(): string {
