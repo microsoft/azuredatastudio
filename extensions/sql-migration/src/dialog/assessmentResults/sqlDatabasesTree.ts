@@ -4,8 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import { AssessmentDialogComponent } from './model/assessmentDialogComponent';
+import { Issues } from './assessmentResultsDialog';
 
 export class SqlDatabaseTree extends AssessmentDialogComponent {
+
+	// private _assessmentData: Map<string, Issues[]>;
+
+	constructor(assessmentData: Map<string, Issues[]>) {
+		super();
+		// this._assessmentData = assessmentData;
+	}
+
 	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
 
 		return view.modelBuilder.divContainer().withItems([
@@ -89,4 +98,5 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 		return table.component();
 	}
+
 }
