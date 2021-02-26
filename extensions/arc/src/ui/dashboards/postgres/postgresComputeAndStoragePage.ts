@@ -678,7 +678,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.editWorkerNodeCount();
 		this.editWorkerCores();
 		this.editWorkerMemory();
+		/* TODO perform once Coordinator section is in view
 		this.editCoordinatorCores();
-		this.editCoordinatorMemory();
+		this.editCoordinatorMemory(); */
 	}
 }
