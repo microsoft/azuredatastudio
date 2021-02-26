@@ -3,24 +3,26 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./media/button';
-import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef,
-	ViewChild, ElementRef, OnDestroy
-} from '@angular/core';
-
+import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy, ViewChild } from '@angular/core';
 import * as azdata from 'azdata';
 
-import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
-
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { convertSize } from 'sql/base/browser/dom';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { InfoButton } from 'sql/base/browser/ui/infoButton/infoButton';
-import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
-import { convertSize } from 'sql/base/browser/dom';
+import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { attachInfoButtonStyler } from 'sql/platform/theme/common/styler';
+import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
-import { ILogService } from 'vs/platform/log/common/log';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import { ILogService } from 'vs/platform/log/common/log';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+
+enum ButtonType {
+	File = 'File',
+	Normal = 'Normal',
+	Informational = 'Informational'
+}
 
 @Component({
 	selector: 'modelview-button',
@@ -43,7 +45,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 	@Input() modelStore: IModelStore;
 	private _button: Button | InfoButton;
 	public fileType: string = '.sql';
-	private _currentButtonType?: azdata.ButtonType = undefined;
+	private _currentButtonType?: ButtonType = undefined;
 	private _buttonStyler: IDisposable | undefined = undefined;
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
@@ -191,7 +193,11 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 	 */
 	private updateStyler(): void {
 		this._buttonStyler?.dispose();
-		this._buttonStyler = this._register(attachButtonStyler(this._button, this.themeService));
+		if (this.buttonType === ButtonType.Informational) {
+			this._buttonStyler = this._register(attachInfoButtonStyler(this._button, this.themeService));
+		} else {
+			this._buttonStyler = this._register(attachButtonStyler(this._button, this.themeService));
+		}
 	}
 
 	protected get defaultIconHeight(): number {
@@ -212,11 +218,11 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		this.setPropertyFromUI<string>(this.setValueProperties, newValue);
 	}
 
-	public get buttonType(): azdata.ButtonType {
+	public get buttonType(): ButtonType {
 		if (this.isFile === true) {
-			return 'File' as azdata.ButtonType;
+			return ButtonType.File;
 		} else {
-			return this.getPropertyOrDefault((props) => props.buttonType, 'Normal' as azdata.ButtonType);
+			return this.getPropertyOrDefault((props) => props.buttonType, ButtonType.Normal);
 		}
 	}
 
