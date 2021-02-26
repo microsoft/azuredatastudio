@@ -317,5 +317,4 @@ export class BookModel {
 	public get version(): string {
 		return this._bookVersion;
 	}
-
 }
