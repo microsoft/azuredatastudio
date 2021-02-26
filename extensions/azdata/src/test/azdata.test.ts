@@ -473,6 +473,7 @@ describe('azdata', function () {
 		beforeEach(function (): void {
 			showInformationMessageStub = sinon.stub(vscode.window, 'showInformationMessage').returns(Promise.resolve(<any>loc.yes));
 			executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: '', stderr: '' }));
+			sinon.stub(HttpClient, 'getTextContent').resolves(JSON.stringify(releaseJson));
 		});
 
 		it('successful update', async function (): Promise<void> {
