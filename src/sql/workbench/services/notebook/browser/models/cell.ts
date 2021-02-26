@@ -80,6 +80,8 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
 	private _isInjectedParameter: boolean;
+	private _previousChartState: any[] = [];
+	private _outputCounter = 0;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -271,6 +273,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this.cellSourceChanged = true;
 		}
 		this._modelContentChangedEvent = undefined;
+		this.resetPreviousChartState();
 	}
 
 	public get modelContentChangedEvent(): IModelContentChangedEvent {
@@ -486,6 +489,7 @@ export class CellModel extends Disposable implements ICellModel {
 			if (!kernel) {
 				return false;
 			}
+			this._outputCounter = 0;
 			this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunCell)
 				.withAdditionalProperties({ cell_language: kernel.name })
 				.send();
@@ -621,19 +625,28 @@ export class CellModel extends Disposable implements ICellModel {
 		if (this._future) {
 			this._future.dispose();
 		}
-		this.clearOutputs();
+		this.clearOutputs(true);
 		this._future = future;
 		future.setReplyHandler({ handle: (msg) => this.handleReply(msg) });
 		future.setIOPubHandler({ handle: (msg) => this.handleIOPub(msg) });
 		future.setStdInHandler({ handle: (msg) => this.handleSdtIn(msg) });
 	}
 
-	public clearOutputs(): void {
+	public clearOutputs(saveChartState = false): void {
+		if (saveChartState) {
+			this.saveChartStateIfExists();
+		} else {
+			this.resetPreviousChartState();
+			this._outputsIdMap.clear();
+		}
 		this._outputs = [];
-		this._outputsIdMap.clear();
 		this.fireOutputsChanged();
 
 		this.executionCount = undefined;
+	}
+
+	public get previousChartState(): any[] {
+		return this._previousChartState;
 	}
 
 	private fireOutputsChanged(shouldScroll: boolean = false): void {
@@ -700,7 +713,14 @@ export class CellModel extends Disposable implements ICellModel {
 					}
 				}
 				if (!added) {
+					if (this._previousChartState[this._outputCounter]) {
+						if (!output.metadata) {
+							output.metadata = {};
+						}
+						output.metadata.azdata_chartOptions = this._previousChartState[this._outputCounter];
+					}
 					this._outputsIdMap.set(output, { batchId: (<QueryResultId>msg.metadata).batchId, id: (<QueryResultId>msg.metadata).id });
+					this._outputCounter++;
 				}
 				break;
 			case 'execute_result_update':
@@ -1002,5 +1022,17 @@ export class CellModel extends Disposable implements ICellModel {
 				}
 			}));
 		}
+	}
+
+	private saveChartStateIfExists(): void {
+		this._outputs?.forEach(o => {
+			if (o.metadata?.azdata_chartOptions) {
+				this._previousChartState?.push(o.metadata?.azdata_chartOptions);
+			}
+		});
+	}
+
+	private resetPreviousChartState(): void {
+		this._previousChartState = [];
 	}
 }
