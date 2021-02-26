@@ -65,8 +65,9 @@ export class NotebookMarkdownRenderer {
 		}
 		const renderer = new marked.Renderer({ baseUrl: notebookFolder });
 		renderer.image = (href: string, title: string, text: string) => {
-			const attachment = this.findAttachmentIfExists(href, options.cellAttachments);
-			// Attachments are already properly formed, so do not need cleaning
+			const attachment = findAttachmentIfExists(href, options.cellAttachments);
+			// Attachments are already properly formed, so do not need cleaning. Cleaning only takes into account relative/absolute
+			// paths issues, and encoding issues -- neither of which apply to cell attachments.
 			// Attachments are always shown, regardless of notebook trust
 			href = attachment ? attachment : this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
 			let dimensions: string[] = [];
@@ -249,27 +250,30 @@ export class NotebookMarkdownRenderer {
 	setNotebookURI(val: URI) {
 		this._notebookURI = val;
 	}
+}
 
-	/**
-	 * The following is a sample cell attachment from JSON:
-	 *  "attachments": {
-	 *     "test.png": {
-	 *        "image/png": "iVBORw0KGgoAAAANggg==="
-	 *     }
-	 *  }
-	 */
-	findAttachmentIfExists(href: string, cellAttachments: { [key: string]: { [key: string]: string } }): string {
-		if (href.startsWith('attachment:') && cellAttachments) {
-			const imageName = href.replace('attachment:', '');
-			const imageDefinition = cellAttachments[imageName];
-			if (imageDefinition) {
-				for (let i = 0; i < ImageMimeTypes.length; i++) {
-					if (imageDefinition[ImageMimeTypes[i]]) {
-						return `data:${ImageMimeTypes[i]};base64,${imageDefinition[ImageMimeTypes[i]]}`;
-					}
+/**
+* The following is a sample cell attachment from JSON:
+*  "attachments": {
+*     "test.png": {
+*        "image/png": "iVBORw0KGgoAAAANggg==="
+*     }
+*  }
+*
+* In a cell, the above attachment would be referenced in markdown like this:
+* ![altText](attachment:test.png)
+*/
+function findAttachmentIfExists(href: string, cellAttachments: { [key: string]: { [key: string]: string } }): string {
+	if (href.startsWith('attachment:') && cellAttachments) {
+		const imageName = href.replace('attachment:', '');
+		const imageDefinition = cellAttachments[imageName];
+		if (imageDefinition) {
+			for (let i = 0; i < ImageMimeTypes.length; i++) {
+				if (imageDefinition[ImageMimeTypes[i]]) {
+					return `data:${ImageMimeTypes[i]};base64,${imageDefinition[ImageMimeTypes[i]]}`;
 				}
 			}
 		}
-		return '';
 	}
+	return '';
 }
