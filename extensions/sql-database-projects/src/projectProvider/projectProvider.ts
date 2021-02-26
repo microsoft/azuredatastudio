@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as dataworkspace from 'dataworkspace';
+import * as sqldbproj from 'sqldbproj';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
@@ -12,7 +13,7 @@ import { ProjectsController } from '../controllers/projectController';
 import { Project } from '../models/project';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 
-export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvider {
+export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvider, sqldbproj.IExtension {
 	constructor(private projectController: ProjectsController) {
 
 	}
@@ -73,5 +74,15 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 		});
 
 		return vscode.Uri.file(projectFile);
+	}
+
+	/**
+	* Adds the list of files and directories to the project, and saves the project file
+	* @param projectFile The Uri of the project file
+	* @param list list of uris of files and folders to add. Files and folders must already exist. Files and folders must already exist. No files or folders will be added if any do not exist.
+	*/
+	async addToProject(projectFile: vscode.Uri, list: vscode.Uri[]): Promise<void> {
+		const project = await Project.openProject(projectFile.fsPath);
+		await project.addToProject(list);
 	}
 }

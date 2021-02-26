@@ -125,7 +125,7 @@ describe('Project: sqlproj content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		let list: string[] = await testUtils.createListOfFiles(path.dirname(projFilePath));
+		let list: Uri[] = await testUtils.createListOfFiles(path.dirname(projFilePath));
 
 		await project.addToProject(list);
 
@@ -137,13 +137,13 @@ describe('Project: sqlproj content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		let list: string[] = [];
+		let list: Uri[] = [];
 		let testFolderPath: string = await testUtils.createDummyFileStructure(true, list, path.dirname(projFilePath));
 
 		const nonexistentFile = path.join(testFolderPath, 'nonexistentFile.sql');
-		list.push(nonexistentFile);
+		list.push(Uri.file(nonexistentFile));
 
-		await testUtils.shouldThrowSpecificError(async () => await project.addToProject(list), `ENOENT: no such file or directory, stat \'${nonexistentFile}\'`);
+		await testUtils.shouldThrowSpecificError(async () => await project.addToProject(list), constants.fileOrFolderDoesNotExist(Uri.file(nonexistentFile).fsPath));
 	});
 
 	it('Should choose correct master dacpac', async function (): Promise<void> {
