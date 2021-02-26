@@ -578,7 +578,6 @@ describe('azdata', function () {
 
 		describe('discoverLatestAvailableAzdataVersion', function (): void {
 			it('finds latest available version of azdata successfully', async function (): Promise<void> {
-				sinon.stub(HttpClient, 'getTextContent').resolves(JSON.stringify(releaseJson));
 				await azdata.discoverLatestAvailableAzdataVersion();
 			});
 		});
@@ -707,7 +706,6 @@ async function testWin32UnsuccessfulUpdate() {
 }
 
 async function testLinuxSuccessfulUpdate(userRequested = false) {
-	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: '0.0.0', stderr: '' }));
 	executeSudoCommandStub.resolves({ stdout: '0.0.0', stderr: '' });
 	await azdata.checkAndUpdateAzdata(oldAzdataMock, userRequested);
@@ -741,7 +739,6 @@ async function testDarwinSuccessfulUpdate(userRequested = false) {
 
 
 async function testWin32SuccessfulUpdate(userRequested = false) {
-	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
 	await azdata.checkAndUpdateAzdata(oldAzdataMock, userRequested);
 	should(executeSudoCommandStub.calledOnce).be.true('executeSudoCommand should have been called once');
@@ -749,7 +746,6 @@ async function testWin32SuccessfulUpdate(userRequested = false) {
 }
 
 async function testLinuxSkippedUpdate() {
-	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	executeSudoCommandStub.resolves({ stdout: '0.0.0', stderr: '' });
 	await azdata.checkAndUpdateAzdata(currentAzdataMock);
 	should(executeSudoCommandStub.callCount).be.equal(0, 'executeSudoCommand was not expected to be called');
@@ -779,14 +775,12 @@ async function testDarwinSkippedUpdateDontPrompt() {
 }
 
 async function testWin32SkippedUpdateDontPrompt() {
-	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
 	await azdata.checkAndUpdateAzdata(oldAzdataMock);
 	should(executeSudoCommandStub.notCalled).be.true('executeSudoCommand should not have been called');
 }
 
 async function testLinuxSkippedUpdateDontPrompt() {
-	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: '0.0.0', stderr: '' }));
 	executeSudoCommandStub.resolves({ stdout: '0.0.0', stderr: '' });
 	await azdata.checkAndUpdateAzdata(oldAzdataMock);
@@ -817,7 +811,6 @@ async function testDarwinSkippedUpdate() {
 }
 
 async function testWin32SkippedUpdate() {
-	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
 	await azdata.checkAndUpdateAzdata(currentAzdataMock);
 	should(executeSudoCommandStub.notCalled).be.true('executeSudoCommand should not have been called');
@@ -850,7 +843,6 @@ async function testLinuxSkippedInstall() {
 }
 
 async function testWin32SkippedInstall() {
-	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
 	sinon.stub(childProcess, 'executeCommand')
 		.onFirstCall()
@@ -864,7 +856,6 @@ async function testWin32SkippedInstall() {
 }
 
 async function testWin32SuccessfulInstall() {
-	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand')
 		.onFirstCall()
