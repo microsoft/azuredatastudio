@@ -25,6 +25,10 @@ export class UriHandlerService implements vscode.UriHandler {
 			const wizardParams = JSON.parse(params.find(param => param[0] === 'params')?.[1] ?? '{}');
 
 			const resourceType = this._resourceTypeService.getResourceTypes().find(type => type.name === paramType);
+			if (paramType && !resourceType) {
+				console.warn(`Unknown resource type ${paramType}`);
+			}
+
 			if (resourceType) {
 				this._resourceTypeService.startDeployment(resourceType, undefined, wizardParams);
 			} else {
