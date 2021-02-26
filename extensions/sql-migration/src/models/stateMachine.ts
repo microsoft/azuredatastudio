@@ -421,7 +421,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		const requestBody: StartDatabaseMigrationRequest = {
 			location: this._migrationController?.properties.location!,
 			properties: {
-				SourceDatabaseName: currentConnection?.databaseName!,
+				SourceDatabaseName: '',
 				MigrationController: this._migrationController?.id!,
 				BackupConfiguration: {
 					TargetLocation: {
@@ -445,26 +445,32 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 		};
 
-		const response = await startDatabaseMigration(
-			this._azureAccount,
-			this._targetSubscription,
-			this._targetManagedInstance.resourceGroup!,
-			this._migrationController?.properties.location!,
-			this._targetManagedInstance.name,
-			currentConnection?.databaseName!,
-			requestBody
-		);
+		this._migrationDbs.forEach(async (db) => {
 
-		if (response.status === 201) {
-			MigrationLocalStorage.saveMigration(
-				currentConnection!,
-				response.databaseMigration,
-				this._targetManagedInstance,
+			requestBody.properties.SourceDatabaseName = db;
+			const response = await startDatabaseMigration(
 				this._azureAccount,
 				this._targetSubscription,
-				this._migrationController
+				this._targetManagedInstance.resourceGroup!,
+				this._migrationController?.properties.location!,
+				this._targetManagedInstance.name,
+				currentConnection?.databaseName!,
+				requestBody
 			);
-		}
+
+			if (response.status === 201) {
+				MigrationLocalStorage.saveMigration(
+					currentConnection!,
+					response.databaseMigration,
+					this._targetManagedInstance,
+					this._azureAccount,
+					this._targetSubscription,
+					this._migrationController
+				);
+			}
+
+			vscode.window.showInformationMessage(`Starting migration for database ${db} to ${this._targetManagedInstance.name}`);
+		});
 
 		vscode.window.showInformationMessage(constants.MIGRATION_STARTED);
 	}

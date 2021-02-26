@@ -42,7 +42,7 @@ export class SummaryPage extends MigrationWizardPage {
 				createInformationRow(this._view, constants.TYPE, constants.SUMMARY_MI_TYPE),
 				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
 				createInformationRow(this._view, constants.SUMMARY_MI_TYPE, this.migrationStateModel._targetManagedInstance.name),
-				createInformationRow(this._view, constants.SUMMARY_DATABASE_COUNT_LABEL, '1'),
+				createInformationRow(this._view, constants.SUMMARY_DATABASE_COUNT_LABEL, this.migrationStateModel._migrationDbs.length.toString()),
 				createHeadingTextComponent(this._view, constants.DATABASE_BACKUP_PAGE_TITLE),
 				this.createNetworkContainerRows(),
 				createHeadingTextComponent(this._view, constants.IR_PAGE_TITLE),
