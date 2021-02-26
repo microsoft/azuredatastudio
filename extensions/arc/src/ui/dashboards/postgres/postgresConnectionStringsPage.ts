@@ -95,7 +95,6 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 	}
 
 	private handleServiceUpdated() {
-		this.connectionStringsLoading.loading = true;
 		this.keyValueContainer?.refresh(this.getConnectionStrings());
 		this.connectionStringsLoading.loading = false;
 	}
