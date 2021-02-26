@@ -413,7 +413,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		return [
 			this.createWorkerNodesSectionContainer(),
-			this.createCoresMemorySection(loc.configurationPerNode, loc.workerNodesConfigurationInformation),
+			this.createCoresMemorySection(loc.configurationPerNode, loc.postgresConfigurationInformation),	// use loc.workerNodesConfigurationInformation when coordinator section is included
 			this.createConfigurationSectionContainer(loc.coresRequest, this.workerCoresRequestBox!),
 			this.createConfigurationSectionContainer(loc.coresLimit, this.workerCoresLimitBox!),
 			this.createConfigurationSectionContainer(loc.memoryRequest, this.workerMemoryRequestBox!),
