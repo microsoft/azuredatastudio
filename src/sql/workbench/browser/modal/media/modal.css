@@ -21,7 +21,7 @@
 .modal:not(.flyout-dialog):not(.callout-dialog) .modal-dialog {
 	margin: auto;
 	width: 640px;
-	height: 480px;
+	max-height: 480px;
 }
 
 .modal .modal-header {
