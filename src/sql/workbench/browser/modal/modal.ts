@@ -534,7 +534,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		} else {
 			DOM.append(this._rightFooter!, footerButton);
 		}
-
+		attachButtonStyler(button, this._themeService);
 		this._footerButtons.push(button);
 		return button;
 	}
