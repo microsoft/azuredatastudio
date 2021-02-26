@@ -274,7 +274,7 @@ registerAction2(class extends NotebookCellAction<ICellRange> {
 
 	getCellContextFromArgs(accessor: ServicesAccessor, context?: ICellRange, ...additionalArgs: any[]): INotebookCellActionContext | undefined {
 		if (!context || typeof context.start !== 'number' || typeof context.end !== 'number' || context.start >= context.end) {
-			return undefined; // {{ SQL CARBON EDIT }}
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		if (additionalArgs.length && additionalArgs[0]) {
@@ -296,7 +296,7 @@ registerAction2(class extends NotebookCellAction<ICellRange> {
 		const activeEditorContext = this.getEditorContextFromArgsOrActive(accessor);
 
 		if (!activeEditorContext || !activeEditorContext.notebookEditor.viewModel || context.start >= activeEditorContext.notebookEditor.viewModel.viewCells.length) {
-			return undefined; // {{ SQL CARBON EDIT }}
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		const cells = activeEditorContext.notebookEditor.viewModel.viewCells;
@@ -350,7 +350,7 @@ registerAction2(class extends NotebookCellAction<ICellRange> {
 
 	getCellContextFromArgs(accessor: ServicesAccessor, context?: ICellRange, ...additionalArgs: any[]): INotebookCellActionContext | undefined {
 		if (!context || typeof context.start !== 'number' || typeof context.end !== 'number' || context.start >= context.end) {
-			return undefined; // {{ SQL CARBON EDIT }}
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		if (additionalArgs.length && additionalArgs[0]) {
@@ -372,7 +372,7 @@ registerAction2(class extends NotebookCellAction<ICellRange> {
 		const activeEditorContext = this.getEditorContextFromArgsOrActive(accessor);
 
 		if (!activeEditorContext || !activeEditorContext.notebookEditor.viewModel || context.start >= activeEditorContext.notebookEditor.viewModel.viewCells.length) {
-			return undefined; // {{ SQL CARBON EDIT }}
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		const cells = activeEditorContext.notebookEditor.viewModel.viewCells;

@@ -243,7 +243,7 @@ export class ExtHostPseudoterminal implements ITerminalChildProcess {
 			});
 		}
 		if (this._pty.onDidOverrideDimensions) {
-			this._pty.onDidOverrideDimensions(e => this._onProcessOverrideDimensions.fire(e ? { cols: e.columns, rows: e.rows } : undefined)); // {{SQL CARBONEDIT}} strict-null-checks
+			this._pty.onDidOverrideDimensions(e => this._onProcessOverrideDimensions.fire(e ? { cols: e.columns, rows: e.rows } : undefined)); // {{SQL CARBON EDIT}} strict-null-checks
 		}
 
 		this._pty.open(initialDimensions ? initialDimensions : undefined);

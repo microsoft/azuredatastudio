@@ -8,7 +8,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { IExtension, IScannedExtension, ExtensionType, ITranslatedScannedExtension, IExtensionManifest } from 'vs/platform/extensions/common/extensions';
 import { IExtensionManagementService, IGalleryExtension, IExtensionIdentifier, ILocalExtension, InstallOptions } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { URI } from 'vs/base/common/uri';
-import { IWorkspace, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace'; // {{ SQL CARBON EDIT }}
+import { IWorkspace, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace'; // {{SQL CARBON EDIT}}
 import { ExtensionRecommendationReason } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
 
 export interface IExtensionManagementServer {

@@ -31,14 +31,14 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPane';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { coalesce, distinct, flatten } from 'vs/base/common/arrays'; // {{ SQL CARBON EDIT }}
+import { coalesce, distinct, flatten } from 'vs/base/common/arrays'; // {{SQL CARBON EDIT}}
 import { IExperimentService, IExperiment, ExperimentActionType } from 'vs/workbench/contrib/experiments/common/experimentService';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { IListContextMenuEvent } from 'vs/base/browser/ui/list/list';
 import { createErrorWithActions } from 'vs/base/common/errorsWithActions';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IAction, Action, Separator } from 'vs/base/common/actions';
-import { ExtensionIdentifier, ExtensionType, IExtensionDescription, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions'; // {{ SQL CARBON EDIT }}
+import { ExtensionIdentifier, ExtensionType, IExtensionDescription, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
 import { CancelablePromise, createCancelablePromise } from 'vs/base/common/async';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { SeverityIcon } from 'vs/platform/severityIcon/common/severityIcon';

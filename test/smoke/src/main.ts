@@ -21,7 +21,7 @@ import {
 	FileLogger,
 } from '../../automation';
 
-import { main as sqlMain, setup as sqlSetup } from './sql/main'; //{{SQL CARBON EDIT}}
+import { main as sqlMain, setup as sqlSetup } from './sql/main'; // {{SQL CARBON EDIT}}
 /*import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
 import { setup as setupDataLossTests } from './areas/workbench/data-loss.test';
 import { setup as setupDataPreferencesTests } from './areas/preferences/preferences.test';

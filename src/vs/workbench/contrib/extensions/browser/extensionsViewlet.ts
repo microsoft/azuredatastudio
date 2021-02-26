@@ -17,9 +17,15 @@ import { append, $, Dimension, hide, show } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { IExtensionsWorkbenchService, IExtensionsViewPaneContainer, VIEWLET_ID, CloseExtensionDetailsOnViewChangeKey, INSTALL_EXTENSION_FROM_VSIX_COMMAND_ID, DefaultViewsContext, ExtensionsSortByContext, WORKSPACE_RECOMMENDATIONS_VIEW_ID } from '../common/extensions';
-import { InstallLocalExtensionsInRemoteAction, InstallRemoteExtensionsInLocalAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
-import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionsWorkbenchService, IExtensionsViewPaneContainer, VIEWLET_ID, AutoUpdateConfigurationKey, CloseExtensionDetailsOnViewChangeKey, INSTALL_EXTENSION_FROM_VSIX_COMMAND_ID } from '../common/extensions';
+import {
+	ClearExtensionsInputAction, ChangeSortAction, UpdateAllAction, CheckForUpdatesAction, DisableAllAction, EnableAllAction,
+	EnableAutoUpdateAction, DisableAutoUpdateAction, ShowBuiltInExtensionsAction, InstallVSIXAction, SearchCategoryAction,
+	/*RecentlyPublishedExtensionsAction, */ShowInstalledExtensionsAction, ShowOutdatedExtensionsAction, ShowDisabledExtensionsAction,
+	ShowEnabledExtensionsAction, PredefinedExtensionFilterAction, RefreshExtensionsAction
+} from 'vs/workbench/contrib/extensions/browser/extensionsActions';
+import { OpenExtensionAuthoringDocsAction } from 'sql/workbench/contrib/extensions/browser/extensionsActions'; // {{SQL CARBON EDIT}}
+import { IExtensionManagementService, IExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService, IExtensionManagementServerService, IExtensionManagementServer } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
 import { ExtensionsListView, EnabledExtensionsView, DisabledExtensionsView, RecommendedExtensionsView, WorkspaceRecommendedExtensionsView, BuiltInFeatureExtensionsView, BuiltInThemesExtensionsView, BuiltInProgrammingLanguageExtensionsView, ServerInstalledExtensionsView, DefaultRecommendedExtensionsView } from 'vs/workbench/contrib/extensions/browser/extensionsViews';

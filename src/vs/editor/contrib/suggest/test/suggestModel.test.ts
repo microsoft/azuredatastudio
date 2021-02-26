@@ -819,7 +819,7 @@ suite('SuggestModel - TriggerAndCancelOracle', function () {
 			provideCompletionItems(doc, pos) {
 				countB += 1;
 				if (!doc.getWordUntilPosition(pos).word.startsWith('a')) {
-					// {{ SQL CARBON EDIT }} strict null checks
+					// {{SQL CARBON EDIT}} strict null checks
 					return undefined;
 				}
 				return {
