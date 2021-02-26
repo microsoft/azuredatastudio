@@ -40,7 +40,8 @@ import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { ViewPane, IViewPaneOptions, ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPane';
+import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { attachPanelStyler, attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { IViewDescriptorService, IViewContainersRegistry, ViewContainerLocation, Extensions as ViewContainerExtensions, IViewsRegistry } from 'vs/workbench/common/views';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
@@ -61,7 +62,7 @@ export class InsightsDetailPaneContainer extends ViewPaneContainer { }
 
 export const INSIGHTS_DETAIL_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
-	name: nls.localize('insightsDetailView.name', "Insight Details"),
+	title: nls.localize('insightsDetailView.name', "Insight Details"),
 	ctorDescriptor: new SyncDescriptor(InsightsDetailPaneContainer),
 	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Dialog);

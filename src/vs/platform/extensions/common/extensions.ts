@@ -169,8 +169,8 @@ export const EXTENSION_CATEGORIES = [
 	'Programming Languages',
 	'SCM Providers',
 	'Snippets',
-	'Themes',
 	'Testing',
+	'Themes',
 	'Visualization',
 	'Other',
 ];

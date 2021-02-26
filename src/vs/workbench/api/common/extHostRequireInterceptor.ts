@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as performance from 'vs/base/common/performance';
 import { TernarySearchTree } from 'vs/base/common/map';
 import { URI } from 'vs/base/common/uri';
 import { MainThreadTelemetryShape, MainContext } from 'vs/workbench/api/common/extHost.protocol';
@@ -55,7 +56,9 @@ export abstract class RequireInterceptor {
 
 		this._installInterceptor();
 
+		performance.mark('code/extHost/willWaitForConfig');
 		const configProvider = await this._extHostConfiguration.getConfigProvider();
+		performance.mark('code/extHost/didWaitForConfig');
 		const extensionPaths = await this._extHostExtensionService.getExtensionPathIndex();
 
 		this.register(new VSCodeNodeModuleFactory(this._apiFactory.vscode, extensionPaths, this._extensionRegistry, configProvider, this._logService)); // {{SQL CARBON EDIT}} // add node module

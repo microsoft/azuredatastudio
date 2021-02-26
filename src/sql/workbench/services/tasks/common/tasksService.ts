@@ -59,9 +59,7 @@ export class TaskService implements ITaskService {
 		this._taskQueue = new TaskNode('Root');
 		this._onTaskComplete = new Emitter<TaskNode>();
 		this._onAddNewTask = new Emitter<TaskNode>();
-
-		lifecycleService.onBeforeShutdown(event => event.veto(this.beforeShutdown()));
-
+		lifecycleService.onBeforeShutdown(event => event.veto(this.beforeShutdown(), 'veto.taskservice'));
 	}
 
 	/**

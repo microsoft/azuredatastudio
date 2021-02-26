@@ -152,6 +152,12 @@ const DefaultQueryState: IQueryState = {
 	assetTypes: []
 };
 
+type QueryTelemetryData = {
+	filterTypes: string[];
+	sortBy: string;
+	sortOrder: string;
+};
+
 class Query {
 
 	constructor(private state = DefaultQueryState) { }
@@ -202,6 +208,14 @@ class Query {
 	get searchText(): string {
 		const criterium = this.state.criteria.filter(criterium => criterium.filterType === FilterType.SearchText)[0];
 		return criterium && criterium.value ? criterium.value : '';
+	}
+
+	get telemetryData(): QueryTelemetryData {
+		return {
+			filterTypes: this.state.criteria.map(criterium => String(criterium.filterType)),
+			sortBy: String(this.sortBy),
+			sortOrder: String(this.sortOrder)
+		};
 	}
 }
 

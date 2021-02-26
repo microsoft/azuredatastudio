@@ -13,7 +13,7 @@ import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
 import { FileSystemProviderErrorCode, markAsFileSystemProviderError } from 'vs/platform/files/common/files';
 import { RemoteAuthorityResolverErrorCode } from 'vs/platform/remote/common/remoteAuthorityResolver';
-import { addIdToOutput, CellEditType, ICellEditOperation, IDisplayOutput } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { addIdToOutput, CellEditType, ICellEditOperation, ICellOutputEdit, IDisplayOutput, notebookDocumentMetadataDefaults } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import type * as vscode from 'vscode';
 
 function es5ClassCompat(target: Function): any {
@@ -638,7 +638,7 @@ export class WorkspaceEdit implements vscode.WorkspaceEdit {
 	// --- notebook
 
 	replaceNotebookMetadata(uri: URI, value: vscode.NotebookDocumentMetadata, metadata?: vscode.WorkspaceEditEntryMetadata): void {
-		this._edits.push({ _type: FileEditType.Cell, metadata, uri, notebookMetadata: value });
+		this._edits.push({ _type: FileEditType.Cell, metadata, uri, edit: { editType: CellEditType.DocumentMetadata, metadata: { ...notebookDocumentMetadataDefaults, ...value } }, notebookMetadata: value });
 	}
 
 	replaceNotebookCells(uri: URI, start: number, end: number, cells: vscode.NotebookCellData[], metadata?: vscode.WorkspaceEditEntryMetadata): void {
@@ -648,17 +648,27 @@ export class WorkspaceEdit implements vscode.WorkspaceEdit {
 	}
 
 	replaceNotebookCellOutput(uri: URI, index: number, outputs: (vscode.NotebookCellOutput | vscode.CellOutput)[], metadata?: vscode.WorkspaceEditEntryMetadata): void {
-		this._edits.push({
-			_type: FileEditType.Cell, metadata, uri, edit: {
-				editType: CellEditType.Output, index, outputs: outputs.map(output => {
-					if (NotebookCellOutput.isNotebookCellOutput(output)) {
-						return addIdToOutput(output.toJSON());
-					} else {
-						return addIdToOutput(output);
-					}
-				})
-			}
-		});
+		this._editNotebookCellOutput(uri, index, false, outputs, metadata);
+	}
+
+	appendNotebookCellOutput(uri: URI, index: number, outputs: (vscode.NotebookCellOutput | vscode.CellOutput)[], metadata?: vscode.WorkspaceEditEntryMetadata): void {
+		this._editNotebookCellOutput(uri, index, true, outputs, metadata);
+	}
+
+	private _editNotebookCellOutput(uri: URI, index: number, append: boolean, outputs: (vscode.NotebookCellOutput | vscode.CellOutput)[], metadata: vscode.WorkspaceEditEntryMetadata | undefined): void {
+		const edit: ICellOutputEdit = {
+			editType: CellEditType.Output,
+			index,
+			append,
+			outputs: outputs.map(output => {
+				if (NotebookCellOutput.isNotebookCellOutput(output)) {
+					return addIdToOutput(output.toJSON());
+				} else {
+					return addIdToOutput(output);
+				}
+			})
+		};
+		this._edits.push({ _type: FileEditType.Cell, metadata, uri, edit });
 	}
 
 	replaceNotebookCellMetadata(uri: URI, index: number, cellMetadata: vscode.NotebookCellMetadata, metadata?: vscode.WorkspaceEditEntryMetadata): void {
@@ -1276,7 +1286,9 @@ export class CodeLens {
 }
 
 @es5ClassCompat
-export class MarkdownString extends BaseMarkdownString implements vscode.MarkdownString {
+export class MarkdownString implements vscode.MarkdownString {
+
+	readonly #delegate: BaseMarkdownString;
 
 	static isMarkdownString(thing: any): thing is vscode.MarkdownString {
 		if (thing instanceof MarkdownString) {
@@ -1286,8 +1298,43 @@ export class MarkdownString extends BaseMarkdownString implements vscode.Markdow
 	}
 
 	constructor(value?: string, supportThemeIcons: boolean = false) {
-		super(value ?? '', { supportThemeIcons });
+		this.#delegate = new BaseMarkdownString(value, { supportThemeIcons });
 	}
+
+	get value(): string {
+		return this.#delegate.value;
+	}
+	set value(value: string) {
+		this.#delegate.value = value;
+	}
+
+	get isTrusted(): boolean | undefined {
+		return this.#delegate.isTrusted;
+	}
+
+	set isTrusted(value: boolean | undefined) {
+		this.#delegate.isTrusted = value;
+	}
+
+	get supportThemeIcons(): boolean | undefined {
+		return this.#delegate.supportThemeIcons;
+	}
+
+	appendText(value: string): vscode.MarkdownString {
+		this.#delegate.appendText(value);
+		return this;
+	}
+
+	appendMarkdown(value: string): vscode.MarkdownString {
+		this.#delegate.appendMarkdown(value);
+		return this;
+	}
+
+	appendCodeblock(value: string, language?: string): vscode.MarkdownString {
+		this.#delegate.appendCodeblock(language ?? '', value);
+		return this;
+	}
+
 
 }
 
@@ -1295,9 +1342,9 @@ export class MarkdownString extends BaseMarkdownString implements vscode.Markdow
 export class ParameterInformation {
 
 	label: string | [number, number];
-	documentation?: string | MarkdownString;
+	documentation?: string | vscode.MarkdownString;
 
-	constructor(label: string | [number, number], documentation?: string | MarkdownString) {
+	constructor(label: string | [number, number], documentation?: string | vscode.MarkdownString) {
 		this.label = label;
 		this.documentation = documentation;
 	}
@@ -1307,11 +1354,11 @@ export class ParameterInformation {
 export class SignatureInformation {
 
 	label: string;
-	documentation?: string | MarkdownString;
+	documentation?: string | vscode.MarkdownString;
 	parameters: ParameterInformation[];
 	activeParameter?: number;
 
-	constructor(label: string, documentation?: string | MarkdownString) {
+	constructor(label: string, documentation?: string | vscode.MarkdownString) {
 		this.label = label;
 		this.documentation = documentation;
 		this.parameters = [];
@@ -1334,6 +1381,23 @@ export enum SignatureHelpTriggerKind {
 	Invoke = 1,
 	TriggerCharacter = 2,
 	ContentChange = 3,
+}
+
+@es5ClassCompat
+export class InlineHint {
+	text: string;
+	range: Range;
+	description?: string | vscode.MarkdownString;
+	whitespaceBefore?: boolean;
+	whitespaceAfter?: boolean;
+
+	constructor(text: string, range: Range, description?: string | vscode.MarkdownString, whitespaceBefore?: boolean, whitespaceAfter?: boolean) {
+		this.text = text;
+		this.range = range;
+		this.description = description;
+		this.whitespaceBefore = whitespaceBefore;
+		this.whitespaceAfter = whitespaceAfter;
+	}
 }
 
 export enum CompletionTriggerKind {
@@ -1397,7 +1461,7 @@ export class CompletionItem implements vscode.CompletionItem {
 	kind?: CompletionItemKind;
 	tags?: CompletionItemTag[];
 	detail?: string;
-	documentation?: string | MarkdownString;
+	documentation?: string | vscode.MarkdownString;
 	sortText?: string;
 	filterText?: string;
 	preselect?: boolean;
@@ -2261,9 +2325,6 @@ export class FunctionBreakpoint extends Breakpoint {
 
 	constructor(functionName: string, enabled?: boolean, condition?: string, hitCondition?: string, logMessage?: string) {
 		super(enabled, condition, hitCondition, logMessage);
-		if (!functionName) {
-			throw illegalArgument('functionName');
-		}
 		this.functionName = functionName;
 	}
 }
@@ -2765,10 +2826,7 @@ export class NotebookCellOutput {
 		return obj instanceof NotebookCellOutput;
 	}
 
-	constructor(
-		readonly outputs: NotebookCellOutputItem[],
-		readonly metadata?: Record<string, string | number | boolean>
-	) { }
+	constructor(readonly outputs: NotebookCellOutputItem[]) { }
 
 	toJSON(): IDisplayOutput {
 		let data: { [key: string]: unknown; } = {};
@@ -2821,7 +2879,8 @@ export enum NotebookCellStatusBarAlignment {
 export enum NotebookEditorRevealType {
 	Default = 0,
 	InCenter = 1,
-	InCenterIfOutsideViewport = 2
+	InCenterIfOutsideViewport = 2,
+	AtTop = 3
 }
 
 
@@ -2887,11 +2946,12 @@ export class LinkedEditingRanges {
 //#region Testing
 export enum TestRunState {
 	Unset = 0,
-	Running = 1,
-	Passed = 2,
-	Failed = 3,
-	Skipped = 4,
-	Errored = 5
+	Queued = 1,
+	Running = 2,
+	Passed = 3,
+	Failed = 4,
+	Skipped = 5,
+	Errored = 6
 }
 
 export enum TestMessageSeverity {
@@ -2926,15 +2986,15 @@ export class TestState {
 	}
 }
 
-type AllowedUndefined = 'description' | 'location';
+export type RequiredTestItem = vscode.RequiredTestItem;
 
-/**
- * Test item without any optional properties. Only some properties are
- * permitted to be undefined, but they must still exist.
- */
-export type RequiredTestItem = {
-	[K in keyof Required<vscode.TestItem>]: K extends AllowedUndefined ? vscode.TestItem[K] : Required<vscode.TestItem>[K]
-};
-
+export type TestItem = vscode.TestItem;
 
 //#endregion
+
+export enum ExternalUriOpenerPriority {
+	None = 0,
+	Option = 1,
+	Default = 2,
+	Preferred = 3,
+}

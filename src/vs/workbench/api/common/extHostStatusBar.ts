@@ -10,12 +10,16 @@ import { MainContext, MainThreadStatusBarShape, IMainContext, ICommandDto } from
 import { localize } from 'vs/nls';
 import { CommandsConverter } from 'vs/workbench/api/common/extHostCommands';
 import { DisposableStore } from 'vs/base/common/lifecycle';
-import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { checkProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
 
 export class ExtHostStatusBarEntry implements vscode.StatusBarItem {
 	private static ID_GEN = 0;
-	private static ALLOWED_BACKGROUND_COLORS = new Set<string>(['statusBarItem.errorBackground']);
+
+	private static ALLOWED_BACKGROUND_COLORS = new Map<string, ThemeColor>(
+		[['statusBarItem.errorBackground', new ThemeColor('statusBarItem.errorForeground')]]
+	);
+
+	#proxy: MainThreadStatusBarShape;
+	#commands: CommandsConverter;
 
 	private _id: number;
 	private _alignment: number;
@@ -37,21 +41,18 @@ export class ExtHostStatusBarEntry implements vscode.StatusBarItem {
 	};
 
 	private _timeoutHandle: any;
-	private _proxy: MainThreadStatusBarShape;
-	private _commands: CommandsConverter;
 	private _accessibilityInformation?: vscode.AccessibilityInformation;
-	private _extension?: IExtensionDescription;
 
-	constructor(proxy: MainThreadStatusBarShape, commands: CommandsConverter, id: string, name: string, alignment: ExtHostStatusBarAlignment = ExtHostStatusBarAlignment.Left, priority?: number, accessibilityInformation?: vscode.AccessibilityInformation, extension?: IExtensionDescription) {
+	constructor(proxy: MainThreadStatusBarShape, commands: CommandsConverter, id: string, name: string, alignment: ExtHostStatusBarAlignment = ExtHostStatusBarAlignment.Left, priority?: number, accessibilityInformation?: vscode.AccessibilityInformation) {
+		this.#proxy = proxy;
+		this.#commands = commands;
+
 		this._id = ExtHostStatusBarEntry.ID_GEN++;
-		this._proxy = proxy;
-		this._commands = commands;
 		this._statusId = id;
 		this._statusName = name;
 		this._alignment = alignment;
 		this._priority = priority;
 		this._accessibilityInformation = accessibilityInformation;
-		this._extension = extension;
 	}
 
 	public get id(): number {
@@ -106,10 +107,6 @@ export class ExtHostStatusBarEntry implements vscode.StatusBarItem {
 	}
 
 	public set backgroundColor(color: ThemeColor | undefined) {
-		if (this._extension) {
-			checkProposedApiEnabled(this._extension);
-		}
-
 		if (color && !ExtHostStatusBarEntry.ALLOWED_BACKGROUND_COLORS.has(color.id)) {
 			color = undefined;
 		}
@@ -127,12 +124,12 @@ export class ExtHostStatusBarEntry implements vscode.StatusBarItem {
 		if (typeof command === 'string') {
 			this._command = {
 				fromApi: command,
-				internal: this._commands.toInternal({ title: '', command }, this._internalCommandRegistration),
+				internal: this.#commands.toInternal({ title: '', command }, this._internalCommandRegistration),
 			};
 		} else if (command) {
 			this._command = {
 				fromApi: command,
-				internal: this._commands.toInternal(command, this._internalCommandRegistration),
+				internal: this.#commands.toInternal(command, this._internalCommandRegistration),
 			};
 		} else {
 			this._command = undefined;
@@ -153,7 +150,7 @@ export class ExtHostStatusBarEntry implements vscode.StatusBarItem {
 	public hide(): void {
 		clearTimeout(this._timeoutHandle);
 		this._visible = false;
-		this._proxy.$dispose(this.id);
+		this.#proxy.$dispose(this.id);
 	}
 
 	private update(): void {
@@ -167,9 +164,15 @@ export class ExtHostStatusBarEntry implements vscode.StatusBarItem {
 		this._timeoutHandle = setTimeout(() => {
 			this._timeoutHandle = undefined;
 
+			// If a background color is set, the foreground is determined
+			let color = this._color;
+			if (this._backgroundColor) {
+				color = ExtHostStatusBarEntry.ALLOWED_BACKGROUND_COLORS.get(this._backgroundColor.id);
+			}
+
 			// Set to status bar
-			this._proxy.$setEntry(this.id, this._statusId, this._statusName, this.text, this.tooltip, this._command?.internal, this.color,
-				this.backgroundColor, this._alignment === ExtHostStatusBarAlignment.Left ? MainThreadStatusBarAlignment.LEFT : MainThreadStatusBarAlignment.RIGHT,
+			this.#proxy.$setEntry(this.id, this._statusId, this._statusName, this._text, this._tooltip, this._command?.internal, color,
+				this._backgroundColor, this._alignment === ExtHostStatusBarAlignment.Left ? MainThreadStatusBarAlignment.LEFT : MainThreadStatusBarAlignment.RIGHT,
 				this._priority, this._accessibilityInformation);
 		}, 0);
 	}
@@ -230,8 +233,8 @@ export class ExtHostStatusBar {
 		this._statusMessage = new StatusBarMessage(this);
 	}
 
-	createStatusBarEntry(id: string, name: string, alignment?: ExtHostStatusBarAlignment, priority?: number, accessibilityInformation?: vscode.AccessibilityInformation, extension?: IExtensionDescription): vscode.StatusBarItem {
-		return new ExtHostStatusBarEntry(this._proxy, this._commands, id, name, alignment, priority, accessibilityInformation, extension);
+	createStatusBarEntry(id: string, name: string, alignment?: ExtHostStatusBarAlignment, priority?: number, accessibilityInformation?: vscode.AccessibilityInformation): vscode.StatusBarItem {
+		return new ExtHostStatusBarEntry(this._proxy, this._commands, id, name, alignment, priority, accessibilityInformation);
 	}
 
 	setStatusBarMessage(text: string, timeoutOrThenable?: number | Thenable<any>): Disposable {

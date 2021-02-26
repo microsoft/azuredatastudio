@@ -842,7 +842,7 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 			this.addEventListener(DOM.EventType.MOUSE_MOVE, mouseMove, { passive: true });
 			setTimeout(async () => {
 				if (node instanceof ResolvableTreeItem) {
-					await node.resolve();
+					await node.resolve(undefined);
 				}
 				let tooltip: IMarkdownString | string | undefined = node.tooltip ?? label;
 				if (isHovering && tooltip) {

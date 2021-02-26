@@ -274,8 +274,8 @@ export namespace MarkdownString {
 		if (isCodeblock(markup)) {
 			const { language, value } = markup;
 			res = { value: '```' + language + '\n' + value + '\n```\n' };
-		} else if (htmlContent.isMarkdownString(markup)) {
-			res = markup;
+		} else if (types.MarkdownString.isMarkdownString(markup)) {
+			res = { value: markup.value, isTrusted: markup.isTrusted, supportThemeIcons: markup.supportThemeIcons };
 		} else if (typeof markup === 'string') {
 			res = { value: markup };
 		} else {
@@ -343,7 +343,7 @@ export namespace MarkdownString {
 		return result;
 	}
 
-	export function fromStrict(value: string | types.MarkdownString): undefined | string | htmlContent.IMarkdownString {
+	export function fromStrict(value: string | vscode.MarkdownString): undefined | string | htmlContent.IMarkdownString {
 		if (!value) {
 			return undefined;
 		}
@@ -1015,6 +1015,29 @@ export namespace SignatureHelp {
 	}
 }
 
+export namespace InlineHint {
+
+	export function from(hint: vscode.InlineHint): modes.InlineHint {
+		return {
+			text: hint.text,
+			range: Range.from(hint.range),
+			description: hint.description && MarkdownString.fromStrict(hint.description),
+			whitespaceBefore: hint.whitespaceBefore,
+			whitespaceAfter: hint.whitespaceAfter
+		};
+	}
+
+	export function to(hint: modes.InlineHint): vscode.InlineHint {
+		return new types.InlineHint(
+			hint.text,
+			Range.to(hint.range),
+			htmlContent.isMarkdownString(hint.description) ? MarkdownString.to(hint.description) : hint.description,
+			hint.whitespaceBefore,
+			hint.whitespaceAfter
+		);
+	}
+}
+
 export namespace DocumentLink {
 
 	export function from(link: vscode.DocumentLink): modes.ILink {
@@ -1389,19 +1412,21 @@ export namespace TestState {
 
 
 export namespace TestItem {
-	export function from(item: vscode.TestItem): ITestItem {
+	export function from(item: vscode.TestItem, parentExtId?: string): ITestItem {
 		return {
+			extId: item.id ?? (parentExtId ? `${parentExtId}\0${item.label}` : item.label),
 			label: item.label,
 			location: item.location ? location.from(item.location) : undefined,
-			debuggable: item.debuggable,
+			debuggable: item.debuggable ?? false,
 			description: item.description,
-			runnable: item.runnable,
+			runnable: item.runnable ?? true,
 			state: TestState.from(item.state),
 		};
 	}
 
-	export function to(item: ITestItem): vscode.TestItem {
+	export function toShallow(item: ITestItem): Omit<vscode.RequiredTestItem, 'children'> {
 		return {
+			id: item.extId,
 			label: item.label,
 			location: item.location && location.to({
 				range: item.location.range,

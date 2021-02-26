@@ -20,16 +20,16 @@ if (isWeb || typeof require === 'undefined' || typeof require.__$__nodeRequire !
 	// Running out of sources
 	if (Object.keys(product).length === 0) {
 		Object.assign(product, {
-			version: '1.17.0-dev',
-			vscodeVersion: '1.50.0-dev',
-			nameLong: 'Azure Data Studio Web Dev',
-			nameShort: 'Azure Data Studio Web Dev',
-			applicationName: 'ads-oss',
-			dataFolderName: '.ads-oss',
+			version: '1.27.0-dev',
+			vscodeVersion: '1.53.0-dev',
+			nameLong: isWeb ? 'Azure Data Studio Web Dev' : 'Azure Data Studio Dev',
+			nameShort: isWeb ? 'Azure Data Studio Web Dev' : 'Azure Data Studio Dev',
+			applicationName: 'azuredatastudio-oss',
+			dataFolderName: '.azuredatastudio-oss',
 			urlProtocol: 'azuredatastudio-oss',
 			reportIssueUrl: 'https://github.com/microsoft/azuredatastudio/issues/new',
-			licenseName: 'Source EULA',
-			licenseUrl: 'https://github.com/v/vscode/blob/main/LICENSE.txt',
+			licenseName: 'MIT',
+			licenseUrl: 'https://github.com/microsoft/azuredatastudio/blob/master/LICENSE.txt',
 			extensionAllowedProposedApi: [
 				'ms-vscode.vscode-js-profile-flame',
 				'ms-vscode.vscode-js-profile-table',

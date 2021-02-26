@@ -20,3 +20,8 @@ jobs:
     vmImage: macOS-latest
   steps:
   - template: build/azure-pipelines/darwin/continuous-build-darwin.yml
+
+trigger:
+  branches:
+    exclude:
+    - electron-11.x.y

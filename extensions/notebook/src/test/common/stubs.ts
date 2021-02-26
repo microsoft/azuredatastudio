@@ -31,6 +31,7 @@ export class MockExtensionContext implements vscode.ExtensionContext {
 	globalStorageUri: vscode.Uri;
 	logUri: vscode.Uri;
 	environmentVariableCollection: vscode.EnvironmentVariableCollection;
+	secrets: vscode.SecretStorage;
 }
 
 export class MockOutputChannel implements vscode.OutputChannel {

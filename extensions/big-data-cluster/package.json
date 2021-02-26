@@ -181,7 +181,7 @@
     ]
   },
   "dependencies": {
-    "ads-kerberos": "^1.1.3",
+    "ads-kerberos2": "^1.1.3",
     "request": "^2.88.0",
     "vscode-nls": "^4.0.0"
   },

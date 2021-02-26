@@ -81,7 +81,7 @@ export class ErrorMessageDialog extends Modal {
 			}
 		}, 'left', true);
 		this._copyButton!.icon = {
-			classNames: 'codicon scriptToClipboard'
+			id: 'codicon scriptToClipboard'
 		};
 		this._copyButton!.element.title = copyButtonLabel;
 		this._register(attachButtonStyler(this._copyButton!, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_FOREGROUND }));

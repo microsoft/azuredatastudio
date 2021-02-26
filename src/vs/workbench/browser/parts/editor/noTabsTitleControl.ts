@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/notabstitlecontrol';
 import { EditorResourceAccessor, Verbosity, IEditorInput, IEditorPartOptions, SideBySideEditor } from 'vs/workbench/common/editor';
-import { TitleControl, IToolbarActions } from 'vs/workbench/browser/parts/editor/titleControl';
+import { TitleControl, IToolbarActions, ITitleControlDimensions } from 'vs/workbench/browser/parts/editor/titleControl';
 import { ResourceLabel, IResourceLabel } from 'vs/workbench/browser/labels';
 import { TAB_ACTIVE_FOREGROUND, TAB_UNFOCUSED_ACTIVE_FOREGROUND } from 'vs/workbench/common/theme';
 import { EventType as TouchEventType, GestureEvent, Gesture } from 'vs/base/browser/touch';
@@ -51,7 +51,7 @@ export class NoTabsTitleControl extends TitleControl {
 		// Breadcrumbs
 		this.createBreadcrumbsControl(labelContainer, { showFileIcons: false, showSymbolIcons: true, showDecorationColors: false, breadcrumbsBackground: () => Color.transparent });
 		titleContainer.classList.toggle('breadcrumbs', Boolean(this.breadcrumbsControl));
-		this._register({ dispose: () => titleContainer.classList.remove('breadcrumbs') }); // import to remove because the container is a shared dom node
+		this._register({ dispose: () => titleContainer.classList.remove('breadcrumbs') }); // important to remove because the container is a shared dom node
 
 		// Right Actions Container
 		const actionsContainer = document.createElement('div');
@@ -68,16 +68,16 @@ export class NoTabsTitleControl extends TitleControl {
 		this.enableGroupDragging(titleContainer);
 
 		// Pin on double click
-		this._register(addDisposableListener(titleContainer, EventType.DBLCLICK, (e: MouseEvent) => this.onTitleDoubleClick(e)));
+		this._register(addDisposableListener(titleContainer, EventType.DBLCLICK, e => this.onTitleDoubleClick(e)));
 
 		// Detect mouse click
-		this._register(addDisposableListener(titleContainer, EventType.AUXCLICK, (e: MouseEvent) => this.onTitleAuxClick(e)));
+		this._register(addDisposableListener(titleContainer, EventType.AUXCLICK, e => this.onTitleAuxClick(e)));
 
 		// Detect touch
 		this._register(addDisposableListener(titleContainer, TouchEventType.Tap, (e: GestureEvent) => this.onTitleTap(e)));
 
 		// Context Menu
-		this._register(addDisposableListener(titleContainer, EventType.CONTEXT_MENU, (e: Event) => {
+		this._register(addDisposableListener(titleContainer, EventType.CONTEXT_MENU, e => {
 			if (this.group.activeEditor) {
 				this.onContextMenu(this.group.activeEditor, e, titleContainer);
 			}
@@ -189,7 +189,7 @@ export class NoTabsTitleControl extends TitleControl {
 	}
 
 	updateOptions(oldOptions: IEditorPartOptions, newOptions: IEditorPartOptions): void {
-		if (oldOptions.labelFormat !== newOptions.labelFormat || !equals(oldOptions.tabDecorations, newOptions.tabDecorations)) {
+		if (oldOptions.labelFormat !== newOptions.labelFormat || !equals(oldOptions.decorations, newOptions.decorations)) {
 			this.redraw();
 		}
 	}
@@ -295,8 +295,8 @@ export class NoTabsTitleControl extends TitleControl {
 					italic: !isEditorPinned,
 					extraClasses: ['no-tabs', 'title-label'],
 					fileDecorations: {
-						colors: Boolean(options.tabDecorations?.colors),
-						badges: Boolean(options.tabDecorations?.badges)
+						colors: Boolean(options.decorations?.colors),
+						badges: Boolean(options.decorations?.badges)
 					},
 				}
 			);
@@ -339,9 +339,11 @@ export class NoTabsTitleControl extends TitleControl {
 		};
 	}
 
-	layout(dimension: Dimension): void {
+	layout(dimensions: ITitleControlDimensions): Dimension {
 		if (this.breadcrumbsControl) {
 			this.breadcrumbsControl.layout(undefined);
 		}
+
+		return new Dimension(dimensions.container.width, this.getDimensions().height);
 	}
 }

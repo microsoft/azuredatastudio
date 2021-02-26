@@ -17,7 +17,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 // import { OpenFolderAction, OpenFileFolderAction, OpenFileAction } from 'vs/workbench/browser/actions/workspaceActions';
 // import { ShowAllCommandsAction } from 'vs/workbench/contrib/quickaccess/browser/commandsQuickAccess';
 import { Parts, IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-// import { StartAction } from 'vs/workbench/contrib/debug/browser/debugActions';
 import { FindInFilesActionId } from 'vs/workbench/contrib/search/common/constants';
 import * as dom from 'vs/base/browser/dom';
 import { KeybindingLabel } from 'vs/base/browser/ui/keybindingLabel/keybindingLabel';
@@ -29,7 +28,6 @@ import { NEW_UNTITLED_FILE_COMMAND_ID } from 'vs/workbench/contrib/files/browser
 
 // {{SQL CARBON EDIT}}
 import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-import { OpenDataExplorerViewletAction } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
 
 const $ = dom.$;
 
@@ -40,7 +38,6 @@ interface WatermarkEntry {
 }
 
 // {{SQL CARBON EDIT}}
-const showServers: WatermarkEntry = { text: nls.localize('watermark.showServers', "Show Servers"), id: OpenDataExplorerViewletAction.ID };
 const newSqlFile: WatermarkEntry = { text: nls.localize('watermark.newSqlFile', "New SQL File"), id: NEW_UNTITLED_FILE_COMMAND_ID };
 const newNotebook: WatermarkEntry = { text: nls.localize('watermark.newNotebook', "New Notebook"), id: NewNotebookAction.ID };
 
@@ -58,14 +55,12 @@ const findInFiles: WatermarkEntry = { text: nls.localize('watermark.findInFiles'
 
 // {{SQL CARBON EDIT}} - Replace noFolderEntries and folderEntries
 const noFolderEntries = [
-	showServers,
 	newSqlFile,
 	newNotebook,
 	findInFiles
 ];
 
 const folderEntries = [
-	showServers,
 	newSqlFile,
 	newNotebook,
 	findInFiles

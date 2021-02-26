@@ -16,7 +16,7 @@ import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IViewsService, IViewDescriptorService } from 'vs/workbench/common/views';
-import { ToggleViewAction } from 'vs/workbench/browser/actions/layoutActions';
+import { ToggleViewAction } from 'sql/workbench/browser/actions/layoutActions';
 
 export class ToggleQueryHistoryAction extends ToggleViewAction {
 

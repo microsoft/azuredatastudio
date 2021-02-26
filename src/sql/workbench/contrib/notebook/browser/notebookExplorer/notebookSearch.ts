@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SearchView, SearchUIState } from 'vs/workbench/contrib/search/browser/searchView';
-import { IViewPaneOptions, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { SearchView } from 'vs/workbench/contrib/search/browser/searchView';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPane';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IProgressService } from 'vs/platform/progress/common/progress';
@@ -43,6 +43,7 @@ import { searchClearIcon, searchCollapseAllIcon, searchExpandAllIcon, searchStop
 import { Action, IAction } from 'vs/base/common/actions';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { Memento } from 'vs/workbench/common/memento';
+import { SearchUIState } from 'vs/workbench/contrib/search/common/search';
 
 const $ = dom.$;
 
@@ -116,10 +117,6 @@ export class NotebookSearchView extends SearchView {
 	}
 
 	public updateActions(): void {
-		if (!this.isVisible()) {
-			this.updatedActionsWhileHidden = true;
-		}
-
 		for (const action of this.viewActions) {
 			action.update();
 		}
