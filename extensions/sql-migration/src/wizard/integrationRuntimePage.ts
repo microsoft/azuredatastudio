@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
-import { CreateMigrationControllerDialog } from './createMigrationControllerDialog';
+import { CreateMigrationControllerDialog } from '../dialog/createMigrationDialog/createMigrationControllerDialog';
 import * as constants from '../models/strings';
 import * as os from 'os';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
