@@ -155,8 +155,15 @@ export class WorkspaceService implements IWorkspaceService {
 		return projectTypes;
 	}
 
-	getProjectsInWorkspace(): vscode.Uri[] {
-		return vscode.workspace.workspaceFile ? this.getWorkspaceConfigurationValue<string[]>(ProjectsConfigurationName).map(project => this.toUri(project)) : [];
+	getProjectsInWorkspace(ext?: string): vscode.Uri[] {
+		let projects = vscode.workspace.workspaceFile ? this.getWorkspaceConfigurationValue<string[]>(ProjectsConfigurationName).map(project => this.toUri(project)) : [];
+
+		// filter by specified extension
+		if (ext) {
+			projects = projects.filter(p => p.fsPath.toLowerCase().endsWith(ext.toLowerCase()));
+		}
+
+		return projects;
 	}
 
 	/**
