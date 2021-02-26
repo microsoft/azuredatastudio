@@ -337,5 +337,6 @@
     "@types/markdown-it": "0.0.2",
     "@types/node": "^12.19.9",
     "lodash.throttle": "^4.1.1"
+		"vscode": "^1.1.10",
   }
 }

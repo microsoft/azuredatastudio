@@ -186,6 +186,7 @@
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
-    "@types/request": "^2.48.3"
+    "@types/request": "^2.48.3",
+    "vscode": "^1.1.36"
   }
 }
