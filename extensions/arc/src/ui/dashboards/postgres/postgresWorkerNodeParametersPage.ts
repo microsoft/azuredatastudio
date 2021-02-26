@@ -10,18 +10,20 @@ import { IconPathHelper } from '../../../constants';
 import { PostgresParametersPage } from './postgresParameters';
 import { PostgresModel } from '../../../models/postgresModel';
 
-export class PostgresWorkerNodesParametersPage extends PostgresParametersPage {
+export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 
 	constructor(protected modelView: azdata.ModelView, _postgresModel: PostgresModel) {
 		super(modelView, _postgresModel);
 	}
 
 	protected get title(): string {
-		return loc.workerNodesParameters;
+		// TODO update to loc.workerNodeParameters
+		return loc.nodeParameters;
 	}
 
 	protected get id(): string {
-		return 'postgres-worker-nodes-parameters';
+		// TODO update to 'postgres-worker-node-parameters'
+		return 'postgres-nodes-parameters';
 	}
 
 	protected get icon(): { dark: string; light: string; } {
@@ -29,7 +31,8 @@ export class PostgresWorkerNodesParametersPage extends PostgresParametersPage {
 	}
 
 	protected get description(): string {
-		return loc.workerNodesParametersDescription;
+		// TODO update to loc.workerNodesParametersDescription
+		return loc.nodeParametersDescription;
 	}
 
 	protected async saveParameterEdits(engineSettings: string, session: azdataExt.AzdataSession): Promise<void> {

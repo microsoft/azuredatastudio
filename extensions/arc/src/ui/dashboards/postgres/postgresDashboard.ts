@@ -14,7 +14,7 @@ import { Dashboard } from '../../components/dashboard';
 import { PostgresDiagnoseAndSolveProblemsPage } from './postgresDiagnoseAndSolveProblemsPage';
 import { PostgresSupportRequestPage } from './postgresSupportRequestPage';
 import { PostgresComputeAndStoragePage } from './postgresComputeAndStoragePage';
-import { PostgresWorkerNodesParametersPage } from './postgresWorkerNodesParametersPage';
+import { PostgresWorkerNodeParametersPage } from './postgresWorkerNodeParametersPage';
 import { PostgresPropertiesPage } from './postgresPropertiesPage';
 
 export class PostgresDashboard extends Dashboard {
@@ -37,7 +37,7 @@ export class PostgresDashboard extends Dashboard {
 		const propertiesPage = new PostgresPropertiesPage(modelView, this._controllerModel, this._postgresModel);
 		// TODO Add dashboard once backend is able to be connected for per role server parameter edits.
 		// const coordinatorNodeParametersPage = new PostgresCoordinatorNodeParametersPage(modelView, this._postgresModel);
-		const workerNodesParametersPage = new PostgresWorkerNodesParametersPage(modelView, this._postgresModel);
+		const workerNodeParametersPage = new PostgresWorkerNodeParametersPage(modelView, this._postgresModel);
 		const diagnoseAndSolveProblemsPage = new PostgresDiagnoseAndSolveProblemsPage(modelView, this._context, this._postgresModel);
 		const supportRequestPage = new PostgresSupportRequestPage(modelView, this._controllerModel, this._postgresModel);
 
@@ -49,7 +49,7 @@ export class PostgresDashboard extends Dashboard {
 					propertiesPage.tab,
 					connectionStringsPage.tab,
 					computeAndStoragePage.tab,
-					workerNodesParametersPage.tab
+					workerNodeParametersPage.tab
 				]
 			},
 			{
