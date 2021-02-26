@@ -465,7 +465,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		DOM.append(this.layoutService.container, this._bodyContainer!);
 		this.setInitialFocusedElement();
 
-		this.disposableStore.add(DOM.addDisposableListener(document, DOM.EventType.KEY_UP, (e: KeyboardEvent) => {
+		this.disposableStore.add(DOM.addDisposableListener(document, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			let context = this._modalShowingContext.get()!;
 			if (context[context.length - 1] === this._staticKey) {
 				let event = new StandardKeyboardEvent(e);
@@ -479,6 +479,7 @@ export abstract class Modal extends Disposable implements IThemable {
 					this.handleForwardTab(e);
 				}
 			}
+			DOM.EventHelper.stop(e, false);
 		}));
 		this.disposableStore.add(DOM.addDisposableListener(window, DOM.EventType.RESIZE, (e: Event) => {
 			this.layout(DOM.getTotalHeight(this._modalBodySection!));
