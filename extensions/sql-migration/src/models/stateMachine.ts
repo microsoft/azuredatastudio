@@ -85,7 +85,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetManagedInstance!: SqlManagedInstance;
 
 	public _databaseBackup!: DatabaseBackupModel;
-	public _migrationDbs!: string[];
+	public _migrationDbs: string[] = [];
 	public _storageAccounts!: StorageAccount[];
 	public _fileShares!: azureResource.FileShare[];
 	public _blobContainers!: azureResource.BlobContainer[];
@@ -448,28 +448,32 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._migrationDbs.forEach(async (db) => {
 
 			requestBody.properties.SourceDatabaseName = db;
-			const response = await startDatabaseMigration(
-				this._azureAccount,
-				this._targetSubscription,
-				this._targetManagedInstance.resourceGroup!,
-				this._migrationController?.properties.location!,
-				this._targetManagedInstance.name,
-				currentConnection?.databaseName!,
-				requestBody
-			);
-
-			if (response.status === 201) {
-				MigrationLocalStorage.saveMigration(
-					currentConnection!,
-					response.databaseMigration,
-					this._targetManagedInstance,
+			try {
+				const response = await startDatabaseMigration(
 					this._azureAccount,
 					this._targetSubscription,
-					this._migrationController
+					this._targetManagedInstance.resourceGroup!,
+					this._migrationController?.properties.location!,
+					this._targetManagedInstance.name,
+					currentConnection?.databaseName!,
+					requestBody
 				);
+
+				if (response.status === 201) {
+					MigrationLocalStorage.saveMigration(
+						currentConnection!,
+						response.databaseMigration,
+						this._targetManagedInstance,
+						this._azureAccount,
+						this._targetSubscription,
+						this._migrationController
+					);
+					vscode.window.showInformationMessage(`Starting migration for database ${db} to ${this._targetManagedInstance.name}`);
+				}
+			} catch (e) {
+				vscode.window.showInformationMessage(e);
 			}
 
-			vscode.window.showInformationMessage(`Starting migration for database ${db} to ${this._targetManagedInstance.name}`);
 		});
 
 		vscode.window.showInformationMessage(constants.MIGRATION_STARTED);

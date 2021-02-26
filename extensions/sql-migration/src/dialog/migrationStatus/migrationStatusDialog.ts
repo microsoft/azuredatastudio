@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
-import { MigrationStatusDialogModel } from './migrationStatusDialogModel';
+import { MigrationCategory, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 
 export class MigrationStatusDialog {
 	private _model: MigrationStatusDialogModel;
@@ -18,7 +19,7 @@ export class MigrationStatusDialog {
 	private _statusDropdown!: azdata.DropDownComponent;
 	private _statusTable!: azdata.DeclarativeTableComponent;
 
-	constructor(migrations: MigrationContext[], private _filter: string) {
+	constructor(migrations: MigrationContext[], private _filter: MigrationCategory) {
 		this._model = new MigrationStatusDialogModel(migrations);
 		this._dialogObject = azdata.window.createModelViewDialog('Migration Status', 'MigrationControllerDialog', 'wide');
 	}
@@ -30,16 +31,14 @@ export class MigrationStatusDialog {
 
 			this._statusDropdown = this._view.modelBuilder.dropDown().withProps({
 				values: this._model.statusDropdownValues,
-				value: {
-					name: `Status: ${this._filter}`,
-					displayName: this._filter
-				},
 				width: '220px'
 			}).component();
 
 			this._statusDropdown.onValueChanged((value) => {
 				this.populateMigrationTable();
 			});
+
+			this._statusDropdown.value = this._statusDropdown.values![this._filter];
 
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
@@ -139,6 +138,7 @@ export class MigrationStatusDialog {
 				url: ''
 			}).component();
 			sqlMigrationName.onDidClick((e) => {
+				vscode.window.showInformationMessage('Feature coming soon');
 			});
 
 			const sqlMigrationContainer = this._view.modelBuilder.flexContainer().withProps({

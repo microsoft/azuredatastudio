@@ -6,7 +6,6 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { WizardController } from './wizard/wizardController';
-import { AssessmentResultsDialog } from './dialog/assessmentResults/assessmentResultsDialog';
 import { promises as fs } from 'fs';
 import * as loc from './models/strings';
 import { MigrationNotebookInfo, NotebookPathHelper } from './constants/notebookPathHelper';
@@ -43,10 +42,10 @@ class SQLMigration {
 				await wizardController.openWizard(connectionId);
 			}),
 
-			vscode.commands.registerCommand('sqlmigration.testDialog', async () => {
-				let dialog = new AssessmentResultsDialog('ownerUri', undefined!, 'Assessment Dialog');
-				await dialog.openDialog();
-			}),
+			// vscode.commands.registerCommand('sqlmigration.testDialog', async () => {
+			// 	let dialog = new AssessmentResultsDialog('ownerUri', undefined!, 'Assessment Dialog');
+			// 	await dialog.openDialog();
+			// }),
 
 			vscode.commands.registerCommand('sqlmigration.openNotebooks', async () => {
 				const input = vscode.window.createQuickPick<MigrationNotebookInfo>();

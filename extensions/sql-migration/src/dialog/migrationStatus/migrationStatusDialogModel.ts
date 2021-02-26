@@ -48,3 +48,9 @@ export class MigrationStatusDialogModel {
 		return filteredMigration;
 	}
 }
+
+export enum MigrationCategory {
+	ALL,
+	ONGOING,
+	SUCCEEDED
+}

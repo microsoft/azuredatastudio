@@ -10,6 +10,7 @@ import * as loc from '../models/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { getDatabaseMigration } from '../api/azure';
 import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatusDialog';
+import { MigrationCategory } from '../dialog/migrationStatus/migrationStatusDialogModel';
 
 interface IActionMetadata {
 	title?: string,
@@ -209,7 +210,7 @@ export class DashboardWidget {
 			inProgressMigrations.length
 		);
 		inProgressMigrationButton.onDidClick((e) => {
-			const dialog = new MigrationStatusDialog(migrationStatus, 'Ongoing');
+			const dialog = new MigrationStatusDialog(migrationStatus, MigrationCategory.ONGOING);
 			dialog.initialize();
 		});
 		this._migrationStatusCardsContainer.addItem(inProgressMigrationButton);
@@ -225,7 +226,7 @@ export class DashboardWidget {
 			successfulMigration.length
 		);
 		successfulMigrationButton.onDidClick((e) => {
-			const dialog = new MigrationStatusDialog(migrationStatus, 'Succeeded');
+			const dialog = new MigrationStatusDialog(migrationStatus, MigrationCategory.SUCCEEDED);
 			dialog.initialize();
 		});
 		this._migrationStatusCardsContainer.addItem(
@@ -241,14 +242,17 @@ export class DashboardWidget {
 				return value.migrationContext.properties.sourceDatabaseName;
 			}));
 		const serverDatabases = await azdata.connection.listDatabases(currentConnection.connectionId);
-
+		const notStartedMigrationCard = this.createStatusCard(
+			IconPathHelper.notStartedMigration,
+			'Migration not started',
+			'Choose to migrate to Azure SQL',
+			serverDatabases.length - migrationDatabases.size
+		);
+		notStartedMigrationCard.onDidClick((e) => {
+			vscode.window.showInformationMessage('Feature coming soon');
+		});
 		this._migrationStatusCardsContainer.addItem(
-			this.createStatusCard(
-				IconPathHelper.notStartedMigration,
-				'Migration not started',
-				'Choose to migrate to Azure SQL',
-				serverDatabases.length - migrationDatabases.size
-			)
+			notStartedMigrationCard
 		);
 		this._migrationStatusCardLoadingContainer.loading = false;
 	}
@@ -319,9 +323,8 @@ export class DashboardWidget {
 			CSSStyles: {
 				'width': '400px',
 				'height': '50px',
-				'border': 'solid',
 				'margin-top': '10px',
-				'border-width': '1px'
+				'box-shadow': '0 1px 2px 0 rgba(0,0,0,0.2)'
 			}
 		}).component();
 
@@ -405,7 +408,7 @@ export class DashboardWidget {
 		}).component();
 
 		viewAllButton.onDidClick(async (e) => {
-			new MigrationStatusDialog(await this.getMigrations(), 'All').initialize();
+			new MigrationStatusDialog(await this.getMigrations(), MigrationCategory.ALL).initialize();
 		});
 
 		const refreshButton = view.modelBuilder.hyperlink().withProps({

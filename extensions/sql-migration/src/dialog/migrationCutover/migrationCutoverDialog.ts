@@ -171,9 +171,10 @@ export class MigrationCutoverDialog {
 			});
 
 			this._fileCount = view.modelBuilder.text().withProps({
-				width: '150px',
+				width: '500px',
 				CSSStyles: {
-					'width': '150px'
+					'font-size': '14px',
+					'font-weight': 'bold'
 				}
 			}).component();
 

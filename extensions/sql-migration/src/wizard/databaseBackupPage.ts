@@ -9,7 +9,7 @@ import { getStorageAccountAccessKeys } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationCutover, MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../models/strings';
-
+import * as vscode from 'vscode';
 export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private _networkShareContainer!: azdata.FlexContainer;
@@ -85,7 +85,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		blobContainerButton.onDidChangeCheckedState((e) => {
 			if (e) {
-				this.toggleNetworkContainerFields(NetworkContainerType.BLOB_CONTAINER);
+				vscode.window.showInformationMessage('Feature coming soon');
+				networkShareButton.checked = true;
+				//this.toggleNetworkContainerFields(NetworkContainerType.BLOB_CONTAINER);
 			}
 		});
 
@@ -97,7 +99,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		fileShareButton.onDidChangeCheckedState((e) => {
 			if (e) {
-				this.toggleNetworkContainerFields(NetworkContainerType.FILE_SHARE);
+				vscode.window.showInformationMessage('Feature coming soon');
+				networkShareButton.checked = true;
+				//this.toggleNetworkContainerFields(NetworkContainerType.FILE_SHARE);
 			}
 		});
 
@@ -414,7 +418,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		offlineButton.onDidChangeCheckedState((e) => {
 			if (e) {
-				this.migrationStateModel._databaseBackup.migrationCutover = MigrationCutover.OFFLINE;
+				vscode.window.showInformationMessage('Feature coming soon');
+				onlineButton.checked = true;
+				//this.migrationStateModel._databaseBackup.migrationCutover = MigrationCutover.OFFLINE;
 			}
 		});
 
@@ -489,7 +495,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	public async onPageLeave(): Promise<void> {
 		this.migrationStateModel._databaseBackup.storageKey = (await getStorageAccountAccessKeys(this.migrationStateModel._azureAccount, this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.storageAccount)).keyName1;
-		console.log(this.migrationStateModel._databaseBackup);
+		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+			return true;
+		});
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
