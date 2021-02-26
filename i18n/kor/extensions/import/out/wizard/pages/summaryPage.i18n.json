@@ -13,5 +13,5 @@
 	"flatFileImport.tableName": "테이블 이름",
 	"flatFileImport.tableSchema": "테이블 스키마",
 	"flatFileImport.fileImport": "가져올 파일",
-	"flatFileImport.success.norows": "✔ 테이블에 데이터 입력이 완료되었습니다."
+	"flatFileImport.success.norows": "✔ 테이블에 데이터를 입력했습니다."
 }

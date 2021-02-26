@@ -16,7 +16,8 @@ import { Selection } from 'vs/editor/common/core/selection';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
-import { CalloutDialog, CalloutType } from 'sql/workbench/browser/modal/calloutDialog';
+import { ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
+import { LinkCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/linkCalloutDialog';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -130,7 +131,8 @@ export class TransformMarkdownAction extends Action {
 }
 
 export class MarkdownTextTransformer {
-	private _callout: CalloutDialog;
+	private _imageCallout: ImageCalloutDialog;
+	private _linkCallout: LinkCalloutDialog;
 	private readonly insertLinkHeading = localize('callout.insertLinkHeading', "Insert link");
 	private readonly insertImageHeading = localize('callout.insertImageHeading', "Insert image");
 
@@ -208,24 +210,28 @@ export class MarkdownTextTransformer {
 		const triggerPosY = triggerElement.getBoundingClientRect().top;
 		const triggerHeight = triggerElement.offsetHeight;
 		const triggerWidth = triggerElement.offsetWidth;
+		const dialogProperties = { xPos: triggerPosX, yPos: triggerPosY, width: triggerWidth, height: triggerHeight };
+		let calloutOptions;
 		/**
 		 * Width value here reflects designs for Notebook callouts.
 		 */
 		const width: DialogWidth = 452;
 
-		const calloutType: CalloutType = type === MarkdownButtonType.IMAGE_PREVIEW ? 'IMAGE' : 'LINK';
-
-		let title = type === MarkdownButtonType.IMAGE_PREVIEW ? this.insertImageHeading : this.insertLinkHeading;
-
-		if (!this._callout) {
-			const dialogProperties = { xPos: triggerPosX, yPos: triggerPosY, width: triggerWidth, height: triggerHeight };
-			this._callout = this._instantiationService.createInstance(CalloutDialog, calloutType, title, width, dialogProperties);
-			this._callout.render();
+		if (type === MarkdownButtonType.IMAGE_PREVIEW) {
+			if (!this._imageCallout) {
+				this._imageCallout = this._instantiationService.createInstance(ImageCalloutDialog, this.insertImageHeading, width, dialogProperties);
+				this._imageCallout.render();
+				calloutOptions = await this._imageCallout.open();
+				calloutOptions.insertTitle = this.insertImageHeading;
+			}
+		} else {
+			if (!this._linkCallout) {
+				this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, width, dialogProperties);
+				this._linkCallout.render();
+				calloutOptions = await this._linkCallout.open();
+				calloutOptions.insertTitle = this.insertLinkHeading;
+			}
 		}
-		let calloutOptions = await this._callout.open();
-		calloutOptions.insertTitle = title;
-		calloutOptions.calloutType = calloutType;
-
 		return calloutOptions.insertMarkup;
 	}
 

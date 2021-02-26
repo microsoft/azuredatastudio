@@ -32,7 +32,8 @@ export class TempTargetSelectionPage extends MigrationWizardPage {
 		this._managedInstanceSubscriptionDropdown.onValueChanged((e) => {
 			if (e.selected) {
 				this.migrationStateModel._targetSubscription = this.migrationStateModel.getSubscription(e.index);
-				this.migrationStateModel._targetManagedInstances = undefined!;
+				this.migrationStateModel._targetManagedInstance = undefined!;
+				this.migrationStateModel._migrationController = undefined!;
 				this.populateManagedInstanceDropdown();
 			}
 		});
@@ -47,7 +48,7 @@ export class TempTargetSelectionPage extends MigrationWizardPage {
 			}).component();
 		this._managedInstanceDropdown.onValueChanged((e) => {
 			if (e.selected) {
-				this.migrationStateModel.migrationControllers = undefined!;
+				this.migrationStateModel._migrationControllers = undefined!;
 				this.migrationStateModel._targetManagedInstance = this.migrationStateModel.getManagedInstance(e.index);
 			}
 		});
@@ -77,35 +78,34 @@ export class TempTargetSelectionPage extends MigrationWizardPage {
 		this.populateSubscriptionDropdown();
 	}
 	public async onPageLeave(): Promise<void> {
-		console.log(this.migrationStateModel._targetSubscription);
-		console.log(this.migrationStateModel._targetManagedInstance);
 	}
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
 	}
 
 	private async populateSubscriptionDropdown(): Promise<void> {
-		this._managedInstanceSubscriptionDropdown.loading = true;
-		this._managedInstanceDropdown.loading = true;
-
-		try {
-			this._managedInstanceSubscriptionDropdown.values = await this.migrationStateModel.getSubscriptionsDropdownValues();
-			this.migrationStateModel._targetSubscription = this.migrationStateModel.getSubscription(0);
-		} catch (e) {
-			this.migrationStateModel._targetManagedInstances = undefined!;
-		} finally {
-			this.populateManagedInstanceDropdown();
-			this._managedInstanceSubscriptionDropdown.loading = false;
-			this._managedInstanceDropdown.loading = false;
+		if (!this.migrationStateModel._targetSubscription) {
+			this._managedInstanceSubscriptionDropdown.loading = true;
+			this._managedInstanceDropdown.loading = true;
+			try {
+				this._managedInstanceSubscriptionDropdown.values = await this.migrationStateModel.getSubscriptionsDropdownValues();
+			} catch (e) {
+				console.log(e);
+			} finally {
+				this._managedInstanceSubscriptionDropdown.loading = false;
+			}
 		}
 	}
 
 	private async populateManagedInstanceDropdown(): Promise<void> {
-		this._managedInstanceDropdown.loading = true;
-		try {
-			this._managedInstanceDropdown.values = await this.migrationStateModel.getManagedInstanceValues(this.migrationStateModel._targetSubscription);
-			this.migrationStateModel._targetManagedInstance = this.migrationStateModel.getManagedInstance(0);
-		} finally {
-			this._managedInstanceDropdown.loading = false;
+		if (!this.migrationStateModel._targetManagedInstance) {
+			this._managedInstanceDropdown.loading = true;
+			try {
+				this._managedInstanceDropdown.values = await this.migrationStateModel.getManagedInstanceValues(this.migrationStateModel._targetSubscription);
+			} catch (e) {
+				console.log(e);
+			} finally {
+				this._managedInstanceDropdown.loading = false;
+			}
 		}
 	}
 }

@@ -8,6 +8,6 @@
 	],
 	"connectionError": "Error de conexión",
 	"kerberosErrorStart": "Error en la conexión debido a un error de Kerberos.",
-	"kerberosHelpLink": "Ayuda para configurar Kerberos está disponible en {0}",
+	"kerberosHelpLink": "La ayuda para configurar Kerberos está disponible en {0}",
 	"kerberosKinit": "Si se ha conectado anteriormente puede que necesite volver a ejecutar kinit."
 }

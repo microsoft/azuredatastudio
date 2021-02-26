@@ -99,6 +99,10 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		if ((<FilterableColumn<T>>column).filterable === false) {
 			return;
 		}
+		if (args.node.classList.contains('slick-header-with-filter')) {
+			// the the filter button has already being added to the header
+			return;
+		}
 		args.node.classList.add('slick-header-with-filter');
 		const $el = jQuery(`<button aria-label="${ShowFilterText}" title="${ShowFilterText}"></button>`)
 			.addClass('slick-header-menubutton')
