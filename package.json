@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.27.0",
-  "distro": "f53ee54d8b1a2b1b57a48d97b00307001dbc87af",
+  "distro": "d0a023136cb3d4386702595bc45223230eca553e",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -50,7 +50,7 @@
     "compile-web": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js compile-web",
     "watch-web": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js watch-web",
     "eslint": "node build/eslint",
-    "sqllint": "eslint --no-eslintrc -c .eslintrc.sql.ts.json --rulesdir ./build/lib/eslint --ext .ts ./src/sql",    
+    "sqllint": "eslint --no-eslintrc -c .eslintrc.sql.ts.json --rulesdir ./build/lib/eslint --ext .ts ./src/sql",
     "electron-rebuild": "electron-rebuild --arch=arm64 --force --version=11.2.2",
     "playwright-install": "node build/azure-pipelines/common/installPlaywright.js",
     "compile-build": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js compile-build",
