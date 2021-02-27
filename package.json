@@ -197,6 +197,7 @@
     "rimraf": "^2.2.8",
     "sinon": "^1.17.2",
     "source-map": "^0.4.4",
+    "source-map-support": "^0.3.2",
     "style-loader": "^1.0.0",
     "temp-write": "^3.4.0",
     "ts-loader": "^4.4.2",

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 const path = require('path');
-const testRunner = require('../../../../test/integration/electron/testrunner');
+const testRunner = require('vscodetestcover');
 
 const suite = 'notebook Extension Integration Tests';
 
