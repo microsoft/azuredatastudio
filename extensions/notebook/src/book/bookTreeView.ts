@@ -19,7 +19,7 @@ import * as glob from 'fast-glob';
 import { getPinnedNotebooks, confirmReplace } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
-import { BookVersion, getContentPath } from './bookVersionHandler';
+import { getContentPath } from './bookVersionHandler';
 import { CreateBookDialog } from '../dialog/createBookDialog';
 import { TelemetryReporter, BookTelemetryView, NbTelemetryActions } from '../telemetry';
 
