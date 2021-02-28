@@ -25,7 +25,9 @@ import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 
 export interface ILinkCalloutDialogOptions {
 	insertTitle?: string,
-	insertMarkup?: string
+	insertMarkup?: string,
+	insertLinkLabel?: string,
+	insertLinkUrl?: string
 }
 
 export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> {
@@ -123,10 +125,14 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 
 	public insert(): void {
 		this.hide();
+		let label = strings.escape(this._linkTextInputBox.value);
+		let url = strings.escape(this._linkUrlInputBox.value);
 		this._selectionComplete.resolve({
-			insertMarkup: `<a href="${strings.escape(this._linkUrlInputBox.value)}">${strings.escape(this._linkTextInputBox.value)}</a>`,
+			insertMarkup: `[${label}](${url})`,
+			insertLinkLabel: label,
+			insertLinkUrl: url
 		});
-		this.dispose();
+		this._selectionComplete = new Deferred<ILinkCalloutDialogOptions>();
 	}
 
 	public cancel(): void {

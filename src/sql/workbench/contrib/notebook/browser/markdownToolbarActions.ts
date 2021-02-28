@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Action } from 'vs/base/common/actions';
-import { localize } from 'vs/nls';
 import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { IRange, Range } from 'vs/editor/common/core/range';
@@ -16,10 +15,6 @@ import { Selection } from 'vs/editor/common/core/selection';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
-import { ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
-import { LinkCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/linkCalloutDialog';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class TransformMarkdownAction extends Action {
 
@@ -30,8 +25,7 @@ export class TransformMarkdownAction extends Action {
 		tooltip: string,
 		private _cellModel: ICellModel,
 		private _type: MarkdownButtonType,
-		@INotebookService private _notebookService: INotebookService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@INotebookService private _notebookService: INotebookService
 	) {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
@@ -40,7 +34,7 @@ export class TransformMarkdownAction extends Action {
 		if (!context?.cellModel?.showMarkdown && context?.cellModel?.showPreview) {
 			this.transformDocumentCommand();
 		} else {
-			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel, this._instantiationService);
+			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel);
 			await markdownTextTransformer.transformText(this._type);
 		}
 		return true;
@@ -131,15 +125,10 @@ export class TransformMarkdownAction extends Action {
 }
 
 export class MarkdownTextTransformer {
-	private _imageCallout: ImageCalloutDialog;
-	private _linkCallout: LinkCalloutDialog;
-	private readonly insertLinkHeading = localize('callout.insertLinkHeading', "Insert link");
-	private readonly insertImageHeading = localize('callout.insertImageHeading', "Insert image");
 
 	constructor(
 		private _notebookService: INotebookService,
 		private _cellModel: ICellModel,
-		private _instantiationService: IInstantiationService,
 		private _notebookEditor?: INotebookEditor) { }
 
 	public get notebookEditor(): INotebookEditor {
@@ -162,13 +151,8 @@ export class MarkdownTextTransformer {
 
 			let beginInsertedText: string;
 			let endInsertedText: string;
-
-			if (type === MarkdownButtonType.IMAGE_PREVIEW || type === MarkdownButtonType.LINK_PREVIEW) {
-				beginInsertedText = await this.createCallout(type, triggerElement);
-			} else {
-				beginInsertedText = getStartTextToInsert(type);
-				endInsertedText = getEndTextToInsert(type);
-			}
+			beginInsertedText = getStartTextToInsert(type);
+			endInsertedText = getEndTextToInsert(type);
 
 			let endRange: IRange = {
 				startColumn: selection.endColumn,
@@ -198,41 +182,6 @@ export class MarkdownTextTransformer {
 			// Always give focus back to the editor after pressing the button
 			editorControl.focus();
 		}
-	}
-
-	/**
-	 * Instantiate modal for use as callout when inserting Link or Image into markdown.
-	 * @param calloutStyle Style of callout passed in to determine which callout is rendered.
-	 * Returns markup created after user enters values and submits the callout.
-	 */
-	private async createCallout(type: MarkdownButtonType, triggerElement: HTMLElement): Promise<string> {
-		const triggerPosX = triggerElement.getBoundingClientRect().left;
-		const triggerPosY = triggerElement.getBoundingClientRect().top;
-		const triggerHeight = triggerElement.offsetHeight;
-		const triggerWidth = triggerElement.offsetWidth;
-		const dialogProperties = { xPos: triggerPosX, yPos: triggerPosY, width: triggerWidth, height: triggerHeight };
-		let calloutOptions;
-		/**
-		 * Width value here reflects designs for Notebook callouts.
-		 */
-		const width: DialogWidth = 452;
-
-		if (type === MarkdownButtonType.IMAGE_PREVIEW) {
-			if (!this._imageCallout) {
-				this._imageCallout = this._instantiationService.createInstance(ImageCalloutDialog, this.insertImageHeading, width, dialogProperties);
-				this._imageCallout.render();
-				calloutOptions = await this._imageCallout.open();
-				calloutOptions.insertTitle = this.insertImageHeading;
-			}
-		} else {
-			if (!this._linkCallout) {
-				this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, width, dialogProperties);
-				this._linkCallout.render();
-				calloutOptions = await this._linkCallout.open();
-				calloutOptions.insertTitle = this.insertLinkHeading;
-			}
-		}
-		return calloutOptions.insertMarkup;
 	}
 
 	private getEditorControl(): CodeEditorWidget | undefined {
@@ -636,7 +585,7 @@ export class ToggleViewAction extends Action {
 		context.cellModel.showMarkdown = this.showMarkdown;
 		// Hide link and image buttons in WYSIWYG mode
 		if (this.showPreview && !this.showMarkdown) {
-			context.hideLinkAndImageButtons();
+			context.hideImageButton();
 		} else {
 			context.showLinkAndImageButtons();
 		}

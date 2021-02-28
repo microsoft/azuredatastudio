@@ -7,7 +7,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
 import { Component, Input, Inject, ViewChild, ElementRef } from '@angular/core';
 import { localize } from 'vs/nls';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { TransformMarkdownAction, MarkdownTextTransformer, MarkdownButtonType, ToggleViewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
@@ -16,6 +16,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
+import { DialogWidth } from 'sql/workbench/browser/modal/modal';
+import { ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
+import { ILinkCalloutDialogOptions, LinkCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/linkCalloutDialog';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
@@ -43,6 +46,9 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	public optionHeading2 = localize('optionHeading2', "Heading 2");
 	public optionHeading3 = localize('optionHeading3', "Heading 3");
 	public optionParagraph = localize('optionParagraph', "Paragraph");
+	public insertLinkHeading = localize('callout.insertLinkHeading', "Insert link");
+	public insertImageHeading = localize('callout.insertImageHeading', "Insert image");
+
 
 	public richTextViewButton = localize('richTextViewButton', "Rich Text View");
 	public splitViewButton = localize('splitViewButton', "Split View");
@@ -51,6 +57,8 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	private _taskbarContent: Array<ITaskbarContent>;
 	private _wysiwygTaskbarContent: Array<ITaskbarContent>;
 	private _previewModeTaskbarContent: Array<ITaskbarContent>;
+	private _imageCallout: ImageCalloutDialog;
+	private _linkCallout: LinkCalloutDialog;
 
 	@Input() public cellModel: ICellModel;
 	private _actionBar: Taskbar;
@@ -169,6 +177,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			{ action: underlineButton },
 			{ action: highlightButton },
 			{ action: codeButton },
+			{ element: linkButtonContainer },
 			{ action: listButton },
 			{ action: orderedListButton },
 			{ element: buttonDropdownContainer },
@@ -205,13 +214,33 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		}
 	}
 
-	public onInsertButtonClick(event: MouseEvent, type: MarkdownButtonType): void {
-		let go = new MarkdownTextTransformer(this._notebookService, this.cellModel, this._instantiationService);
-		let trigger = event.target as HTMLElement;
-		go.transformText(type, trigger);
+	public async onInsertButtonClick(event: MouseEvent, type: MarkdownButtonType): Promise<void> {
+		event.preventDefault();
+		event.stopPropagation();
+		let triggerElement = event.target as HTMLElement;
+		if (this.cellModel.currentMode === CellEditModes.WYSIWYG && type === MarkdownButtonType.IMAGE_PREVIEW || type === MarkdownButtonType.LINK_PREVIEW) {
+			let node = document.getSelection()?.focusNode;
+			let range = document.getSelection()?.getRangeAt(0);
+			let beginInsertedText = await this.createCallout(type, triggerElement);
+			if (type === MarkdownButtonType.LINK_PREVIEW) {
+				if (node && range) {
+					// node.parentElement.focus();
+					// range.selectNodeContents(node);
+					// range.selectNode(node);
+					node.parentElement.focus();
+				}
+				let success = document.execCommand('insertText', false, beginInsertedText.insertLinkLabel);
+				success = document.execCommand('createLink', false, beginInsertedText.insertLinkUrl);
+				if (success) { }
+			}
+
+		} else {
+			let transformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
+			transformer.transformText(type, triggerElement);
+		}
 	}
 
-	public hideLinkAndImageButtons() {
+	public hideImageButton() {
 		this._actionBar.setContent(this._wysiwygTaskbarContent);
 	}
 
@@ -230,5 +259,40 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				action.class = action.class.replace(activeClass, '');
 			}
 		}
+	}
+
+	/**
+	 * Instantiate modal for use as callout when inserting Link or Image into markdown.
+	 * @param calloutStyle Style of callout passed in to determine which callout is rendered.
+	 * Returns markup created after user enters values and submits the callout.
+	 */
+	private async createCallout(type: MarkdownButtonType, triggerElement: HTMLElement): Promise<ILinkCalloutDialogOptions> {
+		const triggerPosX = triggerElement.getBoundingClientRect().left;
+		const triggerPosY = triggerElement.getBoundingClientRect().top;
+		const triggerHeight = triggerElement.offsetHeight;
+		const triggerWidth = triggerElement.offsetWidth;
+		const dialogProperties = { xPos: triggerPosX, yPos: triggerPosY, width: triggerWidth, height: triggerHeight };
+		let calloutOptions;
+		/**
+		 * Width value here reflects designs for Notebook callouts.
+		 */
+		const width: DialogWidth = 452;
+
+		if (type === MarkdownButtonType.IMAGE_PREVIEW) {
+			if (!this._imageCallout) {
+				this._imageCallout = this._instantiationService.createInstance(ImageCalloutDialog, this.insertImageHeading, width, dialogProperties);
+				this._imageCallout.render();
+				calloutOptions = await this._imageCallout.open();
+				calloutOptions.insertTitle = this.insertImageHeading;
+			}
+		} else {
+			if (!this._linkCallout) {
+				this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, width, dialogProperties);
+				this._linkCallout.render();
+				calloutOptions = await this._linkCallout.open();
+				calloutOptions.insertTitle = this.insertLinkHeading;
+			}
+		}
+		return calloutOptions;
 	}
 }

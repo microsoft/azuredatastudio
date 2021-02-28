@@ -73,7 +73,7 @@ suite('MarkdownTextTransformer', () => {
 
 		cellModel = new CellModel(undefined, undefined, mockNotebookService.object);
 		notebookEditor = new NotebookEditorStub({ cellGuid: cellModel.cellGuid, instantiationService: instantiationService });
-		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel, instantiationService, notebookEditor);
+		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel, notebookEditor);
 		mockNotebookService.setup(s => s.findNotebookEditor(TypeMoq.It.isAny())).returns(() => notebookEditor);
 
 		let editor = notebookEditor.cellEditors[0].getEditor();
@@ -148,7 +148,7 @@ suite('MarkdownTextTransformer', () => {
 	test('Ensure notebook editor returns expected object', async () => {
 		assert.deepEqual(notebookEditor, markdownTextTransformer.notebookEditor, 'Notebook editor does not match expected value');
 		// Set markdown text transformer to not have a notebook editor passed in
-		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel, instantiationService);
+		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel);
 		assert.equal(markdownTextTransformer.notebookEditor, undefined, 'No notebook editor should be returned');
 		// Even after text is attempted to be transformed, there should be no editor, and therefore nothing on the text model
 		await markdownTextTransformer.transformText(MarkdownButtonType.BOLD);
