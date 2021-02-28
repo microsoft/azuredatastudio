@@ -325,7 +325,7 @@ export interface IDataSet {
 
 export interface IGridTableOptions {
 	actionOrientation: ActionsOrientation;
-	alwaysUseLocalData?: boolean;
+	localDataProcessing?: boolean;
 	localDataCountThreshold?: number;
 }
 
@@ -357,14 +357,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private rowHeight: number;
 
 	public isOnlyTable: boolean = true;
-
-	private filterData(data: T[]): T[] {
-		return data;
-	}
-
-	private sortData(args: Slick.OnSortEventArgs<T>, data: T[]): T[] {
-		return data;
-	}
 
 	// this handles if the row count is small, like 4-5 rows
 	protected get maxSize(): number {
@@ -490,14 +482,15 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			forceFitColumns: false,
 			defaultColumnWidth: 120
 		};
-		this.dataProvider = new HybridDataProvider(collection, (data) => {
-			return this.filterData(data);
-		}, (args, data) => {
-			return this.sortData(args, data);
-		}, {
-			alwaysUseLocalData: this.options.alwaysUseLocalData,
-			localDataCountThreshold: this.options.localDataCountThreshold
-		}); //TODO
+		this.dataProvider = new HybridDataProvider(collection,
+			(offset, count) => { return this.loadData(offset, count); },
+			undefined,
+			undefined,
+			(data: ICellValue) => { return data?.displayValue; },
+			{
+				localDataProcessing: this.options.localDataProcessing,
+				localDataCountLimit: this.options.localDataCountThreshold
+			}); //TODO
 		this.table = this._register(new Table(this.tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);
@@ -506,11 +499,12 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
+		this._register(this.dataProvider.onFilterStateChange(() => { this.layout(); }));
 		this._register(this.table.onContextMenu(this.contextMenu, this));
 		this._register(this.table.onClick(this.onTableClick, this));
 		//This listener is used for correcting auto-scroling when clicking on the header for reszing.
 		this._register(this.table.onHeaderClick(this.onHeaderClick, this));
-		const filter = new HeaderFilter((data: ICellValue): string => { return data.displayValue; });
+		const filter = new HeaderFilter();
 		attachButtonStyler(filter, this.themeService);
 		this.table.registerPlugin(filter);
 		if (this.styles) {
@@ -813,7 +807,10 @@ class GridTable<T> extends GridTableBase<T> {
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IThemeService themeService: IThemeService
 	) {
-		super(state, resultSet, undefined, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService);
+		super(state, resultSet, {
+			localDataProcessing: true,
+			actionOrientation: ActionsOrientation.VERTICAL
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 	}
 

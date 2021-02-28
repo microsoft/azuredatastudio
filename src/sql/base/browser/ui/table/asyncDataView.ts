@@ -5,6 +5,7 @@
 
 import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
+import { Emitter, Event } from 'vs/base/common/event';
 
 export interface IObservableCollection<T> {
 	getLength(): number;
@@ -201,7 +202,29 @@ export class VirtualizedCollection<T extends Slick.SlickData> implements IObserv
 
 export class AsyncDataProvider<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
 
+	private _onFilterStateChange = new Emitter<void>();
+	get onFilterStateChange(): Event<void> { return this._onFilterStateChange.event; }
+
+	private _onSortComplete = new Emitter<void>();
+	get onSortComplete(): Event<void> { return this._onSortComplete.event; }
+
 	constructor(public dataRows: IObservableCollection<T>) { }
+
+	getFilteredColumnValues(column: Slick.Column<T>): Promise<string[]> {
+		throw new Error('Method not implemented.');
+	}
+
+	getColumnValues(column: Slick.Column<T>): Promise<string[]> {
+		throw new Error('Method not implemented.');
+	}
+
+	sort(options: Slick.OnSortEventArgs<T>): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	filter(columns?: Slick.Column<T>[]): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
 
 	public getLength(): number {
 		return this.dataRows.getLength();
