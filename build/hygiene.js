@@ -69,6 +69,7 @@ const indentationFilter = [
 	'!**/package.json',
 	'!**/yarn.lock',
 	'!**/yarn-error.log',
+	'!**/package-lock.json',
 
 	// except multiple specific folders
 	'!**/codicon/**',

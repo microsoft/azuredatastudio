@@ -14,6 +14,7 @@ import { DeploymentInputDialog } from './ui/deploymentInputDialog';
 import { ResourceTypePickerDialog } from './ui/resourceTypePickerDialog';
 import * as rd from 'resource-deployment';
 import { getExtensionApi } from './api';
+import { UriHandlerService } from './services/uriHandlerService';
 
 const localize = nls.loadMessageBundle();
 
@@ -31,6 +32,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<rd.IEx
 		validationFailures.forEach(message => console.error(message));
 		return <any>undefined;
 	}
+	const uriHandlerService = new UriHandlerService(resourceTypeService);
+	vscode.window.registerUriHandler(uriHandlerService);
 	/**
 	 * Opens a new ResourceTypePickerDialog
 	 * @param defaultResourceTypeName The resource type name to have selected by default

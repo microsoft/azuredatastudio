@@ -58,8 +58,8 @@ export class GitTimelineItem extends TimelineItem {
 }
 
 export class GitTimelineProvider implements TimelineProvider {
-	private _onDidChange = new EventEmitter<TimelineChangeEvent | undefined>();
-	get onDidChange(): Event<TimelineChangeEvent | undefined> {
+	private _onDidChange = new EventEmitter<TimelineChangeEvent>();
+	get onDidChange(): Event<TimelineChangeEvent> {
 		return this._onDidChange.event;
 	}
 

@@ -531,6 +531,7 @@ export interface ICellModel {
 	cellSourceChanged: boolean;
 	readonly savedConnectionName: string | undefined;
 	readonly attachments: nb.ICellAttachment;
+	readonly currentMode: CellEditModes;
 }
 
 export interface IModelFactory {
@@ -585,4 +586,11 @@ export interface INotebookContentsEditable {
 	metadata: nb.INotebookMetadata;
 	nbformat: number;
 	nbformat_minor: number;
+}
+
+export enum CellEditModes {
+	'CODE',
+	'MARKDOWN',
+	'SPLIT',
+	'WYSIWYG'
 }

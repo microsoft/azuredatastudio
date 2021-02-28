@@ -3,13 +3,5 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'mocha';
-import { apiService } from '../../services/apiService';
-import * as assert from 'assert';
-
-describe('API Service Tests', function (): void {
-	it('get azurecoreApi returns azure api', () => {
-		const api = apiService.azurecoreApi;
-		assert(api !== undefined);
-	});
-});
+/// <reference path='../../../../src/sql/azdata.d.ts'/>
+/// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
