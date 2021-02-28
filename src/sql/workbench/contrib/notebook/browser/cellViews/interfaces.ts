@@ -9,6 +9,7 @@ import { ICellEditorProvider, NotebookRange } from 'sql/workbench/services/noteb
 import { MarkdownRenderOptions } from 'vs/base/browser/markdownRenderer';
 import { IMarkdownString } from 'vs/base/common/htmlContent';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
+import { nb } from 'azdata';
 
 export abstract class CellView extends AngularDisposable implements OnDestroy, ICellEditorProvider {
 	constructor() {
@@ -33,9 +34,9 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 }
 
 export interface IMarkdownStringWithCellAttachments extends IMarkdownString {
-	readonly cellAttachments?: { [key: string]: { [key: string]: string } }
+	readonly cellAttachments?: nb.ICellAttachment
 }
 
 export interface MarkdownRenderOptionsWithCellAttachments extends MarkdownRenderOptions {
-	readonly cellAttachments?: { [key: string]: { [key: string]: string } }
+	readonly cellAttachments?: nb.ICellAttachment
 }

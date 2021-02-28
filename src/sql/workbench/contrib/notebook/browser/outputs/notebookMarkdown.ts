@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as path from 'vs/base/common/path';
 
+import { nb } from 'azdata';
 import { URI } from 'vs/base/common/uri';
 import { IMarkdownString, removeMarkdownEscapes } from 'vs/base/common/htmlContent';
 import { IMarkdownRenderResult } from 'vs/editor/browser/core/markdownRenderer';
@@ -263,7 +264,7 @@ export class NotebookMarkdownRenderer {
 * In a cell, the above attachment would be referenced in markdown like this:
 * ![altText](attachment:test.png)
 */
-function findAttachmentIfExists(href: string, cellAttachments: { [key: string]: { [key: string]: string } }): string {
+function findAttachmentIfExists(href: string, cellAttachments: nb.ICellAttachment): string {
 	if (href.startsWith('attachment:') && cellAttachments) {
 		const imageName = href.replace('attachment:', '');
 		const imageDefinition = cellAttachments[imageName];
