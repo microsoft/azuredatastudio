@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getMigrationControllers, getSubscriptions, SqlMigrationController, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount } from '../api/azure';
 import { SKURecommendations } from './externalContract';
-import * as constants from '../models/strings';
+import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 
 export enum State {

@@ -13,14 +13,14 @@ export interface IconPath {
 export class IconPathHelper {
 	public static copy: IconPath;
 	public static refresh: IconPath;
-	public static sqlMiImportHelpThumbnail: IconPath;
-	public static sqlVmImportHelpThumbnail: IconPath;
-	public static migrationDashboardHeaderBackground: IconPath;
+	public static cutover: IconPath;
 	public static sqlMigrationLogo: IconPath;
+	public static sqlMiVideoThumbnail: IconPath;
+	public static sqlVmVideoThumbnail: IconPath;
+	public static migrationDashboardHeaderBackground: IconPath;
 	public static inProgressMigration: IconPath;
 	public static completedMigration: IconPath;
 	public static notStartedMigration: IconPath;
-	public static cutover: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -31,13 +31,13 @@ export class IconPathHelper {
 			light: context.asAbsolutePath('images/refresh.svg'),
 			dark: context.asAbsolutePath('images/refresh.svg')
 		};
-		IconPathHelper.sqlMiImportHelpThumbnail = {
-			light: context.asAbsolutePath('images/sqlMiImportHelpThumbnail.svg'),
-			dark: context.asAbsolutePath('images/sqlMiImportHelpThumbnail.svg')
+		IconPathHelper.sqlMiVideoThumbnail = {
+			light: context.asAbsolutePath('images/sqlMiVideoThumbnail.svg'),
+			dark: context.asAbsolutePath('images/sqlMiVideoThumbnail.svg')
 		};
-		IconPathHelper.sqlVmImportHelpThumbnail = {
-			light: context.asAbsolutePath('images/sqlVmImportHelpThumbnail.svg'),
-			dark: context.asAbsolutePath('images/sqlVmImportHelpThumbnail.svg')
+		IconPathHelper.sqlVmVideoThumbnail = {
+			light: context.asAbsolutePath('images/sqlVmVideoThumbnail.svg'),
+			dark: context.asAbsolutePath('images/sqlVmVideoThumbnail.svg')
 		};
 		IconPathHelper.migrationDashboardHeaderBackground = {
 			light: context.asAbsolutePath('images/background.svg'),

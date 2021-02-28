@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationContext, MigrationLocalStorage } from '../models/migrationLocalStorage';
-import * as loc from '../models/strings';
+import * as loc from '../constants/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { getDatabaseMigration } from '../api/azure';
 import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatusDialog';
@@ -526,12 +526,12 @@ export class DashboardWidget {
 
 		const videosContainer = this.createVideoLinkContainers(view, [
 			{
-				iconPath: IconPathHelper.sqlMiImportHelpThumbnail,
+				iconPath: IconPathHelper.sqlMiVideoThumbnail,
 				description: loc.HELP_VIDEO1_TITLE,
 				link: 'https://www.youtube.com/watch?v=sE99cSoFOHs' //TODO: Fix Video link
 			},
 			{
-				iconPath: IconPathHelper.sqlVmImportHelpThumbnail,
+				iconPath: IconPathHelper.sqlVmVideoThumbnail,
 				description: loc.HELP_VIDEO2_TITLE,
 				link: 'https://www.youtube.com/watch?v=R4GCBoxADyQ' //TODO: Fix video link
 			}

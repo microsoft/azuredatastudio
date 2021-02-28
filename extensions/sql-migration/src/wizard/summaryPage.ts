@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
-import * as constants from '../models/strings';
+import * as constants from '../constants/strings';
 import { createHeadingTextComponent, createInformationRow } from './wizardController';
 
 export class SummaryPage extends MigrationWizardPage {

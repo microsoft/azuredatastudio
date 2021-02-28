@@ -6,7 +6,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { MigrationStateModel } from '../models/stateMachine';
-import { WIZARD_TITLE } from '../models/strings';
+import { WIZARD_TITLE } from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SKURecommendationPage } from './skuRecommendationPage';
 // import { SubscriptionSelectionPage } from './subscriptionSelectionPage';

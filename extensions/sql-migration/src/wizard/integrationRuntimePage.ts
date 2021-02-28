@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import { CreateMigrationControllerDialog } from '../dialog/createMigrationDialog/createMigrationControllerDialog';
-import * as constants from '../models/strings';
+import * as constants from '../constants/strings';
 import { createInformationRow, WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { getMigrationController, getMigrationControllerAuthKeys, getMigrationControllerMonitoringData } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';

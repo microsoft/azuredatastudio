@@ -8,7 +8,7 @@ import { EOL } from 'os';
 import { getStorageAccountAccessKeys } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationCutover, MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
-import * as constants from '../models/strings';
+import * as constants from '../constants/strings';
 import * as vscode from 'vscode';
 export class DatabaseBackupPage extends MigrationWizardPage {
 

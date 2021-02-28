@@ -9,7 +9,7 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import { Product, ProductLookupTable } from '../models/product';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
-import * as constants from '../models/strings';
+import * as constants from '../constants/strings';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
 

@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { WizardController } from './wizard/wizardController';
 import { promises as fs } from 'fs';
-import * as loc from './models/strings';
+import * as loc from './constants/strings';
 import { MigrationNotebookInfo, NotebookPathHelper } from './constants/notebookPathHelper';
 import { IconPathHelper } from './constants/iconPathHelper';
 import { DashboardWidget } from './dashboard/sqlServerDashboard';
