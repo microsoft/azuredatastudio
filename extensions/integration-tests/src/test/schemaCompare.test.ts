@@ -39,6 +39,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).dacFx;
 		console.log(`Start schema compare tests`);
 	});
+
 	test('Schema compare dacpac to dacpac comparison and scmp', async function () {
 		this.timeout(5 * 60 * 1000);
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
@@ -82,6 +83,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		assert(openScmpResult.sourceEndpointInfo.packageFilePath === source.packageFilePath, `Expected: source packageFilePath to be ${source.packageFilePath}, Actual: ${openScmpResult.sourceEndpointInfo.packageFilePath}`);
 		assert(openScmpResult.targetEndpointInfo.packageFilePath === target.packageFilePath, `Expected: target packageFilePath to be ${target.packageFilePath}, Actual: ${openScmpResult.targetEndpointInfo.packageFilePath}`);
 	});
+
 	test('Schema compare database to database comparison, script generation, and scmp @UNSTABLE@', async function () {
 		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
@@ -154,6 +156,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			await utils.tryDeleteDB(server, targetDB, ownerUri);
 		}
 	});
+
 	test('Schema compare dacpac to database comparison, script generation, and scmp @UNSTABLE@', async function () {
 		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
@@ -214,6 +217,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			await utils.tryDeleteDB(server, targetDB, ownerUri);
 		}
 	});
+
 	test('Schema compare dacpac to dacpac comparison with include exclude', async function () {
 		this.timeout(5 * 60 * 1000);
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
@@ -270,6 +274,231 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		const excludeResult3 = await schemaCompareService.schemaCompareIncludeExcludeNode(operationId, t2Difference, false, azdata.TaskExecutionMode.execute);
 		assertIncludeExcludeResult(excludeResult3, true, 0, 0);
 	});
+
+	test('Cancel schema compare dacpac to dacpac comparison', async function () {
+		this.timeout(5 * 60 * 1000);
+		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
+		const now = new Date();
+		const operationId = 'testOperationId_' + now.getTime().toString();
+
+		const source: mssql.SchemaCompareEndpointInfo = {
+			endpointType: mssql.SchemaCompareEndpointType.Dacpac,
+			packageFilePath: dacpac1,
+			serverDisplayName: '',
+			serverName: '',
+			databaseName: '',
+			ownerUri: '',
+			connectionDetails: undefined
+		};
+		const target: mssql.SchemaCompareEndpointInfo = {
+			endpointType: mssql.SchemaCompareEndpointType.Dacpac,
+			packageFilePath: dacpac2,
+			serverDisplayName: '',
+			serverName: '',
+			databaseName: '',
+			ownerUri: '',
+			connectionDetails: undefined
+		};
+
+		const promiseCompare = schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, null);
+		const promiseCancel = schemaCompareService.schemaCompareCancel(operationId);
+
+		const schemaCompareResult = await promiseCompare;
+		const schemaCompareCancelResult = await promiseCancel;
+
+		assert(schemaCompareResult.success === false, `Expected: failure in schema compare. Actual: Success`);
+		assert(schemaCompareCancelResult.success === true, `Expected: success in schema compare cancel. Actual: Failure`);
+	});
+
+	test('Schema compare dacpac to database comparison with publishing some changes and then compare again', async function () {
+		this.timeout(5 * 60 * 1000);
+		let server = await getStandaloneServer();
+		const ownerUri = await getConnectionUri(server);
+		const now = new Date();
+		const operationId = 'testOperationId_' + now.getTime().toString();
+		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
+
+		try {
+			assert(dacfxService, 'DacFx Service Provider is not available');
+			let result = await dacfxService.deployDacpac(dacpac1, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
+
+			assert(result.success === true, 'Deploy database 2 (target) should succeed');
+
+			const source: mssql.SchemaCompareEndpointInfo = {
+				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
+				packageFilePath: dacpac2,
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: ownerUri,
+				connectionDetails: undefined
+			};
+			const target: mssql.SchemaCompareEndpointInfo = {
+				endpointType: mssql.SchemaCompareEndpointType.Database,
+				packageFilePath: '',
+				serverDisplayName: '',
+				serverName: server.serverName,
+				databaseName: targetDB,
+				ownerUri: ownerUri,
+				connectionDetails: undefined
+			};
+
+			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
+
+			const schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, null);
+			assertSchemaCompareResult(schemaCompareResult, operationId, 4);
+
+			//try to exclude the difference of function Function1 and it should not fail
+			let function1Difference = schemaCompareResult.differences.find(e => e.sourceValue && e.sourceValue[1] === 'Function1' && e.name === 'SqlInlineTableValuedFunction');
+			assert(function1Difference !== undefined, 'The difference function Function1 should be found. Should not be undefined');
+
+			//by default all changes are included while publishing, hence excluding Function1
+			const includeResult = await schemaCompareService.schemaCompareIncludeExcludeNode(operationId, function1Difference, false, azdata.TaskExecutionMode.execute);
+			assertIncludeExcludeResult(includeResult, true, 0, 0);
+
+			//publish the updated changes. Function1 should not be added to the target database
+			const publishChangesResult = await schemaCompareService.schemaComparePublishChanges(schemaCompareResult.operationId, server.serverName, targetDB, azdata.TaskExecutionMode.execute);
+			assert(publishChangesResult.success === true, 'Publish changes should complete successfully. But it failed.');
+
+			//verify table Table3 is added
+			const retryCount = 24; // 2 minutes
+			const dbConnectionId = await utils.connectToServer({
+				serverName: server.serverName,
+				database: targetDB,
+				userName: server.userName,
+				password: server.password,
+				authenticationTypeName: server.authenticationTypeName,
+				providerName: server.providerName
+			});
+			const dbConnectionOwnerUri = await azdata.connection.getUriForConnection(dbConnectionId);
+			await utils.assertTableCreationResult('dbo', 'Table3', dbConnectionOwnerUri, retryCount);
+
+			//verify only one difference exist now
+			let schemaCompareResult2 = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, null);
+			assertSchemaCompareResult(schemaCompareResult2, operationId, 1);
+
+			//verify the one difference is of Function1
+			function1Difference = schemaCompareResult2.differences.find(e => e.sourceValue && e.sourceValue[1] === 'Function1' && e.name === 'SqlInlineTableValuedFunction');
+			assert(function1Difference !== undefined, 'The difference function Function1 should be found. Should not be undefined');
+		}
+		finally {
+			await utils.tryDeleteDB(server, targetDB, ownerUri);
+		}
+	});
+
+	test('Schema compare dacpac to database comparison with publishing all changes and then compare again', async function () {
+		this.timeout(5 * 60 * 1000);
+		let server = await getStandaloneServer();
+		const ownerUri = await getConnectionUri(server);
+		const now = new Date();
+		const operationId = 'testOperationId_' + now.getTime().toString();
+		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
+
+		try {
+			assert(dacfxService, 'DacFx Service Provider is not available');
+			const result = await dacfxService.deployDacpac(dacpac1, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
+
+			assert(result.success === true, 'Deploy database 2 (target) should succeed');
+
+			const source: mssql.SchemaCompareEndpointInfo = {
+				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
+				packageFilePath: dacpac2,
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: ownerUri,
+				connectionDetails: undefined
+			};
+			const target: mssql.SchemaCompareEndpointInfo = {
+				endpointType: mssql.SchemaCompareEndpointType.Database,
+				packageFilePath: '',
+				serverDisplayName: '',
+				serverName: server.serverName,
+				databaseName: targetDB,
+				ownerUri: ownerUri,
+				connectionDetails: undefined
+			};
+
+			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
+
+			const schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, null);
+			assertSchemaCompareResult(schemaCompareResult, operationId, 4);
+
+			//publish all the changes
+			const publishChangesResult = await schemaCompareService.schemaComparePublishChanges(schemaCompareResult.operationId, server.serverName, targetDB, azdata.TaskExecutionMode.execute);
+			assert(publishChangesResult.success === true, 'Publish changes should complete successfully. But it failed.');
+
+			//verify table Table3 is added
+			const retryCount = 24; // 2 minutes
+			const dbConnectionId = await utils.connectToServer({
+				serverName: server.serverName,
+				database: targetDB,
+				userName: server.userName,
+				password: server.password,
+				authenticationTypeName: server.authenticationTypeName,
+				providerName: server.providerName
+			});
+			const dbConnectionOwnerUri = await azdata.connection.getUriForConnection(dbConnectionId);
+			await utils.assertTableCreationResult('dbo', 'Table3', dbConnectionOwnerUri, retryCount);
+
+			//verify no differences exist now
+			const schemaCompareResult2 = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, null);
+			assertSchemaCompareResult(schemaCompareResult2, operationId, 0, true);
+		}
+		finally {
+			await utils.tryDeleteDB(server, targetDB, ownerUri);
+		}
+	});
+
+	test('Schema compare dacpac to database comparison with non-default deployment options', async function () {
+		this.timeout(5 * 60 * 1000);
+		let server = await getStandaloneServer();
+		const ownerUri = await getConnectionUri(server);
+		const now = new Date();
+		const operationId = 'testOperationId_' + now.getTime().toString();
+		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
+
+		try {
+			assert(dacfxService, 'DacFx Service Provider is not available');
+			let result = await dacfxService.deployDacpac(dacpac1, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
+
+			assert(result.success === true, 'Deploy database 2 (target) should succeed');
+
+			const source: mssql.SchemaCompareEndpointInfo = {
+				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
+				packageFilePath: dacpac2,
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: ownerUri,
+				connectionDetails: undefined
+			};
+			const target: mssql.SchemaCompareEndpointInfo = {
+				endpointType: mssql.SchemaCompareEndpointType.Database,
+				packageFilePath: '',
+				serverDisplayName: '',
+				serverName: server.serverName,
+				databaseName: targetDB,
+				ownerUri: ownerUri,
+				connectionDetails: undefined
+			};
+
+			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
+
+			const deploymentOptionsResult = await schemaCompareService.schemaCompareGetDefaultOptions();
+			let deploymentOptions = deploymentOptionsResult.defaultDeploymentOptions;
+			deploymentOptions.excludeObjectTypes.push(mssql.SchemaObjectType.TableValuedFunctions);
+			const schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, deploymentOptions);
+			assertSchemaCompareResult(schemaCompareResult, operationId, 3);
+
+			//Function1 difference of index shouldn't be included in difference
+			const function1Difference = schemaCompareResult.differences.find(e => e.sourceValue && e.sourceValue[1] === 'Function1' && e.name === 'SqlInlineTableValuedFunction');
+			assert(function1Difference === undefined, 'The difference for function Function1 should be undefined');
+		}
+		finally {
+			await utils.tryDeleteDB(server, targetDB, ownerUri);
+		}
+	});
 });
 
 async function getConnectionUri(server: TestServerProfile): Promise<string> {
@@ -297,10 +526,10 @@ function assertIncludeExcludeResult(result: mssql.SchemaCompareIncludeExcludeRes
 	}
 }
 
-function assertSchemaCompareResult(schemaCompareResult: mssql.SchemaCompareResult, operationId: string, expectedDifferenceCount: number): void {
-	assert(schemaCompareResult.areEqual === false, `Expected: the schemas are not to be equal Actual: Equal`);
+function assertSchemaCompareResult(schemaCompareResult: mssql.SchemaCompareResult, operationId: string, expectedDifferenceCount: number, expectedIfEqual: boolean = false): void {
+	assert(schemaCompareResult.areEqual === expectedIfEqual, `Expected: the schemas are not to be equal Actual: Equal`);
 	assert(schemaCompareResult.errorMessage === null, `Expected: there should be no error. Actual Error message: "${schemaCompareResult.errorMessage}"`);
-	assert(schemaCompareResult.success === true, `Expected: success in schema compare, Actual: Failure`);
+	assert(schemaCompareResult.success === true, `Expected: success in schema compare. Actual: Failure`);
 	assert(schemaCompareResult.differences.length === expectedDifferenceCount, `Expected: ${expectedDifferenceCount} differences. Actual differences: "${schemaCompareResult.differences.length}"`);
 	assert(schemaCompareResult.operationId === operationId, `Operation Id Expected to be same as passed. Expected : ${operationId}, Actual ${schemaCompareResult.operationId}`);
 }
