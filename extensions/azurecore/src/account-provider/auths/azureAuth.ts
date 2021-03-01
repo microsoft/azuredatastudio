@@ -248,7 +248,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		if (response.data.error) {
 			Logger.error('Response error!', response.data);
-			throw new AzureAuthError(localize('azure.responseError', "Token retrival failed with an error. Open developer tools to view the error"), 'Token retrival failed', undefined);
+			throw new AzureAuthError(localize('azure.responseError', "Token retrieval failed with an error. Open developer tools to view the error"), 'Token retrieval failed', undefined);
 		}
 
 		const accessTokenString = response.data.access_token;
