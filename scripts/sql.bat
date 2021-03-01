@@ -36,7 +36,7 @@ set ELECTRON_ENABLE_STACK_DUMPING=1
 :: Use the following to get v8 tracing:
 :: %CODE% --js-flags="--trace-hydrogen --trace-phase=Z --trace-deopt --code-comments --hydrogen-track-positions --redirect-code-traces" . %*
 
-%CODE% . %*
+%CODE% . %* --remote-debugging-port=9222
 
 popd
 

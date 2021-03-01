@@ -11,12 +11,15 @@ import { promises as fs } from 'fs';
 import * as loc from './models/strings';
 import { MigrationNotebookInfo, NotebookPathHelper } from './constants/notebookPathHelper';
 import { IconPathHelper } from './constants/iconPathHelper';
+import { DashboardWidget } from './dashboard/sqlServerDashboard';
+import { MigrationLocalStorage } from './models/migrationLocalStorage';
 
 class SQLMigration {
 
 	constructor(private readonly context: vscode.ExtensionContext) {
 		NotebookPathHelper.setExtensionContext(context);
 		IconPathHelper.setExtensionContext(context);
+		MigrationLocalStorage.setExtensionContext(context);
 	}
 
 	async start(): Promise<void> {
@@ -83,6 +86,8 @@ let sqlMigration: SQLMigration;
 export async function activate(context: vscode.ExtensionContext) {
 	sqlMigration = new SQLMigration(context);
 	await sqlMigration.registerCommands();
+	let widget = new DashboardWidget();
+	widget.register();
 }
 
 export function deactivate(): void {

@@ -228,13 +228,6 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
-	dom(): azdata.ComponentBuilder<azdata.DomComponent, azdata.DomProperties> {
-		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.DomComponent, azdata.DomProperties> = this.getComponentBuilder(new DomComponentWrapper(this._proxy, this._handle, id), id);
-		this._componentBuilders.set(id, builder);
-		return builder;
-	}
-
 	hyperlink(): azdata.ComponentBuilder<azdata.HyperlinkComponent, azdata.HyperlinkComponentProperties> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.HyperlinkComponent, azdata.HyperlinkComponentProperties> = this.getComponentBuilder(new HyperlinkComponentWrapper(this._proxy, this._handle, id), id);
@@ -547,7 +540,7 @@ function createFromTabs(items: (azdata.Tab | azdata.TabGroup)[]): InternalItemCo
 	return itemConfigs;
 }
 
-function toTabItemConfig(content: azdata.Component, title: string, id?: string, group?: string, icon?: string | URI | { light: string | URI; dark: string | URI }): InternalItemConfig {
+function toTabItemConfig(content: azdata.Component, title: string, id?: string, group?: string, icon?: azdata.IconPath): InternalItemConfig {
 	return new InternalItemConfig(content as ComponentWrapper, {
 		title: title,
 		group: group,
@@ -867,10 +860,10 @@ class ComponentWithIconWrapper extends ComponentWrapper {
 		super(proxy, handle, type, id);
 	}
 
-	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
+	public get iconPath(): azdata.IconPath {
 		return this.properties['iconPath'];
 	}
-	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
+	public set iconPath(v: azdata.IconPath) {
 		this.setProperty('iconPath', v);
 	}
 
@@ -934,10 +927,10 @@ class CardWrapper extends ComponentWrapper implements azdata.CardComponent {
 	public set actions(a: azdata.ActionDescriptor[]) {
 		this.setProperty('actions', a);
 	}
-	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
+	public get iconPath(): azdata.IconPath {
 		return this.properties['iconPath'];
 	}
-	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
+	public set iconPath(v: azdata.IconPath) {
 		this.setProperty('iconPath', v);
 	}
 
@@ -1130,21 +1123,6 @@ class WebViewWrapper extends ComponentWrapper implements azdata.WebViewComponent
 	}
 	public set options(o: vscode.WebviewOptions) {
 		this.setProperty('options', o);
-	}
-}
-
-class DomComponentWrapper extends ComponentWrapper implements azdata.DomComponent {
-
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.Dom, id);
-		this.properties = {};
-	}
-
-	public get html(): string {
-		return this.properties['html'];
-	}
-	public set html(html: string) {
-		this.setProperty('html', html);
 	}
 }
 

@@ -285,20 +285,20 @@ export class Project {
 	 * @param contents Contents to be written to the new file
 	 */
 	public async addScriptItem(relativeFilePath: string, contents?: string, itemType?: string): Promise<FileProjectEntry> {
-		// check if file already exists
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
 
+		// check if file already exists if content was passed to write to a new file
 		if (contents !== undefined && contents !== '' && await utils.exists(absoluteFilePath)) {
 			throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
 		}
 
-		// create the file
+		// create the file if contents were passed in
 		if (contents) {
 			await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
 			await fs.writeFile(absoluteFilePath, contents);
 		}
 
-		// check that file was successfully created
+		// check that file exists
 		let exists = await utils.exists(absoluteFilePath);
 		if (!exists) {
 			throw new Error(constants.noFileExist(absoluteFilePath));
@@ -928,21 +928,27 @@ export class Project {
 
 	/**
 	 * Adds the list of sql files and directories to the project, and saves the project file
-	 * @param absolutePath Absolute path of the folder
+	 * @param list list of files and folder Uris. Files and folders must already exist. No files or folders will be added if any do not exist.
 	 */
-	public async addToProject(list: string[]): Promise<void> {
+	public async addToProject(list: Uri[]): Promise<void> {
+		// verify all files/folders exist. If not all exist, none will be added
+		for (let file of list) {
+			const exists = await utils.exists(file.fsPath);
 
-		for (let i = 0; i < list.length; i++) {
-			let file: string = list[i];
-			const relativePath = utils.trimChars(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(file)), '/');
+			if (!exists) {
+				throw new Error(constants.fileOrFolderDoesNotExist(file.fsPath));
+			}
+		}
+
+		for (let file of list) {
+			const relativePath = utils.trimChars(utils.trimUri(Uri.file(this.projectFilePath), file), '/');
 
 			if (relativePath.length > 0) {
-				let fileStat = await fs.stat(file);
+				const fileStat = await fs.stat(file.fsPath);
 
-				if (fileStat.isFile() && file.toLowerCase().endsWith(constants.sqlFileExtension)) {
+				if (fileStat.isFile() && file.fsPath.toLowerCase().endsWith(constants.sqlFileExtension)) {
 					await this.addScriptItem(relativePath);
-				}
-				else if (fileStat.isDirectory()) {
+				} else if (fileStat.isDirectory()) {
 					await this.addFolderItem(relativePath);
 				}
 			}

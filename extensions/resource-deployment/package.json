@@ -93,6 +93,7 @@
         ],
         "providers": [
           {
+            "name": "sql-image_2017",
             "dialog": {
               "notebook": "./notebooks/docker/2017/deploy-sql2017-image.ipynb",
               "title": "%docker-sql-2017-title%",
@@ -144,6 +145,7 @@
             "when": "version=sql2017"
           },
           {
+            "name": "sql-image_2019",
             "dialog": {
               "notebook": "./notebooks/docker/2019/deploy-sql2019-image.ipynb",
               "title": "%docker-sql-2019-title%",
@@ -248,6 +250,7 @@
         ],
         "providers": [
           {
+            "name": "sql-bdc_new-aks_bdc2019",
             "bdcWizard": {
               "type": "new-aks",
               "notebook": "./notebooks/bdc/2019/deploy-bdc-aks.ipynb"
@@ -268,6 +271,7 @@
             "when": "target=new-aks&&version=bdc2019"
           },
           {
+            "name": "sql-bdc_existing-aks_bdc2019",
             "bdcWizard": {
               "type": "existing-aks",
               "notebook": "./notebooks/bdc/2019/deploy-bdc-existing-aks.ipynb"
@@ -285,6 +289,7 @@
             "when": "target=existing-aks&&version=bdc2019"
           },
           {
+            "name": "sql-bdc_existing-kubeadm_bdc2019",
             "bdcWizard": {
               "type": "existing-kubeadm",
               "notebook": "./notebooks/bdc/2019/deploy-bdc-existing-kubeadm.ipynb"
@@ -302,6 +307,7 @@
             "when": "target=existing-kubeadm&&version=bdc2019"
           },
           {
+            "name": "sql-bdc_existing-aro_bdc2019",
             "bdcWizard": {
               "type": "existing-aro",
               "notebook": "./notebooks/bdc/2019/deploy-bdc-existing-aro.ipynb"
@@ -319,6 +325,7 @@
             "when": "target=existing-aro&&version=bdc2019"
           },
           {
+            "name": "sql-bdc_existing-openshift_bdc2019",
             "bdcWizard": {
               "type": "existing-openshift",
               "notebook": "./notebooks/bdc/2019/deploy-bdc-existing-openshift.ipynb"
@@ -391,11 +398,13 @@
         ],
         "providers": [
           {
+            "name": "sql-windows-setup_2017",
             "downloadUrl": "https://go.microsoft.com/fwlink/?linkid=853016",
             "requiredTools": [],
             "when": "version=sql2017"
           },
           {
+            "name": "sql-windows-setup_2019",
             "downloadUrl": "https://go.microsoft.com/fwlink/?linkid=866662",
             "requiredTools": [],
             "when": "version=sql2019"
@@ -449,6 +458,7 @@
         ],
         "providers": [
           {
+            "name": "sql-azure-setup_single-database",
             "azureSQLDBWizard": {
               "notebook": "./notebooks/azuredb/create-sqldb.ipynb"
             },
@@ -460,11 +470,13 @@
             "when": "resource-type=single-database"
           },
           {
+            "name": "sql-azure-setup_elastic-pool",
             "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLElasticDatabasePool",
             "requiredTools": [],
             "when": "resource-type=elastic-pool"
           },
           {
+            "name": "sql-azure-setup_database-server",
             "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLServer",
             "requiredTools": [],
             "when": "resource-type=database-server"
@@ -504,6 +516,7 @@
         ],
         "providers": [
           {
+            "name": "azure-sql-vm",
             "azureSQLVMWizard": {
               "notebook": "./notebooks/azurevm/create-sqlvm.ipynb"
             },
@@ -549,6 +562,7 @@
         ],
         "providers": [
           {
+            "name": "azure-sql-mi_azure-sql-mi",
             "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLManagedInstance",
             "requiredTools": [],
             "when": "mi-type=azure-sql-mi"
@@ -604,6 +618,7 @@
     ]
   },
   "dependencies": {
+    "@microsoft/ads-extension-telemetry": "^1.1.3",
     "axios": "^0.19.2",
     "linux-release-info": "^2.0.0",
     "promisify-child-process": "^3.1.1",

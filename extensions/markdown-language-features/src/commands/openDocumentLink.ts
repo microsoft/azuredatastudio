@@ -10,7 +10,7 @@ import { Command } from '../commandManager';
 import { MarkdownEngine } from '../markdownEngine';
 import { TableOfContentsProvider } from '../tableOfContentsProvider';
 import { isMarkdownFile } from '../util/file';
-import { isString } from 'util'; // {{ SQL CARBON EDIT }}
+import { isString } from 'util'; // {{SQL CARBON EDIT}}
 
 
 type UriComponents = {
@@ -154,7 +154,7 @@ export class OpenDocumentLinkCommand implements Command {
 }
 
 function reviveUri(parts: any) {
-	if (parts.scheme === 'file' && isString(parts.path)) {  // {{ SQL CARBON EDIT }} Fix markdown relative links https://github.com/microsoft/azuredatastudio/issues/11657
+	if (parts.scheme === 'file' && isString(parts.path)) {  // {{SQL CARBON EDIT}} Fix markdown relative links https://github.com/microsoft/azuredatastudio/issues/11657
 		return vscode.Uri.file(parts.path);
 	}
 	return vscode.Uri.parse('').with(parts);

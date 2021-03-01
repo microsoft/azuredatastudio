@@ -138,7 +138,6 @@ export enum ModelComponentTypes {
 	FileBrowserTree,
 	Editor,
 	DiffEditor,
-	Dom,
 	Hyperlink,
 	Image,
 	RadioCardGroup,

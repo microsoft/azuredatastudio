@@ -27,6 +27,8 @@
 	"kusto.connectionOptions.authType.displayName": "Authentication type",
 	"kusto.connectionOptions.authType.description": "Specifies the method of authenticating with Kusto Server",
 	"kusto.connectionOptions.authType.categoryValues.azureMFA": "Azure Active Directory - Universal with MFA support",
+	"kusto.connectionOptions.authType.categoryValues.none": "No Authentication",
+	"kusto.connectionOptions.authType.categoryValues.sqlLogin": "User Authentication",
 	"kusto.connectionOptions.userName.displayName": "User name",
 	"kusto.connectionOptions.userName.description": "Indicates the user ID to be used when connecting to the data source",
 	"kusto.connectionOptions.password.displayName": "Password",

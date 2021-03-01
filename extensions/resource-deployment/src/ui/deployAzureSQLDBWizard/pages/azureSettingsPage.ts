@@ -243,7 +243,7 @@ export class AzureSettingsPage extends BasePage {
 
 	private async populateAzureSubscriptionsDropdown() {
 		this._azureSubscriptionsDropdown.loading = true;
-		let subService = await apiService.azurecoreApi;
+		let subService = apiService.azurecoreApi;
 		let currentAccountDropdownValue = (this._azureAccountsDropdown.value as azdata.CategoryValue);
 		if (currentAccountDropdownValue === undefined) {
 			this._azureSubscriptionsDropdown.loading = false;

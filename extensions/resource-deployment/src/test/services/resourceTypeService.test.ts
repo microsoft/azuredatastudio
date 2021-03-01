@@ -5,8 +5,8 @@
 
 import 'mocha';
 import * as TypeMoq from 'typemoq';
-import assert = require('assert');
-import should = require('should');
+import * as assert from 'assert';
+import * as should from 'should';
 import { EOL } from 'os';
 import { ResourceTypeService, processWhenClause } from '../../services/resourceTypeService';
 import { IPlatformService } from '../../services/platformService';

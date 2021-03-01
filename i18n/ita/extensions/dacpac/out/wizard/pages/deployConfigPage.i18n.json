@@ -11,7 +11,7 @@
 	"dacFxDeploy.openFile": "Apri",
 	"dacFxDeploy.fileTextboxTitle": "Percorso file",
 	"dacFx.upgradeRadioButtonLabel": "Aggiorna database esistente",
-	"dacFx.newRadioButtonLabel": "Nuovo Database",
+	"dacFx.newRadioButtonLabel": "Nuovo database",
 	"dacFx.targetDatabaseRadioButtonsTitle": "Database di destinazione",
 	"dacFx.targetDatabaseDropdownTitle": "Nome del database"
 }

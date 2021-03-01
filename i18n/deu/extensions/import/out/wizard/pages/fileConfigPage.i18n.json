@@ -9,7 +9,7 @@
 	"flatFileImport.serverDropdownTitle": "Server, auf dem sich die Datenbank befindet",
 	"flatFileImport.databaseDropdownTitle": "Datenbank, in der die Tabelle erstellt wird",
 	"flatFileImport.browseFiles": "Durchsuchen",
-	"flatFileImport.openFile": "Eröffnungskurs",
+	"flatFileImport.openFile": "Öffnen",
 	"flatFileImport.fileTextboxTitle": "Speicherort der zu importierenden Datei",
 	"flatFileImport.tableTextboxTitle": "Name der neuen Tabelle",
 	"flatFileImport.schemaTextboxTitle": "Tabellenschema"

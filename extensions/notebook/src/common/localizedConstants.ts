@@ -81,3 +81,18 @@ export const msgReleaseNotFound = localize('msgReleaseNotFound', "Releases not F
 export const msgUndefinedAssetError = localize('msgUndefinedAssetError', "The selected book is not valid");
 export function httpRequestError(code: number, message: string): string { return localize('httpRequestError', "Http Request failed with error: {0} {1}", code, message); }
 export function msgDownloadLocation(downloadLocation: string): string { return localize('msgDownloadLocation', "Downloading to {0}", downloadLocation); }
+
+// Create Book dialog constants
+export const newGroup = localize('newGroup', "New Group");
+export const groupDescription = localize('groupDescription', "Groups are used to organize Notebooks.");
+export const locationBrowser = localize('locationBrowser', "Browse locations...");
+export const selectContentFolder = localize('selectContentFolder', "Select content folder");
+export const browse = localize('browse', "Browse");
+export const create = localize('create', "Create");
+export const name = localize('name', "Name");
+export const saveLocation = localize('saveLocation', "Save location");
+export const contentFolder = localize('contentFolder', "Content folder (Optional)");
+export const msgContentFolderError = localize('msgContentFolderError', "Content folder path does not exist");
+export const msgSaveFolderError = localize('msgSaveFolderError', "Save location path does not exist");
+
+
