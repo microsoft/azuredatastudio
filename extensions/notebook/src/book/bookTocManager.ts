@@ -24,7 +24,6 @@ export interface quickPickResults {
 }
 
 const allowedFileExtensions: string[] = ['.md', '.ipynb'];
-const initMarkdown: string[] = ['index.md', 'introduction.md', 'intro.md', 'readme.md'];
 
 export function hasSections(node: JupyterBookSection): boolean {
 	return node.sections !== undefined && node.sections.length > 0;
@@ -52,25 +51,24 @@ export class BookTocManager implements IBookTocManager {
 	}
 
 	/**
-	 * Replicates Jupyter Book logic to add the init markdown files
-	 * at the beginning of the table of contents.
+	 * Files in the table of contents are ordered alpha-numerically, if there's a file named
+	 * 'index.md' then it's treated as the first file.
 	 * @param files The files in the directory
 	*/
 	getInitFile(files: string[]): path.ParsedPath | undefined {
 		let initFile = undefined;
-		// Add files named as readme or index within the directory as the first file of the section.
-		files.some((f) => {
-			if (initMarkdown.includes(f.toLowerCase())) {
-				initFile = path.parse(f);
-			}
-		});
-		// If it doesnt find an initMarkdown then use the first file we find.
-		if (initFile === undefined) {
+		//
+		const initFileIndex = files.findIndex(f => f === 'index.md');
+
+		// If it doesnt find a file named as 'index.md' then use the first file we find.
+		if (initFileIndex !== -1) {
 			files.some((f) => {
 				const parsedPath = path.parse(f);
 				if (allowedFileExtensions.includes(parsedPath.ext)) {
 					initFile = parsedPath;
+					return true;
 				}
+				return false;
 			});
 		}
 		return initFile;
@@ -87,33 +85,47 @@ export class BookTocManager implements IBookTocManager {
 	async createTocFromDir(contents: string[], directory: string, rootDirectory: string): Promise<JupyterBookSection[]> {
 		let toc: JupyterBookSection[] = [];
 		for (const content of contents) {
-			const contentStat = (await fs.promises.stat(path.join(directory, content)));
-			const parsedFile = path.parse(content);
-			if (contentStat.isFile() && allowedFileExtensions.includes(parsedFile.ext)) {
-				let filePath = directory === rootDirectory ? path.join(path.sep, parsedFile.name) : path.join(path.sep, path.relative(rootDirectory, directory), parsedFile.name);
-				const section: JupyterBookSection = {
-					title: parsedFile.name,
-					file: filePath.replace(/\\/g, '/')
-				};
-				toc.push(section);
-			} else if (contentStat.isDirectory()) {
-				let files = await fs.promises.readdir(path.join(directory, content));
-				let initFile = this.getInitFile(files);
-				if (initFile) {
-					const indexToRemove = files.findIndex(f => f === initFile.base);
-					if (indexToRemove !== -1) {
-						files.splice(indexToRemove, 1);
-					}
-					let filePath = directory === rootDirectory ? path.join(path.sep, parsedFile.name, initFile.name) : path.join(path.sep, path.relative(rootDirectory, directory), parsedFile.name, initFile.name);
+			try {
+				const contentStat = (await fs.promises.stat(path.join(directory, content)));
+				const parsedFile = path.parse(content);
+				if (contentStat.isFile() && allowedFileExtensions.includes(parsedFile.ext)) {
+					let filePath = directory === rootDirectory ? path.posix.join(path.sep, parsedFile.name) : path.posix.join(path.sep, path.relative(rootDirectory, directory), parsedFile.name);
 					const section: JupyterBookSection = {
 						title: parsedFile.name,
-						file: filePath.replace(/\\/g, '/'),
-						expand_sections: true,
-						numbered: false,
-						sections: await this.createTocFromDir(files, path.join(directory, content), rootDirectory)
+						file: filePath
 					};
 					toc.push(section);
+				} else if (contentStat.isDirectory()) {
+					let files = await fs.promises.readdir(path.join(directory, content));
+					let initFile = this.getInitFile(files);
+					if (initFile) {
+						const indexToRemove = files.findIndex(f => f === initFile.base);
+						if (indexToRemove !== -1) {
+							files.splice(indexToRemove, 1);
+						}
+						let filePath = directory === rootDirectory ? path.posix.join(path.sep, parsedFile.name, initFile.name) : path.posix.join(path.sep, path.relative(rootDirectory, directory), parsedFile.name, initFile.name);
+						let section: JupyterBookSection = {};
+						// if files is empty then treat it as a notebook
+						if (files.length > 0) {
+							section = {
+								title: parsedFile.name,
+								file: filePath,
+								expand_sections: true,
+								numbered: false,
+								sections: await this.createTocFromDir(files, path.join(directory, content), rootDirectory)
+							};
+						} else {
+							section = {
+								title: parsedFile.name,
+								file: filePath,
+							};
+						}
+						toc.push(section);
+					}
 				}
+			}
+			catch (error) {
+				vscode.window.showWarningMessage(loc.msgCreateBookWarningMsg(content));
 			}
 		}
 		return toc;
@@ -255,9 +267,11 @@ export class BookTocManager implements IBookTocManager {
 			await fs.writeFile(path.join(bookContentPath, 'README.md'), '');
 		}
 		let contents = await fs.promises.readdir(bookContentPath);
-		let initFile = this.getInitFile(contents);
-		contents.splice(contents.indexOf(initFile.base), 1);
-		contents.unshift(initFile.base);
+		const initFile = this.getInitFile(contents);
+		if (initFile) {
+			contents.splice(contents.indexOf(initFile.base), 1);
+			contents.unshift(initFile.base);
+		}
 		this.tableofContents = await this.createTocFromDir(contents, bookContentPath, bookContentPath);
 		await fs.writeFile(path.join(bookContentPath, '_config.yml'), yaml.safeDump({ title: path.basename(bookContentPath) }));
 		await fs.writeFile(path.join(bookContentPath, '_toc.yml'), yaml.safeDump(this.tableofContents, { lineWidth: Infinity }));
@@ -335,7 +349,7 @@ export class BookTocManager implements IBookTocManager {
 			}
 		}
 		this.newSection.title = section.title;
-		this.newSection.file = path.join(path.parse(uri).dir, fileName)?.replace(/\\/g, '/');
+		this.newSection.file = path.posix.join(path.parse(uri).dir, fileName);
 		if (section.sections) {
 			const files = section.sections as JupyterBookSection[];
 			const movedSections = await this.traverseSections(files);
@@ -378,7 +392,7 @@ export class BookTocManager implements IBookTocManager {
 			}
 		}
 		fileName = fileName === undefined ? notebookPath.name : path.parse(fileName).name;
-		this.newSection.file = path.sep.concat(fileName).replace(/\\/g, '/');
+		this.newSection.file = path.posix.join(path.sep, fileName);
 		this.newSection.title = notebook.book.title;
 		if (book.version === BookVersion.v1) {
 			// here we only convert if is v1 because we are already using the v2 notation for every book that we read.

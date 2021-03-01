@@ -162,8 +162,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			canPickMany: false,
 			placeHolder: loc.labelBookFolder
 		});
-		const updateBook = this.books.find(book => book.bookPath === pickedBook.detail).bookItems[0];
+
 		if (pickedBook && movingElement) {
+			const updateBook = this.books.find(book => book.bookPath === pickedBook.detail).bookItems[0];
 			if (updateBook) {
 				let bookSections = updateBook.sections;
 				while (bookSections) {
@@ -193,8 +194,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					}
 				}
 			}
+			return pickedSection ? { quickPickSection: pickedSection, book: updateBook } : undefined;
 		}
-		return pickedSection ? { quickPickSection: pickedSection, book: updateBook } : undefined;
+		return undefined;
 	}
 
 	async editBook(movingElement: BookTreeItem): Promise<void> {
