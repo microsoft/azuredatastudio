@@ -196,65 +196,70 @@ export class DashboardWidget {
 	private async refreshMigrations(): Promise<void> {
 		this._migrationStatusCardLoadingContainer.loading = true;
 		this._migrationStatusCardsContainer.clearItems();
+		try {
+			const migrationStatus = await this.getMigrations();
 
-		const migrationStatus = await this.getMigrations();
+			const inProgressMigrations = migrationStatus.filter((value) => {
+				const status = value.migrationContext.properties.migrationStatus;
+				return status === 'InProgress' || status === 'Creating' || status === 'Completing';
+			});
+			const inProgressMigrationButton = this.createStatusCard(
+				IconPathHelper.inProgressMigration,
+				loc.MIGRATION_IN_PROGRESS,
+				loc.LOG_SHIPPING_IN_PROGRESS,
+				inProgressMigrations.length
+			);
+			inProgressMigrationButton.onDidClick((e) => {
+				const dialog = new MigrationStatusDialog(migrationStatus, MigrationCategory.ONGOING);
+				dialog.initialize();
+			});
+			this._migrationStatusCardsContainer.addItem(inProgressMigrationButton);
 
-		const inProgressMigrations = migrationStatus.filter((value) => {
-			const status = value.migrationContext.properties.migrationStatus;
-			return status === 'InProgress' || status === 'Creating' || status === 'Completing';
-		});
-		const inProgressMigrationButton = this.createStatusCard(
-			IconPathHelper.inProgressMigration,
-			'Migration in progress',
-			'Log shipping in progress',
-			inProgressMigrations.length
-		);
-		inProgressMigrationButton.onDidClick((e) => {
-			const dialog = new MigrationStatusDialog(migrationStatus, MigrationCategory.ONGOING);
-			dialog.initialize();
-		});
-		this._migrationStatusCardsContainer.addItem(inProgressMigrationButton);
+			const successfulMigration = migrationStatus.filter((value) => {
+				const status = value.migrationContext.properties.migrationStatus;
+				return status === 'Succeeded';
+			});
+			const successfulMigrationButton = this.createStatusCard(
+				IconPathHelper.completedMigration,
+				loc.MIGRATION_COMPLETED,
+				loc.SUCCESSFULLY_MIGRATED_TO_AZURE_SQL,
+				successfulMigration.length
+			);
+			successfulMigrationButton.onDidClick((e) => {
+				const dialog = new MigrationStatusDialog(migrationStatus, MigrationCategory.SUCCEEDED);
+				dialog.initialize();
+			});
+			this._migrationStatusCardsContainer.addItem(
+				successfulMigrationButton
+			);
 
-		const successfulMigration = migrationStatus.filter((value) => {
-			const status = value.migrationContext.properties.migrationStatus;
-			return status === 'Succeeded';
-		});
-		const successfulMigrationButton = this.createStatusCard(
-			IconPathHelper.completedMigration,
-			'Migration Completed',
-			'Successfully migrated to Azure SQL',
-			successfulMigration.length
-		);
-		successfulMigrationButton.onDidClick((e) => {
-			const dialog = new MigrationStatusDialog(migrationStatus, MigrationCategory.SUCCEEDED);
-			dialog.initialize();
-		});
-		this._migrationStatusCardsContainer.addItem(
-			successfulMigrationButton
-		);
+			const currentConnection = (await azdata.connection.getCurrentConnection());
+			const localMigrations = MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection);
+			const migrationDatabases = new Set(
+				localMigrations.filter((value) => {
 
-		const currentConnection = (await azdata.connection.getCurrentConnection());
-		const localMigrations = MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection);
-		const migrationDatabases = new Set(
-			localMigrations.filter((value) => {
+				}).map((value) => {
+					return value.migrationContext.properties.sourceDatabaseName;
+				}));
+			const serverDatabases = await azdata.connection.listDatabases(currentConnection.connectionId);
+			const notStartedMigrationCard = this.createStatusCard(
+				IconPathHelper.notStartedMigration,
+				loc.MIGRATION_NOT_STARTED,
+				loc.CHOOSE_TO_MIGRATE_TO_AZURE_SQL,
+				serverDatabases.length - migrationDatabases.size
+			);
+			notStartedMigrationCard.onDidClick((e) => {
+				vscode.window.showInformationMessage('Feature coming soon');
+			});
+			this._migrationStatusCardsContainer.addItem(
+				notStartedMigrationCard
+			);
+		} catch (error) {
+			console.log(error);
+		} finally {
+			this._migrationStatusCardLoadingContainer.loading = false;
+		}
 
-			}).map((value) => {
-				return value.migrationContext.properties.sourceDatabaseName;
-			}));
-		const serverDatabases = await azdata.connection.listDatabases(currentConnection.connectionId);
-		const notStartedMigrationCard = this.createStatusCard(
-			IconPathHelper.notStartedMigration,
-			'Migration not started',
-			'Choose to migrate to Azure SQL',
-			serverDatabases.length - migrationDatabases.size
-		);
-		notStartedMigrationCard.onDidClick((e) => {
-			vscode.window.showInformationMessage('Feature coming soon');
-		});
-		this._migrationStatusCardsContainer.addItem(
-			notStartedMigrationCard
-		);
-		this._migrationStatusCardLoadingContainer.loading = false;
 	}
 
 	private async getMigrations(): Promise<MigrationContext[]> {

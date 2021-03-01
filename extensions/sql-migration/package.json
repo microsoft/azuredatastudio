@@ -14,7 +14,6 @@
   "activationEvents": [
     "onDashboardOpen",
     "onCommand:sqlmigration.start",
-    "onCommand:sqlmigration.testDialog",
     "onCommand:sqlmigration.openNotebooks"
   ],
   "main": "./out/main",
@@ -30,11 +29,6 @@
       {
         "command": "sqlmigration.start",
         "title": "SQL Migration Start",
-        "category": "SQL Migration"
-      },
-      {
-        "command": "sqlmigration.testDialog",
-        "title": "SQL Migration test dialog",
         "category": "SQL Migration"
       },
       {

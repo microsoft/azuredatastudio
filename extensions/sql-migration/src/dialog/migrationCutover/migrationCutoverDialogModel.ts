@@ -22,7 +22,7 @@ export class MigrationCutoverDialogModel {
 		));
 	}
 
-	public async startCutover(): Promise<DatabaseMigration> {
+	public async startCutover(): Promise<DatabaseMigration | undefined> {
 		try {
 			if (this.migrationStatus) {
 				return await startMigrationCutover(

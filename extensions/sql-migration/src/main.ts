@@ -41,12 +41,6 @@ class SQLMigration {
 				const wizardController = new WizardController(this.context);
 				await wizardController.openWizard(connectionId);
 			}),
-
-			// vscode.commands.registerCommand('sqlmigration.testDialog', async () => {
-			// 	let dialog = new AssessmentResultsDialog('ownerUri', undefined!, 'Assessment Dialog');
-			// 	await dialog.openDialog();
-			// }),
-
 			vscode.commands.registerCommand('sqlmigration.openNotebooks', async () => {
 				const input = vscode.window.createQuickPick<MigrationNotebookInfo>();
 				input.placeholder = loc.NOTEBOOK_QUICK_PICK_PLACEHOLDER;

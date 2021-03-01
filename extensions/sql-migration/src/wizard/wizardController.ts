@@ -6,7 +6,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { MigrationStateModel } from '../models/stateMachine';
-import { WIZARD_TITLE } from '../constants/strings';
+import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SKURecommendationPage } from './skuRecommendationPage';
 // import { SubscriptionSelectionPage } from './subscriptionSelectionPage';
@@ -31,7 +31,7 @@ export class WizardController {
 	}
 
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {
-		const wizard = azdata.window.createWizard(WIZARD_TITLE, 'wide');
+		const wizard = azdata.window.createWizard(loc.WIZARD_TITLE, 'wide');
 		wizard.generateScriptButton.enabled = false;
 		wizard.generateScriptButton.hidden = true;
 		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);

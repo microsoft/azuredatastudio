@@ -9,7 +9,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
 import { MigrationCategory, MigrationStatusDialogModel } from './migrationStatusDialogModel';
-
+import * as loc from '../../constants/strings';
 export class MigrationStatusDialog {
 	private _model: MigrationStatusDialogModel;
 	private _dialogObject!: azdata.window.Dialog;
@@ -21,7 +21,7 @@ export class MigrationStatusDialog {
 
 	constructor(migrations: MigrationContext[], private _filter: MigrationCategory) {
 		this._model = new MigrationStatusDialogModel(migrations);
-		this._dialogObject = azdata.window.createModelViewDialog('Migration Status', 'MigrationControllerDialog', 'wide');
+		this._dialogObject = azdata.window.createModelViewDialog(loc.MIGRATION_STATUS, 'MigrationControllerDialog', 'wide');
 	}
 
 	initialize() {
@@ -65,7 +65,7 @@ export class MigrationStatusDialog {
 
 	private createSearchAndRefreshContainer(): azdata.FlexContainer {
 		this._searchBox = this._view.modelBuilder.inputBox().withProps({
-			placeHolder: 'Search for migrations',
+			placeHolder: loc.SEARCH_FOR_MIGRATIONS,
 			width: '360px'
 		}).component();
 
@@ -101,89 +101,94 @@ export class MigrationStatusDialog {
 	}
 
 	private populateMigrationTable(): void {
-		const migrations = this._model.filterMigration(
-			this._searchBox.value!,
-			(<azdata.CategoryValue>this._statusDropdown.value).name
-		);
 
-		const data: azdata.DeclarativeTableCellValue[][] = [];
+		try {
+			const migrations = this._model.filterMigration(
+				this._searchBox.value!,
+				(<azdata.CategoryValue>this._statusDropdown.value).name
+			);
 
-		migrations.forEach((migration) => {
-			const migrationRow: azdata.DeclarativeTableCellValue[] = [];
+			const data: azdata.DeclarativeTableCellValue[][] = [];
 
-			const databaseHyperLink = this._view.modelBuilder.hyperlink().withProps({
-				label: migration.migrationContext.name,
-				url: ''
-			}).component();
-			databaseHyperLink.onDidClick(async (e) => {
-				await (new MigrationCutoverDialog(migration)).initialize();
-			});
-			migrationRow.push({
-				value: databaseHyperLink,
-			});
+			migrations.forEach((migration) => {
+				const migrationRow: azdata.DeclarativeTableCellValue[] = [];
 
-			migrationRow.push({
-				value: migration.migrationContext.properties.migrationStatus
-			});
+				const databaseHyperLink = this._view.modelBuilder.hyperlink().withProps({
+					label: migration.migrationContext.name,
+					url: ''
+				}).component();
+				databaseHyperLink.onDidClick(async (e) => {
+					await (new MigrationCutoverDialog(migration)).initialize();
+				});
+				migrationRow.push({
+					value: databaseHyperLink,
+				});
 
-			const sqlMigrationIcon = this._view.modelBuilder.image().withProps({
-				iconPath: IconPathHelper.sqlMigrationLogo,
-				iconWidth: '16px',
-				iconHeight: '16px',
-				width: '32px',
-				height: '20px'
-			}).component();
-			const sqlMigrationName = this._view.modelBuilder.hyperlink().withProps({
-				label: migration.migrationContext.name,
-				url: ''
-			}).component();
-			sqlMigrationName.onDidClick((e) => {
-				vscode.window.showInformationMessage('Feature coming soon');
-			});
+				migrationRow.push({
+					value: migration.migrationContext.properties.migrationStatus
+				});
 
-			const sqlMigrationContainer = this._view.modelBuilder.flexContainer().withProps({
-				CSSStyles: {
-					'justify-content': 'center'
-				}
-			}).component();
-			sqlMigrationContainer.addItem(sqlMigrationIcon, {
-				flex: '0',
-				CSSStyles: {
-					'width': '32px'
-				}
-			});
-			sqlMigrationContainer.addItem(sqlMigrationName,
-				{
+				const sqlMigrationIcon = this._view.modelBuilder.image().withProps({
+					iconPath: IconPathHelper.sqlMigrationLogo,
+					iconWidth: '16px',
+					iconHeight: '16px',
+					width: '32px',
+					height: '20px'
+				}).component();
+				const sqlMigrationName = this._view.modelBuilder.hyperlink().withProps({
+					label: migration.migrationContext.name,
+					url: ''
+				}).component();
+				sqlMigrationName.onDidClick((e) => {
+					vscode.window.showInformationMessage('Feature coming soon');
+				});
+
+				const sqlMigrationContainer = this._view.modelBuilder.flexContainer().withProps({
 					CSSStyles: {
-						'width': 'auto'
+						'justify-content': 'center'
+					}
+				}).component();
+				sqlMigrationContainer.addItem(sqlMigrationIcon, {
+					flex: '0',
+					CSSStyles: {
+						'width': '32px'
 					}
 				});
-			migrationRow.push({
-				value: sqlMigrationContainer
+				sqlMigrationContainer.addItem(sqlMigrationName,
+					{
+						CSSStyles: {
+							'width': 'auto'
+						}
+					});
+				migrationRow.push({
+					value: sqlMigrationContainer
+				});
+
+				migrationRow.push({
+					value: loc.ONLINE
+				});
+
+				migrationRow.push({
+					value: '---'
+				});
+				migrationRow.push({
+					value: '---'
+				});
+
+				data.push(migrationRow);
 			});
 
-			migrationRow.push({
-				value: 'Online'
-			});
-
-			migrationRow.push({
-				value: '---'
-			});
-			migrationRow.push({
-				value: '---'
-			});
-
-			data.push(migrationRow);
-		});
-
-		this._statusTable.dataValues = data;
+			this._statusTable.dataValues = data;
+		} catch (e) {
+			console.log(e);
+		}
 	}
 
 	private createStatusTable(): azdata.DeclarativeTableComponent {
 		this._statusTable = this._view.modelBuilder.declarativeTable().withProps({
 			columns: [
 				{
-					displayName: 'Database',
+					displayName: loc.DATABASE,
 					valueType: azdata.DeclarativeDataType.component,
 					width: '100px',
 					isReadOnly: true,
@@ -192,7 +197,7 @@ export class MigrationStatusDialog {
 					}
 				},
 				{
-					displayName: 'Migration Status',
+					displayName: loc.MIGRATION_STATUS,
 					valueType: azdata.DeclarativeDataType.string,
 					width: '150px',
 					isReadOnly: true,
@@ -201,7 +206,7 @@ export class MigrationStatusDialog {
 					}
 				},
 				{
-					displayName: 'Target Azure SQL Instance Name',
+					displayName: loc.TARGET_AZURE_SQL_INSTANCE_NAME,
 					valueType: azdata.DeclarativeDataType.component,
 					width: '300px',
 					isReadOnly: true,
@@ -210,7 +215,7 @@ export class MigrationStatusDialog {
 					}
 				},
 				{
-					displayName: 'Cutover Type',
+					displayName: loc.CUTOVER_TYPE,
 					valueType: azdata.DeclarativeDataType.string,
 					width: '100px',
 					isReadOnly: true,
@@ -219,7 +224,7 @@ export class MigrationStatusDialog {
 					}
 				},
 				{
-					displayName: 'Start Time',
+					displayName: loc.START_TIME,
 					valueType: azdata.DeclarativeDataType.string,
 					width: '150px',
 					isReadOnly: true,
@@ -228,7 +233,7 @@ export class MigrationStatusDialog {
 					}
 				},
 				{
-					displayName: 'Finish Time',
+					displayName: loc.FINISH_TIME,
 					valueType: azdata.DeclarativeDataType.string,
 					width: '150px',
 					isReadOnly: true,

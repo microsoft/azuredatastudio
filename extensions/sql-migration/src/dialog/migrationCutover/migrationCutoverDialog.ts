@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialogModel } from './migrationCutoverDialogModel';
-
+import * as loc from '../../constants/strings';
 export class MigrationCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
@@ -35,15 +35,15 @@ export class MigrationCutoverDialog {
 
 	constructor(migration: MigrationContext) {
 		this._model = new MigrationCutoverDialogModel(migration);
-		this._dialogObject = azdata.window.createModelViewDialog('Migration Cutover', 'MigrationCutoverDialog', 1000);
+		this._dialogObject = azdata.window.createModelViewDialog(loc.MIGRATION_CUTOVER, 'MigrationCutoverDialog', 1000);
 	}
 
 	async initialize(): Promise<void> {
 		let tab = azdata.window.createTab('');
 		tab.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
-			const sourceDetails = this.createInfoField('Source server', '');
-			const sourceVersion = this.createInfoField('Source version', '');
+			const sourceDetails = this.createInfoField(loc.SOURCE_VERSION, '');
+			const sourceVersion = this.createInfoField(loc.SOURCE_VERSION, '');
 
 			this._serverName = sourceDetails.text;
 			this._serverVersion = sourceVersion.text;
@@ -63,8 +63,8 @@ export class MigrationCutoverDialog {
 				}
 			});
 
-			const targetServer = this.createInfoField('Target server', '');
-			const targetVersion = this.createInfoField('Target version', '');
+			const targetServer = this.createInfoField(loc.TARGET_SERVER, '');
+			const targetVersion = this.createInfoField(loc.TARGET_VERSION, '');
 
 			this._targetServer = targetServer.text;
 			this._targetVersion = targetVersion.text;
@@ -84,8 +84,8 @@ export class MigrationCutoverDialog {
 				}
 			});
 
-			const migrationStatus = this.createInfoField('Migration Status', '');
-			const fullBackupFileOn = this.createInfoField('Full backup file(s)', '');
+			const migrationStatus = this.createInfoField(loc.MIGRATION_STATUS, '');
+			const fullBackupFileOn = this.createInfoField(loc.FULL_BACKUP_FILES, '');
 
 
 			this._migrationStatus = migrationStatus.text;
@@ -106,9 +106,9 @@ export class MigrationCutoverDialog {
 				}
 			});
 
-			const lastSSN = this.createInfoField('Last applied LSN', '');
-			const lastAppliedBackup = this.createInfoField('Last applied backup file(s)', '');
-			const lastAppliedBackupOn = this.createInfoField('Last applied backup file(s) taken on', '');
+			const lastSSN = this.createInfoField(loc.LAST_APPLIED_LSN, '');
+			const lastAppliedBackup = this.createInfoField(loc.LAST_APPLIED_BACKUP_FILES, '');
+			const lastAppliedBackupOn = this.createInfoField(loc.LAST_APPLIED_BACKUP_FILES_TAKEN_ON, '');
 
 			this._lastAppliedLSN = lastSSN.text;
 			this._lastAppliedBackupFile = lastAppliedBackup.text;
@@ -181,30 +181,30 @@ export class MigrationCutoverDialog {
 			this.fileTable = view.modelBuilder.table().withProps({
 				columns: [
 					{
-						value: 'Active Backup file(s)',
+						value: loc.ACTIVE_BACKUP_FILES,
 						width: 150,
 						type: azdata.ColumnType.text
 					},
 					{
-						value: 'Type',
+						value: loc.TYPE,
 						width: 100,
 						type: azdata.ColumnType.text
 					},
 					{
-						value: 'Status',
+						value: loc.STATUS,
 						width: 100,
 						type: azdata.ColumnType.text
 					},
 					{
-						value: 'Backup start time',
+						value: loc.BACKUP_START_TIME,
 						width: 150,
 						type: azdata.ColumnType.text
 					}, {
-						value: 'First LSN',
+						value: loc.FIRST_LSN,
 						width: 150,
 						type: azdata.ColumnType.text
 					}, {
-						value: 'Last LSN',
+						value: loc.LAST_LSN,
 						width: 150,
 						type: azdata.ColumnType.text
 					}
@@ -277,7 +277,7 @@ export class MigrationCutoverDialog {
 				this.refreshStatus();
 			} else {
 				this._dialogObject.message = {
-					text: 'Cannot start the cutover process until all the migrations are done. Click refresh to fetch the latest file status',
+					text: loc.CANNOT_START_CUTOVER_ERROR,
 					level: azdata.window.MessageLevel.Error
 				};
 			}
@@ -315,88 +315,86 @@ export class MigrationCutoverDialog {
 
 
 	private async refreshStatus(): Promise<void> {
-		await this._model.fetchStatus();
-		const sqlServerInfo = await azdata.connection.getServerInfo(this._model._migration.sourceConnectionProfile.connectionId);
-		const sqlServerName = this._model._migration.sourceConnectionProfile.serverName;
-		const sqlServerVersion = sqlServerInfo.serverVersion;
-		const sqlServerEdition = sqlServerInfo.serverEdition;
-		const targetServerName = this._model._migration.targetManagedInstance.name;
-		let targetServerVersion;
-		if (this._model.migrationStatus.id.includes('managedInstances')) {
-			targetServerVersion = 'Azure SQL Database Managed Instance';
-		} else {
-			targetServerVersion = 'Azure SQL Database Virtual Machine';
-		}
+		try {
+			await this._model.fetchStatus();
+			const sqlServerInfo = await azdata.connection.getServerInfo(this._model._migration.sourceConnectionProfile.connectionId);
+			const sqlServerName = this._model._migration.sourceConnectionProfile.serverName;
+			const sqlServerVersion = sqlServerInfo.serverVersion;
+			const sqlServerEdition = sqlServerInfo.serverEdition;
+			const targetServerName = this._model._migration.targetManagedInstance.name;
+			let targetServerVersion;
+			if (this._model.migrationStatus.id.includes('managedInstances')) {
+				targetServerVersion = loc.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
+			} else {
+				targetServerVersion = loc.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
+			}
 
-		const migrationStatusTextValue = this._model.migrationStatus.properties.migrationStatus;
+			const migrationStatusTextValue = this._model.migrationStatus.properties.migrationStatus;
 
-		let fullBackupFileName: string;
-		let lastAppliedSSN: string;
-		let lastAppliedBackupFileTakenOn: string;
+			let fullBackupFileName: string;
+			let lastAppliedSSN: string;
+			let lastAppliedBackupFileTakenOn: string;
 
 
-		const tableData: ActiveBackupFileSchema[] = [];
+			const tableData: ActiveBackupFileSchema[] = [];
 
-		this._model.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.forEach((activeBackupSet) => {
-			tableData.push(
-				{
-					fileName: activeBackupSet.listOfBackupFiles[0].fileName,
-					type: activeBackupSet.backupType,
-					status: activeBackupSet.listOfBackupFiles[0].status,
-					backupStartTime: activeBackupSet.backupStartDate,
-					firstLSN: activeBackupSet.firstLSN,
-					lastLSN: activeBackupSet.lastLSN
+			this._model.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.forEach((activeBackupSet) => {
+				tableData.push(
+					{
+						fileName: activeBackupSet.listOfBackupFiles[0].fileName,
+						type: activeBackupSet.backupType,
+						status: activeBackupSet.listOfBackupFiles[0].status,
+						backupStartTime: activeBackupSet.backupStartDate,
+						firstLSN: activeBackupSet.firstLSN,
+						lastLSN: activeBackupSet.lastLSN
+					}
+				);
+				if (activeBackupSet.listOfBackupFiles[0].fileName.substr(activeBackupSet.listOfBackupFiles[0].fileName.lastIndexOf('.') + 1) === 'bak') {
+					fullBackupFileName = activeBackupSet.listOfBackupFiles[0].fileName;
 				}
-			);
-			if (activeBackupSet.listOfBackupFiles[0].fileName.substr(activeBackupSet.listOfBackupFiles[0].fileName.lastIndexOf('.') + 1) === 'bak') {
-				fullBackupFileName = activeBackupSet.listOfBackupFiles[0].fileName;
+				if (activeBackupSet.listOfBackupFiles[0].fileName === this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename) {
+					lastAppliedSSN = activeBackupSet.lastLSN;
+					lastAppliedBackupFileTakenOn = activeBackupSet.backupFinishDate;
+				}
+			});
+
+			this._serverName.value = sqlServerName;
+			this._serverVersion.value = `${sqlServerVersion}
+			${sqlServerEdition}`;
+
+			this._targetServer.value = targetServerName;
+			this._targetVersion.value = targetServerVersion;
+
+			this._migrationStatus.value = migrationStatusTextValue;
+			this._fullBackupFile.value = fullBackupFileName!;
+
+			this._lastAppliedLSN.value = lastAppliedSSN!;
+			this._lastAppliedBackupFile.value = this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename;
+			this._lastAppliedBackupTakenOn.value = new Date(lastAppliedBackupFileTakenOn!).toLocaleString();
+
+			this._fileCount.value = loc.ACTIVE_BACKUP_FILES_ITEMS(tableData.length);
+
+			this.fileTable.data = tableData.map((row) => {
+				return [
+					row.fileName,
+					row.type,
+					row.status,
+					new Date(row.backupStartTime).toLocaleString(),
+					row.firstLSN,
+					row.lastLSN
+				];
+			});
+			if (this._model.migrationStatus.properties.migrationStatusDetails?.isFullBackupRestored) {
+				this._startCutover = true;
 			}
-			if (activeBackupSet.listOfBackupFiles[0].fileName === this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename) {
-				lastAppliedSSN = activeBackupSet.lastLSN;
-				lastAppliedBackupFileTakenOn = activeBackupSet.backupFinishDate;
+
+			if (migrationStatusTextValue === 'InProgress') {
+				this._databaseCutoverButton.enabled = true;
+			} else {
+				this._databaseCutoverButton.enabled = false;
 			}
-		});
-
-		this._serverName.value = sqlServerName;
-		this._serverVersion.value = `${sqlServerVersion}
-		${sqlServerEdition}`;
-
-		this._targetServer.value = targetServerName;
-		this._targetVersion.value = targetServerVersion;
-
-		this._migrationStatus.value = migrationStatusTextValue;
-		this._fullBackupFile.value = fullBackupFileName!;
-
-		this._lastAppliedLSN.value = lastAppliedSSN!;
-		this._lastAppliedBackupFile.value = this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename;
-		this._lastAppliedBackupTakenOn.value = new Date(lastAppliedBackupFileTakenOn!).toLocaleString();
-
-		this._fileCount.value = `Active Backup files (${tableData.length} items)`;
-
-		this.fileTable.data = tableData.map((row) => {
-			return [
-				row.fileName,
-				row.type,
-				row.status,
-				new Date(row.backupStartTime).toLocaleString(),
-				row.firstLSN,
-				row.lastLSN
-			];
-		});
-		if (this._model.migrationStatus.properties.migrationStatusDetails?.isFullBackupRestored) {
-			this._startCutover = true;
-			// for(let i=0; i<tableData.length;i++){
-			// 	if(tableData[i].status!=='Restored'){
-			// 		this._startCutover = false;
-			// 		break;
-			// 	}
-			// }
-		}
-
-		if (migrationStatusTextValue === 'InProgress') {
-			this._databaseCutoverButton.enabled = true;
-		} else {
-			this._databaseCutoverButton.enabled = false;
+		} catch (e) {
+			console.log(e);
 		}
 	}
 

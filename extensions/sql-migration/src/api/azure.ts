@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import { azureResource } from 'azureResource';
+import * as loc from '../constants/strings';
 
 async function getAzureCoreAPI(): Promise<azurecore.IExtension> {
 	const api = (await vscode.extensions.getExtension(azurecore.extension.name)?.activate()) as azurecore.IExtension;
@@ -222,7 +223,7 @@ export async function startMigrationCutover(account: azdata.Account, subscriptio
 export function getMigrationControllerRegions(): azdata.CategoryValue[] {
 	return [
 		{
-			displayName: 'East US EUAP',
+			displayName: loc.EASTUS2EUAP,
 			name: 'eastus2euap'
 		}
 	];
