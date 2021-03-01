@@ -96,7 +96,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		this._cellOutput = value;
 	}
 
-	ngOnInit() {
+	async ngOnInit() {
 		if (this.cellModel) {
 			let outputId: QueryResultId = this.cellModel.getOutputId(this._cellOutput);
 			if (outputId) {
@@ -109,10 +109,10 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 				}
 			}));
 		}
-		this.renderGrid();
+		await this.renderGrid();
 	}
 
-	renderGrid(): void {
+	async renderGrid(): Promise<void> {
 		if (!this._bundleOptions || !this._cellModel || !this.mimeType) {
 			return;
 		}
@@ -124,7 +124,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			let outputElement = <HTMLElement>this.output.nativeElement;
 			outputElement.appendChild(this._table.element);
 			this._register(attachTableStyler(this._table, this.themeService));
-			this._table.onDidInsert();
+			await this._table.onDidInsert();
 			this.layout();
 			this._initialized = true;
 		}

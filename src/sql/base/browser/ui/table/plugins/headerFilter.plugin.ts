@@ -83,7 +83,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	}
 
 	private handleHeaderCellRendered(e: Event, args: Slick.OnHeaderCellRenderedEventArgs<T>) {
-		const column = args.column;
+		const column = args.column as FilterableColumn<T>;
 		if (column.id === '_detail_selector') {
 			return;
 		}
@@ -98,6 +98,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		const $el = jQuery(`<button aria-label="${ShowFilterText}" title="${ShowFilterText}"></button>`)
 			.addClass('slick-header-menubutton')
 			.data('column', column);
+		this.setButtonImage($el, column.filterValues?.length > 0);
 
 		$el.click(async (e: JQuery.Event) => {
 			e.stopPropagation();

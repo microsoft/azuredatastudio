@@ -23,8 +23,8 @@ export class HybridDataProvider<T extends Slick.SlickData> implements IDisposabl
 	private _onFilterStateChange = new Emitter<void>();
 	get onFilterStateChange(): Event<void> { return this._onFilterStateChange.event; }
 
-	private _onSortComplete = new Emitter<void>();
-	get onSortComplete(): Event<void> { return this._onSortComplete.event; }
+	private _onSortComplete = new Emitter<Slick.OnSortEventArgs<T>>();
+	get onSortComplete(): Event<Slick.OnSortEventArgs<T>> { return this._onSortComplete.event; }
 
 	constructor(dataRows: IObservableCollection<T>,
 		private _loadDataFn: (offset: number, count: number) => Thenable<T[]>,
@@ -37,33 +37,24 @@ export class HybridDataProvider<T extends Slick.SlickData> implements IDisposabl
 		this._disposableStore.add(this._asyncDataProvider.onFilterStateChange(() => {
 			this._onFilterStateChange.fire();
 		}));
-		this._disposableStore.add(this._asyncDataProvider.onSortComplete(() => {
-			this._onSortComplete.fire();
+		this._disposableStore.add(this._asyncDataProvider.onSortComplete((args) => {
+			this._onSortComplete.fire(args);
 		}));
 		this._disposableStore.add(this._tableDataProvider.onFilterStateChange(() => {
 			this._onFilterStateChange.fire();
 		}));
-		this._disposableStore.add(this._tableDataProvider.onFilterStateChange(() => {
-			this._onFilterStateChange.fire();
+		this._disposableStore.add(this._tableDataProvider.onSortComplete((args) => {
+			this._onSortComplete.fire(args);
 		}));
 	}
 
 	public async getColumnValues(column: Slick.Column<T>): Promise<string[]> {
-		if (!this._options.localDataProcessing) {
-			return this._asyncDataProvider.getColumnValues(column);
-		}
-		if (this.thresholdReached) {
-			return [];
-		}
-		if (!this._dataCached) {
-			const data = await this._loadDataFn(0, this.length);
-			this._dataCached = true;
-			this._tableDataProvider.push(data);
-		}
-		return this._tableDataProvider.getColumnValues(column);
+		await this.initializeCacheIfNeeded();
+		return this.provider.getColumnValues(column);
 	}
 
 	public async getFilteredColumnValues(column: Slick.Column<T>): Promise<string[]> {
+		await this.initializeCacheIfNeeded();
 		return this.provider.getFilteredColumnValues(column);
 	}
 
@@ -102,10 +93,12 @@ export class HybridDataProvider<T extends Slick.SlickData> implements IDisposabl
 	}
 
 	public async filter(columns: FilterableColumn<T>[]) {
+		await this.initializeCacheIfNeeded();
 		this.provider.filter(columns);
 	}
 
 	public async sort(options: Slick.OnSortEventArgs<T>) {
+		await this.initializeCacheIfNeeded();
 		this.provider.sort(options);
 	}
 
@@ -115,5 +108,19 @@ export class HybridDataProvider<T extends Slick.SlickData> implements IDisposabl
 
 	private get provider(): IDisposableDataProvider<T> {
 		return this._dataCached ? this._tableDataProvider : this._asyncDataProvider;
+	}
+
+	private async initializeCacheIfNeeded() {
+		if (!this._options.localDataProcessing) {
+			return;
+		}
+		if (this.thresholdReached) {
+			return;
+		}
+		if (!this._dataCached) {
+			const data = await this._loadDataFn(0, this.length);
+			this._dataCached = true;
+			this._tableDataProvider.push(data);
+		}
 	}
 }

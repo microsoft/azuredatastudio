@@ -205,8 +205,8 @@ export class AsyncDataProvider<T extends Slick.SlickData> implements IDisposable
 	private _onFilterStateChange = new Emitter<void>();
 	get onFilterStateChange(): Event<void> { return this._onFilterStateChange.event; }
 
-	private _onSortComplete = new Emitter<void>();
-	get onSortComplete(): Event<void> { return this._onSortComplete.event; }
+	private _onSortComplete = new Emitter<Slick.OnSortEventArgs<T>>();
+	get onSortComplete(): Event<Slick.OnSortEventArgs<T>> { return this._onSortComplete.event; }
 
 	constructor(public dataRows: IObservableCollection<T>) { }
 

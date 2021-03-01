@@ -122,7 +122,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
 	}
 
-	public rerenderGrid(start: number, end: number) {
+	public rerenderGrid() {
 		this._grid.updateRowCount();
 		this._grid.setColumns(this._grid.getColumns());
 		this._grid.invalidateAllRows();

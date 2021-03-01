@@ -14,7 +14,7 @@ export interface IDisposableDataProvider<T> extends Slick.DataProvider<T> {
 	filter(columns?: Slick.Column<T>[]): Promise<void>;
 	sort(args: Slick.OnSortEventArgs<T>): Promise<void>;
 	readonly onFilterStateChange: Event<void>;
-	readonly onSortComplete: Event<void>;
+	readonly onSortComplete: Event<Slick.OnSortEventArgs<T>>;
 }
 
 export interface ITableMouseEvent {

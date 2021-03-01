@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/gridPanel';
 
-import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
+import { ITableStyles, ITableMouseEvent, FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, IColumn, ICellValue } from 'sql/workbench/services/query/common/query';
@@ -411,7 +411,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		return this._resultSet;
 	}
 
-	public onDidInsert() {
+	public async onDidInsert() {
 		if (!this.table) {
 			this.build();
 		}
@@ -427,7 +427,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		});
 		this.dataProvider.dataRows = collection;
 		this.table.updateRowCount();
-		this.setupState();
+		await this.setupState();
 	}
 
 	public onDidRemove() {
@@ -490,7 +490,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			{
 				localDataProcessing: this.options.localDataProcessing,
 				localDataCountLimit: this.options.localDataCountThreshold
-			}); //TODO
+			});
 		this.table = this._register(new Table(this.tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);
@@ -504,6 +504,23 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this._register(this.table.onClick(this.onTableClick, this));
 		//This listener is used for correcting auto-scroling when clicking on the header for reszing.
 		this._register(this.table.onHeaderClick(this.onHeaderClick, this));
+		this._register(this.dataProvider.onFilterStateChange(() => {
+			const columns = this.table.columns as FilterableColumn<T>[];
+			this.state.columnFilters = columns.filter((column) => column.filterValues?.length > 0).map(column => {
+				return {
+					filterValues: column.filterValues,
+					field: column.field
+				};
+			});
+			this.table.rerenderGrid();
+		}));
+		this._register(this.dataProvider.onSortComplete((args: Slick.OnSortEventArgs<T>) => {
+			this.state.sortState = {
+				field: args.sortCol.field,
+				sortAsc: args.sortAsc
+			};
+			this.table.rerenderGrid();
+		}));
 		const filter = new HeaderFilter();
 		attachButtonStyler(filter, this.themeService);
 		this.table.registerPlugin(filter);
@@ -575,7 +592,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}
 	}
 
-	private setupState() {
+	private async setupState() {
 		// change actionbar on maximize change
 		this._register(this.state.onMaximizedChange(this.rebuildActionBar, this));
 
@@ -594,6 +611,25 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 		if (savedSelection) {
 			this.selectionModel.setSelectedRanges(savedSelection);
+		}
+
+		if (this.state.sortState) {
+			await this.dataProvider.sort({
+				multiColumnSort: false,
+				grid: this.table.grid,
+				sortAsc: this.state.sortState.sortAsc,
+				sortCol: this.columns.find((column) => column.field === this.state.sortState.field)
+			});
+		}
+
+		if (this.state.columnFilters) {
+			this.columns.forEach(column => {
+				const idx = this.state.columnFilters.findIndex(filter => filter.field === column.field);
+				if (idx !== -1) {
+					(<FilterableColumn<T>>column).filterValues = this.state.columnFilters[idx].filterValues;
+				}
+			});
+			await this.dataProvider.filter(this.columns);
 		}
 	}
 

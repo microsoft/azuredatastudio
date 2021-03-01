@@ -73,8 +73,8 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 	private _onFilterStateChange = new Emitter<void>();
 	get onFilterStateChange(): Event<void> { return this._onFilterStateChange.event; }
 
-	private _onSortComplete = new Emitter<void>();
-	get onSortComplete(): Event<void> { return this._onSortComplete.event; }
+	private _onSortComplete = new Emitter<Slick.OnSortEventArgs<T>>();
+	get onSortComplete(): Event<Slick.OnSortEventArgs<T>> { return this._onSortComplete.event; }
 
 	constructor(
 		data?: Array<T>,
@@ -148,6 +148,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 
 	async sort(args: Slick.OnSortEventArgs<T>): Promise<void> {
 		this._data = this._sortFn(args, this._data);
+		this._onSortComplete.fire(args);
 	}
 
 	getLength(): number {
