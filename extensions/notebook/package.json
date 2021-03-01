@@ -657,5 +657,8 @@
     "typemoq": "^2.1.0",
     "vscodetestcover": "^1.1.0"
   },
+  "resolutions": {
+    "url-parse": "^1.5.1"
+  },
   "enableProposedApi": true
 }
