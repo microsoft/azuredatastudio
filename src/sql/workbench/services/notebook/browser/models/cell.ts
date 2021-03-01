@@ -80,6 +80,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
 	private _isInjectedParameter: boolean;
+	private _attachments: nb.ICellAttachment;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -138,6 +139,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get metadata(): any {
 		return this._metadata;
+	}
+
+	public get attachments() {
+		return this._attachments;
 	}
 
 	public get isEditMode(): boolean {
@@ -845,6 +850,8 @@ export class CellModel extends Disposable implements ICellModel {
 			if (this._configurationService?.getValue('notebook.saveConnectionName')) {
 				metadata.connection_name = this._savedConnectionName;
 			}
+		} else if (this._cellType === CellTypes.Markdown) {
+			cellJson.attachments = this._attachments;
 		}
 		return cellJson as nb.ICellContents;
 	}
@@ -866,7 +873,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this._isParameter = false;
 			this._isInjectedParameter = false;
 		}
-
+		this._attachments = cell.attachments || {};
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);
 		this._savedConnectionName = this._metadata.connection_name;
