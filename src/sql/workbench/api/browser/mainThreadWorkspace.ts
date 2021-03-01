@@ -9,13 +9,16 @@ import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspaces/common/workspaceEditing';
+import { isUntitledWorkspace } from 'vs/platform/workspaces/common/workspaces';
+import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadWorkspace)
 export class MainThreadWorkspace extends Disposable implements MainThreadWorkspaceShape {
 
 	constructor(
 		extHostContext: IExtHostContext,
-		@IWorkspaceEditingService private workspaceEditingService: IWorkspaceEditingService
+		@IWorkspaceEditingService private workspaceEditingService: IWorkspaceEditingService,
+		@IWorkbenchEnvironmentService protected readonly environmentService: IWorkbenchEnvironmentService,
 	) {
 		super();
 	}
@@ -29,5 +32,14 @@ export class MainThreadWorkspace extends Disposable implements MainThreadWorkspa
 	$enterWorkspace(workspaceFile: URI): Promise<void> {
 		workspaceFile = URI.revive(workspaceFile);
 		return this.workspaceEditingService.enterWorkspace(workspaceFile);
+	}
+
+	$saveWorkspace(workspaceFile: URI): Promise<void> {
+		workspaceFile = URI.revive(workspaceFile);
+		return this.workspaceEditingService.saveAndEnterWorkspace(workspaceFile);
+	}
+
+	$isUntitledWorkspace(workspaceFile: URI): boolean {
+		return isUntitledWorkspace(workspaceFile, this.environmentService);
 	}
 }
