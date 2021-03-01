@@ -62,6 +62,8 @@ export class BookTocManager implements IBookTocManager {
 
 		// If it doesnt find a file named as 'index.md' then use the first file we find.
 		if (initFileIndex !== -1) {
+			initFile = path.parse(files[initFileIndex]);
+		} else {
 			files.some((f) => {
 				const parsedPath = path.parse(f);
 				if (allowedFileExtensions.includes(parsedPath.ext)) {
@@ -98,30 +100,16 @@ export class BookTocManager implements IBookTocManager {
 				} else if (contentStat.isDirectory()) {
 					let files = await fs.promises.readdir(path.join(directory, content));
 					let initFile = this.getInitFile(files);
-					if (initFile) {
-						const indexToRemove = files.findIndex(f => f === initFile.base);
-						if (indexToRemove !== -1) {
-							files.splice(indexToRemove, 1);
-						}
-						let filePath = directory === rootDirectory ? path.posix.join(path.sep, parsedFile.name, initFile.name) : path.posix.join(path.sep, path.relative(rootDirectory, directory), parsedFile.name, initFile.name);
-						let section: JupyterBookSection = {};
-						// if files is empty then treat it as a notebook
-						if (files.length > 0) {
-							section = {
-								title: parsedFile.name,
-								file: filePath,
-								expand_sections: true,
-								numbered: false,
-								sections: await this.createTocFromDir(files, path.join(directory, content), rootDirectory)
-							};
-						} else {
-							section = {
-								title: parsedFile.name,
-								file: filePath,
-							};
-						}
-						toc.push(section);
-					}
+					let filePath = directory === rootDirectory ? path.posix.join(path.sep, parsedFile.name, initFile.name) : path.posix.join(path.sep, path.relative(rootDirectory, directory), parsedFile.name, initFile.name);
+					let section: JupyterBookSection = {};
+					section = {
+						title: parsedFile.name,
+						file: filePath,
+						expand_sections: true,
+						numbered: false,
+						sections: await this.createTocFromDir(files, path.join(directory, content), rootDirectory)
+					};
+					toc.push(section);
 				}
 			}
 			catch (error) {
