@@ -325,8 +325,8 @@ export interface IDataSet {
 
 export interface IGridTableOptions {
 	actionOrientation: ActionsOrientation;
-	localDataProcessing?: boolean;
-	localDataCountThreshold?: number;
+	inMemoryDataProcessing: boolean;
+	inMemoryDataCountThreshold?: number;
 }
 
 export abstract class GridTableBase<T> extends Disposable implements IView {
@@ -337,6 +337,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private styles: ITableStyles;
 	private currentHeight: number;
 	private dataProvider: HybridDataProvider<T>;
+	private filterPlugin: HeaderFilter<T>;
 
 	private columns: Slick.Column<T>[];
 
@@ -374,7 +375,10 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	constructor(
 		state: GridTableState,
 		protected _resultSet: ResultSetSummary,
-		private readonly options: IGridTableOptions = { actionOrientation: ActionsOrientation.VERTICAL },
+		private readonly options: IGridTableOptions = {
+			inMemoryDataProcessing: false,
+			actionOrientation: ActionsOrientation.VERTICAL
+		},
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IInstantiationService protected readonly instantiationService: IInstantiationService,
 		@IEditorService private readonly editorService: IEditorService,
@@ -488,8 +492,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			undefined,
 			(data: ICellValue) => { return data?.displayValue; },
 			{
-				localDataProcessing: this.options.localDataProcessing,
-				localDataCountLimit: this.options.localDataCountThreshold
+				inMemoryDataProcessing: this.options.inMemoryDataProcessing,
+				inMemoryDataCountThreshold: this.options.inMemoryDataCountThreshold
 			});
 		this.table = this._register(new Table(this.tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
@@ -521,9 +525,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			};
 			this.table.rerenderGrid();
 		}));
-		const filter = new HeaderFilter();
-		attachButtonStyler(filter, this.themeService);
-		this.table.registerPlugin(filter);
+		this.filterPlugin = new HeaderFilter();
+		attachButtonStyler(this.filterPlugin, this.themeService);
+		this.table.registerPlugin(this.filterPlugin);
 		if (this.styles) {
 			this.table.style(this.styles);
 		}
@@ -680,6 +684,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	public updateResult(resultSet: ResultSetSummary) {
 		this._resultSet = resultSet;
 		if (this.table && this.visible) {
+			if (this.options.inMemoryDataProcessing && this.options.inMemoryDataCountThreshold < resultSet.rowCount) {
+				this.filterPlugin.enabled = false;
+			}
 			this.dataProvider.length = resultSet.rowCount;
 			this.table.updateRowCount();
 		}
@@ -844,8 +851,9 @@ class GridTable<T> extends GridTableBase<T> {
 		@IThemeService themeService: IThemeService
 	) {
 		super(state, resultSet, {
-			localDataProcessing: true,
-			actionOrientation: ActionsOrientation.VERTICAL
+			actionOrientation: ActionsOrientation.VERTICAL,
+			inMemoryDataProcessing: true,
+			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
 		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 	}

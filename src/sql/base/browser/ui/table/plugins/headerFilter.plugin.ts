@@ -35,8 +35,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private workingFilters!: Array<string>;
 	private columnDef!: FilterableColumn<T>;
 	private buttonStyles?: IButtonStyles;
-
 	private disposableStore = new DisposableStore();
+	private _enabled: boolean = true;
 
 	constructor() {
 	}
@@ -83,6 +83,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	}
 
 	private handleHeaderCellRendered(e: Event, args: Slick.OnHeaderCellRenderedEventArgs<T>) {
+		if (!this.enabled) {
+			return;
+		}
 		const column = args.column as FilterableColumn<T>;
 		if (column.id === '_detail_selector') {
 			return;
@@ -277,6 +280,14 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	public style(styles: IButtonStyles): void {
 		this.buttonStyles = styles;
 		this.applyStyles();
+	}
+
+	public get enabled(): boolean {
+		return this._enabled;
+	}
+
+	public set enabled(value: boolean) {
+		this._enabled = value;
 	}
 
 	private applyStyles() {

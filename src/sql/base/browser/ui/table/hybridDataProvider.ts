@@ -10,8 +10,8 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 
 export interface HybridDataProviderOptions {
-	localDataProcessing: boolean;
-	localDataCountLimit?: number;
+	inMemoryDataProcessing: boolean;
+	inMemoryDataCountThreshold?: number;
 }
 
 export class HybridDataProvider<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
@@ -81,7 +81,7 @@ export class HybridDataProvider<T extends Slick.SlickData> implements IDisposabl
 	}
 
 	public getItems(): T[] {
-		throw new Error('Method should not be called.');
+		throw new Error('Method not implemented.');
 	}
 
 	public get length(): number {
@@ -103,7 +103,7 @@ export class HybridDataProvider<T extends Slick.SlickData> implements IDisposabl
 	}
 
 	private get thresholdReached(): boolean {
-		return this._options.localDataCountLimit !== undefined && this.length > this._options.localDataCountLimit;
+		return this._options.inMemoryDataCountThreshold !== undefined && this.length > this._options.inMemoryDataCountThreshold;
 	}
 
 	private get provider(): IDisposableDataProvider<T> {
@@ -111,7 +111,7 @@ export class HybridDataProvider<T extends Slick.SlickData> implements IDisposabl
 	}
 
 	private async initializeCacheIfNeeded() {
-		if (!this._options.localDataProcessing) {
+		if (!this._options.inMemoryDataProcessing) {
 			return;
 		}
 		if (this.thresholdReached) {
