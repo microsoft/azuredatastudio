@@ -12,7 +12,7 @@ import { localize } from 'vs/nls';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -80,6 +80,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
 	private _isInjectedParameter: boolean;
+	private _attachments: nb.ICellAttachment;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -138,6 +139,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get metadata(): any {
 		return this._metadata;
+	}
+
+	public get attachments() {
+		return this._attachments;
 	}
 
 	public get isEditMode(): boolean {
@@ -845,6 +850,8 @@ export class CellModel extends Disposable implements ICellModel {
 			if (this._configurationService?.getValue('notebook.saveConnectionName')) {
 				metadata.connection_name = this._savedConnectionName;
 			}
+		} else if (this._cellType === CellTypes.Markdown) {
+			cellJson.attachments = this._attachments;
 		}
 		return cellJson as nb.ICellContents;
 	}
@@ -866,7 +873,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this._isParameter = false;
 			this._isInjectedParameter = false;
 		}
-
+		this._attachments = cell.attachments || {};
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);
 		this._savedConnectionName = this._metadata.connection_name;
@@ -876,6 +883,19 @@ export class CellModel extends Disposable implements ICellModel {
 				this.addOutput(output);
 			}
 		}
+	}
+
+	public get currentMode(): CellEditModes {
+		if (this._cellType === CellTypes.Code) {
+			return CellEditModes.CODE;
+		}
+		if (this._showMarkdown && this._showPreview) {
+			return CellEditModes.SPLIT;
+		} else if (this._showMarkdown && !this._showPreview) {
+			return CellEditModes.MARKDOWN;
+		}
+		// defaulting to WYSIWYG
+		return CellEditModes.WYSIWYG;
 	}
 
 	private setLanguageFromContents(cell: nb.ICellContents): void {
