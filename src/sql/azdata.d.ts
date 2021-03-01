@@ -4694,8 +4694,8 @@ declare module 'azdata' {
 		}
 
 		/**
-		* @deprecated Use IKernelSpec instead
-		*/
+		 * @deprecated Use IKernelSpec instead
+		 */
 		export interface IKernelInfo {
 			name: string;
 			language?: string;
