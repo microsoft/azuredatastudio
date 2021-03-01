@@ -14,7 +14,16 @@ export interface IFindPosition {
 	row: number;
 }
 
-function defaultSort<T extends Slick.SlickData>(args: Slick.OnSortEventArgs<T>, data: Array<T>, cellValueGetter: CellValueGetter): Array<T> {
+export type CellValueGetter = (data: any) => any;
+export type TableFilterFunc<T extends Slick.SlickData> = (data: Array<T>, columns: Slick.Column<T>[]) => Array<T>;
+export type TableSortFunc<T extends Slick.SlickData> = (args: Slick.OnSortEventArgs<T>, data: Array<T>) => Array<T>;
+export type TableFindFunc<T extends Slick.SlickData> = (val: T, exp: string) => Array<number>;
+
+function defaultCellValueGetter(data: any): any {
+	return data;
+}
+
+function defaultSort<T extends Slick.SlickData>(args: Slick.OnSortEventArgs<T>, data: Array<T>, cellValueGetter: CellValueGetter = defaultCellValueGetter): Array<T> {
 	if (!args.sortCol || !args.sortCol.field || data.length === 0) {
 		return data;
 	}
@@ -37,7 +46,7 @@ function defaultSort<T extends Slick.SlickData>(args: Slick.OnSortEventArgs<T>, 
 	return data.sort((a, b) => comparer(a, b) * sign);
 }
 
-function defaultFilter<T extends Slick.SlickData>(data: T[], columns: FilterableColumn<T>[], cellValueGetter: CellValueGetter): T[] {
+function defaultFilter<T extends Slick.SlickData>(data: T[], columns: FilterableColumn<T>[], cellValueGetter: CellValueGetter = defaultCellValueGetter): T[] {
 	let filteredData = data;
 	columns?.forEach(column => {
 		if (column.filterValues?.length > 0 && column.field) {
@@ -48,11 +57,6 @@ function defaultFilter<T extends Slick.SlickData>(data: T[], columns: Filterable
 	});
 	return filteredData;
 }
-
-export type CellValueGetter = (data: any) => string;
-export type TableFilterFunc<T extends Slick.SlickData> = (data: Array<T>, columns: Slick.Column<T>[]) => Array<T>;
-export type TableSortFunc<T extends Slick.SlickData> = (args: Slick.OnSortEventArgs<T>, data: Array<T>) => Array<T>;
-export type TableFindFunc<T extends Slick.SlickData> = (val: T, exp: string) => Array<number>;
 
 export class TableDataView<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
 	//The data exposed publicly, when filter is enabled, _data holds the filtered data.
@@ -81,7 +85,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		private _findFn?: TableFindFunc<T>,
 		private _sortFn?: TableSortFunc<T>,
 		private _filterFn?: TableFilterFunc<T>,
-		private _cellValueGetter?: CellValueGetter
+		private _cellValueGetter: CellValueGetter = defaultCellValueGetter
 	) {
 		if (data) {
 			this._data = data;
