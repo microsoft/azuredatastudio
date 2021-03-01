@@ -91,7 +91,7 @@ export class BookTocManager implements IBookTocManager {
 				const contentStat = (await fs.promises.stat(path.join(directory, content)));
 				const parsedFile = path.parse(content);
 				if (contentStat.isFile() && allowedFileExtensions.includes(parsedFile.ext)) {
-					let filePath = directory === rootDirectory ? path.posix.join(path.sep, parsedFile.name) : path.posix.join(path.sep, path.relative(rootDirectory, directory), parsedFile.name);
+					let filePath = directory === rootDirectory ? path.posix.join(path.posix.sep, parsedFile.name) : path.posix.join(path.posix.sep, path.relative(rootDirectory, directory), parsedFile.name);
 					const section: JupyterBookSection = {
 						title: parsedFile.name,
 						file: filePath
@@ -100,7 +100,7 @@ export class BookTocManager implements IBookTocManager {
 				} else if (contentStat.isDirectory()) {
 					let files = await fs.promises.readdir(path.join(directory, content));
 					let initFile = this.getInitFile(files);
-					let filePath = directory === rootDirectory ? path.posix.join(path.sep, parsedFile.name, initFile.name) : path.posix.join(path.sep, path.relative(rootDirectory, directory), parsedFile.name, initFile.name);
+					let filePath = directory === rootDirectory ? path.posix.join(path.posix.sep, parsedFile.name, initFile.name) : path.posix.join(path.posix.sep, path.relative(rootDirectory, directory), parsedFile.name, initFile.name);
 					let section: JupyterBookSection = {};
 					section = {
 						title: parsedFile.name,
@@ -314,7 +314,7 @@ export class BookTocManager implements IBookTocManager {
 	 * @param book The target book.
 	*/
 	async addSection(section: BookTreeItem, book: BookTreeItem): Promise<void> {
-		const uri = path.sep.concat(path.relative(section.rootContentPath, section.book.contentPath));
+		const uri = path.posix.join(path.posix.sep, path.relative(section.rootContentPath, section.book.contentPath));
 		let moveFile = path.join(path.parse(uri).dir, path.parse(uri).name);
 		let fileName = undefined;
 		try {
@@ -380,7 +380,7 @@ export class BookTocManager implements IBookTocManager {
 			}
 		}
 		fileName = fileName === undefined ? notebookPath.name : path.parse(fileName).name;
-		this.newSection.file = path.posix.join(path.sep, fileName);
+		this.newSection.file = path.posix.join(path.posix.sep, fileName);
 		this.newSection.title = notebook.book.title;
 		if (book.version === BookVersion.v1) {
 			// here we only convert if is v1 because we are already using the v2 notation for every book that we read.
