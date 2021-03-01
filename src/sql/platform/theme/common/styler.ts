@@ -326,3 +326,21 @@ export const defaultInfoButtonStyles: IInfoButtonStyleOverrides = {
 export function attachInfoButtonStyler(widget: IThemable, themeService: IThemeService, style?: IInfoButtonStyleOverrides): IDisposable {
 	return attachStyler(themeService, { ...defaultInfoButtonStyles, ...style }, widget);
 }
+
+export interface ICalloutDialogStyleOverrides extends IStyleOverrides {
+	dialogForeground: cr.ColorIdentifier,
+	border: cr.ColorIdentifier,
+	headerAndFooterBackground: cr.ColorIdentifier,
+	bodyBackground: cr.ColorIdentifier,
+	footerTopBorderColor: cr.ColorIdentifier
+
+}
+export function attachCalloutDialogStyler(widget: IThemable, themeService: IThemeService, style?: ICalloutDialogStyleOverrides): IDisposable {
+	return attachStyler(themeService, {
+		// dialogForeground: (style && style.dialogForeground) || cr.editorWidgetForeground,
+		border: (style && style.border) || sqlcr.notebookToolbarLines,
+		headerAndFooterBackground: (style && style.headerAndFooterBackground) || cr.editorWidgetBackground,
+		// bodyBackground: (style && style.bodyBackground) || cr.editorBackground,
+		footerTopBorderColor: (style && style.footerTopBorderColor) || sqlcr.notebookToolbarLines
+	} as ICalloutDialogStyleOverrides, widget);
+}

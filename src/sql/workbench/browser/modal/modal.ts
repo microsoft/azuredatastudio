@@ -27,9 +27,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { editorWidgetForeground, editorBackground } from 'vs/platform/theme/common/colorRegistry';
-import { notebookToolbarLines } from 'sql/platform/theme/common/colorRegistry';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+
 
 export enum MessageLevel {
 	Error = 0,
@@ -130,7 +128,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _dialogBorder?: Color;
 	private _dialogHeaderAndFooterBackground?: Color;
 	private _dialogBodyBackground?: Color;
-	private _footerBorderTopColor?: Color;
+	// private _footerBorderTopColor?: Color;
 
 	private _modalDialog?: HTMLElement;
 	private _modalContent?: HTMLElement;
@@ -418,10 +416,10 @@ export abstract class Modal extends Disposable implements IThemable {
 
 
 	/**
-	 * Tasks to perform before dialog is shown
+	 * Tasks to perform before calout dialog is shown
 	 * Includes: positioning of dialog
 	 */
-	protected positionDialog(): void {
+	protected positionCalloutDialog(): void {
 		/**
 		 * In the case of 'below', dialog will be positioned beneath the trigger and arrow aligned with trigger.
 		 * In the case of 'left', dialog will be positioned left of the trigger and arrow aligned with trigger.
@@ -459,7 +457,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Shows the modal and attaches key listeners
 	 */
 	protected show() {
-		this.positionDialog();
+		this.positionCalloutDialog();
 		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
 		this._modalShowingContext.get()!.push(this._staticKey);
 		DOM.append(this.layoutService.container, this._bodyContainer!);
@@ -676,15 +674,10 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Called by the theme registry on theme change to style the component
 	 */
 	public style(styles: IModalDialogStyles): void {
-		this._dialogForeground = styles.dialogForeground ? styles.dialogForeground : this._themeService.getColorTheme().getColor(editorWidgetForeground);
-		this._dialogBorder = styles.dialogBorder ? styles.dialogBorder : this._themeService.getColorTheme().getColor(notebookToolbarLines);
-		if (this._modalOptions.dialogStyle === 'callout') {
-			this._dialogHeaderAndFooterBackground = styles.dialogBodyBackground ? styles.dialogBodyBackground : this._themeService.getColorTheme().getColor(SIDE_BAR_BACKGROUND);
-		} else {
-			this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground ? styles.dialogHeaderAndFooterBackground : this._themeService.getColorTheme().getColor(SIDE_BAR_BACKGROUND);
-		}
-		this._dialogBodyBackground = styles.dialogBodyBackground ? styles.dialogBodyBackground : this._themeService.getColorTheme().getColor(editorBackground);
-		this._footerBorderTopColor = styles.footerBorderTopColor ? styles.footerBorderTopColor : this._themeService.getColorTheme().getColor(notebookToolbarLines);
+		this._dialogForeground = styles.dialogForeground;
+		this._dialogBorder = styles.dialogBorder;
+		this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground;
+		this._dialogBodyBackground = styles.dialogBodyBackground;
 		this.applyStyles();
 	}
 
@@ -693,10 +686,8 @@ export abstract class Modal extends Disposable implements IThemable {
 		const border = this._dialogBorder ? this._dialogBorder.toString() : '';
 		const headerAndFooterBackground = this._dialogHeaderAndFooterBackground ? this._dialogHeaderAndFooterBackground.toString() : '';
 		const bodyBackground = this._dialogBodyBackground ? this._dialogBodyBackground.toString() : '';
-		const calloutStyle: CSSStyleDeclaration = this._modalDialog.style;
-		const footerTopBorderColor = this._footerBorderTopColor ? this._footerBorderTopColor.toString() : '';
-
-		const foregroundRgb: Color = Color.Format.CSS.parseHex(foreground);
+		const footerBorderTopWidth = border ? '1px' : '';
+		const footerBorderTopStyle = border ? 'solid' : '';
 
 		if (this._closeButtonInHeader) {
 			this._closeButtonInHeader.style.color = foreground;
@@ -706,25 +697,12 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalDialog.style.borderWidth = border ? '1px' : '';
 			this._modalDialog.style.borderStyle = border ? 'solid' : '';
 			this._modalDialog.style.borderColor = border;
-
-			calloutStyle.setProperty('--border', `${border}`);
-			calloutStyle.setProperty('--bodybackground', `${bodyBackground}`);
-			if (foregroundRgb) {
-				calloutStyle.setProperty('--foreground', `
-				${foregroundRgb.rgba.r},
-				${foregroundRgb.rgba.g},
-				${foregroundRgb.rgba.b},
-				0.08
-			`);
-			}
 		}
 
 		if (this._modalHeaderSection) {
 			this._modalHeaderSection.style.backgroundColor = headerAndFooterBackground;
-			if (!(this._modalOptions.dialogStyle === 'callout')) {
-				this._modalHeaderSection.style.borderBottomWidth = border ? '1px' : '';
-				this._modalHeaderSection.style.borderBottomStyle = border ? 'solid' : '';
-			}
+			this._modalHeaderSection.style.borderBottomWidth = border ? '1px' : '';
+			this._modalHeaderSection.style.borderBottomStyle = border ? 'solid' : '';
 			this._modalHeaderSection.style.borderBottomColor = border;
 		}
 
@@ -741,9 +719,9 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		if (this._modalFooterSection) {
 			this._modalFooterSection.style.backgroundColor = headerAndFooterBackground;
-			this._modalFooterSection.style.borderTopWidth = border ? '1px' : '';
-			this._modalFooterSection.style.borderTopStyle = border ? 'solid' : '';
-			this._modalFooterSection.style.borderTopColor = footerTopBorderColor;
+			this._modalFooterSection.style.borderTopWidth = footerBorderTopWidth;
+			this._modalFooterSection.style.borderTopStyle = footerBorderTopStyle;
+			this._modalFooterSection.style.borderTopColor = border;
 		}
 	}
 

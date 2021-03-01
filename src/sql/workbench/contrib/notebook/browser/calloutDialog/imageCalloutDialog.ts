@@ -27,6 +27,8 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+// import { attachCalloutDialogStyler } from 'sql/platform/theme/common/styler';
+
 
 export interface IImageCalloutDialogOptions {
 	insertTitle?: string,
@@ -87,6 +89,7 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 	public render(): void {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
+		// attachCalloutDialogStyler(this, this._themeService);
 		this.addFooterButton(constants.insertButtonText, () => this.insert());
 		this.addFooterButton(constants.cancelButtonText, () => this.cancel(), undefined, true);
 		this.registerListeners();
