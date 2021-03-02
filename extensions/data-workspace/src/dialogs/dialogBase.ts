@@ -94,13 +94,12 @@ export abstract class DialogBase {
 			CSSStyles: { 'margin-top': '3px', 'margin-bottom': '0px' }
 		}).component();
 
-		const untitledWorkspaceCurrentlyOpen = !!vscode.workspace.workspaceFile && isCurrentWorkspaceUntitled();
-		const initialWorkspaceInputBoxValue = !!vscode.workspace.workspaceFile && !untitledWorkspaceCurrentlyOpen ? vscode.workspace.workspaceFile.fsPath : '';
+		const initialWorkspaceInputBoxValue = !!vscode.workspace.workspaceFile && !isCurrentWorkspaceUntitled() ? vscode.workspace.workspaceFile.fsPath : '';
 
 		this.workspaceInputBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.WorkspaceLocationTitle,
 			width: constants.DefaultInputWidth,
-			enabled: !vscode.workspace.workspaceFile || untitledWorkspaceCurrentlyOpen, // want it editable if no saved workspace is open
+			enabled: !vscode.workspace.workspaceFile || isCurrentWorkspaceUntitled(), // want it editable if no saved workspace is open
 			value: initialWorkspaceInputBoxValue,
 			title: initialWorkspaceInputBoxValue // hovertext for if file path is too long to be seen in textbox
 		}).component();

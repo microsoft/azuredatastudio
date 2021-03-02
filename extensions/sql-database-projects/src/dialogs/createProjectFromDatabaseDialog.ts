@@ -356,12 +356,11 @@ export class CreateProjectFromDatabaseDialog {
 	 * @param view
 	 */
 	private createWorkspaceContainerRow(view: azdata.ModelView): azdata.FlexContainer {
-		const untitledWorkspaceCurrentlyOpen = !!vscode.workspace.workspaceFile && isCurrentWorkspaceUntitled();
-		const initialWorkspaceInputBoxValue = !!vscode.workspace.workspaceFile && !untitledWorkspaceCurrentlyOpen ? vscode.workspace.workspaceFile.fsPath : '';
+		const initialWorkspaceInputBoxValue = !!vscode.workspace.workspaceFile && !isCurrentWorkspaceUntitled() ? vscode.workspace.workspaceFile.fsPath : '';
 
 		this.workspaceInputBox = view.modelBuilder.inputBox().withProperties({
 			ariaLabel: constants.workspaceLocationTitle,
-			enabled: !vscode.workspace.workspaceFile || untitledWorkspaceCurrentlyOpen, // want it editable if no saved workspace is open
+			enabled: !vscode.workspace.workspaceFile || isCurrentWorkspaceUntitled(), // want it editable if no saved workspace is open
 			value: initialWorkspaceInputBoxValue,
 			title: initialWorkspaceInputBoxValue, // hovertext for if file path is too long to be seen in textbox
 			width: '100%'
