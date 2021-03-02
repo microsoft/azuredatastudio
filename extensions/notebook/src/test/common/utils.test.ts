@@ -14,7 +14,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { sleep } from './testUtils';
 
-describe('Utils Tests', function () {
+describe('UtilsTests', function () {
 
 	it('getKnoxUrl', () => {
 		const host = '127.0.0.1';
@@ -77,6 +77,22 @@ describe('Utils Tests', function () {
 
 		it('correctly compares version with only minor version difference', () => {
 			should(utils.comparePackageVersions(version1Revision, version1)).equal(1);
+		});
+
+		it('equivalent versions with wildcard characters', () => {
+			should(utils.comparePackageVersions('1.*.3', '1.5.3')).equal(0);
+		});
+
+		it('lower version with wildcard characters', () => {
+			should(utils.comparePackageVersions('1.4.*', '1.5.3')).equal(-1);
+		});
+
+		it('higher version with wildcard characters', () => {
+			should(utils.comparePackageVersions('4.5.6', '3.*')).equal(1);
+		});
+
+		it('all wildcard strings should be equal', () => {
+			should(utils.comparePackageVersions('*.*', '*.*.*')).equal(0);
 		});
 	});
 

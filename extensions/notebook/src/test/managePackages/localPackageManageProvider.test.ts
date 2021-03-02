@@ -215,7 +215,8 @@ describe('Manage Package Providers', () => {
 				getCondaExePath: () => { return ''; },
 				pythonExecutable:  '',
 				pythonInstallationPath: '',
-				usingConda: false
+				usingConda: false,
+				installedPythonVersion: '',
 			},
 			piPyClient: {
 				fetchPypiPackage: (packageName) => { return Promise.resolve(); }

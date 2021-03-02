@@ -106,7 +106,11 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 				let versionKeys = Object.keys(packagesJson.releases);
 				versionKeys = versionKeys.filter(versionKey => {
 					let releaseInfo = packagesJson.releases[versionKey];
-					return Array.isArray(releaseInfo) && releaseInfo.length > 0;
+					if (Array.isArray(releaseInfo) && releaseInfo.length > 0) {
+						let pythonVersionConstraints = releaseInfo.map<string>(info => info.requires_python);
+						return this.isPackageSupported(pythonVersionConstraints);
+					}
+					return false;
 				});
 				versionNums = utils.sortPackageVersions(versionKeys, false);
 
@@ -126,5 +130,29 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 			versions: versionNums,
 			summary: packageSummary
 		};
+	}
+
+	// Determines if a given package is supported for the installed version of Python
+	// using the version constraints from the pypi metadata.
+	private isPackageSupported(versionConstraints: string[]): boolean {
+		if (this.jupyterInstallation.installedPythonVersion !== '') {
+			for (let versionConstraint of versionConstraints) {
+				if (!versionConstraint) {
+					continue;
+				}
+
+				let constraintParts = versionConstraint.split(',');
+				for (let constraintPart of constraintParts) {
+					let versionModifier = constraintPart.slice(0, 2);
+					let version = constraintPart.slice(2);
+					let versionComparison = utils.comparePackageVersions(this.jupyterInstallation.installedPythonVersion, version);
+					if ((versionModifier === '>=' && versionComparison === -1) ||
+						(versionModifier === '!=' && versionComparison === 0)) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
 	}
 }

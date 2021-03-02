@@ -153,6 +153,11 @@ export function comparePackageVersions(first: string, second: string): number {
 	}
 
 	for (let i = 0; i < firstVersion.length; ++i) {
+		// Using asterisks means any version number is equivalent, so skip this value
+		if (firstVersion[i] === '*' || secondVersion[i] === '*') {
+			continue;
+		}
+
 		let firstVersionNum: string | number = Number(firstVersion[i]);
 		let secondVersionNum: string | number = Number(secondVersion[i]);
 

@@ -68,6 +68,7 @@ export interface IJupyterServerInstallation {
 	uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void>;
 	pythonExecutable: string;
 	pythonInstallationPath: string;
+	installedPythonVersion: string;
 }
 
 export const requiredJupyterPkg: PythonPkgDetails = {
@@ -107,6 +108,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private _pythonExecutable: string;
 	private _usingExistingPython: boolean;
 	private _usingConda: boolean;
+	private _installedPythonVersion: string;
 
 	private _installInProgress: boolean;
 	private _installCompletion: Deferred<void>;
@@ -349,6 +351,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			if (pythonUserDir) {
 				this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
 			}
+			this._installedPythonVersion = await this.getInstalledPythonVersion(this._pythonExecutable);
 		}
 
 		// Store the executable options to run child processes with env var without interfering parent env var.
@@ -645,6 +648,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		return this._usingConda;
 	}
 
+	public get installedPythonVersion(): string {
+		return this._installedPythonVersion;
+	}
+
 	private isCondaInstalled(): boolean {
 		let condaExePath = this.getCondaExePath();
 		// eslint-disable-next-line no-sync
@@ -731,6 +738,16 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 
 		return undefined;
+	}
+
+	private async getInstalledPythonVersion(pythonExecutable: string): Promise<string> {
+		let cmd = `"${pythonExecutable}" --version`;
+		let version = await utils.executeBufferedCommand(cmd, {});
+		if (version) {
+			return version.replace('Python ', '');
+		} else {
+			return '';
+		}
 	}
 
 	public getRequiredPackagesForKernel(kernelName: string): PythonPkgDetails[] {
