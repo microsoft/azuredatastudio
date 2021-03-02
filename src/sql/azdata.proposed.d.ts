@@ -955,12 +955,6 @@ declare module 'azdata' {
 		 * @param workspacefile
 		 */
 		export function saveWorkspace(workspaceFile: vscode.Uri): Promise<void>;
-
-		/**
-		 * returns whether or not the workspace is untitled
-		 * @param workspacefile
-		 */
-		export function isUntitledWorkspace(workspaceFile: vscode.Uri): boolean;
 	}
 
 	export interface TableComponentProperties {

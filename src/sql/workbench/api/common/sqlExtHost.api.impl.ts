@@ -475,9 +475,6 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				},
 				saveWorkspace(workspaceFile: vscode.Uri): Promise<void> {
 					return extHostWorkspace.$saveWorkspace(workspaceFile);
-				},
-				isUntitledWorkspace(workspaceFile: vscode.Uri): boolean {
-					return extHostWorkspace.$isUntitledWorkspace(workspaceFile);
 				}
 			};
 

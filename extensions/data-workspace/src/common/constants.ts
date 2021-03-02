@@ -41,7 +41,7 @@ export const ProjectNamePlaceholder = localize('dataworkspace.projectNamePlaceho
 export const ProjectLocationTitle = localize('dataworkspace.projectLocationTitle', "Location");
 export const ProjectLocationPlaceholder = localize('dataworkspace.projectLocationPlaceholder', "Select location to create project");
 export const AddProjectToCurrentWorkspace = localize('dataworkspace.AddProjectToCurrentWorkspace', "This project will be added to the current workspace.");
-export const NewWorkspaceWillBeCreated = localize('dataworkspace.NewWorkspaceWillBeCreated', "A new workspace will be created for this project.");
+export const NewWorkspaceWillBeCreated = localize('dataworkspace.NewWorkspaceWillBeCreated', "A workspace will be created for this project.");
 export const WorkspaceLocationTitle = localize('dataworkspace.workspaceLocationTitle', "Workspace location");
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };

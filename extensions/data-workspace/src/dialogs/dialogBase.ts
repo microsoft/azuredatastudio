@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
-import { directoryExist, fileExist } from '../common/utils';
+import { directoryExist, fileExist, isCurrentWorkspaceUntitled } from '../common/utils';
 
 interface Deferred<T> {
 	resolve: (result: T | Promise<T>) => void;
@@ -94,12 +94,15 @@ export abstract class DialogBase {
 			CSSStyles: { 'margin-top': '3px', 'margin-bottom': '0px' }
 		}).component();
 
+		const untitledWorkspaceCurrentlyOpen = !!vscode.workspace.workspaceFile && isCurrentWorkspaceUntitled();
+		const initialWorkspaceInputBoxValue = !!vscode.workspace.workspaceFile && !untitledWorkspaceCurrentlyOpen ? vscode.workspace.workspaceFile.fsPath : '';
+
 		this.workspaceInputBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.WorkspaceLocationTitle,
 			width: constants.DefaultInputWidth,
-			enabled: !vscode.workspace.workspaceFile, // want it editable if no workspace is open
-			value: vscode.workspace.workspaceFile?.fsPath ?? '',
-			title: vscode.workspace.workspaceFile?.fsPath ?? '' // hovertext for if file path is too long to be seen in textbox
+			enabled: !vscode.workspace.workspaceFile || untitledWorkspaceCurrentlyOpen, // want it editable if no saved workspace is open
+			value: initialWorkspaceInputBoxValue,
+			title: initialWorkspaceInputBoxValue // hovertext for if file path is too long to be seen in textbox
 		}).component();
 
 		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -129,7 +132,7 @@ export abstract class DialogBase {
 			this.workspaceInputBox!.title = selectedFile;
 		}));
 
-		if (vscode.workspace.workspaceFile) {
+		if (vscode.workspace.workspaceFile && !isCurrentWorkspaceUntitled()) {
 			this.workspaceInputFormComponent = {
 				component: this.workspaceInputBox
 			};
@@ -154,7 +157,7 @@ export abstract class DialogBase {
 	 * @param name
 	 */
 	protected updateWorkspaceInputbox(location: string, name: string): void {
-		if (!vscode.workspace.workspaceFile) {
+		if (!vscode.workspace.workspaceFile || isCurrentWorkspaceUntitled()) {
 			const fileLocation = location && name ? path.join(location, `${name}.code-workspace`) : '';
 			this.workspaceInputBox!.value = fileLocation;
 			this.workspaceInputBox!.title = fileLocation;

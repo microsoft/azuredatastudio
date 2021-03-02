@@ -39,7 +39,4 @@ export class MainThreadWorkspace extends Disposable implements MainThreadWorkspa
 		return this.workspaceEditingService.saveAndEnterWorkspace(workspaceFile);
 	}
 
-	$isUntitledWorkspace(workspaceFile: URI): boolean {
-		return isUntitledWorkspace(workspaceFile, this.environmentService);
-	}
 }
