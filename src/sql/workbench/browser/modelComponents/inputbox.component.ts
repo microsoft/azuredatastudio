@@ -64,7 +64,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 						return undefined;
 					} else {
 						return {
-							content: this.inputElement.inputElement.validationMessage || nls.localize('invalidValueError', "Invalid value"),
+							content: this.inputElement.inputElement.validationMessage || this.validationErrorMessage || nls.localize('invalidValueError', "Invalid value"),
 							type: MessageType.ERROR
 						};
 					}
@@ -137,10 +137,8 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 			this._register(input.onDidChange(async e => {
 				if (checkOption()) {
 					this.value = input.value;
+					input.hideErrors = false;
 					await this.validate();
-					if (input.hideErrors) {
-						input.hideErrors = false;
-					}
 					this.fireEvent({
 						eventType: ComponentEventType.onDidChange,
 						args: e
@@ -160,16 +158,13 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 
 	public async validate(): Promise<boolean> {
 		let valid = await super.validate();
-		const otherErrorMsg = valid || this.inputElement.value === '' ? undefined : this.validationErrorMessage;
-		valid = valid && this.inputElement.validate();
+		// Let the input validate handle showing/hiding the error message
+		valid = this.inputElement.validate() && valid;
 
 		// set aria label based on validity of input
 		if (valid) {
 			this.inputElement.setAriaLabel(this.ariaLabel);
 		} else {
-			if (otherErrorMsg) {
-				this.inputElement.showMessage({ type: MessageType.ERROR, content: otherErrorMsg }, true);
-			}
 			if (this.ariaLabel) {
 				this.inputElement.setAriaLabel(nls.localize('period', "{0}. {1}", this.ariaLabel, this.inputElement.inputElement.validationMessage));
 			} else {
