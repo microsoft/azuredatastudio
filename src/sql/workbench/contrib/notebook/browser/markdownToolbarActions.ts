@@ -135,7 +135,7 @@ export class MarkdownTextTransformer {
 		return this._notebookEditor;
 	}
 
-	public async transformText(type: MarkdownButtonType, triggerElement?: HTMLElement, fullMarkdown?: string): Promise<void> {
+	public async transformText(type: MarkdownButtonType, triggerElement?: HTMLElement, previouslyTransformedMarkdown?: string): Promise<void> {
 		let editorControl = this.getEditorControl();
 		if (editorControl) {
 			let selections = editorControl.getSelections();
@@ -162,14 +162,15 @@ export class MarkdownTextTransformer {
 			let editorModel = editorControl.getModel() as TextModel;
 			let isUndo = false;
 
-			if (fullMarkdown) {
+			// If markdown has been previously transformed (e.g. through a callout), insert it "as is"
+			if (previouslyTransformedMarkdown) {
 				startRange = {
 					startColumn: selection.startColumn,
 					endColumn: selection.endColumn,
 					startLineNumber: selection.startLineNumber,
 					endLineNumber: selection.endLineNumber
 				};
-				beginInsertedText = fullMarkdown;
+				beginInsertedText = previouslyTransformedMarkdown;
 				editorModel.pushEditOperations(selections, [
 					{ range: startRange, text: beginInsertedText },
 				], undefined);
@@ -598,9 +599,9 @@ export class ToggleViewAction extends Action {
 		this.class += ' active';
 		context.cellModel.showPreview = this.showPreview;
 		context.cellModel.showMarkdown = this.showMarkdown;
-		// Hide link and image buttons in WYSIWYG mode
+		// Hide image button in WYSIWYG mode
 		if (this.showPreview && !this.showMarkdown) {
-			context.showWYSIWYGTaskbarContent();
+			context.hideImageButton();
 		} else {
 			context.showLinkAndImageButtons();
 		}

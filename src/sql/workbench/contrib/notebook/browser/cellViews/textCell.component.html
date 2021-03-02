@@ -9,7 +9,7 @@
 	<div class="notebook-text" [class.show-markdown]="markdownMode" [class.show-preview]="previewMode">
 		<code-component *ngIf="markdownMode" [cellModel]="cellModel" (onContentChanged)="handleContentChanged()" [model]="model" [activeCellId]="activeCellId">
 		</code-component>
-		<div #preview id="preview" link-handler *ngIf="previewMode" [isTrusted]="isTrusted" [notebookUri]="notebookUri" contentEditable="{{!markdownMode && previewMode && isEditMode ? 'true' : 'false'}}" class="notebook-preview" (input)="handleHtmlChanged()">
+		<div #preview link-handler *ngIf="previewMode" [isTrusted]="isTrusted" [notebookUri]="notebookUri" contentEditable="{{!markdownMode && previewMode && isEditMode ? 'true' : 'false'}}" class="notebook-preview" (input)="handleHtmlChanged()">
 		</div>
 	</div>
 </div>

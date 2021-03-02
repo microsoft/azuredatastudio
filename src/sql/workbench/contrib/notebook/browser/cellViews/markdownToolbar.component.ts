@@ -49,7 +49,6 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	public insertLinkHeading = localize('callout.insertLinkHeading', "Insert link");
 	public insertImageHeading = localize('callout.insertImageHeading', "Insert image");
 
-
 	public richTextViewButton = localize('richTextViewButton', "Rich Text View");
 	public splitViewButton = localize('splitViewButton', "Split View");
 	public markdownViewButton = localize('markdownViewButton', "Markdown View");
@@ -242,7 +241,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		}
 	}
 
-	public showWYSIWYGTaskbarContent() {
+	public hideImageButton() {
 		this._actionBar.setContent(this._wysiwygTaskbarContent);
 	}
 
@@ -281,7 +280,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		const width: DialogWidth = 452;
 
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
-			let defaultLabel = this.getCurrentSelection();
+			const defaultLabel = this.getCurrentSelectionText();
 			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, width, dialogProperties, defaultLabel);
 			this._linkCallout.render();
 			calloutOptions = await this._linkCallout.open();
@@ -289,21 +288,19 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		return calloutOptions;
 	}
 
-	private getCurrentSelection(): string {
+	private getCurrentSelectionText(): string {
 		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
 			return document.getSelection()?.toString() || '';
 		} else {
-			let nbEditor = this._notebookService.findNotebookEditor(this.cellModel?.notebookModel?.notebookUri);
-			let cellEditor = nbEditor.cellEditors.find(e => e.cellGuid() === this.cellModel?.cellGuid);
+			const nbEditor = this._notebookService.findNotebookEditor(this.cellModel?.notebookModel?.notebookUri);
+			const cellEditor = nbEditor.cellEditors.find(e => e.cellGuid() === this.cellModel?.cellGuid);
 			if (cellEditor?.hasEditor) {
-				let editorControl = cellEditor.getEditor().getControl();
-				let selection = editorControl?.getSelection();
-				if (selection) {
-					let textModel = editorControl?.getModel() as TextModel;
-					let value = textModel?.getValueInRange({ startColumn: selection.startColumn, startLineNumber: selection.startLineNumber, endColumn: selection.endColumn, endLineNumber: selection.endLineNumber });
-					if (value) {
-						return value;
-					}
+				const editorControl = cellEditor.getEditor().getControl();
+				const selection = editorControl?.getSelection();
+				if (!selection.isEmpty()) {
+					const textModel = editorControl?.getModel() as TextModel;
+					const value = textModel?.getValueInRange(selection);
+					return value || '';
 				}
 			}
 			return '';

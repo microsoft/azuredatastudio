@@ -114,10 +114,12 @@ suite('MarkdownTextTransformer', () => {
 		await testWithNoSelection(MarkdownButtonType.HEADING2, '');
 		await testWithNoSelection(MarkdownButtonType.HEADING3, '### ', true);
 		await testWithNoSelection(MarkdownButtonType.HEADING3, '');
+		await testPreviouslyTransformedWithNoSelection(MarkdownButtonType.LINK_PREVIEW, '[test](./URL)', true);
 	});
 
 	test('Transform text with one word selected', async () => {
 		await testWithSingleWordSelected(MarkdownButtonType.CODE, '```\nWORD\n```');
+		await testPreviouslyTransformedWithSingleWordSelected(MarkdownButtonType.LINK_PREVIEW, '[SampleURL](https://aka.ms)');
 	});
 
 	test('Transform text with multiple words selected', async () => {
@@ -164,6 +166,15 @@ suite('MarkdownTextTransformer', () => {
 		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with no selection failed (setValue ${setValue})`);
 	}
 
+
+	async function testPreviouslyTransformedWithNoSelection(type: MarkdownButtonType, expectedValue: string, setValue = false): Promise<void> {
+		if (setValue) {
+			textModel.setValue('');
+		}
+		await markdownTextTransformer.transformText(type, undefined, '[test](./URL)');
+		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with no selection and previously transformed md failed (setValue ${setValue})`);
+	}
+
 	async function testWithSingleWordSelected(type: MarkdownButtonType, expectedValue: string): Promise<void> {
 		let value = 'WORD';
 		textModel.setValue(value);
@@ -181,6 +192,18 @@ suite('MarkdownTextTransformer', () => {
 		widget.setSelection(valueRange);
 		await markdownTextTransformer.transformText(type);
 		assert.equal(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with single word selection failed`);
+	}
+
+	async function testPreviouslyTransformedWithSingleWordSelected(type: MarkdownButtonType, expectedValue: string): Promise<void> {
+		let value = 'WORD';
+		textModel.setValue(value);
+
+		// Test transformation (adding text)
+		widget.setSelection({ startColumn: 1, startLineNumber: 1, endColumn: value.length + 1, endLineNumber: 1 });
+		assert.equal(textModel.getValueInRange(widget.getSelection()), value, 'Expected selection is not found');
+		await markdownTextTransformer.transformText(type, undefined, '[SampleURL](https://aka.ms)');
+		const textModelValue = textModel.getValue();
+		assert.equal(textModelValue, expectedValue, `${MarkdownButtonType[type]} with single word selection and previously transformed md sfailed`);
 	}
 
 	async function testWithMultipleWordsSelected(type: MarkdownButtonType, expectedValue: string): Promise<void> {

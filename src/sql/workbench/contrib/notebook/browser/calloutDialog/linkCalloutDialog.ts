@@ -135,6 +135,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 
 	protected onClose(e?: StandardKeyboardEvent) {
 		e.stopPropagation();
+		e.preventDefault();
 		this.cancel();
 	}
 	public insert(): void {
