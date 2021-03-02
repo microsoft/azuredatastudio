@@ -533,7 +533,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private handleOnTextChanged(component: azdata.InputBoxComponent, originalValue: string): boolean {
 		if (component.value === originalValue) {
-			// if there is no text found in the inputbox component return false
+			// if value put within inputbox equals current value found in config return false
 			return false;
 		} else if ((!component.valid)) {
 			// if value given by user is not valid enable discard button for user
