@@ -18,7 +18,7 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 
 	constructor(
 		private jupyterInstallation: IJupyterServerInstallation,
-		private pipyClient: IPyPiClient) {
+		private pyPiClient: IPyPiClient) {
 	}
 
 	/**
@@ -89,7 +89,7 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 	}
 
 	private async fetchPypiPackage(packageName: string): Promise<IPackageOverview> {
-		let body = await this.pipyClient.fetchPypiPackage(packageName);
+		let body = await this.pyPiClient.fetchPypiPackage(packageName);
 		let packagesJson = JSON.parse(body);
 		let versionNums: string[] = [];
 		let packageSummary = '';
