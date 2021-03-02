@@ -216,6 +216,19 @@ describe('Manage Package Providers', () => {
 		versionConstraints = ['>=3.7', '!=3.6,>=3.5', '>=3.8'];
 		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
 		should(result).be.false();
+
+		versionConstraints = ['', '', ''];
+		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
+		should(result).be.true();
+
+		versionConstraints = [undefined, undefined, undefined];
+		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
+		should(result).be.true();
+
+		pythonVersion = '';
+		versionConstraints = ['>=3.7', '!=3.6,>=3.5', '>=3.8'];
+		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
+		should(result).be.true();
 	});
 
 	function createContext(): TestContext {
