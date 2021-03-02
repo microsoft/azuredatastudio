@@ -149,7 +149,7 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 			for (let constraintPart of constraintParts) {
 				constraintPart = constraintPart.trim();
 				let versionModifier = constraintPart.slice(0, 2);
-				let version = constraintPart.slice(2);
+				let version = constraintPart.slice(2).trim();
 				let versionComparison = utils.comparePackageVersions(pythonVersion, version);
 				if ((versionModifier === '>=' && versionComparison === -1) ||
 					(versionModifier === '!=' && versionComparison === 0)) {

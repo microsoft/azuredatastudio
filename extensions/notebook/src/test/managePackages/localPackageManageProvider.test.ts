@@ -201,8 +201,12 @@ describe('Manage Package Providers', () => {
 
 	it('Is python package valid test', async function (): Promise<void> {
 		let pythonVersion = '3.6';
-		let versionConstraints = ['>=3.5, !=3.2, !=3.4.*'];
+		let versionConstraints = ['>=3.5,!=3.2,!=3.4.*'];
 		let result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
+		should(result).be.true();
+
+		versionConstraints = ['>= 3.5, != 3.2, != 3.4.*'];
+		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
 		should(result).be.true();
 
 		versionConstraints = ['>=3.5, !=3.2, !=3.4.*', '!=3.6, >=3.5'];
