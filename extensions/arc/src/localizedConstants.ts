@@ -192,6 +192,9 @@ export function instanceDeleted(name: string): string { return localize('arc.ins
 export function instanceUpdated(name: string): string { return localize('arc.instanceUpdated', "Instance '{0}' updated", name); }
 export function copiedToClipboard(name: string): string { return localize('arc.copiedToClipboard', "{0} copied to clipboard", name); }
 export function clickTheTroubleshootButton(resourceType: string): string { return localize('arc.clickTheTroubleshootButton', "Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.", resourceType); }
+export function dataStorage(value: string): string { return localize('arc.dataStorage', "{0} data", value); }
+export function logStorage(value: string): string { return localize('arc.logStorage', "{0} log", value); }
+export function backupsStorage(value: string): string { return localize('arc.backupsStorage', "{0} backups", value); }
 export function numVCores(vCores: string | undefined): string {
 	if (vCores && +vCores > 0) {
 		if (+vCores === 1) {
