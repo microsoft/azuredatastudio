@@ -11,12 +11,11 @@ import { CellEditModes, ICellModel } from 'sql/workbench/services/notebook/brows
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { TransformMarkdownAction, MarkdownTextTransformer, MarkdownButtonType, ToggleViewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
-import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { ICellEditorProvider, INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { DialogWidth } from 'sql/workbench/browser/modal/modal';
 import { ILinkCalloutDialogOptions, LinkCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/linkCalloutDialog';
 import { TextModel } from 'vs/editor/common/model/textModel';
 
@@ -64,6 +63,8 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	_toggleTextViewAction: ToggleViewAction;
 	_toggleSplitViewAction: ToggleViewAction;
 	_toggleMarkdownViewAction: ToggleViewAction;
+	private _notebookEditor: INotebookEditor;
+	private _cellEditor: ICellEditorProvider;
 
 	constructor(
 		@Inject(INotebookService) private _notebookService: INotebookService,
@@ -211,6 +212,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				this._actionBar.setContent(this._taskbarContent);
 			}
 		}
+		this._notebookEditor = this._notebookService.findNotebookEditor(this.cellModel?.notebookModel?.notebookUri);
 	}
 
 	public async onInsertButtonClick(event: MouseEvent, type: MarkdownButtonType): Promise<void> {
@@ -222,7 +224,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
 			calloutResult = await this.createCallout(type, triggerElement);
 			// If no URL is present, no-op
-			if (!calloutResult.insertLinkUrl) {
+			if (!calloutResult.insertEscapedLinkUrl) {
 				return;
 			}
 			// If cell edit mode isn't WYSIWYG, use result from callout. No need for further transformation.
@@ -232,7 +234,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
 				// Callout is responsible for returning escaped strings
-				document.execCommand('insertHTML', false, `<a href="${calloutResult?.insertLinkUrl}">${calloutResult?.insertLinkLabel}</a>`);
+				document.execCommand('insertHTML', false, `<a href="${calloutResult?.insertEscapedLinkUrl}">${calloutResult?.insertEscapedLinkLabel}</a>`);
 				return;
 			}
 		}
@@ -277,14 +279,10 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		const triggerWidth = triggerElement.offsetWidth;
 		const dialogProperties = { xPos: triggerPosX, yPos: triggerPosY, width: triggerWidth, height: triggerHeight };
 		let calloutOptions;
-		/**
-		 * Width value here reflects designs for Notebook callouts.
-		 */
-		const width: DialogWidth = 452;
 
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
 			const defaultLabel = this.getCurrentSelectionText();
-			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, width, dialogProperties, defaultLabel);
+			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogProperties, defaultLabel);
 			this._linkCallout.render();
 			calloutOptions = await this._linkCallout.open();
 		}
@@ -295,10 +293,12 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
 			return document.getSelection()?.toString() || '';
 		} else {
-			const nbEditor = this._notebookService.findNotebookEditor(this.cellModel?.notebookModel?.notebookUri);
-			const cellEditor = nbEditor.cellEditors.find(e => e.cellGuid() === this.cellModel?.cellGuid);
-			if (cellEditor?.hasEditor) {
-				const editorControl = cellEditor.getEditor().getControl();
+			// If control doesn't exist, editor may have been destroyed previously when switching edit modes
+			if (!this._cellEditor?.getEditor()?.getControl()) {
+				this._cellEditor = this._notebookEditor?.cellEditors?.find(e => e.cellGuid() === this.cellModel?.cellGuid);
+			}
+			if (this._cellEditor?.hasEditor) {
+				const editorControl = this._cellEditor.getEditor()?.getControl();
 				const selection = editorControl?.getSelection();
 				if (!selection.isEmpty()) {
 					const textModel = editorControl?.getModel() as TextModel;

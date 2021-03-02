@@ -20,15 +20,16 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+
+const DEFAULT_DIALOG_WIDTH = 452;
 
 export interface ILinkCalloutDialogOptions {
 	insertTitle?: string,
 	insertMarkdown?: string,
-	insertLinkLabel?: string,
-	insertLinkUrl?: string
+	insertEscapedLinkLabel?: string,
+	insertEscapedLinkUrl?: string
 }
 
 export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> {
@@ -41,7 +42,6 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 
 	constructor(
 		title: string,
-		width: DialogWidth,
 		dialogProperties: IDialogProperties,
 		private readonly _defaultLabel: string = '',
 		@IContextViewService private readonly _contextViewService: IContextViewService,
@@ -55,7 +55,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 	) {
 		super(
 			title,
-			width,
+			DEFAULT_DIALOG_WIDTH,
 			dialogProperties,
 			themeService,
 			layoutService,
@@ -66,13 +66,16 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 			textResourcePropertiesService
 		);
 		let selection = window.getSelection();
-		this._previouslySelectedRange = selection?.getRangeAt(0);
+		if (selection.rangeCount > 0) {
+			this._previouslySelectedRange = selection?.getRangeAt(0);
+		}
 	}
 
 	/**
 	 * Opens the dialog and returns a promise for what options the user chooses.
 	 */
 	public open(): Promise<ILinkCalloutDialogOptions> {
+		this._selectionComplete = new Deferred<ILinkCalloutDialogOptions>();
 		this.show();
 		return this._selectionComplete.promise;
 	}
@@ -104,7 +107,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 				placeholder: constants.linkTextPlaceholder,
 				ariaLabel: constants.linkTextLabel
 			});
-		this._linkTextInputBox.value = this._defaultLabel ? this._defaultLabel : '';
+		this._linkTextInputBox.value = this._defaultLabel;
 		DOM.append(linkTextRow, linkTextInputContainer);
 
 		let linkAddressRow = DOM.$('.row');
@@ -130,40 +133,66 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 	}
 
 	protected onAccept(e?: StandardKeyboardEvent) {
-		e.stopPropagation();
-		// Without calling preventDefault, text cell will insert an extra newline when pressing enter on dialog
-		e.preventDefault();
+		// EventHelper.stop() will call preventDefault. Without it, text cell will insert an extra newline when pressing enter on dialog
+		DOM.EventHelper.stop(e, true);
 		this.insert();
 	}
 
 	protected onClose(e?: StandardKeyboardEvent) {
-		e.stopPropagation();
-		e.preventDefault();
+		DOM.EventHelper.stop(e, true);
 		this.cancel();
 	}
+
 	public insert(): void {
 		this.hide();
-		let label = strings.escape(this._linkTextInputBox.value);
-		let url = strings.escape(this._linkUrlInputBox.value);
+		let escapedLabel = escapeLabel(this._linkTextInputBox.value);
+		let escapedUrl = escapeUrl(this._linkUrlInputBox.value);
 
-		// Reset selection to previous state before callout was open
-		let selection = window.getSelection();
-		selection.removeAllRanges();
-		selection.addRange(this._previouslySelectedRange);
+		if (this._previouslySelectedRange) {
+			// Reset selection to previous state before callout was open
+			let selection = window.getSelection();
+			selection.removeAllRanges();
+			selection.addRange(this._previouslySelectedRange);
 
-		this._selectionComplete.resolve({
-			insertMarkdown: `[${label}](${url})`,
-			insertLinkLabel: label,
-			insertLinkUrl: url
-		});
-		this._selectionComplete = new Deferred<ILinkCalloutDialogOptions>();
+			this._selectionComplete.resolve({
+				insertMarkdown: `[${escapedLabel}](${escapedUrl})`,
+				insertEscapedLinkLabel: escapedLabel,
+				insertEscapedLinkUrl: escapedUrl
+			});
+		}
 	}
 
 	public cancel(): void {
 		super.cancel();
 		this._selectionComplete.resolve({
-			insertMarkdown: ''
+			insertMarkdown: '',
+			insertEscapedLinkLabel: escapeLabel(this._linkTextInputBox.value)
 		});
-		this._selectionComplete = new Deferred<ILinkCalloutDialogOptions>();
 	}
+
+	public setUrl(val: string): void {
+		this._linkUrlInputBox.value = val;
+	}
+}
+
+export function escapeLabel(unescapedLabel: string): string {
+	let firstEscape = strings.escape(unescapedLabel);
+	return firstEscape.replace(/[[]]/g, function (match) {
+		switch (match) {
+			case '[': return '\[';
+			case ']': return '\]';
+			default: return match;
+		}
+	});
+}
+
+export function escapeUrl(unescapedUrl: string): string {
+	let firstEscape = strings.escape(unescapedUrl);
+	return firstEscape.replace(/[()]/g, function (match) {
+		switch (match) {
+			case '(': return '%28';
+			case ')': return '%29';
+			default: return match;
+		}
+	});
 }

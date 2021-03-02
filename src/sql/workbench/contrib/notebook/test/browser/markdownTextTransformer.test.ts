@@ -203,7 +203,7 @@ suite('MarkdownTextTransformer', () => {
 		assert.equal(textModel.getValueInRange(widget.getSelection()), value, 'Expected selection is not found');
 		await markdownTextTransformer.transformText(type, undefined, '[SampleURL](https://aka.ms)');
 		const textModelValue = textModel.getValue();
-		assert.equal(textModelValue, expectedValue, `${MarkdownButtonType[type]} with single word selection and previously transformed md sfailed`);
+		assert.equal(textModelValue, expectedValue, `${MarkdownButtonType[type]} with single word selection and previously transformed md failed`);
 	}
 
 	async function testWithMultipleWordsSelected(type: MarkdownButtonType, expectedValue: string): Promise<void> {
