@@ -157,9 +157,9 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 	}
 
 	public async validate(): Promise<boolean> {
-		let valid = await super.validate();
+		await super.validate();
 		// Let the input validate handle showing/hiding the error message
-		valid = this.inputElement.validate() && valid;
+		const valid = this.inputElement.validate();
 
 		// set aria label based on validity of input
 		if (valid) {
