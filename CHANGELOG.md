@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 1.26.1
+* Release date: February 25, 2021
+* Release status: General Availability
+* Fixes https://github.com/microsoft/azuredatastudio/issues/14382
+
 ## Version 1.26.0
 * Release date: February 22, 2021
 * Release status: General Availability

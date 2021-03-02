@@ -41,7 +41,7 @@ function code() {
 	export ELECTRON_ENABLE_STACK_DUMPING=1
 
 	# Launch Code
-	exec "$CODE" . "$@"
+	exec "$CODE" . "$@" --remote-debugging-port=9222
 }
 
 code "$@"
