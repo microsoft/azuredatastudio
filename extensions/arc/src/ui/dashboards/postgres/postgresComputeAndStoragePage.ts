@@ -328,7 +328,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 				if (!(this.handleOnTextChanged(this.workerMemoryRequestBox!, this.currentConfiguration.workerMemoryRequest!))) {
 					this.saveArgs.workerMemoryRequest = undefined;
 				} else if (this.workerMemoryRequestBox!.value === '') {
-					this.saveArgs.workerMemoryRequest = this.workerMemoryRequestBox!.value;
+					this.saveArgs.workerMemoryRequest = '""';
 				} else {
 					this.saveArgs.workerMemoryRequest = this.workerMemoryRequestBox!.value + 'Gi';
 				}
@@ -348,7 +348,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.workerMemoryLimitBox.onTextChanged(() => {
 				if (!(this.handleOnTextChanged(this.workerMemoryLimitBox!, this.currentConfiguration.workerMemoryLimit!))) {
 					this.saveArgs.workerMemoryLimit = undefined;
-				} else if (this.workerMemoryLimitBox!.value === '') {
+				} else if (this.workerMemoryLimitBox!.value === '""') {
 					this.saveArgs.workerMemoryLimit = this.workerMemoryLimitBox!.value;
 				} else {
 					this.saveArgs.workerMemoryLimit = this.workerMemoryLimitBox!.value + 'Gi';
@@ -406,7 +406,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 				if (!(this.handleOnTextChanged(this.coordinatorMemoryRequestBox!, this.currentConfiguration.coordinatorMemoryRequest!))) {
 					this.saveArgs.coordinatorMemoryRequest = undefined;
 				} else if (this.coordinatorMemoryRequestBox!.value === '') {
-					this.saveArgs.coordinatorMemoryRequest = this.coordinatorMemoryRequestBox!.value;
+					this.saveArgs.coordinatorMemoryRequest = '""';
 				} else {
 					this.saveArgs.coordinatorMemoryRequest = this.coordinatorMemoryRequestBox!.value + 'Gi';
 				}
@@ -427,7 +427,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 				if (!(this.handleOnTextChanged(this.coordinatorMemoryLimitBox!, this.currentConfiguration.coordinatorMemoryLimit!))) {
 					this.saveArgs.coordinatorMemoryLimit = undefined;
 				} else if (this.coordinatorMemoryLimitBox!.value === '') {
-					this.saveArgs.coordinatorMemoryLimit = this.coordinatorMemoryLimitBox!.value;
+					this.saveArgs.coordinatorMemoryLimit = '""';
 				} else {
 					this.saveArgs.coordinatorMemoryLimit = this.coordinatorMemoryLimitBox!.value + 'Gi';
 				}
