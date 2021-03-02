@@ -9,7 +9,6 @@ import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspaces/common/workspaceEditing';
-import { isUntitledWorkspace } from 'vs/platform/workspaces/common/workspaces';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadWorkspace)
