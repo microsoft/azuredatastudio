@@ -3640,7 +3640,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.22.0"
+									"value": ">=1.27.0"
 								}
 							]
 						}
