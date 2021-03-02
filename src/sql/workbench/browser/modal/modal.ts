@@ -134,7 +134,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _modalBodySection?: HTMLElement;
 	private _modalFooterSection?: HTMLElement;
 	private _closeButtonInHeader?: HTMLElement;
-	private _bodyContainer?: HTMLElement;
+	protected _bodyContainer?: HTMLElement;
 	private _modalTitle?: HTMLElement;
 	private _modalTitleIcon?: HTMLElement;
 	private _leftFooter?: HTMLElement;
@@ -699,8 +699,10 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		if (this._modalHeaderSection) {
 			this._modalHeaderSection.style.backgroundColor = headerAndFooterBackground;
-			this._modalHeaderSection.style.borderBottomWidth = border ? '1px' : '';
-			this._modalHeaderSection.style.borderBottomStyle = border ? 'solid' : '';
+			if (!(this._modalOptions.dialogStyle === 'callout')) {
+				this._modalHeaderSection.style.borderBottomWidth = border ? '1px' : '';
+				this._modalHeaderSection.style.borderBottomStyle = border ? 'solid' : '';
+			}
 			this._modalHeaderSection.style.borderBottomColor = border;
 		}
 
@@ -719,7 +721,9 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalFooterSection.style.backgroundColor = headerAndFooterBackground;
 			this._modalFooterSection.style.borderTopWidth = footerBorderTopWidth;
 			this._modalFooterSection.style.borderTopStyle = footerBorderTopStyle;
-			this._modalFooterSection.style.borderTopColor = border;
+			if (!(this._modalOptions.dialogStyle === 'callout')) {
+				this._modalFooterSection.style.borderTopColor = border;
+			}
 		}
 	}
 

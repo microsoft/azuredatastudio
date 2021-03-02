@@ -28,10 +28,6 @@
 	padding: 15px;
 }
 
-.modal .modal-footer {
-	padding: 15px;
-}
-
 .modal .codicon.in-progress {
 	width: 25px;
 	height: 25px;
@@ -129,8 +125,8 @@
 }
 
 .modal .modal-footer {
-	border-top: 1px solid #E1E1E1;
 	display: flex;
+	padding: 15px;
 }
 
 .modal .modal-footer .left-footer {

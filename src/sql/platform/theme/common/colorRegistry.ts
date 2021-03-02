@@ -77,3 +77,9 @@ export const infoButtonForeground = registerColor('infoButton.foreground', { dar
 export const infoButtonBackground = registerColor('infoButton.background', { dark: '#1B1A19', light: '#FFFFFF', hc: '#000000' }, nls.localize('infoButton.background', "Info button background color."));
 export const infoButtonBorder = registerColor('infoButton.border', { dark: '#1B1A19', light: '#FFFFFF', hc: contrastBorder }, nls.localize('infoButton.border', "Info button border color."));
 export const infoButtonHoverBackground = registerColor('infoButton.hoverBackground', { dark: '#282625', light: '#F3F2F1', hc: '#000000' }, nls.localize('infoButton.hoverBackground', "Info button hover background color."));
+
+// Callout Dialog
+export const calloutDialogForeground = registerColor('calloutDialog.foreground', { light: '#616161', dark: '#CCCCCC', hc: '#FFFFFF' }, nls.localize('calloutDialogForeground', 'Callout dialog foreground.'));
+export const calloutDialogBorder = registerColor('calloutDialog.border', { light: '#D6D6D6', dark: '#323130', hc: '#2B56F2' }, nls.localize('calloutDialogBorder', "Callout dialog borders"));
+export const calloutDialogHeaderFooterBackground = registerColor('calloutDialog.headerFooterBackground', { light: '#FFFFFF', dark: '#1E1E1E', hc: Color.black }, nls.localize('calloutDialogHeaderFooterBackground', 'Callout dialog header and footer background.'));
+export const calloutDialogBodyBackground = registerColor('calloutDialog.bodyBackground', { light: '#FFFFFF', dark: '#1E1E1E', hc: Color.black }, nls.localize('calloutDialogBodyBackground', "Callout dialog body background."));

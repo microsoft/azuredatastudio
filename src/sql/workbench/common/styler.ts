@@ -60,10 +60,10 @@ export function attachCalloutDialogStyler(widget: IThemable, themeService: IThem
 		footerBorderTopColor?: cr.ColorIdentifier,
 	}): IDisposable {
 	return attachStyler(themeService, {
-		dialogForeground: (style && style.dialogForeground) || cr.editorWidgetForeground,
-		dialogBorder: (style && style.dialogBorder) || sqlcr.notebookToolbarLines,
-		dialogHeaderAndFooterBackground: (style && style.dialogHeaderAndFooterBackground) || cr.editorWidgetBackground,
-		dialogBodyBackground: (style && style.dialogBodyBackground) || cr.editorBackground,
-		footerBorderTopColor: (style && style.footerBorderTopColor) || sqlcr.notebookToolbarLines
+		dialogForeground: (style && style.dialogForeground) || sqlcr.calloutDialogForeground,
+		dialogBorder: (style && style.dialogBorder) || sqlcr.calloutDialogBorder,
+		dialogHeaderAndFooterBackground: (style && style.dialogHeaderAndFooterBackground) || sqlcr.calloutDialogHeaderFooterBackground,
+		dialogBodyBackground: (style && style.dialogBodyBackground) || sqlcr.calloutDialogBodyBackground,
+		footerBorderTopColor: (style && style.footerBorderTopColor) || sqlcr.calloutDialogBorder
 	}, widget);
 }
