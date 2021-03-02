@@ -230,7 +230,8 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			} else {
 				this.output?.nativeElement?.focus();
 				document.execCommand('delete', false);
-				document.execCommand('insertHTML', false, '<a href="' + calloutResult?.insertLinkUrl + '" target="_blank">' + calloutResult?.insertLinkLabel + '</a>');
+				// Callout is responsible for returning escaped strings
+				document.execCommand('insertHTML', false, `<a href="${calloutResult?.insertLinkUrl}">${calloutResult?.insertLinkLabel}</a>`);
 			}
 		}
 		let transformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
