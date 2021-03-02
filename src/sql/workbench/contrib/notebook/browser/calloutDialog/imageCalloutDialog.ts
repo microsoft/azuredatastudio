@@ -12,7 +12,7 @@ import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog
 import { CalloutDialog } from 'sql/workbench/browser/modal/calloutDialog';
 import { IFileDialogService, IOpenDialogOptions } from 'vs/platform/dialogs/common/dialogs';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IDialogProperties } from 'sql/workbench/browser/modal/modal';
+import { IDialogProperties, IModalDialogStyles } from 'sql/workbench/browser/modal/modal';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -26,9 +26,7 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { attachModalDialogStyler } from 'sql/workbench/common/styler';
-// import { attachCalloutDialogStyler } from 'sql/platform/theme/common/styler';
-
+import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 
 export interface IImageCalloutDialogOptions {
 	insertTitle?: string,
@@ -38,6 +36,9 @@ export interface IImageCalloutDialogOptions {
 }
 
 export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions> {
+	private _styleElement: HTMLStyleElement;
+	private _parent: HTMLElement;
+
 	private _selectionComplete: Deferred<IImageCalloutDialogOptions> = new Deferred<IImageCalloutDialogOptions>();
 	private _imageLocationLabel: HTMLElement;
 	private _imageLocalRadioButton: RadioButton;
@@ -76,6 +77,8 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 			logService,
 			textResourcePropertiesService
 		);
+		this._parent = DOM.$('.modal.callout-dialog');
+		this._styleElement = DOM.createStyleSheet(this._parent);
 	}
 
 	/**
@@ -88,8 +91,8 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 
 	public render(): void {
 		super.render();
-		attachModalDialogStyler(this, this._themeService);
-		// attachCalloutDialogStyler(this, this._themeService);
+		attachCalloutDialogStyler(this, this._themeService);
+
 		this.addFooterButton(constants.insertButtonText, () => this.insert());
 		this.addFooterButton(constants.cancelButtonText, () => this.cancel(), undefined, true);
 		this.registerListeners();
@@ -203,6 +206,8 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 			imagePath: undefined,
 			embedImage: undefined
 		});
+		this._parent.remove();
+		this._styleElement.remove();
 	}
 
 	private async getUserHome(): Promise<string> {
@@ -227,4 +232,51 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 		}
 	}
 
+	// public style(styles: IModalDialogStyles): void {
+	// 	const content: string[] = [];
+	// 	const foreground = styles.dialogForeground ? styles.dialogForeground.toString() : '';
+	// 	const foregroundRgb: Color = Color.Format.CSS.parseHex(foreground);
+
+	// 	if (styles.dialogForeground && styles.dialogBodyBackground && styles.dialogBorder) {
+	// 		content.push(`
+	// 		.modal-dialog {
+	// 			box-shadow: 0px 3px 8px rgba(
+	// 				${foregroundRgb.rgba.r},
+	// 				${foregroundRgb.rgba.g},
+	// 				${foregroundRgb.rgba.b},
+	// 				0.08);
+	// 		}
+
+	// 		.callout-arrow:before {
+	// 			border-color:
+	// 				transparent
+	// 				transparent
+	// 				${styles.dialogBodyBackground}
+	// 				${styles.dialogBodyBackground};
+	// 			box-shadow: -3px 3px 3px 0 rgba(
+	// 				${foregroundRgb.rgba.r},
+	// 				${foregroundRgb.rgba.g},
+	// 				${foregroundRgb.rgba.b},
+	// 				0.08);
+	// 		}
+
+	// 		.callout-arrow.from-left:before {
+	// 			background-color: ${styles.dialogBodyBackground};
+	// 		}
+
+	// 		.hc-black .callout-arrow:before {
+	// 			background-color: ${styles.dialogBodyBackground};
+	// 			border-color:
+	// 				transparent
+	// 				transparent
+	// 				${styles.dialogBorder}
+	// 				${styles.dialogBorder};
+	// 		}`);
+	// 	}
+
+	// 	const newStyles = content.join('\n');
+	// 	if (newStyles !== this._styleElement.innerHTML) {
+	// 		this._styleElement.innerHTML = newStyles;
+	// 	}
+	// }
 }

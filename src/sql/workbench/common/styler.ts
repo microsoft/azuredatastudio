@@ -6,6 +6,7 @@
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
+import * as sqlcr from 'sql/platform/theme/common/colorRegistry';
 import { IThemable } from 'vs/base/common/styler';
 import { attachStyler } from 'vs/platform/theme/common/styler';
 import {
@@ -47,5 +48,22 @@ export function attachTabbedPanelStyler(widget: IThemable, themeService: IThemeS
 		activeBackgroundForVerticalLayout: VERTICAL_TAB_ACTIVE_BACKGROUND,
 		border: DASHBOARD_BORDER,
 		activeTabContrastBorder: cr.activeContrastBorder
+	}, widget);
+}
+
+export function attachCalloutDialogStyler(widget: IThemable, themeService: IThemeService, style?:
+	{
+		dialogForeground?: cr.ColorIdentifier,
+		dialogBorder?: cr.ColorIdentifier,
+		dialogHeaderAndFooterBackground?: cr.ColorIdentifier,
+		dialogBodyBackground?: cr.ColorIdentifier,
+		footerBorderTopColor?: cr.ColorIdentifier,
+	}): IDisposable {
+	return attachStyler(themeService, {
+		dialogForeground: (style && style.dialogForeground) || cr.editorWidgetForeground,
+		dialogBorder: (style && style.dialogBorder) || sqlcr.notebookToolbarLines,
+		dialogHeaderAndFooterBackground: (style && style.dialogHeaderAndFooterBackground) || cr.editorWidgetBackground,
+		dialogBodyBackground: (style && style.dialogBodyBackground) || cr.editorBackground,
+		footerBorderTopColor: (style && style.footerBorderTopColor) || sqlcr.notebookToolbarLines
 	}, widget);
 }

@@ -28,7 +28,6 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
-
 export enum MessageLevel {
 	Error = 0,
 	Warning = 1,
@@ -128,7 +127,6 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _dialogBorder?: Color;
 	private _dialogHeaderAndFooterBackground?: Color;
 	private _dialogBodyBackground?: Color;
-	// private _footerBorderTopColor?: Color;
 
 	private _modalDialog?: HTMLElement;
 	private _modalContent?: HTMLElement;

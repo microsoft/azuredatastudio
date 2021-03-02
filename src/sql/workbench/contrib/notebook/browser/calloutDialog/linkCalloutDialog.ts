@@ -21,7 +21,7 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 
 export interface ILinkCalloutDialogOptions {
 	insertTitle?: string,
@@ -72,7 +72,8 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 
 	public render(): void {
 		super.render();
-		attachModalDialogStyler(this, this._themeService);
+		attachCalloutDialogStyler(this, this._themeService);
+
 		this.addFooterButton(constants.insertButtonText, () => this.insert());
 		this.addFooterButton(constants.cancelButtonText, () => this.cancel(), undefined, true);
 		this.registerListeners();
