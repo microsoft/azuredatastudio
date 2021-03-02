@@ -139,6 +139,9 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 
 	updateResult(resultSet: ResultSetSummary, rows: ICellValue[][]): void {
 		this._table.updateResultSet(resultSet, rows);
+		if (this._table.chartDisplayed) {
+			this._table.updateChartData(resultSet.rowCount, resultSet.columnInfo.length, this._table.gridDataProvider);
+		}
 		if (!this._layoutCalledOnce) {
 			this.layout();
 			this._layoutCalledOnce = true;
