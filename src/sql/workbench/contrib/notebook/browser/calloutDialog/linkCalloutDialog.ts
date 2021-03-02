@@ -37,6 +37,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 	private _linkTextInputBox: InputBox;
 	private _linkAddressLabel: HTMLElement;
 	private _linkUrlInputBox: InputBox;
+	private _previouslySelectedRange: Range;
 
 	constructor(
 		title: string,
@@ -64,6 +65,8 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 			logService,
 			textResourcePropertiesService
 		);
+		let selection = window.getSelection();
+		this._previouslySelectedRange = selection?.getRangeAt(0);
 	}
 
 	/**
@@ -142,6 +145,12 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 		this.hide();
 		let label = strings.escape(this._linkTextInputBox.value);
 		let url = strings.escape(this._linkUrlInputBox.value);
+
+		// Reset selection to previous state before callout was open
+		let selection = window.getSelection();
+		selection.removeAllRanges();
+		selection.addRange(this._previouslySelectedRange);
+
 		this._selectionComplete.resolve({
 			insertMarkdown: `[${label}](${url})`,
 			insertLinkLabel: label,
