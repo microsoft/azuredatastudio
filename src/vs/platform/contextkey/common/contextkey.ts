@@ -59,7 +59,7 @@ export interface IContextKeyExpression {
 export type ContextKeyExpression = (
 	ContextKeyFalseExpr | ContextKeyTrueExpr | ContextKeyDefinedExpr | ContextKeyNotExpr
 	| ContextKeyEqualsExpr | ContextKeyNotEqualsExpr | ContextKeyRegexExpr
-	| ContextKeyNotRegexExpr | ContextKeyAndExpr | ContextKeyOrExpr | ContextKeyInExpr | ContextKeyNotInExpr | ContextKeyGreaterThanEqualsExpr | ContextKeyLessThanEqualsExpr // {{ SQL CARBON EDIT }}
+	| ContextKeyNotRegexExpr | ContextKeyAndExpr | ContextKeyOrExpr | ContextKeyInExpr | ContextKeyNotInExpr | ContextKeyGreaterThanEqualsExpr | ContextKeyLessThanEqualsExpr // {{SQL CARBON EDIT}}
 );
 
 export abstract class ContextKeyExpr {

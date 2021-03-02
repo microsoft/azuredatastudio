@@ -2,12 +2,12 @@
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "The SQL Database Projects extension for Azure Data Studio allows users to develop and publish database schemas.",
-  "version": "0.6.1",
+  "version": "0.7.1",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
     "vscode": "^1.30.1",
-    "azdata": ">=1.25.0"
+    "azdata": ">=1.27.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/sqlDatabaseProjects.png",

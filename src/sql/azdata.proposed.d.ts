@@ -81,6 +81,14 @@ declare module 'azdata' {
 		export interface ICellMetadata {
 			connection_name?: string;
 		}
+
+		export interface ICellContents {
+			attachments?: ICellAttachments;
+		}
+
+		export type ICellAttachments = { [key: string]: ICellAttachment };
+		export type ICellAttachment = { [key: string]: string };
+
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
@@ -349,7 +357,7 @@ declare module 'azdata' {
 	export interface RadioCard {
 		id: string;
 		descriptions: RadioCardDescription[];
-		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		icon?: IconPath;
 	}
 
 	export interface RadioCardDescription {
@@ -441,7 +449,7 @@ declare module 'azdata' {
 		/**
 		 * The path for the icon with optional dark-theme away alternative
 		 */
-		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		iconPath?: IconPath;
 		/**
 		 * The height of the icon
 		 */
@@ -538,7 +546,7 @@ declare module 'azdata' {
 		/**
 		 * Icon of the tab
 		 */
-		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		icon?: IconPath;
 	}
 
 	/**
@@ -820,7 +828,7 @@ declare module 'azdata' {
 	}
 
 	export interface ButtonColumnOption {
-		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		icon?: IconPath;
 	}
 
 	export interface ButtonCell extends TableCell {
@@ -963,7 +971,7 @@ declare module 'azdata' {
 		/**
 		 * The icon to be displayed.
 		 */
-		icon: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		icon: IconPath;
 		/**
 		 * The title of the icon.
 		 */
@@ -974,7 +982,7 @@ declare module 'azdata' {
 		/**
 		 * The icon to be displayed.
 		 */
-		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		icon?: IconPath;
 		/**
 		 * The title of the button.
 		 */
@@ -985,7 +993,7 @@ declare module 'azdata' {
 		/**
 		 * The icon to be displayed.
 		 */
-		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		icon?: IconPath;
 		/**
 		 * The title of the hyperlink.
 		 */
@@ -1013,7 +1021,7 @@ declare module 'azdata' {
 		/**
 		 * The icon to use for all the cells in this column.
 		 */
-		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		icon?: IconPath;
 	}
 
 	export interface ButtonColumn extends IconColumnOptions, TableColumn {

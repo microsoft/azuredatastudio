@@ -13,6 +13,7 @@
 	"installingService": "正在安裝服務",
 	"serviceInstalled": "已安裝",
 	"downloadingService": "正在下載 {0}",
+	"downloadingServiceSize": "({0} KB)",
 	"downloadingServiceStatus": "正在下載服務",
 	"downloadingServiceComplete": "已完成!"
 }

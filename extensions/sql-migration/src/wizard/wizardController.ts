@@ -6,7 +6,6 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { MigrationStateModel } from '../models/stateMachine';
-import { SourceConfigurationPage } from './sourceConfigurationPage';
 import { WIZARD_TITLE } from '../models/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SKURecommendationPage } from './skuRecommendationPage';
@@ -14,7 +13,6 @@ import { SKURecommendationPage } from './skuRecommendationPage';
 import { DatabaseBackupPage } from './databaseBackupPage';
 import { AccountsSelectionPage } from './accountsSelectionPage';
 import { IntergrationRuntimePage } from './integrationRuntimePage';
-import { TempTargetSelectionPage } from './tempTargetSelectionPage';
 import { SummaryPage } from './summaryPage';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '400px';
@@ -36,11 +34,9 @@ export class WizardController {
 		const wizard = azdata.window.createWizard(WIZARD_TITLE, 'wide');
 		wizard.generateScriptButton.enabled = false;
 		wizard.generateScriptButton.hidden = true;
-		const sourceConfigurationPage = new SourceConfigurationPage(wizard, stateModel);
 		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
 		// const subscriptionSelectionPage = new SubscriptionSelectionPage(wizard, stateModel);
 		const azureAccountsPage = new AccountsSelectionPage(wizard, stateModel);
-		const tempTargetSelectionPage = new TempTargetSelectionPage(wizard, stateModel);
 		const databaseBackupPage = new DatabaseBackupPage(wizard, stateModel);
 		const integrationRuntimePage = new IntergrationRuntimePage(wizard, stateModel);
 		const summaryPage = new SummaryPage(wizard, stateModel);
@@ -48,8 +44,6 @@ export class WizardController {
 		const pages: MigrationWizardPage[] = [
 			// subscriptionSelectionPage,
 			azureAccountsPage,
-			tempTargetSelectionPage,
-			sourceConfigurationPage,
 			skuRecommendationPage,
 			databaseBackupPage,
 			integrationRuntimePage,
@@ -87,4 +81,46 @@ export class WizardController {
 			await stateModel.startMigration();
 		});
 	}
+}
+
+export function createInformationRow(view: azdata.ModelView, label: string, value: string): azdata.FlexContainer {
+	return view.modelBuilder.flexContainer()
+		.withLayout(
+			{
+				flexFlow: 'row',
+				alignItems: 'center',
+			})
+		.withItems(
+			[
+				creaetLabelTextComponent(view, label),
+				createTextCompononent(view, value)
+			],
+			{
+				CSSStyles: { 'margin-right': '5px' }
+			})
+		.component();
+}
+
+export function createHeadingTextComponent(view: azdata.ModelView, value: string): azdata.TextComponent {
+	const component = createTextCompononent(view, value);
+	component.updateCssStyles({
+		'font-size': '13px',
+		'font-weight': 'bold'
+	});
+	return component;
+}
+
+
+export function creaetLabelTextComponent(view: azdata.ModelView, value: string): azdata.TextComponent {
+	const component = createTextCompononent(view, value);
+	component.updateCssStyles({
+		'width': '250px'
+	});
+	return component;
+}
+
+export function createTextCompononent(view: azdata.ModelView, value: string): azdata.TextComponent {
+	return view.modelBuilder.text().withProps({
+		value: value
+	}).component();
 }

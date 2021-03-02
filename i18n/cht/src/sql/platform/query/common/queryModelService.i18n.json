@@ -8,5 +8,5 @@
 	],
 	"commitEditFailed": "提交行失敗:",
 	"runQueryStringBatchStartMessage": "已開始執行查詢 \"{0}\"",
-	"updateCellFailed": "更新儲存格失敗:"
+	"updateCellFailed": "更新資料格失敗:"
 }

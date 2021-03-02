@@ -560,7 +560,7 @@ export class ProjectsController {
 			if ((<IProjectReferenceSettings>settings).projectName !== undefined) {
 				// get project path and guid
 				const projectReferenceSettings = settings as IProjectReferenceSettings;
-				const workspaceProjects = await utils.getSqlProjectsInWorkspace();
+				const workspaceProjects = utils.getSqlProjectsInWorkspace();
 				const referencedProject = await Project.openProject(workspaceProjects.filter(p => path.parse(p.fsPath).name === projectReferenceSettings.projectName)[0].fsPath);
 				const relativePath = path.relative(project.projectFolderPath, referencedProject?.projectFilePath!);
 				projectReferenceSettings.projectRelativePath = vscode.Uri.file(relativePath);
@@ -768,7 +768,7 @@ export class ProjectsController {
 
 				const project = await Project.openProject(newProjFilePath);
 				await this.createProjectFromDatabaseApiCall(model); // Call ExtractAPI in DacFx Service
-				let fileFolderList: string[] = model.extractTarget === mssql.ExtractTarget.file ? [model.filePath] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
+				let fileFolderList: vscode.Uri[] = model.extractTarget === mssql.ExtractTarget.file ? [vscode.Uri.file(model.filePath)] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
 
 				await project.addToProject(fileFolderList); // Add generated file structure to the project
 
@@ -811,8 +811,8 @@ export class ProjectsController {
 	/**
 	 * Generate a flat list of all files and folder under a folder.
 	 */
-	public async generateList(absolutePath: string): Promise<string[]> {
-		let fileFolderList: string[] = [];
+	public async generateList(absolutePath: string): Promise<vscode.Uri[]> {
+		let fileFolderList: vscode.Uri[] = [];
 
 		if (!await utils.exists(absolutePath)) {
 			if (await utils.exists(absolutePath + constants.sqlFileExtension)) {
@@ -831,13 +831,13 @@ export class ProjectsController {
 				const stat = await fs.stat(filepath);
 
 				if (stat.isDirectory()) {
-					fileFolderList.push(filepath);
+					fileFolderList.push(vscode.Uri.file(filepath));
 					(await fs
 						.readdir(filepath))
 						.forEach((f: string) => files.push(path.join(filepath, f)));
 				}
 				else if (stat.isFile()) {
-					fileFolderList.push(filepath);
+					fileFolderList.push(vscode.Uri.file(filepath));
 				}
 			}
 

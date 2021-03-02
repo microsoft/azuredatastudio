@@ -48,8 +48,10 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 
 		this._azureAccountsDropdown.onValueChanged(async (value) => {
 			if (value.selected) {
-				this.migrationStateModel.azureAccount = this.migrationStateModel.getAccount(value.index);
-				this.migrationStateModel.subscriptions = undefined!;
+				this.migrationStateModel._azureAccount = this.migrationStateModel.getAccount(value.index);
+				this.migrationStateModel._subscriptions = undefined!;
+				this.migrationStateModel._targetSubscription = undefined!;
+				this.migrationStateModel._databaseBackup.subscription = undefined!;
 			}
 		});
 
@@ -82,7 +84,6 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		this._azureAccountsDropdown.loading = true;
 		try {
 			this._azureAccountsDropdown.values = await this.migrationStateModel.getAccountValues();
-			this.migrationStateModel.azureAccount = this.migrationStateModel.getAccount(0);
 		} finally {
 			this._azureAccountsDropdown.loading = false;
 		}

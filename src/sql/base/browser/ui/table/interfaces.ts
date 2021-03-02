@@ -29,3 +29,7 @@ export interface ITableConfiguration<T> {
 	columns?: Slick.Column<T>[];
 	sorter?: ITableSorter<T>;
 }
+
+export interface FilterableColumn<T> extends Slick.Column<T> {
+	filterable?: boolean;
+}

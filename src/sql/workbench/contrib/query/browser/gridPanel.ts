@@ -48,6 +48,7 @@ import { Progress } from 'vs/platform/progress/common/progress';
 import { ScrollableView, IView } from 'sql/base/browser/ui/scrollableView/scrollableView';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -373,7 +374,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		@IInstantiationService protected readonly instantiationService: IInstantiationService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IUntitledTextEditorService private readonly untitledEditorService: IUntitledTextEditorService,
-		@IConfigurationService private readonly configurationService: IConfigurationService
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IQueryModelService private readonly queryModelService: IQueryModelService
 	) {
 		super();
 		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
@@ -513,10 +515,11 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		});
 		this.rebuildActionBar();
 
-		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
+		this.selectionModel.onSelectedRangesChanged.subscribe(async e => {
 			if (this.state) {
 				this.state.selection = this.selectionModel.getSelectedRanges();
 			}
+			await this.notifyTableSelectionChanged();
 		});
 
 		this.table.grid.onScroll.subscribe((e, data) => {
@@ -588,6 +591,20 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private onHeaderClick(event: ITableMouseEvent) {
 		//header clicks must be accounted for as they force the table to scroll to the top;
 		this.scrolled = false;
+	}
+
+	private async notifyTableSelectionChanged() {
+		const selectedValues = [];
+		for (const range of this.state.selection) {
+			const subset = await this.gridDataProvider.getRowData(range.fromRow, range.toRow - range.fromRow + 1);
+			subset.rows.forEach(row => {
+				// start with range.fromCell -1 because we have row number column which is not available in the actual data
+				for (let i = range.fromCell - 1; i < range.toCell; i++) {
+					selectedValues.push(row[i]?.displayValue);
+				}
+			});
+		}
+		this.queryModelService.notifyCellSelectionChanged(selectedValues);
 	}
 
 	private onTableClick(event: ITableMouseEvent) {
@@ -769,9 +786,10 @@ class GridTable<T> extends GridTableBase<T> {
 		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IQueryModelService queryModelService: IQueryModelService
 	) {
-		super(state, resultSet, undefined, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
+		super(state, resultSet, undefined, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 	}
 

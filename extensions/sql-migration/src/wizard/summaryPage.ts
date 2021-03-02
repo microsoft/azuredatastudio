@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../models/strings';
+import { createHeadingTextComponent, createInformationRow } from './wizardController';
 
 export class SummaryPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -35,22 +36,18 @@ export class SummaryPage extends MigrationWizardPage {
 	public async onPageEnter(): Promise<void> {
 		this._flexContainer.addItems(
 			[
-				this.createHeadingTextComponent(constants.AZURE_ACCOUNT_LINKED),
-				this.createHeadingTextComponent(this.migrationStateModel.azureAccount.displayInfo.displayName),
-
-
-				this.createHeadingTextComponent(constants.MIGRATION_TARGET),
-				this.createInformationRow(constants.TYPE, constants.SUMMARY_MI_TYPE),
-				this.createInformationRow(constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
-				this.createInformationRow(constants.SUMMARY_MI_TYPE, this.migrationStateModel._targetManagedInstance.name),
-				this.createInformationRow(constants.SUMMARY_DATABASE_COUNT_LABEL, '1'),
-
-				this.createHeadingTextComponent(constants.DATABASE_BACKUP_PAGE_TITLE),
+				createHeadingTextComponent(this._view, constants.AZURE_ACCOUNT_LINKED),
+				createHeadingTextComponent(this._view, this.migrationStateModel._azureAccount.displayInfo.displayName),
+				createHeadingTextComponent(this._view, constants.MIGRATION_TARGET),
+				createInformationRow(this._view, constants.TYPE, constants.SUMMARY_MI_TYPE),
+				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
+				createInformationRow(this._view, constants.SUMMARY_MI_TYPE, this.migrationStateModel._targetManagedInstance.name),
+				createInformationRow(this._view, constants.SUMMARY_DATABASE_COUNT_LABEL, '1'),
+				createHeadingTextComponent(this._view, constants.DATABASE_BACKUP_PAGE_TITLE),
 				this.createNetworkContainerRows(),
-
-				this.createHeadingTextComponent(constants.IR_PAGE_TITLE),
-				this.createInformationRow(constants.IR_PAGE_TITLE, this.migrationStateModel.migrationController?.name!),
-				this.createInformationRow(constants.SUMMARY_IR_NODE, this.migrationStateModel._nodeNames.join(', ')),
+				createHeadingTextComponent(this._view, constants.IR_PAGE_TITLE),
+				createInformationRow(this._view, constants.IR_PAGE_TITLE, this.migrationStateModel._migrationController?.name!),
+				createInformationRow(this._view, constants.SUMMARY_IR_NODE, this.migrationStateModel._nodeNames.join(', ')),
 
 			]
 		);
@@ -66,82 +63,39 @@ export class SummaryPage extends MigrationWizardPage {
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
 	}
 
-	private createInformationRow(label: string, value: string): azdata.FlexContainer {
-		return this._view.modelBuilder.flexContainer()
-			.withLayout(
-				{
-					flexFlow: 'row',
-					alignItems: 'center',
-				})
-			.withItems(
-				[
-					this.creaetLabelTextComponent(label),
-					this.createTextCompononent(value)
-				],
-				{
-					CSSStyles: { 'margin-right': '5px' }
-				})
-			.component();
-	}
-
-	private createHeadingTextComponent(value: string): azdata.TextComponent {
-		const component = this.createTextCompononent(value);
-		component.updateCssStyles({
-			'font-size': '13px',
-			'font-weight': 'bold'
-		});
-		return component;
-	}
-
-
-	private creaetLabelTextComponent(value: string): azdata.TextComponent {
-		const component = this.createTextCompononent(value);
-		component.updateCssStyles({
-			'color': '#595959',
-			'width': '250px'
-		});
-		return component;
-	}
-
-	private createTextCompononent(value: string): azdata.TextComponent {
-		return this._view.modelBuilder.text().withProps({
-			value: value
-		}).component();
-	}
-
 	private createNetworkContainerRows(): azdata.FlexContainer {
 		const flexContainer = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
 		}).component();
-		switch (this.migrationStateModel.databaseBackup.networkContainerType) {
+		switch (this.migrationStateModel._databaseBackup.networkContainerType) {
 			case NetworkContainerType.NETWORK_SHARE:
 				flexContainer.addItems(
 					[
-						this.createInformationRow(constants.TYPE, constants.NETWORK_SHARE),
-						this.createInformationRow(constants.PATH, this.migrationStateModel.databaseBackup.networkShareLocation),
-						this.createInformationRow(constants.USER_ACCOUNT, this.migrationStateModel.databaseBackup.windowsUser),
-						this.createInformationRow(constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel.databaseBackup.subscription.name),
-						this.createInformationRow(constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel.databaseBackup.storageAccount.name),
+						createInformationRow(this._view, constants.TYPE, constants.NETWORK_SHARE),
+						createInformationRow(this._view, constants.PATH, this.migrationStateModel._databaseBackup.networkShareLocation),
+						createInformationRow(this._view, constants.USER_ACCOUNT, this.migrationStateModel._databaseBackup.windowsUser),
+						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name),
+						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel._databaseBackup.storageAccount.name),
 					]
 				);
 				break;
 			case NetworkContainerType.FILE_SHARE:
 				flexContainer.addItems(
 					[
-						this.createInformationRow(constants.TYPE, constants.FILE_SHARE),
-						this.createInformationRow(constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel.databaseBackup.subscription.name),
-						this.createInformationRow(constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel.databaseBackup.storageAccount.name),
-						this.createInformationRow(constants.FILE_SHARE, this.migrationStateModel.databaseBackup.fileShare.name),
+						createInformationRow(this._view, constants.TYPE, constants.FILE_SHARE),
+						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name),
+						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel._databaseBackup.storageAccount.name),
+						createInformationRow(this._view, constants.FILE_SHARE, this.migrationStateModel._databaseBackup.fileShare.name),
 					]
 				);
 				break;
 			case NetworkContainerType.BLOB_CONTAINER:
 				flexContainer.addItems(
 					[
-						this.createInformationRow(constants.TYPE, constants.BLOB_CONTAINER),
-						this.createInformationRow(constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel.databaseBackup.blobContainer.subscription.name),
-						this.createInformationRow(constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel.databaseBackup.storageAccount.name),
-						this.createInformationRow(constants.BLOB_CONTAINER, this.migrationStateModel.databaseBackup.blobContainer.name),
+						createInformationRow(this._view, constants.TYPE, constants.BLOB_CONTAINER),
+						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.blobContainer.subscription.name),
+						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel._databaseBackup.storageAccount.name),
+						createInformationRow(this._view, constants.BLOB_CONTAINER, this.migrationStateModel._databaseBackup.blobContainer.name),
 					]
 				);
 		}

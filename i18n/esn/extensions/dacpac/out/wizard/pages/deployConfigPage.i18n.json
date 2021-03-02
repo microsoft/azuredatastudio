@@ -12,6 +12,6 @@
 	"dacFxDeploy.fileTextboxTitle": "Ubicación de archivos",
 	"dacFx.upgradeRadioButtonLabel": "Actualizar una base de datos existente",
 	"dacFx.newRadioButtonLabel": "Nueva base de datos",
-	"dacFx.targetDatabaseRadioButtonsTitle": "Base de datos destino",
+	"dacFx.targetDatabaseRadioButtonsTitle": "Base de datos de destino",
 	"dacFx.targetDatabaseDropdownTitle": "Nombre de la base de datos"
 }

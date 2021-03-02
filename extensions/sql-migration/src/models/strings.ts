@@ -25,7 +25,7 @@ export const SKU_RECOMMENDATION_ALL_SUCCESSFUL = (databaseCount: number): string
 export const SKU_RECOMMENDATION_SOME_SUCCESSFUL = (migratableCount: number, databaseCount: number): string => {
 	return localize('sql.migration.wizard.sku.some', "Based on the results of our source configuration scans, {0} out of {1} of your databases can be migrated to Azure SQL.", migratableCount, databaseCount);
 };
-export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose a target");
+export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose a target Azure SQL");
 
 export const SKU_RECOMMENDATION_NONE_SUCCESSFUL = localize('sql.migration.sku.none', "Based on the results of our source configuration scans, none of your databases can be migrated to Azure SQL.");
 
@@ -34,7 +34,7 @@ export const SUBSCRIPTION_SELECTION_AZURE_ACCOUNT_TITLE = localize('sql.migratio
 export const SUBSCRIPTION_SELECTION_AZURE_SUBSCRIPTION_TITLE = localize('sql.migration.wizard.subscription.azure.subscription.title', "Azure Subscription");
 export const SUBSCRIPTION_SELECTION_AZURE_PRODUCT_TITLE = localize('sql.migration.wizard.subscription.azure.product.title', "Azure Product");
 
-export const CONGRATULATIONS = localize('sql.migration.generic.congratulations', "Congratulations");
+export const CONGRATULATIONS = localize('sql.migration.generic.congratulations', "Congratulations!");
 
 
 // Accounts page
@@ -98,6 +98,12 @@ export const DEFAULT_SETUP_BUTTON = localize('sql.migration.default.setup.button
 export const CUSTOM_SETUP_BUTTON = localize('sql.migration.custom.setup.button', "Custom setup: Add migration controller after customizing most options.");
 export const MIGRATION_CONTROLLER_NOT_FOUND_ERROR = localize('sql.migration.ir.page.migration.controller.not.found', "No Migration Controllers found. Please create a new one");
 export const CREATE_NEW = localize('sql.migration.create.new', "Create new");
+export const INVALID_CONTROLLER_ERROR = localize('sql.migration.invalid.controller.error', "Please select a valid controller");
+export const CONTROLLER_OFFLINE_ERROR = localize('sql.migration.invalid.controller.offline.error', "Please select a controller that is connected to a node");
+export const AUTHENTICATION_KEYS = localize('sql.migration.authentication.types', "Authentication Keys");
+export function CONTROLLER_DETAILS_HEADER(controllerName: string) {
+	return localize('sql.migration.controller.header', "Migration Controller \"{0}\" details:`", controllerName);
+}
 
 // create migration controller dialog
 export const CONTROLLER_DIALOG_DESCRIPTION = localize('sql.migration.controller.container.description', "A migration controller is an ARM (Azure Resource Manager) resource created in your Azure subscription and it is needed to coordinate and monitor data migration activities. {0}");
@@ -128,7 +134,6 @@ export const INVALID_REGION_ERROR = localize('sql.migration.invalid.region.error
 export const INVALID_CONTROLLER_NAME_ERROR = localize('sql.migration.invalid.controller.name.error', "Please enter a valid name for the migration controller.");
 export const CONTROLLER_NOT_FOUND = localize('sql.migration.controller.not.found', "No Migration Controllers found. Please create a new one.");
 export const CONTROLLER_NOT_SETUP_ERROR = localize('sql.migration.controller.not.setup', "Please add a migration controller to proceed.");
-
 export const MANAGED_INSTANCE = localize('sql.migration.managed.instance', "Azure SQL managed instance");
 export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instance found");
 export const TARGET_SELECTION_PAGE_TITLE = localize('sql.migration.target.page.title', "Choose the target Azure SQL");
@@ -149,7 +154,7 @@ export const CANCEL = localize('sql.migration.cancel', "Cancel");
 export const TYPE = localize('sql.migration.type', "Type");
 export const PATH = localize('sql.migration.path', "Path");
 export const USER_ACCOUNT = localize('sql.migration.path.user.account', "User Account");
-
+export const VIEW_ALL = localize('sql.migration.view.all', "View All");
 
 //Summary Page
 export const SUMMARY_PAGE_TITLE = localize('sql.migration.summary.page.title', "Summary");
@@ -171,3 +176,20 @@ export const NOTEBOOK_QUICK_PICK_PLACEHOLDER = localize('sql.migration.quick.pic
 export const NOTEBOOK_INLINE_MIGRATION_TITLE = localize('sql.migration.inline.migration.notebook.title', "Inline migration");
 export const NOTEBOOK_SQL_MIGRATION_ASSESSMENT_TITLE = localize('sql.migration.sql.assessment.notebook.title', "SQL migration assessment");
 export const NOTEBOOK_OPEN_ERROR = localize('sql.migration.notebook.open.error', "Error opening migration notebook");
+
+// Dashboard
+export const DASHBOARD_TITLE = localize('sql.migration.dashboard.title', "Azure SQL Migration");
+export const DASHBOARD_DESCRIPTION = localize('sql.migration.dashboard.description', "Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance or SQL Server on Azure Virtual Machines.");
+export const DASHBOARD_MIGRATE_TASK_BUTTON_TITLE = localize('sql.migration.dashboard.migrate.task.button', "Migrate to Azure SQL");
+export const DASHBOARD_MIGRATE_TASK_BUTTON_DESCRIPTION = localize('sql.migration.dashboard.migrate.task.button.description', "Migrate SQL Server instance to Azure SQL.");
+export const DATABASE_MIGRATION_STATUS = localize('sql.migration.database.migration.status', "Database Migration Status");
+export const HELP_VIDEO1_TITLE = localize('sql.migration.dashboard.video1.title', "Migrate to SQL Server to SQL Managed Instance");
+export const HELP_VIDEO2_TITLE = localize('sql.migration.dashboard.video2.title', "Migrate to SQL Server to SQL Virtual Machine");
+export const HELP_LINK1_TITLE = localize('sql.migration.dashboard.link1.title', "Migrating your SQL Server to cloud");
+export const HELP_LINK1_DESCRIPTION = localize('sql.migration.dashboard.link1.description', "Lorem ipsum dolor sit amet, consectetur adipi. Lorem ipsum dolor sit amet, consectetur adipi. Lorem ipsum.");
+export const HELP_TITLE = localize('sql.migration.dashboard.help.title', "Help Articles and Video Links");
+export const PRE_REQ_TITLE = localize('sql.migration.pre.req.title', "Things you need before starting migration:");
+export const PRE_REQ_1 = localize('sql.migration.pre.req.1', "Azure account details");
+export const PRE_REQ_2 = localize('sql.migration.pre.req.2', "Azure SQL Managed Instance or SQL Server on Azure Virtual Machine");
+export const PRE_REQ_3 = localize('sql.migration.pre.req.3', "Backup location details");
+

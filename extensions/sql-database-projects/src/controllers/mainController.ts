@@ -11,7 +11,7 @@ import * as path from 'path';
 import { ProjectsController } from './projectController';
 import { NetCoreTool } from '../tools/netcoreTool';
 import { IconPathHelper } from '../common/iconHelper';
-import { IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
+import { WorkspaceTreeItem } from 'dataworkspace';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
 
 /**
@@ -37,7 +37,7 @@ export default class MainController implements vscode.Disposable {
 	public deactivate(): void {
 	}
 
-	public async activate(): Promise<IProjectProvider> {
+	public async activate(): Promise<SqlDatabaseProjectProvider> {
 		await this.initializeDatabaseProjects();
 		return new SqlDatabaseProjectProvider(this.projectsController);
 	}

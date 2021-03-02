@@ -12,6 +12,7 @@
     "azdata": ">=1.19.0"
   },
   "activationEvents": [
+    "onDashboardOpen",
     "onCommand:sqlmigration.start",
     "onCommand:sqlmigration.testDialog",
     "onCommand:sqlmigration.openNotebooks"
@@ -40,6 +41,35 @@
         "command": "sqlmigration.openNotebooks",
         "title": "%migration-notebook-command-title%",
         "category": "SQL Migration"
+      }
+    ],
+    "dashboard.tabs": [
+      {
+        "id": "migration-dashboard",
+        "description": "%migration-dashboard-title%",
+        "provider": "MSSQL",
+        "title": "%migration-dashboard-title%",
+        "icon": {
+          "light": "./images/migration.svg",
+          "dark": "./images/migration.svg"
+        },
+        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
+        "container": {
+          "grid-container": [
+            {
+              "name": "",
+              "row": 0,
+              "col": 1,
+              "rowspan": 5,
+              "colspan": 5,
+              "widget": {
+                "modelview": {
+                  "id": "migration.dashboard"
+                }
+              }
+            }
+          ]
+        }
       }
     ]
   },

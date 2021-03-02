@@ -1107,7 +1107,7 @@ export class NotebookViewModel extends Disposable implements EditorFoldingStateD
 
 	async undo() {
 		if (!this.metadata.editable) {
-			return undefined; // {{ SQL CARBON EDIT }}
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		const editStack = this._undoService.getElements(this.uri);
@@ -1127,7 +1127,7 @@ export class NotebookViewModel extends Disposable implements EditorFoldingStateD
 
 	async redo() {
 		if (!this.metadata.editable) {
-			return undefined; // {{ SQL CARBON EDIT }}
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		const editStack = this._undoService.getElements(this.uri);
