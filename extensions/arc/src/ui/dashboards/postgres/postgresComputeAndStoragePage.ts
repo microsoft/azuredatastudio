@@ -271,7 +271,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.workerBox.onTextChanged(() => {
-				if (!this.handleOnTextChanged(this.workerBox!, this.currentConfiguration.workers!.toString())) {
+				if (!this.saveValueToEdit(this.workerBox!, this.currentConfiguration.workers!.toString())) {
 					this.saveArgs.workers = undefined;
 				} else {
 					this.saveArgs.workers = parseInt(this.workerBox!.value!);
@@ -289,7 +289,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.workerCoresRequestBox.onTextChanged(() => {
-				if (!(this.handleOnTextChanged(this.workerCoresRequestBox!, this.currentConfiguration.workerCoresRequest!))) {
+				if (!(this.saveValueToEdit(this.workerCoresRequestBox!, this.currentConfiguration.workerCoresRequest!))) {
 					this.saveArgs.workerCoresRequest = undefined;
 				} else {
 					this.saveArgs.workerCoresRequest = this.workerCoresRequestBox!.value;
@@ -307,7 +307,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.workerCoresLimitBox.onTextChanged(() => {
-				if (!(this.handleOnTextChanged(this.workerCoresLimitBox!, this.currentConfiguration.workerCoresLimit!))) {
+				if (!(this.saveValueToEdit(this.workerCoresLimitBox!, this.currentConfiguration.workerCoresLimit!))) {
 					this.saveArgs.workerCoresLimit = undefined;
 				} else {
 					this.saveArgs.workerCoresLimit = this.workerCoresLimitBox!.value;
@@ -326,7 +326,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.workerMemoryRequestBox.onTextChanged(() => {
-				if (!(this.handleOnTextChanged(this.workerMemoryRequestBox!, this.currentConfiguration.workerMemoryRequest!))) {
+				if (!(this.saveValueToEdit(this.workerMemoryRequestBox!, this.currentConfiguration.workerMemoryRequest!))) {
 					this.saveArgs.workerMemoryRequest = undefined;
 				} else if (this.workerMemoryRequestBox!.value === '') {
 					this.saveArgs.workerMemoryRequest = '""';
@@ -347,7 +347,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.workerMemoryLimitBox.onTextChanged(() => {
-				if (!(this.handleOnTextChanged(this.workerMemoryLimitBox!, this.currentConfiguration.workerMemoryLimit!))) {
+				if (!(this.saveValueToEdit(this.workerMemoryLimitBox!, this.currentConfiguration.workerMemoryLimit!))) {
 					this.saveArgs.workerMemoryLimit = undefined;
 				} else if (this.workerMemoryLimitBox!.value === '""') {
 					this.saveArgs.workerMemoryLimit = this.workerMemoryLimitBox!.value;
@@ -367,7 +367,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.coordinatorCoresRequestBox.onTextChanged(() => {
-				if (!(this.handleOnTextChanged(this.coordinatorCoresRequestBox!, this.currentConfiguration.coordinatorCoresRequest!))) {
+				if (!(this.saveValueToEdit(this.coordinatorCoresRequestBox!, this.currentConfiguration.coordinatorCoresRequest!))) {
 					this.saveArgs.coordinatorCoresRequest = undefined;
 				} else {
 					this.saveArgs.coordinatorCoresRequest = this.coordinatorCoresRequestBox!.value;
@@ -385,7 +385,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.coordinatorCoresLimitBox.onTextChanged(() => {
-				if (!(this.handleOnTextChanged(this.coordinatorCoresLimitBox!, this.currentConfiguration.coordinatorCoresLimit!))) {
+				if (!(this.saveValueToEdit(this.coordinatorCoresLimitBox!, this.currentConfiguration.coordinatorCoresLimit!))) {
 					this.saveArgs.coordinatorCoresLimit = undefined;
 				} else {
 					this.saveArgs.coordinatorCoresLimit = this.coordinatorCoresLimitBox!.value;
@@ -404,7 +404,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.coordinatorMemoryRequestBox.onTextChanged(() => {
-				if (!(this.handleOnTextChanged(this.coordinatorMemoryRequestBox!, this.currentConfiguration.coordinatorMemoryRequest!))) {
+				if (!(this.saveValueToEdit(this.coordinatorMemoryRequestBox!, this.currentConfiguration.coordinatorMemoryRequest!))) {
 					this.saveArgs.coordinatorMemoryRequest = undefined;
 				} else if (this.coordinatorMemoryRequestBox!.value === '') {
 					this.saveArgs.coordinatorMemoryRequest = '""';
@@ -425,7 +425,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.coordinatorMemoryLimitBox.onTextChanged(() => {
-				if (!(this.handleOnTextChanged(this.coordinatorMemoryLimitBox!, this.currentConfiguration.coordinatorMemoryLimit!))) {
+				if (!(this.saveValueToEdit(this.coordinatorMemoryLimitBox!, this.currentConfiguration.coordinatorMemoryLimit!))) {
 					this.saveArgs.coordinatorMemoryLimit = undefined;
 				} else if (this.coordinatorMemoryLimitBox!.value === '') {
 					this.saveArgs.coordinatorMemoryLimit = '""';
@@ -545,7 +545,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	 * @param originalValue The value that was contained in the input box before user interaction.
 	 * @return A boolean that reads true if the new value should be taken in for editing or not.
 	 */
-	private handleOnTextChanged(component: azdata.InputBoxComponent, originalValue: string): boolean {
+	private saveValueToEdit(component: azdata.InputBoxComponent, originalValue: string): boolean {
 		if (component.value === originalValue) {
 			return false;
 		} else if ((!component.valid)) {
