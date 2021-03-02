@@ -101,10 +101,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 				placeholder: constants.linkTextPlaceholder,
 				ariaLabel: constants.linkTextLabel
 			});
-
-		if (this._defaultLabel) {
-			this._linkTextInputBox.value = this._defaultLabel;
-		}
+		this._linkTextInputBox.value = this._defaultLabel ? this._defaultLabel : '';
 		DOM.append(linkTextRow, linkTextInputContainer);
 
 		let linkAddressRow = DOM.$('.row');
@@ -131,6 +128,8 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 
 	protected onAccept(e?: StandardKeyboardEvent) {
 		e.stopPropagation();
+		// Without calling preventDefault, text cell will insert an extra newline when pressing enter on dialog
+		e.preventDefault();
 		this.insert();
 	}
 
