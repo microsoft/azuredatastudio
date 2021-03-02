@@ -14,14 +14,14 @@ import { convertToGibibyteString } from '../../../common/utils';
 
 export type ConfigurationSpecModel = {
 	workers?: number,
-	workerCoresRequest?: string | undefined,
-	workerCoresLimit?: string | undefined,
-	workerMemoryRequest?: string | undefined,
-	workerMemoryLimit?: string | undefined,
-	coordinatorCoresRequest?: string | undefined,
-	coordinatorCoresLimit?: string | undefined,
-	coordinatorMemoryRequest?: string | undefined,
-	coordinatorMemoryLimit?: string | undefined
+	workerCoresRequest?: string,
+	workerCoresLimit?: string,
+	workerMemoryRequest?: string,
+	workerMemoryLimit?: string,
+	coordinatorCoresRequest?: string,
+	coordinatorCoresLimit?: string,
+	coordinatorMemoryRequest?: string,
+	coordinatorMemoryLimit?: string
 };
 
 export class PostgresComputeAndStoragePage extends DashboardPage {
@@ -532,19 +532,25 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		return flexContainer;
 	}
 
+	/**
+	 * A function that determines if an input box's value should be considered or not.
+	 * Tiggers the save and discard buttons to become enabled depnding on the value change.
+	 *
+	 * If new value is the same as value found in config, do not consider this new value for editing.
+	 * If new value is invalid, do not consider this new value for editing and enable discard button.
+	 * If value is valid and not equal to original value found in config, add this new value to be considered
+	 * for editing and enable save/discard buttons.
+	 *
+	 * @param component The input box that had an onTextChanged event triggered.
+	 * @param originalValue The value that was contained in the input box before user interaction.
+	 * @return A boolean that reads true if the new value should be taken in for editing or not.
+	 */
 	private handleOnTextChanged(component: azdata.InputBoxComponent, originalValue: string): boolean {
 		if (component.value === originalValue) {
-			// if value put within inputbox equals current value found in config return false
 			return false;
 		} else if ((!component.valid)) {
-			// if value given by user is not valid enable discard button for user
-			// to clear all inputs and return false
-			this.discardButton!.enabled = true;
 			return false;
 		} else {
-			// if a valid value has been entered into the input box, enable save and discard buttons
-			// so that user could choose to either edit instance or clear all inputs
-			// return true
 			this.saveButton!.enabled = true;
 			this.discardButton!.enabled = true;
 			return true;
