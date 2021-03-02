@@ -135,24 +135,33 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 	// Determines if a given package is supported for the installed version of Python
 	// using the version constraints from the pypi metadata.
 	private isPackageSupported(versionConstraints: string[]): boolean {
-		if (this.jupyterInstallation.installedPythonVersion !== '') {
-			for (let versionConstraint of versionConstraints) {
-				if (!versionConstraint) {
-					continue;
-				}
+		if (this.jupyterInstallation.installedPythonVersion === '') {
+			return true;
+		}
 
-				let constraintParts = versionConstraint.split(',');
-				for (let constraintPart of constraintParts) {
-					let versionModifier = constraintPart.slice(0, 2);
-					let version = constraintPart.slice(2);
-					let versionComparison = utils.comparePackageVersions(this.jupyterInstallation.installedPythonVersion, version);
-					if ((versionModifier === '>=' && versionComparison === -1) ||
-						(versionModifier === '!=' && versionComparison === 0)) {
-						return false;
-					}
+		let supportedVersionFound = true;
+		for (let versionConstraint of versionConstraints) {
+			if (!versionConstraint) {
+				continue;
+			}
+
+			let constraintParts = versionConstraint.split(',');
+			for (let constraintPart of constraintParts) {
+				let versionModifier = constraintPart.slice(0, 2);
+				let version = constraintPart.slice(2);
+				let versionComparison = utils.comparePackageVersions(this.jupyterInstallation.installedPythonVersion, version);
+				if ((versionModifier === '>=' && versionComparison === -1) ||
+					(versionModifier === '!=' && versionComparison === 0)) {
+					supportedVersionFound = false;
+				} else {
+					supportedVersionFound = true;
+					break;
 				}
 			}
+			if (supportedVersionFound) {
+				break;
+			}
 		}
-		return true;
+		return supportedVersionFound;
 	}
 }
