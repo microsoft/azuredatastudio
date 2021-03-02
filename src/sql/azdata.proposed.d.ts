@@ -81,6 +81,14 @@ declare module 'azdata' {
 		export interface ICellMetadata {
 			connection_name?: string;
 		}
+
+		export interface ICellContents {
+			attachments?: ICellAttachments;
+		}
+
+		export type ICellAttachments = { [key: string]: ICellAttachment };
+		export type ICellAttachment = { [key: string]: string };
+
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
