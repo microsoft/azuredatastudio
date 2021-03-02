@@ -201,19 +201,19 @@ describe('Manage Package Providers', () => {
 
 	it('Is python package valid test', async function (): Promise<void> {
 		let pythonVersion = '3.6';
-		let versionConstraints = ['>=3.5,!=3.2,!=3.4.*'];
+		let versionConstraints = ['>=3.5, !=3.2, !=3.4.*'];
 		let result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
 		should(result).be.true();
 
-		versionConstraints = ['>=3.5,!=3.2,!=3.4.*', '!=3.6,>=3.5'];
+		versionConstraints = ['>=3.5, !=3.2, !=3.4.*', '!=3.6, >=3.5'];
 		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
 		should(result).be.true();
 
-		versionConstraints = ['>=3.4,!=3.6,>=3.5'];
+		versionConstraints = ['>=3.4, !=3.6, >=3.5'];
 		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
 		should(result).be.false();
 
-		versionConstraints = ['>=3.7', '!=3.6,>=3.5', '>=3.8'];
+		versionConstraints = ['>=3.7', '!=3.6, >=3.5', '>=3.8'];
 		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
 		should(result).be.false();
 
@@ -226,7 +226,7 @@ describe('Manage Package Providers', () => {
 		should(result).be.true();
 
 		pythonVersion = '';
-		versionConstraints = ['>=3.7', '!=3.6,>=3.5', '>=3.8'];
+		versionConstraints = ['>=3.7', '!=3.6, >=3.5', '>=3.8'];
 		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
 		should(result).be.true();
 	});
