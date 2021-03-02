@@ -22,6 +22,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export interface ILinkCalloutDialogOptions {
 	insertTitle?: string,
@@ -123,6 +124,11 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 		this._register(styler.attachInputBoxStyler(this._linkUrlInputBox, this._themeService));
 	}
 
+	protected onAccept(e?: StandardKeyboardEvent) {
+		e.stopPropagation();
+		this.insert();
+	}
+
 	public insert(): void {
 		this.hide();
 		let label = strings.escape(this._linkTextInputBox.value);
@@ -140,5 +146,6 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 		this._selectionComplete.resolve({
 			insertMarkup: ''
 		});
+		this._selectionComplete = new Deferred<ILinkCalloutDialogOptions>();
 	}
 }

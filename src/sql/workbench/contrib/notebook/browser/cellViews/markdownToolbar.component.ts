@@ -17,7 +17,6 @@ import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/butto
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { DialogWidth } from 'sql/workbench/browser/modal/modal';
-import { ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
 import { ILinkCalloutDialogOptions, LinkCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/linkCalloutDialog';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
@@ -57,10 +56,10 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	private _taskbarContent: Array<ITaskbarContent>;
 	private _wysiwygTaskbarContent: Array<ITaskbarContent>;
 	private _previewModeTaskbarContent: Array<ITaskbarContent>;
-	private _imageCallout: ImageCalloutDialog;
 	private _linkCallout: LinkCalloutDialog;
 
 	@Input() public cellModel: ICellModel;
+	@Input() public preview: ElementRef;
 	private _actionBar: Taskbar;
 	_toggleTextViewAction: ToggleViewAction;
 	_toggleSplitViewAction: ToggleViewAction;
@@ -218,29 +217,26 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		event.preventDefault();
 		event.stopPropagation();
 		let triggerElement = event.target as HTMLElement;
-		if (this.cellModel.currentMode === CellEditModes.WYSIWYG && type === MarkdownButtonType.IMAGE_PREVIEW || type === MarkdownButtonType.LINK_PREVIEW) {
-			let node = document.getSelection()?.focusNode;
-			let range = document.getSelection()?.getRangeAt(0);
-			let beginInsertedText = await this.createCallout(type, triggerElement);
-			if (type === MarkdownButtonType.LINK_PREVIEW) {
-				if (node && range) {
-					// node.parentElement.focus();
-					// range.selectNodeContents(node);
-					// range.selectNode(node);
-					node.parentElement.focus();
-				}
-				let success = document.execCommand('insertText', false, beginInsertedText.insertLinkLabel);
-				success = document.execCommand('createLink', false, beginInsertedText.insertLinkUrl);
-				if (success) { }
+		let needsTransform = true;
+		let calloutResult: ILinkCalloutDialogOptions;
+		if (type === MarkdownButtonType.LINK_PREVIEW) {
+			calloutResult = await this.createCallout(type, triggerElement);
+			if (this.cellModel.currentMode !== CellEditModes.WYSIWYG) {
+				needsTransform = false;
+			} else {
+				this.preview?.nativeElement?.focus();
+				document.execCommand('insertHTML', false, '<a href="' + calloutResult?.insertLinkUrl + '" target="_blank">' + calloutResult?.insertLinkLabel + '</a>');
 			}
-
-		} else {
-			let transformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
+		}
+		let transformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
+		if (needsTransform || type !== MarkdownButtonType.LINK_PREVIEW) {
 			transformer.transformText(type, triggerElement);
+		} else if (!needsTransform) {
+			transformer.transformText(type, triggerElement, calloutResult?.insertMarkup);
 		}
 	}
 
-	public hideImageButton() {
+	public showWysiwygTaskbarContent() {
 		this._actionBar.setContent(this._wysiwygTaskbarContent);
 	}
 
@@ -278,20 +274,10 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		 */
 		const width: DialogWidth = 452;
 
-		if (type === MarkdownButtonType.IMAGE_PREVIEW) {
-			if (!this._imageCallout) {
-				this._imageCallout = this._instantiationService.createInstance(ImageCalloutDialog, this.insertImageHeading, width, dialogProperties);
-				this._imageCallout.render();
-				calloutOptions = await this._imageCallout.open();
-				calloutOptions.insertTitle = this.insertImageHeading;
-			}
-		} else {
-			if (!this._linkCallout) {
-				this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, width, dialogProperties);
-				this._linkCallout.render();
-				calloutOptions = await this._linkCallout.open();
-				calloutOptions.insertTitle = this.insertLinkHeading;
-			}
+		if (type === MarkdownButtonType.LINK_PREVIEW) {
+			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, width, dialogProperties);
+			this._linkCallout.render();
+			calloutOptions = await this._linkCallout.open();
 		}
 		return calloutOptions;
 	}

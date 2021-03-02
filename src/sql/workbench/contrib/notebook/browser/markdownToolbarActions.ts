@@ -135,7 +135,7 @@ export class MarkdownTextTransformer {
 		return this._notebookEditor;
 	}
 
-	public async transformText(type: MarkdownButtonType, triggerElement?: HTMLElement): Promise<void> {
+	public async transformText(type: MarkdownButtonType, triggerElement?: HTMLElement, fullMarkdown?: string): Promise<void> {
 		let editorControl = this.getEditorControl();
 		if (editorControl) {
 			let selections = editorControl.getSelections();
@@ -151,8 +151,6 @@ export class MarkdownTextTransformer {
 
 			let beginInsertedText: string;
 			let endInsertedText: string;
-			beginInsertedText = getStartTextToInsert(type);
-			endInsertedText = getEndTextToInsert(type);
 
 			let endRange: IRange = {
 				startColumn: selection.endColumn,
@@ -163,14 +161,31 @@ export class MarkdownTextTransformer {
 
 			let editorModel = editorControl.getModel() as TextModel;
 			let isUndo = false;
-			if (editorModel) {
-				let markdownLineType = getMarkdownLineType(type);
-				// Paragraph (empty string) is just used for replacing any existing headers so will never be an undo operation
-				isUndo = beginInsertedText && this.isUndoOperation(selection, type, markdownLineType, editorModel);
-				if (isUndo) {
-					this.handleUndoOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedText, endInsertedText, selections, selection);
-				} else {
-					this.handleTransformOperation(markdownLineType, type, startRange, endRange, editorModel, beginInsertedText, endInsertedText, selections, selection);
+
+			if (fullMarkdown) {
+				startRange = {
+					startColumn: selection.startColumn,
+					endColumn: selection.endColumn,
+					startLineNumber: selection.startLineNumber,
+					endLineNumber: selection.endLineNumber
+				};
+				beginInsertedText = fullMarkdown;
+				editorModel.pushEditOperations(selections, [
+					{ range: startRange, text: beginInsertedText },
+				], undefined);
+			} else {
+				beginInsertedText = getStartTextToInsert(type);
+				endInsertedText = getEndTextToInsert(type);
+
+				if (editorModel) {
+					let markdownLineType = getMarkdownLineType(type);
+					// Paragraph (empty string) is just used for replacing any existing headers so will never be an undo operation
+					isUndo = beginInsertedText && this.isUndoOperation(selection, type, markdownLineType, editorModel);
+					if (isUndo) {
+						this.handleUndoOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedText, endInsertedText, selections, selection);
+					} else {
+						this.handleTransformOperation(markdownLineType, type, startRange, endRange, editorModel, beginInsertedText, endInsertedText, selections, selection);
+					}
 				}
 			}
 
@@ -585,7 +600,7 @@ export class ToggleViewAction extends Action {
 		context.cellModel.showMarkdown = this.showMarkdown;
 		// Hide link and image buttons in WYSIWYG mode
 		if (this.showPreview && !this.showMarkdown) {
-			context.hideImageButton();
+			context.showWysiwygTaskbarContent();
 		} else {
 			context.showLinkAndImageButtons();
 		}

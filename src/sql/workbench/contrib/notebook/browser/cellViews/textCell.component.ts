@@ -61,7 +61,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	@HostListener('document:keydown', ['$event'])
 	onkeydown(e: KeyboardEvent) {
-		if (this.isActive() && this.cellModel?.currentMode === CellEditModes.WYSIWYG) {
+		if (document.activeElement.className === this.output?.nativeElement?.className && this.isActive() && this.cellModel?.currentMode === CellEditModes.WYSIWYG) {
 			// select the active .
 			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
 				preventDefaultAndExecCommand(e, 'selectAll');
