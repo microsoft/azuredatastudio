@@ -18,6 +18,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { DialogWidth } from 'sql/workbench/browser/modal/modal';
 import { ILinkCalloutDialogOptions, LinkCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/linkCalloutDialog';
+import { TextModel } from 'vs/editor/common/model/textModel';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
@@ -59,7 +60,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	private _linkCallout: LinkCalloutDialog;
 
 	@Input() public cellModel: ICellModel;
-	@Input() public preview: ElementRef;
+	@Input() public output: ElementRef;
 	private _actionBar: Taskbar;
 	_toggleTextViewAction: ToggleViewAction;
 	_toggleSplitViewAction: ToggleViewAction;
@@ -221,10 +222,14 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		let calloutResult: ILinkCalloutDialogOptions;
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
 			calloutResult = await this.createCallout(type, triggerElement);
+			if (!calloutResult.insertLinkUrl) {
+				return;
+			}
 			if (this.cellModel.currentMode !== CellEditModes.WYSIWYG) {
 				needsTransform = false;
 			} else {
-				this.preview?.nativeElement?.focus();
+				this.output?.nativeElement?.focus();
+				document.execCommand('delete', false);
 				document.execCommand('insertHTML', false, '<a href="' + calloutResult?.insertLinkUrl + '" target="_blank">' + calloutResult?.insertLinkLabel + '</a>');
 			}
 		}
@@ -236,7 +241,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		}
 	}
 
-	public showWysiwygTaskbarContent() {
+	public showWYSIWYGTaskbarContent() {
 		this._actionBar.setContent(this._wysiwygTaskbarContent);
 	}
 
@@ -275,10 +280,32 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		const width: DialogWidth = 452;
 
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
-			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, width, dialogProperties);
+			let defaultLabel = this.getCurrentSelection();
+			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, width, dialogProperties, defaultLabel);
 			this._linkCallout.render();
 			calloutOptions = await this._linkCallout.open();
 		}
 		return calloutOptions;
+	}
+
+	private getCurrentSelection(): string {
+		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
+			return document.getSelection()?.toString() || '';
+		} else {
+			let nbEditor = this._notebookService.findNotebookEditor(this.cellModel?.notebookModel?.notebookUri);
+			let cellEditor = nbEditor.cellEditors.find(e => e.cellGuid() === this.cellModel?.cellGuid);
+			if (cellEditor?.hasEditor) {
+				let editorControl = cellEditor.getEditor().getControl();
+				let selection = editorControl?.getSelection();
+				if (selection) {
+					let textModel = editorControl?.getModel() as TextModel;
+					let value = textModel?.getValueInRange({ startColumn: selection.startColumn, startLineNumber: selection.startLineNumber, endColumn: selection.endColumn, endLineNumber: selection.endLineNumber });
+					if (value) {
+						return value;
+					}
+				}
+			}
+			return '';
+		}
 	}
 }

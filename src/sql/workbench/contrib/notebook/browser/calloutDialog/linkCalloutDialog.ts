@@ -42,6 +42,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 		title: string,
 		width: DialogWidth,
 		dialogProperties: IDialogProperties,
+		private readonly _defaultLabel: string = '',
 		@IContextViewService private readonly _contextViewService: IContextViewService,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
@@ -100,6 +101,10 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 				placeholder: constants.linkTextPlaceholder,
 				ariaLabel: constants.linkTextLabel
 			});
+
+		if (this._defaultLabel) {
+			this._linkTextInputBox.value = this._defaultLabel;
+		}
 		DOM.append(linkTextRow, linkTextInputContainer);
 
 		let linkAddressRow = DOM.$('.row');
@@ -129,6 +134,10 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 		this.insert();
 	}
 
+	protected onClose(e?: StandardKeyboardEvent) {
+		e.stopPropagation();
+		this.cancel();
+	}
 	public insert(): void {
 		this.hide();
 		let label = strings.escape(this._linkTextInputBox.value);

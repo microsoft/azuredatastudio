@@ -600,7 +600,7 @@ export class ToggleViewAction extends Action {
 		context.cellModel.showMarkdown = this.showMarkdown;
 		// Hide link and image buttons in WYSIWYG mode
 		if (this.showPreview && !this.showMarkdown) {
-			context.showWysiwygTaskbarContent();
+			context.showWYSIWYGTaskbarContent();
 		} else {
 			context.showLinkAndImageButtons();
 		}
