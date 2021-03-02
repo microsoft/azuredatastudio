@@ -74,10 +74,10 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	/**
-	 * Verify that a workspace is open or that if one isn't, it's ok to create a workspace
+	 * Verify that a workspace is open or that if one isn't, it's ok to create a workspace and restart the extension host
 	 */
 	async validateWorkspace(): Promise<boolean> {
-		if (!vscode.workspace.workspaceFile) {
+		if (!vscode.workspace.workspaceFile || isCurrentWorkspaceUntitled()) {
 			const result = await vscode.window.showWarningMessage(constants.CreateWorkspaceConfirmation, constants.OkButtonText, constants.CancelButtonText);
 			if (result === constants.OkButtonText) {
 				return true;
