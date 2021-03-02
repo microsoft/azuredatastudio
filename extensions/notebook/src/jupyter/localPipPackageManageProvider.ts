@@ -153,9 +153,9 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 				if ((versionModifier === '>=' && versionComparison === -1) ||
 					(versionModifier === '!=' && versionComparison === 0)) {
 					supportedVersionFound = false;
+					break;
 				} else {
 					supportedVersionFound = true;
-					break;
 				}
 			}
 			if (supportedVersionFound) {

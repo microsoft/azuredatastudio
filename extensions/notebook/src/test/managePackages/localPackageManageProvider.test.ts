@@ -199,6 +199,25 @@ describe('Manage Package Providers', () => {
 		await should(pypiClient.fetchPypiPackage('')).be.rejected();
 	});
 
+	it('Is python package valid test', async function (): Promise<void> {
+		let pythonVersion = '3.6';
+		let versionConstraints = ['>=3.5,!=3.2,!=3.4.*'];
+		let result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
+		should(result).be.true();
+
+		versionConstraints = ['>=3.5,!=3.2,!=3.4.*', '!=3.6,>=3.5'];
+		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
+		should(result).be.true();
+
+		versionConstraints = ['>=3.4,!=3.6,>=3.5'];
+		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
+		should(result).be.false();
+
+		versionConstraints = ['>=3.7', '!=3.6,>=3.5', '>=3.8'];
+		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
+		should(result).be.false();
+	});
+
 	function createContext(): TestContext {
 		return {
 			serverInstallation: {

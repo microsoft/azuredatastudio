@@ -14,7 +14,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { sleep } from './testUtils';
 
-describe('UtilsTests', function () {
+describe('Utils Tests', function () {
 
 	it('getKnoxUrl', () => {
 		const host = '127.0.0.1';
