@@ -265,12 +265,13 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			validationErrorMessage: loc.workerValidationErrorMessage,
 			inputType: 'number',
-			placeHolder: loc.loading
+			placeHolder: loc.loading,
+			required: true
 		}).component();
 
 		this.disposables.push(
 			this.workerBox.onTextChanged(() => {
-				if (!this.workerBox.value || !(this.handleOnTextChanged(this.workerBox!, this.currentConfiguration.workers!.toString()))) {
+				if (!this.handleOnTextChanged(this.workerBox!, this.currentConfiguration.workers!.toString())) {
 					this.saveArgs.workers = undefined;
 				} else {
 					this.saveArgs.workers = parseInt(this.workerBox!.value!);
