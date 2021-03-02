@@ -15,7 +15,7 @@ import { cssStyles } from '../common/uiConstants';
 import { ImportDataModel } from '../models/api/import';
 import { Deferred } from '../common/promise';
 import { getConnectionName } from './utils';
-import { exists } from '../common/utils';
+import { exists, isCurrentWorkspaceUntitled } from '../common/utils';
 
 export class CreateProjectFromDatabaseDialog {
 	public dialog: azdata.window.Dialog;
@@ -356,11 +356,14 @@ export class CreateProjectFromDatabaseDialog {
 	 * @param view
 	 */
 	private createWorkspaceContainerRow(view: azdata.ModelView): azdata.FlexContainer {
+		const untitledWorkspaceCurrentlyOpen = !!vscode.workspace.workspaceFile && isCurrentWorkspaceUntitled();
+		const initialWorkspaceInputBoxValue = !!vscode.workspace.workspaceFile && !untitledWorkspaceCurrentlyOpen ? vscode.workspace.workspaceFile.fsPath : '';
+
 		this.workspaceInputBox = view.modelBuilder.inputBox().withProperties({
 			ariaLabel: constants.workspaceLocationTitle,
-			enabled: !vscode.workspace.workspaceFile, // want it editable if no workspace is open
-			value: vscode.workspace.workspaceFile?.fsPath ?? '',
-			title: vscode.workspace.workspaceFile?.fsPath ?? '', // hovertext for if file path is too long to be seen in textbox
+			enabled: !vscode.workspace.workspaceFile || untitledWorkspaceCurrentlyOpen, // want it editable if no saved workspace is open
+			value: initialWorkspaceInputBoxValue,
+			title: initialWorkspaceInputBoxValue, // hovertext for if file path is too long to be seen in textbox
 			width: '100%'
 		}).component();
 
@@ -397,9 +400,8 @@ export class CreateProjectFromDatabaseDialog {
 		}).component();
 
 		let workspaceContainerRow;
-		if (vscode.workspace.workspaceFile) {
+		if (vscode.workspace.workspaceFile && !isCurrentWorkspaceUntitled()) {
 			workspaceContainerRow = view.modelBuilder.flexContainer().withItems([workspaceLabel, this.workspaceInputBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '0px' } }).withLayout({ flexFlow: 'column' }).component();
-
 		} else {
 			// have browse button to help select where the workspace file should be created
 			const workspaceInput = view.modelBuilder.flexContainer().withItems([this.workspaceInputBox], { CSSStyles: { 'margin-right': '10px', 'margin-bottom': '10px', 'width': '100%' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
@@ -416,7 +418,7 @@ export class CreateProjectFromDatabaseDialog {
 	 * @param name
 	 */
 	public updateWorkspaceInputbox(location: string, name: string): void {
-		if (!vscode.workspace.workspaceFile) {
+		if (!vscode.workspace.workspaceFile || isCurrentWorkspaceUntitled()) {
 			const fileLocation = location && name ? path.join(location, `${name}.code-workspace`) : '';
 			this.workspaceInputBox!.value = fileLocation;
 			this.workspaceInputBox!.title = fileLocation;
