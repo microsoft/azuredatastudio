@@ -221,23 +221,26 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		let calloutResult: ILinkCalloutDialogOptions;
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
 			calloutResult = await this.createCallout(type, triggerElement);
+			// If no URL is present, no-op
 			if (!calloutResult.insertLinkUrl) {
 				return;
 			}
+			// If cell edit mode isn't WYSIWYG, use result from callout. No need for further transformation.
 			if (this.cellModel.currentMode !== CellEditModes.WYSIWYG) {
 				needsTransform = false;
 			} else {
+				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
-				document.execCommand('delete', false);
 				// Callout is responsible for returning escaped strings
 				document.execCommand('insertHTML', false, `<a href="${calloutResult?.insertLinkUrl}">${calloutResult?.insertLinkLabel}</a>`);
+				return;
 			}
 		}
-		let transformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
-		if (needsTransform || type !== MarkdownButtonType.LINK_PREVIEW) {
+		const transformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
+		if (needsTransform) {
 			transformer.transformText(type, triggerElement);
 		} else if (!needsTransform) {
-			transformer.transformText(type, triggerElement, calloutResult?.insertMarkup);
+			transformer.transformText(type, triggerElement, calloutResult?.insertMarkdown);
 		}
 	}
 

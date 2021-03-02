@@ -26,7 +26,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export interface ILinkCalloutDialogOptions {
 	insertTitle?: string,
-	insertMarkup?: string,
+	insertMarkdown?: string,
 	insertLinkLabel?: string,
 	insertLinkUrl?: string
 }
@@ -143,7 +143,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 		let label = strings.escape(this._linkTextInputBox.value);
 		let url = strings.escape(this._linkUrlInputBox.value);
 		this._selectionComplete.resolve({
-			insertMarkup: `[${label}](${url})`,
+			insertMarkdown: `[${label}](${url})`,
 			insertLinkLabel: label,
 			insertLinkUrl: url
 		});
@@ -153,7 +153,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 	public cancel(): void {
 		super.cancel();
 		this._selectionComplete.resolve({
-			insertMarkup: ''
+			insertMarkdown: ''
 		});
 		this._selectionComplete = new Deferred<ILinkCalloutDialogOptions>();
 	}

@@ -30,7 +30,7 @@ import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 
 export interface IImageCalloutDialogOptions {
 	insertTitle?: string,
-	insertMarkup?: string,
+	insertMarkdown?: string,
 	imagePath?: string,
 	embedImage?: boolean
 }
@@ -186,7 +186,7 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 	public insert(): void {
 		this.hide();
 		this._selectionComplete.resolve({
-			insertMarkup: `<img src="${strings.escape(this._imageUrlInputBox.value)}">`,
+			insertMarkdown: `<img src="${strings.escape(this._imageUrlInputBox.value)}">`,
 			imagePath: this._imageUrlInputBox.value,
 			embedImage: this._imageEmbedCheckbox.checked
 		});
@@ -196,7 +196,7 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 	public cancel(): void {
 		super.cancel();
 		this._selectionComplete.resolve({
-			insertMarkup: '',
+			insertMarkdown: '',
 			imagePath: undefined,
 			embedImage: undefined
 		});
