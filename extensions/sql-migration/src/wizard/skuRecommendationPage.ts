@@ -178,8 +178,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						'font-weight': 550,
 					},
 					linkCodiconStyles: {
-						'font-size': '1em',
-						'color': 'royalblue'
+						'font-size': '1em'
 					}
 				},
 				{
@@ -187,8 +186,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					linkDisplayValue: 'View/Change',
 					displayLinkCodicon: true,
 					linkCodiconStyles: {
-						'font-size': '1em',
-						'color': 'royalblue'
+						'font-size': '1em'
 					}
 				}
 			];
