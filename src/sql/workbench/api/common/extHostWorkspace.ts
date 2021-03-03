@@ -17,15 +17,15 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape {
 		this._proxy = _mainContext.getProxy(SqlMainContext.MainThreadWorkspace);
 	}
 
-	$createWorkspace(folder: URI, workspaceFile: URI): Promise<void> {
-		return this._proxy.$createWorkspace(folder, workspaceFile);
+	$createAndEnterWorkspace(folder: URI, workspaceFile: URI): Promise<void> {
+		return this._proxy.$createAndEnterWorkspace(folder, workspaceFile);
 	}
 
 	$enterWorkspace(workspaceFile: URI): Promise<void> {
 		return this._proxy.$enterWorkspace(workspaceFile);
 	}
 
-	$saveWorkspace(workspaceFile: URI): Promise<void> {
-		return this._proxy.$saveWorkspace(workspaceFile);
+	$saveAndEnterWorkspace(workspaceFile: URI): Promise<void> {
+		return this._proxy.$saveAndEnterWorkspace(workspaceFile);
 	}
 }

@@ -22,7 +22,7 @@ export class MainThreadWorkspace extends Disposable implements MainThreadWorkspa
 		super();
 	}
 
-	$createWorkspace(folder: URI, workspaceFile?: URI): Promise<void> {
+	$createAndEnterWorkspace(folder: URI, workspaceFile?: URI): Promise<void> {
 		folder = URI.revive(folder);
 		workspaceFile = URI.revive(workspaceFile);
 		return this.workspaceEditingService.createAndEnterWorkspace([{ uri: folder }], workspaceFile);
@@ -33,7 +33,7 @@ export class MainThreadWorkspace extends Disposable implements MainThreadWorkspa
 		return this.workspaceEditingService.enterWorkspace(workspaceFile);
 	}
 
-	$saveWorkspace(workspaceFile: URI): Promise<void> {
+	$saveAndEnterWorkspace(workspaceFile: URI): Promise<void> {
 		workspaceFile = URI.revive(workspaceFile);
 		return this.workspaceEditingService.saveAndEnterWorkspace(workspaceFile);
 	}

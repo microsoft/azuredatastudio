@@ -57,9 +57,9 @@ export class WorkspaceService implements IWorkspaceService {
 
 		if (isCurrentWorkspaceUntitled()) {
 			vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders!.length, null, { uri: projectFolder });
-			await azdata.workspace.saveWorkspace(workspaceFile!);
+			await azdata.workspace.saveAndEnterWorkspace(workspaceFile!);
 		} else {
-			await azdata.workspace.createWorkspace(projectFolder, workspaceFile);
+			await azdata.workspace.createAndEnterWorkspace(projectFolder, workspaceFile);
 		}
 	}
 
