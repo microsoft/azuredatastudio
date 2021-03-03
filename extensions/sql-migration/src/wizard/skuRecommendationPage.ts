@@ -33,6 +33,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _managedInstanceDropdown!: azdata.DropDownComponent;
 	private _view: azdata.ModelView | undefined;
 	private _rbg!: azdata.RadioCardGroupComponent;
+	private _dbCount!: number;
 
 	private async initialState(view: azdata.ModelView) {
 		this._view = view;
@@ -40,6 +41,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
 		this._chooseTargetComponent = this.createChooseTargetComponent(view);
 		this._azureSubscriptionText = this.createAzureSubscriptionText(view);
+
 
 		const managedInstanceSubscriptionDropdownLabel = view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION
@@ -96,6 +98,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			]
 		);
 
+		this._dbCount = (await azdata.connection.listDatabases(this.migrationStateModel.sourceConnectionId)).length;
 		await view.initializeModel(formContainer.component());
 	}
 
@@ -161,9 +164,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			const imagePath = path.resolve(this.migrationStateModel.getExtensionPath(), 'media', product.icon ?? 'ads.svg');
 			let dbCount = 0;
 			if (product.type === 'AzureSQLVM') {
-				dbCount = 0;
+				dbCount = this._dbCount;
 			} else {
-				dbCount = this.migrationStateModel._migrationDbs.length;
+				dbCount = this._dbCount - this.migrationStateModel._migrationDbs.length;
 			}
 			const descriptions: azdata.RadioCardDescription[] = [
 				{
