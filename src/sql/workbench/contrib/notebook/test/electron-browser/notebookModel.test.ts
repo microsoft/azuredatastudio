@@ -69,7 +69,7 @@ let expectedNotebookContentOneCell: nb.INotebookContents = {
 	cells: [{
 		cell_type: CellTypes.Code,
 		source: ['insert into t1 values (c1, c2)'],
-		metadata: { language: 'python' },
+		metadata: { language: 'sql' },
 		execution_count: 1
 	}],
 	metadata: {
@@ -77,6 +77,27 @@ let expectedNotebookContentOneCell: nb.INotebookContents = {
 			name: 'mssql',
 			language: 'sql',
 			display_name: 'SQL'
+		}
+	},
+	nbformat: 4,
+	nbformat_minor: 5
+};
+
+let expectedKernelAliasNotebookContentOneCell: nb.INotebookContents = {
+	cells: [{
+		cell_type: CellTypes.Code,
+		source: ['StormEvents | summarize Count = count() by State | sort by Count | limit 10'],
+		execution_count: 1
+	}],
+	metadata: {
+		kernelspec: {
+			name: 'mssql',
+			language: 'sql',
+			display_name: 'SQL'
+		},
+		language_info: {
+			name: 'fake',
+			version: ''
 		}
 	},
 	nbformat: 4,
@@ -601,7 +622,7 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should not be in error state if client session initialization succeeds', async function (): Promise<void> {
-		let model = await loadModelAndStartClientSession();
+		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 
 		assert.equal(model.inErrorState, false);
 		assert.equal(model.notebookManagers.length, 1);
@@ -628,7 +649,7 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should close active session when closed', async function () {
-		let model = await loadModelAndStartClientSession();
+		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 		// After client session is started, ensure session is ready
 		assert(model.isSessionReady);
 
@@ -641,7 +662,7 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should disconnect when connection profile created by notebook', async function () {
-		let model = await loadModelAndStartClientSession();
+		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 		// Ensure notebook prefix is present in the connection URI
 		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
 		await changeContextWithConnectionProfile(model);
@@ -657,7 +678,7 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should not disconnect when connection profile not created by notebook', async function () {
-		let model = await loadModelAndStartClientSession();
+		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 		// Ensure notebook prefix isn't present in connection URI
 		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.default}some/path`);
 		await changeContextWithConnectionProfile(model);
@@ -692,7 +713,7 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should connect to Fake (kernel alias) connection and set kernelAlias', async function () {
-		let model = await loadModelAndStartClientSession();
+		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 
 		// Ensure notebook prefix is present in the connection URI
 		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
@@ -717,7 +738,7 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should change kernel when connecting to a Fake (kernel alias) connection', async function () {
-		let model = await loadModelAndStartClientSession();
+		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 		// Ensure notebook prefix is present in the connection URI
 		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
 		await changeContextWithFakeConnectionProfile(model);
@@ -742,7 +763,7 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should change kernel from Fake (kernel alias) to SQL kernel when connecting to SQL connection', async function () {
-		let model = await loadModelAndStartClientSession();
+		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 
 		// Ensure notebook prefix is present in the connection URI
 		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
@@ -865,9 +886,50 @@ suite('notebook model', function (): void {
 		assert.equal(output.metadata['multi_connection_mode'], true, 'multi_connection_mode not saved correctly to notebook metadata');
 	});
 
-	async function loadModelAndStartClientSession(): Promise<NotebookModel> {
+	test('Should not language info kernel alias name even if kernel spec is SQL', async function () {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
-		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedKernelAliasNotebookContentOneCell));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		queryConnectionService.setup(c => c.getActiveConnections(TypeMoq.It.isAny())).returns(() => null);
+
+		// Given I have a session that fails to start
+		sessionReady.resolve();
+		let actualSession: IClientSession = undefined;
+
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		model.onClientSessionReady((session) => actualSession = session);
+		await changeContextWithFakeConnectionProfile(model);
+		await model.loadContents();
+
+		await model.requestModelLoad();
+
+		// Check to see if language info is set to kernel alias
+		assert.equal(model.languageInfo.name, 'fake', 'Notebook language info is not set properly');
+	});
+
+	// To-DO Fix loadModelAndStartClientSession to utilize loadContents as well
+	// If loadContents() is added then we get error:
+	// TypeError: Cannot read property 'createInstance' of undefined on LoadContents()
+	test.skip('Should not change kernel alias as language info', async function () {
+		let model = await loadModelAndStartClientSession(expectedKernelAliasNotebookContentOneCell);
+
+		// Ensure notebook prefix is present in the connection URI
+		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
+		await model.loadContents();
+
+		await model.requestModelLoad();
+
+		await changeContextWithFakeConnectionProfile(model);
+		await changeContextWithFakeConnectionProfile(model);
+
+		// Check to see if current kernel is set to kernel alias
+		assert.equal(model.languageInfo.name, 'fake', 'Notebook language info is not set properly');
+	});
+
+	async function loadModelAndStartClientSession(notebookContent: nb.INotebookContents): Promise<NotebookModel> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(notebookContent));
 		defaultModelOptions.contentManager = mockContentManager.object;
 
 		queryConnectionService.setup(c => c.getActiveConnections(TypeMoq.It.isAny())).returns(() => null);
@@ -880,6 +942,7 @@ suite('notebook model', function (): void {
 		});
 		let model = new NotebookModel(options, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, capabilitiesService);
 		model.onClientSessionReady((session) => actualSession = session);
+
 		await model.requestModelLoad();
 
 		await model.startSession(notebookManagers[0]);

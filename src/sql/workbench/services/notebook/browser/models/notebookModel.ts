@@ -288,6 +288,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._selectedKernelDisplayName;
 	}
 
+	public set selectedKernelDisplayName(kernel: string) {
+		this._selectedKernelDisplayName = kernel;
+	}
+
 	public set trustedMode(isTrusted: boolean) {
 		this._trustedMode = isTrusted;
 
