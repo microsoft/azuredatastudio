@@ -895,11 +895,8 @@ suite('notebook model', function (): void {
 
 		// Given I have a session that fails to start
 		sessionReady.resolve();
-		let actualSession: IClientSession = undefined;
 
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
-		model.onClientSessionReady((session) => actualSession = session);
-		await changeContextWithFakeConnectionProfile(model);
 		await model.loadContents();
 
 		await model.requestModelLoad();
