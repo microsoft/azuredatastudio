@@ -11,6 +11,7 @@ import * as should from 'should';
 import * as path from 'path';
 import * as TypeMoq from 'typemoq';
 import * as constants from '../common/constants';
+import * as utils from '../common/utils';
 import { WorkspaceService } from '../services/workspaceService';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import { createProjectProvider } from './projectProviderRegistry.test';
@@ -253,6 +254,25 @@ suite('WorkspaceService Tests', function (): void {
 		]);
 
 		should.strictEqual(createWorkspaceStub.calledOnce, true, 'createAndEnterWorkspace should have been called once');
+		should.strictEqual(onWorkspaceProjectsChangedStub.notCalled, true, 'the onDidWorkspaceProjectsChange event should not have been fired');
+		onWorkspaceProjectsChangedDisposable.dispose();
+	});
+
+	test('test addProjectsToWorkspace when untitled workspace is open', async () => {
+		stubWorkspaceFile(undefined);
+		const onWorkspaceProjectsChangedStub = sinon.stub();
+		const onWorkspaceProjectsChangedDisposable = service.onDidWorkspaceProjectsChange(() => {
+			onWorkspaceProjectsChangedStub();
+		});
+		const saveWorkspaceStub = sinon.stub(azdata.workspace, 'saveAndEnterWorkspace').resolves(undefined);
+		sinon.stub(utils, 'isCurrentWorkspaceUntitled').returns(true);
+		sinon.stub(vscode.workspace, 'workspaceFolders').value(['folder1']);
+
+		await service.addProjectsToWorkspace([
+			vscode.Uri.file('/test/folder/proj1.sqlproj')
+		]);
+
+		should.strictEqual(saveWorkspaceStub.calledOnce, true, 'saveAndEnterWorkspace should have been called once');
 		should.strictEqual(onWorkspaceProjectsChangedStub.notCalled, true, 'the onDidWorkspaceProjectsChange event should not have been fired');
 		onWorkspaceProjectsChangedDisposable.dispose();
 	});
