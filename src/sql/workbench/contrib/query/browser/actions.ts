@@ -10,7 +10,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { QueryEditor } from './queryEditor';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
-import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { INotificationService, Severity, NeverShowAgainScope } from 'vs/platform/notification/common/notification';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
 import * as Constants from 'sql/workbench/contrib/extensions/common/constants';
@@ -67,11 +67,11 @@ export class SaveResultAction extends Action {
 	}
 
 	public async run(context: IGridActionContext): Promise<boolean> {
-		this.notificationService.prompt(Severity.Info, localize('jsonEncodingPrompt', "Results encoding will not be saved when exporting to JSON, remember to save with desired encoding once file is created."),
-			[{
-				label: localize('jsonEncodingOk', "OK"),
-				run: () => { }
-			}]);
+		this.notificationService.notify({
+			severity: Severity.Info,
+			message: localize('jsonEncoding', "Results encoding will not be saved when exporting to JSON, remember to save with desired encoding once file is created."),
+			neverShowAgain: { id: 'ignoreJsonEncoding', scope: NeverShowAgainScope.WORKSPACE }
+		});
 
 		if (!context.gridDataProvider.canSerialize) {
 			this.notificationService.warn(localize('saveToFileNotSupported', "Save to file is not supported by the backing data source"));
