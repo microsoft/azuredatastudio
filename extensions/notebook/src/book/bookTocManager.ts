@@ -30,22 +30,17 @@ export function hasSections(node: JupyterBookSection): boolean {
 }
 
 export class BookTocManager implements IBookTocManager {
-	public tableofContents: JupyterBookSection[];
-	public newSection: JupyterBookSection;
-	private _movedFiles: Map<string, string>;
-	private _modifiedDirectory: Set<string>;
-	private _tocFiles: Map<string, string>;
+	public tableofContents: JupyterBookSection[] = [];
+	public newSection: JupyterBookSection = {};
+	public movedFiles: Map<string, string> = new Map<string, string>();
+	private _modifiedDirectory: Set<string> = new Set<string>();
+	public tocFiles: Map<string, string> = new Map<string, string>();
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
 	private _sourceBook: BookModel;
 
 	constructor(targetBook?: BookModel, sourceBook?: BookModel) {
 		this._sourceBook = sourceBook;
-		this.newSection = {};
-		this.tableofContents = [];
-		this._movedFiles = new Map<string, string>();
-		this._modifiedDirectory = new Set<string>();
-		this._tocFiles = new Map<string, string>();
 		this.sourceBookContentPath = sourceBook?.bookItems[0].rootContentPath;
 		this.targetBookContentPath = targetBook?.bookItems[0].rootContentPath;
 	}
@@ -132,7 +127,7 @@ export class BookTocManager implements IBookTocManager {
 			counter++;
 		}
 		await fs.move(src, path.join(newFileName.concat(' - ', counter.toString())).concat(path.parse(dest).ext), { overwrite: true });
-		this._movedFiles.set(src, path.join(newFileName.concat(' - ', counter.toString())).concat(path.parse(dest).ext));
+		this.movedFiles.set(src, path.join(newFileName.concat(' - ', counter.toString())).concat(path.parse(dest).ext));
 		vscode.window.showInformationMessage(loc.duplicateFileError(path.parse(dest).base, src, newFileName.concat(' - ', counter.toString())));
 		return newFileName.concat(' - ', counter.toString());
 	}
@@ -145,14 +140,14 @@ export class BookTocManager implements IBookTocManager {
 	 * Rewrite the original table of contents of the book, in case of error as well.
 	*/
 	async recovery(): Promise<void> {
-		this._movedFiles.forEach(async (value, key) => {
+		for (const [key, value] of this.movedFiles.entries()) {
 			await fs.move(value, key);
-		});
+		}
 
-		this._tocFiles.forEach(async (value, key) => {
+		for (const [key, value] of this.tocFiles.entries()) {
 			const yamlFile = await yaml.safeLoad(value);
 			await fs.writeFile(key, yaml.safeDump(yamlFile, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
-		});
+		}
 	}
 
 	async cleanUp(directory: string): Promise<void> {
@@ -166,7 +161,7 @@ export class BookTocManager implements IBookTocManager {
 				let fileStat = await fs.stat(filePath);
 				if (fileStat.isFile) {
 					//check if the file is in the moved files
-					let newPath = this._movedFiles.get(filePath);
+					let newPath = this.movedFiles.get(filePath);
 					if (newPath) {
 						let exists = await fs.pathExists(newPath);
 						// if the file exists in the new path and if the the new path and old path are different
@@ -193,8 +188,8 @@ export class BookTocManager implements IBookTocManager {
 	async updateTOC(version: BookVersion, tocPath: string, findSection: JupyterBookSection, addSection?: JupyterBookSection): Promise<void> {
 		const tocFile = await fs.readFile(tocPath, 'utf8');
 		this.tableofContents = yaml.safeLoad(tocFile);
-		if (!this._tocFiles.has(tocPath)) {
-			this._tocFiles.set(tocPath, tocFile);
+		if (!this.tocFiles.has(tocPath)) {
+			this.tocFiles.set(tocPath, tocFile);
 		}
 		const isModified = this.modifyToc(version, this.tableofContents, findSection, addSection);
 		if (isModified) {
@@ -205,13 +200,15 @@ export class BookTocManager implements IBookTocManager {
 	}
 
 	/**
-	 * Modify the table of contents read from file. This method is only called when we move a section to another section.
-	 * Since the sections can be arranged in a tree structure we need to look for the section that will be modified in a recursively.
+	 * Modify the table of contents read from file to add or remove a section.
+	 *
+	 * Returns true if the table of contents is modified successfully. If it does not find the section that will be modified then that means that the toc and book tree view are not showing the same information,
+	 * in that case return false.
+	 *
 	 * @param version Version of the book
 	 * @param toc The table of contents that will be modified
 	 * @param findSection The section that will be modified.
 	 * @param addSection The section that'll be added to the target section. If it's undefined then the target section (findSection) is removed from the table of contents.
-	 * Returns true if the table of contents is modified, else returns false.
 	*/
 	private modifyToc(version: BookVersion, toc: JupyterBookSection[], findSection: JupyterBookSection, addSection: JupyterBookSection): boolean {
 		for (const [index, section] of toc.entries()) {
@@ -274,7 +271,7 @@ export class BookTocManager implements IBookTocManager {
 				let fileName = undefined;
 				try {
 					await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'), { overwrite: false });
-					this._movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'));
+					this.movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'));
 				} catch (error) {
 					if (error.code === 'EEXIST') {
 						fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'));
@@ -285,7 +282,7 @@ export class BookTocManager implements IBookTocManager {
 				}
 				try {
 					await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'), { overwrite: false });
-					this._movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'));
+					this.movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'));
 				} catch (error) {
 					if (error.code === 'EEXIST') {
 						fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'));
@@ -315,7 +312,7 @@ export class BookTocManager implements IBookTocManager {
 		let fileName = undefined;
 		try {
 			await fs.move(section.book.contentPath, path.join(this.targetBookContentPath, moveFile).concat(path.parse(uri).ext), { overwrite: false });
-			this._movedFiles.set(section.book.contentPath, path.join(this.targetBookContentPath, moveFile).concat(path.parse(uri).ext));
+			this.movedFiles.set(section.book.contentPath, path.join(this.targetBookContentPath, moveFile).concat(path.parse(uri).ext));
 		} catch (error) {
 			if (error.code === 'EEXIST') {
 				fileName = await this.renameFile(section.book.contentPath, path.join(this.targetBookContentPath, moveFile).concat(path.parse(uri).ext));
@@ -434,24 +431,8 @@ export class BookTocManager implements IBookTocManager {
 		}
 	}
 
-	public get movedFiles(): Map<string, string> {
-		return this._movedFiles;
-	}
-
-	public get originalToc(): Map<string, string> {
-		return this._tocFiles;
-	}
-
 	public get modifiedDir(): Set<string> {
 		return this._modifiedDirectory;
-	}
-
-	public set movedFiles(files: Map<string, string>) {
-		this._movedFiles = files;
-	}
-
-	public set originalToc(files: Map<string, string>) {
-		this._tocFiles = files;
 	}
 
 	public set modifiedDir(files: Set<string>) {

@@ -475,8 +475,8 @@ describe('BookTocManagerTests', function () {
 
 					const mockExtensionContext = new MockExtensionContext();
 
-					sourceBookModel = new BookModel(run.sourceBook.rootBookFolderPath, false, false, mockExtensionContext);
-					targetBookModel = new BookModel(run.targetBook.rootBookFolderPath, false, false, mockExtensionContext);
+					sourceBookModel = new BookModel(run.sourceBook.rootBookFolderPath, false, false, mockExtensionContext, undefined);
+					targetBookModel = new BookModel(run.targetBook.rootBookFolderPath, false, false, mockExtensionContext, undefined);
 					// create book model mock objects
 					sinon.stub(sourceBookModel, 'bookItems').value([sectionA]);
 					sinon.stub(targetBookModel, 'bookItems').value([targetBook]);
