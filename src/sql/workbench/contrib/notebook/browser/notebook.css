@@ -82,6 +82,9 @@
 .notebookEditor .in-preview .actions-container .action-item:last-child {
 	margin-right: 14px;
 }
+.notebookEditor .in-preview .actions-container .action-item:last-child :not(.masked-icon) {
+	margin-left: 8px;
+}
 .notebookEditor
 	.in-preview
 	.actions-container
@@ -224,8 +227,7 @@
 
 .monaco-workbench.vs-dark .notebook-action.new-notebook,
 .monaco-workbench.hc-black .notebook-action.new-notebook {
-	background: url("./media/dark/new_notebook_inverse.svg") center center
-		no-repeat;
+	background: url("./media/dark/new_notebook_inverse.svg") center center no-repeat;
 }
 
 .notebookEditor .book-nav {
