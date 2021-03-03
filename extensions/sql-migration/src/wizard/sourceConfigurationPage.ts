@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { SOURCE_CONFIGURATION_PAGE_TITLE, COLLECTING_SOURCE_CONFIGURATIONS, COLLECTING_SOURCE_CONFIGURATIONS_INFO, COLLECTING_SOURCE_CONFIGURATIONS_ERROR } from '../models/strings';
+import { SOURCE_CONFIGURATION_PAGE_TITLE, COLLECTING_SOURCE_CONFIGURATIONS, COLLECTING_SOURCE_CONFIGURATIONS_INFO, COLLECTING_SOURCE_CONFIGURATIONS_ERROR } from '../constants/strings';
 import { MigrationStateModel, StateChangeEvent, State } from '../models/stateMachine';
 import { Disposable } from 'vscode';
 
