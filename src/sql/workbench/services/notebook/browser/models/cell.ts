@@ -83,6 +83,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _previousChartState: any[] = [];
 	private _outputCounter = 0;
 	private _attachments: nb.ICellAttachments;
+	private _preventNextChartCache: boolean = false;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -278,7 +279,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this.cellSourceChanged = true;
 		}
 		this._modelContentChangedEvent = undefined;
-		this.resetPreviousChartState();
+		this._preventNextChartCache = true;
 	}
 
 	public get modelContentChangedEvent(): IModelContentChangedEvent {
@@ -636,14 +637,17 @@ export class CellModel extends Disposable implements ICellModel {
 		future.setIOPubHandler({ handle: (msg) => this.handleIOPub(msg) });
 		future.setStdInHandler({ handle: (msg) => this.handleSdtIn(msg) });
 	}
-
-	public clearOutputs(saveChartState = false): void {
-		if (saveChartState) {
-			this.saveChartStateIfExists();
+	/**
+	 * Clear outputs can be done as part of the "Clear Outputs" action on a cell or as part of running a cell
+	 * @param runCellPending
+	 */
+	public clearOutputs(runCellPending = false): void {
+		if (runCellPending) {
+			this.cacheChartStateIfExists();
 		} else {
 			this.resetPreviousChartState();
-			this._outputsIdMap.clear();
 		}
+		this._outputsIdMap.clear();
 		this._outputs = [];
 		this.fireOutputsChanged();
 
@@ -1044,15 +1048,31 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 	}
 
-	private saveChartStateIfExists(): void {
-		this._outputs?.forEach(o => {
-			if (o.metadata?.azdata_chartOptions) {
-				this._previousChartState?.push(o.metadata?.azdata_chartOptions);
-			}
-		});
+	/**
+	 * Cache start state for any existing charts.
+	 * This allows this data to be passed to the grid output component when a cell is re-executed
+	 */
+	private cacheChartStateIfExists(): void {
+		this.resetPreviousChartState();
+		if (!this._preventNextChartCache) {
+			this._outputs?.forEach(o => {
+				if (dataResourceDataExists(o)) {
+					if (o.metadata?.azdata_chartOptions) {
+						this._previousChartState.push(o.metadata.azdata_chartOptions);
+					} else {
+						this._previousChartState.push(null);
+					}
+				}
+			});
+		}
+		this._preventNextChartCache = false;
 	}
 
 	private resetPreviousChartState(): void {
 		this._previousChartState = [];
 	}
+}
+
+function dataResourceDataExists(metadata: nb.ICellOutput): boolean {
+	return metadata['data'] && metadata['data']['application/vnd.dataresource+json'];
 }
