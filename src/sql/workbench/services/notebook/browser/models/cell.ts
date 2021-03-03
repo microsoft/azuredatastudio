@@ -850,7 +850,7 @@ export class CellModel extends Disposable implements ICellModel {
 			if (this._configurationService?.getValue('notebook.saveConnectionName')) {
 				metadata.connection_name = this._savedConnectionName;
 			}
-		} else if (this._cellType === CellTypes.Markdown) {
+		} else if (this._cellType === CellTypes.Markdown && this._attachments) {
 			cellJson.attachments = this._attachments;
 		}
 		return cellJson as nb.ICellContents;
@@ -873,7 +873,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this._isParameter = false;
 			this._isInjectedParameter = false;
 		}
-		this._attachments = cell.attachments || {};
+		this._attachments = cell.attachments;
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);
 		this._savedConnectionName = this._metadata.connection_name;
