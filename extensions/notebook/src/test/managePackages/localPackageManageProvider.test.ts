@@ -200,35 +200,48 @@ describe('Manage Package Providers', () => {
 	});
 
 	it('Is python package valid test', async function (): Promise<void> {
+		// Package is valid for version constraints
 		let pythonVersion = '3.6';
 		let versionConstraints = ['>=3.5,!=3.2,!=3.4.*'];
 		let result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
 		should(result).be.true();
 
+		// Version constraints string has lots of spaces
 		versionConstraints = ['>= 3.5, != 3.2, != 3.4.*'];
 		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
 		should(result).be.true();
 
+		// Package is valid for first set of constraints, but not the second
 		versionConstraints = ['>=3.5, !=3.2, !=3.4.*', '!=3.6, >=3.5'];
 		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
 		should(result).be.true();
 
+		// Package is valid for second set of constraints, but not the first
+		versionConstraints = ['!=3.6, >=3.5', '>=3.5, !=3.2, !=3.4.*'];
+		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
+		should(result).be.true();
+
+		// Package is not valid for constraints
 		versionConstraints = ['>=3.4, !=3.6, >=3.5'];
 		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
 		should(result).be.false();
 
+		// Package is not valid for several sets of constraints
 		versionConstraints = ['>=3.7', '!=3.6, >=3.5', '>=3.8'];
 		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
 		should(result).be.false();
 
+		// Constraints are all empty strings
 		versionConstraints = ['', '', ''];
 		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
 		should(result).be.true();
 
+		// Constraints are all undefined
 		versionConstraints = [undefined, undefined, undefined];
 		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
 		should(result).be.true();
 
+		// Installed python version is an empty string
 		pythonVersion = '';
 		versionConstraints = ['>=3.7', '!=3.6, >=3.5', '>=3.8'];
 		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
