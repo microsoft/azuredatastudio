@@ -128,7 +128,7 @@ suite('Notebook integration test suite', function () {
 		});
 	});
 
-	test('should not be dirty after saving notebook test', async function () {
+	test.skip('should not be dirty after saving notebook test', async function () {
 		// Given a notebook that's been edited (in this case, open notebook runs the 1st cell and adds an output)
 		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title);
 		await runCell(notebook);
