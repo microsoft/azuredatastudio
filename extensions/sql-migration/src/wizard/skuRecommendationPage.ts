@@ -201,8 +201,20 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 			//check which card is being selected, and open correct dialog based on link
 			console.log(value);
-			let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog', this);
-			await dialog.openDialog();
+			if (value.description.linkDisplayValue === 'View/Change') {
+				if (value.cardId === 'AzureSQLVM') {
+					// open dialog for AzureSQLVM
+				} else if (value.cardId === 'AzureSQLMI') {
+					let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog', this);
+					await dialog.openDialog();
+				}
+			} else if (value.description.linkDisplayValue === 'Learn more') {
+				if (value.cardId === 'AzureSQLVM') {
+					vscode.env.openExternal(vscode.Uri.parse('https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview'));
+				} else if (value.cardId === 'AzureSQLMI') {
+					vscode.env.openExternal(vscode.Uri.parse('https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/sql-managed-instance-paas-overview '));
+				}
+			}
 		});
 
 		this._rbg.onSelectionChanged((value) => {
