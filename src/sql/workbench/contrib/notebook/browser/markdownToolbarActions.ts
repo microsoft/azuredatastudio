@@ -15,6 +15,7 @@ import { Selection } from 'vs/editor/common/core/selection';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
+import { IEditor } from 'vs/editor/common/editorCommon';
 
 export class TransformMarkdownAction extends Action {
 
@@ -135,7 +136,7 @@ export class MarkdownTextTransformer {
 		return this._notebookEditor;
 	}
 
-	public async transformText(type: MarkdownButtonType, triggerElement?: HTMLElement, previouslyTransformedMarkdown?: string): Promise<void> {
+	public async transformText(type: MarkdownButtonType): Promise<void> {
 		let editorControl = this.getEditorControl();
 		if (editorControl) {
 			let selections = editorControl.getSelections();
@@ -149,8 +150,8 @@ export class MarkdownTextTransformer {
 				endLineNumber: selection.startLineNumber
 			};
 
-			let beginInsertedText: string;
-			let endInsertedText: string;
+			let beginInsertedText = getStartTextToInsert(type);
+			let endInsertedText = getEndTextToInsert(type);
 
 			let endRange: IRange = {
 				startColumn: selection.endColumn,
@@ -161,32 +162,14 @@ export class MarkdownTextTransformer {
 
 			let editorModel = editorControl.getModel() as TextModel;
 			let isUndo = false;
-
-			// If markdown has been previously transformed (e.g. through a callout), insert it "as is"
-			if (previouslyTransformedMarkdown) {
-				startRange = {
-					startColumn: selection.startColumn,
-					endColumn: selection.endColumn,
-					startLineNumber: selection.startLineNumber,
-					endLineNumber: selection.endLineNumber
-				};
-				beginInsertedText = previouslyTransformedMarkdown;
-				editorModel.pushEditOperations(selections, [
-					{ range: startRange, text: beginInsertedText },
-				], undefined);
-			} else {
-				beginInsertedText = getStartTextToInsert(type);
-				endInsertedText = getEndTextToInsert(type);
-
-				if (editorModel) {
-					let markdownLineType = getMarkdownLineType(type);
-					// Paragraph (empty string) is just used for replacing any existing headers so will never be an undo operation
-					isUndo = beginInsertedText && this.isUndoOperation(selection, type, markdownLineType, editorModel);
-					if (isUndo) {
-						this.handleUndoOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedText, endInsertedText, selections, selection);
-					} else {
-						this.handleTransformOperation(markdownLineType, type, startRange, endRange, editorModel, beginInsertedText, endInsertedText, selections, selection);
-					}
+			if (editorModel) {
+				let markdownLineType = getMarkdownLineType(type);
+				// Paragraph (empty string) is just used for replacing any existing headers so will never be an undo operation
+				isUndo = beginInsertedText && this.isUndoOperation(selection, type, markdownLineType, editorModel);
+				if (isUndo) {
+					this.handleUndoOperation(markdownLineType, startRange, endRange, editorModel, beginInsertedText, endInsertedText, selections, selection);
+				} else {
+					this.handleTransformOperation(markdownLineType, type, startRange, endRange, editorModel, beginInsertedText, endInsertedText, selections, selection);
 				}
 			}
 
@@ -578,6 +561,36 @@ function getColumnOffsetForSelection(type: MarkdownButtonType, nothingSelected: 
 			return 2;
 		// -1 is considered as having no explicit offset, so do not do anything with selection
 		default: return -1;
+	}
+}
+
+/**
+ * When markdown is already formatted correctly and doesn't need transformed, insert markdown based on current editor selection
+ * @param markdownToInsert formatted markdown
+ * @param editorControl editor control for cell
+ */
+export async function insertFormattedMarkdown(markdownToInsert: string, editorControl: IEditor): Promise<void> {
+	if (editorControl) {
+		let selections = editorControl.getSelections();
+		let selection = selections[0];
+		let startRange: IRange = {
+			startColumn: selection.startColumn,
+			endColumn: selection.startColumn,
+			startLineNumber: selection.startLineNumber,
+			endLineNumber: selection.startLineNumber
+		};
+
+		let editorModel = editorControl.getModel() as TextModel;
+
+		startRange = {
+			startColumn: selection.startColumn,
+			endColumn: selection.endColumn,
+			startLineNumber: selection.startLineNumber,
+			endLineNumber: selection.endLineNumber
+		};
+		editorModel.pushEditOperations(selections, [
+			{ range: startRange, text: markdownToInsert },
+		], undefined);
 	}
 }
 

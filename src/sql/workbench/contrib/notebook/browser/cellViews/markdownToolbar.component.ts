@@ -10,7 +10,7 @@ import { localize } from 'vs/nls';
 import { CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { TransformMarkdownAction, MarkdownTextTransformer, MarkdownButtonType, ToggleViewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
+import { TransformMarkdownAction, MarkdownTextTransformer, MarkdownButtonType, ToggleViewAction, insertFormattedMarkdown } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { ICellEditorProvider, INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
@@ -18,6 +18,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ILinkCalloutDialogOptions, LinkCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/linkCalloutDialog';
 import { TextModel } from 'vs/editor/common/model/textModel';
+import { IEditor } from 'vs/editor/common/editorCommon';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
@@ -240,9 +241,9 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		}
 		const transformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
 		if (needsTransform) {
-			transformer.transformText(type, triggerElement);
+			await transformer.transformText(type);
 		} else if (!needsTransform) {
-			transformer.transformText(type, triggerElement, calloutResult?.insertMarkdown);
+			await insertFormattedMarkdown(calloutResult?.insertMarkdown, this.getCellEditorControl());
 		}
 	}
 
@@ -293,20 +294,25 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
 			return document.getSelection()?.toString() || '';
 		} else {
-			// If control doesn't exist, editor may have been destroyed previously when switching edit modes
-			if (!this._cellEditor?.getEditor()?.getControl()) {
-				this._cellEditor = this._notebookEditor?.cellEditors?.find(e => e.cellGuid() === this.cellModel?.cellGuid);
-			}
-			if (this._cellEditor?.hasEditor) {
-				const editorControl = this._cellEditor.getEditor()?.getControl();
-				const selection = editorControl?.getSelection();
-				if (!selection.isEmpty()) {
-					const textModel = editorControl?.getModel() as TextModel;
-					const value = textModel?.getValueInRange(selection);
-					return value || '';
-				}
+			const editorControl = this.getCellEditorControl();
+			const selection = editorControl?.getSelection();
+			if (selection && !selection.isEmpty()) {
+				const textModel = editorControl?.getModel() as TextModel;
+				const value = textModel?.getValueInRange(selection);
+				return value || '';
 			}
 			return '';
 		}
+	}
+
+	private getCellEditorControl(): IEditor | undefined {
+		// If control doesn't exist, editor may have been destroyed previously when switching edit modes
+		if (!this._cellEditor?.getEditor()?.getControl()) {
+			this._cellEditor = this._notebookEditor?.cellEditors?.find(e => e.cellGuid() === this.cellModel?.cellGuid);
+		}
+		if (this._cellEditor?.hasEditor) {
+			return this._cellEditor.getEditor()?.getControl();
+		}
+		return undefined;
 	}
 }

@@ -6,7 +6,7 @@
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 
-import { MarkdownTextTransformer, MarkdownButtonType } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
+import { MarkdownTextTransformer, MarkdownButtonType, insertFormattedMarkdown } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { TestLifecycleService, TestEnvironmentService, TestAccessibilityService } from 'vs/workbench/test/browser/workbenchTestServices';
@@ -171,7 +171,7 @@ suite('MarkdownTextTransformer', () => {
 		if (setValue) {
 			textModel.setValue('');
 		}
-		await markdownTextTransformer.transformText(type, undefined, '[test](./URL)');
+		await insertFormattedMarkdown('[test](./URL)', widget);
 		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with no selection and previously transformed md failed (setValue ${setValue})`);
 	}
 
@@ -201,7 +201,7 @@ suite('MarkdownTextTransformer', () => {
 		// Test transformation (adding text)
 		widget.setSelection({ startColumn: 1, startLineNumber: 1, endColumn: value.length + 1, endLineNumber: 1 });
 		assert.equal(textModel.getValueInRange(widget.getSelection()), value, 'Expected selection is not found');
-		await markdownTextTransformer.transformText(type, undefined, '[SampleURL](https://aka.ms)');
+		await insertFormattedMarkdown('[SampleURL](https://aka.ms)', widget);
 		const textModelValue = textModel.getValue();
 		assert.equal(textModelValue, expectedValue, `${MarkdownButtonType[type]} with single word selection and previously transformed md failed`);
 	}
