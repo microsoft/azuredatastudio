@@ -468,7 +468,6 @@ export abstract class PostgresParametersPage extends DashboardPage {
 				readOnly: false,
 				min: parseInt(engineSetting.min!),
 				max: parseInt(engineSetting.max!),
-				validationErrorMessage: loc.outOfRange(engineSetting.min!, engineSetting.max!),
 				inputType: 'number',
 				value: engineSetting.value,
 				width: '150px'
