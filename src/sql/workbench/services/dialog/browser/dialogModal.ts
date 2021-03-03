@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/dialogModal';
+import { CalloutDialog } from 'sql/workbench/browser/modal/calloutDialog';
 import { Modal, IModalOptions } from 'sql/workbench/browser/modal/modal';
 import { Dialog, DialogButton } from 'sql/workbench/services/dialog/common/dialogTypes';
 import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
@@ -16,15 +17,17 @@ import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { DialogMessage } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { DialogMessage, IDialogProperties, DialogPosition, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { append, $ } from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+import { attachModalDialogStyler, attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { Deferred } from 'sql/base/common/promise';
+
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -169,5 +172,44 @@ export class DialogModal extends Modal {
 	public dispose(): void {
 		super.dispose();
 		this._dialogPane.dispose();
+	}
+}
+
+
+export interface ICalloutDialogOptions {
+
+}
+
+export class CalloutDialogModal extends CalloutDialog<ICalloutDialogOptions> {
+	private _selectionComplete: Deferred<ICalloutDialogOptions> = new Deferred<ICalloutDialogOptions>();
+
+	constructor(
+		title: string,
+		width: DialogWidth,
+		position: DialogPosition,
+		dialogProperties: IDialogProperties,
+		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
+		@ILayoutService layoutService: ILayoutService,
+		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IClipboardService clipboardService: IClipboardService,
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
+	) {
+		super(title, width, position, dialogProperties, themeService, layoutService, telemetryService, contextKeyService, clipboardService, logService, textResourcePropertiesService);
+	}
+
+	public render() {
+		super.render();
+		attachCalloutDialogStyler(this, this._themeService);
+	}
+
+	protected renderBody(container: HTMLElement) {
+
+	}
+
+	public open(): Promise<ICalloutDialogOptions> {
+		this.show();
+		return this._selectionComplete.promise;
 	}
 }

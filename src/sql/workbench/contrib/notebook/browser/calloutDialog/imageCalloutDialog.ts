@@ -25,7 +25,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
-import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { DialogPosition, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface IImageCalloutDialogOptions {
 	insertTitle?: string,
@@ -49,6 +49,7 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 	constructor(
 		title: string,
 		width: DialogWidth,
+		position: DialogPosition,
 		dialogProperties: IDialogProperties,
 		@IPathService private readonly _pathService: IPathService,
 		@IFileDialogService private readonly _fileDialogService: IFileDialogService,
@@ -64,6 +65,7 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 		super(
 			title,
 			width,
+			position,
 			dialogProperties,
 			themeService,
 			layoutService,

@@ -7,7 +7,7 @@ import 'vs/css!./media/calloutDialog';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as DOM from 'vs/base/browser/dom';
 import { Color } from 'vs/base/common/color';
-import { IDialogProperties, Modal, DialogWidth, IModalDialogStyles } from 'sql/workbench/browser/modal/modal';
+import { IDialogProperties, Modal, DialogWidth, DialogPosition, IModalDialogStyles } from 'sql/workbench/browser/modal/modal';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -23,6 +23,7 @@ export abstract class CalloutDialog<T> extends Modal {
 	constructor(
 		title: string,
 		width: DialogWidth,
+		position: DialogPosition,
 		dialogProperties: IDialogProperties,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
@@ -44,7 +45,7 @@ export abstract class CalloutDialog<T> extends Modal {
 			contextKeyService,
 			{
 				dialogStyle: 'callout',
-				dialogPosition: 'below',
+				dialogPosition: position,
 				dialogProperties: dialogProperties,
 				width: width
 			});

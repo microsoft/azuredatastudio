@@ -20,7 +20,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { DialogPosition, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface ILinkCalloutDialogOptions {
 	insertTitle?: string,
@@ -37,6 +37,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 	constructor(
 		title: string,
 		width: DialogWidth,
+		position: DialogPosition,
 		dialogProperties: IDialogProperties,
 		@IContextViewService private readonly _contextViewService: IContextViewService,
 		@IThemeService themeService: IThemeService,
@@ -50,6 +51,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 		super(
 			title,
 			width,
+			position,
 			dialogProperties,
 			themeService,
 			layoutService,

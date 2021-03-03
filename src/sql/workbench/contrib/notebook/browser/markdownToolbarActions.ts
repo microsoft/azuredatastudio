@@ -19,7 +19,7 @@ import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser
 import { ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
 import { LinkCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/linkCalloutDialog';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { DialogWidth, DialogPosition } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class TransformMarkdownAction extends Action {
 
@@ -216,17 +216,18 @@ export class MarkdownTextTransformer {
 		 * Width value here reflects designs for Notebook callouts.
 		 */
 		const width: DialogWidth = 452;
+		const position: DialogPosition = 'below';
 
 		if (type === MarkdownButtonType.IMAGE_PREVIEW) {
 			if (!this._imageCallout) {
-				this._imageCallout = this._instantiationService.createInstance(ImageCalloutDialog, this.insertImageHeading, width, dialogProperties);
+				this._imageCallout = this._instantiationService.createInstance(ImageCalloutDialog, this.insertImageHeading, width, position, dialogProperties);
 				this._imageCallout.render();
 				calloutOptions = await this._imageCallout.open();
 				calloutOptions.insertTitle = this.insertImageHeading;
 			}
 		} else {
 			if (!this._linkCallout) {
-				this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, width, dialogProperties);
+				this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, width, position, dialogProperties);
 				this._linkCallout.render();
 				calloutOptions = await this._linkCallout.open();
 				calloutOptions.insertTitle = this.insertLinkHeading;
