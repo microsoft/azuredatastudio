@@ -383,7 +383,7 @@ declare module 'azdata' {
 	}
 
 	export type RadioCardSelectionChangedEvent = { cardId: string; card: RadioCard };
-	export type RadioCardLinkClickEvent = { cardId: string, card: RadioCard, selectorText: RadioCardDescription };
+	export type RadioCardLinkClickEvent = { cardId: string, card: RadioCard, description: RadioCardDescription };
 
 	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
 		/**
