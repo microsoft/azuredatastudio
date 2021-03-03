@@ -639,16 +639,16 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 	/**
 	 * Clear outputs can be done as part of the "Clear Outputs" action on a cell or as part of running a cell
-	 * @param runCellPending
+	 * @param runCellPending If a cell has been run
 	 */
 	public clearOutputs(runCellPending = false): void {
 		if (runCellPending) {
 			this.cacheChartStateIfExists();
 		} else {
-			this.resetPreviousChartState();
+			this.clearPreviousChartState();
 		}
-		this._outputsIdMap.clear();
 		this._outputs = [];
+		this._outputsIdMap.clear();
 		this.fireOutputsChanged();
 
 		this.executionCount = undefined;
@@ -1050,10 +1050,11 @@ export class CellModel extends Disposable implements ICellModel {
 
 	/**
 	 * Cache start state for any existing charts.
-	 * This allows this data to be passed to the grid output component when a cell is re-executed
+	 * This ensures that data can be passed to the grid output component when a cell is re-executed
 	 */
 	private cacheChartStateIfExists(): void {
-		this.resetPreviousChartState();
+		this.clearPreviousChartState();
+		// If a cell's source was changed, don't cache chart state
 		if (!this._preventNextChartCache) {
 			this._outputs?.forEach(o => {
 				if (dataResourceDataExists(o)) {
@@ -1068,7 +1069,7 @@ export class CellModel extends Disposable implements ICellModel {
 		this._preventNextChartCache = false;
 	}
 
-	private resetPreviousChartState(): void {
+	private clearPreviousChartState(): void {
 		this._previousChartState = [];
 	}
 }

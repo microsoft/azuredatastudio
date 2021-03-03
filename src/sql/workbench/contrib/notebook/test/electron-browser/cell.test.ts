@@ -1114,6 +1114,11 @@ suite('Cell Model', function (): void {
 				}
 			]
 		};
+
+		let future = TypeMoq.Mock.ofType(EmptyFuture);
+		let onIopub: nb.MessageHandler<nb.IIOPubMessage>;
+		future.setup(f => f.setIOPubHandler(TypeMoq.It.isAny())).callback((handler) => onIopub = handler);
+
 		// When I create a cell
 		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false }) as CellModel;
 		assert.deepEqual(cellModel.previousChartState, [], 'New cell should have no previous chart state');
@@ -1125,10 +1130,6 @@ suite('Cell Model', function (): void {
 		// When cell outputs are cleared
 		cellModel.clearOutputs();
 		assert.deepEqual(cellModel.previousChartState, [], 'Previous chart state should be erased after clearing outputs');
-
-		let future = TypeMoq.Mock.ofType(EmptyFuture);
-		let onIopub: nb.MessageHandler<nb.IIOPubMessage>;
-		future.setup(f => f.setIOPubHandler(TypeMoq.It.isAny())).callback((handler) => onIopub = handler);
 
 		// Put previous chart state back
 		cellModel[<any>'_previousChartState'] = contents.outputs[0].metadata.azdata_chartOptions;
