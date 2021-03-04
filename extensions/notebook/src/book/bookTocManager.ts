@@ -15,12 +15,18 @@ import { BookModel } from './bookModel';
 export interface IBookTocManager {
 	updateBook(element: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
+	addNewNotebook(nbName: string, book: BookModel, fileType: FileType): Promise<void>;
 	recovery(): Promise<void>
 }
 
 export interface quickPickResults {
 	quickPickSection?: vscode.QuickPickItem,
 	book?: BookTreeItem
+}
+
+export enum FileType {
+	Markdown = '.md',
+	Notebook = '.ipynb'
 }
 
 const allowedFileExtensions: string[] = ['.md', '.ipynb'];
@@ -395,12 +401,12 @@ export class BookTocManager implements IBookTocManager {
 	 * @param targetSection Book section that'll be modified.
 	*/
 	public async updateBook(element: BookTreeItem, targetBook: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
-		const targetBookVersion = targetBook.book.version as BookVersion;
+		const targetBookVersion = targetBook.book.version;
 		if (element.contextValue === 'section') {
 			// modify the sourceBook toc and remove the section
 			const findSection: JupyterBookSection = { file: element.book.page.file?.replace(/\\/g, '/'), title: element.book.page.title };
 			await this.addSection(element, targetBook);
-			const elementVersion = element.book.version as BookVersion;
+			const elementVersion = element.book.version;
 			await this.updateTOC(elementVersion, element.tableOfContentsPath, findSection, undefined);
 			if (targetSection) {
 				// adding new section to the target book toc file
@@ -420,7 +426,7 @@ export class BookTocManager implements IBookTocManager {
 			const findSection = { file: element.book.page?.file?.replace(/\\/g, '/'), title: element.book.page?.title };
 			await this.addNotebook(element, targetBook);
 			if (element.tableOfContentsPath) {
-				const elementVersion = element.book.version as BookVersion;
+				const elementVersion = element.book.version;
 				await this.updateTOC(elementVersion, element.tableOfContentsPath, findSection, undefined);
 			} else {
 				// close the standalone notebook, so it doesn't throw an error when we move the notebook to new location.
@@ -436,6 +442,20 @@ export class BookTocManager implements IBookTocManager {
 				await this.updateTOC(targetBookVersion, targetBook.tableOfContentsPath, targetSection, this.newSection);
 			}
 		}
+	}
+
+	public async addNewNotebook(nbName: string, book?: BookModel, fileType?: FileType): Promise<void> {
+		let toc = yaml.safeLoad((await fs.readFile(book.tableOfContentsPath, 'utf8')));
+		let notebookToc: JupyterBookSection = {
+			title: nbName,
+			file: path.posix.join(path.posix.sep, nbName)
+		};
+		if (book.version === BookVersion.v1) {
+			notebookToc = convertTo(book.version, notebookToc);
+		}
+		toc.push(notebookToc);
+		await fs.writeFile(path.join(book.contentFolderPath, nbName).concat(fileType), '');
+		await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(toc, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
 	}
 
 	public get movedFiles(): Map<string, string> {

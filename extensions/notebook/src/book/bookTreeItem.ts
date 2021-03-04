@@ -8,7 +8,7 @@ import * as fs from 'fs';
 import { JupyterBookSection, IJupyterBookToc } from '../contracts/content';
 import * as loc from '../common/localizedConstants';
 import { isBookItemPinned } from '../common/utils';
-import { getContentPath, getTocPath } from './bookVersionHandler';
+import { BookVersion, getContentPath, getTocPath } from './bookVersionHandler';
 
 export enum BookTreeItemType {
 	Book = 'Book',
@@ -26,7 +26,7 @@ export interface BookTreeItemFormat {
 	type: BookTreeItemType;
 	treeItemCollapsibleState: number;
 	isUntitled: boolean;
-	version?: string;
+	version?: BookVersion;
 }
 
 export class BookTreeItem extends vscode.TreeItem {
@@ -34,7 +34,7 @@ export class BookTreeItem extends vscode.TreeItem {
 	private _uri: string | undefined;
 	private _previousUri: string;
 	private _nextUri: string;
-	public readonly version: string;
+	public readonly version: BookVersion;
 	public command: vscode.Command;
 	public resourceUri: vscode.Uri;
 	private _rootContentPath: string;

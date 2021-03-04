@@ -314,7 +314,7 @@ export class BookModel {
 		return this._errorMessage;
 	}
 
-	public get version(): string {
+	public get version(): BookVersion {
 		return this._bookVersion;
 	}
 }
