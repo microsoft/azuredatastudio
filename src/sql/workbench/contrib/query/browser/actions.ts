@@ -8,6 +8,7 @@ import { localize } from 'vs/nls';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { QueryEditor } from './queryEditor';
+import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
 import { INotificationService, Severity, NeverShowAgainScope } from 'vs/platform/notification/common/notification';
@@ -61,17 +62,24 @@ export class SaveResultAction extends Action {
 		label: string,
 		icon: string,
 		private format: SaveFormat,
-		@INotificationService private notificationService: INotificationService
+		@INotificationService private notificationService: INotificationService,
+		@IEditorService private editorService: IEditorService,
 	) {
 		super(id, label, icon);
 	}
 
 	public async run(context: IGridActionContext): Promise<boolean> {
-		this.notificationService.notify({
-			severity: Severity.Info,
-			message: localize('jsonEncoding', "Results encoding will not be saved when exporting to JSON, remember to save with desired encoding once file is created."),
-			neverShowAgain: { id: 'ignoreJsonEncoding', scope: NeverShowAgainScope.GLOBAL }
-		});
+
+		const activeEditor = this.editorService.activeEditorPane as QueryEditor;
+		let input = activeEditor.input as UntitledQueryEditorInput;
+		if (input.getEncoding() !== 'utf8') {
+			this.notificationService.notify({
+				severity: Severity.Info,
+				message: localize('jsonEncoding', "Results encoding will not be saved when exporting to JSON, remember to save with desired encoding once file is created."),
+				neverShowAgain: { id: 'ignoreJsonEncoding', scope: NeverShowAgainScope.GLOBAL }
+			});
+		}
+
 
 		if (!context.gridDataProvider.canSerialize) {
 			this.notificationService.warn(localize('saveToFileNotSupported', "Save to file is not supported by the backing data source"));
