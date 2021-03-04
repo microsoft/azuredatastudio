@@ -22,7 +22,7 @@ const dacpac2: string = path.join(__dirname, '..', '..', 'testData', 'Database2.
 const includeExcludeSourceDacpac: string = path.join(__dirname, '..', '..', 'testData', 'SchemaCompareIncludeExcludeSource.dacpac');
 const includeExcludeTargetDacpac: string = path.join(__dirname, '..', '..', 'testData', 'SchemaCompareIncludeExcludeTarget.dacpac');
 const SERVER_CONNECTION_TIMEOUT: number = 3000;
-const retryCount = 24; // 2 minutes
+const retryCount = 12; // 1 minute
 const folderPath = path.join(os.tmpdir(), 'SchemaCompareTest');
 
 suite('Schema compare integration test suite @DacFx@', () => {
@@ -40,11 +40,8 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		console.log(`Start schema compare tests`);
 	});
 
-	beforeEach(function (): void {
-		this.timeout(5 * 60 * 1000);
-	});
-
 	test('Schema compare dacpac to dacpac comparison and scmp', async function () {
+		this.timeout(5 * 60 * 1000);
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 		const now = new Date();
 		const operationId = 'testOperationId_' + now.getTime().toString();
@@ -88,6 +85,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 	});
 
 	test('Schema compare database to database comparison, script generation, and scmp @UNSTABLE@', async function () {
+		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
 		const now = new Date();
@@ -160,6 +158,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 	});
 
 	test('Schema compare dacpac to database comparison, script generation, and scmp @UNSTABLE@', async function () {
+		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
 		const now = new Date();
@@ -220,6 +219,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 	});
 
 	test('Schema compare dacpac to dacpac comparison with include exclude', async function () {
+		this.timeout(5 * 60 * 1000);
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 		const operationId = 'testOperationId_' + new Date().getTime().toString();
 
@@ -276,6 +276,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 	});
 
 	test('Cancel schema compare dacpac to dacpac comparison', async function () {
+		this.timeout(5 * 60 * 1000);
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 		const now = new Date();
 		const operationId = 'testOperationId_' + now.getTime().toString();
@@ -442,6 +443,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 	});
 
 	test('Schema compare dacpac to database comparison with non-default deployment options', async function () {
+		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
 		const now = new Date();
