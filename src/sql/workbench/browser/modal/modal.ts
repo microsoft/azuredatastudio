@@ -472,6 +472,7 @@ export abstract class Modal extends Disposable implements IThemable {
 				if (event.equals(KeyCode.Enter)) {
 					this.onAccept(event);
 				} else if (event.equals(KeyCode.Escape)) {
+					DOM.EventHelper.stop(e, true);
 					this.onClose(event);
 				} else if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 					this.handleBackwardTab(e);

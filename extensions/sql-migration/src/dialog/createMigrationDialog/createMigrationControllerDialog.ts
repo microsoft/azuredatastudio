@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { createMigrationController, getMigrationControllerRegions, getMigrationController, getResourceGroups, getMigrationControllerAuthKeys, getMigrationControllerMonitoringData } from '../../api/azure';
 import { MigrationStateModel } from '../../models/stateMachine';
-import * as constants from '../../models/strings';
+import * as constants from '../../constants/strings';
 import * as os from 'os';
 import { azureResource } from 'azureResource';
 import { IntergrationRuntimePage } from '../../wizard/integrationRuntimePage';
@@ -130,7 +130,6 @@ export class CreateMigrationControllerDialog {
 		this._dialogObject.okButton.enabled = false;
 		azdata.window.openDialog(this._dialogObject);
 		this._dialogObject.cancelButton.onClick((e) => {
-			this.migrationStateModel._migrationController = undefined!;
 		});
 		this._dialogObject.okButton.onClick((e) => {
 			this.irPage.populateMigrationController();
