@@ -211,6 +211,16 @@ describe('Manage Package Providers', () => {
 		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
 		should(result).be.true();
 
+		// Strictly greater or less than comparisons
+		versionConstraints = ['> 3.5, > 3.4.*', '< 3.8'];
+		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
+		should(result).be.true();
+
+		// Strict equality
+		versionConstraints = ['== 3.6', '== 3.6.*'];
+		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
+		should(result).be.true();
+
 		// Package is valid for first set of constraints, but not the second
 		versionConstraints = ['>=3.5, !=3.2, !=3.4.*', '!=3.6, >=3.5'];
 		result = await LocalPipPackageManageProvider.isPackageSupported(pythonVersion, versionConstraints);
