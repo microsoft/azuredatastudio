@@ -886,7 +886,7 @@ suite('notebook model', function (): void {
 		assert.equal(output.metadata['multi_connection_mode'], true, 'multi_connection_mode not saved correctly to notebook metadata');
 	});
 
-	test('Should not language info kernel alias name even if kernel spec is SQL', async function () {
+	test('Should keep kernel alias as language info kernel alias name even if kernel spec is seralized as SQL', async function () {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedKernelAliasNotebookContentOneCell));
 		defaultModelOptions.contentManager = mockContentManager.object;
