@@ -27,8 +27,8 @@
 }
 
 .callout-arrow:before {
-	border-width: 1px;
 	border-style: solid;
+	border-width: 1px;
 	content: '';
 	display: block;
 	height: 0;
@@ -36,32 +36,27 @@
 	width: 0;
 }
 .callout-arrow.from-below:before {
-	border-width: 0.5em;
-	left: 2em;
-	top: -0.2em;
+	height: 10px;
+	left: 24px;
+	top: -6px;
 	transform: rotate(135deg);
+	width: 10px;
 }
 .callout-arrow.from-left:before {
 	height: 26px;
-	right: -13px;
+	right: -14px;
 	top: 26px;
 	transform: rotate(-135deg);
 	width: 26px;
 }
 
 .hc-black .callout-arrow:before {
-	border-width: 0.1em;
 	box-shadow: none;
-	height: 0.8em;
-	width: 0.8em;
-}
-.hc-black .callout-arrow.from-below:before {
-	top: -0.4em;
+	height: 10px;
+	width: 10px;
 }
 .hc-black .callout-arrow.from-left:before {
-	height: 2em;
-	right: -1.2em;
-	width: 2em;
+	box-shadow: none;
 }
 
 .modal.callout-dialog .modal-header {

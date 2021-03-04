@@ -57,13 +57,13 @@ export function attachCalloutDialogStyler(widget: IThemable, themeService: IThem
 		dialogBorder?: cr.ColorIdentifier,
 		dialogHeaderAndFooterBackground?: cr.ColorIdentifier,
 		dialogBodyBackground?: cr.ColorIdentifier,
-		footerBorderTopColor?: cr.ColorIdentifier,
+		dialogInteriorBorder?: cr.ColorIdentifier,
 	}): IDisposable {
 	return attachStyler(themeService, {
 		dialogForeground: (style && style.dialogForeground) || sqlcr.calloutDialogForeground,
-		dialogBorder: (style && style.dialogBorder) || sqlcr.calloutDialogBorder,
+		dialogBorder: (style && style.dialogBorder) || sqlcr.calloutDialogExteriorBorder,
 		dialogHeaderAndFooterBackground: (style && style.dialogHeaderAndFooterBackground) || sqlcr.calloutDialogHeaderFooterBackground,
 		dialogBodyBackground: (style && style.dialogBodyBackground) || sqlcr.calloutDialogBodyBackground,
-		footerBorderTopColor: (style && style.footerBorderTopColor) || sqlcr.calloutDialogBorder
+		dialogInteriorBorder: (style && style.dialogInteriorBorder) || sqlcr.calloutDialogInteriorBorder
 	}, widget);
 }

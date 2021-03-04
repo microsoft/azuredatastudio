@@ -52,7 +52,7 @@ export interface IModalDialogStyles {
 	footerBackgroundColor?: Color;
 	footerBorderTopWidth?: Color;
 	footerBorderTopStyle?: Color;
-	footerBorderTopColor?: Color;
+	dialogInteriorBorder?: Color;
 }
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
@@ -124,7 +124,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _dialogBorder?: Color;
 	private _dialogHeaderAndFooterBackground?: Color;
 	private _dialogBodyBackground?: Color;
-	private _footerBorderTopColor?: Color;
+	private _dialogInteriorBorder?: Color;
 
 	private _modalDialog?: HTMLElement;
 	private _modalContent?: HTMLElement;
@@ -677,7 +677,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		this._dialogBorder = styles.dialogBorder;
 		this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground;
 		this._dialogBodyBackground = styles.dialogBodyBackground;
-		this._footerBorderTopColor = styles.footerBorderTopColor;
+		this._dialogInteriorBorder = styles.dialogInteriorBorder;
 		this.applyStyles();
 	}
 
@@ -735,26 +735,19 @@ export abstract class Modal extends Disposable implements IThemable {
 
 			if (this._dialogForeground && this._dialogBodyBackground && this._dialogBorder) {
 				content.push(`
-				.modal-dialog {
-					box-shadow: 0px 3px 8px rgba(${foregroundRgb.rgba.r},${foregroundRgb.rgba.g},${foregroundRgb.rgba.b},0.08);
+				.modal.callout-dialog .modal-dialog {
+					box-shadow: 0px 0px 3px 3px rgba(${foregroundRgb.rgba.r},${foregroundRgb.rgba.g},${foregroundRgb.rgba.b},0.25);
 				}
-
-				.modal .modal-footer {
-					border-top-color: ${this._footerBorderTopColor};
+				.modal.callout-dialog .modal-footer {
+					border-top-color: ${this._dialogInteriorBorder};
 				}
-
 				.callout-arrow:before {
-					border-color: transparent transparent ${this._dialogBodyBackground} ${this._dialogBodyBackground};
-					box-shadow: -3px 3px 3px 0 rgba(${foregroundRgb.rgba.r},${foregroundRgb.rgba.g},${foregroundRgb.rgba.b},0.08);
-				}
-
-				.callout-arrow.from-left:before {
-					background-color: ${this._dialogBodyBackground};
-				}
-
-				.hc-black .callout-arrow:before {
 					background-color: ${this._dialogBodyBackground};
 					border-color: transparent transparent ${this._dialogBorder} ${this._dialogBorder};
+				}
+				.callout-arrow.from-left:before {
+					background-color: ${this._dialogBodyBackground};
+					box-shadow: -3px 2px 4px 0 rgba(${foregroundRgb.rgba.r},${foregroundRgb.rgba.g},${foregroundRgb.rgba.b},0.25);
 				}`);
 			}
 
