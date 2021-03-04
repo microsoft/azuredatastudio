@@ -905,25 +905,6 @@ suite('notebook model', function (): void {
 		assert.equal(model.languageInfo.name, 'fake', 'Notebook language info is not set properly');
 	});
 
-	// To-DO Fix loadModelAndStartClientSession to utilize loadContents as well
-	// If loadContents() is added then we get error:
-	// TypeError: Cannot read property 'createInstance' of undefined on LoadContents()
-	test.skip('Should not change kernel alias as language info', async function () {
-		let model = await loadModelAndStartClientSession(expectedKernelAliasNotebookContentOneCell);
-
-		// Ensure notebook prefix is present in the connection URI
-		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
-		await model.loadContents();
-
-		await model.requestModelLoad();
-
-		await changeContextWithFakeConnectionProfile(model);
-		await changeContextWithFakeConnectionProfile(model);
-
-		// Check to see if current kernel is set to kernel alias
-		assert.equal(model.languageInfo.name, 'fake', 'Notebook language info is not set properly');
-	});
-
 	async function loadModelAndStartClientSession(notebookContent: nb.INotebookContents): Promise<NotebookModel> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(notebookContent));
