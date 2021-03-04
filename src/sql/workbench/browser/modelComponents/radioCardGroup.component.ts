@@ -190,9 +190,9 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 		event.stopPropagation();
 		this.fireEvent({
 			eventType: ComponentEventType.onDidClick,
-			args: {
+			args: <azdata.RadioCardLinkClickEvent>{
 				cardId,
-				textContents: deepClone(textContents),
+				description: deepClone(textContents),
 				card: deepClone(this.getCardById(cardId))
 			}
 		});
