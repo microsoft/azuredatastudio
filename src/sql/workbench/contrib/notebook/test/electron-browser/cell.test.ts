@@ -1040,4 +1040,39 @@ suite('Cell Model', function (): void {
 		assert.equal(model.savedConnectionName, connectionName);
 	});
 
+	test('Should read attachments name from notebook attachments', async function () {
+		const cellAttachment = JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}');
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '',
+			attachments: cellAttachment
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		assert.deepEqual(model.attachments, contents.attachments, 'Attachments do not match in cellModel');
+
+		let serializedCell = model.toJSON();
+		assert.deepEqual(serializedCell.attachments, cellAttachment, 'Cell attachment from JSON is incorrect');
+	});
+
+	test('Should not include attachments in notebook json if no attachments exist', async function () {
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: ''
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		assert.deepEqual(model.attachments, undefined, 'Cell model attachments should return undefined if they do not exist');
+
+		let serializedCell = model.toJSON();
+		assert.deepEqual(serializedCell.attachments, undefined, 'JSON should not include attachments if attachments do not exist');
+	});
 });

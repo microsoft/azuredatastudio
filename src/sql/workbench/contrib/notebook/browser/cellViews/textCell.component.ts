@@ -29,8 +29,6 @@ import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/
 import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode } from 'vs/base/common/keyCodes';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -52,6 +50,15 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	@Input() set activeCellId(value: string) {
 		this._activeCellId = value;
+	}
+
+	@HostListener('document:keydown.escape', ['$event'])
+	handleKeyboardEvent() {
+		if (this.isEditMode) {
+			this.toggleEditMode(false);
+		}
+		this.cellModel.active = false;
+		this._model.updateActiveCell(undefined);
 	}
 
 	// Double click to edit text cell in notebook
@@ -93,6 +100,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public readonly onDidClickLink = this._onDidClickLink.event;
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
+	private _highlightRange: NotebookRange;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -227,7 +235,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this.markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
 			this.markdownResult = this.markdownRenderer.render({
 				isTrusted: true,
-				value: Array.isArray(this._content) ? this._content.join('') : this._content
+				value: Array.isArray(this._content) ? this._content.join('') : this._content,
+				cellAttachments: this.cellModel.attachments
 			});
 			this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
 			this.setLoading(false);
@@ -237,6 +246,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 				outputElement.focus();
+				this.addDecoration();
 			}
 		}
 	}
@@ -344,15 +354,18 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
 		if (oldDecorationRange) {
+			this._highlightRange = oldDecorationRange === this._highlightRange ? undefined : this._highlightRange;
 			this.removeDecoration(oldDecorationRange);
 		}
 
 		if (newDecorationRange) {
+			this._highlightRange = newDecorationRange;
 			this.addDecoration(newDecorationRange);
 		}
 	}
 
-	private addDecoration(range: NotebookRange): void {
+	private addDecoration(range?: NotebookRange): void {
+		range = range ?? this._highlightRange;
 		if (range && this.output && this.output.nativeElement) {
 			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
 			let elements = this.getHtmlElements();
@@ -449,17 +462,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 		this.cellModel.active = true;
 		this._model.updateActiveCell(this.cellModel);
-	}
-
-	public onKey(e: KeyboardEvent) {
-		let event = new StandardKeyboardEvent(e);
-		if (event.equals(KeyCode.Escape)) {
-			if (this.isEditMode) {
-				this.toggleEditMode(false);
-			}
-			this.cellModel.active = false;
-			this._model.updateActiveCell(undefined);
-		}
 	}
 }
 

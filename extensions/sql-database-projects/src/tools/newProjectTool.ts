@@ -32,7 +32,11 @@ export function defaultProjectNameNewProj(): string {
  *
  * @param dbName the database name to base the default project name off of
  */
-export function defaultProjectNameFromDb(dbName: string): string {
+export function defaultProjectNameFromDb(dbName: string | undefined): string {
+	if (!dbName) {
+		return '';
+	}
+
 	const projectNameStarter = constants.defaultProjectNameStarter + dbName;
 	const defaultLocation = defaultProjectSaveLocation() ?? vscode.Uri.file(os.homedir());
 	const projectPath: string = path.join(defaultLocation.fsPath, projectNameStarter);

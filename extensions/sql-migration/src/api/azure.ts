@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import { azureResource } from 'azureResource';
+import * as loc from '../constants/strings';
 
 async function getAzureCoreAPI(): Promise<azurecore.IExtension> {
 	const api = (await vscode.extensions.getExtension(azurecore.extension.name)?.activate()) as azurecore.IExtension;
@@ -82,7 +83,7 @@ export async function getBlobContainers(account: azdata.Account, subscription: S
 	return blobContainers!;
 }
 
-export async function getMigrationController(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<MigrationController> {
+export async function getMigrationController(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<SqlMigrationController> {
 	const api = await getAzureCoreAPI();
 	const host = `https://${regionName}.management.azure.com`;
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/Controllers/${controllerName}?api-version=2020-09-01-preview`;
@@ -93,7 +94,7 @@ export async function getMigrationController(account: azdata.Account, subscripti
 	return response.response.data;
 }
 
-export async function getMigrationControllers(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string): Promise<MigrationController[]> {
+export async function getMigrationControllers(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string): Promise<SqlMigrationController[]> {
 	const api = await getAzureCoreAPI();
 	const host = `https://${regionName}.management.azure.com`;
 	const path = `/subscriptions/${subscription.id}/providers/Microsoft.DataMigration/Controllers?api-version=2020-09-01-preview`;
@@ -101,10 +102,11 @@ export async function getMigrationControllers(account: azdata.Account, subscript
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
+	sortResourceArrayByName(response.response.data.value);
 	return response.response.data.value;
 }
 
-export async function createMigrationController(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<MigrationController> {
+export async function createMigrationController(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, controllerName: string): Promise<SqlMigrationController> {
 	const api = await getAzureCoreAPI();
 	const host = `https://${regionName}.management.azure.com`;
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/Controllers/${controllerName}?api-version=2020-09-01-preview`;
@@ -157,10 +159,10 @@ export async function getMigrationControllerMonitoringData(account: azdata.Accou
 	return response.response.data;
 }
 
-export async function startDatabaseMigration(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, managedInstance: string, migrationControllerName: string, requestBody: StartDatabaseMigrationRequest): Promise<StartDatabaseMigrationResponse> {
+export async function startDatabaseMigration(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, managedInstance: string, targetDatabaseName: string, requestBody: StartDatabaseMigrationRequest): Promise<StartDatabaseMigrationResponse> {
 	const api = await getAzureCoreAPI();
 	const host = `https://${regionName}.management.azure.com`;
-	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.Sql/managedInstances/${managedInstance}/providers/Microsoft.DataMigration/databaseMigrations/${migrationControllerName}?api-version=2020-09-01-preview`;
+	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.Sql/managedInstances/${managedInstance}/providers/Microsoft.DataMigration/databaseMigrations/${targetDatabaseName}?api-version=2020-09-01-preview`;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.PUT, requestBody, true, host);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
@@ -171,7 +173,18 @@ export async function startDatabaseMigration(account: azdata.Account, subscripti
 	};
 }
 
-export async function getMigrationStatus(account: azdata.Account, subscription: Subscription, migration: DatabaseMigration): Promise<any> {
+export async function getDatabaseMigration(account: azdata.Account, subscription: Subscription, regionName: string, migrationId: string): Promise<DatabaseMigration> {
+	const api = await getAzureCoreAPI();
+	const host = `https://${regionName}.management.azure.com`;
+	const path = `${migrationId}?api-version=2020-09-01-preview`;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.toString());
+	}
+	return response.response.data;
+}
+
+export async function getMigrationStatus(account: azdata.Account, subscription: Subscription, migration: DatabaseMigration): Promise<DatabaseMigration> {
 	const api = await getAzureCoreAPI();
 	const host = `https://eastus2euap.management.azure.com`;
 	const path = `${migration.id}?$expand=MigrationStatusDetails&api-version=2020-09-01-preview`;
@@ -179,9 +192,29 @@ export async function getMigrationStatus(account: azdata.Account, subscription: 
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
-	return {
-		result: response.response.data
-	};
+	return response.response.data;
+}
+
+export async function listMigrationsByController(account: azdata.Account, subscription: Subscription, controller: SqlMigrationController): Promise<DatabaseMigration[]> {
+	const api = await getAzureCoreAPI();
+	const host = `https://eastus2euap.management.azure.com`;
+	const path = `${controller.id}/listMigrations?$expand=MigrationStatusDetails&api-version=2020-09-01-preview`;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.toString());
+	}
+	return response.response.data.value;
+}
+
+export async function startMigrationCutover(account: azdata.Account, subscription: Subscription, migrationStatus: DatabaseMigration): Promise<any> {
+	const api = await getAzureCoreAPI();
+	const host = `https://eastus2euap.management.azure.com`;
+	const path = `${migrationStatus.id}/operations/${migrationStatus.properties.migrationOperationId}/cutover?api-version=2020-09-01-preview`;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, undefined, true, host);
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.toString());
+	}
+	return response.response.data.value;
 }
 
 /**
@@ -190,13 +223,13 @@ export async function getMigrationStatus(account: azdata.Account, subscription: 
 export function getMigrationControllerRegions(): azdata.CategoryValue[] {
 	return [
 		{
-			displayName: 'East US EUAP',
+			displayName: loc.EASTUS2EUAP,
 			name: 'eastus2euap'
 		}
 	];
 }
 
-type SortableAzureResources = AzureProduct | azureResource.FileShare | azureResource.BlobContainer | azureResource.AzureResourceSubscription;
+type SortableAzureResources = AzureProduct | azureResource.FileShare | azureResource.BlobContainer | azureResource.AzureResourceSubscription | SqlMigrationController;
 function sortResourceArrayByName(resourceArray: SortableAzureResources[]): void {
 	if (!resourceArray) {
 		return;
@@ -222,7 +255,7 @@ export interface MigrationControllerProperties {
 	isProvisioned?: boolean;
 }
 
-export interface MigrationController {
+export interface SqlMigrationController {
 	properties: MigrationControllerProperties;
 	location: string;
 	id: string;
@@ -285,19 +318,105 @@ export interface StartDatabaseMigrationRequest {
 	}
 }
 
-export interface DatabaseMigration {
-	properties: {
-		name: string,
-		provisioningState: string,
-		sourceDatabaseName: string,
-		migrationOperationId: string,
-	},
-	id: string,
-	name: string,
-	type: string
-}
-
 export interface StartDatabaseMigrationResponse {
 	status: number,
 	databaseMigration: DatabaseMigration
+}
+
+export interface DatabaseMigration {
+	properties: DatabaseMigrationProperties;
+	id: string;
+	name: string;
+	type: string;
+}
+export interface DatabaseMigrationProperties {
+	scope: string;
+	provisioningState: string;
+	migrationStatus: string;
+	migrationStatusDetails?: MigrationStatusDetails;
+	sourceSqlConnection: SqlConnectionInfo;
+	sourceDatabaseName: string;
+	targetDatabaseCollation: string;
+	migrationController: string;
+	migrationOperationId: string;
+	backupConfiguration: BackupConfiguration;
+	autoCutoverConfiguration: AutoCutoverConfiguration;
+	migrationFailureError: ErrorInfo;
+}
+export interface MigrationStatusDetails {
+	migrationState: string;
+	startedOn: string;
+	endedOn: string;
+	fullBackupSetInfo: BackupSetInfo;
+	lastRestoredBackupSetInfo: BackupSetInfo;
+	activeBackupSets: BackupSetInfo[];
+	blobContainerName: string;
+	isFullBackupRestored: boolean;
+	restoreBlockingReason: string;
+	fileUploadBlockingErrors: string[];
+	currentRestoringFileName: string;
+	lastRestoredFilename: string;
+}
+
+export interface SqlConnectionInfo {
+	dataSource: string;
+	authentication: string;
+	username: string;
+	password: string;
+	encryptConnection: string;
+	trustServerCertificate: string;
+}
+
+export interface BackupConfiguration {
+	sourceLocation: SourceLocation;
+	targetLocation: TargetLocation;
+}
+
+export interface AutoCutoverConfiguration {
+	lastBackupName: string;
+}
+
+export interface ErrorInfo {
+	code: string;
+	message: string;
+}
+
+export interface BackupSetInfo {
+	backupSetId: string;
+	firstLSN: string;
+	lastLSN: string;
+	backupType: string;
+	listOfBackupFiles: BackupFileInfo[];
+	backupStartDate: string;
+	backupFinishDate: string;
+	isBackupRestored: boolean;
+	backupSize: number;
+	compressedBackupSize: number;
+}
+
+export interface SourceLocation {
+	fileShare: DatabaseMigrationFileShare;
+	azureBlob: DatabaseMigrationAzureBlob;
+}
+
+export interface TargetLocation {
+	storageAccountResourceId: string;
+	accountKey: string;
+}
+
+export interface BackupFileInfo {
+	fileName: string;
+	status: string;
+}
+
+export interface DatabaseMigrationFileShare {
+	path: string;
+	username: string;
+	password: string;
+}
+
+export interface DatabaseMigrationAzureBlob {
+	storageAccountResourceId: string;
+	accountKey: string;
+	blobContainerName: string;
 }
