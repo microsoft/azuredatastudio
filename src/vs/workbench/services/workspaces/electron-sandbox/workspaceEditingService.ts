@@ -11,7 +11,6 @@ import { IJSONEditingService } from 'vs/workbench/services/configuration/common/
 import { IWorkspacesService, isUntitledWorkspace, IWorkspaceIdentifier, hasWorkspaceFileExtension } from 'vs/platform/workspaces/common/workspaces';
 import { WorkspaceService } from 'vs/workbench/services/configuration/browser/configurationService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { basename } from 'vs/base/common/resources';
@@ -42,7 +41,6 @@ export class NativeWorkspaceEditingService extends AbstractWorkspaceEditingServi
 		@INativeHostService private nativeHostService: INativeHostService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IStorageService private storageService: IStorageService,
-		@IExtensionService private extensionService: IExtensionService,
 		@IBackupFileService private backupFileService: IBackupFileService,
 		@INotificationService notificationService: INotificationService,
 		@ICommandService commandService: ICommandService,
