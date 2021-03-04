@@ -30,6 +30,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -80,8 +81,8 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
 	private _isInjectedParameter: boolean;
-	private _previousChartState: any[] = [];
-	private _outputCounter = 0;
+	private _previousChartState: IInsightOptions[] = [];
+	private _outputCounter = 0; // When re-executing the same cell, ensure that we apply chart options in the same order
 	private _attachments: nb.ICellAttachments;
 	private _preventNextChartCache: boolean = false;
 
@@ -1061,7 +1062,7 @@ export class CellModel extends Disposable implements ICellModel {
 					if (o.metadata?.azdata_chartOptions) {
 						this._previousChartState.push(o.metadata.azdata_chartOptions);
 					} else {
-						this._previousChartState.push(null);
+						this._previousChartState.push(undefined);
 					}
 				}
 			});
@@ -1075,5 +1076,5 @@ export class CellModel extends Disposable implements ICellModel {
 }
 
 function dataResourceDataExists(metadata: nb.ICellOutput): boolean {
-	return metadata['data'] && metadata['data']['application/vnd.dataresource+json'];
+	return metadata['data']?.['application/vnd.dataresource+json'];
 }
