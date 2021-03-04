@@ -3,16 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/calloutDialog';
 import 'vs/css!./media/imageCalloutDialog';
 import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
 import * as styler from 'vs/platform/theme/common/styler';
-import { URI } from 'vs/base/common/uri';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
-import { CalloutDialog } from 'sql/workbench/browser/modal/calloutDialog';
+import { URI } from 'vs/base/common/uri';
+import { Modal, IDialogProperties } from 'sql/workbench/browser/modal/modal';
 import { IFileDialogService, IOpenDialogOptions } from 'vs/platform/dialogs/common/dialogs';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IDialogProperties } from 'sql/workbench/browser/modal/modal';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -26,7 +27,7 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { DialogPosition, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
-
+import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 export interface IImageCalloutDialogOptions {
 	insertTitle?: string,
 	insertMarkup?: string,
@@ -34,7 +35,7 @@ export interface IImageCalloutDialogOptions {
 	embedImage?: boolean
 }
 
-export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions> {
+export class ImageCalloutDialog extends Modal {
 	private _selectionComplete: Deferred<IImageCalloutDialogOptions> = new Deferred<IImageCalloutDialogOptions>();
 	private _imageLocationLabel: HTMLElement;
 	private _imageLocalRadioButton: RadioButton;
@@ -64,17 +65,24 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 	) {
 		super(
 			title,
-			width,
-			position,
-			dialogProperties,
-			themeService,
-			layoutService,
+			TelemetryKeys.CalloutDialog,
 			telemetryService,
-			contextKeyService,
+			layoutService,
 			clipboardService,
+			themeService,
 			logService,
-			textResourcePropertiesService
+			textResourcePropertiesService,
+			contextKeyService,
+			{
+				dialogStyle: 'callout',
+				dialogPosition: position,
+				dialogProperties: dialogProperties,
+				width: width
+			}
 		);
+	}
+
+	protected layout(height?: number): void {
 	}
 
 	/**
@@ -87,6 +95,7 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 
 	public render(): void {
 		super.render();
+		attachCalloutDialogStyler(this, this._themeService);
 
 		this.addFooterButton(constants.insertButtonText, () => this.insert());
 		this.addFooterButton(constants.cancelButtonText, () => this.cancel(), undefined, true);
@@ -195,7 +204,6 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 	}
 
 	public cancel(): void {
-		super.cancel();
 		this._selectionComplete.resolve({
 			insertMarkup: '',
 			imagePath: undefined,

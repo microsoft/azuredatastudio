@@ -69,8 +69,6 @@ export interface IDialogProperties {
 export interface IModalOptions {
 	dialogStyle?: DialogStyle;
 	dialogPosition?: DialogPosition;
-	positionX?: number;
-	positionY?: number;
 	width?: DialogWidth;
 	isAngular?: boolean;
 	hasBackButton?: boolean;
@@ -86,8 +84,6 @@ export interface IModalOptions {
 const defaultOptions: IModalOptions = {
 	dialogStyle: 'flyout',
 	dialogPosition: undefined,
-	positionX: undefined,
-	positionY: undefined,
 	width: 'narrow',
 	isAngular: false,
 	hasBackButton: false,
@@ -103,6 +99,7 @@ const tabbableElementsQuerySelector = 'a[href], area[href], input:not([disabled]
 
 export abstract class Modal extends Disposable implements IThemable {
 	protected _useDefaultMessageBoxLocation: boolean = true;
+	private _styleElement: HTMLStyleElement;
 	protected _messageElement?: HTMLElement;
 	protected _modalOptions: IModalOptions;
 	protected readonly disposableStore = this._register(new DisposableStore());
@@ -127,6 +124,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _dialogBorder?: Color;
 	private _dialogHeaderAndFooterBackground?: Color;
 	private _dialogBodyBackground?: Color;
+	private _footerBorderTopColor?: Color;
 
 	private _modalDialog?: HTMLElement;
 	private _modalContent?: HTMLElement;
@@ -192,6 +190,8 @@ export abstract class Modal extends Disposable implements IThemable {
 	 *
 	 */
 	public render() {
+		this._styleElement = DOM.createStyleSheet(this._bodyContainer);
+
 		let top: number;
 		let builderClass = '.modal.fade';
 		builderClass += this._modalOptions.dialogStyle === 'flyout' ? '.flyout-dialog'
@@ -433,18 +433,19 @@ export abstract class Modal extends Disposable implements IThemable {
 					this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - this._modalOptions.dialogProperties.width}px`;
 					this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos + (this._modalOptions.dialogProperties.height)}px`;
 				} else {
-					this._modalDialog.style.left = `${this._modalOptions.positionX}px`;
-					this._modalDialog.style.top = `${this._modalOptions.positionY}px`;
+					this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos
+						}px`;
+					this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos}px`;
 				}
 			}
 
 			if (this._modalOptions.dialogPosition === 'left') {
 				if (this._modalOptions.dialogProperties) {
-					this._modalDialog.style.left = `${this._modalOptions.positionX - (dialogWidth + this._modalOptions.dialogProperties.width)}px`;
-					this._modalDialog.style.top = `${this._modalOptions.positionY - this._modalOptions.dialogProperties.height * 2}px`;
+					this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - (dialogWidth + this._modalOptions.dialogProperties.width)}px`;
+					this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos - this._modalOptions.dialogProperties.height * 2}px`;
 				} else {
-					this._modalDialog.style.left = `${this._modalOptions.positionX - (dialogWidth)}px`;
-					this._modalDialog.style.top = `${this._modalOptions.positionY}px`;
+					this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - (dialogWidth)}px`;
+					this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos}px`;
 				}
 			}
 			this._modalDialog.style.width = `${dialogWidth}px`;
@@ -676,6 +677,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		this._dialogBorder = styles.dialogBorder;
 		this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground;
 		this._dialogBodyBackground = styles.dialogBodyBackground;
+		this._footerBorderTopColor = styles.footerBorderTopColor;
 		this.applyStyles();
 	}
 
@@ -723,6 +725,42 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalFooterSection.style.borderTopStyle = footerBorderTopStyle;
 			if (!(this._modalOptions.dialogStyle === 'callout')) {
 				this._modalFooterSection.style.borderTopColor = border;
+			}
+		}
+
+		if (this._modalOptions.dialogStyle === 'callout') {
+			const content: string[] = [];
+			const foreground = this._dialogForeground ? this._dialogForeground.toString() : '';
+			const foregroundRgb: Color = Color.Format.CSS.parseHex(foreground);
+
+			if (this._dialogForeground && this._dialogBodyBackground && this._dialogBorder) {
+				content.push(`
+				.modal-dialog {
+					box-shadow: 0px 3px 8px rgba(${foregroundRgb.rgba.r},${foregroundRgb.rgba.g},${foregroundRgb.rgba.b},0.08);
+				}
+
+				.modal .modal-footer {
+					border-top-color: ${this._footerBorderTopColor};
+				}
+
+				.callout-arrow:before {
+					border-color: transparent transparent ${this._dialogBodyBackground} ${this._dialogBodyBackground};
+					box-shadow: -3px 3px 3px 0 rgba(${foregroundRgb.rgba.r},${foregroundRgb.rgba.g},${foregroundRgb.rgba.b},0.08);
+				}
+
+				.callout-arrow.from-left:before {
+					background-color: ${this._dialogBodyBackground};
+				}
+
+				.hc-black .callout-arrow:before {
+					background-color: ${this._dialogBodyBackground};
+					border-color: transparent transparent ${this._dialogBorder} ${this._dialogBorder};
+				}`);
+			}
+
+			const newStyles = content.join('\n');
+			if (newStyles !== this._styleElement.innerHTML) {
+				this._styleElement.innerHTML = newStyles;
 			}
 		}
 	}

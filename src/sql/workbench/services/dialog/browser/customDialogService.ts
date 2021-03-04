@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DialogModal, CalloutDialogModal } from 'sql/workbench/services/dialog/browser/dialogModal';
+import { DialogModal } from 'sql/workbench/services/dialog/browser/dialogModal';
 import { WizardModal } from 'sql/workbench/services/dialog/browser/wizardModal';
 import { Dialog, Wizard } from 'sql/workbench/services/dialog/common/dialogTypes';
 import { IModalOptions } from 'sql/workbench/browser/modal/modal';
@@ -20,18 +20,14 @@ export class CustomDialogService {
 
 	public showDialog(dialog: Dialog, dialogName?: string, options?: IModalOptions): void {
 		let name = dialogName ? dialogName : 'CustomDialog';
-		let dialogModal;
 
 		if (options && (options.dialogStyle === 'callout')) {
 			options.dialogProperties.xPos = document.activeElement.getBoundingClientRect().left;
 			options.dialogProperties.yPos = document.activeElement.getBoundingClientRect().top;
-
-			dialogModal = this._instantiationService.createInstance(CalloutDialogModal, dialog.title, options.width, options.dialogPosition, options.dialogProperties);
-			this._dialogModals.set(dialog, dialogModal);
-		} else {
-			dialogModal = this._instantiationService.createInstance(DialogModal, dialog, name, options || DefaultDialogOptions);
-			this._dialogModals.set(dialog, dialogModal);
+			options.renderFooter = false;
 		}
+		let dialogModal = this._instantiationService.createInstance(DialogModal, dialog, name, options || DefaultDialogOptions);
+		this._dialogModals.set(dialog, dialogModal);
 		dialogModal.render();
 		dialogModal.open();
 	}

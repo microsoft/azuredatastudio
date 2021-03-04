@@ -3,14 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/calloutDialog';
 import 'vs/css!./media/linkCalloutDialog';
 import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
 import * as styler from 'vs/platform/theme/common/styler';
 import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
-import { CalloutDialog } from 'sql/workbench/browser/modal/calloutDialog';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { Modal, IDialogProperties } from 'sql/workbench/browser/modal/modal';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IDialogProperties } from 'sql/workbench/browser/modal/modal';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -21,13 +22,14 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { DialogPosition, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 
 export interface ILinkCalloutDialogOptions {
 	insertTitle?: string,
 	insertMarkup?: string
 }
 
-export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> {
+export class LinkCalloutDialog extends Modal {
 	private _selectionComplete: Deferred<ILinkCalloutDialogOptions> = new Deferred<ILinkCalloutDialogOptions>();
 	private _linkTextLabel: HTMLElement;
 	private _linkTextInputBox: InputBox;
@@ -50,17 +52,24 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 	) {
 		super(
 			title,
-			width,
-			position,
-			dialogProperties,
-			themeService,
-			layoutService,
+			TelemetryKeys.CalloutDialog,
 			telemetryService,
-			contextKeyService,
+			layoutService,
 			clipboardService,
+			themeService,
 			logService,
-			textResourcePropertiesService
+			textResourcePropertiesService,
+			contextKeyService,
+			{
+				dialogStyle: 'callout',
+				dialogPosition: position,
+				dialogProperties: dialogProperties,
+				width: width
+			}
 		);
+	}
+
+	protected layout(height?: number): void {
 	}
 
 	/**
@@ -73,6 +82,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 
 	public render(): void {
 		super.render();
+		attachCalloutDialogStyler(this, this._themeService);
 
 		this.addFooterButton(constants.insertButtonText, () => this.insert());
 		this.addFooterButton(constants.cancelButtonText, () => this.cancel(), undefined, true);
@@ -131,7 +141,6 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 	}
 
 	public cancel(): void {
-		super.cancel();
 		this._selectionComplete.resolve({
 			insertMarkup: ''
 		});
