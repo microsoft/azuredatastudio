@@ -179,7 +179,6 @@ export const connectToPostgresDescription = localize('arc.connectToPostgresDescr
 export const postgresExtension = localize('arc.postgresExtension', "microsoft.azuredatastudio-postgresql");
 
 export function rangeSetting(min: string, max: string): string { return localize('arc.rangeSetting', "Value is expected to be in the range {0} - {1}", min, max); }
-export function allowedValue(value: string): string { return localize('arc.allowedValue', "Value is expected to be {0}", value); }
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
 export function deletingInstance(name: string): string { return localize('arc.deletingInstance', "Deleting instance '{0}'...", name); }
 export function installingExtension(name: string): string { return localize('arc.installingExtension', "Installing extension '{0}'...", name); }
