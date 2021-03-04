@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { escapeLabel, escapeUrl, ILinkCalloutDialogOptions, LinkCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/linkCalloutDialog';
+import { ILinkCalloutDialogOptions, LinkCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/linkCalloutDialog';
 import { TestLayoutService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -10,6 +10,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { Deferred } from 'sql/base/common/promise';
+import { escapeLabel, escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 
 suite('Link Callout Dialog', function (): void {
 	let layoutService: ILayoutService;
@@ -38,9 +39,9 @@ suite('Link Callout Dialog', function (): void {
 		linkCalloutDialog.cancel();
 		let result = await deferred.promise;
 
-		assert.equal(result.insertEscapedLinkLabel, 'defaultLabel', 'Label not returned correctly');
-		assert.equal(result.insertEscapedLinkUrl, undefined, 'URL not returned correctly');
-		assert.equal(result.insertMarkdown, '', 'Markdown not returned correctly');
+		assert.equal(result.insertUnescapedLinkLabel, 'defaultLabel', 'Label not returned correctly');
+		assert.equal(result.insertUnescapedLinkUrl, undefined, 'URL not returned correctly');
+		assert.equal(result.insertEscapedMarkdown, '', 'Markdown not returned correctly');
 	});
 
 	test('Should return expected values on insert', async function (): Promise<void> {
@@ -56,15 +57,37 @@ suite('Link Callout Dialog', function (): void {
 			deferred.resolve(value);
 		});
 
-		linkCalloutDialog.setUrl(sampleUrl);
+		linkCalloutDialog.url = sampleUrl;
 
 		// And insert the dialog
 		linkCalloutDialog.insert();
 		let result = await deferred.promise;
+		assert.equal(result.insertUnescapedLinkLabel, defaultLabel, 'Label not returned correctly');
+		assert.equal(result.insertUnescapedLinkUrl, sampleUrl, 'URL not returned correctly');
+		assert.equal(result.insertEscapedMarkdown, `[${defaultLabel}](${sampleUrl})`, 'Markdown not returned correctly');
+	});
 
-		assert.equal(result.insertEscapedLinkLabel, defaultLabel, 'Label not returned correctly');
-		assert.equal(result.insertEscapedLinkUrl, sampleUrl, 'URL not returned correctly');
-		assert.equal(result.insertMarkdown, `[${defaultLabel}](${sampleUrl})`, 'Markdown not returned correctly');
+	test('Should return expected values on insert when escape necessary', async function (): Promise<void> {
+		const defaultLabel = 'default[]Label';
+		const sampleUrl = 'https://www.aka.ms/azuredatastudio()';
+		let linkCalloutDialog = new LinkCalloutDialog('Title', undefined, defaultLabel,
+			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
+		linkCalloutDialog.render();
+
+		let deferred = new Deferred<ILinkCalloutDialogOptions>();
+		// When I first open the callout dialog
+		linkCalloutDialog.open().then(value => {
+			deferred.resolve(value);
+		});
+
+		linkCalloutDialog.url = sampleUrl;
+
+		// And insert the dialog
+		linkCalloutDialog.insert();
+		let result = await deferred.promise;
+		assert.equal(result.insertUnescapedLinkLabel, defaultLabel, 'Label not returned correctly');
+		assert.equal(result.insertUnescapedLinkUrl, sampleUrl, 'URL not returned correctly');
+		assert.equal(result.insertEscapedMarkdown, '[default\[\]Label](https://www.aka.ms/azuredatastudio%28%29)', 'Markdown not returned correctly');
 	});
 
 	test('Label escape', function (): void {

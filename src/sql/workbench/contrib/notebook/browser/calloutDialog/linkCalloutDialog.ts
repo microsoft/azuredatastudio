@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/linkCalloutDialog';
 import * as DOM from 'vs/base/browser/dom';
-import * as strings from 'vs/base/common/strings';
 import * as styler from 'vs/platform/theme/common/styler';
 import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
 import { CalloutDialog } from 'sql/workbench/browser/modal/calloutDialog';
@@ -22,14 +21,15 @@ import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { escapeLabel, escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 
 const DEFAULT_DIALOG_WIDTH = 452;
 
 export interface ILinkCalloutDialogOptions {
 	insertTitle?: string,
-	insertMarkdown?: string,
-	insertEscapedLinkLabel?: string,
-	insertEscapedLinkUrl?: string
+	insertEscapedMarkdown?: string,
+	insertUnescapedLinkLabel?: string,
+	insertUnescapedLinkUrl?: string
 }
 
 export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> {
@@ -155,9 +155,9 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 			selection.addRange(this._previouslySelectedRange);
 
 			this._selectionComplete.resolve({
-				insertMarkdown: `[${escapedLabel}](${escapedUrl})`,
-				insertEscapedLinkLabel: escapedLabel,
-				insertEscapedLinkUrl: escapedUrl
+				insertEscapedMarkdown: `[${escapedLabel}](${escapedUrl})`,
+				insertUnescapedLinkLabel: this._linkTextInputBox.value,
+				insertUnescapedLinkUrl: this._linkUrlInputBox.value
 			});
 		}
 	}
@@ -165,34 +165,12 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 	public cancel(): void {
 		super.cancel();
 		this._selectionComplete.resolve({
-			insertMarkdown: '',
-			insertEscapedLinkLabel: escapeLabel(this._linkTextInputBox.value)
+			insertEscapedMarkdown: '',
+			insertUnescapedLinkLabel: escapeLabel(this._linkTextInputBox.value)
 		});
 	}
 
-	public setUrl(val: string): void {
+	public set url(val: string) {
 		this._linkUrlInputBox.value = val;
 	}
-}
-
-export function escapeLabel(unescapedLabel: string): string {
-	let firstEscape = strings.escape(unescapedLabel);
-	return firstEscape.replace(/[[]]/g, function (match) {
-		switch (match) {
-			case '[': return '\[';
-			case ']': return '\]';
-			default: return match;
-		}
-	});
-}
-
-export function escapeUrl(unescapedUrl: string): string {
-	let firstEscape = strings.escape(unescapedUrl);
-	return firstEscape.replace(/[()]/g, function (match) {
-		switch (match) {
-			case '(': return '%28';
-			case ')': return '%29';
-			default: return match;
-		}
-	});
 }

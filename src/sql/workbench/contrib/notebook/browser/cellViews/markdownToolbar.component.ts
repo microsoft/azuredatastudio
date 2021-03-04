@@ -217,15 +217,14 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	}
 
 	public async onInsertButtonClick(event: MouseEvent, type: MarkdownButtonType): Promise<void> {
-		event.preventDefault();
-		event.stopPropagation();
+		DOM.EventHelper.stop(event, true);
 		let triggerElement = event.target as HTMLElement;
 		let needsTransform = true;
 		let calloutResult: ILinkCalloutDialogOptions;
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
 			calloutResult = await this.createCallout(type, triggerElement);
 			// If no URL is present, no-op
-			if (!calloutResult.insertEscapedLinkUrl) {
+			if (!calloutResult.insertUnescapedLinkUrl) {
 				return;
 			}
 			// If cell edit mode isn't WYSIWYG, use result from callout. No need for further transformation.
@@ -235,7 +234,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
 				// Callout is responsible for returning escaped strings
-				document.execCommand('insertHTML', false, `<a href="${calloutResult?.insertEscapedLinkUrl}">${calloutResult?.insertEscapedLinkLabel}</a>`);
+				document.execCommand('insertHTML', false, `<a href="${calloutResult?.insertUnescapedLinkUrl}">${calloutResult?.insertUnescapedLinkLabel}</a>`);
 				return;
 			}
 		}
@@ -243,7 +242,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		if (needsTransform) {
 			await transformer.transformText(type);
 		} else if (!needsTransform) {
-			await insertFormattedMarkdown(calloutResult?.insertMarkdown, this.getCellEditorControl());
+			await insertFormattedMarkdown(calloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
 		}
 	}
 
