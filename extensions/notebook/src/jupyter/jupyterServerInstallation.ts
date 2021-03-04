@@ -167,7 +167,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
 				// reinstall pip to make sure !pip command works
 				if (!this._usingExistingPython) {
-					let packages: PythonPkgDetails[] = await this.getInstalledPipPackages();
+					let packages: PythonPkgDetails[] = await this.getInstalledPipPackages(this._pythonExecutable);
 					let pip: PythonPkgDetails = packages.find(x => x.name === 'pip');
 					let cmd = `"${this._pythonExecutable}" -m pip install --force-reinstall pip=="${pip.version}"`;
 					await this.executeBufferedCommand(cmd);
