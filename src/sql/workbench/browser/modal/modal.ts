@@ -422,41 +422,41 @@ export abstract class Modal extends Disposable implements IThemable {
 		 * In the case of 'below', dialog will be positioned beneath the trigger and arrow aligned with trigger.
 		 * In the case of 'left', dialog will be positioned left of the trigger and arrow aligned with trigger.
 		 */
-		if (this._modalOptions.dialogStyle === 'callout') {
-			let dialogWidth;
-			if (typeof this._modalOptions.width === 'number') {
-				dialogWidth = this._modalOptions.width;
-			}
-
-			if (this._modalOptions.dialogPosition === 'below') {
-				if (this._modalOptions.dialogProperties) {
-					this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - this._modalOptions.dialogProperties.width}px`;
-					this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos + (this._modalOptions.dialogProperties.height)}px`;
-				} else {
-					this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos
-						}px`;
-					this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos}px`;
-				}
-			}
-
-			if (this._modalOptions.dialogPosition === 'left') {
-				if (this._modalOptions.dialogProperties) {
-					this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - (dialogWidth + this._modalOptions.dialogProperties.width)}px`;
-					this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos - this._modalOptions.dialogProperties.height * 2}px`;
-				} else {
-					this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - (dialogWidth)}px`;
-					this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos}px`;
-				}
-			}
-			this._modalDialog.style.width = `${dialogWidth}px`;
+		let dialogWidth;
+		if (typeof this._modalOptions.width === 'number') {
+			dialogWidth = this._modalOptions.width;
 		}
+
+		if (this._modalOptions.dialogPosition === 'below') {
+			if (this._modalOptions.dialogProperties) {
+				this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - this._modalOptions.dialogProperties.width}px`;
+				this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos + (this._modalOptions.dialogProperties.height)}px`;
+			} else {
+				this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos
+					}px`;
+				this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos}px`;
+			}
+		}
+
+		if (this._modalOptions.dialogPosition === 'left') {
+			if (this._modalOptions.dialogProperties) {
+				this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - (dialogWidth + this._modalOptions.dialogProperties.width)}px`;
+				this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos - this._modalOptions.dialogProperties.height * 2}px`;
+			} else {
+				this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - (dialogWidth)}px`;
+				this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos}px`;
+			}
+		}
+		this._modalDialog.style.width = `${dialogWidth}px`;
 	}
 
 	/**
 	 * Shows the modal and attaches key listeners
 	 */
 	protected show() {
-		this.positionCalloutDialog();
+		if (this._modalOptions.dialogStyle === 'callout') {
+			this.positionCalloutDialog();
+		}
 		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
 		this._modalShowingContext.get()!.push(this._staticKey);
 		DOM.append(this.layoutService.container, this._bodyContainer!);
