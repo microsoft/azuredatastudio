@@ -40,8 +40,11 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		console.log(`Start schema compare tests`);
 	});
 
-	test('Schema compare dacpac to dacpac comparison and scmp', async function () {
+	beforeEach(function (): void {
 		this.timeout(5 * 60 * 1000);
+	});
+
+	test('Schema compare dacpac to dacpac comparison and scmp', async function () {
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 		const now = new Date();
 		const operationId = 'testOperationId_' + now.getTime().toString();
@@ -85,7 +88,6 @@ suite('Schema compare integration test suite @DacFx@', () => {
 	});
 
 	test('Schema compare database to database comparison, script generation, and scmp @UNSTABLE@', async function () {
-		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
 		const now = new Date();
@@ -158,7 +160,6 @@ suite('Schema compare integration test suite @DacFx@', () => {
 	});
 
 	test('Schema compare dacpac to database comparison, script generation, and scmp @UNSTABLE@', async function () {
-		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
 		const now = new Date();
@@ -219,7 +220,6 @@ suite('Schema compare integration test suite @DacFx@', () => {
 	});
 
 	test('Schema compare dacpac to dacpac comparison with include exclude', async function () {
-		this.timeout(5 * 60 * 1000);
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 		const operationId = 'testOperationId_' + new Date().getTime().toString();
 
@@ -276,7 +276,6 @@ suite('Schema compare integration test suite @DacFx@', () => {
 	});
 
 	test('Cancel schema compare dacpac to dacpac comparison', async function () {
-		this.timeout(5 * 60 * 1000);
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 		const now = new Date();
 		const operationId = 'testOperationId_' + now.getTime().toString();
@@ -312,17 +311,14 @@ suite('Schema compare integration test suite @DacFx@', () => {
 
 	test('Schema compare dacpac to database comparison with publishing some changes and then compare again', async function () {
 		this.timeout(5 * 60 * 1000);
-		let server = await getStandaloneServer();
+		const server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
 		const now = new Date();
 		const operationId = 'testOperationId_' + now.getTime().toString();
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
 
 		try {
-			assert(dacfxService, 'DacFx Service Provider is not available');
-			let result = await dacfxService.deployDacpac(dacpac1, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
-
-			assert(result.success === true, 'Deploy database 2 (target) should succeed');
+			await createDatabase1(targetDB, ownerUri);
 
 			const source: mssql.SchemaCompareEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
@@ -361,7 +357,6 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			assert(publishChangesResult.success === true, 'Publish changes should complete successfully. But it failed.');
 
 			//verify table Table3 is added
-			const retryCount = 24; // 2 minutes
 			const dbConnectionId = await utils.connectToServer({
 				serverName: server.serverName,
 				database: targetDB,
@@ -388,17 +383,14 @@ suite('Schema compare integration test suite @DacFx@', () => {
 
 	test('Schema compare dacpac to database comparison with publishing all changes and then compare again', async function () {
 		this.timeout(5 * 60 * 1000);
-		let server = await getStandaloneServer();
+		const server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
 		const now = new Date();
 		const operationId = 'testOperationId_' + now.getTime().toString();
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
 
 		try {
-			assert(dacfxService, 'DacFx Service Provider is not available');
-			const result = await dacfxService.deployDacpac(dacpac1, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
-
-			assert(result.success === true, 'Deploy database 2 (target) should succeed');
+			await createDatabase1(targetDB, ownerUri);
 
 			const source: mssql.SchemaCompareEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
@@ -429,7 +421,6 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			assert(publishChangesResult.success === true, 'Publish changes should complete successfully. But it failed.');
 
 			//verify table Table3 is added
-			const retryCount = 24; // 2 minutes
 			const dbConnectionId = await utils.connectToServer({
 				serverName: server.serverName,
 				database: targetDB,
@@ -451,7 +442,6 @@ suite('Schema compare integration test suite @DacFx@', () => {
 	});
 
 	test('Schema compare dacpac to database comparison with non-default deployment options', async function () {
-		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
 		const now = new Date();
@@ -459,10 +449,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
 
 		try {
-			assert(dacfxService, 'DacFx Service Provider is not available');
-			let result = await dacfxService.deployDacpac(dacpac1, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
-
-			assert(result.success === true, 'Deploy database 2 (target) should succeed');
+			await createDatabase1(targetDB, ownerUri);
 
 			const source: mssql.SchemaCompareEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
@@ -566,4 +553,44 @@ async function assertScriptGenerationResult(resultstatus: azdata.ResultStatus, s
 		// TODO: add proper validation for task completion to ensure all tasks successfully complete before exiting test
 		assert(tasks !== null && tasks.tasks.length > 0, 'Tasks should still show in list. This is to ensure that the tasks actually complete.');
 	}
+}
+
+async function createDatabase1(targetDB: string, ownerUri: string): Promise<void> {
+	await utils.createDB(targetDB, ownerUri);
+
+	//Create Table1
+	let query = 'BEGIN TRY\r\n' +
+		` CREATE TABLE [${targetDB}].[dbo].[Table1] (\r\n` +
+		' [Id] INT NOT NULL,\r\n' +
+		' [Something] NCHAR (10) NULL,\r\n' +
+		' PRIMARY KEY CLUSTERED ([Id] ASC)\r\n' +
+		');\r\n' +
+		'SELECT 1 AS NoError\r\n' +
+		'END TRY \r\n' +
+		'BEGIN CATCH\r\n' +
+		'SELECT ERROR_MESSAGE() AS ErrorMessage; \r\n' +
+		'END CATCH\r\n' +
+		'SELECT 1 AS NoError\r\n';
+	let tableCreatedResult = await utils.runQuery(query, ownerUri);
+	assert(tableCreatedResult.columnInfo[0].columnName !== 'ErrorMessage', 'Table1 creation threw error');
+
+	// Create Table2
+	query = 'BEGIN TRY\r\n' +
+		` CREATE TABLE [${targetDB}].[dbo].[Table2] (\r\n` +
+		' [Id] INT NOT NULL,\r\n' +
+		' [Id1] NCHAR (10) NULL,\r\n' +
+		' [Id2] NCHAR (10) NULL,\r\n' +
+		' [Id3] NCHAR (10) NULL,\r\n' +
+		' [Id4] NCHAR (10) NULL,\r\n' +
+		' [IdDt] DATETIME NULL,\r\n' +
+		' PRIMARY KEY CLUSTERED ([Id] ASC)\r\n' +
+		');\r\n' +
+		'SELECT 1 AS NoError\r\n' +
+		'END TRY \r\n' +
+		'BEGIN CATCH\r\n' +
+		'SELECT ERROR_MESSAGE() AS ErrorMessage; \r\n' +
+		'END CATCH\r\n' +
+		'SELECT 1 AS NoError\r\n';
+	tableCreatedResult = await utils.runQuery(query, ownerUri);
+	assert(tableCreatedResult.columnInfo[0].columnName !== 'ErrorMessage', 'Table2 creation threw error');
 }
