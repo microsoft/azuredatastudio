@@ -70,7 +70,7 @@ export class SaveResultAction extends Action {
 		this.notificationService.notify({
 			severity: Severity.Info,
 			message: localize('jsonEncoding', "Results encoding will not be saved when exporting to JSON, remember to save with desired encoding once file is created."),
-			neverShowAgain: { id: 'ignoreJsonEncoding', scope: NeverShowAgainScope.WORKSPACE }
+			neverShowAgain: { id: 'ignoreJsonEncoding', scope: NeverShowAgainScope.GLOBAL }
 		});
 
 		if (!context.gridDataProvider.canSerialize) {
