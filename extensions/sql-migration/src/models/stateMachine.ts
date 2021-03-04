@@ -7,9 +7,9 @@ import * as azdata from 'azdata';
 import { azureResource } from 'azureResource';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
-import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getMigrationControllers, getSubscriptions, MigrationController, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount } from '../api/azure';
+import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getMigrationControllers, getSubscriptions, SqlMigrationController, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount } from '../api/azure';
 import { SKURecommendations } from './externalContract';
-import * as constants from '../models/strings';
+import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 
 export enum State {
@@ -85,12 +85,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetManagedInstance!: SqlManagedInstance;
 
 	public _databaseBackup!: DatabaseBackupModel;
+	public _migrationDbs: string[] = [];
 	public _storageAccounts!: StorageAccount[];
 	public _fileShares!: azureResource.FileShare[];
 	public _blobContainers!: azureResource.BlobContainer[];
 
-	public _migrationController!: MigrationController;
-	public _migrationControllers!: MigrationController[];
+	public _migrationController!: SqlMigrationController;
+	public _migrationControllers!: SqlMigrationController[];
 	public _nodeNames!: string[];
 
 	private _stateChangeEventEmitter = new vscode.EventEmitter<StateChangeEvent>();
@@ -402,7 +403,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return migrationControllerValues;
 	}
 
-	public getMigrationController(index: number): MigrationController {
+	public getMigrationController(index: number): SqlMigrationController {
 		return this._migrationControllers[index];
 	}
 
@@ -420,7 +421,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		const requestBody: StartDatabaseMigrationRequest = {
 			location: this._migrationController?.properties.location!,
 			properties: {
-				SourceDatabaseName: currentConnection?.databaseName!,
+				SourceDatabaseName: '',
 				MigrationController: this._migrationController?.id!,
 				BackupConfiguration: {
 					TargetLocation: {
@@ -444,26 +445,36 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 		};
 
-		const response = await startDatabaseMigration(
-			this._azureAccount,
-			this._targetSubscription,
-			this._targetManagedInstance.resourceGroup!,
-			this._migrationController?.properties.location!,
-			this._targetManagedInstance.name,
-			this._migrationController?.name!,
-			requestBody
-		);
+		this._migrationDbs.forEach(async (db) => {
 
-		if (response.status === 201) {
-			MigrationLocalStorage.saveMigration(
-				currentConnection!,
-				response.databaseMigration,
-				this._targetManagedInstance,
-				this._azureAccount,
-				this._targetSubscription,
-				this._migrationController
-			);
-		}
+			requestBody.properties.SourceDatabaseName = db;
+			try {
+				const response = await startDatabaseMigration(
+					this._azureAccount,
+					this._targetSubscription,
+					this._targetManagedInstance.resourceGroup!,
+					this._migrationController?.properties.location!,
+					this._targetManagedInstance.name,
+					currentConnection?.databaseName!,
+					requestBody
+				);
+
+				if (response.status === 201) {
+					MigrationLocalStorage.saveMigration(
+						currentConnection!,
+						response.databaseMigration,
+						this._targetManagedInstance,
+						this._azureAccount,
+						this._targetSubscription,
+						this._migrationController
+					);
+					vscode.window.showInformationMessage(`Starting migration for database ${db} to ${this._targetManagedInstance.name}`);
+				}
+			} catch (e) {
+				vscode.window.showInformationMessage(e);
+			}
+
+		});
 
 		vscode.window.showInformationMessage(constants.MIGRATION_STARTED);
 	}

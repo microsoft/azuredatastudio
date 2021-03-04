@@ -20,7 +20,6 @@ import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { NavigationProviders } from '../../common/constants';
 import * as loc from '../../common/localizedConstants';
 
-
 export function equalTOC(actualToc: IJupyterBookSectionV2[], expectedToc: IJupyterBookSectionV2[]): boolean {
 	for (let [i, section] of actualToc.entries()) {
 		if (section.title !== expectedToc[i].title || section.file !== expectedToc[i].file) {
@@ -59,7 +58,7 @@ describe('BookTocManagerTests', function () {
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 			bookFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 			root2FolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
-			notebooks = ['notebook1.ipynb', 'notebook2.ipynb', 'notebook3.ipynb', 'index.md', 'readme.md'];
+			notebooks = ['notebook1.ipynb', 'notebook2.ipynb', 'notebook3.ipynb', 'index.md'];
 
 			await fs.mkdir(rootFolderPath);
 			await fs.writeFile(path.join(rootFolderPath, notebooks[0]), '');
@@ -72,7 +71,7 @@ describe('BookTocManagerTests', function () {
 			await fs.writeFile(path.join(root2FolderPath, notebooks[0]), '');
 			await fs.writeFile(path.join(root2FolderPath, subfolder, notebooks[1]), '');
 			await fs.writeFile(path.join(root2FolderPath, subfolder, notebooks[2]), '');
-			await fs.writeFile(path.join(root2FolderPath, subfolder, notebooks[4]), '');
+			await fs.writeFile(path.join(root2FolderPath, subfolder, notebooks[3]), '');
 			await fs.writeFile(path.join(root2FolderPath, notebooks[3]), '');
 		});
 
@@ -95,8 +94,8 @@ describe('BookTocManagerTests', function () {
 				file: path.join(subfolder, 'notebook3')
 			}];
 			await bookTocManager.createBook(bookFolderPath, root2FolderPath);
-			should(equalTOC(bookTocManager.tableofContents[2].sections, expectedSection)).be.true;
-			should((bookTocManager.tableofContents[2] as IJupyterBookSectionV2).file).be.equal(path.join(subfolder, 'readme'));
+			should(equalTOC(bookTocManager.tableofContents[1].sections, expectedSection)).be.true;
+			should(bookTocManager.tableofContents[1].file).be.equal(path.join(path.sep, subfolder, 'index'));
 		});
 
 		it('should ignore invalid file extensions', async () => {
@@ -475,8 +474,8 @@ describe('BookTocManagerTests', function () {
 
 					const mockExtensionContext = new MockExtensionContext();
 
-					sourceBookModel = new BookModel(run.sourceBook.rootBookFolderPath, false, false, mockExtensionContext);
-					targetBookModel = new BookModel(run.targetBook.rootBookFolderPath, false, false, mockExtensionContext);
+					sourceBookModel = new BookModel(run.sourceBook.rootBookFolderPath, false, false, mockExtensionContext, undefined);
+					targetBookModel = new BookModel(run.targetBook.rootBookFolderPath, false, false, mockExtensionContext, undefined);
 					// create book model mock objects
 					sinon.stub(sourceBookModel, 'bookItems').value([sectionA]);
 					sinon.stub(targetBookModel, 'bookItems').value([targetBook]);

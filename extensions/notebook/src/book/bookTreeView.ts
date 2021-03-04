@@ -16,7 +16,7 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { debounce, getPinnedNotebooks, confirmReplace } from '../common/utils';
+import { getPinnedNotebooks, confirmReplace } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { CreateBookDialog } from '../dialog/createBookDialog';
@@ -92,14 +92,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._extensionContext.globalState.update(constants.visitedNotebooksMementoKey, value);
 	}
 
-	setFileWatcher(book: BookModel): void {
-		fs.watchFile(book.tableOfContentsPath, async (curr, prev) => {
-			if (curr.mtime > prev.mtime) {
-				await this.initializeBookContents(book);
-			}
-		});
-	}
-
 	trustBook(bookTreeItem?: BookTreeItem): void {
 		let bookPathToTrust: string = bookTreeItem ? bookTreeItem.root : this.currentBook?.bookPath;
 		if (bookPathToTrust) {
@@ -167,15 +159,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			const updateBook = this.books.find(book => book.bookPath === pickedBook.detail).bookItems[0];
 			if (updateBook) {
 				let bookSections = updateBook.sections;
-				while (bookSections?.length > 0) {
+				while (bookSections) {
 					bookOptions = [{ label: loc.labelAddToLevel, detail: pickedSection ? pickedSection.detail : '' }];
 					bookSections.forEach(section => {
 						if (section.sections) {
 							bookOptions.push({ label: section.title ? section.title : section.file, detail: section.file });
 						}
 					});
-					bookSections = [];
-					if (bookOptions.length > 1) {
+					bookSections = undefined;
+					if (bookOptions.length >= 1) {
 						pickedSection = await vscode.window.showQuickPick(bookOptions, {
 							canPickMany: false,
 							placeHolder: loc.labelBookSection
@@ -194,16 +186,16 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					}
 				}
 			}
-			return { quickPickSection: pickedSection, book: updateBook };
+			return pickedSection ? { quickPickSection: pickedSection, book: updateBook } : undefined;
 		}
 		return undefined;
 	}
 
 	async editBook(movingElement: BookTreeItem): Promise<void> {
 		const selectionResults = await this.getSelectionQuickPick(movingElement);
-		const pickedSection = selectionResults.quickPickSection;
-		const updateBook = selectionResults.book;
-		if (pickedSection && updateBook) {
+		if (selectionResults) {
+			const pickedSection = selectionResults.quickPickSection;
+			const updateBook = selectionResults.book;
 			const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
 			if (movingElement.tableOfContents.sections) {
 				if (movingElement.contextValue === 'savedNotebook') {
@@ -216,7 +208,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			this.bookTocManager = new BookTocManager(targetBook, sourceBook);
 			// remove watch on toc file from source book.
 			if (sourceBook) {
-				fs.unwatchFile(sourceBook.tableOfContentsPath);
+				sourceBook.unwatchTOC();
 			}
 			try {
 				await this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
@@ -225,16 +217,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				vscode.window.showErrorMessage(loc.editBookError(updateBook.book.contentPath, e instanceof Error ? e.message : e));
 			} finally {
 				try {
-					await targetBook.initializeContents();
+					await targetBook.reinitializeContents();
 				} finally {
 					if (sourceBook && sourceBook.bookPath !== targetBook.bookPath) {
 						// refresh source book model to pick up latest changes
-						await sourceBook.initializeContents();
+						await sourceBook.reinitializeContents();
 					}
-					this._onDidChangeTreeData.fire(undefined);
-					// even if it fails, we still need to watch the toc file again.
 					if (sourceBook) {
-						this.setFileWatcher(sourceBook);
+						sourceBook.watchTOC();
 					}
 				}
 			}
@@ -261,17 +251,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 
 			TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.OpenBook).send();
-			// add file watcher on toc file.
-			if (!isNotebook) {
-				fs.watchFile(this.currentBook.tableOfContentsPath, async (curr, prev) => {
-					if (curr.mtime > prev.mtime) {
-						let book = this.books.find(book => book.bookPath === bookPath);
-						if (book) {
-							await this.initializeBookContents(book);
-						}
-					}
-				});
-			}
 		} catch (e) {
 			// if there is an error remove book from context
 			const index = this.books.findIndex(book => book.bookPath === bookPath);
@@ -297,13 +276,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	@debounce(1500)
-	async initializeBookContents(book: BookModel): Promise<void> {
-		await book.initializeContents().then(() => {
-			this._onDidChangeTreeData.fire(undefined);
-		});
-	}
-
 	async closeBook(book: BookTreeItem): Promise<void> {
 		// remove book from the saved books
 		let deletedBook: BookModel;
@@ -324,7 +296,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} finally {
 			// remove watch on toc file.
 			if (deletedBook && !deletedBook.isNotebook) {
-				fs.unwatchFile(deletedBook.tableOfContentsPath);
+				deletedBook.unwatchTOC();
 			}
 		}
 	}
@@ -338,7 +310,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 */
 	private async createAndAddBookModel(bookPath: string, isNotebook: boolean, notebookBookRoot?: string): Promise<void> {
 		if (!this.books.find(x => x.bookPath === bookPath)) {
-			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext, notebookBookRoot);
+			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext, this._onDidChangeTreeData, notebookBookRoot);
 			await book.initializeContents();
 			this.books.push(book);
 			if (!this.currentBook) {

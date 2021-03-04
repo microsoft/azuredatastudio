@@ -572,7 +572,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			return galleryExtensions.map((e, index) => toExtension(e, e.versions[0], index, nextPageQuery, options.source));
 		};
 
-		// {{ SQL CARBON EDIT }}
+		// {{SQL CARBON EDIT}}
 		return { firstPage: extensions, total, pageSize: extensions.length, getPage } as IPager<IGalleryExtension>;
 	}
 

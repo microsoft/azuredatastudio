@@ -81,7 +81,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { once } from 'vs/base/common/functional';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 
-// {{ SQL CARBON EDIT }}
+// {{SQL CARBON EDIT}}
 // integration with tasks view panel
 import { ITaskService as ISqlTaskService, TaskStatusChangeArgs } from 'sql/workbench/services/tasks/common/tasksService';
 import { TaskStatus } from 'sql/workbench/api/common/extHostBackgroundTaskManagement';
@@ -1495,7 +1495,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 
 		const execTask = async (task: Task, resolver: ITaskResolver): Promise<ITaskSummary> => {
 			return ProblemMatcherRegistry.onReady().then(() => {
-				// {{ SQL CARBON EDIT }}
+				// {{SQL CARBON EDIT}}
 				const taskNodeId = UUID.generateUuid();
 				let taskInfo: TaskInfo = {
 					databaseName: undefined,
@@ -1512,7 +1512,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 				this.lastRunTasksViewTask = taskInfo;
 
 				let executeResult = this.getTaskSystem().run(task, resolver);
-				// {{ SQL CARBON EDIT }}
+				// {{SQL CARBON EDIT}}
 				return this.handleExecuteResult(executeResult, runSource, taskNodeId);
 			});
 		};
@@ -1586,7 +1586,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 				throw new TaskError(Severity.Warning, nls.localize('TaskSystem.active', 'There is already a task running. Terminate it first before executing another task.'), TaskErrors.RunningTask);
 			}
 		}
-		// {{ SQL CARBON EDIT }}
+		// {{SQL CARBON EDIT}}
 		executeResult.promise.then((summary: ITaskSummary) => {
 			let args: TaskStatusChangeArgs = {
 				taskId: taskNodeId ? taskNodeId : executeResult.task._id,

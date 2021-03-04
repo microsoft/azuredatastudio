@@ -132,7 +132,7 @@
     ],
     "resourceDeploymentTypes": [
       {
-        "name": "arc.control.create",
+        "name": "arc-controller",
         "displayName": "%resource.type.azure.arc.display.name%",
         "description": "%resource.type.azure.arc.description%",
         "platforms": "*",
@@ -144,6 +144,7 @@
         ],
         "providers": [
           {
+            "name": "arc-controller",
             "notebookWizard": {
               "notebook": "./notebooks/arcDeployment/deploy.arc.data.controller.ipynb",
               "type": "new-arc-control-plane",
@@ -618,7 +619,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.3.0"
+                "version": "20.3.1"
               }
             ],
             "when": true
@@ -626,7 +627,7 @@
         ]
       },
       {
-        "name": "arc.postgres",
+        "name": "arc-postgres",
         "displayName": "%resource.type.arc.postgres.display.name%",
         "description": "%resource.type.arc.postgres.description%",
         "platforms": "*",
@@ -637,6 +638,7 @@
         ],
         "providers": [
           {
+            "name": "arc-postgres",
             "notebookWizard": {
               "notebook": "./notebooks/arcDeployment/deploy.postgres.existing.arc.ipynb",
               "doneAction": {
@@ -869,7 +871,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.3.0"
+                "version": "20.3.1"
               }
             ],
             "when": "true"
@@ -912,6 +914,7 @@
           "SQL Server"
         ],
         "provider": {
+          "name": "azure-sql-mi_arc-mi",
           "notebookWizard": {
             "notebook": "./notebooks/arcDeployment/deploy.sql.existing.arc.ipynb",
             "doneAction": {
@@ -1082,7 +1085,7 @@
             },
             {
               "name": "azdata",
-              "version": "20.3.0"
+              "version": "20.3.1"
             }
           ],
           "when": "mi-type=arc-mi"

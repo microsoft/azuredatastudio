@@ -465,13 +465,14 @@ export abstract class Modal extends Disposable implements IThemable {
 		DOM.append(this.layoutService.container, this._bodyContainer!);
 		this.setInitialFocusedElement();
 
-		this.disposableStore.add(DOM.addDisposableListener(document, DOM.EventType.KEY_UP, (e: KeyboardEvent) => {
+		this.disposableStore.add(DOM.addDisposableListener(document, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			let context = this._modalShowingContext.get()!;
 			if (context[context.length - 1] === this._staticKey) {
 				let event = new StandardKeyboardEvent(e);
 				if (event.equals(KeyCode.Enter)) {
 					this.onAccept(event);
 				} else if (event.equals(KeyCode.Escape)) {
+					DOM.EventHelper.stop(e, true);
 					this.onClose(event);
 				} else if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 					this.handleBackwardTab(e);

@@ -34,6 +34,7 @@
         },
         "providers": [
           {
+            "name": "validations-wizard",
             "notebookWizard": {
               "notebook": "%deployment-notebook-1%",
               "runNotebook": false,
@@ -129,6 +130,7 @@
         },
         "providers": [
           {
+            "name": "test-wizard",
             "notebookWizard": {
               "notebook": "%deployment-notebook-1%",
               "type": "new-arc-control-plane",
@@ -462,6 +464,7 @@
         ],
         "providers": [
           {
+            "name": "edition_evaluation",
             "dialog": {
               "notebook": "%deployment-notebook-1%",
               "title": "%dialog-title-1%",
@@ -520,6 +523,7 @@
             "when": "edition=evaluation"
           },
           {
+            "name": "edition_standard",
             "dialog": {
               "notebook": "%deployment-notebook-2%",
               "title": "%dialog-title-2%",

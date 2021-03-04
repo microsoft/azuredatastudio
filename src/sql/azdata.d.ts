@@ -3180,11 +3180,14 @@ declare module 'azdata' {
 		CSSStyles?: { [key: string]: string };
 	}
 
+	export type ThemedIconPath = { light: string | vscode.Uri; dark: string | vscode.Uri };
+	export type IconPath = string | vscode.Uri | ThemedIconPath;
+
 	export interface ComponentWithIcon {
 		/**
 		 * @deprecated This will be moved to `ComponentWithIconProperties`
 		 */
-		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		iconPath?: IconPath;
 		/**
 		 * @deprecated This will be moved to `ComponentWithIconProperties`
 		 */
@@ -4691,8 +4694,8 @@ declare module 'azdata' {
 		}
 
 		/**
-		* @deprecated Use IKernelSpec instead
-		*/
+		 * @deprecated Use IKernelSpec instead
+		 */
 		export interface IKernelInfo {
 			name: string;
 			language?: string;
