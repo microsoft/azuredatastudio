@@ -80,7 +80,6 @@ export class SaveResultAction extends Action {
 			});
 		}
 
-
 		if (!context.gridDataProvider.canSerialize) {
 			this.notificationService.warn(localize('saveToFileNotSupported', "Save to file is not supported by the backing data source"));
 			return false;
