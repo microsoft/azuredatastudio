@@ -569,7 +569,7 @@ function getColumnOffsetForSelection(type: MarkdownButtonType, nothingSelected: 
  * @param markdownToInsert formatted markdown
  * @param editorControl editor control for cell
  */
-export async function insertFormattedMarkdown(markdownToInsert: string, editorControl: IEditor): Promise<void> {
+export async function insertFormattedMarkdown(markdownToInsert: string, editorControl?: IEditor): Promise<void> {
 	if (editorControl) {
 		let selections = editorControl.getSelections();
 		let selection = selections[0];
