@@ -19,6 +19,8 @@ import { PostgresModel } from '../../models/postgresModel';
 import { AzureArcTreeDataProvider } from '../../ui/tree/azureArcTreeDataProvider';
 import { FakeControllerModel } from '../mocks/fakeControllerModel';
 import { FakeAzdataApi } from '../mocks/fakeAzdataApi';
+import { FakePostgresServerShowResult } from '../mocks/fakePostgresServerShowResult';
+import { assert } from 'sinon';
 //import * as utils from '../../common/utils';
 
 describe('PostgresModel', function (): void {
@@ -52,26 +54,20 @@ describe('PostgresModel', function (): void {
 		});
 
 		it('Updates model to expected config', async function (): Promise<void> {
-			const configResultMock = TypeMoq.Mock.ofType<azdataExt.PostgresServerShowResult>();
-			//sinon.stub(PostgresModel.prototype, 'config').returns(configResultMock.object);
-			const postgresShow = sinon.stub().returns(configResultMock);
+			const result = new FakePostgresServerShowResult();
+			const postgresShow = sinon.stub().returns(result);
 			sinon.stub(azdataApi, 'arc').get(() => {
 				return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
 			});
 
-
-
 			await postgresModel.refresh();
 			sinon.assert.calledOnceWithExactly(postgresShow, postgresModel.info.name);
-			//should(postgresModel).be.
-			should(postgresModel.config).be.not.undefined();
-			should(postgresModel.config).deepEqual(configResultMock, 'it worked');
-			//sinon.assert.match(postgresModel.config, configResultMock);
+			assert.match(postgresModel.config, result.result);
 		});
 
 		it('Updates onConfigLastUpdated when model is refreshed', async function (): Promise<void> {
-			const configResultMock = TypeMoq.Mock.ofType<azdataExt.PostgresServerShowResult>();
-			const postgresShow = sinon.stub().resolves(configResultMock);
+			const result = new FakePostgresServerShowResult();
+			const postgresShow = sinon.stub().returns(result);
 			sinon.stub(azdataApi, 'arc').get(() => {
 				return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
 			});
@@ -79,6 +75,19 @@ describe('PostgresModel', function (): void {
 			await postgresModel.refresh();
 			sinon.assert.calledOnceWithExactly(postgresShow, postgresModel.info.name);
 			should(postgresModel.configLastUpdated).be.Date();
+		});
+
+		it('Calls onConfigUpdated event when model is refreshed', async function (): Promise<void> {
+			const result = new FakePostgresServerShowResult();
+			const postgresShow = sinon.stub().returns(result);
+			sinon.stub(azdataApi, 'arc').get(() => {
+				return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
+			});
+			const configUpdatedEvent = sinon.stub(vscode.EventEmitter.prototype, 'fire');
+
+			await postgresModel.refresh();
+			sinon.assert.calledOnceWithExactly(postgresShow, postgresModel.info.name);
+			sinon.assert.calledOnceWithExactly(configUpdatedEvent, postgresModel.config);
 		});
 
 		it('Expected exception is thrown', async function (): Promise<void> {
@@ -91,29 +100,6 @@ describe('PostgresModel', function (): void {
 
 			await should(postgresModel.refresh()).be.rejectedWith(error);
 		});
-
-		/* public async refresh() {
-			// Only allow one refresh to be happening at a time
-			if (this._refreshPromise) {
-				return this._refreshPromise.promise;
-			}
-			this._refreshPromise = new Deferred();
-			let session: azdataExt.AzdataSession | undefined = undefined;
-			try {
-				session = await this.controllerModel.acquireAzdataSession();
-				this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name, this.controllerModel.azdataAdditionalEnvVars, session)).result;
-				this.configLastUpdated = new Date();
-				this._onConfigUpdated.fire(this._config);
-				this._refreshPromise.resolve();
-			} catch (err) {
-				this._refreshPromise.reject(err);
-				throw err;
-			} finally {
-				session?.dispose();
-				this._refreshPromise = undefined;
-			}
-		} */
-
 
 
 	});
