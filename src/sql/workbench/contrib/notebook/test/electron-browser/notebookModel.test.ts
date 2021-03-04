@@ -886,52 +886,35 @@ suite('notebook model', function (): void {
 		assert.equal(output.metadata['multi_connection_mode'], true, 'multi_connection_mode not saved correctly to notebook metadata');
 	});
 
-	test('Should keep kernel alias as language info kernel alias name even if kernel spec is seralized as SQL', async function () {
+	test('Should set language info correctly from notebook metadata', async function () {
+		// Given a notebook with 'fake' language info metadata
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedKernelAliasNotebookContentOneCell));
 		defaultModelOptions.contentManager = mockContentManager.object;
 
-		queryConnectionService.setup(c => c.getActiveConnections(TypeMoq.It.isAny())).returns(() => null);
-
-		// Given I have a session that fails to start
-		sessionReady.resolve();
-
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined, queryConnectionService.object, configurationService);
 		await model.loadContents();
 
-		await model.requestModelLoad();
-
-		// Check to see if language info is set to kernel alias
+		// I expect language info to be set to 'fake'
 		assert.equal(model.languageInfo.name, 'fake', 'Notebook language info is not set properly');
 	});
 
-	test('Should change language info after connecting to a Fake (kernel alias) connection', async function () {
+	test('Should update language info after connecting to a Fake (kernel alias) connection', async function () {
+		// Given a SQL notebook
 		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 
-		// Ensure notebook prefix is present in the connection URI
-		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
-
-		// Check to see if language info is set to kernel alias
+		// I expect the language info to be set to 'sql'
 		assert.equal(model.languageInfo.name, 'sql', 'Notebook language info is not set to default language');
 
-		// Connect to fake connection enables kernel alias connection
+		// When I connect to a Fake (kernel alias) connection
 		await changeContextWithFakeConnectionProfile(model);
 
-		// // After client session is started, ensure context isn't null/undefined
-		assert(!isUndefinedOrNull(model.context), 'context should exist after call to change context');
-
-		await model.startSession(notebookManagers[0]);
-
 		let notebookKernelAlias = model.context.serverCapabilities.notebookKernelAlias;
+		await model.changeKernel(notebookKernelAlias);
 
-		// Check to see if language info is set to kernel alias
-		assert.equal(model.languageInfo.name, notebookKernelAlias, 'Notebook language info is not updated after alias connection');
-
-		// After closing the notebook
-		await model.handleClosed();
-
-		// Ensure disconnect is called once
-		queryConnectionService.verify((c) => c.disconnect(TypeMoq.It.isAny()), TypeMoq.Times.once());
+		// I expect the language info to be set to kernel alias
+		assert.equal(model.languageInfo.name, notebookKernelAlias, 'Notebook language info is not updated after Fake (kernel alias) connection');
 	});
 
 	async function loadModelAndStartClientSession(notebookContent: nb.INotebookContents): Promise<NotebookModel> {
