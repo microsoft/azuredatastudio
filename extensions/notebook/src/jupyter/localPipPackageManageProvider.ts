@@ -150,11 +150,21 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 			let constraintParts = packageVersionConstraint.split(',');
 			for (let constraint of constraintParts) {
 				constraint = constraint.trim();
-				let versionModifier = constraint.slice(0, 2);
-				let version = constraint.slice(2).trim();
+				let splitIndex: number;
+				if ((constraint[0] === '>' || constraint[0] === '<') && constraint[1] !== '=') {
+					splitIndex = 1;
+				} else {
+					splitIndex = 2;
+				}
+				let versionSpecifier = constraint.slice(0, splitIndex);
+				let version = constraint.slice(splitIndex).trim();
 				let versionComparison = utils.comparePackageVersions(pythonVersion, version);
-				if ((versionModifier === '>=' && versionComparison === -1) ||
-					(versionModifier === '!=' && versionComparison === 0)) {
+				if ((versionSpecifier === '>=' && versionComparison === -1) ||
+					(versionSpecifier === '<=' && versionComparison === 1) ||
+					(versionSpecifier === '>' && versionComparison !== 1) ||
+					(versionSpecifier === '<' && versionComparison !== -1) ||
+					(versionSpecifier === '==' && versionComparison !== 0) ||
+					(versionSpecifier === '!=' && versionComparison === 0)) {
 					supportedVersionFound = false;
 					break; // Failed at least one version check, so skip checking the other constraints
 				} else {
