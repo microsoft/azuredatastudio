@@ -10,6 +10,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspaces/common/workspaceEditing';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadWorkspace)
 export class MainThreadWorkspace extends Disposable implements MainThreadWorkspaceShape {
@@ -18,24 +19,27 @@ export class MainThreadWorkspace extends Disposable implements MainThreadWorkspa
 		extHostContext: IExtHostContext,
 		@IWorkspaceEditingService private workspaceEditingService: IWorkspaceEditingService,
 		@IWorkbenchEnvironmentService protected readonly environmentService: IWorkbenchEnvironmentService,
+		@IHostService private readonly hostService: IHostService
 	) {
 		super();
 	}
 
-	$createAndEnterWorkspace(folder: URI, workspaceFile?: URI): Promise<void> {
+	async $createAndEnterWorkspace(folder: URI, workspaceFile?: URI): Promise<void> {
 		folder = URI.revive(folder);
 		workspaceFile = URI.revive(workspaceFile);
-		return this.workspaceEditingService.createAndEnterWorkspace([{ uri: folder }], workspaceFile);
+		await this.workspaceEditingService.createAndEnterWorkspace([{ uri: folder }], workspaceFile);
+		this.hostService.reload();
 	}
 
-	$enterWorkspace(workspaceFile: URI): Promise<void> {
+	async $enterWorkspace(workspaceFile: URI): Promise<void> {
 		workspaceFile = URI.revive(workspaceFile);
-		return this.workspaceEditingService.enterWorkspace(workspaceFile);
+		await this.workspaceEditingService.enterWorkspace(workspaceFile);
+		this.hostService.reload();
 	}
 
-	$saveAndEnterWorkspace(workspaceFile: URI): Promise<void> {
+	async $saveAndEnterWorkspace(workspaceFile: URI): Promise<void> {
 		workspaceFile = URI.revive(workspaceFile);
-		return this.workspaceEditingService.saveAndEnterWorkspace(workspaceFile);
+		await this.workspaceEditingService.saveAndEnterWorkspace(workspaceFile);
+		this.hostService.reload();
 	}
-
 }
