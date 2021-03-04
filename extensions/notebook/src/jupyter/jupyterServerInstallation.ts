@@ -751,7 +751,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let cmd = `"${pythonExecutable}" --version`;
 		let version = await utils.executeBufferedCommand(cmd, {});
 		if (version) {
-			return version.replace('Python ', '');
+			return version.replace('Python ', '').trim();
 		} else {
 			return '';
 		}
