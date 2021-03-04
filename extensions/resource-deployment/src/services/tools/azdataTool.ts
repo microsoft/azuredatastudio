@@ -85,7 +85,7 @@ export class AzdataTool extends ToolBase {
 	protected async updateVersionAndStatus(): Promise<void> {
 		this.azdataApi = await vscode.extensions.getExtension(azdataExt.extension.name)?.activate();
 		if (!this.azdataApi) {
-			this.setStatusDescription(localize('deploy.azdataExtMissing', "The Azdata CLI extension must be installed to deploy this resource. Please install it through the extension gallery and try again."));
+			this.setInstallationPathOrAdditionalInformation(localize('deploy.azdataExtMissing', "The Azure Data CLI extension must be installed to deploy this resource. Please install it through the extension gallery and try again."));
 			this.setStatus(ToolStatus.NotInstalled);
 			return;
 		}
