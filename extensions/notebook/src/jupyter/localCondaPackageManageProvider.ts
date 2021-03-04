@@ -104,7 +104,19 @@ export class LocalCondaPackageManageProvider implements IPackageManageProvider {
 
 				let packages = packageJson[packageName];
 				if (Array.isArray(packages)) {
-					let allVersions = packages.filter(pkg => pkg && pkg.version).map(pkg => pkg.version);
+					let allVersions = packages.filter(pkg => {
+						if (pkg && pkg.version) {
+							let dependencies = pkg.depends;
+							if (Array.isArray(dependencies)) {
+								let strDependencies = dependencies as string[];
+								let pythonDependency = strDependencies.find(dependency => dependency.trim().toLowerCase().startsWith('python '));
+								pythonDependency = pythonDependency.replace('python ', '');
+								return utils.isPackageSupported(this.jupyterInstallation.installedPythonVersion, [pythonDependency]);
+							}
+						}
+						return false;
+					}).map(pkg => pkg.version);
+
 					let singletonVersions = new Set<string>(allVersions);
 					let sortedVersions = utils.sortPackageVersions(Array.from(singletonVersions), false);
 					return {
