@@ -3,15 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as nls from 'vscode-nls';
+import * as azdata from 'azdata';
 import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import { ClientCapabilities, StaticFeature, RPCMessageType, ServerCapabilities } from 'vscode-languageclient';
 import { Disposable, window, QuickPickItem, QuickPickOptions } from 'vscode';
 import { Telemetry } from './telemetry';
 import * as contracts from './contracts';
-import * as azdata from 'azdata';
 import * as Utils from './utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { DataItemCache } from './util/dataCache';
+import { DeleteCredentialRequest, ReadCredentialRequest, SaveCredentialRequest } from './credentialstore/contracts';
+import { Keychain } from './credentialstore/keychain';
 
 const localize = nls.loadMessageBundle();
 
@@ -26,6 +28,64 @@ export class TelemetryFeature implements StaticFeature {
 	initialize(): void {
 		this._client.onNotification(contracts.TelemetryNotification.type, e => {
 			Telemetry.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
+		});
+	}
+}
+
+export class NativeCredentialsFeature extends SqlOpsFeature<any>  {
+
+	private keychain: Keychain;
+
+	private static readonly messagesTypes: RPCMessageType[] = [
+		DeleteCredentialRequest.type,
+		SaveCredentialRequest.type,
+		ReadCredentialRequest.type
+	];
+
+	fillClientCapabilities(capabilities: ClientCapabilities): void {
+		Utils.ensure(Utils.ensure(capabilities, 'credentials')!, 'credentials')!.dynamicRegistration = true;
+	}
+
+	initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	constructor(_client: SqlOpsDataClient) {
+		super(_client, NativeCredentialsFeature.messagesTypes);
+		this.keychain = new Keychain();
+	}
+
+	protected registerProvider(options: any): Disposable {
+
+		let readCredential = (credentialId: string): Thenable<azdata.Credential> => {
+			return this.keychain.getPassword(credentialId).then((password) => {
+				if (password) {
+					const credential: azdata.Credential = {
+						credentialId: credentialId,
+						password: password
+					};
+					return credential;
+				}
+				return undefined;
+			});
+		};
+
+		let saveCredential = (credentialId: string, password: string): Thenable<boolean> => {
+			return this.keychain.setPassword(credentialId, password).then(() => { return true; });
+		};
+
+		let deleteCredential = (credentialId: string): Thenable<boolean> => {
+			return this.keychain.deletePassword(credentialId).then((result) => { return result; });
+		};
+
+		return azdata.credentials.registerProvider({
+			deleteCredential,
+			readCredential,
+			saveCredential,
+			handle: 0
 		});
 	}
 }

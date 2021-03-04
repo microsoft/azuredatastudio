@@ -8,10 +8,10 @@ import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { getCommonLaunchArgsAndCleanupOldLogFiles } from './utils';
+import { getCommonLaunchArgsAndCleanupOldLogFiles, nativeCredentialsEnabled } from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature } from './features';
+import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, NativeCredentialsFeature } from './features';
 import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import { SchemaCompareService } from './schemaCompare/schemaCompareService';
@@ -87,11 +87,18 @@ export class SqlToolsServer {
 	}
 
 	private activateFeatures(context: AppContext): Promise<void> {
-		const credsStore = new CredentialStore(context.extensionContext.logPath, this.config);
 		const resourceProvider = new AzureResourceProvider(context.extensionContext.logPath, this.config);
-		this.disposables.push(credsStore);
 		this.disposables.push(resourceProvider);
-		return Promise.all([credsStore.start(), resourceProvider.start()]).then();
+		if (nativeCredentialsEnabled()) {
+			return Promise.all([resourceProvider.start()]).then();
+		} else {
+			const credsStore = new CredentialStore(context.extensionContext.logPath, this.config);
+			this.disposables.push(credsStore);
+			return Promise.all([credsStore.start(), resourceProvider.start()]).then();
+		}
+		// const credsStore = new CredentialStore(context.extensionContext.logPath, this.config);
+		// this.disposables.push(credsStore);
+		// return Promise.all([credsStore.start(), resourceProvider.start()]).then();
 	}
 
 	dispose() {
@@ -143,6 +150,26 @@ function generateHandleServerProviderEvent() {
 }
 
 function getClientOptions(context: AppContext): ClientOptions {
+	const features = [
+		// we only want to add new features
+		...SqlOpsDataClient.defaultFeatures,
+		TelemetryFeature,
+		AccountFeature,
+		AgentServicesFeature,
+		SerializationFeature,
+		SqlAssessmentServicesFeature,
+		SchemaCompareService.asFeature(context),
+		LanguageExtensionService.asFeature(context),
+		DacFxService.asFeature(context),
+		CmsService.asFeature(context),
+		SqlAssessmentService.asFeature(context),
+		NotebookConvertService.asFeature(context),
+		ProfilerFeature,
+		SqlMigrationService.asFeature(context)
+	];
+	if (nativeCredentialsEnabled()) {
+		features.push(NativeCredentialsFeature);
+	}
 	return {
 		documentSelector: ['sql'],
 		synchronize: {
@@ -150,23 +177,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 		},
 		providerId: Constants.providerId,
 		errorHandler: new LanguageClientErrorHandler(),
-		features: [
-			// we only want to add new features
-			...SqlOpsDataClient.defaultFeatures,
-			TelemetryFeature,
-			AccountFeature,
-			AgentServicesFeature,
-			SerializationFeature,
-			SqlAssessmentServicesFeature,
-			SchemaCompareService.asFeature(context),
-			LanguageExtensionService.asFeature(context),
-			DacFxService.asFeature(context),
-			CmsService.asFeature(context),
-			SqlAssessmentService.asFeature(context),
-			NotebookConvertService.asFeature(context),
-			ProfilerFeature,
-			SqlMigrationService.asFeature(context),
-		],
+		features: features,
 		outputChannel: new CustomOutputChannel()
 	};
 }

@@ -32,6 +32,16 @@ export function getAppDataPath() {
 }
 
 /**
+ * This function returns whether the native credential management system
+ * should be used instead of tools service
+ */
+export function nativeCredentialsEnabled() {
+	const linux: boolean = os.platform() === 'darwin';
+	const nativeCredentialsEnabled: boolean = true;
+	return linux && nativeCredentialsEnabled;
+}
+
+/**
  * Get a file name that is not already used in the target directory
  * @param filePath source notebook file name
  * @param fileExtension file type
