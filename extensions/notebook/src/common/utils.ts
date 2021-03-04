@@ -187,6 +187,52 @@ export function sortPackageVersions(versions: string[], ascending: boolean = tru
 	});
 }
 
+// Determines if a given package is supported for the provided version of Python
+// using the version constraints from the pypi metadata.
+export function isPackageSupported(pythonVersion: string, packageVersionConstraints: string[]): boolean {
+	if (pythonVersion === '') {
+		return true;
+	}
+
+	// Version constraint strings are formatted like '!=2.7, >=3.5, >=3.6',
+	// with each package release having its own set of version constraints.
+	let supportedVersionFound = true;
+	for (let packageVersionConstraint of packageVersionConstraints) {
+		if (!packageVersionConstraint) {
+			continue;
+		}
+
+		let constraintParts = packageVersionConstraint.split(',');
+		for (let constraint of constraintParts) {
+			constraint = constraint.trim();
+			let splitIndex: number;
+			if ((constraint[0] === '>' || constraint[0] === '<') && constraint[1] !== '=') {
+				splitIndex = 1;
+			} else {
+				splitIndex = 2;
+			}
+			let versionSpecifier = constraint.slice(0, splitIndex);
+			let version = constraint.slice(splitIndex).trim();
+			let versionComparison = comparePackageVersions(pythonVersion, version);
+			if ((versionSpecifier === '>=' && versionComparison === -1) ||
+				(versionSpecifier === '<=' && versionComparison === 1) ||
+				(versionSpecifier === '>' && versionComparison !== 1) ||
+				(versionSpecifier === '<' && versionComparison !== -1) ||
+				(versionSpecifier === '==' && versionComparison !== 0) ||
+				(versionSpecifier === '!=' && versionComparison === 0)) {
+				supportedVersionFound = false;
+				break; // Failed at least one version check, so skip checking the other constraints
+			} else {
+				supportedVersionFound = true; // The package is tentatively supported until we find a constraint that fails
+			}
+		}
+		if (supportedVersionFound) {
+			break; // All constraints passed for this package, so we don't need to check any of the others
+		}
+	}
+	return supportedVersionFound;
+}
+
 export function isEditorTitleFree(title: string): boolean {
 
 	let hasTextDoc = vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title && !notebookLanguages.find(lang => lang === doc.languageId)) > -1;

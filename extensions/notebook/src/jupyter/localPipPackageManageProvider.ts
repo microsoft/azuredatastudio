@@ -108,7 +108,7 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 					let releaseInfo = packagesJson.releases[versionKey];
 					if (Array.isArray(releaseInfo) && releaseInfo.length > 0) {
 						let pythonVersionConstraints = releaseInfo.map<string>(info => info.requires_python);
-						return LocalPipPackageManageProvider.isPackageSupported(this.jupyterInstallation.installedPythonVersion, pythonVersionConstraints);
+						return utils.isPackageSupported(this.jupyterInstallation.installedPythonVersion, pythonVersionConstraints);
 					}
 					return false;
 				});
@@ -130,51 +130,5 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 			versions: versionNums,
 			summary: packageSummary
 		};
-	}
-
-	// Determines if a given package is supported for the provided version of Python
-	// using the version constraints from the pypi metadata.
-	public static isPackageSupported(pythonVersion: string, packageVersionConstraints: string[]): boolean {
-		if (pythonVersion === '') {
-			return true;
-		}
-
-		// Version constraint strings are formatted like '!=2.7, >=3.5, >=3.6',
-		// with each package release having its own set of version constraints.
-		let supportedVersionFound = true;
-		for (let packageVersionConstraint of packageVersionConstraints) {
-			if (!packageVersionConstraint) {
-				continue;
-			}
-
-			let constraintParts = packageVersionConstraint.split(',');
-			for (let constraint of constraintParts) {
-				constraint = constraint.trim();
-				let splitIndex: number;
-				if ((constraint[0] === '>' || constraint[0] === '<') && constraint[1] !== '=') {
-					splitIndex = 1;
-				} else {
-					splitIndex = 2;
-				}
-				let versionSpecifier = constraint.slice(0, splitIndex);
-				let version = constraint.slice(splitIndex).trim();
-				let versionComparison = utils.comparePackageVersions(pythonVersion, version);
-				if ((versionSpecifier === '>=' && versionComparison === -1) ||
-					(versionSpecifier === '<=' && versionComparison === 1) ||
-					(versionSpecifier === '>' && versionComparison !== 1) ||
-					(versionSpecifier === '<' && versionComparison !== -1) ||
-					(versionSpecifier === '==' && versionComparison !== 0) ||
-					(versionSpecifier === '!=' && versionComparison === 0)) {
-					supportedVersionFound = false;
-					break; // Failed at least one version check, so skip checking the other constraints
-				} else {
-					supportedVersionFound = true; // The package is tentatively supported until we find a constraint that fails
-				}
-			}
-			if (supportedVersionFound) {
-				break; // All constraints passed for this package, so we don't need to check any of the others
-			}
-		}
-		return supportedVersionFound;
 	}
 }
