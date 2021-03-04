@@ -28,6 +28,7 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { DialogPosition, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
+
 export interface IImageCalloutDialogOptions {
 	insertTitle?: string,
 	insertMarkup?: string,

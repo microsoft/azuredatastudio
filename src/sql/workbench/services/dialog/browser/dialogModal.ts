@@ -23,7 +23,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+import { attachModalDialogStyler, attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 export class DialogModal extends Modal {
@@ -56,7 +56,11 @@ export class DialogModal extends Modal {
 
 	public render() {
 		super.render();
-		attachModalDialogStyler(this, this._themeService);
+		if (this._modalOptions.dialogStyle === 'callout') {
+			attachCalloutDialogStyler(this, this._themeService);
+		} else {
+			attachModalDialogStyler(this, this._themeService);
+		}
 
 		if (this._modalOptions.renderFooter !== false) {
 			this._modalOptions.renderFooter = true;
