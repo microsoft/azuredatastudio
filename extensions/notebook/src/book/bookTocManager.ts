@@ -444,7 +444,7 @@ export class BookTocManager implements IBookTocManager {
 		}
 	}
 
-	public async addNewNotebook(nbName: string, book?: BookModel, fileType?: FileType): Promise<void> {
+	public async addNewNotebook(nbName: string, book: BookModel, fileType: FileType): Promise<void> {
 		let toc = yaml.safeLoad((await fs.readFile(book.tableOfContentsPath, 'utf8')));
 		let notebookToc: JupyterBookSection = {
 			title: nbName,
