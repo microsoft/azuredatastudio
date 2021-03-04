@@ -10,7 +10,6 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspaces/common/workspaceEditing';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
-import { IHostService } from 'vs/workbench/services/host/browser/host';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadWorkspace)
 export class MainThreadWorkspace extends Disposable implements MainThreadWorkspaceShape {
@@ -18,28 +17,24 @@ export class MainThreadWorkspace extends Disposable implements MainThreadWorkspa
 	constructor(
 		extHostContext: IExtHostContext,
 		@IWorkspaceEditingService private workspaceEditingService: IWorkspaceEditingService,
-		@IWorkbenchEnvironmentService protected readonly environmentService: IWorkbenchEnvironmentService,
-		@IHostService private readonly hostService: IHostService
+		@IWorkbenchEnvironmentService protected readonly environmentService: IWorkbenchEnvironmentService
 	) {
 		super();
 	}
 
-	async $createAndEnterWorkspace(folder: URI, workspaceFile?: URI): Promise<void> {
+	$createAndEnterWorkspace(folder: URI, workspaceFile?: URI): Promise<void> {
 		folder = URI.revive(folder);
 		workspaceFile = URI.revive(workspaceFile);
-		await this.workspaceEditingService.createAndEnterWorkspace([{ uri: folder }], workspaceFile);
-		this.hostService.reload();
+		return this.workspaceEditingService.createAndEnterWorkspace([{ uri: folder }], workspaceFile);
 	}
 
-	async $enterWorkspace(workspaceFile: URI): Promise<void> {
+	$enterWorkspace(workspaceFile: URI): Promise<void> {
 		workspaceFile = URI.revive(workspaceFile);
-		await this.workspaceEditingService.enterWorkspace(workspaceFile);
-		this.hostService.reload();
+		return this.workspaceEditingService.enterWorkspace(workspaceFile);
 	}
 
-	async $saveAndEnterWorkspace(workspaceFile: URI): Promise<void> {
+	$saveAndEnterWorkspace(workspaceFile: URI): Promise<void> {
 		workspaceFile = URI.revive(workspaceFile);
-		await this.workspaceEditingService.saveAndEnterWorkspace(workspaceFile);
-		this.hostService.reload();
+		return this.workspaceEditingService.saveAndEnterWorkspace(workspaceFile);
 	}
 }
