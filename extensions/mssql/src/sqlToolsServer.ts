@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as os from 'os';
 import { ServerProvider, IConfig, Events } from 'service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
@@ -167,7 +168,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 		ProfilerFeature,
 		SqlMigrationService.asFeature(context)
 	];
-	if (nativeCredentialsEnabled()) {
+	if (os.platform() === 'darwin') {
 		features.push(NativeCredentialsFeature);
 	}
 	return {

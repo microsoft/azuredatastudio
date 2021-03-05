@@ -9,7 +9,6 @@ import {
 	MainThreadCredentialManagementShape, SqlMainContext
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
-import { ICredentialsService as INativeCredentialService } from 'vs/workbench/services/credentials/common/credentials';
 import * as azdata from 'azdata';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
@@ -23,8 +22,7 @@ export class MainThreadCredentialManagement extends Disposable implements MainTh
 
 	constructor(
 		extHostContext: IExtHostContext,
-		@ICredentialsService private credentialService: ICredentialsService,
-		@INativeCredentialService private nativeCredentialService: INativeCredentialService
+		@ICredentialsService private credentialService: ICredentialsService
 	) {
 		super();
 		if (extHostContext) {

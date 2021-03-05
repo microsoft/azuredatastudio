@@ -8,7 +8,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import * as azdata from 'azdata';
 import { Deferred } from 'sql/base/common/promise';
 
-export const SERVICE_ID = 'credentialsService';
+export const SERVICE_ID = 'sqlCredentialsService';
 
 export interface CredentialManagementEvents {
 	onSaveCredential(credentialId: string, password: string): Thenable<boolean>;
