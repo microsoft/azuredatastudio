@@ -167,25 +167,25 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		products.forEach((product) => {
 			const imagePath = path.resolve(this.migrationStateModel.getExtensionPath(), 'images', product.icon ?? 'ads.svg');
-			let dbCount = 0;
-			if (product.type === 'AzureSQLVM') {
-				dbCount = 0;
-			} else {
-				dbCount = this.migrationStateModel._migrationDbs.length;
-			}
+			const dbCount = this.migrationStateModel._migrationDbs.length;
 			const descriptions: azdata.RadioCardDescription[] = [
 				{
 					textValue: product.name,
 					textStyles: {
 						'font-size': '14px',
+						'font-weight': 'bold',
 						'line-height': '20px'
 					},
 					linkDisplayValue: 'Learn more',
+					linkStyles: {
+						'font-size': '14px',
+						'line-height': '20px'
+					},
 					displayLinkCodicon: true,
 					linkCodiconStyles: {
-						'font-size': '1em',
-						'color': 'royalblue'
-					}
+						'font-size': '14px',
+						'line-height': '20px'
+					},
 				},
 				{
 					textValue: `${dbCount} databases will be migrated`,
@@ -193,11 +193,15 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						'font-size': '13px',
 						'line-height': '18px'
 					},
+					linkStyles: {
+						'font-size': '14px',
+						'line-height': '20px'
+					},
 					linkDisplayValue: 'View/Change',
 					displayLinkCodicon: true,
 					linkCodiconStyles: {
-						'font-size': '1em',
-						'color': 'royalblue'
+						'font-size': '13px',
+						'line-height': '18px'
 					}
 				}
 			];
@@ -335,6 +339,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		};
 		const textValue: string = `${count} databases will be migrated`;
 		this._rbg.cards[0].descriptions[1].textValue = textValue;
+		this._rbg.cards[1].descriptions[1].textValue = textValue;
+
 		this._rbg.updateProperties({
 			cards: this._rbg.cards
 		});

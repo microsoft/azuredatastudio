@@ -487,10 +487,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				const response = await startDatabaseMigration(
 					this._azureAccount,
 					this._targetSubscription,
-					this._targetServerInstance.resourceGroup!,
 					this._migrationController?.properties.location!,
-					this._targetServerInstance.name,
-					currentConnection?.databaseName!,
+					this._targetServerInstance,
+					db,
 					requestBody
 				);
 
