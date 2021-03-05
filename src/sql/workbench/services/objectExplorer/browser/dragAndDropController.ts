@@ -9,7 +9,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { ITree, IDragAndDrop, IDragOverReaction, DRAG_OVER_ACCEPT_BUBBLE_DOWN, DRAG_OVER_REJECT } from 'vs/base/parts/tree/browser/tree';
 import { DragMouseEvent } from 'vs/base/browser/mouseEvent';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
-import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
+import { UNSAVED_GROUP_ID, mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { DataTransfers, IDragAndDropData } from 'vs/base/browser/dnd';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
@@ -102,12 +102,12 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			let providerName = this.getProviderNameFromElement(element);
 			if (providerName === 'KUSTO') {
 				finalString = element.nodeTypeId !== 'Function' && escapedName.indexOf(' ') > 0 ? `[@"${escapedName}"]` : escapedName;
-			} else if (providerName === 'MSSQL') {
+			} else if (providerName === mssqlProviderName) {
 				finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
 			} else if (providerName === 'PGSQL') {
-				finalString = escapedSchema ? `"${escapedSchema}"."${escapedName}"` : `"${escapedName}"`;
+				finalString = element.metadata.schema ? `"${element.metadata.schema}"."${element.metadata.name}"` : `"${element.metadata.name}"`;
 			} else {
-				finalString = escapedSchema ? `${escapedSchema}.${escapedName}` : `${escapedName}`;
+				finalString = element.metadata.schema ? `${element.metadata.schema}.${element.metadata.name}` : `${element.metadata.name}`;
 			}
 			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify([`${element.nodeTypeId}:${element.id}?${finalString}`]));
 		}
@@ -118,12 +118,12 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 			for (let child of element.children) {
 				escapedSchema = escapeString(child.metadata.schema);
 				escapedName = escapeString(child.metadata.name);
-				if (providerName === 'MSSQL') {
+				if (providerName === mssqlProviderName) {
 					finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
 				} else if (providerName === 'PGSQL') {
-					finalString = escapedSchema ? `"${escapedSchema}"."${escapedName}"` : `"${escapedName}"`;
+					finalString = child.metadata.schema ? `"${child.metadata.schema}"."${child.metadata.name}"` : `"${child.metadata.name}"`;
 				} else {
-					finalString = escapedSchema ? `${escapedSchema}.${escapedName}` : `${escapedName}`;
+					finalString = child.metadata.schema ? `${child.metadata.schema}.${child.metadata.name}` : `${child.metadata.name}`;
 				}
 				returnString = returnString ? `${returnString},${finalString}` : `${finalString}`;
 			}
