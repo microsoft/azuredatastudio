@@ -744,7 +744,8 @@ export abstract class Modal extends Disposable implements IThemable {
 			const shadow = this._dialogShadowColor ? this._dialogShadowColor.toString() : '';
 			const shadowRgb: Color = Color.Format.CSS.parseHex(shadow);
 
-			content.push(`
+			if (exteriorBorderRgb && shadowRgb) {
+				content.push(`
 				.modal.callout-dialog .modal-dialog {
 					border-color: rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b},0.5);
 					box-shadow: 0px 3.2px 7.2px rgba(${shadowRgb.rgba.r}, ${shadowRgb.rgba.g}, ${shadowRgb.rgba.b}, 0.132),
@@ -767,6 +768,7 @@ export abstract class Modal extends Disposable implements IThemable {
 					background-color: ${this._dialogBodyBackground};
 					box-shadow: -4px 4px 4px rgba(${shadowRgb.rgba.r}, ${shadowRgb.rgba.g}, ${shadowRgb.rgba.b}, 0.05);
 				}`);
+			}
 
 			const newStyles = content.join('\n');
 			if (newStyles !== this._styleElement.innerHTML) {
