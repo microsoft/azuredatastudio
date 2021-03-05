@@ -970,7 +970,7 @@ declare module 'azdata' {
 		/**
 		 * Append data to an existing table data.
 		 */
-		appendData(data: any[][]): void;
+		appendData(data: any[][]): Thenable<void>;
 	}
 
 	export interface IconColumnCellValue {

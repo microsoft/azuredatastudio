@@ -49,9 +49,11 @@ export const ProductLookupTable: { [key in MigrationProductType]: Product } = {
 	'AzureSQLMI': {
 		type: 'AzureSQLMI',
 		name: localize('sql.migration.products.azuresqlmi.name', 'Azure Managed Instance (Microsoft managed)'),
+		icon: 'sqlMI.svg'
 	},
 	'AzureSQLVM': {
 		type: 'AzureSQLVM',
 		name: localize('sql.migration.products.azuresqlvm.name', 'Azure SQL Virtual Machine (Customer managed)'),
+		icon: 'sqlVM.svg'
 	}
 };
