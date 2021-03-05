@@ -8,7 +8,6 @@ import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles, iconSize } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
-import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
 
 export type PodHealthModel = {
@@ -19,7 +18,6 @@ export type PodHealthModel = {
 
 export class PostgresResourceHealthPage extends DashboardPage {
 	private podSummaryContainer!: azdata.DivContainer;
-	private podIssuesDetected: string[] = [];
 
 	private podConditionsContainer!: azdata.DivContainer;
 	private podConditionsLoading!: azdata.LoadingComponent;
@@ -31,7 +29,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 	private coordinatorData: PodHealthModel[] = [];
 	private podsData: PodHealthModel[] = [];
 
-	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
+	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
 		super(modelView);
 
 		this.disposables.push(
@@ -55,12 +53,12 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		const content = this.modelView.modelBuilder.divContainer().component();
 		root.addItem(content, { CSSStyles: { 'margin': '10px 20px 0px 20px' } });
 
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.resourceHealth,
 			CSSStyles: { ...cssStyles.title }
 		}).component());
 
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.resourceHealthDescription,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component());
@@ -72,12 +70,12 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		content.addItem(this.podSummaryContainer);
 
 		// Pod Conditions
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.podsPresent,
 			CSSStyles: { ...cssStyles.title }
 		}).component());
 
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.podsUsedDescription,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'margin-top': '10px' }
 		}).component());
@@ -142,7 +140,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
 		// Refresh
-		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const refreshButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.refresh,
 			iconPath: IconPathHelper.refresh
 		}).component();
@@ -154,8 +152,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 					this.podConditionsLoading!.loading = true;
 
 					await Promise.all([
-						this._postgresModel.refresh(),
-						this._controllerModel.refresh()
+						this._postgresModel.refresh()
 					]);
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.refreshFailed(error));
@@ -166,7 +163,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
-			{ component: refreshButton, toolbarSeparatorAfter: true }
+			{ component: refreshButton }
 		]).component();
 	}
 
@@ -223,6 +220,10 @@ export class PostgresResourceHealthPage extends DashboardPage {
 						condtionContainer.addItem(this.modelView.modelBuilder.text().withProps({
 							value: loc.podScheduled,
 						}).component());
+					} else {
+						condtionContainer.addItem(this.modelView.modelBuilder.text().withProps({
+							value: c.message,
+						}).component());
 					}
 				}
 
@@ -249,9 +250,10 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		return podNames;
 	}
 
-	private findPodIssues(): void {
+	private findPodIssues(): string[] {
 		const podStatus = this._postgresModel.config?.status.podsStatus;
 		let issueCount = 0;
+		let podIssuesDetected: string[] = [];
 
 		podStatus?.forEach(p => {
 			p.conditions.forEach(c => {
@@ -261,10 +263,12 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			});
 
 			if (issueCount > 0) {
-				this.podIssuesDetected.push(loc.numberOfIssuesDetected(p.name, issueCount));
+				podIssuesDetected.push(loc.numberOfIssuesDetected(p.name, issueCount));
 				issueCount = 0;
 			}
 		});
+
+		return podIssuesDetected;
 	}
 
 	private refreshPodSummarySection(): void {
@@ -288,8 +292,8 @@ export class PostgresResourceHealthPage extends DashboardPage {
 				iconWidth: '20px'
 			}).component();
 
-			this.findPodIssues();
-			if (this.podIssuesDetected.length === 0) {
+			let podIssues = this.findPodIssues();
+			if (podIssues.length === 0) {
 				imageComponent.iconPath = IconPathHelper.success;
 				podSummaryTitle.addItem(imageComponent, { CSSStyles: { 'margin-right': '5px' } });
 				podSummaryTitle.addItem(this.modelView.modelBuilder.text().withProps({
@@ -313,15 +317,14 @@ export class PostgresResourceHealthPage extends DashboardPage {
 					value: loc.podIssuesDetected,
 					CSSStyles: { ...cssStyles.text, 'margin-top': '20px 0px 10px 0px' }
 				}).component());
-				this.podIssuesDetected.forEach(i => {
-					components.push(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+				components.push(...podIssues.map(i => {
+					return this.modelView.modelBuilder.text().withProps({
 						value: i,
 						CSSStyles: { ...cssStyles.text, 'margin': '0px' }
-					}).component());
-				});
-
+					}).component();
+				}));
+				this.podSummaryContainer.addItems(components);
 			}
-			this.podSummaryContainer.addItems(components);
 		}
 	}
 
