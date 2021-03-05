@@ -96,14 +96,31 @@ export class BookModel {
 			this._queuedCommands.push({ deferred, book: undefined });
 			await deferred.promise;
 		}
-		this._bookItems = [];
-		this._allNotebooks = new Map<string, BookTreeItem>();
-		if (this.isNotebook) {
-			this.readNotebook();
-		} else {
-			await this.readBookStructure();
-			await this.loadTableOfContentFiles();
-			await this.readBooks();
+		await this.initBook(book);
+	}
+
+	public async initBook(book?: BookInitialization): Promise<void> {
+		if (this._currentBook && this._currentBook !== book) {
+			const deferred = new Deferred<void>();
+			this._queuedCommands.push({ deferred, book: book });
+			await deferred.promise;
+		}
+		try {
+			this._bookItems = [];
+			this._allNotebooks = new Map<string, BookTreeItem>();
+			if (this.isNotebook) {
+				this.readNotebook();
+			} else {
+				await this.readBookStructure();
+				await this.loadTableOfContentFiles();
+				await this.readBooks();
+			}
+		}
+		finally {
+			// If there isn't an active session and we still have queued commands then we have to manually kick off the next one
+			if (this._queuedCommands.length > 0 && !this._currentBook) {
+				this._queuedCommands.shift()?.deferred.resolve();
+			}
 		}
 	}
 
