@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./media/modal';
+import 'vs/css!./media/calloutDialog';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Color } from 'vs/base/common/color';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
@@ -417,7 +418,7 @@ export abstract class Modal extends Disposable implements IThemable {
 
 
 	/**
-	 * Tasks to perform before calout dialog is shown
+	 * Tasks to perform before callout dialog is shown
 	 * Includes: positioning of dialog
 	 */
 	protected positionCalloutDialog(): void {
