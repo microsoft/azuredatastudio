@@ -36,8 +36,8 @@ export function getAppDataPath() {
  * should be used instead of tools service
  */
 export function nativeCredentialsEnabled() {
-	const linux: boolean = os.platform() === 'darwin';
-	const nativeCredentialsEnabled: boolean = true;
+	const linux: boolean = os.platform() === 'linux';
+	const nativeCredentialsEnabled: boolean = true; // add setting for this after review
 	return linux && nativeCredentialsEnabled;
 }
 

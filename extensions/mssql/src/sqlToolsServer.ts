@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as os from 'os';
 import { ServerProvider, IConfig, Events } from 'service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
@@ -97,9 +96,6 @@ export class SqlToolsServer {
 			this.disposables.push(credsStore);
 			return Promise.all([credsStore.start(), resourceProvider.start()]).then();
 		}
-		// const credsStore = new CredentialStore(context.extensionContext.logPath, this.config);
-		// this.disposables.push(credsStore);
-		// return Promise.all([credsStore.start(), resourceProvider.start()]).then();
 	}
 
 	dispose() {
@@ -168,7 +164,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 		ProfilerFeature,
 		SqlMigrationService.asFeature(context)
 	];
-	if (os.platform() === 'darwin') {
+	if (nativeCredentialsEnabled()) {
 		features.push(NativeCredentialsFeature);
 	}
 	return {
