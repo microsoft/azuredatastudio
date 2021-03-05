@@ -48,6 +48,12 @@
 	top: -0.2em;
 	transform: rotate(135deg);
 }
+.callout-arrow.from-above:before {
+	border-width: 0.5em;
+	left: 2em;
+	bottom: -0.2em;
+	transform: rotate(-45deg);
+}
 .callout-arrow.from-left:before {
 	background-color: var(--bodybackground);
 	height: 26px;
