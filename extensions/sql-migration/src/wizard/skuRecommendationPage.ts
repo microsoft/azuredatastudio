@@ -188,7 +188,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (product.type === 'AzureSQLVM') {
 				dbCount = this._dbCount;
 			} else {
-				dbCount = this._dbCount - this.migrationStateModel._migrationDbs.length;
+				dbCount = this.migrationStateModel._migrationDbs.length;
 			}
 			const descriptions: azdata.RadioCardDescription[] = [
 				{
