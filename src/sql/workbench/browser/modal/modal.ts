@@ -58,7 +58,7 @@ export interface IModalDialogStyles {
 	footerBorderTopColor?: Color;
 }
 
-export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
+export type DialogWidth = 'narrow' | 'medium' | 'wide' | number | string;
 export type DialogStyle = 'normal' | 'flyout' | 'callout';
 export type DialogPosition = 'left' | 'below';
 
@@ -223,8 +223,12 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		if (typeof this._modalOptions.width === 'number') {
 			this._modalDialog.style.width = `${this._modalOptions.width}px`;
-		} else {
+		} else if (this._modalOptions.width === 'narrow'
+			|| this._modalOptions.width === 'medium'
+			|| this._modalOptions.width === 'wide') {
 			this._modalDialog.classList.add(`${this._modalOptions.width}-dialog`);
+		} else {
+			this._modalDialog.style.width = this._modalOptions.width;
 		}
 
 		if (this._modalOptions.dialogStyle === 'callout') {
