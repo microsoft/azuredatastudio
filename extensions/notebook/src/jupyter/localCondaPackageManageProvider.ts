@@ -113,6 +113,7 @@ export class LocalCondaPackageManageProvider implements IPackageManageProvider {
 								pythonDependency = pythonDependency.replace('python ', '');
 								return utils.isPackageSupported(this.jupyterInstallation.installedPythonVersion, [pythonDependency]);
 							}
+							return true;
 						}
 						return false;
 					}).map(pkg => pkg.version);
