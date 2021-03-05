@@ -538,6 +538,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private addPrimaryContributedActions(primary: IAction[]) {
 		for (let action of primary) {
+			let iconName = action.item.icon.light.path.replace(/^.*[\\\/]/, '').slice(0, -4);
+			action.class = ['masked-icon', `${iconName}`];
+
 			// Need to ensure that we don't add the same action multiple times
 			let foundIndex = this._providerRelatedActions.findIndex(act => act.id === action.id);
 			if (foundIndex < 0) {
