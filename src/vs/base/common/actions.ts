@@ -27,7 +27,7 @@ export interface IAction extends IDisposable {
 	readonly id: string;
 	label: string;
 	tooltip: string;
-	class: string | string[] | undefined;
+	class: string | undefined;
 	enabled: boolean;
 	checked: boolean;
 	expanded: boolean | undefined; // {{SQL CARBON EDIT}}

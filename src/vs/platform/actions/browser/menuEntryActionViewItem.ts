@@ -17,7 +17,6 @@ import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { ActionViewItem } from 'vs/base/browser/ui/actionbar/actionViewItems';
 import { DropdownMenuActionViewItem } from 'vs/base/browser/ui/dropdown/dropdownActionViewItem';
 import { isWindows, isLinux } from 'vs/base/common/platform';
-import { isArray } from 'vs/base/common/types';
 
 export function createAndFillInContextMenuActions(menu: IMenu, options: IMenuActionOptions | undefined, target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, isPrimaryGroup?: (group: string) => boolean): IDisposable {
 	const groups = menu.getActions(options);
@@ -254,7 +253,7 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 		public _action: MenuItemAction,
 		@IKeybindingService labeledkeybindingService: IKeybindingService,
 		@INotificationService protected _notificationService: INotificationService,
-		private readonly _defaultCSSClassToAdd: string[] = [_action.class[0], _action.class[1]]
+		private readonly _defaultCSSClassToAdd: string = ''
 	) {
 		super(_action, labeledkeybindingService, _notificationService);
 	}
@@ -292,13 +291,7 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 				if (this.label) {
 					const iconClasses = iconClass.split(' ');
 					if (this._defaultCSSClassToAdd) {
-						if (isArray(this._defaultCSSClassToAdd)) {
-							for (let cssClass of this._defaultCSSClassToAdd) {
-								iconClasses.push(cssClass);
-							}
-						} else {
-							iconClasses.push(this._defaultCSSClassToAdd);
-						}
+						iconClasses.push(this._defaultCSSClassToAdd);
 					}
 					this.label.classList.add('codicon', ...iconClasses);
 					this._labeledItemClassDispose = toDisposable(() => {
