@@ -207,6 +207,10 @@ export function isPackageSupported(pythonVersion: string, packageVersionConstrai
 		let constraintParts = packageVersionConstraint.split(',');
 		for (let constraint of constraintParts) {
 			constraint = constraint.trim();
+			if (constraint.length === 0) {
+				continue;
+			}
+
 			let splitIndex: number;
 			if (!constraint[0].match(specifierFirstCharMatch)) {
 				splitIndex = -1; // No version specifier is included with this version number
@@ -226,16 +230,34 @@ export function isPackageSupported(pythonVersion: string, packageVersionConstrai
 				version = constraint.slice(splitIndex).trim();
 			}
 			let versionComparison = comparePackageVersions(pythonVersion, version);
-			if ((versionSpecifier === '>=' && versionComparison === -1) ||
-				(versionSpecifier === '<=' && versionComparison === 1) ||
-				(versionSpecifier === '>' && versionComparison !== 1) ||
-				(versionSpecifier === '<' && versionComparison !== -1) ||
-				(versionSpecifier === '==' && versionComparison !== 0) ||
-				(versionSpecifier === '!=' && versionComparison === 0)) {
-				supportedVersionFound = false;
+			switch (versionSpecifier) {
+				case '>=':
+					supportedVersionFound = versionComparison !== -1;
+					break;
+				case '<=':
+					supportedVersionFound = versionComparison !== 1;
+					break;
+				case '>':
+					supportedVersionFound = versionComparison === 1;
+					break;
+				case '<':
+					supportedVersionFound = versionComparison === -1;
+					break;
+				case '==':
+					supportedVersionFound = versionComparison === 0;
+					break;
+				case '!=':
+					supportedVersionFound = versionComparison !== 0;
+					break;
+				default:
+					// We hit an unexpected version specifier. Rather than throw an error here, we should
+					// let the package be installable so that we're not too restrictive by mistake.
+					// Trying to install the package will still throw its own unsupported version error later.
+					supportedVersionFound = true; // The package is tentatively supported until we find a constraint that fails
+					break;
+			}
+			if (!supportedVersionFound) {
 				break; // Failed at least one version check, so skip checking the other constraints
-			} else {
-				supportedVersionFound = true; // The package is tentatively supported until we find a constraint that fails
 			}
 		}
 		if (supportedVersionFound) {

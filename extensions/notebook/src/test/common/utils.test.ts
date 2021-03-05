@@ -237,6 +237,13 @@ describe('Utils Tests', function () {
 			should(result).be.true();
 		});
 
+		it('Constraints are a bunch of commas', async function (): Promise<void> {
+			let pythonVersion = '3.6';
+			let versionConstraints: string[] = [',,,', ',,,,', ', , , , , , ,'];
+			let result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.true();
+		});
+
 		it('Installed python version is an empty string', async function (): Promise<void> {
 			let pythonVersion = '';
 			let versionConstraints = ['>=3.7', '!=3.6, >=3.5', '>=3.8'];
