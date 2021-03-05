@@ -16,8 +16,8 @@ class TelemetryEventImpl implements ITelemetryEvent {
 		private _eventName: string,
 		private _properties?: ITelemetryEventProperties,
 		private _measurements?: ITelemetryEventMeasures) {
-		_properties = _properties || {};
-		_measurements = _measurements || {};
+		this._properties = _properties || {};
+		this._measurements = _measurements || {};
 	}
 
 	public send(): void {

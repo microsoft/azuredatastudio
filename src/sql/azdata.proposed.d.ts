@@ -944,13 +944,19 @@ declare module 'azdata' {
 		/**
 		 * Creates and enters a workspace at the specified location
 		 */
-		export function createWorkspace(location: vscode.Uri, workspaceFile?: vscode.Uri): Promise<void>;
+		export function createAndEnterWorkspace(location: vscode.Uri, workspaceFile?: vscode.Uri): Promise<void>;
 
 		/**
 		 * Enters the workspace with the provided path
 		 * @param workspacefile
 		 */
 		export function enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+
+		/**
+		 * Saves and enters the workspace with the provided path
+		 * @param workspacefile
+		 */
+		export function saveAndEnterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 	}
 
 	export interface TableComponentProperties {
@@ -964,7 +970,7 @@ declare module 'azdata' {
 		/**
 		 * Append data to an existing table data.
 		 */
-		appendData(data: any[][]): void;
+		appendData(data: any[][]): Thenable<void>;
 	}
 
 	export interface IconColumnCellValue {

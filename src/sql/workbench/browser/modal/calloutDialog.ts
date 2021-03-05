@@ -51,7 +51,7 @@ export abstract class CalloutDialog<T> extends Modal {
 	public abstract open(): Promise<T>;
 
 	public cancel(): void {
-		this.hide();
+		this.hide('cancel');
 		this.dispose();
 	}
 

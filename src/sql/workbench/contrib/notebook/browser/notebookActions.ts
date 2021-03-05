@@ -337,6 +337,7 @@ export class KernelsDropdown extends SelectBox {
 					index = 0;
 				}
 				this.setOptions(kernels, index);
+				this.model.selectedKernelDisplayName = kernels[index];
 			}
 		} else if (this.model.clientSession?.isInErrorState) {
 			kernels.unshift(noKernelName);
