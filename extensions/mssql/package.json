@@ -7,7 +7,7 @@
     "*"
   ],
   "engines": {
-    "vscode": "^1.53.0"
+    "vscode": "*"
   },
   "main": "./out/main",
   "typings": "./src/mssql",
