@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/dialogModal';
-import { Modal, IModalOptions } from 'sql/workbench/browser/modal/modal';
+import { Modal, IModalOptions, HideReason } from 'sql/workbench/browser/modal/modal';
 import { Wizard, DialogButton, WizardPage } from 'sql/workbench/services/dialog/common/dialogTypes';
 import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
@@ -278,11 +278,14 @@ export class WizardModal extends Modal {
 		}
 	}
 
-	public cancel(): void {
+	public close(): void {
+		this.cancel('close');
+	}
+	public cancel(hideReason: HideReason = 'cancel'): void {
 		const currentPage = this._wizard.pages[this._wizard.currentPage];
 		this._onCancel.fire();
 		this.dispose();
-		this.hide('cancel', currentPage.pageName ?? this._wizard.currentPage.toString());
+		this.hide(hideReason, currentPage.pageName ?? this._wizard.currentPage.toString());
 	}
 
 	private async validateNavigation(newPage: number): Promise<boolean> {
