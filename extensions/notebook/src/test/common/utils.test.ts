@@ -156,6 +156,17 @@ describe('Utils Tests', function () {
 	});
 
 	describe('isPackageSupported', () => {
+		it('Constraints have no version specifier', async function (): Promise<void> {
+			let pythonVersion = '3.6';
+			let versionConstraints = ['3.6.*', '3.*'];
+			let result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.true();
+
+			versionConstraints = ['3.5.*', '3.5'];
+			result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.false();
+		});
+
 		it('Package is valid for version constraints', async function (): Promise<void> {
 			let pythonVersion = '3.6';
 			let versionConstraints = ['>=3.5,!=3.2,!=3.4.*'];

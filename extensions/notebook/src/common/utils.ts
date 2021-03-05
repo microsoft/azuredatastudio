@@ -187,6 +187,8 @@ export function sortPackageVersions(versions: string[], ascending: boolean = tru
 	});
 }
 
+const specifierFirstCharMatch = /[><=!]/;
+
 // Determines if a given package is supported for the provided version of Python
 // using the version constraints from the pypi metadata.
 export function isPackageSupported(pythonVersion: string, packageVersionConstraints: string[]): boolean {
@@ -206,13 +208,23 @@ export function isPackageSupported(pythonVersion: string, packageVersionConstrai
 		for (let constraint of constraintParts) {
 			constraint = constraint.trim();
 			let splitIndex: number;
-			if ((constraint[0] === '>' || constraint[0] === '<') && constraint[1] !== '=') {
+			if (!constraint[0].match(specifierFirstCharMatch)) {
+				splitIndex = -1; // No version specifier is included with this version number
+			} else if ((constraint[0] === '>' || constraint[0] === '<') && constraint[1] !== '=') {
 				splitIndex = 1;
 			} else {
 				splitIndex = 2;
 			}
-			let versionSpecifier = constraint.slice(0, splitIndex);
-			let version = constraint.slice(splitIndex).trim();
+
+			let versionSpecifier: string;
+			let version: string;
+			if (splitIndex === -1) {
+				versionSpecifier = '=='; // If there's no version specifier, then we need to match the version exactly
+				version = constraint;
+			} else {
+				versionSpecifier = constraint.slice(0, splitIndex);
+				version = constraint.slice(splitIndex).trim();
+			}
 			let versionComparison = comparePackageVersions(pythonVersion, version);
 			if ((versionSpecifier === '>=' && versionComparison === -1) ||
 				(versionSpecifier === '<=' && versionComparison === 1) ||
