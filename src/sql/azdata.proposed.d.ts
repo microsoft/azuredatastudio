@@ -718,7 +718,7 @@ declare module 'azdata' {
 			pageName?: string;
 		}
 
-		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
+		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number | string;
 
 		/**
 		 * These dialog styles affect how the dialog dispalys in the application.
