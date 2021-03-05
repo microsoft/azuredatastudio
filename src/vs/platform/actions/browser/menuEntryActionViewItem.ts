@@ -283,8 +283,7 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 					iconClass = ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
 				} else {
 					iconClass = ids.nextId();
-					createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
-					createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.dark)}`);
+					createCSSRule(`.codicon.masked-icon.${iconClass}:before`, `mask-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
 					ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
 				}
 
@@ -294,6 +293,7 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 						iconClasses.push(this._defaultCSSClassToAdd);
 					}
 					this.label.classList.add('codicon', ...iconClasses);
+					this.label.classList.add('masked-icon', ...iconClasses);
 					this._labeledItemClassDispose = toDisposable(() => {
 						if (this.label) {
 							this.label.classList.remove('codicon', ...iconClasses);
