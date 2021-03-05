@@ -177,55 +177,40 @@ export class PostgresResourceHealthPage extends DashboardPage {
 
 
 			p.conditions.forEach(c => {
-				const condtionContainer = this.modelView.modelBuilder.flexContainer().withProps({
-					CSSStyles: { 'alignItems': 'center', 'height': '15px' }
+				let message: string;
+				let imageComponent = this.modelView.modelBuilder.image().withProps({
+					width: iconSize,
+					height: iconSize,
+					iconHeight: '15px',
+					iconWidth: '15px'
 				}).component();
 
 				if (c.status === 'False') {
-					const imageComponent = this.modelView.modelBuilder.image().withProps({
-						iconPath: IconPathHelper.fail,
-						width: iconSize,
-						height: iconSize,
-						iconHeight: '15px',
-						iconWidth: '15px'
-					}).component();
-					condtionContainer.addItem(imageComponent, { CSSStyles: { 'margin-right': '0px' } });
-
-					condtionContainer.addItem(this.modelView.modelBuilder.text().withProps({
-						value: c.message,
-					}).component());
+					imageComponent.iconPath = IconPathHelper.fail;
+					message = c.message ?? c.reason ?? '';
 				} else {
-					const imageComponent = this.modelView.modelBuilder.image().withProps({
-						iconPath: IconPathHelper.success,
-						width: iconSize,
-						height: iconSize,
-						iconHeight: '15px',
-						iconWidth: '15px'
-					}).component();
-					condtionContainer.addItem(imageComponent, { CSSStyles: { 'margin-right': '0px' } });
+					imageComponent.iconPath = IconPathHelper.success;
 
 					if (c.type === 'Initialized') {
-						condtionContainer.addItem(this.modelView.modelBuilder.text().withProps({
-							value: loc.podInitialized,
-						}).component());
+						message = loc.podInitialized;
 					} else if (c.type === 'Ready') {
-						condtionContainer.addItem(this.modelView.modelBuilder.text().withProps({
-							value: loc.podReady,
-						}).component());
+						message = loc.podReady;
 					} else if (c.type === 'ContainersReady') {
-						condtionContainer.addItem(this.modelView.modelBuilder.text().withProps({
-							value: loc.containerReady,
-						}).component());
+						message = loc.containerReady;
 					} else if (c.type === 'PodScheduled') {
-						condtionContainer.addItem(this.modelView.modelBuilder.text().withProps({
-							value: loc.podScheduled,
-						}).component());
+						message = loc.podScheduled;
 					} else {
-						condtionContainer.addItem(this.modelView.modelBuilder.text().withProps({
-							value: c.message,
-						}).component());
+						message = c.message ?? c.reason ?? '';
 					}
 				}
+
+				const condtionContainer = this.modelView.modelBuilder.flexContainer().withProps({
+					CSSStyles: { 'alignItems': 'center', 'height': '15px' }
+				}).component();
+				condtionContainer.addItem(imageComponent, { CSSStyles: { 'margin-right': '0px' } });
+				condtionContainer.addItem(this.modelView.modelBuilder.text().withProps({
+					value: message,
+				}).component());
 
 				indexes.push(this.podsData.length);
 				this.podsData.push({
