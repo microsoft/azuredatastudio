@@ -18,10 +18,8 @@ export type PodHealthModel = {
 };
 
 export class PostgresResourceHealthPage extends DashboardPage {
-	private runningPodsLoading!: azdata.LoadingComponent;
-	private pendingPodsLoading!: azdata.LoadingComponent;
-	private runningPods!: azdata.TextComponent;
-	private pendingPods!: azdata.TextComponent;
+	private podSummaryContainer!: azdata.DivContainer;
+	private podIssuesDetected: string[] = [];
 
 	private podConditionsContainer!: azdata.DivContainer;
 	private podConditionsLoading!: azdata.LoadingComponent;
@@ -62,70 +60,28 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			CSSStyles: { ...cssStyles.title }
 		}).component());
 
-		const overviewBox = this.modelView.modelBuilder.divContainer().withProps({
-			CSSStyles: { 'border': 'solid 1px #ccc', 'height': '200px', 'width': '300px', }
-		}).component();
-
-		overviewBox.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: loc.podOverview,
-			CSSStyles: { ...cssStyles.title, 'margin': '10px 20px 20px 20px' }
+		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: loc.resourceHealthDescription,
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component());
 
-		this.runningPods = this.modelView.modelBuilder.text().withProps({
-			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'font-size': '16px' }
-		}).component();
+		this.podSummaryContainer = this.modelView.modelBuilder.divContainer().component();
 
-		this.pendingPods = this.modelView.modelBuilder.text().withProps({
-			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'font-size': '16px' }
-		}).component();
+		this.refreshPodSummarySection();
 
+		content.addItem(this.podSummaryContainer);
 
-		this.runningPodsLoading = this.modelView.modelBuilder.loadingComponent().withProperties<azdata.LoadingComponentProperties>({
-			loading: !this._postgresModel.configLastUpdated
-		}).component();
-
-		this.pendingPodsLoading = this.modelView.modelBuilder.loadingComponent().withProperties<azdata.LoadingComponentProperties>({
-			loading: !this._postgresModel.configLastUpdated
-		}).component();
-
-
-		this.refreshPodOverviewBox();
-
-		this.runningPodsLoading.component = this.runningPods;
-		this.pendingPodsLoading.component = this.pendingPods;
-
-		const podOverviewTable = this.modelView.modelBuilder.declarativeTable().withProps({
-			columns: [
-				{
-					displayName: '',
-					valueType: azdata.DeclarativeDataType.component,
-					isReadOnly: true,
-					width: '20px',
-					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: cssStyles.tableRow
-				},
-				{
-					displayName: '',
-					valueType: azdata.DeclarativeDataType.string,
-					isReadOnly: true,
-					width: '230px',
-					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: cssStyles.tableRow
-				}
-			],
-			data: [
-				[this.runningPodsLoading, loc.running],
-				[this.pendingPodsLoading, loc.pending]]
-		}).component();
-		overviewBox.addItem(podOverviewTable, { CSSStyles: { 'margin': '10px 20px 20px 20px' } });
-		content.addItem(overviewBox);
-
+		// Pod Conditions
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: loc.availablePods,
+			value: loc.podsPresent,
 			CSSStyles: { ...cssStyles.title }
 		}).component());
 
-		// Pod Conditions
+		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: loc.podsUsedDescription,
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'margin-top': '10px' }
+		}).component());
+
 		this.podConditionsContainer = this.modelView.modelBuilder.divContainer().component();
 		this.podConditionsTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
@@ -146,14 +102,11 @@ export class PostgresResourceHealthPage extends DashboardPage {
 					headerCssStyles: cssStyles.tableHeader,
 					rowCssStyles: {
 						...cssStyles.tableRow,
-						'overflow': 'hidden',
-						'text-overflow': 'ellipsis',
-						'white-space': 'nowrap',
-						'max-width': '0'
+						'min-width': '150px'
 					}
 				},
 				{
-					displayName: loc.lastUpdated,
+					displayName: loc.lastTransition,
 					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
 					width: '30%',
@@ -171,7 +124,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			})
 		);
 
-		this.podConditionsContainer.addItem(this.podDropDown);
+		this.podConditionsContainer.addItem(this.podDropDown, { CSSStyles: { 'margin': '10px 0px 10px 0px' } });
 		this.podConditionsContainer.addItem(this.podConditionsTable);
 		this.podConditionsLoading = this.modelView.modelBuilder.loadingComponent()
 			.withItem(this.podConditionsContainer)
@@ -199,8 +152,6 @@ export class PostgresResourceHealthPage extends DashboardPage {
 				refreshButton.enabled = false;
 				try {
 					this.podConditionsLoading!.loading = true;
-					this.runningPodsLoading.loading = true;
-					this.pendingPodsLoading.loading = true;
 
 					await Promise.all([
 						this._postgresModel.refresh(),
@@ -219,25 +170,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		]).component();
 	}
 
-	private getPodOverview(): void {
-		const podStatus = this._postgresModel.config?.status.podsStatus;
-		let runningPodCount = 0;
-		let pendingPodCount = 0;
-
-		podStatus?.forEach(p => {
-			// If a condition of the pod has a status of False, pod is not Ready
-			if (p.conditions.find(c => c.status === 'False') ? true : false) {
-				pendingPodCount++;
-			} else {
-				runningPodCount++;
-			}
-		});
-
-		this.runningPods.value = runningPodCount.toString();
-		this.pendingPods.value = pendingPodCount.toString();
-	}
-
-	private getPods(): string[] {
+	private createPodList(): string[] {
 		const podStatus = this._postgresModel.config?.status.podsStatus;
 		let podNames: string[] = [];
 
@@ -316,11 +249,79 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		return podNames;
 	}
 
-	private refreshPodOverviewBox(): void {
-		if (this._postgresModel.config) {
-			this.getPodOverview();
-			this.runningPodsLoading.loading = false;
-			this.pendingPodsLoading.loading = false;
+	private findPodIssues(): void {
+		const podStatus = this._postgresModel.config?.status.podsStatus;
+		let issueCount = 0;
+
+		podStatus?.forEach(p => {
+			p.conditions.forEach(c => {
+				if (c.status === 'False') {
+					issueCount++;
+				}
+			});
+
+			if (issueCount > 0) {
+				this.podIssuesDetected.push(loc.numberOfIssuesDetected(p.name, issueCount));
+				issueCount = 0;
+			}
+		});
+	}
+
+	private refreshPodSummarySection(): void {
+		let podSummaryTitle = this.modelView.modelBuilder.flexContainer().withProps({
+			CSSStyles: { 'alignItems': 'center', 'height': '15px', 'margin-top': '20px' }
+		}).component();
+		if (!this._postgresModel.config) {
+			podSummaryTitle.addItem(this.modelView.modelBuilder.loadingComponent().component(), { CSSStyles: { 'margin-right': '5px' } });
+			podSummaryTitle.addItem(this.modelView.modelBuilder.text().withProps({
+				value: loc.loading,
+				CSSStyles: { ...cssStyles.title }
+			}).component());
+			this.podSummaryContainer.addItem(podSummaryTitle);
+		} else {
+			let components: azdata.Component[] = [];
+			let imageComponent = this.modelView.modelBuilder.image().withProps({
+				iconPath: IconPathHelper.success,
+				width: iconSize,
+				height: iconSize,
+				iconHeight: '20px',
+				iconWidth: '20px'
+			}).component();
+
+			this.findPodIssues();
+			if (this.podIssuesDetected.length === 0) {
+				imageComponent.iconPath = IconPathHelper.success;
+				podSummaryTitle.addItem(imageComponent, { CSSStyles: { 'margin-right': '5px' } });
+				podSummaryTitle.addItem(this.modelView.modelBuilder.text().withProps({
+					value: loc.available,
+					CSSStyles: { ...cssStyles.title, 'margin-left': '0px' }
+				}).component());
+				components.push(podSummaryTitle);
+				components.push(this.modelView.modelBuilder.text().withProps({
+					value: loc.noPodIssuesDetected,
+					CSSStyles: { ...cssStyles.text, 'margin-top': '20px' }
+				}).component());
+			} else {
+				imageComponent.iconPath = IconPathHelper.fail;
+				podSummaryTitle.addItem(imageComponent, { CSSStyles: { 'margin-right': '5px' } });
+				podSummaryTitle.addItem(this.modelView.modelBuilder.text().withProps({
+					value: loc.issuesDetected,
+					CSSStyles: { ...cssStyles.title }
+				}).component());
+				components.push(podSummaryTitle);
+				components.push(this.modelView.modelBuilder.text().withProps({
+					value: loc.podIssuesDetected,
+					CSSStyles: { ...cssStyles.text, 'margin-top': '20px 0px 10px 0px' }
+				}).component());
+				this.podIssuesDetected.forEach(i => {
+					components.push(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+						value: i,
+						CSSStyles: { ...cssStyles.text, 'margin': '0px' }
+					}).component());
+				});
+
+			}
+			this.podSummaryContainer.addItems(components);
 		}
 	}
 
@@ -328,14 +329,15 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		if (this._postgresModel.config) {
 			this.podConditionsTableIndexes = new Map();
 			this.podsData = [];
-			this.podDropDown.values = this.getPods();
+			this.podDropDown.values = this.createPodList();
 			this.podConditionsTable.setFilter(this.podConditionsTableIndexes.get(this.coordinatorPodName!));
 			this.podConditionsLoading.loading = false;
 		}
 	}
 
 	private handleConfigUpdated() {
-		this.refreshPodOverviewBox();
+		this.podSummaryContainer.clearItems();
+		this.refreshPodSummarySection();
 		this.refreshPodCondtions();
 	}
 }

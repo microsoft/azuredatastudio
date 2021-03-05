@@ -134,6 +134,8 @@ export const postgresArcProductName = localize('arc.postgresArcProductName', "Az
 export const coordinator = localize('arc.coordinator', "Coordinator");
 export const worker = localize('arc.worker', "Worker");
 export const monitor = localize('arc.monitor', "Monitor");
+export const available = localize('arc.available', "Available");
+export const issuesDetected = localize('arc.issuesDetected', "Issues Detected");
 export const newDatabase = localize('arc.newDatabase', "New Database");
 export const databaseName = localize('arc.databaseName', "Database name");
 export const enterNewPassword = localize('arc.enterNewPassword', "Enter a new password");
@@ -152,6 +154,7 @@ export const postgresComputeAndStorageDescriptionPartTwo = localize('arc.postgre
 export const computeAndStorageDescriptionPartThree = localize('arc.computeAndStorageDescriptionPartThree', "without downtime and by");
 export const computeAndStorageDescriptionPartFour = localize('arc.computeAndStorageDescriptionPartFour', "Before doing so, you need to ensure");
 export const computeAndStorageDescriptionPartFive = localize('arc.computeAndStorageDescriptionPartFive', "there are sufficient resources available");
+export const resourceHealthDescription = localize('arc.resourceHealthDescription', "Resource health can tell you if your resource is running as expected.");
 export const computeAndStorageDescriptionPartSix = localize('arc.computeAndStorageDescriptionPartSix', "in your Kubernetes cluster to honor this configuration.");
 export const node = localize('arc.node', "node");
 export const nodes = localize('arc.nodes', "nodes");
@@ -169,17 +172,19 @@ export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
 export const enterANonEmptyPassword = localize('arc.enterANonEmptyPassword', "Enter a non empty password or press escape to exit.");
 export const thePasswordsDoNotMatch = localize('arc.thePasswordsDoNotMatch', "The passwords do not match. Confirm the password or press escape to exit.");
 export const passwordReset = localize('arc.passwordReset', "Password reset successfully");
-export const podOverview = localize('arc.podOverview', "Pod overview");
 export const condition = localize('arc.condition', "Condition");
 export const details = localize('arc.details', "Details");
-export const lastUpdated = localize('arc.lastUpdated', "Last updated");
+export const lastTransition = localize('arc.lastTransition', "Last transition");
 export const noExternalEndpoint = localize('arc.noExternalEndpoint', "No External Endpoint has been configured so this information isn't available.");
 export const podsReady = localize('arc.podsReady', "pods ready");
-export const availablePods = localize('arc.availablePod', "Available Pods");
+export const podsPresent = localize('arc.podsPresent', "Pods Present");
+export const podsUsedDescription = localize('arc.podsUsedDescription', "Select a pod in the dropdown below for detailed health information.");
 export const connectToPostgresDescription = localize('arc.connectToPostgresDescription', "A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.");
 export const postgresExtension = localize('arc.postgresExtension', "microsoft.azuredatastudio-postgresql");
 export const podInitialized = localize('arc.podInitialized', "Pod is initialized.");
 export const podReady = localize('arc.podReady', "Pod is ready.");
+export const noPodIssuesDetected = localize('arc.noPodIssuesDetected', "There aren’t any known issues affecting this PostgreSQL Hyperscale instance.");
+export const podIssuesDetected = localize('arc.podIssuesDetected', "The pods listed below are experiencing issues that may affect performance or availability.");
 export const containerReady = localize('arc.containerReady', "Pod containers are ready.");
 export const podScheduled = localize('arc.podScheduled', "Pod is schedulable.");
 
@@ -230,6 +235,7 @@ export function fetchEndpointsFailed(name: string, error: any): string { return 
 export function fetchRegistrationsFailed(name: string, error: any): string { return localize('arc.fetchRegistrationsFailed', "An unexpected error occurred retrieving the registrations for '{0}'. {1}", name, getErrorMessage(error)); }
 export function fetchDatabasesFailed(name: string, error: any): string { return localize('arc.fetchDatabasesFailed', "An unexpected error occurred retrieving the databases for '{0}'. {1}", name, getErrorMessage(error)); }
 export function fetchEngineSettingsFailed(name: string, error: any): string { return localize('arc.fetchEngineSettingsFailed', "An unexpected error occurred retrieving the engine settings for '{0}'. {1}", name, getErrorMessage(error)); }
+export function numberOfIssuesDetected(name: string, issues: number): string { return localize('arc.numberOfIssuesDetected', "• {0} ({1} issues)", name, issues); }
 export function instanceDeletionWarning(name: string): string { return localize('arc.instanceDeletionWarning', "Warning! Deleting an instance is permanent and cannot be undone. To delete the instance '{0}' type the name '{0}' below to proceed.", name); }
 export function invalidInstanceDeletionName(name: string): string { return localize('arc.invalidInstanceDeletionName', "The value '{0}' does not match the instance name. Try again or press escape to exit", name); }
 export function couldNotFindAzureResource(name: string): string { return localize('arc.couldNotFindAzureResource', "Could not find Azure resource for {0}", name); }
