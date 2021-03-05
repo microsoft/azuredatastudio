@@ -274,7 +274,7 @@ export class WizardModal extends Modal {
 			}
 			this._onDone.fire();
 			this.dispose();
-			this.hide('done');
+			this.hide('ok');
 		}
 	}
 

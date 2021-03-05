@@ -104,7 +104,7 @@ const defaultOptions: IModalOptions = {
 
 const tabbableElementsQuerySelector = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]';
 
-export type HideReason = 'close' | 'cancel' | 'done' | 'ok';
+export type HideReason = 'close' | 'cancel' | 'ok';
 
 export abstract class Modal extends Disposable implements IThemable {
 	protected _useDefaultMessageBoxLocation: boolean = true;

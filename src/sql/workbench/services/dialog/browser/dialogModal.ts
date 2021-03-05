@@ -138,7 +138,7 @@ export class DialogModal extends Modal {
 			if (await this._dialog.validateClose()) {
 				this._onDone.fire();
 				this.dispose();
-				this.hide('done');
+				this.hide('ok');
 			}
 			clearTimeout(buttonSpinnerHandler);
 			this._doneButton.element.classList.remove('validating');
