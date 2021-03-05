@@ -10,7 +10,7 @@
 	},
 	"license": "SEE MIT LICENSE IN LICENSE.md",
 	"engines": {
-		"vscode": "^1.54.0",
+		"vscode": "^1.34.0",
 		"azdata": ">=1.26.0"
 	},
 	"icon": "languagepack.png",
