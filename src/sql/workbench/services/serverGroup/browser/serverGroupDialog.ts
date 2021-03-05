@@ -72,7 +72,7 @@ export class ServerGroupDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(localize('ServerGroupsDialogTitle', "Server Groups"), TelemetryKeys.ServerGroups, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
+		super(localize('ServerGroupsDialogTitle', "Server Groups"), TelemetryKeys.ModalDialogName.ServerGroups, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
 	}
 
 	public render() {

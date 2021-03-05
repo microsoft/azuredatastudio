@@ -669,7 +669,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
-		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.AddServerGroup);
+		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.AddServerGroup);
 		return this._connectionStore.saveProfileGroup(profile).then(groupId => {
 			this._onAddConnectionProfile.fire(undefined);
 			return groupId;
@@ -954,7 +954,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			connection.extensionTimer.stop();
 
 			connection.connectHandler(true);
-			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DatabaseConnected)
+			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.DatabaseConnected)
 				.withAdditionalProperties({
 					connectionType: connection.serverInfo ? (connection.serverInfo.isCloud ? 'Azure' : 'Standalone') : '',
 					provider: connection.connectionProfile.providerName,
@@ -973,7 +973,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}
 		} else {
 			connection.connectHandler(false, info.errorMessage, info.errorNumber, info.messages);
-			this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DatabaseConnectionError, info.errorNumber.toString())
+			this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.DatabaseConnectionError, info.errorNumber.toString())
 				.withAdditionalProperties({
 					provider: connection.connectionProfile.providerName,
 				})
@@ -1003,13 +1003,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {
-		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.MoveServerConnection);
+		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.MoveServerConnection);
 		return this._connectionStore.changeGroupIdForConnectionGroup(source, target);
 	}
 
 	public changeGroupIdForConnection(source: ConnectionProfile, targetGroupId: string): Promise<void> {
 		let id = Utils.generateUri(source);
-		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.MoveServerGroup);
+		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.MoveServerGroup);
 		return this._connectionStore.changeGroupIdForConnection(source, targetGroupId).then(result => {
 			this._onAddConnectionProfile.fire(source);
 			if (id && targetGroupId) {
@@ -1154,7 +1154,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 		return this.doDisconnect(uri, profile).then(result => {
 			if (result) {
-				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DatabaseDisconnected)
+				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.DatabaseDisconnected)
 					.withAdditionalProperties({
 						provider: profile.providerName
 					})
@@ -1272,7 +1272,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Disconnects a connection before removing from settings.
 	 */
 	public deleteConnection(connection: ConnectionProfile): Promise<boolean> {
-		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DeleteConnection)
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.DeleteConnection)
 			.withAdditionalProperties({
 				provider: connection.providerName
 			}).send();
@@ -1305,7 +1305,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Disconnects a connection before removing from config. If disconnect fails, settings is not modified.
 	 */
 	public deleteConnectionGroup(group: ConnectionProfileGroup): Promise<boolean> {
-		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DeleteServerGroup);
+		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.DeleteServerGroup);
 		// Get all connections for this group
 		let connections = ConnectionProfileGroup.getConnectionsInGroup(group);
 
