@@ -147,7 +147,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				this.databaseTable.component().dataValues?.push(
 					[
 						{
-							value: false,
+							value: true,
 							style: styleLeft
 						},
 						{

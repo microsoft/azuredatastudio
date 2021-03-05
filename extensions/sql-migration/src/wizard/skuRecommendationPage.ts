@@ -34,6 +34,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _view: azdata.ModelView | undefined;
 	private _rbg!: azdata.RadioCardGroupComponent;
 	private _dbCount!: number;
+	private _serverName!: string;
 
 	private async initialState(view: azdata.ModelView) {
 		this._view = view;
@@ -98,7 +99,15 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			]
 		);
 
+		let data = connectionUri.split('|');
+		data.forEach(element => {
+			if (element.startsWith('server:')) {
+				let serverArray = element.split(':');
+				this._serverName = serverArray[1];
+			}
+		});
 		this._dbCount = (await azdata.connection.listDatabases(this.migrationStateModel.sourceConnectionId)).length;
+
 		await view.initializeModel(formContainer.component());
 	}
 
@@ -106,7 +115,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const component = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: '',
 			CSSStyles: {
-				'font-size': '18px'
+				'font-size': '14px'
 			}
 		});
 
@@ -138,13 +147,17 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	private constructDetails(): void {
 		this._chooseTargetComponent?.component.clearItems();
-
+		this._igComponent!.component.value = constants.ASSESSMENT_COMPLETED(this._serverName);
 		if (this.migrationStateModel.assessmentResults) {
+			if (this.migrationStateModel.assessmentResults!.length === this._dbCount + 1) {
+				this._detailsComponent!.component.value = constants.SKU_RECOMMENDATION_NONE_SUCCESSFUL;
+			} else if (this.migrationStateModel.assessmentResults!.length > 0) {
 
+				this._detailsComponent!.component.value = constants.SKU_RECOMMENDATION_SOME_SUCCESSFUL(this._dbCount - this.migrationStateModel.assessmentResults!.length, this._dbCount);
+			} else {
+				this._detailsComponent!.component.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this._dbCount);
+			}
 		}
-		this._igComponent!.component.value = constants.CONGRATULATIONS;
-		// either: SKU_RECOMMENDATION_ALL_SUCCESSFUL or SKU_RECOMMENDATION_SOME_SUCCESSFUL or SKU_RECOMMENDATION_NONE_SUCCESSFUL
-		this._detailsComponent!.component.value = constants.SKU_RECOMMENDATION_SOME_SUCCESSFUL(1, 1);
 		this.constructTargets();
 	}
 
@@ -197,6 +210,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				descriptions
 			});
 		});
+		let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog', this);
 
 		this._rbg.onLinkClick(async (value) => {
 
@@ -206,7 +220,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				if (value.cardId === 'AzureSQLVM') {
 					// open dialog for AzureSQLVM
 				} else if (value.cardId === 'AzureSQLMI') {
-					let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog', this);
 					await dialog.openDialog();
 				}
 			} else if (value.description.linkDisplayValue === 'Learn more') {
