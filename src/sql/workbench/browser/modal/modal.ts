@@ -440,9 +440,7 @@ export abstract class Modal extends Disposable implements IThemable {
 					this._modalDialog.style.left = `${this._modalOptions.positionX}px`;
 					this._modalDialog.style.top = `${this._modalOptions.positionY - 235}px`;
 				}
-			}
-
-			if (this._modalOptions.dialogPosition === 'below') {
+			} else if (this._modalOptions.dialogPosition === 'below') {
 				if (this._modalOptions.dialogProperties) {
 					this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - this._modalOptions.dialogProperties.width}px`;
 					this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos + (this._modalOptions.dialogProperties.height)}px`;
@@ -450,9 +448,7 @@ export abstract class Modal extends Disposable implements IThemable {
 					this._modalDialog.style.left = `${this._modalOptions.positionX}px`;
 					this._modalDialog.style.top = `${this._modalOptions.positionY}px`;
 				}
-			}
-
-			if (this._modalOptions.dialogPosition === 'left') {
+			} else if (this._modalOptions.dialogPosition === 'left') {
 				if (this._modalOptions.dialogProperties) {
 					this._modalDialog.style.left = `${this._modalOptions.positionX - (dialogWidth + this._modalOptions.dialogProperties.width)}px`;
 					this._modalDialog.style.top = `${this._modalOptions.positionY - this._modalOptions.dialogProperties.height * 2}px`;
