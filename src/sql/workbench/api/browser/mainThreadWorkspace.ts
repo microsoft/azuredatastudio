@@ -17,7 +17,7 @@ export class MainThreadWorkspace extends Disposable implements MainThreadWorkspa
 	constructor(
 		extHostContext: IExtHostContext,
 		@IWorkspaceEditingService private workspaceEditingService: IWorkspaceEditingService,
-		@IWorkbenchEnvironmentService protected readonly environmentService: IWorkbenchEnvironmentService,
+		@IWorkbenchEnvironmentService protected readonly environmentService: IWorkbenchEnvironmentService
 	) {
 		super();
 	}
@@ -37,5 +37,4 @@ export class MainThreadWorkspace extends Disposable implements MainThreadWorkspa
 		workspaceFile = URI.revive(workspaceFile);
 		return this.workspaceEditingService.saveAndEnterWorkspace(workspaceFile);
 	}
-
 }
