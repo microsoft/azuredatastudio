@@ -14,8 +14,21 @@ import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, JupyterBookSection } from '../contracts/content';
 import { convertFrom, getContentPath, BookVersion } from './bookVersionHandler';
 import { debounce } from '../common/utils';
+import { Deferred } from '../common/promise';
 const fsPromises = fileServices.promises;
 const content = 'content';
+
+class BookInitialization {
+	private _initializedBook = new Deferred<void>();
+
+	public initializationDone(): Promise<void> {
+		return this._initializedBook.promise;
+	}
+
+	public dispose(): void {
+		this._initializedBook.resolve();
+	}
+}
 
 export class BookModel {
 	private _bookItems: BookTreeItem[];
@@ -26,6 +39,8 @@ export class BookModel {
 	private _bookVersion: BookVersion;
 	private _rootPath: string;
 	private _errorMessage: string;
+	private _currentBook: BookInitialization | undefined = undefined;
+	private _queuedCommands: { deferred: Deferred<void>, book?: BookInitialization }[] = [];
 
 	constructor(
 		public readonly bookPath: string,
@@ -56,6 +71,31 @@ export class BookModel {
 	}
 
 	public async initializeContents(): Promise<void> {
+		const book = new BookInitialization();
+		book.initializationDone().then(async () => {
+			this._currentBook = undefined;
+			this._queuedCommands.shift()?.deferred.resolve();
+		});
+		if (!this._currentBook && this._queuedCommands.length === 0) {
+			this._currentBook = book;
+		} else {
+			// We're in a session or another command is executing so add this to the end of the queued commands and wait our turn
+			const deferred = new Deferred<void>();
+			deferred.promise.then(() => {
+				this._currentBook = book;
+				// We've started a new session so look at all our queued commands and start
+				// the ones for this session now.
+				this._queuedCommands = this._queuedCommands.filter(c => {
+					if (c.book === this._currentBook) {
+						c.deferred.resolve();
+						return false;
+					}
+					return true;
+				});
+			});
+			this._queuedCommands.push({ deferred, book: undefined });
+			await deferred.promise;
+		}
 		this._bookItems = [];
 		this._allNotebooks = new Map<string, BookTreeItem>();
 		if (this.isNotebook) {

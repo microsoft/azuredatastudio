@@ -217,12 +217,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				vscode.window.showErrorMessage(loc.editBookError(updateBook.book.contentPath, e instanceof Error ? e.message : e));
 			} finally {
 				try {
-					await targetBook.reinitializeContents();
-				} finally {
 					if (sourceBook && sourceBook.bookPath !== targetBook.bookPath) {
 						// refresh source book model to pick up latest changes
 						await sourceBook.reinitializeContents();
 					}
+				} finally {
 					if (sourceBook) {
 						sourceBook.watchTOC();
 					}
