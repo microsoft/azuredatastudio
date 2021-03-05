@@ -943,29 +943,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	private addTelemetryForConnection(connection: ConnectionManagementInfo): void {
-		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DatabaseConnected)
-			.withAdditionalProperties({
-				connectionType: connection.serverInfo ? (connection.serverInfo.isCloud ? 'Azure' : 'Standalone') : '',
-				provider: connection.connectionProfile.providerName,
-				serverVersion: connection.serverInfo ? connection.serverInfo.serverVersion : '',
-				serverEdition: connection.serverInfo ? connection.serverInfo.serverEdition : '',
-				serverEngineEdition: connection.serverInfo ? connection.serverInfo.engineEditionId : '',
-				isBigDataCluster: connection.serverInfo?.options?.isBigDataCluster ?? false,
-				extensionConnectionTime: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
-				serviceConnectionTime: connection.serviceTimer.elapsed()
-			})
-			.send();
-	}
-
-	private addTelemetryForConnectionDisconnected(connection: interfaces.IConnectionProfile): void {
-		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DatabaseDisconnected)
-			.withAdditionalProperties({
-				provider: connection.providerName
-			})
-			.send();
-	}
-
 	public onConnectionComplete(handle: number, info: azdata.ConnectionInfoSummary): void {
 		let connection = this._connectionStatusManager.onConnectionComplete(info);
 
@@ -977,13 +954,34 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			connection.extensionTimer.stop();
 
 			connection.connectHandler(true);
-			this.addTelemetryForConnection(connection);
+			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DatabaseConnected)
+				.withAdditionalProperties({
+					connectionType: connection.serverInfo ? (connection.serverInfo.isCloud ? 'Azure' : 'Standalone') : '',
+					provider: connection.connectionProfile.providerName,
+					serverVersion: connection.serverInfo ? connection.serverInfo.serverVersion : '',
+					serverEdition: connection.serverInfo ? connection.serverInfo.serverEdition : '',
+					serverEngineEdition: connection.serverInfo ? connection.serverInfo.engineEditionId : '',
+					isBigDataCluster: connection.serverInfo?.options?.isBigDataCluster ?? false,
+				}).withAdditionalMeasurements({
+					extensionConnectionTimeMs: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
+					serviceConnectionTimeMs: connection.serviceTimer.elapsed()
+				})
+				.send();
 
 			if (this._connectionStatusManager.isDefaultTypeUri(info.ownerUri)) {
 				this._connectionGlobalStatus.setStatusToConnected(info.connectionSummary);
 			}
 		} else {
 			connection.connectHandler(false, info.errorMessage, info.errorNumber, info.messages);
+			this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DatabaseConnectionError, info.errorNumber.toString())
+				.withAdditionalProperties({
+					provider: connection.connectionProfile.providerName,
+				})
+				.withAdditionalMeasurements({
+					extensionConnectionTimeMs: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
+					serviceConnectionTimeMs: connection.serviceTimer.elapsed()
+				})
+				.send();
 		}
 	}
 
@@ -1156,7 +1154,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 		return this.doDisconnect(uri, profile).then(result => {
 			if (result) {
-				this.addTelemetryForConnectionDisconnected(profile);
+				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DatabaseDisconnected)
+					.withAdditionalProperties({
+						provider: profile.providerName
+					})
+					.send();
 				this._connectionStatusManager.removeConnection(uri);
 			} else {
 				throw result;
