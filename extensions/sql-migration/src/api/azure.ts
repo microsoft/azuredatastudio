@@ -38,15 +38,14 @@ export async function getResourceGroups(account: azdata.Account, subscription: S
 export type SqlManagedInstance = AzureProduct;
 export async function getAvailableManagedInstanceProducts(account: azdata.Account, subscription: Subscription): Promise<SqlManagedInstance[]> {
 	const api = await getAzureCoreAPI();
-
 	const result = await api.getSqlManagedInstances(account, [subscription], false);
+	sortResourceArrayByName(result.resources);
 	return result.resources;
 }
 
 export type SqlServer = AzureProduct;
 export async function getAvailableSqlServers(account: azdata.Account, subscription: Subscription): Promise<SqlServer[]> {
 	const api = await getAzureCoreAPI();
-
 	const result = await api.getSqlServers(account, [subscription], false);
 	return result.resources;
 }
@@ -54,9 +53,13 @@ export async function getAvailableSqlServers(account: azdata.Account, subscripti
 export type SqlVMServer = AzureProduct;
 export async function getAvailableSqlVMs(account: azdata.Account, subscription: Subscription): Promise<SqlVMServer[]> {
 	const api = await getAzureCoreAPI();
-
-	const result = await api.getSqlVMServers(account, [subscription], false);
-	return result.resources;
+	const path = `/subscriptions/${subscription.id}/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines?api-version=2017-03-01-preview`;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.toString());
+	}
+	sortResourceArrayByName(response.response.data.value);
+	return response.response.data.value;
 }
 
 export type StorageAccount = AzureProduct;
@@ -159,10 +162,10 @@ export async function getMigrationControllerMonitoringData(account: azdata.Accou
 	return response.response.data;
 }
 
-export async function startDatabaseMigration(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, managedInstance: string, targetDatabaseName: string, requestBody: StartDatabaseMigrationRequest): Promise<StartDatabaseMigrationResponse> {
+export async function startDatabaseMigration(account: azdata.Account, subscription: Subscription, regionName: string, targetServer: SqlManagedInstance | SqlVMServer, targetDatabaseName: string, requestBody: StartDatabaseMigrationRequest): Promise<StartDatabaseMigrationResponse> {
 	const api = await getAzureCoreAPI();
 	const host = `https://${regionName}.management.azure.com`;
-	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.Sql/managedInstances/${managedInstance}/providers/Microsoft.DataMigration/databaseMigrations/${targetDatabaseName}?api-version=2020-09-01-preview`;
+	const path = `${targetServer.id}/providers/Microsoft.DataMigration/databaseMigrations/${targetDatabaseName}?api-version=2020-09-01-preview`;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.PUT, requestBody, true, host);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());

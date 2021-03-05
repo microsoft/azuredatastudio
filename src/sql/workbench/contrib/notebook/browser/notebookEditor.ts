@@ -399,6 +399,23 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 		}
 	}
 
+	public async launchFind(searchTerm: string): Promise<void> {
+		this._findState.change({
+			isRevealed: true,
+			searchString: searchTerm
+		}, false);
+		if (!this._notebookModel) {
+			await this.setNotebookModel();
+		}
+		if (this._notebookModel) {
+			this._finder.setFindInput(searchTerm);
+			this._findState.change({
+				searchString: searchTerm
+			}, false);
+			this._triggerInputChange();
+		}
+	}
+
 	public async findNext(): Promise<void> {
 		try {
 			const p = await this.notebookFindModel.findNext();
