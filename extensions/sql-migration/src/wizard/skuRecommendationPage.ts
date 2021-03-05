@@ -149,11 +149,20 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._chooseTargetComponent?.component.clearItems();
 		this._igComponent!.component.value = constants.ASSESSMENT_COMPLETED(this._serverName);
 		if (this.migrationStateModel.assessmentResults) {
-			if (this.migrationStateModel.assessmentResults!.length === this._dbCount + 1) {
+			// need to parse assessment results before this, multiple assessment results present for same DB
+			let dbIssueCount = 0;
+			let last = '';
+			this.migrationStateModel.assessmentResults.forEach(element => {
+				if (element.targetName !== this._serverName && element.targetName !== last) {
+					dbIssueCount += 1;
+					last = element.targetName;
+				}
+			});
+			if (dbIssueCount === this._dbCount) {
 				this._detailsComponent!.component.value = constants.SKU_RECOMMENDATION_NONE_SUCCESSFUL;
-			} else if (this.migrationStateModel.assessmentResults!.length > 0) {
+			} else if (dbIssueCount > 0) {
 
-				this._detailsComponent!.component.value = constants.SKU_RECOMMENDATION_SOME_SUCCESSFUL(this._dbCount - this.migrationStateModel.assessmentResults!.length, this._dbCount);
+				this._detailsComponent!.component.value = constants.SKU_RECOMMENDATION_SOME_SUCCESSFUL(this._dbCount - dbIssueCount, this._dbCount);
 			} else {
 				this._detailsComponent!.component.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this._dbCount);
 			}
