@@ -158,21 +158,6 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 			.then(() => Object.keys(itemsToRefresh).length ? this.modelViewProxy.$refreshDataProvider(this.handle, this.componentId, itemsToRefresh) : null);
 	}
 
-	protected refreshNode(treeItemHandle: vsTreeExt.TreeItemHandle): Promise<vsTreeExt.TreeNode> {
-		const extElement = this.getExtensionElement(treeItemHandle);
-		const existing = this.nodes.get(extElement);
-		//this.clearChildren(extElement); // clear children cache
-		return Promise.resolve(this.componentDataProvider.getTreeItem(extElement))
-			.then(extTreeItem => {
-				if (extTreeItem) {
-					const newNode = this.createTreeNode(extElement, extTreeItem, existing.parent);
-					this.updateNodeCache(extElement, newNode, existing, existing.parent);
-					return newNode;
-				}
-				return null;
-			});
-	}
-
 	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeComponentItem, parent?: vsTreeExt.TreeNode | vsTreeExt.Root): vsTreeExt.TreeNode {
 		let node = super.createTreeNode(element, extensionTreeItem, parent);
 		if (node.item) {

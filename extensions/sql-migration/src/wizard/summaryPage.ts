@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
-import * as constants from '../models/strings';
+import * as constants from '../constants/strings';
 import { createHeadingTextComponent, createInformationRow } from './wizardController';
 
 export class SummaryPage extends MigrationWizardPage {
@@ -39,10 +39,10 @@ export class SummaryPage extends MigrationWizardPage {
 				createHeadingTextComponent(this._view, constants.AZURE_ACCOUNT_LINKED),
 				createHeadingTextComponent(this._view, this.migrationStateModel._azureAccount.displayInfo.displayName),
 				createHeadingTextComponent(this._view, constants.MIGRATION_TARGET),
-				createInformationRow(this._view, constants.TYPE, constants.SUMMARY_MI_TYPE),
+				createInformationRow(this._view, constants.TYPE, (this.migrationStateModel._targetServerInstance.type === 'microsoft.compute/virtualmachines') ? constants.SUMMARY_VM_TYPE : constants.SUMMARY_MI_TYPE),
 				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
-				createInformationRow(this._view, constants.SUMMARY_MI_TYPE, this.migrationStateModel._targetManagedInstance.name),
-				createInformationRow(this._view, constants.SUMMARY_DATABASE_COUNT_LABEL, '1'),
+				createInformationRow(this._view, constants.SUMMARY_MI_TYPE, this.migrationStateModel._targetServerInstance.name),
+				createInformationRow(this._view, constants.SUMMARY_DATABASE_COUNT_LABEL, this.migrationStateModel._migrationDbs.length.toString()),
 				createHeadingTextComponent(this._view, constants.DATABASE_BACKUP_PAGE_TITLE),
 				this.createNetworkContainerRows(),
 				createHeadingTextComponent(this._view, constants.IR_PAGE_TITLE),

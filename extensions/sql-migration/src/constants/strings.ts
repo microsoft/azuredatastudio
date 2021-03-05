@@ -136,6 +136,7 @@ export const CONTROLLER_NOT_FOUND = localize('sql.migration.controller.not.found
 export const CONTROLLER_NOT_SETUP_ERROR = localize('sql.migration.controller.not.setup', "Please add a migration controller to proceed.");
 export const MANAGED_INSTANCE = localize('sql.migration.managed.instance', "Azure SQL managed instance");
 export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instance found");
+export const NO_VIRTUAL_MACHINE_FOUND = localize('sql.migration.no.virtualMachine.found', "No virtual machine found");
 export const TARGET_SELECTION_PAGE_TITLE = localize('sql.migration.target.page.title', "Choose the target Azure SQL");
 
 // common strings
@@ -192,4 +193,52 @@ export const PRE_REQ_TITLE = localize('sql.migration.pre.req.title', "Things you
 export const PRE_REQ_1 = localize('sql.migration.pre.req.1', "Azure account details");
 export const PRE_REQ_2 = localize('sql.migration.pre.req.2', "Azure SQL Managed Instance or SQL Server on Azure Virtual Machine");
 export const PRE_REQ_3 = localize('sql.migration.pre.req.3', "Backup location details");
+export const MIGRATION_IN_PROGRESS = localize('sql.migration.migration.in.progress', "Migration in progress");
+export const LOG_SHIPPING_IN_PROGRESS = localize('sql.migration.log.shipping.in.progress', "Log shipping in progress");
+export const MIGRATION_COMPLETED = localize('sql.migration.migration.completed', "Migration completed");
+export const SUCCESSFULLY_MIGRATED_TO_AZURE_SQL = localize('sql.migration.successfully.migrated.to.azure.sql', "Successfully migrated to Azure SQL");
+export const MIGRATION_NOT_STARTED = localize('sql.migration.migration.not.started', "Migration not started");
+export const CHOOSE_TO_MIGRATE_TO_AZURE_SQL = localize('sql.migration.choose.to.migrate.to.azure.sql', "Choose to migrate to Azure SQL");
 
+
+// Azure APIs
+export const EASTUS2EUAP = localize('sql.migration.eastus2euap', 'East US 2 EUAP');
+
+
+//Migration cutover dialog
+export const MIGRATION_CUTOVER = localize('sql.migration.cutover', "Migration cutover");
+export const SOURCE_SERVER = localize('sql.migration.source.server', "Source server");
+export const SOURCE_VERSION = localize('sql.migration.source.version', "Source version");
+export const TARGET_SERVER = localize('sql.migration.target.server', "Target server");
+export const TARGET_VERSION = localize('sql.migration.target.version', "Target version");
+export const MIGRATION_STATUS = localize('sql.migration.migration.status', "Migration status");
+export const FULL_BACKUP_FILES = localize('sql.migration.full.backup.files', "Full backup files(s)");
+export const LAST_APPLIED_LSN = localize('sql.migration.last.applied.lsn', "Last applied LSN");
+export const LAST_APPLIED_BACKUP_FILES = localize('sql.migration.last.applied.backup.files', "Last applied backup file(s)");
+export const LAST_APPLIED_BACKUP_FILES_TAKEN_ON = localize('sql.migration.last.applied.files.taken.on', "Last applied backup file(s) taken on");
+export const ACTIVE_BACKUP_FILES = localize('sql.migration.active.backup.files', "Active Backup file(s)");
+export const STATUS = localize('sql.migration.status', "Status");
+export const BACKUP_START_TIME = localize('sql.migration.backup.start.time', "Backup start time");
+export const FIRST_LSN = localize('sql.migration.first.lsn', "First LSN");
+export const LAST_LSN = localize('sql.migration.last.LSN', "Last LSN");
+export const CANNOT_START_CUTOVER_ERROR = localize('sql.migration.cannot.start.cutover.error', "Cannot start the cutover process until all the migrations are done. Click refresh to fetch the latest file status");
+export const AZURE_SQL_DATABASE_MANAGED_INSTANCE = localize('sql.migration.azure.sql.database.managed.instance', "Azure SQL Database Managed Instance");
+export const AZURE_SQL_DATABASE_VIRTUAL_MACHINE = localize('sql.migration.azure.sql.database.virtual.machine', "Azure SQL Database Virtual Machine");
+
+export function ACTIVE_BACKUP_FILES_ITEMS(fileCount: number) {
+	if (fileCount === 1) {
+		return localize('sql.migration.active.backup.files.items', "Active Backup files (1 item)");
+	} else {
+		return localize('sql.migration.active.backup.files.multiple.items', "Active Backup files ({0} items)", fileCount);
+	}
+}
+
+
+//Migration status dialog
+export const SEARCH_FOR_MIGRATIONS = localize('sql.migration.search.for.migration', "Search for migrations");
+export const ONLINE = localize('sql.migration.online', "Online");
+export const DATABASE = localize('sql.migration.database', "Database");
+export const TARGET_AZURE_SQL_INSTANCE_NAME = localize('sql.migration.target.azure.sql.instance.name', "Target Azure SQL Instance Name");
+export const CUTOVER_TYPE = localize('sql.migration.cutover.type', "Cutover type");
+export const START_TIME = localize('sql.migration.start.time', "Start Time");
+export const FINISH_TIME = localize('sql.migration.finish.time', "Finish Time");

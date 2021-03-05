@@ -8,7 +8,7 @@
   ],
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.22.0"
+    "azdata": ">=1.27.0"
   },
   "main": "./out/main",
   "repository": {

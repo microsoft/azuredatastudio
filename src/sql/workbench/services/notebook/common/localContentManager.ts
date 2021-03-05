@@ -139,7 +139,8 @@ namespace v4 {
 		return {
 			cell_type: cell.cell_type,
 			source: cell.source,
-			metadata: cell.metadata
+			metadata: cell.metadata,
+			attachments: cell.attachments
 		};
 	}
 

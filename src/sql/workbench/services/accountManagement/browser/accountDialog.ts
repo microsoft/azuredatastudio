@@ -22,7 +22,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import * as azdata from 'azdata';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { Modal } from 'sql/workbench/browser/modal/modal';
+import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel';
 import { AddAccountAction } from 'sql/platform/accounts/common/accountActions';
 import { AccountListRenderer, AccountListDelegate } from 'sql/workbench/services/accountManagement/browser/accountListRenderer';
@@ -272,12 +272,12 @@ export class AccountDialog extends Modal {
 
 	/* Overwrite enter key behavior */
 	protected onAccept() {
-		this.close();
+		this.close('ok');
 	}
 
-	public close() {
+	public close(hideReason: HideReason = 'close') {
 		this._onCloseEmitter.fire();
-		this.hide();
+		this.hide(hideReason);
 	}
 
 	public open() {

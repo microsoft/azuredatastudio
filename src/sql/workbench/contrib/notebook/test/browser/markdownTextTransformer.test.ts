@@ -6,7 +6,7 @@
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 
-import { MarkdownTextTransformer, MarkdownButtonType } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
+import { MarkdownTextTransformer, MarkdownButtonType, insertFormattedMarkdown } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { TestLifecycleService, TestEnvironmentService, TestAccessibilityService } from 'vs/workbench/test/browser/workbenchTestServices';
@@ -73,7 +73,7 @@ suite('MarkdownTextTransformer', () => {
 
 		cellModel = new CellModel(undefined, undefined, mockNotebookService.object);
 		notebookEditor = new NotebookEditorStub({ cellGuid: cellModel.cellGuid, instantiationService: instantiationService });
-		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel, instantiationService, notebookEditor);
+		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel, notebookEditor);
 		mockNotebookService.setup(s => s.findNotebookEditor(TypeMoq.It.isAny())).returns(() => notebookEditor);
 
 		let editor = notebookEditor.cellEditors[0].getEditor();
@@ -114,10 +114,12 @@ suite('MarkdownTextTransformer', () => {
 		await testWithNoSelection(MarkdownButtonType.HEADING2, '');
 		await testWithNoSelection(MarkdownButtonType.HEADING3, '### ', true);
 		await testWithNoSelection(MarkdownButtonType.HEADING3, '');
+		await testPreviouslyTransformedWithNoSelection(MarkdownButtonType.LINK_PREVIEW, '[test](./URL)', true);
 	});
 
 	test('Transform text with one word selected', async () => {
 		await testWithSingleWordSelected(MarkdownButtonType.CODE, '```\nWORD\n```');
+		await testPreviouslyTransformedWithSingleWordSelected(MarkdownButtonType.LINK_PREVIEW, '[SampleURL](https://aka.ms)');
 	});
 
 	test('Transform text with multiple words selected', async () => {
@@ -148,7 +150,7 @@ suite('MarkdownTextTransformer', () => {
 	test('Ensure notebook editor returns expected object', async () => {
 		assert.deepEqual(notebookEditor, markdownTextTransformer.notebookEditor, 'Notebook editor does not match expected value');
 		// Set markdown text transformer to not have a notebook editor passed in
-		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel, instantiationService);
+		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel);
 		assert.equal(markdownTextTransformer.notebookEditor, undefined, 'No notebook editor should be returned');
 		// Even after text is attempted to be transformed, there should be no editor, and therefore nothing on the text model
 		await markdownTextTransformer.transformText(MarkdownButtonType.BOLD);
@@ -162,6 +164,15 @@ suite('MarkdownTextTransformer', () => {
 		}
 		await markdownTextTransformer.transformText(type);
 		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with no selection failed (setValue ${setValue})`);
+	}
+
+
+	async function testPreviouslyTransformedWithNoSelection(type: MarkdownButtonType, expectedValue: string, setValue = false): Promise<void> {
+		if (setValue) {
+			textModel.setValue('');
+		}
+		await insertFormattedMarkdown('[test](./URL)', widget);
+		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with no selection and previously transformed md failed (setValue ${setValue})`);
 	}
 
 	async function testWithSingleWordSelected(type: MarkdownButtonType, expectedValue: string): Promise<void> {
@@ -181,6 +192,18 @@ suite('MarkdownTextTransformer', () => {
 		widget.setSelection(valueRange);
 		await markdownTextTransformer.transformText(type);
 		assert.equal(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with single word selection failed`);
+	}
+
+	async function testPreviouslyTransformedWithSingleWordSelected(type: MarkdownButtonType, expectedValue: string): Promise<void> {
+		let value = 'WORD';
+		textModel.setValue(value);
+
+		// Test transformation (adding text)
+		widget.setSelection({ startColumn: 1, startLineNumber: 1, endColumn: value.length + 1, endLineNumber: 1 });
+		assert.equal(textModel.getValueInRange(widget.getSelection()), value, 'Expected selection is not found');
+		await insertFormattedMarkdown('[SampleURL](https://aka.ms)', widget);
+		const textModelValue = textModel.getValue();
+		assert.equal(textModelValue, expectedValue, `${MarkdownButtonType[type]} with single word selection and previously transformed md failed`);
 	}
 
 	async function testWithMultipleWordsSelected(type: MarkdownButtonType, expectedValue: string): Promise<void> {

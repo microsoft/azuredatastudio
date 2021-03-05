@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
-import { DatabaseMigration, MigrationController, SqlManagedInstance } from '../api/azure';
+import { DatabaseMigration, SqlMigrationController, SqlManagedInstance } from '../api/azure';
 import * as azdata from 'azdata';
 
 
@@ -16,7 +16,7 @@ export class MigrationLocalStorage {
 		MigrationLocalStorage.context = context;
 	}
 
-	public static getMigrations(connectionProfile: azdata.connection.ConnectionProfile): MigrationContext[] {
+	public static getMigrationsBySourceConnections(connectionProfile: azdata.connection.ConnectionProfile): MigrationContext[] {
 
 		let dataBaseMigrations: MigrationContext[] = [];
 		try {
@@ -41,7 +41,7 @@ export class MigrationLocalStorage {
 		targetMI: SqlManagedInstance,
 		azureAccount: azdata.Account,
 		subscription: azureResource.AzureResourceSubscription,
-		controller: MigrationController): void {
+		controller: SqlMigrationController): void {
 		try {
 			const migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
 			migrationMementos.push({
@@ -69,5 +69,5 @@ export interface MigrationContext {
 	targetManagedInstance: SqlManagedInstance,
 	azureAccount: azdata.Account,
 	subscription: azureResource.AzureResourceSubscription,
-	controller: MigrationController
+	controller: SqlMigrationController
 }
