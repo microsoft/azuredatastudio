@@ -54,16 +54,18 @@ export function attachTabbedPanelStyler(widget: IThemable, themeService: IThemeS
 export function attachCalloutDialogStyler(widget: IThemable, themeService: IThemeService, style?:
 	{
 		dialogForeground?: cr.ColorIdentifier,
-		dialogBorder?: cr.ColorIdentifier,
 		dialogHeaderAndFooterBackground?: cr.ColorIdentifier,
 		dialogBodyBackground?: cr.ColorIdentifier,
 		dialogInteriorBorder?: cr.ColorIdentifier,
+		dialogExteriorBorder?: cr.ColorIdentifier,
+		dialogShadowColor?: cr.ColorIdentifier
 	}): IDisposable {
 	return attachStyler(themeService, {
 		dialogForeground: (style && style.dialogForeground) || sqlcr.calloutDialogForeground,
-		dialogBorder: (style && style.dialogBorder) || sqlcr.calloutDialogExteriorBorder,
 		dialogHeaderAndFooterBackground: (style && style.dialogHeaderAndFooterBackground) || sqlcr.calloutDialogHeaderFooterBackground,
 		dialogBodyBackground: (style && style.dialogBodyBackground) || sqlcr.calloutDialogBodyBackground,
-		dialogInteriorBorder: (style && style.dialogInteriorBorder) || sqlcr.calloutDialogInteriorBorder
+		dialogInteriorBorder: (style && style.dialogInteriorBorder) || sqlcr.calloutDialogInteriorBorder,
+		dialogExteriorBorder: (style && style.dialogExteriorBorder) || sqlcr.calloutDialogExteriorBorder,
+		dialogShadowColor: (style && style.dialogShadowColor) || sqlcr.calloutDialogShadowColor
 	}, widget);
 }

@@ -80,7 +80,8 @@ export const infoButtonHoverBackground = registerColor('infoButton.hoverBackgrou
 
 // Callout Dialog
 export const calloutDialogForeground = registerColor('calloutDialog.foreground', { light: '#616161', dark: '#CCCCCC', hc: '#FFFFFF' }, nls.localize('calloutDialogForeground', 'Callout dialog foreground.'));
-export const calloutDialogInteriorBorder = registerColor('calloutDialogInteriorBorder.border', { light: '#D6D6D6', dark: '#323130', hc: '#2B56F2' }, nls.localize('calloutDialogInteriorBorder', "Callout dialog interior borders used for separating elements."));
-export const calloutDialogExteriorBorder = registerColor('calloutDialogExteriorBorder.border', { light: '#D6D6D6', dark: '#CCCCCC', hc: '#2B56F2' }, nls.localize('calloutDialogExteriorBorder', "Callout dialog exterior borders to provide contrast against notebook UI."));
+export const calloutDialogInteriorBorder = registerColor('calloutDialog.interiorBorder', { light: '#D6D6D6', dark: '#323130', hc: '#2B56F2' }, nls.localize('calloutDialogInteriorBorder', "Callout dialog interior borders used for separating elements."));
+export const calloutDialogExteriorBorder = registerColor('calloutDialog.exteriorBorder', { light: '#CCCCCC', dark: '#CCCCCC', hc: '#2B56F2' }, nls.localize('calloutDialogExteriorBorder', "Callout dialog exterior borders to provide contrast against notebook UI."));
 export const calloutDialogHeaderFooterBackground = registerColor('calloutDialog.headerFooterBackground', { light: '#FFFFFF', dark: '#1E1E1E', hc: Color.black }, nls.localize('calloutDialogHeaderFooterBackground', 'Callout dialog header and footer background.'));
 export const calloutDialogBodyBackground = registerColor('calloutDialog.bodyBackground', { light: '#FFFFFF', dark: '#1E1E1E', hc: Color.black }, nls.localize('calloutDialogBodyBackground', "Callout dialog body background."));
+export const calloutDialogShadowColor = registerColor('calloutDialog.shadow', { light: '#000000', dark: '#FFFFFF', hc: '#000000' }, nls.localize('calloutDialogShadowColor', 'Callout dialog box shadow color.'));

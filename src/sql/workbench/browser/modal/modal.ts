@@ -13,7 +13,6 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-
 import { Button } from 'sql/base/browser/ui/button/button';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { localize } from 'vs/nls';
@@ -53,6 +52,8 @@ export interface IModalDialogStyles {
 	footerBorderTopWidth?: Color;
 	footerBorderTopStyle?: Color;
 	dialogInteriorBorder?: Color;
+	dialogExteriorBorder?: Color;
+	dialogShadowColor?: Color;
 }
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
@@ -125,6 +126,8 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _dialogHeaderAndFooterBackground?: Color;
 	private _dialogBodyBackground?: Color;
 	private _dialogInteriorBorder?: Color;
+	private _dialogExteriorBorder?: Color;
+	private _dialogShadowColor?: Color;
 
 	private _modalDialog?: HTMLElement;
 	private _modalContent?: HTMLElement;
@@ -678,6 +681,8 @@ export abstract class Modal extends Disposable implements IThemable {
 		this._dialogHeaderAndFooterBackground = styles.dialogHeaderAndFooterBackground;
 		this._dialogBodyBackground = styles.dialogBodyBackground;
 		this._dialogInteriorBorder = styles.dialogInteriorBorder;
+		this._dialogExteriorBorder = styles.dialogExteriorBorder;
+		this._dialogShadowColor = styles.dialogShadowColor;
 		this.applyStyles();
 	}
 
@@ -730,26 +735,34 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		if (this._modalOptions.dialogStyle === 'callout') {
 			const content: string[] = [];
-			const foreground = this._dialogForeground ? this._dialogForeground.toString() : '';
-			const foregroundRgb: Color = Color.Format.CSS.parseHex(foreground);
+			const exteriorBorder = this._dialogExteriorBorder ? this._dialogExteriorBorder.toString() : '';
+			const exteriorBorderRgb: Color = Color.Format.CSS.parseHex(exteriorBorder);
+			const shadow = this._dialogShadowColor ? this._dialogShadowColor.toString() : '';
+			const shadowRgb: Color = Color.Format.CSS.parseHex(shadow);
 
-			if (this._dialogForeground && this._dialogBodyBackground && this._dialogBorder) {
-				content.push(`
+			content.push(`
 				.modal.callout-dialog .modal-dialog {
-					box-shadow: 0px 0px 3px 3px rgba(${foregroundRgb.rgba.r},${foregroundRgb.rgba.g},${foregroundRgb.rgba.b},0.25);
+					border-color: rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b},0.5);
+					box-shadow: 0px 3.2px 7.2px rgba(${shadowRgb.rgba.r}, ${shadowRgb.rgba.g}, ${shadowRgb.rgba.b}, 0.132),
+								0px 0.6px 1.8px rgba(${shadowRgb.rgba.r}, ${shadowRgb.rgba.g}, ${shadowRgb.rgba.b}, 0.108);
+				}
+				.hc-black .modal.callout-dialog .modal-dialog {
+					border-color: rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b}, 1);
 				}
 				.modal.callout-dialog .modal-footer {
 					border-top-color: ${this._dialogInteriorBorder};
 				}
 				.callout-arrow:before {
 					background-color: ${this._dialogBodyBackground};
-					border-color: transparent transparent ${this._dialogBorder} ${this._dialogBorder};
+					border-color: transparent transparent rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b}, 0.5) rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b}, 0.5);
+				}
+				.hc-black .callout-arrow:before {
+					border-color: transparent transparent rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b}, 1) rgba(${exteriorBorderRgb.rgba.r}, ${exteriorBorderRgb.rgba.g}, ${exteriorBorderRgb.rgba.b}, 1);
 				}
 				.callout-arrow.from-left:before {
 					background-color: ${this._dialogBodyBackground};
-					box-shadow: -3px 2px 4px 0 rgba(${foregroundRgb.rgba.r},${foregroundRgb.rgba.g},${foregroundRgb.rgba.b},0.25);
+					box-shadow: -4px 4px 4px rgba(${shadowRgb.rgba.r}, ${shadowRgb.rgba.g}, ${shadowRgb.rgba.b}, 0.05);
 				}`);
-			}
 
 			const newStyles = content.join('\n');
 			if (newStyles !== this._styleElement.innerHTML) {

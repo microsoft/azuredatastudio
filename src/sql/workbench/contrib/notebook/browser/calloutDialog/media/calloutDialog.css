@@ -8,6 +8,8 @@
 }
 .modal.callout-dialog .modal-dialog {
 	border-radius: 2px;
+	border-width: 1px;
+	border-style: solid;
 	max-height: 300px;
 	position: absolute;
 }
@@ -52,8 +54,6 @@
 
 .hc-black .callout-arrow:before {
 	box-shadow: none;
-	height: 10px;
-	width: 10px;
 }
 .hc-black .callout-arrow.from-left:before {
 	box-shadow: none;
