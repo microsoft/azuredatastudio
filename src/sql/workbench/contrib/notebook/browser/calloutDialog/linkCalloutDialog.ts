@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/linkCalloutDialog';
 import * as DOM from 'vs/base/browser/dom';
-import * as strings from 'vs/base/common/strings';
 import * as styler from 'vs/platform/theme/common/styler';
 import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
@@ -22,11 +21,17 @@ import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { DialogPosition, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { escapeLabel, escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 
 export interface ILinkCalloutDialogOptions {
 	insertTitle?: string,
-	insertMarkup?: string
+	insertEscapedMarkdown?: string,
+	insertUnescapedLinkLabel?: string,
+	insertUnescapedLinkUrl?: string
 }
+
+const DIALOG_WIDTH: DialogWidth = 452;
 
 export class LinkCalloutDialog extends Modal {
 	private _selectionComplete: Deferred<ILinkCalloutDialogOptions> = new Deferred<ILinkCalloutDialogOptions>();
@@ -34,12 +39,13 @@ export class LinkCalloutDialog extends Modal {
 	private _linkTextInputBox: InputBox;
 	private _linkAddressLabel: HTMLElement;
 	private _linkUrlInputBox: InputBox;
+	private _previouslySelectedRange: Range;
 
 	constructor(
 		title: string,
-		width: DialogWidth,
 		position: DialogPosition,
 		dialogProperties: IDialogProperties,
+		private readonly _defaultLabel: string = '',
 		@IContextViewService private readonly _contextViewService: IContextViewService,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
@@ -63,9 +69,13 @@ export class LinkCalloutDialog extends Modal {
 				dialogStyle: 'callout',
 				dialogPosition: position,
 				dialogProperties: dialogProperties,
-				width: width
+				width: DIALOG_WIDTH
 			}
 		);
+		let selection = window.getSelection();
+		if (selection.rangeCount > 0) {
+			this._previouslySelectedRange = selection?.getRangeAt(0);
+		}
 	}
 
 	protected layout(height?: number): void {
@@ -75,6 +85,7 @@ export class LinkCalloutDialog extends Modal {
 	 * Opens the dialog and returns a promise for what options the user chooses.
 	 */
 	public open(): Promise<ILinkCalloutDialogOptions> {
+		this._selectionComplete = new Deferred<ILinkCalloutDialogOptions>();
 		this.show();
 		return this._selectionComplete.promise;
 	}
@@ -107,6 +118,7 @@ export class LinkCalloutDialog extends Modal {
 				placeholder: constants.linkTextPlaceholder,
 				ariaLabel: constants.linkTextLabel
 			});
+		this._linkTextInputBox.value = this._defaultLabel;
 		DOM.append(linkTextRow, linkTextInputContainer);
 
 		let linkAddressRow = DOM.$('.row');
@@ -131,17 +143,45 @@ export class LinkCalloutDialog extends Modal {
 		this._register(styler.attachInputBoxStyler(this._linkUrlInputBox, this._themeService));
 	}
 
+	protected onAccept(e?: StandardKeyboardEvent) {
+		// EventHelper.stop() will call preventDefault. Without it, text cell will insert an extra newline when pressing enter on dialog
+		DOM.EventHelper.stop(e, true);
+		this.insert();
+	}
+
+	protected onClose(e?: StandardKeyboardEvent) {
+		DOM.EventHelper.stop(e, true);
+		this.cancel();
+	}
+
 	public insert(): void {
-		this.hide();
-		this._selectionComplete.resolve({
-			insertMarkup: `<a href="${strings.escape(this._linkUrlInputBox.value)}">${strings.escape(this._linkTextInputBox.value)}</a>`,
-		});
-		this.dispose();
+		this.hide('ok');
+		let escapedLabel = escapeLabel(this._linkTextInputBox.value);
+		let escapedUrl = escapeUrl(this._linkUrlInputBox.value);
+
+		if (this._previouslySelectedRange) {
+			// Reset selection to previous state before callout was open
+			let selection = window.getSelection();
+			selection.removeAllRanges();
+			selection.addRange(this._previouslySelectedRange);
+
+			this._selectionComplete.resolve({
+				insertEscapedMarkdown: `[${escapedLabel}](${escapedUrl})`,
+				insertUnescapedLinkLabel: this._linkTextInputBox.value,
+				insertUnescapedLinkUrl: this._linkUrlInputBox.value
+			});
+		}
 	}
 
 	public cancel(): void {
+		this.hide('cancel');
 		this._selectionComplete.resolve({
-			insertMarkup: ''
+			insertEscapedMarkdown: '',
+			insertUnescapedLinkLabel: escapeLabel(this._linkTextInputBox.value)
 		});
+	}
+
+	public set url(val: string) {
+		this._linkUrlInputBox.value = val;
 	}
 }

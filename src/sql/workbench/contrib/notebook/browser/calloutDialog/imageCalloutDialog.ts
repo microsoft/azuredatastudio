@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/imageCalloutDialog';
 import * as DOM from 'vs/base/browser/dom';
-import * as strings from 'vs/base/common/strings';
 import * as styler from 'vs/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
@@ -27,13 +26,16 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { DialogPosition, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
+import { escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 
 export interface IImageCalloutDialogOptions {
 	insertTitle?: string,
-	insertMarkup?: string,
+	insertEscapedMarkdown?: string,
 	imagePath?: string,
 	embedImage?: boolean
 }
+
+const DIALOG_WIDTH: DialogWidth = 452;
 
 export class ImageCalloutDialog extends Modal {
 	private _selectionComplete: Deferred<IImageCalloutDialogOptions> = new Deferred<IImageCalloutDialogOptions>();
@@ -49,7 +51,6 @@ export class ImageCalloutDialog extends Modal {
 
 	constructor(
 		title: string,
-		width: DialogWidth,
 		position: DialogPosition,
 		dialogProperties: IDialogProperties,
 		@IPathService private readonly _pathService: IPathService,
@@ -77,7 +78,7 @@ export class ImageCalloutDialog extends Modal {
 				dialogStyle: 'callout',
 				dialogPosition: position,
 				dialogProperties: dialogProperties,
-				width: width
+				width: DIALOG_WIDTH
 			}
 		);
 	}
@@ -194,9 +195,9 @@ export class ImageCalloutDialog extends Modal {
 	}
 
 	public insert(): void {
-		this.hide();
+		this.hide('ok');
 		this._selectionComplete.resolve({
-			insertMarkup: `<img src="${strings.escape(this._imageUrlInputBox.value)}">`,
+			insertEscapedMarkdown: `![](${escapeUrl(this._imageUrlInputBox.value)})`,
 			imagePath: this._imageUrlInputBox.value,
 			embedImage: this._imageEmbedCheckbox.checked
 		});
@@ -204,8 +205,9 @@ export class ImageCalloutDialog extends Modal {
 	}
 
 	public cancel(): void {
+		this.hide('cancel');
 		this._selectionComplete.resolve({
-			insertMarkup: '',
+			insertEscapedMarkdown: '',
 			imagePath: undefined,
 			embedImage: undefined
 		});

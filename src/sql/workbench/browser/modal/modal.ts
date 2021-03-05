@@ -99,6 +99,8 @@ const defaultOptions: IModalOptions = {
 
 const tabbableElementsQuerySelector = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]';
 
+export type HideReason = 'close' | 'cancel' | 'ok';
+
 export abstract class Modal extends Disposable implements IThemable {
 	protected _useDefaultMessageBoxLocation: boolean = true;
 	private _styleElement: HTMLStyleElement;
@@ -317,7 +319,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Overridable to change behavior of escape key
 	 */
 	protected onClose(e?: StandardKeyboardEvent) {
-		this.hide();
+		this.hide('close');
 	}
 
 	/**
@@ -330,7 +332,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		if (target.closest('.modal-content')) {
 			return;
 		} else {
-			this.hide();
+			this.hide('close');
 		}
 	}
 
@@ -338,7 +340,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Overridable to change behavior of enter key
 	 */
 	protected onAccept(e?: StandardKeyboardEvent) {
-		this.hide();
+		this.hide('ok');
 	}
 
 	private handleBackwardTab(e: KeyboardEvent) {
@@ -473,6 +475,7 @@ export abstract class Modal extends Disposable implements IThemable {
 				if (event.equals(KeyCode.Enter)) {
 					this.onAccept(event);
 				} else if (event.equals(KeyCode.Escape)) {
+					DOM.EventHelper.stop(e, true);
 					this.onClose(event);
 				} else if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
 					this.handleBackwardTab(e);
@@ -499,7 +502,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Hides the modal and removes key listeners
 	 */
-	protected hide(reason?: string, currentPageName?: string): void {
+	protected hide(reason?: HideReason, currentPageName?: string): void {
 		this._modalShowingContext.get()!.pop();
 		this._bodyContainer!.remove();
 		this.disposableStore.clear();

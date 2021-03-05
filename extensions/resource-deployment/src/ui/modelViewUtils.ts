@@ -1062,7 +1062,7 @@ async function processAzureAccountField(context: AzureAccountFieldContext): Prom
 
 	// Check if we have an initial subscription value - if we do then the user isn't going to be allowed to change any of the
 	// Azure values so we can skip adding the account picker
-	const hasInitialSubscriptionValue = !!context.initialVariableValues?.[context.fieldInfo.subscriptionVariableName || ''].toString();
+	const hasInitialSubscriptionValue = !!context.initialVariableValues?.[context.fieldInfo.subscriptionVariableName || '']?.toString();
 	if (!hasInitialSubscriptionValue) {
 		accountComponents = createAzureAccountDropdown(context);
 		accountDropdown = accountComponents.accountDropdown;
@@ -1215,7 +1215,7 @@ function createAzureSubscriptionComponent(
 		cssStyles: context.fieldInfo.labelCSSStyles
 	});
 
-	const defaultValue = context.initialVariableValues?.[context.fieldInfo.subscriptionVariableName || ''].toString() ?? (context.fieldInfo.required ? undefined : '');
+	const defaultValue = context.initialVariableValues?.[context.fieldInfo.subscriptionVariableName || '']?.toString() ?? (context.fieldInfo.required ? undefined : '');
 	let subscriptionInputInfo: InputComponentInfo<AzureComponent>;
 	let setValueFunc: (value: InputValueType) => void;
 	// If we have an default value then we don't allow users to modify it - so use a disabled text input box instead
@@ -1373,7 +1373,7 @@ function createAzureResourceGroupsComponent(
 		width: context.fieldInfo.labelWidth,
 		cssStyles: context.fieldInfo.labelCSSStyles
 	});
-	const defaultValue = context.initialVariableValues?.[context.fieldInfo.resourceGroupVariableName || ''].toString() ?? (context.fieldInfo.required ? undefined : '');
+	const defaultValue = context.initialVariableValues?.[context.fieldInfo.resourceGroupVariableName || '']?.toString() ?? (context.fieldInfo.required ? undefined : '');
 	let resourceGroupInputInfo: InputComponentInfo<AzureComponent>;
 	// If we have an default value then we don't allow users to modify it - so use a disabled text input box instead
 	if (defaultValue) {
@@ -1478,7 +1478,7 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 		width: context.fieldInfo.labelWidth,
 		cssStyles: context.fieldInfo.labelCSSStyles
 	});
-	const defaultValue = context.initialVariableValues?.[context.fieldInfo.locationVariableName || ''].toString() ?? (context.fieldInfo.required ? undefined : '');
+	const defaultValue = context.initialVariableValues?.[context.fieldInfo.locationVariableName || '']?.toString() ?? (context.fieldInfo.required ? undefined : '');
 	let locationInputInfo: InputComponentInfo<AzureComponent>;
 	// If we have an default value then we don't allow users to modify it - so use a disabled text input box instead
 	if (defaultValue) {

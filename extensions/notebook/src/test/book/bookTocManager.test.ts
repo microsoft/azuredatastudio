@@ -20,6 +20,7 @@ import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { NavigationProviders } from '../../common/constants';
 import * as loc from '../../common/localizedConstants';
 
+
 export function equalTOC(actualToc: IJupyterBookSectionV2[], expectedToc: IJupyterBookSectionV2[]): boolean {
 	for (let [i, section] of actualToc.entries()) {
 		if (section.title !== expectedToc[i].title || section.file !== expectedToc[i].file) {
@@ -58,7 +59,7 @@ describe('BookTocManagerTests', function () {
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 			bookFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 			root2FolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
-			notebooks = ['notebook1.ipynb', 'notebook2.ipynb', 'notebook3.ipynb', 'index.md', 'readme.md'];
+			notebooks = ['notebook1.ipynb', 'notebook2.ipynb', 'notebook3.ipynb', 'index.md'];
 
 			await fs.mkdir(rootFolderPath);
 			await fs.writeFile(path.join(rootFolderPath, notebooks[0]), '');
@@ -71,7 +72,7 @@ describe('BookTocManagerTests', function () {
 			await fs.writeFile(path.join(root2FolderPath, notebooks[0]), '');
 			await fs.writeFile(path.join(root2FolderPath, subfolder, notebooks[1]), '');
 			await fs.writeFile(path.join(root2FolderPath, subfolder, notebooks[2]), '');
-			await fs.writeFile(path.join(root2FolderPath, subfolder, notebooks[4]), '');
+			await fs.writeFile(path.join(root2FolderPath, subfolder, notebooks[3]), '');
 			await fs.writeFile(path.join(root2FolderPath, notebooks[3]), '');
 		});
 
@@ -94,8 +95,8 @@ describe('BookTocManagerTests', function () {
 				file: path.join(subfolder, 'notebook3')
 			}];
 			await bookTocManager.createBook(bookFolderPath, root2FolderPath);
-			should(equalTOC(bookTocManager.tableofContents[2].sections, expectedSection)).be.true;
-			should((bookTocManager.tableofContents[2] as IJupyterBookSectionV2).file).be.equal(path.join(subfolder, 'readme'));
+			should(equalTOC(bookTocManager.tableofContents[1].sections, expectedSection)).be.true;
+			should((bookTocManager.tableofContents[1] as IJupyterBookSectionV2).file).be.equal(path.join(path.sep, subfolder, 'index'));
 		});
 
 		it('should ignore invalid file extensions', async () => {
@@ -338,7 +339,11 @@ describe('BookTocManagerTests', function () {
 						treeItemCollapsibleState: undefined,
 						type: BookTreeItemType.Markdown,
 						version: run.version,
-						page: run.sectionA.sectionFormat
+						page: {
+							title: run.sectionA.sectionName,
+							file: path.join(path.sep, 'sectionA', 'readme'),
+							sections: run.sectionA.sectionFormat
+						}
 					};
 
 					// section B is from source book
@@ -353,7 +358,11 @@ describe('BookTocManagerTests', function () {
 						treeItemCollapsibleState: undefined,
 						type: BookTreeItemType.Markdown,
 						version: run.version,
-						page: run.sectionB.sectionFormat
+						page: {
+							title: run.sectionB.sectionName,
+							file: path.join(path.sep, 'sectionB', 'readme'),
+							sections: run.sectionB.sectionFormat
+						}
 					};
 
 					// notebook5 is from source book
@@ -374,12 +383,8 @@ describe('BookTocManagerTests', function () {
 						type: BookTreeItemType.Notebook,
 						version: run.version,
 						page: {
-							sections: [
-								{
-									'title': 'Notebook 5',
-									'file': path.join(path.sep, 'notebook5')
-								}
-							]
+							'title': 'Notebook 5',
+							'file': path.join(path.sep, 'notebook5')
 						}
 					};
 
@@ -400,12 +405,8 @@ describe('BookTocManagerTests', function () {
 						type: BookTreeItemType.Notebook,
 						version: run.version,
 						page: {
-							sections: [
-								{
-									'title': 'Notebook 5',
-									'file': path.join(path.sep, 'notebook5')
-								}
-							]
+							'title': 'Notebook 5',
+							'file': path.join(path.sep, 'notebook5')
 						}
 					};
 
@@ -432,7 +433,7 @@ describe('BookTocManagerTests', function () {
 					sectionA.tableOfContentsPath = run.sourceBook.tocPath;
 					sectionB.tableOfContentsPath = run.sourceBook.tocPath;
 					notebook.tableOfContentsPath = run.sourceBook.tocPath;
-					duplicatedNotebook.tableOfContentsPath = run.sourceBook.tocPath;
+					duplicatedNotebook.tableOfContentsPath = undefined;
 
 					sectionA.sections = run.sectionA.sectionFormat;
 					sectionB.sections = run.sectionB.sectionFormat;
@@ -468,9 +469,9 @@ describe('BookTocManagerTests', function () {
 					}
 
 					// target book
-					await fs.writeFile(run.targetBook.tocPath, '- title: Welcome\n  file: /readme\n- title: Section C\n  file: /sectionC/readme\n  sections:\n  - title: Notebook6\n    file: /sectionC/notebook6');
+					await fs.writeFile(run.targetBook.tocPath, '- title: Welcome\n  file: /readme\n- title: Section C\n  file: /sectionC/readme\n  sections:\n  - title: Notebook 6\n    file: /sectionC/notebook6');
 					// source book
-					await fs.writeFile(run.sourceBook.tocPath, '- title: Notebook 5\n  file: /notebook5\n- title: Section A\n  file: /sectionA/readme\n  sections:\n  - title: Notebook1\n    file: /sectionA/notebook1\n  - title: Notebook2\n    file: /sectionA/notebook2');
+					await fs.writeFile(run.sourceBook.tocPath, '- title: Notebook 5\n  file: /notebook5\n- title: Section A\n  file: /sectionA/readme\n  sections:\n  - title: Notebook1\n    file: /sectionA/notebook1\n  - title: Notebook2\n    file: /sectionA/notebook2\n- title: Section B\n  file: /sectionB/readme\n  sections:\n  - title: Notebook3\n    file: /sectionB/notebook3\n  - title: Notebook4\n    file: /sectionB/notebook4');
 
 					const mockExtensionContext = new MockExtensionContext();
 

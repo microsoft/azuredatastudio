@@ -48,14 +48,6 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	public async onEnter(): Promise<void> {
 		this.wizard.wizardObject.generateScriptButton.hidden = true;
 		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
-			if (!this._eulaValidationSucceeded && !(await this.acquireEulaAndProceed())) {
-				this.wizard.wizardObject.message = {
-					text: localize('deploymentDialog.FailedEulaValidation', "To proceed, you must accept the terms of the End User License Agreement(EULA)"),
-					level: azdata.window.MessageLevel.Error
-				};
-				return false; // we return false so that the workflow does not proceed and user gets to either click acceptEulaAndSelect again or cancel
-			}
-
 			for (let i = 0; i < this._tools.length; i++) {
 				switch (this._tools[i].status) {
 					case ToolStatus.Installing:
@@ -73,6 +65,14 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 						};
 						return false;
 				}
+			}
+
+			if (!this._eulaValidationSucceeded && !(await this.acquireEulaAndProceed())) {
+				this.wizard.wizardObject.message = {
+					text: localize('deploymentDialog.FailedEulaValidation', "To proceed, you must accept the terms of the End User License Agreement(EULA)"),
+					level: azdata.window.MessageLevel.Error
+				};
+				return false; // we return false so that the workflow does not proceed and user gets to either click acceptEulaAndSelect again or cancel
 			}
 
 			this.wizard.wizardObject.message = {
@@ -338,7 +338,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		this._installationInProgress = true;
 		let tool: ITool;
 		try {
-			this.enableDoneButton(false);
+			this.setDoneAndNextButtonEnabledState(false);
 			const toolRequirements = this.toolRequirements;
 			let toolsNotInstalled: ITool[] = [];
 			for (let i: number = 0; i < toolRequirements.length; i++) {
@@ -370,7 +370,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					level: azdata.window.MessageLevel.Information,
 					text: localize('deploymentDialog.InstalledTools', "All required tools are installed now.")
 				};
-				this.enableDoneButton(true);
+				this.setDoneAndNextButtonEnabledState(true);
 			} else {
 				this.wizard.wizardObject.message = {
 					level: azdata.window.MessageLevel.Information,
@@ -475,7 +475,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 				'display': erroredOrFailedTool || minVersionCheckFailed || (toolsToAutoInstall.length === 0) ? 'none' : 'inline'
 			}
 		});
-		this.enableDoneButton(!erroredOrFailedTool && messages.length === 0 && !minVersionCheckFailed && (toolsToAutoInstall.length === 0));
+		this.setDoneAndNextButtonEnabledState(!erroredOrFailedTool && messages.length === 0 && !minVersionCheckFailed && (toolsToAutoInstall.length === 0));
 		if (messages.length !== 0) {
 			if (messages.length > 1) {
 				messages = messages.map(message => `•	${message}`);
@@ -506,8 +506,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 				level: azdata.window.MessageLevel.Warning,
 				text: infoText.join(EOL)
 			};
-		}
-		if (!this.areToolsEulaAccepted()) {
+		} else if (!this.areToolsEulaAccepted()) {
 			this.wizard.wizardObject.doneButton.label = loc.acceptEulaAndSelect;
 			this.wizard.wizardObject.nextButton.label = loc.acceptEulaAndSelect;
 		}
@@ -531,13 +530,13 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		});
 		if (this.toolRequirements.length === 0) {
 			this._toolsLoadingComponent.loading = false;
-			this.enableDoneButton(true);
+			this.setDoneAndNextButtonEnabledState(true);
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
 			this._tools = [];
 		} else {
 			this._tools = this.toolRequirements.map(toolReq => this.toolsService.getToolByName(toolReq.name)!);
 			this._toolsLoadingComponent.loading = true;
-			this.enableDoneButton(false);
+			this.setDoneAndNextButtonEnabledState(false);
 			let toolsLoadingErrors: string[] = [];
 			Promise.all(
 				this._tools.map(
@@ -549,8 +548,8 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		}
 	}
 
-	private enableDoneButton(enable: boolean) {
-		this.wizard.wizardObject.doneButton.enabled = enable;
-		this.wizard.wizardObject.nextButton.enabled = enable;
+	private setDoneAndNextButtonEnabledState(enabled: boolean) {
+		this.wizard.wizardObject.doneButton.enabled = enabled;
+		this.wizard.wizardObject.nextButton.enabled = enabled;
 	}
 }
