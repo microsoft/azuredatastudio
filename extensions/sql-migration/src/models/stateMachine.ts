@@ -11,6 +11,8 @@ import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBl
 import { SKURecommendations } from './externalContract';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
 export enum State {
 	INIT,
@@ -270,11 +272,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		let virtualMachineValues: azdata.CategoryValue[] = [];
 		try {
 			this._targetSqlVirtualMachines = await getAvailableSqlVMs(this._azureAccount, subscription);
-			this._targetSqlVirtualMachines.forEach((virtualMachine) => {
-				virtualMachineValues.push({
+			virtualMachineValues = this._targetSqlVirtualMachines.map((virtualMachine) => {
+				return {
 					name: virtualMachine.id,
 					displayName: `${virtualMachine.name}`
-				});
+				};
 			});
 
 			if (virtualMachineValues.length === 0) {
@@ -502,7 +504,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						this._targetSubscription,
 						this._migrationController
 					);
-					vscode.window.showInformationMessage(`Starting migration for database ${db} to ${this._targetServerInstance.name}`);
+					vscode.window.showInformationMessage(localize("sql.migration.starting.migration.message", 'Starting migration for database {0} to {1}', db, this._targetServerInstance.name));
 				}
 			} catch (e) {
 				vscode.window.showInformationMessage(e);
