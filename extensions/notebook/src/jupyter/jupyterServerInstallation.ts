@@ -748,13 +748,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	private async getInstalledPythonVersion(pythonExecutable: string): Promise<string> {
-		let cmd = `"${pythonExecutable}" --version`;
+		let cmd = `"${pythonExecutable}" -c "import platform;print(platform.python_version())"`;
 		let version = await utils.executeBufferedCommand(cmd, {});
-		if (version) {
-			return version.replace('Python ', '').trim();
-		} else {
-			return '';
-		}
+		return version?.trim() ?? '';
 	}
 
 	public getRequiredPackagesForKernel(kernelName: string): PythonPkgDetails[] {
