@@ -74,7 +74,11 @@ export class NativeCredentialsFeature extends SqlOpsFeature<any>  {
 		};
 
 		let saveCredential = (credentialId: string, password: string): Thenable<boolean> => {
-			return this.keychain.setPassword(credentialId, password).then(() => { return true; });
+			return this.keychain.setPassword(credentialId, password).then(() => {
+				return this.keychain.getPassword(credentialId).then((savedPassword) => {
+					return savedPassword === password;
+				});
+			});
 		};
 
 		let deleteCredential = (credentialId: string): Thenable<boolean> => {
