@@ -11,7 +11,7 @@ class Log {
 	private output: vscode.OutputChannel;
 
 	constructor() {
-		this.output = vscode.window.createOutputChannel('Microsoft Authentication');
+		this.output = vscode.window.createOutputChannel('SQL Credential Service');
 	}
 
 	private data2String(data: any): string {
