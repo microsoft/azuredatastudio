@@ -184,7 +184,7 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 	}
 
 	public insert(): void {
-		this.hide();
+		this.hide('ok');
 		this._selectionComplete.resolve({
 			insertEscapedMarkdown: `![](${escapeUrl(this._imageUrlInputBox.value)})`,
 			imagePath: this._imageUrlInputBox.value,
