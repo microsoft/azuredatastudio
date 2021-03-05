@@ -17,7 +17,6 @@ import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/butto
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ILinkCalloutDialogOptions, LinkCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/linkCalloutDialog';
-import { IImageCalloutDialogOptions, ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { IEditor } from 'vs/editor/common/editorCommon';
 
@@ -58,7 +57,6 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	private _wysiwygTaskbarContent: Array<ITaskbarContent>;
 	private _previewModeTaskbarContent: Array<ITaskbarContent>;
 	private _linkCallout: LinkCalloutDialog;
-	private _imageCallout: ImageCalloutDialog;
 
 	@Input() public cellModel: ICellModel;
 	@Input() public output: ElementRef;
@@ -223,7 +221,6 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		let triggerElement = event.target as HTMLElement;
 		let needsTransform = true;
 		let linkCalloutResult: ILinkCalloutDialogOptions;
-		let imageCalloutResult: IImageCalloutDialogOptions;
 
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
 			linkCalloutResult = await this.createCallout(type, triggerElement);
@@ -241,22 +238,6 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				document.execCommand('insertHTML', false, `<a href="${linkCalloutResult?.insertUnescapedLinkUrl}">${linkCalloutResult?.insertUnescapedLinkLabel}</a>`);
 				return;
 			}
-		} else {
-			imageCalloutResult = await this.createCallout(type, triggerElement);
-			// If no URL is present, no-op
-			if (!imageCalloutResult.imagePath) {
-				return;
-			}
-			// If cell edit mode isn't WYSIWYG, use result from callout. No need for further transformation.
-			if (this.cellModel.currentMode !== CellEditModes.WYSIWYG) {
-				needsTransform = false;
-			} else {
-				// Otherwise, re-focus on the output element, and insert the link directly.
-				this.output?.nativeElement?.focus();
-				// Callout is responsible for returning escaped strings
-				document.execCommand('insertHTML', false, `<img src="${imageCalloutResult?.imagePath}" />`);
-				return;
-			}
 		}
 
 		const transformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
@@ -265,10 +246,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		} else if (!needsTransform) {
 			if (type === MarkdownButtonType.LINK_PREVIEW) {
 				await insertFormattedMarkdown(linkCalloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
-			} else {
-				await insertFormattedMarkdown(imageCalloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
 			}
-
 		}
 	}
 
@@ -311,12 +289,6 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, 'below', dialogProperties, defaultLabel);
 			this._linkCallout.render();
 			calloutOptions = await this._linkCallout.open();
-		}
-		if (type === MarkdownButtonType.IMAGE_PREVIEW) {
-			const defaultLabel = this.getCurrentSelectionText();
-			this._imageCallout = this._instantiationService.createInstance(ImageCalloutDialog, this.insertImageHeading, 'below', dialogProperties, defaultLabel);
-			this._imageCallout.render();
-			calloutOptions = await this._imageCallout.open();
 		}
 		return calloutOptions;
 	}
