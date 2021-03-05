@@ -150,7 +150,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	public async populateMigrationController(): Promise<void> {
 		this.migrationControllerDropdown.loading = true;
 		try {
-			this.migrationControllerDropdown.values = await this.migrationStateModel.getMigrationControllerValues(this.migrationStateModel._targetSubscription, this.migrationStateModel._targetManagedInstance);
+			this.migrationControllerDropdown.values = await this.migrationStateModel.getMigrationControllerValues(this.migrationStateModel._targetSubscription, this.migrationStateModel._targetServerInstance);
 			if (this.migrationStateModel._migrationController) {
 				this.migrationControllerDropdown.value = {
 					name: this.migrationStateModel._migrationController.id,
