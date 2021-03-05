@@ -60,7 +60,7 @@ export interface IModalDialogStyles {
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
 export type DialogStyle = 'normal' | 'flyout' | 'callout';
-export type DialogPosition = 'left' | 'below';
+export type DialogPosition = 'left' | 'below' | 'above';
 
 export interface IDialogProperties {
 	xPos: number,
@@ -430,6 +430,16 @@ export abstract class Modal extends Disposable implements IThemable {
 			let dialogWidth;
 			if (typeof this._modalOptions.width === 'number') {
 				dialogWidth = this._modalOptions.width;
+			}
+
+			if (this._modalOptions.dialogPosition === 'above') {
+				if (this._modalOptions.dialogProperties) {
+					this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - this._modalOptions.dialogProperties.width}px`;
+					this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos - 235}px`;
+				} else {
+					this._modalDialog.style.left = `${this._modalOptions.positionX}px`;
+					this._modalDialog.style.top = `${this._modalOptions.positionY - 235}px`;
+				}
 			}
 
 			if (this._modalOptions.dialogPosition === 'below') {

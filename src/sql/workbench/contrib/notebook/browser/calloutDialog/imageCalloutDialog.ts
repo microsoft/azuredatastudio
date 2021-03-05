@@ -24,7 +24,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
-import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { DialogPosition, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 
@@ -51,6 +51,7 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 		title: string,
 		width: DialogWidth,
 		dialogProperties: IDialogProperties,
+		dialogPosition: DialogPosition,
 		@IPathService private readonly _pathService: IPathService,
 		@IFileDialogService private readonly _fileDialogService: IFileDialogService,
 		@IContextViewService private readonly _contextViewService: IContextViewService,
@@ -66,6 +67,7 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 			title,
 			width,
 			dialogProperties,
+			dialogPosition,
 			themeService,
 			layoutService,
 			telemetryService,
