@@ -321,6 +321,10 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 		this._findInput.focus();
 	}
 
+	public setFindInput(searchTerm: string): void {
+		this._findInput.inputBox.value = searchTerm;
+	}
+
 	public highlightFindOptions(): void {
 		this._findInput.highlightFindOptions();
 	}
