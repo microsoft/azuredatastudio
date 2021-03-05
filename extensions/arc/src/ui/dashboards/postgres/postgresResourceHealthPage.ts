@@ -157,10 +157,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 				refreshButton.enabled = false;
 				try {
 					this.podConditionsLoading!.loading = true;
-
-					await Promise.all([
-						this._postgresModel.refresh()
-					]);
+					this._postgresModel.refresh();
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.refreshFailed(error));
 				}
