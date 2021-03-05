@@ -14,7 +14,7 @@ import { ServerTreeDragAndDrop } from 'sql/workbench/services/objectExplorer/bro
 import { TestTree } from 'sql/workbench/test/treeMock';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { mssqlProviderName, pgsqlProviderName } from 'sql/platform/connection/common/constants';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 
 
@@ -60,7 +60,7 @@ suite('SQL Drag And Drop Controller tests', () => {
 		groupId: 'group id',
 		getOptionsKey: undefined!,
 		matches: undefined!,
-		providerName: 'PGSQL',
+		providerName: pgsqlProviderName,
 		options: {},
 		saveProfile: true,
 		id: 'd936bb32-422b-49c3-963f-ae9532d63dc6'

@@ -9,7 +9,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { ITree, IDragAndDrop, IDragOverReaction, DRAG_OVER_ACCEPT_BUBBLE_DOWN, DRAG_OVER_REJECT } from 'vs/base/parts/tree/browser/tree';
 import { DragMouseEvent } from 'vs/base/browser/mouseEvent';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
-import { UNSAVED_GROUP_ID, mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { UNSAVED_GROUP_ID, mssqlProviderName, pgsqlProviderName } from 'sql/platform/connection/common/constants';
 import { DataTransfers, IDragAndDropData } from 'vs/base/browser/dnd';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
@@ -104,7 +104,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				finalString = element.nodeTypeId !== 'Function' && escapedName.indexOf(' ') > 0 ? `[@"${escapedName}"]` : escapedName;
 			} else if (providerName === mssqlProviderName) {
 				finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
-			} else if (providerName === 'PGSQL') {
+			} else if (providerName === pgsqlProviderName) {
 				finalString = element.metadata.schema ? `"${element.metadata.schema}"."${element.metadata.name}"` : `"${element.metadata.name}"`;
 			} else {
 				finalString = element.metadata.schema ? `${element.metadata.schema}.${element.metadata.name}` : `${element.metadata.name}`;
@@ -120,7 +120,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 				escapedName = escapeString(child.metadata.name);
 				if (providerName === mssqlProviderName) {
 					finalString = escapedSchema ? `[${escapedSchema}].[${escapedName}]` : `[${escapedName}]`;
-				} else if (providerName === 'PGSQL') {
+				} else if (providerName === pgsqlProviderName) {
 					finalString = child.metadata.schema ? `"${child.metadata.schema}"."${child.metadata.name}"` : `"${child.metadata.name}"`;
 				} else {
 					finalString = child.metadata.schema ? `${child.metadata.schema}.${child.metadata.name}` : `${child.metadata.name}`;
