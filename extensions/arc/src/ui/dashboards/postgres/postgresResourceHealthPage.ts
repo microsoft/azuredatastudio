@@ -16,6 +16,13 @@ export type PodHealthModel = {
 	lastUpdate: string
 };
 
+export enum PodCondtionType {
+	initialized = 'Initialized',
+	ready = 'Ready',
+	containersReady = 'ContainersReady',
+	podScheduled = 'PodScheduled'
+}
+
 export class PostgresResourceHealthPage extends DashboardPage {
 	private podSummaryContainer!: azdata.DivContainer;
 
@@ -191,13 +198,13 @@ export class PostgresResourceHealthPage extends DashboardPage {
 				} else {
 					imageComponent.iconPath = IconPathHelper.success;
 
-					if (c.type === 'Initialized') {
+					if (c.type === PodCondtionType.initialized) {
 						message = loc.podInitialized;
-					} else if (c.type === 'Ready') {
+					} else if (c.type === PodCondtionType.ready) {
 						message = loc.podReady;
-					} else if (c.type === 'ContainersReady') {
+					} else if (c.type === PodCondtionType.containersReady) {
 						message = loc.containerReady;
-					} else if (c.type === 'PodScheduled') {
+					} else if (c.type === PodCondtionType.podScheduled) {
 						message = loc.podScheduled;
 					} else {
 						message = c.message ?? c.reason ?? '';
