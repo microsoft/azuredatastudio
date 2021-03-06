@@ -283,7 +283,7 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 					iconClass = ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
 				} else {
 					iconClass = ids.nextId();
-					createCSSRule(`.codicon.masked-icon.${iconClass}:before`, `mask-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
+					createCSSRule(`.codicon.masked-icon.${iconClass}::before`, `-webkit-mask-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
 					ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
 				}
 
