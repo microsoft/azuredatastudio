@@ -40,7 +40,7 @@ export class BookModel {
 	private _rootPath: string;
 	private _errorMessage: string;
 	private _currentBook: BookInitialization | undefined = undefined;
-	private _queuedCommands: { deferred: Deferred<void>, book?: BookInitialization }[] = [];
+	private _queuedBooks: { deferred: Deferred<void>, book?: BookInitialization }[] = [];
 
 	constructor(
 		public readonly bookPath: string,
@@ -66,43 +66,23 @@ export class BookModel {
 
 	@debounce(1500)
 	public async reinitializeContents(): Promise<void> {
-		await this.initializeContents();
+		await this.initializeContents(true);
 		this._onDidChangeTreeData.fire(undefined);
 	}
 
-	public async initializeContents(): Promise<void> {
+	public async initializeContents(isRefresh: boolean): Promise<void> {
 		const book = new BookInitialization();
 		book.initializationDone().then(async () => {
 			this._currentBook = undefined;
-			this._queuedCommands.shift()?.deferred.resolve();
+			this._queuedBooks.shift()?.deferred.resolve();
 		});
-		if (!this._currentBook && this._queuedCommands.length === 0) {
+		if ((!this._currentBook || isRefresh) && this._queuedBooks.length === 0) {
 			this._currentBook = book;
-		} else {
-			// We're in a session or another command is executing so add this to the end of the queued commands and wait our turn
-			const deferred = new Deferred<void>();
-			deferred.promise.then(() => {
-				this._currentBook = book;
-				// We've started a new session so look at all our queued commands and start
-				// the ones for this session now.
-				this._queuedCommands = this._queuedCommands.filter(c => {
-					if (c.book === this._currentBook) {
-						c.deferred.resolve();
-						return false;
-					}
-					return true;
-				});
-			});
-			this._queuedCommands.push({ deferred, book: undefined });
-			await deferred.promise;
 		}
-		await this.initBook(book);
-	}
-
-	public async initBook(book?: BookInitialization): Promise<void> {
-		if (this._currentBook && this._currentBook !== book) {
+		else {
+			// If there's a current book, then we add the book to the queue
 			const deferred = new Deferred<void>();
-			this._queuedCommands.push({ deferred, book: book });
+			this._queuedBooks.push({ deferred, book: undefined });
 			await deferred.promise;
 		}
 		try {
@@ -117,9 +97,9 @@ export class BookModel {
 			}
 		}
 		finally {
-			// If there isn't an active session and we still have queued commands then we have to manually kick off the next one
-			if (this._queuedCommands.length > 0 && !this._currentBook) {
-				this._queuedCommands.shift()?.deferred.resolve();
+			// If there isn't an active book and there are some books in queue then kick off the next one
+			if (this._queuedBooks.length > 0 && !this._currentBook) {
+				this._queuedBooks.shift()?.deferred.resolve();
 			}
 		}
 	}
