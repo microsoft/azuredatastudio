@@ -57,9 +57,9 @@ export interface IModalDialogStyles {
 	dialogShadowColor?: Color;
 }
 
-export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
+export type DialogWidth = 'narrow' | 'medium' | 'wide' | number | string;
 export type DialogStyle = 'normal' | 'flyout' | 'callout';
-export type DialogPosition = 'left' | 'below';
+export type DialogPosition = 'left' | 'below' | 'above';
 
 export interface IDialogProperties {
 	xPos: number,
@@ -223,8 +223,12 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		if (typeof this._modalOptions.width === 'number') {
 			this._modalDialog.style.width = `${this._modalOptions.width}px`;
-		} else {
+		} else if (this._modalOptions.width === 'narrow'
+			|| this._modalOptions.width === 'medium'
+			|| this._modalOptions.width === 'wide') {
 			this._modalDialog.classList.add(`${this._modalOptions.width}-dialog`);
+		} else {
+			this._modalDialog.style.width = this._modalOptions.width;
 		}
 
 		if (this._modalOptions.dialogStyle === 'callout') {
@@ -433,18 +437,23 @@ export abstract class Modal extends Disposable implements IThemable {
 			dialogWidth = this._modalOptions.width;
 		}
 
-		if (this._modalOptions.dialogPosition === 'below') {
+		if (this._modalOptions.dialogPosition === 'above') {
+			if (this._modalOptions.dialogProperties) {
+				this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - this._modalOptions.dialogProperties.width}px`;
+				this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos - 235}px`;
+			} else {
+				this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos}px`;
+				this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos - 235}px`;
+			}
+		} else if (this._modalOptions.dialogPosition === 'below') {
 			if (this._modalOptions.dialogProperties) {
 				this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - this._modalOptions.dialogProperties.width}px`;
 				this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos + (this._modalOptions.dialogProperties.height)}px`;
 			} else {
-				this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos
-					}px`;
+				this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos}px`;
 				this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos}px`;
 			}
-		}
-
-		if (this._modalOptions.dialogPosition === 'left') {
+		} else if (this._modalOptions.dialogPosition === 'left') {
 			if (this._modalOptions.dialogProperties) {
 				this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - (dialogWidth + this._modalOptions.dialogProperties.width)}px`;
 				this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos - this._modalOptions.dialogProperties.height * 2}px`;
@@ -453,6 +462,7 @@ export abstract class Modal extends Disposable implements IThemable {
 				this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos}px`;
 			}
 		}
+
 		this._modalDialog.style.width = `${dialogWidth}px`;
 	}
 

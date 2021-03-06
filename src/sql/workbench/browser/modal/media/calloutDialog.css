@@ -33,16 +33,19 @@
 	border-width: 1px;
 	content: '';
 	display: block;
-	height: 0;
+	height: 10px;
 	position: absolute;
-	width: 0;
+	width: 10px;
 }
 .callout-arrow.from-below:before {
-	height: 10px;
 	left: 24px;
 	top: -6px;
 	transform: rotate(135deg);
-	width: 10px;
+}
+.callout-arrow.from-above:before {
+	bottom: -6px;
+	left: 24px;
+	transform: rotate(-45deg);
 }
 .callout-arrow.from-left:before {
 	height: 26px;

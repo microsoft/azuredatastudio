@@ -8,7 +8,7 @@ import * as DOM from 'vs/base/browser/dom';
 import * as styler from 'vs/platform/theme/common/styler';
 import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { Modal, IDialogProperties } from 'sql/workbench/browser/modal/modal';
+import { Modal, IDialogProperties, DialogPosition, DialogWidth } from 'sql/workbench/browser/modal/modal';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -19,7 +19,6 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { DialogPosition, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { escapeLabel, escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
@@ -31,7 +30,7 @@ export interface ILinkCalloutDialogOptions {
 	insertUnescapedLinkUrl?: string
 }
 
-const DIALOG_WIDTH: DialogWidth = 452;
+const DEFAULT_DIALOG_WIDTH: DialogWidth = 452;
 
 export class LinkCalloutDialog extends Modal {
 	private _selectionComplete: Deferred<ILinkCalloutDialogOptions> = new Deferred<ILinkCalloutDialogOptions>();
@@ -43,7 +42,7 @@ export class LinkCalloutDialog extends Modal {
 
 	constructor(
 		title: string,
-		position: DialogPosition,
+		dialogPosition: DialogPosition,
 		dialogProperties: IDialogProperties,
 		private readonly _defaultLabel: string = '',
 		@IContextViewService private readonly _contextViewService: IContextViewService,
@@ -67,9 +66,9 @@ export class LinkCalloutDialog extends Modal {
 			contextKeyService,
 			{
 				dialogStyle: 'callout',
-				dialogPosition: position,
+				dialogPosition: dialogPosition,
 				dialogProperties: dialogProperties,
-				width: DIALOG_WIDTH
+				width: DEFAULT_DIALOG_WIDTH
 			}
 		);
 		let selection = window.getSelection();

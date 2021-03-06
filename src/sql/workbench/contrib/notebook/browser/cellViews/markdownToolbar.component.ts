@@ -282,11 +282,12 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		const triggerHeight = triggerElement.offsetHeight;
 		const triggerWidth = triggerElement.offsetWidth;
 		const dialogProperties = { xPos: triggerPosX, yPos: triggerPosY, width: triggerWidth, height: triggerHeight };
+		const dialogPosition = window.innerHeight - triggerPosY < 250 ? 'above' : 'below';
 		let calloutOptions;
 
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
 			const defaultLabel = this.getCurrentSelectionText();
-			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, 'below', dialogProperties, defaultLabel);
+			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogPosition, dialogProperties, defaultLabel);
 			this._linkCallout.render();
 			calloutOptions = await this._linkCallout.open();
 		}

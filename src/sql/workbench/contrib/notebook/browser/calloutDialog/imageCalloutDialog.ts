@@ -35,7 +35,7 @@ export interface IImageCalloutDialogOptions {
 	embedImage?: boolean
 }
 
-const DIALOG_WIDTH: DialogWidth = 452;
+const DEFAULT_DIALOG_WIDTH: DialogWidth = 452;
 
 export class ImageCalloutDialog extends Modal {
 	private _selectionComplete: Deferred<IImageCalloutDialogOptions> = new Deferred<IImageCalloutDialogOptions>();
@@ -51,7 +51,7 @@ export class ImageCalloutDialog extends Modal {
 
 	constructor(
 		title: string,
-		position: DialogPosition,
+		dialogPosition: DialogPosition,
 		dialogProperties: IDialogProperties,
 		@IPathService private readonly _pathService: IPathService,
 		@IFileDialogService private readonly _fileDialogService: IFileDialogService,
@@ -76,9 +76,9 @@ export class ImageCalloutDialog extends Modal {
 			contextKeyService,
 			{
 				dialogStyle: 'callout',
-				dialogPosition: position,
+				dialogPosition: dialogPosition,
 				dialogProperties: dialogProperties,
-				width: DIALOG_WIDTH
+				width: DEFAULT_DIALOG_WIDTH
 			}
 		);
 	}
