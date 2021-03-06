@@ -76,7 +76,7 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 			}
 
 			if (errorCount > 0) {
-				vscode.window.showErrorMessage(ProjectsFailedToLoad(errorCount));
+				vscode.window.showErrorMessage(ProjectsFailedToLoad);
 			}
 
 			TelemetryReporter.sendMetricsEvent(typeMetric, 'OpenWorkspaceProjectTypes');
