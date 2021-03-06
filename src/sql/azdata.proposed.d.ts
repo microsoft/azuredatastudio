@@ -345,6 +345,7 @@ declare module 'azdata' {
 		separator(): ComponentBuilder<SeparatorComponent, SeparatorComponentProperties>;
 		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent, PropertiesContainerComponentProperties>;
 		infoBox(): ComponentBuilder<InfoBoxComponent, InfoBoxComponentProperties>;
+		slider(): ComponentBuilder<SliderComponent, SliderComponentProperties>;
 	}
 
 	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
@@ -586,6 +587,19 @@ declare module 'azdata' {
 
 	export interface CheckBoxProperties {
 		required?: boolean;
+	}
+
+	export interface SliderComponentProperties extends ComponentProperties {
+		value: number,
+		min: number,
+		max: number,
+		step?: number,
+		showTicks?: boolean
+	}
+
+	export interface SliderComponent extends Component, SliderComponentProperties {
+		onChanged: vscode.Event<number>;
+		onInput: vscode.Event<number>;
 	}
 
 	/**
