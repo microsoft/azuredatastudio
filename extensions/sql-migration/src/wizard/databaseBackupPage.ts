@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import { getStorageAccountAccessKeys } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationCutover, MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import * as vscode from 'vscode';
 export class DatabaseBackupPage extends MigrationWizardPage {
@@ -56,7 +56,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						title: '',
 						component: networkContainer
 					},
-					this.migrationModeContainer(view),
 				]
 			);
 		await view.initializeModel(form.component());
@@ -388,56 +387,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}).component();
 
 		return flexContainer;
-	}
-
-	private migrationModeContainer(view: azdata.ModelView): azdata.FormComponent {
-		const description = view.modelBuilder.text().withProps({
-			value: constants.DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION
-		}).component();
-
-		const buttonGroup = 'cutoverContainer';
-
-		const onlineButton = view.modelBuilder.radioButton().withProps({
-			label: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL,
-			name: buttonGroup,
-			checked: true
-		}).component();
-
-		this.migrationStateModel._databaseBackup.migrationCutover = MigrationCutover.ONLINE;
-
-		onlineButton.onDidChangeCheckedState((e) => {
-			if (e) {
-				this.migrationStateModel._databaseBackup.migrationCutover = MigrationCutover.ONLINE;
-			}
-		});
-
-		const offlineButton = view.modelBuilder.radioButton().withProps({
-			label: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL,
-			name: buttonGroup
-		}).component();
-
-		offlineButton.onDidChangeCheckedState((e) => {
-			if (e) {
-				vscode.window.showInformationMessage('Feature coming soon');
-				onlineButton.checked = true;
-				//this.migrationStateModel._databaseBackup.migrationCutover = MigrationCutover.OFFLINE;
-			}
-		});
-
-		const flexContainer = view.modelBuilder.flexContainer().withItems(
-			[
-				description,
-				onlineButton,
-				offlineButton
-			]
-		).withLayout({
-			flexFlow: 'column'
-		}).component();
-
-		return {
-			title: constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL,
-			component: flexContainer
-		};
 	}
 
 	public async onPageEnter(): Promise<void> {
