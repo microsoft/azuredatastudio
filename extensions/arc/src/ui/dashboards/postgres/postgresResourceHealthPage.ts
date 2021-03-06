@@ -157,7 +157,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 				refreshButton.enabled = false;
 				try {
 					this.podConditionsLoading!.loading = true;
-					this._postgresModel.refresh();
+					await this._postgresModel.refresh();
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.refreshFailed(error));
 				}
@@ -312,8 +312,8 @@ export class PostgresResourceHealthPage extends DashboardPage {
 						CSSStyles: { ...cssStyles.text, 'margin': '0px' }
 					}).component();
 				}));
-				this.podSummaryContainer.addItems(components);
 			}
+			this.podSummaryContainer.addItems(components);
 		}
 	}
 
