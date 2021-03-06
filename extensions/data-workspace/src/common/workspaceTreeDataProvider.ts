@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { IWorkspaceService } from './interfaces';
-import { UnknownProjectsError } from './constants';
+import { ProjectsFailedToLoad, UnknownProjectsError } from './constants';
 import { WorkspaceTreeItem } from 'dataworkspace';
 import { TelemetryReporter } from './telemetry';
 
@@ -45,7 +45,7 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 
 			const typeMetric: Record<string, number> = {};
 
-			let errors: string[] = [];
+			let errorCount = 0;
 			for (const project of projects) {
 				try {
 					const projectProvider = await this._workspaceService.getProjectProvider(project);
@@ -70,13 +70,13 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 						});
 					});
 				} catch (e) {
-					errors.push(e.message);
+					errorCount++;
+					console.error(e.message);
 				}
 			}
 
-			if (errors.length > 0) {
-				const errorMessage: string = errors.join('\n');
-				vscode.window.showErrorMessage(errorMessage);
+			if (errorCount > 0) {
+				vscode.window.showErrorMessage(ProjectsFailedToLoad(errorCount));
 			}
 
 			TelemetryReporter.sendMetricsEvent(typeMetric, 'OpenWorkspaceProjectTypes');
