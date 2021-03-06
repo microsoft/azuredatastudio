@@ -283,6 +283,73 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 					iconClass = ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
 				} else {
 					iconClass = ids.nextId();
+					createCSSRule(`.codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
+					createCSSRule(`.vs-dark .codicon.${iconClass}, .hc-black .codicon.${iconClass}`, `background-image: ${asCSSUrl(item.icon.dark)}`);
+					ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
+				}
+
+				if (this.label) {
+					const iconClasses = iconClass.split(' ');
+					if (this._defaultCSSClassToAdd) {
+						iconClasses.push(this._defaultCSSClassToAdd);
+					}
+					this.label.classList.add('codicon', ...iconClasses);
+					this._labeledItemClassDispose = toDisposable(() => {
+						if (this.label) {
+							this.label.classList.remove('codicon', ...iconClasses);
+						}
+					});
+				}
+			}
+		}
+	}
+
+	dispose(): void {
+		if (this._labeledItemClassDispose) {
+			dispose(this._labeledItemClassDispose);
+			this._labeledItemClassDispose = undefined;
+		}
+
+		super.dispose();
+	}
+}
+export class LabeledNotebookMenuItemActionItem extends MenuEntryActionViewItem {
+	private _labeledItemClassDispose?: IDisposable;
+
+	constructor(
+		public _action: MenuItemAction,
+		@IKeybindingService labeledkeybindingService: IKeybindingService,
+		@INotificationService protected _notificationService: INotificationService,
+		private readonly _defaultCSSClassToAdd: string = ''
+	) {
+		super(_action, labeledkeybindingService, _notificationService);
+	}
+
+	updateLabel(): void {
+		if (this.label) {
+			this.label.innerText = this._commandAction.label;
+		}
+	}
+
+	// Overwrite item class to ensure that we can pass in a CSS class that other items use
+	// Leverages the _defaultCSSClassToAdd property that's passed into the constructor
+	protected _updateItemClass(item: ICommandAction): void {
+		dispose(this._labeledItemClassDispose);
+		this._labeledItemClassDispose = undefined;
+
+		if (ThemeIcon.isThemeIcon(item.icon)) {
+			// TODO
+		} else if (item.icon) {
+			let iconClass: string;
+
+
+			if (item.icon?.dark?.scheme) {
+				const iconPathMapKey = item.icon.dark.toString();
+
+				if (ICON_PATH_TO_CSS_RULES.has(iconPathMapKey)) {
+					iconClass = ICON_PATH_TO_CSS_RULES.get(iconPathMapKey)!;
+				} else {
+					iconClass = ids.nextId();
 					createCSSRule(`.codicon.masked-icon.${iconClass}::before`, `-webkit-mask-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
 					ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
 				}
