@@ -45,6 +45,7 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 
 			const typeMetric: Record<string, number> = {};
 
+			let errors: string[] = [];
 			for (const project of projects) {
 				try {
 					const projectProvider = await this._workspaceService.getProjectProvider(project);
@@ -69,8 +70,13 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 						});
 					});
 				} catch (e) {
-					vscode.window.showErrorMessage(e.message);
+					errors.push(e.message);
 				}
+			}
+
+			if (errors.length > 0) {
+				const errorMessage: string = errors.join('\n');
+				vscode.window.showErrorMessage(errorMessage);
 			}
 
 			TelemetryReporter.sendMetricsEvent(typeMetric, 'OpenWorkspaceProjectTypes');
