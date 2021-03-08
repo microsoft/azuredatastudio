@@ -79,6 +79,7 @@ export const resetAllToDefault = localize('arc.resetAllToDefault', "Reset all to
 export const resetToDefault = localize('arc.resetToDefault', "Reset to default");
 export const troubleshoot = localize('arc.troubleshoot', "Troubleshoot");
 export const clickTheNewSupportRequestButton = localize('arc.clickTheNewSupportRequestButton', "Click the new support request button to file a support request in the Azure Portal.");
+export const supportRequestNote = localize('arc.supportRequestNote', "* Must have resource configuration uploaded to Azure portal to open a support request.");
 export const running = localize('arc.running', "Running");
 export const ready = localize('arc.ready', "Ready");
 export const notReady = localize('arc.notReady', "Not Ready");
