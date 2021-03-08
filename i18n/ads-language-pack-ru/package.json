@@ -1,7 +1,7 @@
 {
-	"name": "ads-language-pack-pt-BR",
-	"displayName": "Portuguese (Brazil) Language Pack for Azure Data Studio",
-	"description": "Language pack extension for Portuguese (Brazil)",
+	"name": "ads-language-pack-ru",
+	"displayName": "Russian Language Pack for Azure Data Studio",
+	"description": "Language pack extension for Russian",
 	"version": "1.26.0",
 	"publisher": "Microsoft",
 	"repository": {
@@ -20,9 +20,9 @@
 	"contributes": {
 		"localizations": [
 			{
-				"languageId": "pt-br",
-				"languageName": "Portuguese (Brazil)",
-				"localizedLanguageName": "português (Brasil)",
+				"languageId": "ru",
+				"languageName": "Russian",
+				"localizedLanguageName": "русский",
 				"translations": [
 					{
 						"id": "vscode",
@@ -589,6 +589,6 @@
 		]
 	},
 	"scripts": {
-		"update": "cd ../vscode && npm run update-localization-extension pt_BR"
+		"update": "cd ../vscode && npm run update-localization-extension ru"
 	}
 }
