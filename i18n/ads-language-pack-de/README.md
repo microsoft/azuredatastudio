@@ -4,7 +4,7 @@ Das deutsche Sprachpaket bietet eine lokalisierte Benutzeroberfläche für Azure
 
 ## Verwendung
 
-Sie können die Standardsprache der Benutzeroberfläche außer Kraft setzen, indem Sie die Azure Data Studio-Anzeigesprache explizit über den Befehl "Anzeigesprache konfigurieren" festlegen. 
+Sie können die Standardsprache der Benutzeroberfläche außer Kraft setzen, indem Sie die Azure Data Studio-Anzeigesprache explizit über den Befehl "Anzeigesprache konfigurieren" festlegen.
 
 Drücken Sie "STRG+UMSCHALT+P", um die Befehlspalette aufzurufen, und beginnen Sie mit der Eingabe von "Anzeige", um den Befehl "Anzeigesprache konfigurieren" zu filtern und anzuzeigen.
 
@@ -21,7 +21,7 @@ Die Übersetzungszeichenfolgen werden in Microsoft Localization Platform verwalt
 
 ## Lizenz
 
-Der Quellcode und die Zeichenketten sind unter der Lizenz [MIT](https://github.com/Microsoft/vscode-loc/blob/master/LICENSE.md) lizenziert.
+Der Quellcode und die Zeichenketten sind unter der Lizenz [SOURCE EULA](https://github.com/Microsoft/azuredatastudio/blob/master/LICENSE.txt) lizenziert.
 
 ## Credits
 
@@ -87,7 +87,7 @@ The translation strings are maintained in Microsoft Localization Platform. Chang
 
 ## License
 
-The source code and strings are licensed under the [MIT](https://github.com/Microsoft/vscode-loc/blob/master/LICENSE.md) license.
+The source code and strings are licensed under the [SOURCE EULA](https://github.com/Microsoft/azuredatastudio/blob/master/LICENSE.txt).
 
 ## Credits
 

@@ -16,7 +16,7 @@ Las cadenas de traducción se mantienen en la plataforma de localización de Mic
 
 ## Licencia
 
-El código fuente y las cadenas se someten a la licencia [MIT](https://github.com/Microsoft/vscode-loc/blob/master/LICENSE.md).
+El código fuente y las cadenas se someten a la licencia [SOURCE EULA](https://github.com/Microsoft/azuredatastudio/blob/master/LICENSE.txt).
 
 ## Reconocimientos
 
@@ -85,7 +85,7 @@ The translation strings are maintained in Microsoft Localization Platform. Chang
 
 ## License
 
-The source code and strings are licensed under the [MIT](https://github.com/Microsoft/vscode-loc/blob/master/LICENSE.md) license.
+The source code and strings are licensed under the [SOURCE EULA](https://github.com/Microsoft/azuredatastudio/blob/master/LICENSE.txt).
 
 ## Credits
 

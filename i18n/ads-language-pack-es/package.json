@@ -3,12 +3,12 @@
 	"displayName": "Spanish Language Pack for Azure Data Studio",
 	"description": "Language pack extension for Spanish",
 	"version": "1.26.0",
-	"publisher": "MS-CEINTL",
+	"publisher": "Microsoft",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Microsoft/vscode-loc"
+		"url": "https://github.com/Microsoft/azuredatastudio"
 	},
-	"license": "SEE MIT LICENSE IN LICENSE.md",
+	"license": "SEE SOURCE EULA LICENSE IN LICENSE.txt",
 	"engines": {
 		"vscode": "^1.34.0",
 		"azdata": ">=1.26.0"
