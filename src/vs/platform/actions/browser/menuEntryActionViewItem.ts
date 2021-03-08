@@ -313,6 +313,13 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 		super.dispose();
 	}
 }
+
+/**
+ * This is a duplicate of LabeledMenuItemActionItem with the following exceptions:
+ * - Used exclusively by notebook toolbar.
+ * - Adds CSS class: `masked-icon` to contributed actions label element.
+ * - Adds style rule for masked-icon.
+ */
 export class LabeledNotebookMenuItemActionItem extends MenuEntryActionViewItem {
 	private _labeledItemClassDispose?: IDisposable;
 
@@ -351,6 +358,7 @@ export class LabeledNotebookMenuItemActionItem extends MenuEntryActionViewItem {
 				} else {
 					iconClass = ids.nextId();
 					createCSSRule(`.codicon.masked-icon.${iconClass}::before`, `-webkit-mask-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
+					createCSSRule(`.codicon.masked-icon.${iconClass}::before`, `mask-image: ${asCSSUrl(item.icon.light || item.icon.dark)}`);
 					ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
 				}
 
