@@ -110,7 +110,7 @@ export class LocalCondaPackageManageProvider implements IPackageManageProvider {
 							if (Array.isArray(dependencies)) {
 								let strDependencies = dependencies as string[];
 								let pythonDependency = strDependencies.find(dependency => dependency.trim().toLowerCase().startsWith('python '));
-								pythonDependency = pythonDependency.replace('python ', '');
+								pythonDependency = pythonDependency?.replace('python ', '');
 								return utils.isPackageSupported(this.jupyterInstallation.installedPythonVersion, [pythonDependency]);
 							}
 							return true;
