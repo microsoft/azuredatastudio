@@ -15,19 +15,19 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _networkShareContainer!: azdata.FlexContainer;
 	private _networkShareContainerSubscriptionDropdown!: azdata.DropDownComponent;
 	private _networkShareContainerStorageAccountDropdown!: azdata.DropDownComponent;
-	private _networkShareLocationText!: azdata.InputBoxComponent;
 	private _windowsUserAccountText!: azdata.InputBoxComponent;
 	private _passwordText!: azdata.InputBoxComponent;
+	private _networkShareDatabaseConfigContainer!: azdata.FlexContainer;
 
 	private _blobContainer!: azdata.FlexContainer;
 	private _blobContainerSubscriptionDropdown!: azdata.DropDownComponent;
 	private _blobContainerStorageAccountDropdown!: azdata.DropDownComponent;
-	private _blobContainerBlobDropdown!: azdata.DropDownComponent;
+	private _blobContainerDatabaseConfigContainer!: azdata.FlexContainer;
 
 	private _fileShareContainer!: azdata.FlexContainer;
 	private _fileShareSubscriptionDropdown!: azdata.DropDownComponent;
 	private _fileShareStorageAccountDropdown!: azdata.DropDownComponent;
-	private _fileShareFileShareDropdown!: azdata.DropDownComponent;
+	private _fileShareDatabaseConfigContainer!: azdata.FlexContainer;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_BACKUP_PAGE_TITLE), migrationStateModel);
@@ -104,6 +104,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 		});
 
+		networkShareButton.checked = true;
+
 		const flexContainer = view.modelBuilder.flexContainer().withItems(
 			[
 				networkShareButton,
@@ -159,6 +161,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				value: constants.DATABASE_BACKUP_FILE_SHARE_LABEL,
 				requiredIndicator: true,
 			}).component();
+
+		const fileShareDatabaseConfigHeader = view.modelBuilder.text().withProps({
+			value: 'Enter the target name and select the file share location of selected database(s)'
+		}).component();
+
+		this._fileShareDatabaseConfigContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column'
+		}).component();
+
 		this._fileShareFileShareDropdown = view.modelBuilder.dropDown()
 			.withProps({
 				required: true
@@ -177,6 +188,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this._fileShareSubscriptionDropdown,
 					storageAccountLabel,
 					this._fileShareStorageAccountDropdown,
+					fileShareDatabaseConfigHeader,
+					this._fileShareDatabaseConfigContainer,
 					fileShareLabel,
 					this._fileShareFileShareDropdown
 				]
@@ -224,6 +237,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 		});
 
+
+		const blobContainerDatabaseConfigHeader = view.modelBuilder.text().withProps({
+			value: 'Enter the target name and select the file share location of selected database(s)'
+		}).component();
+
+		this._fileShareDatabaseConfigContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column'
+		}).component();
+
 		const containerLabel = view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_BLOB_STORAGE_ACCOUNT_CONTAINER_LABEL,
 			requiredIndicator: true,
@@ -245,6 +267,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this._blobContainerSubscriptionDropdown,
 					storageAccountLabel,
 					this._blobContainerStorageAccountDropdown,
+					blobContainerDatabaseConfigHeader,
 					containerLabel,
 					this._blobContainerBlobDropdown
 				]

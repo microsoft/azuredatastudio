@@ -52,15 +52,15 @@ export interface NetworkShare {
 export interface DatabaseBackupModel {
 	migrationCutover: MigrationCutover;
 	networkContainerType: NetworkContainerType;
-	networkShareLocation: string;
+	networkShareLocations: string[];
 	windowsUser: string;
 	password: string;
 	subscription: azureResource.AzureResourceSubscription;
 	storageAccount: StorageAccount;
 	storageKey: string;
 	azureSecurityToken: string;
-	fileShare: azureResource.FileShare;
-	blobContainer: azureResource.BlobContainer;
+	fileShares: azureResource.FileShare[];
+	blobContainers: azureResource.BlobContainer[];
 }
 export interface Model {
 	readonly sourceConnectionId: string;
