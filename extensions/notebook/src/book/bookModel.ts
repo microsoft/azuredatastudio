@@ -60,9 +60,6 @@ export class BookModel {
 
 	public async initializeContents(): Promise<void> {
 		const deferred = new Deferred<void>();
-		deferred.then(async () => {
-			this._queuedPromises.shift()?.resolve();
-		});
 		if (!this._activePromise && this._queuedPromises.length === 0) {
 			this._activePromise = deferred;
 		}
@@ -83,12 +80,10 @@ export class BookModel {
 			}
 		}
 		finally {
-			// Resolve promise after initializing book
-			this._activePromise.resolve();
-			// Set active promise to undefined after all promises have been resolved.
-			if (this._queuedPromises.length === 0) {
-				this._activePromise = undefined;
-			}
+			// Resolve next promise in queue
+			const queuedPromise = this._queuedPromises.shift();
+			queuedPromise?.resolve();
+			this._activePromise = queuedPromise;
 		}
 	}
 
