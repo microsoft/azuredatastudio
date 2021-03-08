@@ -316,11 +316,10 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 
 /**
  * This is a duplicate of LabeledMenuItemActionItem with the following exceptions:
- * - Used exclusively by notebook toolbar.
  * - Adds CSS class: `masked-icon` to contributed actions label element.
  * - Adds style rule for masked-icon.
  */
-export class LabeledNotebookMenuItemActionItem extends MenuEntryActionViewItem {
+export class MaskedLabeledMenuItemActionItem extends MenuEntryActionViewItem {
 	private _labeledItemClassDispose?: IDisposable;
 
 	constructor(

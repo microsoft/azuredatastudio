@@ -41,7 +41,7 @@ import { createErrorWithActions } from 'vs/base/common/errorsWithActions';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { LabeledNotebookMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { MaskedLabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
@@ -509,7 +509,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				action.tooltip = action.label;
 				action.label = '';
 			}
-			return new LabeledNotebookMenuItemActionItem(action, this.keybindingService, this.notificationService);
+			return new MaskedLabeledMenuItemActionItem(action, this.keybindingService, this.notificationService);
 		}
 		return undefined;
 	}
