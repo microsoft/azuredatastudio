@@ -59,16 +59,15 @@ export class BookModel {
 	}
 
 	public async initializeContents(): Promise<void> {
-		const promise = new Deferred<void>();
-		promise.then(async () => {
+		const deferred = new Deferred<void>();
+		deferred.then(async () => {
 			this._queuedPromises.shift()?.resolve();
 		});
 		if (!this._activePromise && this._queuedPromises.length === 0) {
-			this._activePromise = promise;
+			this._activePromise = deferred;
 		}
 		else {
 			// If there's an active promise, then we need to add the new promise to the queue.
-			const deferred = new Deferred<void>();
 			this._queuedPromises.push(deferred);
 			await deferred.promise;
 		}
