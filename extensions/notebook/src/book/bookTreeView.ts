@@ -311,7 +311,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private async createAndAddBookModel(bookPath: string, isNotebook: boolean, notebookBookRoot?: string): Promise<void> {
 		if (!this.books.find(x => x.bookPath === bookPath)) {
 			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext, this._onDidChangeTreeData, notebookBookRoot);
-			await book.initializeContents(false);
+			await book.initializeContents();
 			this.books.push(book);
 			if (!this.currentBook) {
 				this.currentBook = book;

@@ -18,18 +18,6 @@ import { Deferred } from '../common/promise';
 const fsPromises = fileServices.promises;
 const content = 'content';
 
-class BookInitialization {
-	private _initializedBook = new Deferred<void>();
-
-	public initializationDone(): Promise<void> {
-		return this._initializedBook.promise;
-	}
-
-	public dispose(): void {
-		this._initializedBook.resolve();
-	}
-}
-
 export class BookModel {
 	private _bookItems: BookTreeItem[];
 	private _allNotebooks = new Map<string, BookTreeItem>();
@@ -39,8 +27,8 @@ export class BookModel {
 	private _bookVersion: BookVersion;
 	private _rootPath: string;
 	private _errorMessage: string;
-	private _currentBook: BookInitialization | undefined = undefined;
-	private _queuedBooks: { deferred: Deferred<void>, book?: BookInitialization }[] = [];
+	private _activePromise: Deferred<void> | undefined = undefined;
+	private _queuedPromises: Deferred<void>[] = [];
 
 	constructor(
 		public readonly bookPath: string,
@@ -66,23 +54,22 @@ export class BookModel {
 
 	@debounce(1500)
 	public async reinitializeContents(): Promise<void> {
-		await this.initializeContents(true);
+		await this.initializeContents();
 		this._onDidChangeTreeData.fire(undefined);
 	}
 
-	public async initializeContents(isRefresh: boolean): Promise<void> {
-		const book = new BookInitialization();
-		book.initializationDone().then(async () => {
-			this._currentBook = undefined;
-			this._queuedBooks.shift()?.deferred.resolve();
+	public async initializeContents(): Promise<void> {
+		const promise = new Deferred<void>();
+		promise.then(async () => {
+			this._queuedPromises.shift()?.resolve();
 		});
-		if ((!this._currentBook || isRefresh) && this._queuedBooks.length === 0) {
-			this._currentBook = book;
+		if (!this._activePromise && this._queuedPromises.length === 0) {
+			this._activePromise = promise;
 		}
 		else {
-			// If there's a current book, then we add the book to the queue
+			// If there's an active promise, then we need to add the new promise to the queue.
 			const deferred = new Deferred<void>();
-			this._queuedBooks.push({ deferred, book: undefined });
+			this._queuedPromises.push(deferred);
 			await deferred.promise;
 		}
 		try {
@@ -97,9 +84,11 @@ export class BookModel {
 			}
 		}
 		finally {
-			// If there isn't an active book and there are some books in queue then kick off the next one
-			if (this._queuedBooks.length > 0 && !this._currentBook) {
-				this._queuedBooks.shift()?.deferred.resolve();
+			// Resolve promise after initializing book
+			this._activePromise.resolve();
+			// Set active promise to undefined after all promises have been resolved.
+			if (this._queuedPromises.length === 0) {
+				this._activePromise = undefined;
 			}
 		}
 	}
