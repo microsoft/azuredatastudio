@@ -467,7 +467,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					},
 					SourceLocation: {
 						FileShare: {
-							Path: this._databaseBackup.networkShareLocation,
+							Path: '',
 							Username: this._databaseBackup.windowsUser,
 							Password: this._databaseBackup.password,
 						}
@@ -482,7 +482,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 		};
 
-		this._migrationDbs.forEach(async (db) => {
+		this._migrationDbs.forEach(async (db, index) => {
 
 			requestBody.properties.SourceDatabaseName = db;
 			try {
@@ -494,6 +494,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					db,
 					requestBody
 				);
+
+				requestBody.properties.BackupConfiguration.SourceLocation.FileShare.Path = this._databaseBackup.networkShareLocations[index];
 
 				if (response.status === 201) {
 					MigrationLocalStorage.saveMigration(
