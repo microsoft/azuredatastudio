@@ -104,7 +104,7 @@ export default class MainController implements vscode.Disposable {
 		let modelManagementService = await this.getModelManagementService();
 		// Model Management
 		//
-		let registeredModelService = new DeployedModelService(this._apiWrapper, this._config, this._queryRunner, modelImporter, modelRecentService, modelManagementService);
+		let registeredModelService = new DeployedModelService(this._apiWrapper, this._config, modelImporter, modelRecentService, modelManagementService);
 		let azureModelsService = new AzureModelRegistryService(this._apiWrapper, this._config, this.httpClient, this._outputChannel);
 		let predictService = new PredictService(this._apiWrapper, this._queryRunner);
 		let modelManagementController = new ModelManagementController(this._apiWrapper, this._rootPath,

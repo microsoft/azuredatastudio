@@ -28,13 +28,9 @@ export class DeployedModelService {
 	constructor(
 		private _apiWrapper: ApiWrapper,
 		private _config: Config,
-		private _queryRunner: QueryRunner,
 		private _modelClient: ModelPythonClient,
 		private _recentModelService: ModelConfigRecent,
 		private _modelManagementService: mssql.IModelManagementService) {
-		if (this._queryRunner) {
-
-		}
 	}
 
 	/**

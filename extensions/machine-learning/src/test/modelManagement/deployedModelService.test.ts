@@ -61,7 +61,7 @@ describe('DeployedModelService', () => {
 		let service = new DeployedModelService(
 			testContext.apiWrapper.object,
 			testContext.config.object,
-			testContext.queryRunner.object,
+
 			testContext.modelClient.object,
 			testContext.recentModels.object,
 			undefined!);
@@ -155,7 +155,6 @@ describe('DeployedModelService', () => {
 		let service = new DeployedModelService(
 			testContext.apiWrapper.object,
 			testContext.config.object,
-			testContext.queryRunner.object,
 			testContext.modelClient.object,
 			testContext.recentModels.object,
 			undefined!);
@@ -188,7 +187,6 @@ describe('DeployedModelService', () => {
 		let service = new DeployedModelService(
 			testContext.apiWrapper.object,
 			testContext.config.object,
-			testContext.queryRunner.object,
 			testContext.modelClient.object,
 			testContext.recentModels.object,
 			undefined!);
@@ -232,7 +230,6 @@ describe('DeployedModelService', () => {
 		let service = new DeployedModelService(
 			testContext.apiWrapper.object,
 			testContext.config.object,
-			testContext.queryRunner.object,
 			testContext.modelClient.object,
 			testContext.recentModels.object,
 			undefined!);
@@ -336,7 +333,6 @@ describe('DeployedModelService', () => {
 		let service = new DeployedModelService(
 			testContext.apiWrapper.object,
 			testContext.config.object,
-			testContext.queryRunner.object,
 			testContext.modelClient.object,
 			testContext.recentModels.object,
 			undefined!);
