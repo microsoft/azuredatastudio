@@ -16,6 +16,7 @@ export class MigrationCutoverDialog {
 	private _databaseTitleName!: azdata.TextComponent;
 	private _databaseCutoverButton!: azdata.ButtonComponent;
 	private _refresh!: azdata.ButtonComponent;
+	private _cancel!: azdata.ButtonComponent;
 
 	private _serverName!: azdata.TextComponent;
 	private _serverVersion!: azdata.TextComponent;
@@ -290,6 +291,27 @@ export class MigrationCutoverDialog {
 			}
 		});
 
+		this._cancel = this._view.modelBuilder.button().withProps({
+			iconPath: IconPathHelper.discard,
+			iconHeight: '16px',
+			iconWidth: '16px',
+			label: 'Cancel Migration',
+			height: '55px',
+			width: '130px'
+		}).component();
+
+		this._cancel.onDidClick((e) => {
+			this.cancelMigration();
+		});
+
+		header.addItem(this._cancel, {
+			flex: '0',
+			CSSStyles: {
+				'width': '130px'
+			}
+		});
+
+
 		this._refresh = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.refresh,
 			iconHeight: '16px',
@@ -427,6 +449,11 @@ export class MigrationCutoverDialog {
 			flexContainer: flexContainer,
 			text: textComponent
 		};
+	}
+
+	private async cancelMigration(): Promise<void> {
+		await this._model.cancelMigration();
+		await this.refreshStatus();
 	}
 }
 

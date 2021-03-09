@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { getMigrationStatus, DatabaseMigration, startMigrationCutover } from '../../api/azure';
+import { getMigrationStatus, DatabaseMigration, startMigrationCutover, stopMigration } from '../../api/azure';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 
 
@@ -26,6 +26,21 @@ export class MigrationCutoverDialogModel {
 		try {
 			if (this.migrationStatus) {
 				return await startMigrationCutover(
+					this._migration.azureAccount,
+					this._migration.subscription,
+					this.migrationStatus
+				);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+		return undefined!;
+	}
+
+	public async cancelMigration(): Promise<DatabaseMigration | undefined> {
+		try {
+			if (this.migrationStatus) {
+				return await stopMigration(
 					this._migration.azureAccount,
 					this._migration.subscription,
 					this.migrationStatus

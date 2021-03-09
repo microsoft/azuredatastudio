@@ -91,6 +91,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _storageAccounts!: StorageAccount[];
 	public _fileShares!: azureResource.FileShare[];
 	public _blobContainers!: azureResource.BlobContainer[];
+	public _refreshNetworkShareLocation!: azureResource.BlobContainer[];
+	public _targetDatabaseNames!: string[];
 
 	public _migrationController!: SqlMigrationController;
 	public _migrationControllers!: SqlMigrationController[];
@@ -102,7 +104,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _skuRecommendations: SKURecommendations | undefined;
 	private _assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined;
 
-
+	public _refreshDatabaseBackupPage!: boolean;
 
 	constructor(
 		private readonly _extensionContext: vscode.ExtensionContext,
@@ -486,17 +488,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			requestBody.properties.SourceDatabaseName = db;
 			try {
+				requestBody.properties.BackupConfiguration.SourceLocation.FileShare.Path = this._databaseBackup.networkShareLocations[index];
 				const response = await startDatabaseMigration(
 					this._azureAccount,
 					this._targetSubscription,
 					this._migrationController?.properties.location!,
 					this._targetServerInstance,
-					db,
+					this._targetDatabaseNames[index],
 					requestBody
 				);
-
-				requestBody.properties.BackupConfiguration.SourceLocation.FileShare.Path = this._databaseBackup.networkShareLocations[index];
-
 				if (response.status === 201) {
 					MigrationLocalStorage.saveMigration(
 						currentConnection!,

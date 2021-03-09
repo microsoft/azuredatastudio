@@ -270,12 +270,17 @@ export class DashboardWidget {
 		const localMigrations = MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection);
 		for (let i = 0; i < localMigrations.length; i++) {
 			const localMigration = localMigrations[i];
-			localMigration.migrationContext = await getDatabaseMigration(
-				localMigration.azureAccount,
-				localMigration.subscription,
-				localMigration.targetManagedInstance.location,
-				localMigration.migrationContext.id
-			);
+			try {
+				localMigration.migrationContext = await getDatabaseMigration(
+					localMigration.azureAccount,
+					localMigration.subscription,
+					localMigration.targetManagedInstance.location,
+					localMigration.migrationContext.id
+				);
+			} catch (e) {
+				console.log(e);
+			}
+
 			localMigration.sourceConnectionProfile = currentConnection;
 		}
 		return localMigrations;

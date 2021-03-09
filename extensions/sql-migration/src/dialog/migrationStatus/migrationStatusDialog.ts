@@ -10,6 +10,7 @@ import { MigrationContext } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
 import { MigrationCategory, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
+import { getDatabaseMigration } from '../../api/azure';
 export class MigrationStatusDialog {
 	private _model: MigrationStatusDialogModel;
 	private _dialogObject!: azdata.window.Dialog;
@@ -84,6 +85,10 @@ export class MigrationStatusDialog {
 			label: 'Refresh',
 		}).component();
 
+		this._refresh.onDidClick((e) => {
+			this.refreshTable();
+		});
+
 		const flexContainer = this._view.modelBuilder.flexContainer().component();
 
 		flexContainer.addItem(this._searchBox, {
@@ -136,7 +141,7 @@ export class MigrationStatusDialog {
 					height: '20px'
 				}).component();
 				const sqlMigrationName = this._view.modelBuilder.hyperlink().withProps({
-					label: migration.migrationContext.name,
+					label: migration.targetManagedInstance.name,
 					url: ''
 				}).component();
 				sqlMigrationName.onDidClick((e) => {
@@ -182,6 +187,19 @@ export class MigrationStatusDialog {
 		} catch (e) {
 			console.log(e);
 		}
+	}
+
+	private refreshTable(): void {
+		this._model._migrations.forEach(async (migration) => {
+			migration.migrationContext = await getDatabaseMigration(
+				migration.azureAccount,
+				migration.subscription,
+				migration.targetManagedInstance.location,
+				migration.migrationContext.id
+			);
+		});
+
+		this.populateMigrationTable();
 	}
 
 	private createStatusTable(): azdata.DeclarativeTableComponent {

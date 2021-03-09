@@ -87,7 +87,21 @@ export const INVALID_FILESHARE_ERROR = localize('sql.migration.invalid.fileShare
 export const INVALID_BLOBCONTAINER_ERROR = localize('sql.migration.invalid.blobContainer.error', "Please select a valid blob container to proceed.");
 export const INVALID_NETWORK_SHARE_LOCATION = localize('sql.migration.invalid.network.share.location', "Invalid network share location format. Example: {0}", '\\\\Servername.domainname.com\\Backupfolder');
 export const INVALID_USER_ACCOUNT = localize('sql.migration.invalid.user.account', "Invalid user account format. Example: {0}", 'Domain\\username');
-
+export function TARGET_NAME_FOR_DATABASE(dbName: string): string {
+	return localize('sql.migration.target.name.for.database', 'Target name for database ‘{0}’', dbName);
+}
+export function TARGET_NETWORK_SHARE_LOCATION(dbName: string): string {
+	return localize('sql.migration.network.share.location', "Network share location to read backups for database ‘{0}’", dbName);
+}
+export function TARGET_FILE_SHARE(dbName: string): string {
+	return localize('sql.migration.file.share', "Select the file share that contains the backup files for ‘{0}’", dbName);
+}
+export function TARGET_BLOB_CONTAINER(dbName: string): string {
+	return localize('sql.migration.blob.container', "Select the container that contains the backup files for ‘{0}’", dbName);
+}
+export const ENTER_NETWORK_SHARE_INFORMATION = localize('sql.migration.enter.network.share.information', "Enter network share path information for selected database(s)");
+export const ENTER_BLOB_CONTAINER_INFORMATION = localize('sql.migration.blob.container.information', "Enter the target name and select the blob container location for selected database(s)");
+export const ENTER_FILE_SHARE_INFORMATION = localize('sql.migration.enter.file.share.information', "Enter the target name and select the file share location of selected database(s)");
 
 // integration runtime page
 export const IR_PAGE_TITLE = localize('sql.migration.ir.page.title', "Migration Controller");
@@ -168,8 +182,8 @@ export const SUMMARY_AZURE_STORAGE_SUBSCRIPTION = localize('sql.migration.summar
 export const SUMMARY_AZURE_STORAGE = localize('sql.migration.summary.azure.storage', "Azure storage");
 export const SUMMARY_IR_NODE = localize('sql.migration.ir.node', "Integration Runtime node");
 export const NETWORK_SHARE = localize('sql.migration.network.share', "Network Share");
-export const BLOB_CONTAINER = localize('sql.migration.blob.container', "Blob Container");
-export const FILE_SHARE = localize('sql.migration.file.share', "File Share");
+export const BLOB_CONTAINER = localize('sql.migration.blob.container.title', "Blob Container");
+export const FILE_SHARE = localize('sql.migration.file.share.title', "File Share");
 export const MIGRATION_STARTED = localize('sql.migration.started.notification', "Migration in progress");
 
 // Open notebook quick pick string

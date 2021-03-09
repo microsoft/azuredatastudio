@@ -128,6 +128,7 @@ export class AssessmentResultsDialog {
 	protected async execute() {
 		this.model._migrationDbs = this._tree.selectedDbs();
 		this.skuRecommendationPage.refreshDatabaseCount(this._model._migrationDbs.length);
+		this.model._refreshDatabaseBackupPage = true;
 		this._isOpen = false;
 	}
 
