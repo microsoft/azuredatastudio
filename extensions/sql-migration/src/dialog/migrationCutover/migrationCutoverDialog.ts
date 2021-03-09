@@ -414,6 +414,7 @@ export class MigrationCutoverDialog {
 				this._databaseCutoverButton.enabled = true;
 			} else {
 				this._databaseCutoverButton.enabled = false;
+				this._cancel.enabled = false;
 			}
 		} catch (e) {
 			console.log(e);
