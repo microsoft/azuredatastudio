@@ -321,7 +321,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
 
 		try {
-			await createDatabase1(targetDB, ownerUri);
+			await createDatabase1(targetDB, ownerUri, server);
 
 			const source: mssql.SchemaCompareEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
@@ -369,6 +369,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				providerName: server.providerName
 			});
 			const dbConnectionOwnerUri = await azdata.connection.getUriForConnection(dbConnectionId);
+			console.log('dbConnectionOwnerUri:', dbConnectionOwnerUri);
 			await utils.assertTableCreationResult('dbo', 'Table3', dbConnectionOwnerUri, retryCount);
 
 			//verify only one difference exist now
@@ -394,7 +395,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
 
 		try {
-			await createDatabase1(targetDB, ownerUri);
+			await createDatabase1(targetDB, ownerUri, server);
 
 			const source: mssql.SchemaCompareEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
@@ -456,7 +457,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
 
 		try {
-			await createDatabase1(targetDB, ownerUri);
+			await createDatabase1(targetDB, ownerUri, server);
 
 			const source: mssql.SchemaCompareEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
@@ -562,13 +563,28 @@ async function assertScriptGenerationResult(resultstatus: azdata.ResultStatus, s
 	}
 }
 
-async function createDatabase1(targetDB: string, ownerUri: string): Promise<void> {
+async function createDatabase1(targetDB: string, ownerUri: string, server: TestServerProfile): Promise<void> {
+	console.log('In create database');
 	await utils.createDB(targetDB, ownerUri);
 	console.log('Databases created successfully');
 
+	const dbConnectionId = await utils.connectToServer({
+		serverName: server.serverName,
+		database: targetDB,
+		userName: server.userName,
+		password: server.password,
+		authenticationTypeName: server.authenticationTypeName,
+		providerName: server.providerName
+	});
+
+	const dbOwnerUri = await azdata.connection.getUriForConnection(dbConnectionId);
+
+	console.log('ownerUri:', ownerUri);
+	console.log('dbOwnerUri:', dbOwnerUri);
+
 	//Create Table1
 	let query = 'BEGIN TRY\r\n' +
-		` CREATE TABLE [${targetDB}].[dbo].[Table1] (\r\n` +
+		' CREATE TABLE [dbo].[Table1] (\r\n' +
 		' [Id] INT NOT NULL,\r\n' +
 		' [Something] NCHAR (10) NULL,\r\n' +
 		' PRIMARY KEY CLUSTERED ([Id] ASC)\r\n' +
@@ -579,12 +595,12 @@ async function createDatabase1(targetDB: string, ownerUri: string): Promise<void
 		'SELECT ERROR_MESSAGE() AS ErrorMessage; \r\n' +
 		'END CATCH\r\n' +
 		'SELECT 1 AS NoError\r\n';
-	let tableCreatedResult = await utils.runQuery(query, ownerUri);
+	let tableCreatedResult = await utils.runQuery(query, dbOwnerUri);
 	assert(tableCreatedResult.columnInfo[0].columnName !== 'ErrorMessage', 'Table1 creation threw error');
 
 	// Create Table2
 	query = 'BEGIN TRY\r\n' +
-		` CREATE TABLE [${targetDB}].[dbo].[Table2] (\r\n` +
+		' CREATE TABLE [dbo].[Table2] (\r\n' +
 		' [Id] INT NOT NULL,\r\n' +
 		' [Id1] NCHAR (10) NULL,\r\n' +
 		' [Id2] NCHAR (10) NULL,\r\n' +
@@ -599,7 +615,7 @@ async function createDatabase1(targetDB: string, ownerUri: string): Promise<void
 		'SELECT ERROR_MESSAGE() AS ErrorMessage; \r\n' +
 		'END CATCH\r\n' +
 		'SELECT 1 AS NoError\r\n';
-	tableCreatedResult = await utils.runQuery(query, ownerUri);
+	tableCreatedResult = await utils.runQuery(query, dbOwnerUri);
 	assert(tableCreatedResult.columnInfo[0].columnName !== 'ErrorMessage', 'Table2 creation threw error');
 	console.log('Tables created succesfully');
 }
