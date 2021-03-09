@@ -421,7 +421,20 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (!bookItem && this.currentBook) {
 			// get the parent node and expand it if it's not already
 			let allNodes = this.currentBook?.getAllNotebooks();
-			if (allNodes.size === 0) {
+			if (allNodes.size > 0) {
+				let book = allNodes ? Array.from(allNodes?.keys())?.filter(x => x.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf(path.posix.sep))) > -1) : undefined;
+				let bookNode = book?.length > 0 ? this.currentBook?.getNotebook(book.find(x => x.substring(0, x.lastIndexOf(path.posix.sep)) === notebookPath.substring(0, notebookPath.lastIndexOf(path.sep)))) : undefined;
+				if (bookNode) {
+					if (this._bookViewer?.visible) {
+						await this._bookViewer.reveal(bookNode, { select: true, focus: false, expand: 3 });
+					} else {
+						await this.getChildren(bookNode);
+					}
+
+					bookItem = this.currentBook?.getNotebook(notebookPath);
+				}
+			}
+			if (!bookItem) {
 				let bookItems = await this.getChildren(this.currentBook.bookItems[0]);
 				// number of levels to expand
 				let depthoNotebookInBook: number = path.relative(notebookPath, this.currentBook.bookPath)?.split(path.sep)?.length ?? 0;
@@ -434,21 +447,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						}
 						let book = bookItems.find(b => b.tooltip.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf(path.posix.sep))) > -1);
 						bookItems = await this.getChildren(book);
-						await this._bookViewer.reveal(book, { select: true, focus: false, expand: 3 });
+						// await this._bookViewer.reveal(book, { select: true, focus: false, expand: 3 });
 						depthoNotebookInBook--;
 					}
-				}
-			} else {
-				let book = allNodes ? Array.from(allNodes?.keys())?.filter(x => x.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf(path.posix.sep))) > -1) : undefined;
-				let bookNode = book?.length > 0 ? this.currentBook?.getNotebook(book.find(x => x.substring(0, x.lastIndexOf(path.posix.sep)) === notebookPath.substring(0, notebookPath.lastIndexOf(path.sep)))) : undefined;
-				if (bookNode) {
-					if (this._bookViewer?.visible) {
-						await this._bookViewer.reveal(bookNode, { select: true, focus: false, expand: 3 });
-					} else {
-						await this.getChildren(bookNode);
-					}
-
-					bookItem = this.currentBook?.getNotebook(notebookPath);
 				}
 			}
 		}
