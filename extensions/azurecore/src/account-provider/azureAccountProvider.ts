@@ -10,9 +10,9 @@ import * as nls from 'vscode-nls';
 import {
 	AzureAccountProviderMetadata,
 	AzureAuthType,
-	Deferred,
 	AzureAccount
-} from './interfaces';
+} from 'azurecore';
+import { Deferred } from './interfaces';
 
 import { SimpleTokenCache } from './simpleTokenCache';
 import { Logger } from '../utils/Logger';
