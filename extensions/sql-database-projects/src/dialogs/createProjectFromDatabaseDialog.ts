@@ -249,8 +249,7 @@ export class CreateProjectFromDatabaseDialog {
 			ariaLabel: constants.projectNamePlaceholderText,
 			placeHolder: constants.projectNamePlaceholderText,
 			required: true,
-			width: cssStyles.createProjectFromDatabaseTextboxWidth,
-			validationErrorMessage: constants.projectNameRequired
+			width: cssStyles.createProjectFromDatabaseTextboxWidth
 		}).component();
 
 		this.projectNameTextBox.onTextChanged(() => {
@@ -278,8 +277,7 @@ export class CreateProjectFromDatabaseDialog {
 			value: '',
 			ariaLabel: constants.projectLocationLabel,
 			placeHolder: constants.projectLocationPlaceholderText,
-			width: cssStyles.createProjectFromDatabaseTextboxWidth,
-			validationErrorMessage: constants.projectLocationRequired
+			width: cssStyles.createProjectFromDatabaseTextboxWidth
 		}).component();
 
 		this.projectLocationTextBox.onTextChanged(() => {

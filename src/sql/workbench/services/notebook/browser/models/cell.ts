@@ -30,6 +30,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -80,7 +81,10 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
 	private _isInjectedParameter: boolean;
+	private _previousChartState: IInsightOptions[] = [];
+	private _outputCounter = 0; // When re-executing the same cell, ensure that we apply chart options in the same order
 	private _attachments: nb.ICellAttachments;
+	private _preventNextChartCache: boolean = false;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -276,6 +280,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this.cellSourceChanged = true;
 		}
 		this._modelContentChangedEvent = undefined;
+		this._preventNextChartCache = true;
 	}
 
 	public get modelContentChangedEvent(): IModelContentChangedEvent {
@@ -491,6 +496,7 @@ export class CellModel extends Disposable implements ICellModel {
 			if (!kernel) {
 				return false;
 			}
+			this._outputCounter = 0;
 			this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunCell)
 				.withAdditionalProperties({ cell_language: kernel.name })
 				.send();
@@ -626,19 +632,31 @@ export class CellModel extends Disposable implements ICellModel {
 		if (this._future) {
 			this._future.dispose();
 		}
-		this.clearOutputs();
+		this.clearOutputs(true);
 		this._future = future;
 		future.setReplyHandler({ handle: (msg) => this.handleReply(msg) });
 		future.setIOPubHandler({ handle: (msg) => this.handleIOPub(msg) });
 		future.setStdInHandler({ handle: (msg) => this.handleSdtIn(msg) });
 	}
-
-	public clearOutputs(): void {
+	/**
+	 * Clear outputs can be done as part of the "Clear Outputs" action on a cell or as part of running a cell
+	 * @param runCellPending If a cell has been run
+	 */
+	public clearOutputs(runCellPending = false): void {
+		if (runCellPending) {
+			this.cacheChartStateIfExists();
+		} else {
+			this.clearPreviousChartState();
+		}
 		this._outputs = [];
 		this._outputsIdMap.clear();
 		this.fireOutputsChanged();
 
 		this.executionCount = undefined;
+	}
+
+	public get previousChartState(): any[] {
+		return this._previousChartState;
 	}
 
 	private fireOutputsChanged(shouldScroll: boolean = false): void {
@@ -705,7 +723,14 @@ export class CellModel extends Disposable implements ICellModel {
 					}
 				}
 				if (!added) {
+					if (this._previousChartState[this._outputCounter]) {
+						if (!output.metadata) {
+							output.metadata = {};
+						}
+						output.metadata.azdata_chartOptions = this._previousChartState[this._outputCounter];
+					}
 					this._outputsIdMap.set(output, { batchId: (<QueryResultId>msg.metadata).batchId, id: (<QueryResultId>msg.metadata).id });
+					this._outputCounter++;
 				}
 				break;
 			case 'execute_result_update':
@@ -1023,4 +1048,33 @@ export class CellModel extends Disposable implements ICellModel {
 			}));
 		}
 	}
+
+	/**
+	 * Cache start state for any existing charts.
+	 * This ensures that data can be passed to the grid output component when a cell is re-executed
+	 */
+	private cacheChartStateIfExists(): void {
+		this.clearPreviousChartState();
+		// If a cell's source was changed, don't cache chart state
+		if (!this._preventNextChartCache) {
+			this._outputs?.forEach(o => {
+				if (dataResourceDataExists(o)) {
+					if (o.metadata?.azdata_chartOptions) {
+						this._previousChartState.push(o.metadata.azdata_chartOptions);
+					} else {
+						this._previousChartState.push(undefined);
+					}
+				}
+			});
+		}
+		this._preventNextChartCache = false;
+	}
+
+	private clearPreviousChartState(): void {
+		this._previousChartState = [];
+	}
+}
+
+function dataResourceDataExists(metadata: nb.ICellOutput): boolean {
+	return metadata['data']?.['application/vnd.dataresource+json'];
 }

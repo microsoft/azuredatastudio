@@ -229,10 +229,11 @@ export class NotebookSearchView extends SearchView {
 				let element = this.tree.getSelection()[0] as Match;
 				const resource = element instanceof Match ? element.parent().resource : (<FileMatch>element).resource;
 				if (resource.fsPath.endsWith('.md')) {
-					this.commandService.executeCommand('markdown.showPreview', resource);
+					await this.commandService.executeCommand('markdown.showPreview', resource);
 				} else {
-					await this.open(this.tree.getSelection()[0] as Match, true, false, false);
+					await this.commandService.executeCommand('bookTreeView.openNotebook', resource.fsPath);
 				}
+				await this.commandService.executeCommand('notebook.action.launchFindInNotebook', this.viewModel.searchResult.query?.contentPattern?.pattern);
 			}
 		}));
 	}
