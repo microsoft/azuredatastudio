@@ -434,7 +434,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					});
 				}
 				// Only add new parameter cell if notebookUri Parameters are found
-				if (notebookUriParams) {
+				if (notebookUriParams && this.notebookUri?.scheme !== 'git') {
 					this.addUriParameterCell(notebookUriParams, hasParameterCell, parameterCellIndex, hasInjectedCell);
 				}
 			}

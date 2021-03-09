@@ -481,7 +481,7 @@ export abstract class NotebookInput extends EditorInput {
 	}
 
 	updateModel(): void {
-		this._model.updateModel();
+		this._model?.updateModel();
 	}
 
 	public matches(otherInput: any): boolean {

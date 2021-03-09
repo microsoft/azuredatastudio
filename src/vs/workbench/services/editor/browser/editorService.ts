@@ -39,6 +39,10 @@ import { IWorkingCopyService } from 'vs/workbench/services/workingCopy/common/wo
 import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentity';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { ILogService } from 'vs/platform/log/common/log';
+// eslint-disable-next-line code-import-patterns
+import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
+// eslint-disable-next-line code-import-patterns
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 type CachedEditorInput = ResourceEditorInput | IFileEditorInput | UntitledTextEditorInput;
 type OpenInEditorGroup = IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE;
@@ -969,6 +973,11 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 
 		// Otherwise create and add to cache
 		input = factoryFn();
+
+		if (input?.preferredResource?.path?.endsWith('ipynb')) {
+			input = this.instantiationService.createInstance(FileNotebookInput, input.getName(), input.resource, input as FileEditorInput);
+		}
+
 		this.editorInputCache.set(resource, input);
 		Event.once(input.onDispose)(() => this.editorInputCache.delete(resource));
 
