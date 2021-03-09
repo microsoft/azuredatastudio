@@ -161,6 +161,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
+		console.log('ownerUri:', ownerUri);
 		const now = new Date();
 		const operationId = 'testOperationId_' + now.getTime().toString();
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
@@ -314,6 +315,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		this.timeout(5 * 60 * 1000);
 		const server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
+		console.log('ownerUri:', ownerUri);
 		const now = new Date();
 		const operationId = 'testOperationId_' + now.getTime().toString();
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
@@ -386,6 +388,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		this.timeout(5 * 60 * 1000);
 		const server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
+		console.log('ownerUri:', ownerUri);
 		const now = new Date();
 		const operationId = 'testOperationId_' + now.getTime().toString();
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
@@ -431,6 +434,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				providerName: server.providerName
 			});
 			const dbConnectionOwnerUri = await azdata.connection.getUriForConnection(dbConnectionId);
+			console.log('dbConnectionOwnerUri:', dbConnectionOwnerUri);
 			await utils.assertTableCreationResult('dbo', 'Table3', dbConnectionOwnerUri, retryCount);
 
 			//verify no differences exist now
@@ -446,6 +450,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
+		console.log('ownerUri:', ownerUri);
 		const now = new Date();
 		const operationId = 'testOperationId_' + now.getTime().toString();
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
@@ -559,6 +564,7 @@ async function assertScriptGenerationResult(resultstatus: azdata.ResultStatus, s
 
 async function createDatabase1(targetDB: string, ownerUri: string): Promise<void> {
 	await utils.createDB(targetDB, ownerUri);
+	console.log('Databases created successfully');
 
 	//Create Table1
 	let query = 'BEGIN TRY\r\n' +
@@ -595,4 +601,5 @@ async function createDatabase1(targetDB: string, ownerUri: string): Promise<void
 		'SELECT 1 AS NoError\r\n';
 	tableCreatedResult = await utils.runQuery(query, ownerUri);
 	assert(tableCreatedResult.columnInfo[0].columnName !== 'ErrorMessage', 'Table2 creation threw error');
+	console.log('Tables created succesfully');
 }
