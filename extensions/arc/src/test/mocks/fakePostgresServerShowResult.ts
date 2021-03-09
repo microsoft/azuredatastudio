@@ -66,7 +66,7 @@ export class FakePostgresServerShowResult {
 				}
 			},
 			status: {
-				externalEndpoint: '',
+				externalEndpoint: '127.0.0.1:5432',
 				readyPods: '',
 				state: '',
 				logSearchDashboard: '',
