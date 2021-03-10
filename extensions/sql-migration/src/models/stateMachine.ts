@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import { azureResource } from 'azureResource';
+import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getMigrationControllers, getSubscriptions, SqlMigrationController, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer } from '../api/azure';
@@ -79,7 +80,7 @@ export interface StateChangeEvent {
 export class MigrationStateModel implements Model, vscode.Disposable {
 	public _azureAccounts!: azdata.Account[];
 	public _azureAccount!: azdata.Account;
-	public _accountTenants!: AzureTenant[];
+	public _accountTenants!: azurecore.Tenant[];
 
 	public _subscriptions!: azureResource.AzureResourceSubscription[];
 
@@ -205,7 +206,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		});
 	}
 
-	public getTenant(index: number): AzureTenant {
+	public getTenant(index: number): azurecore.Tenant {
 		return this._accountTenants[index];
 	}
 
@@ -528,31 +529,4 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 		vscode.window.showInformationMessage(constants.MIGRATION_STARTED);
 	}
-}
-
-
-export function deepClone<T>(obj: T): T {
-	if (!obj || typeof obj !== 'object') {
-		return obj;
-	}
-	if (obj instanceof RegExp) {
-		// See https://github.com/Microsoft/TypeScript/issues/10990
-		return obj as any;
-	}
-	const result: any = Array.isArray(obj) ? [] : {};
-	Object.keys(<any>obj).forEach((key: string) => {
-		if ((<any>obj)[key] && typeof (<any>obj)[key] === 'object') {
-			result[key] = deepClone((<any>obj)[key]);
-		} else {
-			result[key] = (<any>obj)[key];
-		}
-	});
-	return result;
-}
-
-export interface AzureTenant {
-	displayName: string;
-	id: string;
-	tenantCategory: string;
-	userId: string;
 }
