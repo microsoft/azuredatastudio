@@ -232,7 +232,7 @@ export class GuidedTour extends Disposable {
 			positionVertical = Math.round((subjectElementPosition.top - 22));
 			subjectElement.style.pointerEvents = 'none';
 		}
-		if (elementClassToAppendTo === '.codicon-settings-gear') {
+		if (elementClassToAppendTo === '.codicon-settings-view-bar-icon') {
 			tourItem.style.top = (positionVertical - 330) + 'px';
 			tourItem.style.left = positionHorizontal + 'px';
 		}
