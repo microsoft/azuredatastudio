@@ -132,7 +132,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					text: ''
 				};
 				this.migrationStateModel._migrationController = this.migrationStateModel.getMigrationController(value.index);
-				await this.loadControllerStatus();
+				if (value !== constants.MIGRATION_CONTROLLER_NOT_FOUND_ERROR) {
+					await this.loadControllerStatus();
+				}
 			}
 		});
 
@@ -169,7 +171,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 	private async loadControllerStatus(): Promise<void> {
 		this._statusLoadingComponent.loading = true;
-
 		try {
 			this._migrationDetailsContainer.clearItems();
 

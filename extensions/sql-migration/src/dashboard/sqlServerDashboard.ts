@@ -184,6 +184,9 @@ export class DashboardWidget {
 			label: taskMetaData.title,
 			title: taskMetaData.title,
 			width: maxWidth,
+			CSSStyles: {
+				'border': '1px solid'
+			}
 		}).component();
 		buttonContainer.onDidClick(async () => {
 			if (taskMetaData.command) {
@@ -267,12 +270,17 @@ export class DashboardWidget {
 		const localMigrations = MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection);
 		for (let i = 0; i < localMigrations.length; i++) {
 			const localMigration = localMigrations[i];
-			localMigration.migrationContext = await getDatabaseMigration(
-				localMigration.azureAccount,
-				localMigration.subscription,
-				localMigration.targetManagedInstance.location,
-				localMigration.migrationContext.id
-			);
+			try {
+				localMigration.migrationContext = await getDatabaseMigration(
+					localMigration.azureAccount,
+					localMigration.subscription,
+					localMigration.targetManagedInstance.location,
+					localMigration.migrationContext.id
+				);
+			} catch (e) {
+				console.log(e);
+			}
+
 			localMigration.sourceConnectionProfile = currentConnection;
 		}
 		return localMigrations;
@@ -329,7 +337,7 @@ export class DashboardWidget {
 				'width': '400px',
 				'height': '50px',
 				'margin-top': '10px',
-				'box-shadow': '0 1px 2px 0 rgba(0,0,0,0.2)'
+				'border': '1px solid'
 			}
 		}).component();
 
@@ -389,7 +397,7 @@ export class DashboardWidget {
 			justifyContent: 'flex-start',
 		}).withProps({
 			CSSStyles: {
-				'border': '1px solid rgba(0, 0, 0, 0.1)',
+				'border': '1px solid',
 				'padding': '15px'
 			}
 		}).component();
@@ -436,7 +444,7 @@ export class DashboardWidget {
 		buttonContainer.addItem(viewAllButton, {
 			flex: 'auto',
 			CSSStyles: {
-				'border-right': '1px solid rgba(0, 0, 0, 0.7)',
+				'border-right': '1px solid ',
 				'width': '40px',
 			}
 		});
@@ -492,7 +500,7 @@ export class DashboardWidget {
 			justifyContent: 'flex-start',
 		}).withProps({
 			CSSStyles: {
-				'border': '1px solid rgba(0, 0, 0, 0.1)',
+				'border': '1px solid',
 				'padding': '15px'
 			}
 		}).component();
@@ -518,7 +526,7 @@ export class DashboardWidget {
 		const links = [{
 			title: loc.HELP_LINK1_TITLE,
 			description: loc.HELP_LINK1_DESCRIPTION,
-			link: 'www.microsoft.com' //TODO: add proper link over here.
+			link: 'https://www.microsoft.com' //TODO: add proper link over here.
 		}];
 
 		const styles = {
