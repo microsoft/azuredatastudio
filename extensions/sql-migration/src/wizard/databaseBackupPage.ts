@@ -71,7 +71,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const networkShareButton = view.modelBuilder.radioButton()
 			.withProps({
 				name: buttonGroup,
-				label: constants.DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL
+				label: constants.DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL,
+				checked: true
 			}).component();
 
 		networkShareButton.onDidChangeCheckedState((e) => {
@@ -107,8 +108,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				//this.toggleNetworkContainerFields(NetworkContainerType.FILE_SHARE);
 			}
 		});
-
-		networkShareButton.checked = true;
 
 		const flexContainer = view.modelBuilder.flexContainer().withItems(
 			[
@@ -369,7 +368,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
-		if (this.migrationStateModel._refreshDatabaseBackupPage) {
+		if (this.migrationStateModel.refreshDatabaseBackupPage) {
 
 			this._networkShareLocations = [];
 			this._fileShareDropdowns = [];
@@ -490,7 +489,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				);
 			});
 
-			this.migrationStateModel._refreshDatabaseBackupPage = false;
+			this.migrationStateModel.refreshDatabaseBackupPage = false;
 		}
 		await this.getSubscriptionValues();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
@@ -519,6 +518,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					for (let i = 0; i < this._blobContainerDropdowns.length; i++) {
 						if ((<azdata.CategoryValue>this._blobContainerDropdowns[i].value).displayName === constants.NO_BLOBCONTAINERS_FOUND) {
 							errors.push(constants.INVALID_BLOBCONTAINER_ERROR);
+							break;
 						}
 					}
 					break;
@@ -532,6 +532,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					for (let i = 0; i < this._fileShareDropdowns.length; i++) {
 						if ((<azdata.CategoryValue>this._fileShareDropdowns[i].value).displayName === constants.NO_FILESHARES_FOUND) {
 							errors.push(constants.INVALID_FILESHARE_ERROR);
+							break;
 						}
 					}
 					break;
@@ -588,7 +589,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		});
 		this._fileShareSubscriptionDropdown.validate();
 		this._fileShareStorageAccountDropdown.validate();
-		this._fileShareDropdowns.forEach((dropdown) => {
+		this._fileShareDropdowns.forEach(dropdown => {
 			dropdown.validate();
 		});
 

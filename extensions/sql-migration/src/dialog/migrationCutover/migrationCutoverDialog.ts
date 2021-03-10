@@ -295,7 +295,7 @@ export class MigrationCutoverDialog {
 			iconPath: IconPathHelper.discard,
 			iconHeight: '16px',
 			iconWidth: '16px',
-			label: 'Cancel Migration',
+			label: loc.CANCEL_MIGRATION,
 			height: '55px',
 			width: '130px'
 		}).component();
@@ -442,7 +442,10 @@ export class MigrationCutoverDialog {
 			value: value,
 			CSSStyles: {
 				'margin-top': '5px',
-				'margin-bottom': '0'
+				'margin-bottom': '0',
+				'width': '100%',
+				'overflow': 'hidden',
+				'text-overflow': 'ellipses'
 			}
 		}).component();
 		flexContainer.addItem(textComponent);

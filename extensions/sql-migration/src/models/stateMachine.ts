@@ -104,7 +104,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _skuRecommendations: SKURecommendations | undefined;
 	private _assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined;
 
-	public _refreshDatabaseBackupPage!: boolean;
+	public refreshDatabaseBackupPage!: boolean;
 
 	constructor(
 		private readonly _extensionContext: vscode.ExtensionContext,

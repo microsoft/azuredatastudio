@@ -37,10 +37,10 @@ export class MigrationCutoverDialogModel {
 		return undefined!;
 	}
 
-	public async cancelMigration(): Promise<DatabaseMigration | undefined> {
+	public async cancelMigration(): Promise<void> {
 		try {
 			if (this.migrationStatus) {
-				return await stopMigration(
+				await stopMigration(
 					this._migration.azureAccount,
 					this._migration.subscription,
 					this.migrationStatus

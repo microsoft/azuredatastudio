@@ -220,7 +220,7 @@ export async function startMigrationCutover(account: azdata.Account, subscriptio
 	return response.response.data.value;
 }
 
-export async function stopMigration(account: azdata.Account, subscription: Subscription, migrationStatus: DatabaseMigration): Promise<any> {
+export async function stopMigration(account: azdata.Account, subscription: Subscription, migrationStatus: DatabaseMigration): Promise<void> {
 	const api = await getAzureCoreAPI();
 	const host = `https://eastus2euap.management.azure.com`;
 	const path = `${migrationStatus.id}/operations/${migrationStatus.properties.migrationOperationId}/cancel?api-version=2020-09-01-preview`;
@@ -228,7 +228,6 @@ export async function stopMigration(account: azdata.Account, subscription: Subsc
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
-	return response.response.data.value;
 }
 
 /**
