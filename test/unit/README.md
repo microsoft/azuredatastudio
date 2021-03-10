@@ -38,3 +38,18 @@ The following command will create a `coverage` folder at the root of the workspa
 **Windows**
 
 	scripts\test --coverage
+	
+
+
+## Run Unit Tests in a Specific File
+
+The following command will run the unit tests in a given file:
+
+**OS X and Linux**
+
+	./scripts/test.sh --runGrep=FileName.test.js
+
+**Windows**
+
+	./scripts/test.bat --runGrep=FileName.test.js
+
