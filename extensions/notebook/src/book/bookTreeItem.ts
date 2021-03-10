@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { JupyterBookSection, IJupyterBookToc } from '../contracts/content';
 import * as loc from '../common/localizedConstants';
-import { isBookItemPinned } from '../common/utils';
+import { isBookItemPinned, isNotebookFromBook } from '../common/utils';
 import { getContentPath, getTocPath } from './bookVersionHandler';
 
 export enum BookTreeItemType {
@@ -58,13 +58,13 @@ export class BookTreeItem extends vscode.TreeItem {
 				if (book.isUntitled) {
 					this.contextValue = 'unsavedNotebook';
 				} else {
-					this.contextValue = isBookItemPinned(book.contentPath) ? 'pinnedNotebook' : 'savedNotebook';
+					this.contextValue = isBookItemPinned(book.contentPath) ? 'pinnedNotebook' : isNotebookFromBook(book);
 				}
 			} else if (book.type === BookTreeItemType.ExternalLink) {
 				this.contextValue = BookTreeItemType.ExternalLink;
 
 			} else {
-				this.contextValue = book.type === BookTreeItemType.Notebook ? (isBookItemPinned(book.contentPath) ? 'pinnedNotebook' : 'savedNotebook') : 'section';
+				this.contextValue = book.type === BookTreeItemType.Notebook ? (isBookItemPinned(book.contentPath) ? 'pinnedNotebook' : isNotebookFromBook(book)) : 'section';
 			}
 			this.setPageVariables();
 			this.setCommand();

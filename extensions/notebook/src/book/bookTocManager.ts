@@ -14,6 +14,7 @@ import { BookModel } from './bookModel';
 
 export interface IBookTocManager {
 	updateBook(element: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
+	removeNotebook(element: BookTreeItem): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
 	recovery(): Promise<void>
 }
@@ -408,7 +409,7 @@ export class BookTocManager implements IBookTocManager {
 				await fs.writeFile(targetBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
 			}
 		}
-		else if (element.contextValue === 'savedNotebook') {
+		else if (element.contextValue === 'savedNotebook' || element.contextValue === 'savedBookNotebook') {
 			// the notebook is part of a book so we need to modify its toc as well
 			const findSection = { file: element.book.page?.file?.replace(/\\/g, '/'), title: element.book.page?.title };
 			await this.addNotebook(element, targetBook);
@@ -429,6 +430,12 @@ export class BookTocManager implements IBookTocManager {
 				await this.updateTOC(targetBookVersion, targetBook.tableOfContentsPath, targetSection, this.newSection);
 			}
 		}
+	}
+
+	public async removeNotebook(element: BookTreeItem): Promise<void> {
+		const findSection = { file: element.book.page?.file?.replace(/\\/g, '/'), title: element.book.page?.title };
+		const elementVersion = element.book.version as BookVersion;
+		await this.updateTOC(elementVersion, element.tableOfContentsPath, findSection, undefined);
 	}
 
 	public get modifiedDir(): Set<string> {
