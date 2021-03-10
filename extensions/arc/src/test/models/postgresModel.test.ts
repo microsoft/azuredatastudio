@@ -145,7 +145,6 @@ describe('PostgresModel', function (): void {
 			// Set up cred store to return our password
 			const credProviderMock = TypeMoq.Mock.ofType<azdata.CredentialProvider>();
 			credProviderMock.setup(x => x.readCredential(TypeMoq.It.isAny())).returns(() => Promise.resolve({ credentialId: 'id', password: password }));
-			// Need to setup then when Promise.resolving a mocked object : https://github.com/florinn/typemoq/issues/66
 			credProviderMock.setup((x: any) => x.then).returns(() => undefined);
 			sinon.stub(azdata.credentials, 'getProvider').returns(Promise.resolve(credProviderMock.object));
 
@@ -168,7 +167,6 @@ describe('PostgresModel', function (): void {
 			// Set up cred store to return our password
 			const credProviderMock = TypeMoq.Mock.ofType<azdata.CredentialProvider>();
 			credProviderMock.setup(x => x.readCredential(TypeMoq.It.isAny())).returns(() => Promise.resolve({ credentialId: 'id', password: password }));
-			// Need to setup then when Promise.resolving a mocked object : https://github.com/florinn/typemoq/issues/66
 			credProviderMock.setup((x: any) => x.then).returns(() => undefined);
 			sinon.stub(azdata.credentials, 'getProvider').returns(Promise.resolve(credProviderMock.object));
 
@@ -200,7 +198,6 @@ describe('PostgresModel', function (): void {
 			// Set up cred store to return our password
 			const credProviderMock = TypeMoq.Mock.ofType<azdata.CredentialProvider>();
 			credProviderMock.setup(x => x.readCredential(TypeMoq.It.isAny())).returns(() => Promise.resolve({ credentialId: 'id', password: password }));
-			// Need to setup then when Promise.resolving a mocked object : https://github.com/florinn/typemoq/issues/66
 			credProviderMock.setup((x: any) => x.then).returns(() => undefined);
 			sinon.stub(azdata.credentials, 'getProvider').returns(Promise.resolve(credProviderMock.object));
 
@@ -347,7 +344,7 @@ describe('PostgresModel', function (): void {
 			sinon.assert.calledOnceWithExactly(onEngineSettingsUpdated, postgresModel.workerNodesEngineSettings);
 		});
 
-		it('Populating ngine settings skips certain parameters', async function (): Promise<void> {
+		it('Populating engine settings skips certain parameters', async function (): Promise<void> {
 			const connectionResultMock = TypeMoq.Mock.ofType<azdata.ConnectionResult>();
 			connectionResultMock.setup(x => x.connected).returns(() => true);
 			connectionResultMock.setup((x: any) => x.then).returns(() => undefined);
