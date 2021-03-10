@@ -242,7 +242,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				descriptions
 			});
 		});
-		let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog', this);
+		let miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog', this, 'mi');
+		let vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog', this, 'vm');
 
 		this._rbg.onLinkClick(async (value) => {
 
@@ -250,9 +251,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			console.log(value);
 			if (value.description.linkDisplayValue === 'View/Change') {
 				if (value.cardId === 'AzureSQLVM') {
-					// open dialog for AzureSQLVM
+					await vmDialog.openDialog();
 				} else if (value.cardId === 'AzureSQLMI') {
-					await dialog.openDialog();
+					await miDialog.openDialog();
 				}
 			} else if (value.description.linkDisplayValue === 'Learn more') {
 				if (value.cardId === 'AzureSQLVM') {

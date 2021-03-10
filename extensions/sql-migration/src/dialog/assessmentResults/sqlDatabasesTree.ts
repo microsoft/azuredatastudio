@@ -31,11 +31,16 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private _objectDetailsName!: azdata.TextComponent;
 	private _objectDetailsSample!: azdata.TextComponent;
 	private _moreInfo!: azdata.TextComponent;
+	private _assessmentType!: string;
 
-	constructor(model: MigrationStateModel, assessmentData: Map<string, Issues[]>) {
+	constructor(model: MigrationStateModel, assessmentData: Map<string, Issues[]>, assessmentType: string) {
 		super();
 		this._assessmentData = assessmentData;
 		this._model = model;
+		this._assessmentType = assessmentType;
+		if (this._assessmentType === 'vm') {
+			this._assessmentData.clear();
+		}
 	}
 
 	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
