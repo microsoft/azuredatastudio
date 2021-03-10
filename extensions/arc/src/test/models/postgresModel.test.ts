@@ -9,27 +9,21 @@ import * as azdata from 'azdata';
 import * as should from 'should';
 import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
-//import { v4 as uuid } from 'uuid';
 import * as vscode from 'vscode';
-//import * as loc from '../../localizedConstants';
-//import * as kubeUtils from '../../common/kubeUtils';
 import { UserCancelledError } from '../../common/api';
 import { ControllerModel, Registration } from '../../models/controllerModel';
-import { PostgresModel } from '../../models/postgresModel';
+import { PostgresModel, EngineSettingsModel } from '../../models/postgresModel';
 import { ConnectToPGSqlDialog } from '../../ui/dialogs/connectPGDialog';
 import { AzureArcTreeDataProvider } from '../../ui/tree/azureArcTreeDataProvider';
 import { FakeControllerModel } from '../mocks/fakeControllerModel';
 import { FakeAzdataApi } from '../mocks/fakeAzdataApi';
 import { FakePostgresServerShowResult } from '../mocks/fakePostgresServerShowResult';
 import { assert } from 'sinon';
-//import { ResourceModel } from '../../models/resourceModel';
-//import * as utils from '../../common/utils';
 
 describe('PostgresModel', function (): void {
 	let controllerModel: ControllerModel;
 	let postgresModel: PostgresModel;
 	let azdataApi: azdataExt.IAzdataApi;
-	//let connectionProfile: azdata.IConnectionProfile;
 
 	afterEach(function (): void {
 		sinon.restore();
@@ -132,6 +126,20 @@ describe('PostgresModel', function (): void {
 			sinon.assert.calledOnce(close);
 		});
 
+		it('Show dialog prompt if password not found', async function (): Promise<void> {
+			const connect = sinon.stub(azdata.connection, 'connect');
+			const show = sinon.stub(ConnectToPGSqlDialog.prototype, 'showDialog');
+
+			const iconnectionProfileMock = TypeMoq.Mock.ofType<azdata.IConnectionProfile>();
+			iconnectionProfileMock.setup((x: any) => x.then).returns(() => undefined);
+			const close = sinon.stub(ConnectToPGSqlDialog.prototype, 'waitForClose').returns(Promise.resolve(iconnectionProfileMock.object));
+
+			await postgresModel['getConnectionProfile']();
+			sinon.assert.notCalled(connect);
+			sinon.assert.calledOnce(show);
+			sinon.assert.calledOnce(close);
+		});
+
 		it('Reads password from cred store and no dialog prompt', async function (): Promise<void> {
 			const password = 'password123';
 			// Set up cred store to return our password
@@ -209,20 +217,6 @@ describe('PostgresModel', function (): void {
 			sinon.assert.calledOnce(close);
 		});
 
-		it('Show dialog prompt if password not found', async function (): Promise<void> {
-			const connect = sinon.stub(azdata.connection, 'connect');
-			const show = sinon.stub(ConnectToPGSqlDialog.prototype, 'showDialog');
-
-			const iconnectionProfileMock = TypeMoq.Mock.ofType<azdata.IConnectionProfile>();
-			iconnectionProfileMock.setup((x: any) => x.then).returns(() => undefined);
-			const close = sinon.stub(ConnectToPGSqlDialog.prototype, 'waitForClose').returns(Promise.resolve(iconnectionProfileMock.object));
-
-			await postgresModel['getConnectionProfile']();
-			sinon.assert.notCalled(connect);
-			sinon.assert.calledOnce(show);
-			sinon.assert.calledOnce(close);
-		});
-
 		it('Shows dialog prompt if no connection id', async function (): Promise<void> {
 			// Setup PostgresModel without connectionId
 			const postgresResource: PGResourceInfo = { name: 'pgt', resourceType: '' };
@@ -267,6 +261,8 @@ describe('PostgresModel', function (): void {
 			sinon.stub(ConnectToPGSqlDialog.prototype, 'waitForClose').returns(Promise.resolve(iconnectionProfileMock.object));
 			sinon.stub(ConnectToPGSqlDialog.prototype, 'showDialog');
 
+			sinon.stub(azdata.connection, 'getUriForConnection');
+
 			//Call to provide external endpoint
 			await postgresModel.refresh();
 		});
@@ -291,12 +287,7 @@ describe('PostgresModel', function (): void {
 			connectionResultMock.setup((x: any) => x.then).returns(() => undefined);
 			const connect = sinon.stub(azdata.connection, 'connect').returns(Promise.resolve(connectionResultMock.object));
 
-
-			//azdata.DbCellValue[][]
-
-			//const rowMock = TypeMoq.Mock.ofType<azdata.DbCellValue>();
 			const array: azdata.DbCellValue[][] = [];
-
 
 			const executeMock = TypeMoq.Mock.ofType<azdata.SimpleExecuteResult>();
 			executeMock.setup(x => x.rows).returns(() => array);
@@ -306,29 +297,6 @@ describe('PostgresModel', function (): void {
 			providerMock.setup(x => x.runQueryAndReturn(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => executeMock.object);
 			providerMock.setup((x: any) => x.then).returns(() => undefined);
 			sinon.stub(azdata.dataprotocol, 'getProvider').returns(providerMock.object);
-
-			sinon.stub(azdata.connection, 'getUriForConnection');
-
-			//const myArray = ['a', 'b', 'c'];
-			//sinon.stub()
-
-
-
-			/* const executeMock = TypeMoq.Mock.ofType<azdata.SimpleExecuteResult>();
-			executeMock.setup((x: any) => x.then).returns(() => undefined);
-
-
-
-			const result = new FakePostgresServerShowResult();
-			const postgresShow = sinon.stub().returns(result);
-			sinon.stub(azdataApi, 'arc').get(() => {
-				return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
-			}); */
-
-
-
-
-
 
 			await postgresModel.getEngineSettings();
 			sinon.assert.calledOnce(connect);
@@ -352,31 +320,6 @@ describe('PostgresModel', function (): void {
 			providerMock.setup((x: any) => x.then).returns(() => undefined);
 			sinon.stub(azdata.dataprotocol, 'getProvider').returns(providerMock.object);
 
-			sinon.stub(azdata.connection, 'getUriForConnection');
-
-			await postgresModel.getEngineSettings();
-			should(postgresModel.engineSettingsLastUpdated).be.Date();
-		});
-
-		it('Populates engine settings accurately', async function (): Promise<void> {
-			const connectionResultMock = TypeMoq.Mock.ofType<azdata.ConnectionResult>();
-			connectionResultMock.setup(x => x.connected).returns(() => true);
-			connectionResultMock.setup((x: any) => x.then).returns(() => undefined);
-			sinon.stub(azdata.connection, 'connect').returns(Promise.resolve(connectionResultMock.object));
-
-			const array: azdata.DbCellValue[][] = [];
-
-			const executeMock = TypeMoq.Mock.ofType<azdata.SimpleExecuteResult>();
-			executeMock.setup(x => x.rows).returns(() => array);
-			executeMock.setup((x: any) => x.then).returns(() => undefined);
-
-			const providerMock = TypeMoq.Mock.ofType<azdata.QueryProvider>();
-			providerMock.setup(x => x.runQueryAndReturn(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => executeMock.object);
-			providerMock.setup((x: any) => x.then).returns(() => undefined);
-			sinon.stub(azdata.dataprotocol, 'getProvider').returns(providerMock.object);
-
-			sinon.stub(azdata.connection, 'getUriForConnection');
-
 			await postgresModel.getEngineSettings();
 			should(postgresModel.engineSettingsLastUpdated).be.Date();
 		});
@@ -398,12 +341,104 @@ describe('PostgresModel', function (): void {
 			providerMock.setup((x: any) => x.then).returns(() => undefined);
 			sinon.stub(azdata.dataprotocol, 'getProvider').returns(providerMock.object);
 
-			sinon.stub(azdata.connection, 'getUriForConnection');
-
 			const onEngineSettingsUpdated = sinon.stub(vscode.EventEmitter.prototype, 'fire');
 
 			await postgresModel.getEngineSettings();
 			sinon.assert.calledOnceWithExactly(onEngineSettingsUpdated, postgresModel.workerNodesEngineSettings);
+		});
+
+		it('Populating ngine settings skips certain parameters', async function (): Promise<void> {
+			const connectionResultMock = TypeMoq.Mock.ofType<azdata.ConnectionResult>();
+			connectionResultMock.setup(x => x.connected).returns(() => true);
+			connectionResultMock.setup((x: any) => x.then).returns(() => undefined);
+			sinon.stub(azdata.connection, 'connect').returns(Promise.resolve(connectionResultMock.object));
+
+			const rows: azdata.DbCellValue[][] = [
+				[{
+					displayValue: 'archive_timeout',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				}]
+			];
+
+			const executeMock = TypeMoq.Mock.ofType<azdata.SimpleExecuteResult>();
+			executeMock.setup(x => x.rows).returns(() => rows);
+			executeMock.setup((x: any) => x.then).returns(() => undefined);
+
+			const providerMock = TypeMoq.Mock.ofType<azdata.QueryProvider>();
+			providerMock.setup(x => x.runQueryAndReturn(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => executeMock.object);
+			providerMock.setup((x: any) => x.then).returns(() => undefined);
+			sinon.stub(azdata.dataprotocol, 'getProvider').returns(providerMock.object);
+
+			await postgresModel.getEngineSettings();
+			should(postgresModel.workerNodesEngineSettings.pop()).be.undefined();
+		});
+
+		it('Populates engine settings accurately', async function (): Promise<void> {
+			const connectionResultMock = TypeMoq.Mock.ofType<azdata.ConnectionResult>();
+			connectionResultMock.setup(x => x.connected).returns(() => true);
+			connectionResultMock.setup((x: any) => x.then).returns(() => undefined);
+			sinon.stub(azdata.connection, 'connect').returns(Promise.resolve(connectionResultMock.object));
+
+			const rows: azdata.DbCellValue[][] = [
+				[{
+					displayValue: 'test0',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: 'test1',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: 'test2',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: 'test3',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: 'test4',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: 'test5',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				},
+				{
+					displayValue: 'test6',
+					isNull: false,
+					invariantCultureDisplayValue: ''
+				}],
+			];
+
+			const engineSettingsModelCompare: EngineSettingsModel = {
+				parameterName: 'test0',
+				value: 'test1',
+				description: 'test2',
+				min: 'test3',
+				max: 'test4',
+				options: 'test5',
+				type: 'test6'
+			};
+
+			const executeMock = TypeMoq.Mock.ofType<azdata.SimpleExecuteResult>();
+			executeMock.setup(x => x.rows).returns(() => rows);
+			executeMock.setup((x: any) => x.then).returns(() => undefined);
+
+			const providerMock = TypeMoq.Mock.ofType<azdata.QueryProvider>();
+			providerMock.setup(x => x.runQueryAndReturn(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => executeMock.object);
+			providerMock.setup((x: any) => x.then).returns(() => undefined);
+			sinon.stub(azdata.dataprotocol, 'getProvider').returns(providerMock.object);
+
+			await postgresModel.getEngineSettings();
+			should(postgresModel.workerNodesEngineSettings.pop()).be.match(engineSettingsModelCompare);
 		});
 
 	});
