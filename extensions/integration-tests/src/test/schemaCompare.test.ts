@@ -306,20 +306,24 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		const schemaCompareResult = await promiseCompare;
 		const schemaCompareCancelResult = await promiseCancel;
 
-		assert(schemaCompareResult.success === false, `Expected: failure in schema compare. Actual: Success`);
-		assert(schemaCompareCancelResult.success === true, `Expected: success in schema compare cancel. Actual: Failure`);
+		assert(schemaCompareResult.success === false, 'Expected: failure in schema compare. Actual: Success');
+		assert(schemaCompareResult.errorMessage === 'The operation was canceled.', `Expected: Schema Compare operation canceled message. Actual error message: "${schemaCompareResult.errorMessage}"`);
+		assert(schemaCompareCancelResult.success === true, 'Expected: success in schema compare cancel. Actual: Failure');
 	});
 
 	test('Schema compare dacpac to database comparison with publishing some changes and then compare again', async function () {
 		this.timeout(5 * 60 * 1000);
 		const server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
-		const now = new Date();
-		const operationId = 'testOperationId_' + now.getTime().toString();
-		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
+		const now = new Date().getTime().toString();
+		const operationId = 'testOperationId_' + now;
+		const targetDB: string = 'ads_schemaCompare_targetDB_' + now;
 
 		try {
-			await createDatabase1(targetDB, ownerUri);
+			assert(dacfxService, 'DacFx Service Provider is not available');
+			let result = await dacfxService.deployDacpac(dacpac1, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
+
+			assert(result.success === true, 'Deploy database 2 (target) should succeed');
 
 			const source: mssql.SchemaCompareEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
@@ -386,12 +390,15 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		this.timeout(5 * 60 * 1000);
 		const server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
-		const now = new Date();
-		const operationId = 'testOperationId_' + now.getTime().toString();
-		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
+		const now = new Date().getTime().toString();
+		const operationId = 'testOperationId_' + now;
+		const targetDB: string = 'ads_schemaCompare_targetDB_' + now;
 
 		try {
-			await createDatabase1(targetDB, ownerUri);
+			assert(dacfxService, 'DacFx Service Provider is not available');
+			let result = await dacfxService.deployDacpac(dacpac1, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
+
+			assert(result.success === true, 'Deploy database 2 (target) should succeed');
 
 			const source: mssql.SchemaCompareEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
@@ -446,12 +453,15 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		this.timeout(5 * 60 * 1000);
 		let server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
-		const now = new Date();
-		const operationId = 'testOperationId_' + now.getTime().toString();
-		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
+		const now = new Date().getTime().toString();
+		const operationId = 'testOperationId_' + now;
+		const targetDB: string = 'ads_schemaCompare_targetDB_' + now;
 
 		try {
-			await createDatabase1(targetDB, ownerUri);
+			assert(dacfxService, 'DacFx Service Provider is not available');
+			let result = await dacfxService.deployDacpac(dacpac1, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
+
+			assert(result.success === true, 'Deploy database 2 (target) should succeed');
 
 			const source: mssql.SchemaCompareEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
@@ -516,7 +526,7 @@ function assertIncludeExcludeResult(result: mssql.SchemaCompareIncludeExcludeRes
 }
 
 function assertSchemaCompareResult(schemaCompareResult: mssql.SchemaCompareResult, operationId: string, expectedDifferenceCount: number, expectedIfEqual: boolean = false): void {
-	assert(schemaCompareResult.areEqual === expectedIfEqual, `Expected: the schemas are not to be equal Actual: Equal`);
+	assert(schemaCompareResult.areEqual === expectedIfEqual, `Expected: the schemas equivalency to be ${expectedIfEqual} Actual: ${schemaCompareResult.areEqual}`);
 	assert(schemaCompareResult.errorMessage === null, `Expected: there should be no error. Actual Error message: "${schemaCompareResult.errorMessage}"`);
 	assert(schemaCompareResult.success === true, `Expected: success in schema compare. Actual: Failure`);
 	assert(schemaCompareResult.differences.length === expectedDifferenceCount, `Expected: ${expectedDifferenceCount} differences. Actual differences: "${schemaCompareResult.differences.length}"`);
@@ -555,44 +565,4 @@ async function assertScriptGenerationResult(resultstatus: azdata.ResultStatus, s
 		// TODO: add proper validation for task completion to ensure all tasks successfully complete before exiting test
 		assert(tasks !== null && tasks.tasks.length > 0, 'Tasks should still show in list. This is to ensure that the tasks actually complete.');
 	}
-}
-
-async function createDatabase1(targetDB: string, ownerUri: string): Promise<void> {
-	await utils.createDB(targetDB, ownerUri);
-
-	//Create Table1
-	let query = 'BEGIN TRY\r\n' +
-		` CREATE TABLE [${targetDB}].[dbo].[Table1] (\r\n` +
-		' [Id] INT NOT NULL,\r\n' +
-		' [Something] NCHAR (10) NULL,\r\n' +
-		' PRIMARY KEY CLUSTERED ([Id] ASC)\r\n' +
-		');\r\n' +
-		'SELECT 1 AS NoError\r\n' +
-		'END TRY \r\n' +
-		'BEGIN CATCH\r\n' +
-		'SELECT ERROR_MESSAGE() AS ErrorMessage; \r\n' +
-		'END CATCH\r\n' +
-		'SELECT 1 AS NoError\r\n';
-	let tableCreatedResult = await utils.runQuery(query, ownerUri);
-	assert(tableCreatedResult.columnInfo[0].columnName !== 'ErrorMessage', 'Table1 creation threw error');
-
-	// Create Table2
-	query = 'BEGIN TRY\r\n' +
-		` CREATE TABLE [${targetDB}].[dbo].[Table2] (\r\n` +
-		' [Id] INT NOT NULL,\r\n' +
-		' [Id1] NCHAR (10) NULL,\r\n' +
-		' [Id2] NCHAR (10) NULL,\r\n' +
-		' [Id3] NCHAR (10) NULL,\r\n' +
-		' [Id4] NCHAR (10) NULL,\r\n' +
-		' [IdDt] DATETIME NULL,\r\n' +
-		' PRIMARY KEY CLUSTERED ([Id] ASC)\r\n' +
-		');\r\n' +
-		'SELECT 1 AS NoError\r\n' +
-		'END TRY \r\n' +
-		'BEGIN CATCH\r\n' +
-		'SELECT ERROR_MESSAGE() AS ErrorMessage; \r\n' +
-		'END CATCH\r\n' +
-		'SELECT 1 AS NoError\r\n';
-	tableCreatedResult = await utils.runQuery(query, ownerUri);
-	assert(tableCreatedResult.columnInfo[0].columnName !== 'ErrorMessage', 'Table2 creation threw error');
 }
