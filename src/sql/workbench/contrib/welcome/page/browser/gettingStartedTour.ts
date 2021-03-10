@@ -22,7 +22,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { extensionsViewIcon } from 'vs/workbench/contrib/extensions/browser/extensionsIcons';
 import { settingsViewBarIcon } from 'vs/workbench/browser/parts/activitybar/activitybarPart';
-import { dataExplorerIcon } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
+import { dataExplorerIconId } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
 import { notebookIconId } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 
 const $ = dom.$;
@@ -44,7 +44,7 @@ interface TourData {
 	popupImage: string;
 }
 
-const dataExplorerIconCssSelector = `.action-label.${dataExplorerIcon}`;
+const dataExplorerIconCssSelector = `.action-label.${dataExplorerIconId}`;
 const notebookIconCssSelector = `.action-label.${notebookIconId}`;
 const extensionsIconCssSelector = ThemeIcon.asCSSSelector(extensionsViewIcon);
 const settingsGearIconCssSelector = ThemeIcon.asCSSSelector(settingsViewBarIcon);
