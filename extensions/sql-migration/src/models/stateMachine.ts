@@ -79,6 +79,7 @@ export interface StateChangeEvent {
 export class MigrationStateModel implements Model, vscode.Disposable {
 	public _azureAccounts!: azdata.Account[];
 	public _azureAccount!: azdata.Account;
+	public _accountTenants!: AzureTenant[];
 
 	public _subscriptions!: azureResource.AzureResourceSubscription[];
 
@@ -193,6 +194,19 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public getAccount(index: number): azdata.Account {
 		return this._azureAccounts[index];
+	}
+
+	public async getTenantValues(): Promise<azdata.CategoryValue[]> {
+		return this._accountTenants.map(tenant => {
+			return {
+				displayName: tenant.displayName,
+				name: tenant.id
+			};
+		});
+	}
+
+	public getTenant(index: number): AzureTenant {
+		return this._accountTenants[index];
 	}
 
 	public async getSubscriptionsDropdownValues(): Promise<azdata.CategoryValue[]> {
@@ -514,4 +528,31 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 		vscode.window.showInformationMessage(constants.MIGRATION_STARTED);
 	}
+}
+
+
+export function deepClone<T>(obj: T): T {
+	if (!obj || typeof obj !== 'object') {
+		return obj;
+	}
+	if (obj instanceof RegExp) {
+		// See https://github.com/Microsoft/TypeScript/issues/10990
+		return obj as any;
+	}
+	const result: any = Array.isArray(obj) ? [] : {};
+	Object.keys(<any>obj).forEach((key: string) => {
+		if ((<any>obj)[key] && typeof (<any>obj)[key] === 'object') {
+			result[key] = deepClone((<any>obj)[key]);
+		} else {
+			result[key] = (<any>obj)[key];
+		}
+	});
+	return result;
+}
+
+export interface AzureTenant {
+	displayName: string;
+	id: string;
+	tenantCategory: string;
+	userId: string;
 }
