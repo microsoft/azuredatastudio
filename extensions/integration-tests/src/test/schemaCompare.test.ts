@@ -321,7 +321,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
 
 		try {
-			await createDatabase1(targetDB, ownerUri, server);
+			assert(dacfxService, 'DacFx Service Provider is not available');
+			let result = await dacfxService.deployDacpac(dacpac1, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
+
+			assert(result.success === true, 'Deploy database 2 (target) should succeed');
 
 			const source: mssql.SchemaCompareEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
@@ -395,7 +398,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
 
 		try {
-			await createDatabase1(targetDB, ownerUri, server);
+			assert(dacfxService, 'DacFx Service Provider is not available');
+			const result = await dacfxService.deployDacpac(dacpac1, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
+
+			assert(result.success === true, 'Deploy database 2 (target) should succeed');
 
 			const source: mssql.SchemaCompareEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
@@ -457,7 +463,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
 
 		try {
-			await createDatabase1(targetDB, ownerUri, server);
+			assert(dacfxService, 'DacFx Service Provider is not available');
+			let result = await dacfxService.deployDacpac(dacpac1, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
+
+			assert(result.success === true, 'Deploy database 2 (target) should succeed');
 
 			const source: mssql.SchemaCompareEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
@@ -561,61 +570,4 @@ async function assertScriptGenerationResult(resultstatus: azdata.ResultStatus, s
 		// TODO: add proper validation for task completion to ensure all tasks successfully complete before exiting test
 		assert(tasks !== null && tasks.tasks.length > 0, 'Tasks should still show in list. This is to ensure that the tasks actually complete.');
 	}
-}
-
-async function createDatabase1(targetDB: string, ownerUri: string, server: TestServerProfile): Promise<void> {
-	console.log('In create database');
-	await utils.createDB(targetDB, ownerUri);
-	console.log('Databases created successfully');
-
-	const dbConnectionId = await utils.connectToServer({
-		serverName: server.serverName,
-		database: targetDB,
-		userName: server.userName,
-		password: server.password,
-		authenticationTypeName: server.authenticationTypeName,
-		providerName: server.providerName
-	});
-
-	const dbOwnerUri = await azdata.connection.getUriForConnection(dbConnectionId);
-
-	console.log('ownerUri:', ownerUri);
-	console.log('dbOwnerUri:', dbOwnerUri);
-
-	//Create Table1
-	let query = 'BEGIN TRY\r\n' +
-		' CREATE TABLE [dbo].[Table1] (\r\n' +
-		' [Id] INT NOT NULL,\r\n' +
-		' [Something] NCHAR (10) NULL,\r\n' +
-		' PRIMARY KEY CLUSTERED ([Id] ASC)\r\n' +
-		');\r\n' +
-		'SELECT 1 AS NoError\r\n' +
-		'END TRY \r\n' +
-		'BEGIN CATCH\r\n' +
-		'SELECT ERROR_MESSAGE() AS ErrorMessage; \r\n' +
-		'END CATCH\r\n' +
-		'SELECT 1 AS NoError\r\n';
-	let tableCreatedResult = await utils.runQuery(query, dbOwnerUri);
-	assert(tableCreatedResult.columnInfo[0].columnName !== 'ErrorMessage', 'Table1 creation threw error');
-
-	// Create Table2
-	query = 'BEGIN TRY\r\n' +
-		' CREATE TABLE [dbo].[Table2] (\r\n' +
-		' [Id] INT NOT NULL,\r\n' +
-		' [Id1] NCHAR (10) NULL,\r\n' +
-		' [Id2] NCHAR (10) NULL,\r\n' +
-		' [Id3] NCHAR (10) NULL,\r\n' +
-		' [Id4] NCHAR (10) NULL,\r\n' +
-		' [IdDt] DATETIME NULL,\r\n' +
-		' PRIMARY KEY CLUSTERED ([Id] ASC)\r\n' +
-		');\r\n' +
-		'SELECT 1 AS NoError\r\n' +
-		'END TRY \r\n' +
-		'BEGIN CATCH\r\n' +
-		'SELECT ERROR_MESSAGE() AS ErrorMessage; \r\n' +
-		'END CATCH\r\n' +
-		'SELECT 1 AS NoError\r\n';
-	tableCreatedResult = await utils.runQuery(query, dbOwnerUri);
-	assert(tableCreatedResult.columnInfo[0].columnName !== 'ErrorMessage', 'Table2 creation threw error');
-	console.log('Tables created succesfully');
 }
