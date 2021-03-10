@@ -300,8 +300,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
 			}
 			const resourceDropdownValue = (<azdata.CategoryValue>this._resourceDropdown.value).displayName;
-			if (resourceDropdownValue === constants.NO_MANAGED_INSTANCE_FOUND || resourceDropdownValue === constants.NO_VIRTUAL_MACHINE_FOUND) {
-				errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
+			if (resourceDropdownValue === constants.NO_MANAGED_INSTANCE_FOUND) {
+				errors.push(constants.NO_MANAGED_INSTANCE_FOUND);
+			}
+			else if (resourceDropdownValue === constants.NO_VIRTUAL_MACHINE_FOUND) {
+				errors.push(constants.NO_VIRTUAL_MACHINE_FOUND);
 			}
 
 			if (errors.length > 0) {

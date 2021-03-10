@@ -220,6 +220,16 @@ export async function startMigrationCutover(account: azdata.Account, subscriptio
 	return response.response.data.value;
 }
 
+export async function stopMigration(account: azdata.Account, subscription: Subscription, migrationStatus: DatabaseMigration): Promise<void> {
+	const api = await getAzureCoreAPI();
+	const host = `https://eastus2euap.management.azure.com`;
+	const path = `${migrationStatus.id}/operations/${migrationStatus.properties.migrationOperationId}/cancel?api-version=2020-09-01-preview`;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, undefined, true, host);
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.toString());
+	}
+}
+
 /**
  * For now only east us euap is supported. Actual API calls will be added in the public release.
  */
