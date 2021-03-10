@@ -98,6 +98,14 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 	}
 
 	private createAzureTenantContainer(view: azdata.ModelView): azdata.FormComponent {
+
+		const azureTenantDropdownLabel = view.modelBuilder.text().withProps({
+			value: constants.AZURE_TENANT,
+			CSSStyles: {
+				'margin': '0px'
+			}
+		}).component();
+
 		this._accountTenantDropdown = view.modelBuilder.dropDown().withProps({
 			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
@@ -117,6 +125,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 				flexFlow: 'column'
 			})
 			.withItems([
+				azureTenantDropdownLabel,
 				this._accountTenantDropdown
 			], { CSSStyles: { 'margin': '2px', } })
 			.withProps({

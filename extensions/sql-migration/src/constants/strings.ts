@@ -45,6 +45,7 @@ export const ACCOUNT_LINK_BUTTON_LABEL = localize('sql.migration.wizard.account.
 export function accountLinkedMessage(count: number): string {
 	return count === 1 ? localize('sql.migration.wizard.account.count.single.message', '{0} account linked', count) : localize('sql.migration.wizard.account.count.multiple.message', '{0} accounts linked', count);
 }
+export const AZURE_TENANT = localize('sql.migration.azure.tenant', "Azure AD tenant");
 
 
 // database backup page
