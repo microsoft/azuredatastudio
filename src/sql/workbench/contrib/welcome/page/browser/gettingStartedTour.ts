@@ -11,7 +11,7 @@ import { Action } from 'vs/base/common/actions';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { RawContextKey, IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { registerThemingParticipant, ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { buttonBackground, buttonForeground } from 'vs/platform/theme/common/colorRegistry';
 import { Color } from 'vs/base/common/color';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -20,6 +20,10 @@ import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Button } from 'sql/base/browser/ui/button/button';
+import { extensionsViewIcon } from 'vs/workbench/contrib/extensions/browser/extensionsIcons';
+import { settingsViewBarIcon } from 'vs/workbench/browser/parts/activitybar/activitybarPart';
+import { dataExplorerIcon } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
+import { notebookIconId } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 
 const $ = dom.$;
 interface TourData {
@@ -40,11 +44,16 @@ interface TourData {
 	popupImage: string;
 }
 
+const dataExplorerIconCssSelector = `.action-label.${dataExplorerIcon}`;
+const notebookIconCssSelector = `.action-label.${notebookIconId}`;
+const extensionsIconCssSelector = ThemeIcon.asCSSSelector(extensionsViewIcon);
+const settingsGearIconCssSelector = ThemeIcon.asCSSSelector(settingsViewBarIcon);
+
 const tourData: TourData[] = [
-	{ key: 'connections', order: '1', header: localize('GuidedTour.connections', "Connections"), body: localize('GuidedTour.makeConnections', "Connect, query, and manage your connections from SQL Server, Azure, and more."), step: localize('GuidedTour.one', "1"), elmClass: 'overview-tour-connections', id: 'overview-tour-connections', btnId: 'overview-tour-connections-btn', btnText: localize('GuidedTour.next', "Next"), docs: 'https://aka.ms/ads-connections-quickstart', elementToAppendTo: '.action-label.dataExplorer', arrow: 'arrow-left', popupImage: './../../gettingStarted/media/connections.png' },
-	{ key: 'jupyer_books', order: '2', header: localize('GuidedTour.notebooks', "Notebooks"), body: localize('GuidedTour.gettingStartedNotebooks', "Get started creating your own notebook or collection of notebooks in a single place."), step: localize('GuidedTour.two', "2"), elmClass: 'overview-tour-jupyterBooks', id: 'overview-tour-jupyterBooks', btnId: 'overview-tour-jupyter-btn', btnText: localize('GuidedTour.next', "Next"), docs: 'https://aka.ms/ads-notebooks', elementToAppendTo: '.action-label.book', arrow: 'arrow-left', popupImage: './../../gettingStarted/media/notebooks.png' },
-	{ key: 'extensions', order: '3', header: localize('GuidedTour.extensions', "Extensions"), body: localize('GuidedTour.addExtensions', "Extend the functionality of Azure Data Studio by installing extensions developed by us/Microsoft as well as the third-party community (you!)."), step: localize('GuidedTour.three', "3"), elmClass: 'overview-tour-extensions', id: 'overview-tour-extensions', btnId: 'overview-tour-extensions-btn', btnText: localize('GuidedTour.next', "Next"), docs: 'https://aka.ms/ads-extensions', elementToAppendTo: '.action-label.codicon-extensions-view-icon', arrow: 'arrow-left', popupImage: './../../gettingStarted/media/extensions.png' },
-	{ key: 'settings', order: '4', header: localize('GuidedTour.settings', "Settings"), body: localize('GuidedTour.makeConnesetSettings', "Customize Azure Data Studio based on your preferences. You can configure Settings like autosave and tab size, personalize your Keyboard Shortcuts, and switch to a Color Theme of your liking."), step: localize('GuidedTour.four', "4"), elmClass: 'overview-tour-settings', id: 'overview-tour-settings', btnId: 'overview-tour-settings-btn', btnText: localize('GuidedTour.next', "Next"), elementToAppendTo: '.codicon-settings-view-bar-icon', arrow: 'arrow-bottom-left', popupImage: '../../gettingStarted/media/settings.png' },
+	{ key: 'connections', order: '1', header: localize('GuidedTour.connections', "Connections"), body: localize('GuidedTour.makeConnections', "Connect, query, and manage your connections from SQL Server, Azure, and more."), step: localize('GuidedTour.one', "1"), elmClass: 'overview-tour-connections', id: 'overview-tour-connections', btnId: 'overview-tour-connections-btn', btnText: localize('GuidedTour.next', "Next"), docs: 'https://aka.ms/ads-connections-quickstart', elementToAppendTo: dataExplorerIconCssSelector, arrow: 'arrow-left', popupImage: './../../gettingStarted/media/connections.png' },
+	{ key: 'jupyer_books', order: '2', header: localize('GuidedTour.notebooks', "Notebooks"), body: localize('GuidedTour.gettingStartedNotebooks', "Get started creating your own notebook or collection of notebooks in a single place."), step: localize('GuidedTour.two', "2"), elmClass: 'overview-tour-jupyterBooks', id: 'overview-tour-jupyterBooks', btnId: 'overview-tour-jupyter-btn', btnText: localize('GuidedTour.next', "Next"), docs: 'https://aka.ms/ads-notebooks', elementToAppendTo: notebookIconCssSelector, arrow: 'arrow-left', popupImage: './../../gettingStarted/media/notebooks.png' },
+	{ key: 'extensions', order: '3', header: localize('GuidedTour.extensions', "Extensions"), body: localize('GuidedTour.addExtensions', "Extend the functionality of Azure Data Studio by installing extensions developed by us/Microsoft as well as the third-party community (you!)."), step: localize('GuidedTour.three', "3"), elmClass: 'overview-tour-extensions', id: 'overview-tour-extensions', btnId: 'overview-tour-extensions-btn', btnText: localize('GuidedTour.next', "Next"), docs: 'https://aka.ms/ads-extensions', elementToAppendTo: extensionsIconCssSelector, arrow: 'arrow-left', popupImage: './../../gettingStarted/media/extensions.png' },
+	{ key: 'settings', order: '4', header: localize('GuidedTour.settings', "Settings"), body: localize('GuidedTour.makeConnesetSettings', "Customize Azure Data Studio based on your preferences. You can configure Settings like autosave and tab size, personalize your Keyboard Shortcuts, and switch to a Color Theme of your liking."), step: localize('GuidedTour.four', "4"), elmClass: 'overview-tour-settings', id: 'overview-tour-settings', btnId: 'overview-tour-settings-btn', btnText: localize('GuidedTour.next', "Next"), elementToAppendTo: settingsGearIconCssSelector, arrow: 'arrow-bottom-left', popupImage: '../../gettingStarted/media/settings.png' },
 	{ key: 'welcome_page', order: '5', header: localize('GuidedTour.welcomePage', "Welcome Page"), body: localize('GuidedTour.discoverWelcomePage', "Discover top features, recently opened files, and recommended extensions on the Welcome page. For more information on how to get started in Azure Data Studio, check out our videos and documentation."), step: localize('GuidedTour.five', "5"), elmClass: 'overview-tour-home', id: 'overview-tour-home', btnId: 'overview-tour-home-btn', btnText: localize('GuidedTour.finish', "Finish"), elementToAppendTo: 'center', arrow: 'none', popupImage: '../../gettingStarted/media/welcome.png' },
 ];
 
@@ -232,7 +241,7 @@ export class GuidedTour extends Disposable {
 			positionVertical = Math.round((subjectElementPosition.top - 22));
 			subjectElement.style.pointerEvents = 'none';
 		}
-		if (elementClassToAppendTo === '.codicon-settings-view-bar-icon') {
+		if (elementClassToAppendTo === settingsGearIconCssSelector) {
 			tourItem.style.top = (positionVertical - 330) + 'px';
 			tourItem.style.left = positionHorizontal + 'px';
 		}
@@ -325,7 +334,7 @@ registerThemingParticipant((theme, collector) => {
 		collector.addRule(`.monaco-workbench > .ads-tour .ads-tour-popup p, .monaco-workbench > .ads-tour .ads-tour-popup h1  { color: ${bodyTag}; }`);
 		collector.addRule(`.monaco-workbench > .ads-tour .ads-tour-popup .ads-tour-btn-container .ads-tour-docs-link  { color: ${bodyTag}; }`);
 		collector.addRule(`.monaco-workbench > .ads-tour .ads-tour-popup .ads-tour-btn-container .ads-tour-btn-primary-inverse { background: ${bodyTag}; }`);
-		collector.addRule(`.monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar .action-label.activity-workbench-view-extension-books-explorer.subject-element-focused, .monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar .action-label.codicon.dataExplorer.subject-element-focused { background: ${bodyTag}; }`);
+		collector.addRule(`.monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar .action-label.activity-workbench-view-extension-books-explorer.subject-element-focused, .monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar ${dataExplorerIconCssSelector}.subject-element-focused { background: ${bodyTag}; }`);
 		collector.addRule(`.monaco-workbench .activitybar>.content :not(.monaco-menu)>.monaco-action-bar .action-label.codicon.subject-element-focused { color: ${bodyTag} !important; }`);
 		collector.addRule(`.monaco-workbench .welcomePage .btn-remove-tour { color: ${bodyTag} !important; }`);
 		collector.addRule(`.monaco-workbench .welcomePage .guided-tour-banner p { color: ${bodyTag}; }`);
