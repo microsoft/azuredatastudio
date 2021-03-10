@@ -11,12 +11,15 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { Deferred } from 'sql/base/common/promise';
 import { escapeLabel, escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
+import { IDialogProperties } from 'sql/workbench/browser/modal/modal';
 
 suite('Link Callout Dialog', function (): void {
 	let layoutService: ILayoutService;
 	let themeService: IThemeService;
 	let telemetryService: IAdsTelemetryService;
 	let contextKeyService: IContextKeyService;
+
+	const defaultDialogProperties: IDialogProperties = { xPos: 0, yPos: 0, height: 250, width: 100 };
 
 	setup(() => {
 		layoutService = new TestLayoutService();
@@ -26,7 +29,7 @@ suite('Link Callout Dialog', function (): void {
 	});
 
 	test('Should return empty markdown on cancel', async function (): Promise<void> {
-		let linkCalloutDialog = new LinkCalloutDialog('Title', undefined, 'defaultLabel',
+		let linkCalloutDialog = new LinkCalloutDialog('Title', 'below', defaultDialogProperties, 'defaultLabel',
 			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
 		linkCalloutDialog.render();
 
@@ -47,7 +50,7 @@ suite('Link Callout Dialog', function (): void {
 	test('Should return expected values on insert', async function (): Promise<void> {
 		const defaultLabel = 'defaultLabel';
 		const sampleUrl = 'https://www.aka.ms/azuredatastudio';
-		let linkCalloutDialog = new LinkCalloutDialog('Title', undefined, defaultLabel,
+		let linkCalloutDialog = new LinkCalloutDialog('Title', 'below', defaultDialogProperties, defaultLabel,
 			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
 		linkCalloutDialog.render();
 
@@ -70,7 +73,7 @@ suite('Link Callout Dialog', function (): void {
 	test('Should return expected values on insert when escape necessary', async function (): Promise<void> {
 		const defaultLabel = 'default[]Label';
 		const sampleUrl = 'https://www.aka.ms/azuredatastudio()';
-		let linkCalloutDialog = new LinkCalloutDialog('Title', undefined, defaultLabel,
+		let linkCalloutDialog = new LinkCalloutDialog('Title', 'below', defaultDialogProperties, defaultLabel,
 			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
 		linkCalloutDialog.render();
 

@@ -9,7 +9,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as WS from 'ws';
 
 import { IAzureTerminalService } from '../interfaces';
-import { AzureAccount, Tenant } from '../../account-provider/interfaces';
+import { AzureAccount, Tenant } from 'azurecore';
 
 const localize = nls.loadMessageBundle();
 

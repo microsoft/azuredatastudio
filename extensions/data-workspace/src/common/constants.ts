@@ -20,6 +20,7 @@ export const EnterWorkspaceConfirmation = localize('dataworkspace.enterWorkspace
 export const WorkspaceContainsNotAddedProjects = localize('dataworkspace.workspaceContainsNotAddedProjects', "The current workspace contains one or more projects that have not been added to the workspace. Use the 'Open existing' dialog to add projects to the projects pane.");
 export const LaunchOpenExisitingDialog = localize('dataworkspace.launchOpenExistingDialog', "Launch Open existing dialog");
 export const DoNotShowAgain = localize('dataworkspace.doNotShowAgain', "Do not show again");
+export const ProjectsFailedToLoad = localize('dataworkspace.projectsFailedToLoad', "Some projects failed to load. Please open console for more information");
 
 // config settings
 export const projectsConfigurationKey = 'projects';
