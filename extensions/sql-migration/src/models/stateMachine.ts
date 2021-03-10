@@ -197,7 +197,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._azureAccounts[index];
 	}
 
-	public async getTenantValues(): Promise<azdata.CategoryValue[]> {
+	public getTenantValues(): azdata.CategoryValue[] {
 		return this._accountTenants.map(tenant => {
 			return {
 				displayName: tenant.displayName,
