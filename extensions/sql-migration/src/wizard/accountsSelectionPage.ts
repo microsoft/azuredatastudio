@@ -89,7 +89,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			.withLayout({
 				flexFlow: 'column'
 			})
-			.withItems([this._azureAccountsDropdown, linkAccountButton], { CSSStyles: { 'margin': '2px', } })
+			.withItems([this._azureAccountsDropdown, linkAccountButton])
 			.component();
 
 		return {
@@ -128,7 +128,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			.withItems([
 				azureTenantDropdownLabel,
 				this._accountTenantDropdown
-			], { CSSStyles: { 'margin': '2px', } })
+			])
 			.withProps({
 				CSSStyles: {
 					'display': 'none'
