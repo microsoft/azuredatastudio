@@ -2,13 +2,13 @@
   "name": "sql-migration",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.0.3",
+  "version": "*",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
-    "vscode": "^1.25.0",
+    "vscode": "*",
     "azdata": ">=1.27.0"
   },
   "activationEvents": [
