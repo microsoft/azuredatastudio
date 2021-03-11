@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { ModelViewBase } from './modelViewBase';
+import { ModelViewBase, ModelSourceType } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { AzureResourceFilterComponent } from './azureResourceFilterComponent';
 import { AzureModelsTable } from './azureModelsTable';
@@ -92,11 +92,13 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 	}
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
-		this.removeComponents(formBuilder);
-		if (this.azureFilterComponent?.accountIsValid) {
-			this.addAzureComponents(formBuilder);
-		} else {
-			this.addAzureSignInComponents(formBuilder);
+		if (this.modelSourceType === ModelSourceType.Azure) {
+			this.removeComponents(formBuilder);
+			if (this.azureFilterComponent?.accountIsValid) {
+				this.addAzureComponents(formBuilder);
+			} else {
+				this.addAzureSignInComponents(formBuilder);
+			}
 		}
 	}
 
@@ -166,6 +168,7 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 	 * Loads the data in the components
 	 */
 	public async loadData(): Promise<void> {
+		await this.onLoaded();
 		await this.azureFilterComponent?.loadData();
 	}
 
