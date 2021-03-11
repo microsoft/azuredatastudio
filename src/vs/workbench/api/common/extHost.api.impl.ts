@@ -61,7 +61,7 @@ import { getRemoteName } from 'vs/platform/remote/common/remoteHosts';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IExtHostDecorations } from 'vs/workbench/api/common/extHostDecorations';
 import { IExtHostTask } from 'vs/workbench/api/common/extHostTask';
-// import { IExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService';
+import { IExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService';
 import { IExtHostSearch } from 'vs/workbench/api/common/extHostSearch';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransformerService';
@@ -123,7 +123,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostDocumentsAndEditors = rpcProtocol.set(ExtHostContext.ExtHostDocumentsAndEditors, accessor.get(IExtHostDocumentsAndEditors));
 	const extHostCommands = rpcProtocol.set(ExtHostContext.ExtHostCommands, accessor.get(IExtHostCommands));
 	const extHostTerminalService = rpcProtocol.set(ExtHostContext.ExtHostTerminalService, accessor.get(IExtHostTerminalService));
-	// const extHostDebugService = rpcProtocol.set(ExtHostContext.ExtHostDebugService, accessor.get(IExtHostDebugService)); {{SQL CARBON EDIT}} remove debug service
+	const extHostDebugService = rpcProtocol.set(ExtHostContext.ExtHostDebugService, accessor.get(IExtHostDebugService));
 	const extHostSearch = rpcProtocol.set(ExtHostContext.ExtHostSearch, accessor.get(IExtHostSearch));
 	const extHostTask = rpcProtocol.set(ExtHostContext.ExtHostTask, accessor.get(IExtHostTask));
 	const extHostOutputService = rpcProtocol.set(ExtHostContext.ExtHostOutputService, accessor.get(IExtHostOutputService));
@@ -156,10 +156,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostTesting = rpcProtocol.set(ExtHostContext.ExtHostTesting, new ExtHostTesting(rpcProtocol, extHostDocumentsAndEditors, extHostWorkspace));
 
 	// Check that no named customers are missing
-	// {{SQL CARBON EDIT}} filter out the services we don't expose
-	const filtered: ProxyIdentifier<any>[] = [ExtHostContext.ExtHostDebugService];
-	const expected: ProxyIdentifier<any>[] = values(ExtHostContext).filter(v => !filtered.find(x => x === v));
-
+	const expected: ProxyIdentifier<any>[] = values(ExtHostContext);
 	rpcProtocol.assertRegistered(expected);
 
 	// Other instances
@@ -908,68 +905,55 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 		// namespace: debug
 		const debug: typeof vscode.debug = {
 			get activeDebugSession() {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return undefined!;
+				return extHostDebugService.activeDebugSession;
 			},
 			get activeDebugConsole() {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return undefined!;
+				return extHostDebugService.activeDebugConsole;
 			},
 			get breakpoints() {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return [];
+				return extHostDebugService.breakpoints;
 			},
 			onDidStartDebugSession(listener, thisArg?, disposables?) {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return undefined!;
+				return extHostDebugService.onDidStartDebugSession(listener, thisArg, disposables);
 			},
 			onDidTerminateDebugSession(listener, thisArg?, disposables?) {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return undefined!;
+				return extHostDebugService.onDidTerminateDebugSession(listener, thisArg, disposables);
 			},
 			onDidChangeActiveDebugSession(listener, thisArg?, disposables?) {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return undefined!;
+				return extHostDebugService.onDidChangeActiveDebugSession(listener, thisArg, disposables);
 			},
 			onDidReceiveDebugSessionCustomEvent(listener, thisArg?, disposables?) {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return undefined!;
+				return extHostDebugService.onDidReceiveDebugSessionCustomEvent(listener, thisArg, disposables);
 			},
 			onDidChangeBreakpoints(listener, thisArgs?, disposables?) {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return undefined!;
+				return extHostDebugService.onDidChangeBreakpoints(listener, thisArgs, disposables);
 			},
 			registerDebugConfigurationProvider(debugType: string, provider: vscode.DebugConfigurationProvider, triggerKind?: vscode.DebugConfigurationProviderTriggerKind) {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return undefined!;
+				return extHostDebugService.registerDebugConfigurationProvider(debugType, provider, triggerKind || extHostTypes.DebugConfigurationProviderTriggerKind.Initial);
 			},
 			registerDebugAdapterDescriptorFactory(debugType: string, factory: vscode.DebugAdapterDescriptorFactory) {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return undefined!;
+				return extHostDebugService.registerDebugAdapterDescriptorFactory(extension, debugType, factory);
 			},
 			registerDebugAdapterTrackerFactory(debugType: string, factory: vscode.DebugAdapterTrackerFactory) {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return undefined!;
+				return extHostDebugService.registerDebugAdapterTrackerFactory(debugType, factory);
 			},
 			startDebugging(folder: vscode.WorkspaceFolder | undefined, nameOrConfig: string | vscode.DebugConfiguration, parentSessionOrOptions?: vscode.DebugSession | vscode.DebugSessionOptions) {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return undefined!;
+				if (!parentSessionOrOptions || (typeof parentSessionOrOptions === 'object' && 'configuration' in parentSessionOrOptions)) {
+					return extHostDebugService.startDebugging(folder, nameOrConfig, { parentSession: parentSessionOrOptions } as vscode.DebugSessionOptions);
+				}
+				return extHostDebugService.startDebugging(folder, nameOrConfig, parentSessionOrOptions || {});
 			},
 			stopDebugging(session?: vscode.DebugSession) {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return undefined!;
+				return extHostDebugService.stopDebugging(session);
 			},
 			addBreakpoints(breakpoints: vscode.Breakpoint[]) {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return undefined!;
+				return extHostDebugService.addBreakpoints(breakpoints);
 			},
 			removeBreakpoints(breakpoints: vscode.Breakpoint[]) {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return undefined!;
+				return extHostDebugService.removeBreakpoints(breakpoints);
 			},
 			asDebugSourceUri(source: vscode.DebugProtocolSource, session?: vscode.DebugSession): vscode.Uri {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return undefined!;
+				return extHostDebugService.asDebugSourceUri(source, session);
 			}
 		};
 

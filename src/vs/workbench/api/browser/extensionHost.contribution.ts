@@ -21,7 +21,7 @@ import './mainThreadClipboard';
 import './mainThreadCommands';
 import './mainThreadConfiguration';
 import './mainThreadConsole';
-// import './mainThreadDebugService'; {{SQL CARBON EDIT}} @anthonydresser comment out debug service
+import './mainThreadDebugService';
 import './mainThreadDecorations';
 import './mainThreadDiagnostics';
 import './mainThreadDialogs';

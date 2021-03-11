@@ -225,7 +225,7 @@ function registerCommandsAndActions(): void {
 function registerDebugMenu(): void {
 	// View menu
 
-	/*MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
+	MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
 		group: '3_views',
 		command: {
 			id: VIEWLET_ID,
@@ -241,7 +241,7 @@ function registerDebugMenu(): void {
 			title: nls.localize({ key: 'miToggleDebugConsole', comment: ['&& denotes a mnemonic'] }, "De&&bug Console")
 		},
 		order: 2
-	}); {{SQL CARBON EDIT}} - Disable unusued menus */
+	});
 
 	// Debug menu
 
@@ -489,7 +489,7 @@ function registerDebugView(): void {
 		ctorDescriptor: new SyncDescriptor(DebugViewPaneContainer),
 		icon: icons.runViewIcon,
 		alwaysUseContainerInfo: true,
-		order: 13 // {{SQL CARBON EDIT}}
+		order: 13 // Set to what?
 	}, ViewContainerLocation.Sidebar);
 	registry.registerWorkbenchAction(SyncActionDescriptor.from(OpenDebugViewletAction, { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_D }), 'View: Show Run and Debug', CATEGORIES.View.value);
 

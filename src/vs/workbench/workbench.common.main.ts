@@ -299,14 +299,13 @@ import 'vs/workbench/contrib/sash/browser/sash.contribution';
 // SCM
 import 'vs/workbench/contrib/scm/browser/scm.contribution';
 
-/* {{SQL CARBON EDIT}} // Debug
+// Debug
 import 'vs/workbench/contrib/debug/browser/debug.contribution';
 import 'vs/workbench/contrib/debug/browser/debugEditorContribution';
 import 'vs/workbench/contrib/debug/browser/breakpointEditorContribution';
 import 'vs/workbench/contrib/debug/browser/callStackEditorContribution';
 import 'vs/workbench/contrib/debug/browser/repl';
 import 'vs/workbench/contrib/debug/browser/debugViewlet';
-*/
 
 // Markers
 import 'vs/workbench/contrib/markers/browser/markers.contribution';

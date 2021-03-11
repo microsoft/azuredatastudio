@@ -140,7 +140,7 @@ import 'vs/workbench/contrib/tags/electron-browser/tags.contribution';
 import 'vs/workbench/contrib/splash/electron-browser/partsSplash.contribution';
 
 // Debug
-// import 'vs/workbench/contrib/debug/node/debugHelperService'; {{SQL CARBON EDIT}}
+import 'vs/workbench/contrib/debug/node/debugHelperService';
 
 // Webview
 import 'vs/workbench/contrib/webview/electron-browser/webview.contribution';

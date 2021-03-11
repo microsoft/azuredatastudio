@@ -321,11 +321,11 @@ export class Menubar {
 		menubar.append(gotoMenuItem);  {{SQL CARBON EDIT}} - Disable unused menus */
 
 		// Debug
-		/*const debugMenu = new Menu();
+		const debugMenu = new Menu();
 		const debugMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mRun', comment: ['&& denotes a mnemonic'] }, "&&Run")), submenu: debugMenu });
 
 		this.setMenuById(debugMenu, 'Run');
-		menubar.append(debugMenuItem); {{SQL CARBON EDIT}} - Disable unused menus */
+		menubar.append(debugMenuItem);
 
 		// Terminal
 		/*const terminalMenu = new Menu();
