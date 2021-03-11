@@ -8,8 +8,8 @@
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
-    "vscode": "^1.27.0",
-    "azdata": ">=1.19.0"
+    "vscode": "^1.25.0",
+    "azdata": ">=1.27.0"
   },
   "activationEvents": [
     "onDashboardOpen",
