@@ -7,7 +7,7 @@
   "preview": true,
   "engines": {
     "vscode": "^1.25.0",
-    "azdata": ">=1.21.0"
+    "azdata": ">=1.27.0"
   },
   "activationEvents": [
     "onCommand:ml.command.managePackages",
