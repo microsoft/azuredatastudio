@@ -1218,11 +1218,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStatusManager.isConnecting(fileUri);
 	}
 
-	public getConnectionProfile(fileUri: string): interfaces.IConnectionProfile {
+	public getConnectionProfile(fileUri: string): interfaces.IConnectionProfile | undefined {
 		return this._connectionStatusManager.isConnected(fileUri) ? this._connectionStatusManager.getConnectionProfile(fileUri) : undefined;
 	}
 
-	public getConnectionInfo(fileUri: string): ConnectionManagementInfo {
+	public getConnectionInfo(fileUri: string): ConnectionManagementInfo | undefined {
 		return this._connectionStatusManager.isConnected(fileUri) ? this._connectionStatusManager.findConnection(fileUri) : undefined;
 	}
 
