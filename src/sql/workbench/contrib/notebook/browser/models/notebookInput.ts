@@ -109,6 +109,10 @@ export class NotebookEditorModel extends EditorModel {
 		return this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
 	}
 
+	isReadonly(): boolean {
+		return this.textEditorModel.isReadonly();
+	}
+
 	public setDirty(dirty: boolean): void {
 		if (this._dirty === dirty) {
 			return;

@@ -42,6 +42,12 @@ export class FileNotebookInput extends NotebookInput implements IFileEditorInput
 		// Unsupported
 		return;
 	}
+	getPreferredName(): string | undefined {
+		return this.textInput.getPreferredName();
+	}
+	getPreferredDescription(): string {
+		return this.textInput.getPreferredDescription();
+	}
 	isResolved(): boolean {
 		return this.textInput.isResolved();
 	}
