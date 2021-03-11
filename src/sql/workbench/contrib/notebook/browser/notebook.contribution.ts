@@ -252,6 +252,11 @@ configurationRegistry.registerConfiguration({
 			'default': 1.5,
 			'minimum': 1,
 			'description': localize('notebook.markdownPreviewLineHeight', "Controls the line height used in the notebook markdown preview. This number is relative to the font size.")
+		},
+		'notebook.relativePathNotebook': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('notebook.relativePathNotebook', "Enables Relative Path Links without Changing Path for Notebook ")
 		}
 	}
 });

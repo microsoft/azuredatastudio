@@ -33,7 +33,8 @@ const markdownReplacements = [
 export class HTMLMarkdownConverter {
 	private turndownService: TurndownService;
 
-	constructor(private notebookUri: URI) {
+
+	constructor(private notebookUri: URI, private relativePathSetting: boolean) {
 		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-', 'headingStyle': 'atx', blankReplacement: blankReplacement });
 		this.setTurndownOptions();
 	}
@@ -137,7 +138,9 @@ export class HTMLMarkdownConverter {
 				const notebookLink = node.href ? URI.parse(node.href) : URI.file(node.title);
 				const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
 				let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
-				if (relativePath) {
+				if (this.relativePathSetting) {
+					return `['test'](${relativePath})`;
+				} else if (relativePath) {
 					return `[${node.innerText}](${relativePath})`;
 				}
 				return `[${content}](${node.href})`;

@@ -12,9 +12,10 @@ import { URI } from 'vs/base/common/uri';
 suite('HTML Markdown Converter', function (): void {
 	let htmlMarkdownConverter: HTMLMarkdownConverter;
 	let htmlString: string;
+	let relativePathSetting: boolean;
 
 	suiteSetup(() => {
-		htmlMarkdownConverter = new HTMLMarkdownConverter(URI.file('/tmp/notebook.ipynb'));
+		htmlMarkdownConverter = new HTMLMarkdownConverter(URI.file('/tmp/notebook.ipynb'), relativePathSetting);
 		htmlString = '';
 	});
 

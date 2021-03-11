@@ -102,6 +102,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
 	private _highlightRange: NotebookRange;
+	private relativePathSetting: boolean;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -114,6 +115,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
 		this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		this.markdownPreviewLineHeight = this._configurationService.getValue('notebook.markdownPreviewLineHeight');
+		this.relativePathSetting = this._configurationService.getValue('notebook.relativePathNotebook');
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {
 				this.markdownResult.dispose();
@@ -126,6 +128,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this.markdownPreviewLineHeight = this._configurationService.getValue('notebook.markdownPreviewLineHeight');
 				this.updatePreview();
 			}
+			this.relativePathSetting = this._configurationService.getValue('notebook.relativePathNotebook');
 		}));
 	}
 
@@ -164,7 +167,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.updateTheme(this.themeService.getColorTheme());
 		this.setFocusAndScroll();
 		this.cellModel.isEditMode = false;
-		this._htmlMarkdownConverter = new HTMLMarkdownConverter(this.notebookUri);
+		this._htmlMarkdownConverter = new HTMLMarkdownConverter(this.notebookUri, this.relativePathSetting);
 		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
 		}));
