@@ -524,11 +524,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					vscode.window.showInformationMessage(localize("sql.migration.starting.migration.message", 'Starting migration for database {0} to {1}', db, this._targetServerInstance.name));
 				}
 			} catch (e) {
+				console.log(e);
 				vscode.window.showInformationMessage(e);
 			}
 
 		});
-
-		vscode.window.showInformationMessage(constants.MIGRATION_STARTED);
 	}
 }
