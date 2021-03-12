@@ -39,7 +39,7 @@ export class HTMLMarkdownConverter {
 	constructor(private notebookUri: URI, @IConfigurationService private readonly configurationService: IConfigurationService) {
 		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-', 'headingStyle': 'atx', blankReplacement: blankReplacement });
 		this.setTurndownOptions();
-		this.newLine = this.getEOL(notebookUri) ?? '\n';
+		this.newLine = this.getEOL(notebookUri);
 	}
 
 	public convert(html: string): string {
