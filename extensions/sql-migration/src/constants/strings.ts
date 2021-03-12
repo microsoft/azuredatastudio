@@ -215,11 +215,10 @@ export const MIGRATION_COMPLETED = localize('sql.migration.migration.completed',
 export const SUCCESSFULLY_MIGRATED_TO_AZURE_SQL = localize('sql.migration.successfully.migrated.to.azure.sql', "Successfully migrated to Azure SQL");
 export const MIGRATION_NOT_STARTED = localize('sql.migration.migration.not.started', "Migration not started");
 export const CHOOSE_TO_MIGRATE_TO_AZURE_SQL = localize('sql.migration.choose.to.migrate.to.azure.sql', "Choose to migrate to Azure SQL");
-
+export const COMING_SOON = localize('sql.migration.coming.soon', "Coming soon");
 
 // Azure APIs
 export const EASTUS2EUAP = localize('sql.migration.eastus2euap', 'East US 2 EUAP');
-
 
 //Migration cutover dialog
 export const MIGRATION_CUTOVER = localize('sql.migration.cutover', "Migration cutover");

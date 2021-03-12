@@ -143,6 +143,10 @@ export class DashboardWidget {
 			}
 		}).component();
 
+		preRequisiteLearnMoreLink.onDidClick((value) => {
+			vscode.window.showInformationMessage(loc.COMING_SOON);
+		});
+
 		const preReqContainer = view.modelBuilder.flexContainer().withItems([
 			preRequisiteListTitle,
 			preRequisiteListElement
@@ -433,8 +437,10 @@ export class DashboardWidget {
 			}
 		}).component();
 
-		refreshButton.onDidClick((e) => {
-			this.refreshMigrations();
+		refreshButton.onDidClick(async (e) => {
+			refreshButton.enabled = false;
+			await this.refreshMigrations();
+			refreshButton.enabled = true;
 		});
 
 		const buttonContainer = view.modelBuilder.flexContainer().withLayout({
