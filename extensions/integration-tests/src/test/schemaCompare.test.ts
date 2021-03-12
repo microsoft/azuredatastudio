@@ -24,7 +24,7 @@ const includeExcludeTargetDacpac: string = path.join(__dirname, '..', '..', 'tes
 const SERVER_CONNECTION_TIMEOUT: number = 3000;
 const retryCount = 12; // 1 minute
 const folderPath = path.join(os.tmpdir(), 'SchemaCompareTest');
-const testTimeout = 5 * 60 * 1000;	// 5 minutes
+const testTimeout = 10 * 60 * 1000;	// 10 minutes
 
 suite('Schema compare integration test suite @DacFx@', () => {
 	suiteSetup(async function () {
