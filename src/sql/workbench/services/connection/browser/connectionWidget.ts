@@ -127,17 +127,24 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._optionsMaps[option.specialValueType] = option;
 		}
 
+		// let's try editing this.
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		if (authTypeOption) {
-			let authTypeDefault = this.getAuthTypeDefault(authTypeOption, OS);
+			let authTypeDefault = this.getAuthTypeDefault(authTypeOption, OS, this._configurationService);
 			let authTypeDefaultDisplay = this.getAuthTypeDisplayName(authTypeDefault);
 			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeDefaultDisplay, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
 		}
 		this._providerName = providerName;
 	}
 
-	protected getAuthTypeDefault(option: azdata.ConnectionOption, os: OperatingSystem): string {
-		// Check for OS-specific default value
+	protected getAuthTypeDefault(option: azdata.ConnectionOption, os: OperatingSystem, configurationService: IConfigurationService): string {
+
+		//Let' remove windows-only options.
+		if (true) {
+
+		}
+
+		// Check for OS-specific default value  // Windows user might not want to default to Integrated. Let's give them the choice.
 		if (option.defaultValueOsOverrides) {
 			let result = option.defaultValueOsOverrides.find(d => ConnectionWidget._osByName[d.os] === os);
 			if (result) {

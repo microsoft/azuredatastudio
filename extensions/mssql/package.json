@@ -773,6 +773,7 @@
           "isArray": false
         },
         {
+          "_comment":"when we look at the mssql capabilities here are the default values.",
           "specialValueType": "authType",
           "isIdentity": true,
           "name": "authenticationType",

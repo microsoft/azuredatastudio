@@ -31,6 +31,7 @@ import { CmsConnectionController } from 'sql/workbench/services/connection/brows
 import { entries } from 'sql/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ConnectionOptionSpecialType } from 'azdata';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -150,6 +151,22 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 		// as a fallback, default to MSSQL if the value from settings is not available
 		return defaultProvider || Constants.mssqlProviderName;
+	}
+
+	private getDefaultAuthenticationTypeName(): string {
+		let defaultAuthenticationType: string;
+		if (!defaultAuthenticationType && this._configurationService) {
+			defaultAuthenticationType = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultAuthenticationType);
+		}
+		//
+		let mything = this._model.serverCapabilities.connectionOptions.find(option => option.specialValueType === ConnectionOptionSpecialType.authType);
+		if (mything) {
+
+		}
+		//mything = this._model.serverCapabilities.connectionOptions;
+
+		return defaultAuthenticationType || Constants.sqlLogin;  // as a fallback, default to sql login if the value from settings is not available
+
 	}
 
 	private handleOnConnect(params: INewConnectionParams, profile?: IConnectionProfile): void {
@@ -361,6 +378,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		if (this._model) {
 			this._model.dispose();
 		}
+		//Consider editing here?  We update model's provider here before showing dialog.  _configurationService available.
 		this._model = this.createModel(model);
 		if (this._model.providerName) {
 			this._currentProviderType = this._model.providerName;
@@ -377,6 +395,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		if (model && !model.providerName) {
 			model.providerName = providerName;
 		}
+
+		const defaultAuthenticationType = this.getDefaultAuthenticationTypeName();
+		let authenticationTypeName = model ? model.authenticationType : defaultAuthenticationType;
+		authenticationTypeName = authenticationTypeName ? authenticationTypeName : defaultAuthenticationType;
+		if (model && !model.authenticationType) {
+			model.authenticationType = authenticationTypeName;
+		}
+
 		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
 		newProfile.saveProfile = true;
 		newProfile.generateNewId();
@@ -451,6 +477,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this._connectionDialog.onConnect((profile) => {
 				this.handleOnConnect(this._connectionDialog.newConnectionParams, profile as IConnectionProfile);
 			});
+			// what is input value?
 			this._connectionDialog.onShowUiComponent((input) => this.handleShowUiComponent(input));
 			this._connectionDialog.onInitDialog(() => this.handleInitDialog());
 			this._connectionDialog.onFillinConnectionInputs((input) => this.handleFillInConnectionInputs(input as IConnectionProfile));

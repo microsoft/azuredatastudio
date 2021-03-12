@@ -128,6 +128,18 @@ configurationRegistry.registerConfiguration({
 			'description': localize('sql.defaultEngineDescription', "Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection."),
 			'default': 'MSSQL'
 		},
+		'sql.defaultAuthenticationType': {
+			'type': 'string',
+			'enum': ['SqlAuth', 'AzureMFA', `AzureMFAAndUser`, 'Integrated'],
+			'description': localize('sql.defaultAuthenticationTypeDescription', "Default authentication type to use when connecting to Azure resources. "),
+			'enumDescriptions': [
+				localize('sql.defaultAuthenticationType.SqlAuth', "Sql Login"),
+				localize('sql.defaultAuthenticationType.AzureMFA', "Azure Active Directory - Universal with MFA support"),
+				localize('sql.defaultAuthenticationType.AzureMFAAndUser', ""),
+				localize('sql.defaultAuthenticationType.Integrated', "Windows Authentication"),
+			],
+			'default': 'AzureMFA'
+		},
 		'connection.parseClipboardForConnectionString': {
 			'type': 'boolean',
 			'default': true,
@@ -135,3 +147,9 @@ configurationRegistry.registerConfiguration({
 		}
 	}
 });
+
+
+
+
+
+
