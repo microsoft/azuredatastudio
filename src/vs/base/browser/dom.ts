@@ -1441,17 +1441,18 @@ const _ttpSafeInnerHtml = window.trustedTypes?.createPolicy('safeInnerHtml', {
 export function safeInnerHtml(node: HTMLElement, value: string): void {
 
 	const options = _extInsaneOptions({
-		allowedTags: ['a', 'button', 'blockquote', 'code', 'div', 'h1', 'h2', 'h3', 'input', 'label', 'li', 'p', 'pre', 'select', 'small', 'span', 'strong', 'textarea', 'ul', 'ol'],
+		allowedTags: ['a', 'button', 'blockquote', 'code', 'div', 'h1', 'h2', 'h3', 'h4', 'i', 'img', 'input', 'label', 'li', 'p', 'pre', 'select', 'small', 'span', 'strong', 'textarea', 'ul', 'ol'], // {{SQL CARBON EDIT}} Add tags for welcome page support
 		allowedAttributes: {
 			'a': ['href', 'x-dispatch'],
 			'button': ['data-href', 'x-dispatch'],
 			'input': ['type', 'placeholder', 'checked', 'required'],
+			'img': ['src', 'alt', 'title', 'aria-label'], // {{SQL CARBON EDIT}} Add img for welcome page support
 			'label': ['for'],
 			'select': ['required'],
 			'span': ['data-command', 'role'],
 			'textarea': ['name', 'placeholder', 'required'],
 		},
-		allowedSchemes: ['http', 'https', 'command']
+		allowedSchemes: ['http', 'https', 'command', 'file'] // {{SQL CARBON EDIT}} Add allowed schema for welcome page support
 	}, ['class', 'id', 'role', 'tabindex']);
 
 	const html = _ttpSafeInnerHtml?.createHTML(value, options) ?? insane(value, options);
