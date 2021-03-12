@@ -12,6 +12,7 @@ export class WebUserDataAutoSyncEnablementService extends UserDataAutoSyncEnable
 	private enabled: boolean | undefined = undefined;
 
 	isEnabled(): boolean {
+		/* {{SQL CARBON EDIT}} Disable unused sync service
 		if (this.enabled === undefined) {
 			this.enabled = this.workbenchEnvironmentService.options?.settingsSyncOptions?.enabled;
 		}
@@ -19,6 +20,8 @@ export class WebUserDataAutoSyncEnablementService extends UserDataAutoSyncEnable
 			this.enabled = super.isEnabled(this.workbenchEnvironmentService.options?.enableSyncByDefault);
 		}
 		return this.enabled;
+		*/
+		return false;
 	}
 
 	setEnablement(enabled: boolean) {
