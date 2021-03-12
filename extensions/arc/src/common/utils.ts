@@ -184,7 +184,6 @@ export async function promptAndConfirmPassword(validate: (input: string) => stri
 	return undefined;
 }
 
-// Borrowed as is from other extensions
 export function generateGuid(): string {
 	let hexValues: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
 	// c.f. rfc4122 (UUID version 4 = xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx)
