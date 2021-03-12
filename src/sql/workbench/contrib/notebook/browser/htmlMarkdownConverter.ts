@@ -135,13 +135,21 @@ export class HTMLMarkdownConverter {
 			replacement: (content, node) => {
 				//On Windows, if notebook is not trusted then the href attr is removed for all non-web URL links
 				// href contains either a hyperlink or a URI-encoded absolute path. (See resolveUrls method in notebookMarkdown.ts)
-				const notebookLink = node.href ? URI.parse(node.href) : URI.file(node.title);
+				// Current Notebook folder
 				const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
+				// New Notebook URI
+				const notebookLink = node.href ? URI.parse(node.href) : URI.file(node.title);
+				let notebookValue = node.attributes.href.nodeValue;
 				let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
+				let notebookBaseName = path.basename(notebookLink.fsPath);
 				if (this.relativePathSetting) {
-					return `['test'](${relativePath})`;
-				} else if (relativePath) {
-					return `[${node.innerText}](${relativePath})`;
+					let newNotebookFolder = notebookLink ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
+					// Same directory folder
+					if (newNotebookFolder === notebookFolder) {
+						// Set relative path to parent
+						let newRelativePath = relativePath.replace(notebookValue, notebookBaseName);
+						return `[${node.innerText}](${newRelativePath})`;
+					}
 				}
 				return `[${content}](${node.href})`;
 			}
