@@ -19,6 +19,7 @@ import { MockExtensionContext } from '../common/stubs';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { NavigationProviders } from '../../common/constants';
 import * as loc from '../../common/localizedConstants';
+import { BookVersion } from '../../book/bookVersionHandler';
 
 
 export function equalTOC(actualToc: IJupyterBookSectionV2[], expectedToc: IJupyterBookSectionV2[]): boolean {
@@ -125,7 +126,7 @@ describe('BookTocManagerTests', function () {
 		let runs = [
 			{
 				it: 'using the jupyter-book legacy version < 0.7.0',
-				version: 'v1',
+				version: BookVersion.v1,
 				sourceBook: {
 					'rootBookFolderPath': sourceBookFolderPath,
 					'bookContentFolderPath': path.join(sourceBookFolderPath, 'content'),
@@ -215,7 +216,7 @@ describe('BookTocManagerTests', function () {
 				}
 			}, {
 				it: 'using the jupyter-book legacy version >= 0.7.0',
-				version: 'v2',
+				version: BookVersion.v2,
 				sourceBook: {
 					'rootBookFolderPath': sourceBookFolderPath,
 					'bookContentFolderPath': sourceBookFolderPath,

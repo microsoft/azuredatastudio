@@ -13,7 +13,7 @@ import * as crypto from 'crypto';
 import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey, AUTHTYPE, INTEGRATED_AUTH, KNOX_ENDPOINT_PORT, KNOX_ENDPOINT_SERVER } from './constants';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import * as loc from '../common/localizedConstants';
-import { BookTreeItemFormat } from '../book/bookTreeItem';
+import { BookTreeItemFormat, BookTreeItemType } from '../book/bookTreeItem';
 
 const localize = nls.loadMessageBundle();
 
@@ -442,12 +442,12 @@ export function isBookItemPinned(notebookPath: string): boolean {
 	return false;
 }
 
-export function isNotebookFromBook(book: BookTreeItemFormat): string {
+export function getNotebookType(book: BookTreeItemFormat): string {
 	if (book.tableOfContents.sections) {
-		return 'savedBookNotebook';
+		return BookTreeItemType.savedBookNotebook;
 	}
 	else {
-		return 'savedNotebook';
+		return BookTreeItemType.savedNotebook;
 	}
 }
 

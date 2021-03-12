@@ -389,16 +389,14 @@ export class BookTocManager implements IBookTocManager {
 	 * @param targetSection Book section that'll be modified.
 	*/
 	public async updateBook(element: BookTreeItem, targetBook: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
-		const targetBookVersion = targetBook.book.version as BookVersion;
 		if (element.contextValue === 'section') {
 			// modify the sourceBook toc and remove the section
 			const findSection: JupyterBookSection = { file: element.book.page.file?.replace(/\\/g, '/'), title: element.book.page.title };
 			await this.addSection(element, targetBook);
-			const elementVersion = element.book.version as BookVersion;
-			await this.updateTOC(elementVersion, element.tableOfContentsPath, findSection, undefined);
+			await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
 			if (targetSection) {
 				// adding new section to the target book toc file
-				await this.updateTOC(targetBookVersion, targetBook.tableOfContentsPath, targetSection, this.newSection);
+				await this.updateTOC(targetBook.book.version, targetBook.tableOfContentsPath, targetSection, this.newSection);
 			}
 			else {
 				//since there's not a target section, we just append the section at the end of the file
@@ -414,8 +412,7 @@ export class BookTocManager implements IBookTocManager {
 			const findSection = { file: element.book.page?.file?.replace(/\\/g, '/'), title: element.book.page?.title };
 			await this.addNotebook(element, targetBook);
 			if (element.tableOfContentsPath) {
-				const elementVersion = element.book.version as BookVersion;
-				await this.updateTOC(elementVersion, element.tableOfContentsPath, findSection, undefined);
+				await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
 			} else {
 				// close the standalone notebook, so it doesn't throw an error when we move the notebook to new location.
 				await vscode.commands.executeCommand('notebook.command.closeNotebook', element);
@@ -427,15 +424,14 @@ export class BookTocManager implements IBookTocManager {
 				this.tableofContents.push(this.newSection);
 				await fs.writeFile(targetBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
 			} else {
-				await this.updateTOC(targetBookVersion, targetBook.tableOfContentsPath, targetSection, this.newSection);
+				await this.updateTOC(targetBook.book.version, targetBook.tableOfContentsPath, targetSection, this.newSection);
 			}
 		}
 	}
 
 	public async removeNotebook(element: BookTreeItem): Promise<void> {
 		const findSection = { file: element.book.page?.file?.replace(/\\/g, '/'), title: element.book.page?.title };
-		const elementVersion = element.book.version as BookVersion;
-		await this.updateTOC(elementVersion, element.tableOfContentsPath, findSection, undefined);
+		await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
 	}
 
 	public get modifiedDir(): Set<string> {

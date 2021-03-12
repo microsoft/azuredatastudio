@@ -16,7 +16,7 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { getPinnedNotebooks, confirmReplace, isNotebookFromBook } from '../common/utils';
+import { getPinnedNotebooks, confirmReplace, getNotebookType } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { CreateBookDialog } from '../dialog/createBookDialog';
@@ -131,7 +131,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (bookPathToUpdate) {
 			let pinStatusChanged = await this.bookPinManager.unpinNotebook(bookTreeItem);
 			if (pinStatusChanged) {
-				bookTreeItem.contextValue = isNotebookFromBook(bookTreeItem.book);
+				bookTreeItem.contextValue = getNotebookType(bookTreeItem.book);
 			}
 		}
 	}
