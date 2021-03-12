@@ -19,6 +19,7 @@ export enum NbTelemetryActions {
 	SaveBook = 'BookSaved',
 	CreateBook = 'BookCreated',
 	PinNotebook = 'NotebookPinned',
-	OpenNotebookFromBook = 'NotebookOpenedFromBook'
+	OpenNotebookFromBook = 'NotebookOpenedFromBook',
+	SearchBook = 'SearchBookInSearchView'
 }
 

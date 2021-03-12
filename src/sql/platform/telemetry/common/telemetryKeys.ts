@@ -80,6 +80,9 @@ export enum TelemetryAction {
 
 export enum NbTelemetryAction {
 	RunCell = 'RunCell',
-	RunAll = 'RunNotebook'
+	RunAll = 'RunNotebook',
+	AddCell = 'AddCell',
+	ChangeKernel = 'ChangeKernel',
+	NewNotebookFromConnections = 'NewNotebookWithConnectionProfile'
 }
 

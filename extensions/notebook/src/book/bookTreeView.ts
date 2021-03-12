@@ -515,6 +515,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			let filesToIncludeFiltered = path.join(folderToSearch, '**', '*.md') + ',' + path.join(folderToSearch, '**', '*.ipynb');
 			vscode.commands.executeCommand('workbench.action.findInFiles', { filesToInclude: filesToIncludeFiltered, query: '' });
 		}
+		TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.SearchBook).send();
 	}
 
 	public async openNewBook(): Promise<void> {
