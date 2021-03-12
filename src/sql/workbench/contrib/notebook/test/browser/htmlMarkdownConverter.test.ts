@@ -7,14 +7,16 @@ import * as assert from 'assert';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
+import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 
 
 suite('HTML Markdown Converter', function (): void {
 	let htmlMarkdownConverter: HTMLMarkdownConverter;
 	let htmlString: string;
+	let configurationService = new TestConfigurationService();
 
 	suiteSetup(() => {
-		htmlMarkdownConverter = new HTMLMarkdownConverter(URI.file('/tmp/notebook.ipynb'));
+		htmlMarkdownConverter = new HTMLMarkdownConverter(URI.file('/tmp/notebook.ipynb'), configurationService);
 		htmlString = '';
 	});
 

@@ -7,6 +7,8 @@ import TurndownService = require('turndown');
 import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
 import * as turndownPluginGfm from 'sql/workbench/contrib/notebook/browser/turndownPluginGfm';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { isLinux, isMacintosh } from 'vs/base/common/platform';
 
 // These replacements apply only to text. Here's how it's handled from Turndown:
 // if (node.nodeType === 3) {
@@ -32,14 +34,24 @@ const markdownReplacements = [
 
 export class HTMLMarkdownConverter {
 	private turndownService: TurndownService;
+	public newLine: string;
 
-	constructor(private notebookUri: URI) {
+	constructor(private notebookUri: URI, @IConfigurationService private readonly configurationService: IConfigurationService) {
 		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-', 'headingStyle': 'atx', blankReplacement: blankReplacement });
 		this.setTurndownOptions();
+		this.newLine = this.getEOL(notebookUri) ?? '\n';
 	}
 
 	public convert(html: string): string {
 		return this.turndownService.turndown(html, { gfm: true });
+	}
+
+	private getEOL(resource: URI, language?: string): string {
+		const eol = this.configurationService.getValue<string>('files.eol', { overrideIdentifier: language, resource });
+		if (eol && eol !== 'auto') {
+			return eol;
+		}
+		return (isLinux || isMacintosh) ? '\n' : '\r\n';
 	}
 
 	private setTurndownOptions() {
@@ -149,21 +161,23 @@ export class HTMLMarkdownConverter {
 			filter: ['ul', 'ol'],
 			replacement: function (content, node) {
 				let parent = node.parentNode;
+				let newLine = this.newLine ?? '\n';
 				if ((parent.nodeName === 'LI' && parent.lastElementChild === node)) {
-					return '\n' + content;
+					return newLine + content;
 				} else if (parent.nodeName === 'UL' || parent.nodeName === 'OL') { // Nested list case
-					return '\n' + content + '\n';
+					return newLine + content + newLine;
 				} else {
-					return '\n\n' + content + '\n\n';
+					return newLine + newLine + content + newLine + newLine;
 				}
 			}
 		});
 		this.turndownService.addRule('lineBreak', {
 			filter: 'br',
 			replacement: function (content, node, options) {
+				let newLine = this.newLine ?? '\n';
 				// For elements that aren't lists, convert <br> into its markdown equivalent
 				if (node.parentElement?.nodeName !== 'LI') {
-					return options.br + '\n';
+					return options.br + newLine;
 				}
 				// One (and only one) line break is ignored when it's inside of a list item
 				// Otherwise, a new list will be created due to the looseness of the list
@@ -173,7 +187,7 @@ export class HTMLMarkdownConverter {
 						numberLineBreaks++;
 					}
 				});
-				return numberLineBreaks > 1 ? options.br + '\n' : '';
+				return numberLineBreaks > 1 ? options.br + newLine : '';
 			}
 		});
 		this.turndownService.addRule('listItem', {
