@@ -640,14 +640,31 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 		// If the options are provided for us then set up the callback to load those options async'ly
 		if (optionsSource?.provider) {
 			getRadioOptions = async () => {
-				return { defaultValue: options.defaultValue, values: await optionsSource.provider!.getOptions() };
+				try {
+					return { defaultValue: options.defaultValue, values: await optionsSource.provider!.getOptions() };
+				} catch (err) {
+					context.container.message = {
+						text: getErrorMessage(err),
+						description: '',
+						level: azdata.window.MessageLevel.Error
+					};
+					return { defaultValue: '', values: [] };
+				}
 			};
 		}
 		optionsComponent = await processRadioOptionsTypeField(context, getRadioOptions);
 	} else {
 		throwUnless(context.fieldInfo.options.optionsType === OptionsType.Dropdown, loc.optionsTypeRadioOrDropdown);
 		if (optionsSource?.provider) {
-			context.fieldInfo.options.values = await optionsSource.provider.getOptions();
+			try {
+				context.fieldInfo.options.values = await optionsSource.provider.getOptions();
+			} catch (err) {
+				context.container.message = {
+					text: getErrorMessage(err),
+					description: '',
+					level: azdata.window.MessageLevel.Error
+				};
+			}
 		}
 		optionsComponent = processDropdownOptionsTypeField(context);
 	}
