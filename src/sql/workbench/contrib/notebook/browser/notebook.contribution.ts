@@ -167,6 +167,20 @@ CommandsRegistry.registerCommand({
 	}
 });
 
+const RESTART_NOTEBOOK_SESSION = 'notebook.action.restartNotebookSessions';
+
+CommandsRegistry.registerCommand({
+	id: RESTART_NOTEBOOK_SESSION,
+	handler: async (accessor: ServicesAccessor) => {
+		const notebookEditor = accessor.get(IEditorService).activeEditorPane;
+		if (notebookEditor instanceof NotebookEditor) {
+			if (notebookEditor) {
+				await (await notebookEditor.getNotebookModel()).restartSession();
+			}
+		}
+	}
+});
+
 MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 	command: {
 		id: TOGGLE_TAB_FOCUS_COMMAND_ID,

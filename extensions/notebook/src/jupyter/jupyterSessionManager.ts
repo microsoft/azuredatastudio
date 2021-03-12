@@ -188,6 +188,9 @@ export class JupyterSession implements nb.ISession {
 			// able to set environment variables
 			this._messagesComplete.resolve();
 		});
+		_installation.pythonInstallationChanged(async () => {
+			this.changeKernel(await this._kernel.getSpec());
+		});
 	}
 
 	public get canChangeKernels(): boolean {

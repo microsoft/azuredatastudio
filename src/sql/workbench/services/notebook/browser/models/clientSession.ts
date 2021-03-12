@@ -309,6 +309,14 @@ export class ClientSession implements IClientSession {
 		}
 	}
 
+	public async stopServer(): Promise<void> {
+		let serverManager = this.notebookManager.serverManager;
+		if (serverManager) {
+			await serverManager.stopServer();
+			this.isServerStarted = serverManager.isStarted;
+		}
+	}
+
 	/**
 	 * Select a kernel for the session.
 	 */

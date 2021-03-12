@@ -88,6 +88,10 @@ export class NotebookModelStub implements INotebookModel {
 	getStandardKernelFromName(name: string): IStandardKernelWithProvider {
 		throw new Error('Method not implemented.');
 	}
+
+	restartSession(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
 	changeKernel(displayName: string): void {
 		throw new Error('Method not implemented.');
 	}
@@ -302,6 +306,9 @@ export class ClientSessionStub implements IClientSession {
 		throw new Error('Method not implemented.');
 	}
 	shutdown(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+	stopServer(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 	selectKernel(): Promise<void> {

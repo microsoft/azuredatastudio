@@ -121,6 +121,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	private readonly _runningOnSAW: boolean;
 
+	private _pythonInstallationChanged: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
+
 	constructor(extensionPath: string, outputChannel: vscode.OutputChannel) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
@@ -154,6 +156,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		allPackages.forEach(pkg => {
 			this._requiredPackagesSet.add(pkg.name);
 		});
+	}
+
+	get pythonInstallationChanged(): vscode.Event<void> {
+		return this._pythonInstallationChanged.event;
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation, forceInstall: boolean, packages: PythonPkgDetails[]): Promise<void> {
@@ -438,6 +444,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 						this._installCompletion.resolve();
 						this._installInProgress = false;
+						// this._pythonInstallationChanged.fire();
+						await vscode.commands.executeCommand('notebook.action.restartNotebookSessions');
 					})
 					.catch(err => {
 						let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));

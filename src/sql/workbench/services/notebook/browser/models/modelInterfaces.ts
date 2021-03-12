@@ -172,6 +172,8 @@ export interface IClientSession extends IDisposable {
 	 */
 	shutdown(): Promise<void>;
 
+	stopServer(): Promise<void>;
+
 	/**
 	 * Select a kernel for the session.
 	 */
@@ -360,6 +362,8 @@ export interface INotebookModel {
 	 * Get a custom metadata value from the notebook
 	 */
 	getMetaValue(key: string): any;
+
+	restartSession(): Promise<void>;
 
 	/**
 	 * Change the current kernel from the Kernel dropdown
