@@ -10,6 +10,7 @@ import * as should from 'should';
 import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
 import * as vscode from 'vscode';
+import { generateGuid } from '../../common/utils';
 import { UserCancelledError } from '../../common/api';
 import { ControllerModel, Registration } from '../../models/controllerModel';
 import { PostgresModel, EngineSettingsModel } from '../../models/postgresModel';
@@ -17,8 +18,88 @@ import { ConnectToPGSqlDialog } from '../../ui/dialogs/connectPGDialog';
 import { AzureArcTreeDataProvider } from '../../ui/tree/azureArcTreeDataProvider';
 import { FakeControllerModel } from '../mocks/fakeControllerModel';
 import { FakeAzdataApi } from '../mocks/fakeAzdataApi';
-import { FakePostgresServerShowResult } from '../mocks/fakePostgresServerShowResult';
 import { assert } from 'sinon';
+
+export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.PostgresServerShowResult> = {
+	logs: [],
+	stdout: [],
+	stderr: [],
+	result: {
+		apiVersion: 'version',
+		kind: 'postgresql',
+		metadata: {
+			creationTimestamp: '',
+			generation: 1,
+			name: 'pgt',
+			namespace: 'ns',
+			resourceVersion: '',
+			selfLink: '',
+			uid: '',
+		},
+		spec: {
+			engine: {
+				extensions: [{ name: '' }],
+				settings: {
+					default: { ['']: '' }
+				}
+			},
+			scale: {
+				shards: 0,
+				workers: 0
+			},
+			scheduling: {
+				default: {
+					resources: {
+						requests: {
+							cpu: '',
+							memory: ''
+						},
+						limits: {
+							cpu: '',
+							memory: ''
+						}
+					}
+				}
+			},
+			service: {
+				type: '',
+				port: 0
+			},
+			storage: {
+				data: {
+					className: '',
+					size: ''
+				},
+				logs: {
+					className: '',
+					size: ''
+				},
+				backups: {
+					className: '',
+					size: ''
+				}
+			}
+		},
+		status: {
+			externalEndpoint: '127.0.0.1:5432',
+			readyPods: '',
+			state: '',
+			logSearchDashboard: '',
+			metricsDashboard: '',
+			podsStatus: [{
+				conditions: [{
+					lastTransitionTime: '',
+					message: '',
+					reason: '',
+					status: '',
+					type: '',
+				}],
+				name: '',
+				role: '',
+			}]
+		}
+	}
+};
 
 describe('PostgresModel', function (): void {
 	let controllerModel: ControllerModel;
@@ -53,20 +134,18 @@ describe('PostgresModel', function (): void {
 		});
 
 		it('Updates model to expected config', async function (): Promise<void> {
-			const result = new FakePostgresServerShowResult();
-			const postgresShow = sinon.stub().returns(result);
+			const postgresShow = sinon.stub().returns(FakePostgresServerShowOutput);
 			sinon.stub(azdataApi, 'arc').get(() => {
 				return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
 			});
 
 			await postgresModel.refresh();
 			sinon.assert.calledOnceWithExactly(postgresShow, postgresModel.info.name);
-			assert.match(postgresModel.config, result.result);
+			assert.match(postgresModel.config, FakePostgresServerShowOutput.result);
 		});
 
 		it('Updates onConfigLastUpdated when model is refreshed', async function (): Promise<void> {
-			const result = new FakePostgresServerShowResult();
-			const postgresShow = sinon.stub().returns(result);
+			const postgresShow = sinon.stub().returns(FakePostgresServerShowOutput);
 			sinon.stub(azdataApi, 'arc').get(() => {
 				return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
 			});
@@ -77,12 +156,11 @@ describe('PostgresModel', function (): void {
 		});
 
 		it('Calls onConfigUpdated event when model is refreshed', async function (): Promise<void> {
-			const result = new FakePostgresServerShowResult();
-			const postgresShow = sinon.stub().returns(result);
+			const postgresShow = sinon.stub().returns(FakePostgresServerShowOutput);
 			sinon.stub(azdataApi, 'arc').get(() => {
 				return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
 			});
-			const configUpdatedEvent = sinon.stub(vscode.EventEmitter.prototype, 'fire');
+			const configUpdatedEvent = sinon.spy(vscode.EventEmitter.prototype, 'fire');
 
 			await postgresModel.refresh();
 			sinon.assert.calledOnceWithExactly(postgresShow, postgresModel.info.name);
@@ -110,8 +188,7 @@ describe('PostgresModel', function (): void {
 			postgresModel = new PostgresModel(controllerModel, postgresResource, registration, new AzureArcTreeDataProvider(TypeMoq.Mock.ofType<vscode.ExtensionContext>().object));
 
 			//Stub calling refresh postgres model
-			const result = new FakePostgresServerShowResult();
-			const postgresShow = sinon.stub().returns(result);
+			const postgresShow = sinon.stub().returns(FakePostgresServerShowOutput);
 			sinon.stub(azdataApi, 'arc').get(() => {
 				return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
 			});
@@ -128,7 +205,15 @@ describe('PostgresModel', function (): void {
 
 		it('Show dialog prompt if password not found', async function (): Promise<void> {
 			const connect = sinon.stub(azdata.connection, 'connect');
-			const show = sinon.stub(ConnectToPGSqlDialog.prototype, 'showDialog');
+
+			const cancelButtonMock = TypeMoq.Mock.ofType<azdata.window.Button>();
+			cancelButtonMock.setup((x: any) => x.then).returns(() => undefined);
+
+			const dialogMock = TypeMoq.Mock.ofType<azdata.window.Dialog>();
+			dialogMock.setup(x => x.cancelButton).returns(() => cancelButtonMock.object);
+			dialogMock.setup((x: any) => x.then).returns(() => undefined);
+			const show = sinon.stub(azdata.window, 'createModelViewDialog').returns(dialogMock.object);
+			sinon.stub(azdata.window, 'openDialog');
 
 			const iconnectionProfileMock = TypeMoq.Mock.ofType<azdata.IConnectionProfile>();
 			iconnectionProfileMock.setup((x: any) => x.then).returns(() => undefined);
@@ -141,7 +226,7 @@ describe('PostgresModel', function (): void {
 		});
 
 		it('Reads password from cred store and no dialog prompt', async function (): Promise<void> {
-			const password = 'password123';
+			const password = generateGuid();
 			// Set up cred store to return our password
 			const credProviderMock = TypeMoq.Mock.ofType<azdata.CredentialProvider>();
 			credProviderMock.setup(x => x.readCredential(TypeMoq.It.isAny())).returns(() => Promise.resolve({ credentialId: 'id', password: password }));
@@ -153,8 +238,16 @@ describe('PostgresModel', function (): void {
 			connectionResultMock.setup((x: any) => x.then).returns(() => undefined);
 			const connect = sinon.stub(azdata.connection, 'connect').returns(Promise.resolve(connectionResultMock.object));
 
-			const show = sinon.stub(ConnectToPGSqlDialog.prototype, 'showDialog');
-			const treeSave = sinon.stub(AzureArcTreeDataProvider.prototype, 'saveControllers');
+			const cancelButtonMock = TypeMoq.Mock.ofType<azdata.window.Button>();
+			cancelButtonMock.setup((x: any) => x.then).returns(() => undefined);
+
+			const dialogMock = TypeMoq.Mock.ofType<azdata.window.Dialog>();
+			dialogMock.setup(x => x.cancelButton).returns(() => cancelButtonMock.object);
+			dialogMock.setup((x: any) => x.then).returns(() => undefined);
+			const show = sinon.stub(azdata.window, 'createModelViewDialog').returns(dialogMock.object);
+			sinon.stub(azdata.window, 'openDialog');
+
+			const treeSave = sinon.spy(AzureArcTreeDataProvider.prototype, 'saveControllers');
 
 			await postgresModel['getConnectionProfile']();
 			sinon.assert.calledOnce(connect);
@@ -163,7 +256,7 @@ describe('PostgresModel', function (): void {
 		});
 
 		it('Reads password from cred store and connect fails, show dialog prompt', async function (): Promise<void> {
-			const password = 'password123';
+			const password = generateGuid();
 			// Set up cred store to return our password
 			const credProviderMock = TypeMoq.Mock.ofType<azdata.CredentialProvider>();
 			credProviderMock.setup(x => x.readCredential(TypeMoq.It.isAny())).returns(() => Promise.resolve({ credentialId: 'id', password: password }));
@@ -179,7 +272,14 @@ describe('PostgresModel', function (): void {
 			iconnectionProfileMock.setup((x: any) => x.then).returns(() => undefined);
 			const close = sinon.stub(ConnectToPGSqlDialog.prototype, 'waitForClose').returns(Promise.resolve(iconnectionProfileMock.object));
 
-			const show = sinon.stub(ConnectToPGSqlDialog.prototype, 'showDialog');
+			const cancelButtonMock = TypeMoq.Mock.ofType<azdata.window.Button>();
+			cancelButtonMock.setup((x: any) => x.then).returns(() => undefined);
+
+			const dialogMock = TypeMoq.Mock.ofType<azdata.window.Dialog>();
+			dialogMock.setup(x => x.cancelButton).returns(() => cancelButtonMock.object);
+			dialogMock.setup((x: any) => x.then).returns(() => undefined);
+			const show = sinon.stub(azdata.window, 'createModelViewDialog').returns(dialogMock.object);
+			sinon.stub(azdata.window, 'openDialog');
 
 			await postgresModel['getConnectionProfile']();
 			sinon.assert.calledOnce(connect);
@@ -194,7 +294,7 @@ describe('PostgresModel', function (): void {
 			let postgresModelNew = new PostgresModel(controllerModel, postgresResource, registration, new AzureArcTreeDataProvider(TypeMoq.Mock.ofType<vscode.ExtensionContext>().object));
 			await postgresModelNew.refresh();
 
-			const password = 'password123';
+			const password = generateGuid();
 			// Set up cred store to return our password
 			const credProviderMock = TypeMoq.Mock.ofType<azdata.CredentialProvider>();
 			credProviderMock.setup(x => x.readCredential(TypeMoq.It.isAny())).returns(() => Promise.resolve({ credentialId: 'id', password: password }));
@@ -202,7 +302,14 @@ describe('PostgresModel', function (): void {
 			sinon.stub(azdata.credentials, 'getProvider').returns(Promise.resolve(credProviderMock.object));
 
 			const connect = sinon.stub(azdata.connection, 'connect');
-			const show = sinon.stub(ConnectToPGSqlDialog.prototype, 'showDialog');
+			const cancelButtonMock = TypeMoq.Mock.ofType<azdata.window.Button>();
+			cancelButtonMock.setup((x: any) => x.then).returns(() => undefined);
+
+			const dialogMock = TypeMoq.Mock.ofType<azdata.window.Dialog>();
+			dialogMock.setup(x => x.cancelButton).returns(() => cancelButtonMock.object);
+			dialogMock.setup((x: any) => x.then).returns(() => undefined);
+			const show = sinon.stub(azdata.window, 'createModelViewDialog').returns(dialogMock.object);
+			sinon.stub(azdata.window, 'openDialog');
 
 			const iconnectionProfileMock = TypeMoq.Mock.ofType<azdata.IConnectionProfile>();
 			iconnectionProfileMock.setup((x: any) => x.then).returns(() => undefined);
@@ -223,7 +330,14 @@ describe('PostgresModel', function (): void {
 
 			const provider = sinon.stub(azdata.credentials, 'getProvider');
 			const connect = sinon.stub(azdata.connection, 'connect');
-			const show = sinon.stub(ConnectToPGSqlDialog.prototype, 'showDialog');
+			const cancelButtonMock = TypeMoq.Mock.ofType<azdata.window.Button>();
+			cancelButtonMock.setup((x: any) => x.then).returns(() => undefined);
+
+			const dialogMock = TypeMoq.Mock.ofType<azdata.window.Dialog>();
+			dialogMock.setup(x => x.cancelButton).returns(() => cancelButtonMock.object);
+			dialogMock.setup((x: any) => x.then).returns(() => undefined);
+			const show = sinon.stub(azdata.window, 'createModelViewDialog').returns(dialogMock.object);
+			sinon.stub(azdata.window, 'openDialog');
 
 			const iconnectionProfileMock = TypeMoq.Mock.ofType<azdata.IConnectionProfile>();
 			iconnectionProfileMock.setup((x: any) => x.then).returns(() => undefined);
@@ -246,8 +360,7 @@ describe('PostgresModel', function (): void {
 			postgresModel = new PostgresModel(controllerModel, postgresResource, registration, new AzureArcTreeDataProvider(TypeMoq.Mock.ofType<vscode.ExtensionContext>().object));
 
 			//Stub calling refresh postgres model
-			const result = new FakePostgresServerShowResult();
-			const postgresShow = sinon.stub().returns(result);
+			const postgresShow = sinon.stub().returns(FakePostgresServerShowOutput);
 			sinon.stub(azdataApi, 'arc').get(() => {
 				return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
 			});
@@ -256,7 +369,14 @@ describe('PostgresModel', function (): void {
 			const iconnectionProfileMock = TypeMoq.Mock.ofType<azdata.IConnectionProfile>();
 			iconnectionProfileMock.setup((x: any) => x.then).returns(() => undefined);
 			sinon.stub(ConnectToPGSqlDialog.prototype, 'waitForClose').returns(Promise.resolve(iconnectionProfileMock.object));
-			sinon.stub(ConnectToPGSqlDialog.prototype, 'showDialog');
+			const cancelButtonMock = TypeMoq.Mock.ofType<azdata.window.Button>();
+			cancelButtonMock.setup((x: any) => x.then).returns(() => undefined);
+
+			const dialogMock = TypeMoq.Mock.ofType<azdata.window.Dialog>();
+			dialogMock.setup(x => x.cancelButton).returns(() => cancelButtonMock.object);
+			dialogMock.setup((x: any) => x.then).returns(() => undefined);
+			sinon.stub(azdata.window, 'createModelViewDialog').returns(dialogMock.object);
+			sinon.stub(azdata.window, 'openDialog');
 
 			sinon.stub(azdata.connection, 'getUriForConnection');
 
@@ -338,7 +458,7 @@ describe('PostgresModel', function (): void {
 			providerMock.setup((x: any) => x.then).returns(() => undefined);
 			sinon.stub(azdata.dataprotocol, 'getProvider').returns(providerMock.object);
 
-			const onEngineSettingsUpdated = sinon.stub(vscode.EventEmitter.prototype, 'fire');
+			const onEngineSettingsUpdated = sinon.spy(vscode.EventEmitter.prototype, 'fire');
 
 			await postgresModel.getEngineSettings();
 			sinon.assert.calledOnceWithExactly(onEngineSettingsUpdated, postgresModel.workerNodesEngineSettings);
