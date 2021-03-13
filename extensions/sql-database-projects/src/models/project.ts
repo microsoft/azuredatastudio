@@ -266,6 +266,11 @@ export class Project {
 	public async addFolderItem(relativeFolderPath: string): Promise<ProjectEntry> {
 		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
 
+		// check if folder already has been added to sqlproj
+		if (this.files.find(f => f.relativePath === relativeFolderPath)) {
+			throw new Error(constants.folderAlreadyAddedToProject((relativeFolderPath)));
+		}
+
 		//If folder doesn't exist, create it
 		let exists = await utils.exists(absoluteFolderPath);
 		if (!exists) {
@@ -290,6 +295,11 @@ export class Project {
 		// check if file already exists if content was passed to write to a new file
 		if (contents !== undefined && contents !== '' && await utils.exists(absoluteFilePath)) {
 			throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
+		}
+
+		// check if file already has been added to sqlproj
+		if (this.files.find(f => f.relativePath === relativeFilePath)) {
+			throw new Error(constants.fileAlreadyAddedToProject((relativeFilePath)));
 		}
 
 		// create the file if contents were passed in
