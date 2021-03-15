@@ -10,7 +10,7 @@ import { AgreementInfo, DeploymentProvider, HelpText, ITool, ResourceType, Resou
 import { createFlexContainer } from './modelViewUtils';
 import * as loc from '../localizedConstants';
 import { IToolsService } from '../services/toolsService';
-import { getErrorMessage } from '../common/utils';
+import { deepClone, getErrorMessage } from '../common/utils';
 import { ResourceTypePage } from './resourceTypePage';
 import { ResourceTypeWizard } from './resourceTypeWizard';
 import { OptionValuesFilter as OptionValuesFilter } from '../services/resourceTypeService';
@@ -200,7 +200,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					}).component();
 					this._optionsContainer.addItem(optionsTitle);
 					this._resourceType.options.forEach((option, index) => {
-						let optionValues = option.values;
+						let optionValues = deepClone(option.values);
 						const optionValueFilter = this.optionValuesFilter?.[this._resourceType.name]?.[option.name];
 						if (optionValueFilter) {
 							optionValues = optionValues.filter(optionValue => optionValueFilter.includes(optionValue.name));
