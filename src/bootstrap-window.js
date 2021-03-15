@@ -21,6 +21,7 @@
 		globalThis.MonacoBootstrapWindow = factory();
 	}
 }(this, function () {
+	const bootstrapLib = bootstrap();
 	const preloadGlobals = globals();
 	const sandbox = preloadGlobals.context.sandbox;
 	const webFrame = preloadGlobals.webFrame;
@@ -56,15 +57,22 @@
 			developerToolsUnbind = registerDeveloperKeybindings(options && options.disallowReloadKeybinding);
 		}
 
-		// Enable ASAR support
-		globalThis.MonacoBootstrap.enableASARSupport(configuration.appRoot);
+		// Correctly inherit the parent's environment (TODO@sandbox non-sandboxed only)
+		if (!sandbox) {
+			Object.assign(safeProcess.env, configuration.userEnv);
+		}
+
+		// Enable ASAR support (TODO@sandbox non-sandboxed only)
+		if (!sandbox) {
+			globalThis.MonacoBootstrap.enableASARSupport(configuration.appRoot);
+		}
 
 		if (options && typeof options.canModifyDOM === 'function') {
 			options.canModifyDOM(configuration);
 		}
 
-		// Get the nls configuration into the process.env as early as possible
-		const nlsConfig = globalThis.MonacoBootstrap.setupNLS();
+		// Get the nls configuration into the process.env as early as possible  (TODO@sandbox non-sandboxed only)
+		const nlsConfig = sandbox ? { availableLanguages: {} } : globalThis.MonacoBootstrap.setupNLS();
 
 		let locale = nlsConfig.availableLanguages['*'] || 'en';
 		if (locale === 'zh-tw') {
@@ -87,16 +95,27 @@
 
 		window['MonacoEnvironment'] = {};
 
-		// const baseUrl = sandbox ? // {{SQL CARBON EDIT}} Pending changes?
-		// 	`${bootstrapLib.fileUriFromPath(configuration.appRoot, { isWindows: safeProcess.platform === 'win32', scheme: 'vscode-file', fallbackAuthority: 'vscode-app' })}/out` :
-		// 	`${bootstrapLib.fileUriFromPath(configuration.appRoot, { isWindows: safeProcess.platform === 'win32' })}/out`;
+		const baseUrl = sandbox ?
+			`${bootstrapLib.fileUriFromPath(configuration.appRoot, { isWindows: safeProcess.platform === 'win32', scheme: 'vscode-file', fallbackAuthority: 'vscode-app' })}/out` :
+			`${bootstrapLib.fileUriFromPath(configuration.appRoot, { isWindows: safeProcess.platform === 'win32' })}/out`;
 
 		const loaderConfig = {
-			baseUrl: `${uriFromPath(configuration.appRoot)}/out`,
+			baseUrl: baseUrl,
 			'vs/nls': nlsConfig,
 			amdModulesPattern: /^(vs|sql)\//, // {{SQL CARBON EDIT}} include sql in regex
 			preferScriptTags: sandbox
 		};
+		// use a trusted types policy when loading via script tags
+		if (loaderConfig.preferScriptTags) {
+			loaderConfig.trustedTypesPolicy = window.trustedTypes?.createPolicy('amdLoader', {
+				createScriptURL(value) {
+					if (value.startsWith(window.location.origin)) {
+						return value;
+					}
+					throw new Error(`Invalid script url: ${value}`);
+				}
+			});
+		}
 
 		// cached data config
 		if (configuration.nodeCachedDataDir) {
@@ -226,6 +245,14 @@
 		if (error && typeof error !== 'string' && error.stack) {
 			console.error(error.stack);
 		}
+	}
+
+	/**
+	 * @return {{ fileUriFromPath: (path: string, config: { isWindows?: boolean, scheme?: string, fallbackAuthority?: string }) => string; }}
+	 */
+	function bootstrap() {
+		// @ts-ignore (defined in bootstrap.js)
+		return globalThis.MonacoBootstrap;
 	}
 
 	/**
