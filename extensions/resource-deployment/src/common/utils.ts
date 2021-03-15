@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as path from 'path';
+import { ErrorType, ErrorWithType } from 'resource-deployment';
 import { ToolsInstallPath } from '../constants';
 import { ITool, NoteBookEnvironmentVariablePrefix } from '../interfaces';
 
@@ -10,6 +11,10 @@ export function getErrorMessage(error: any): string {
 	return (error instanceof Error)
 		? (typeof error.message === 'string' ? error.message : '')
 		: typeof error === 'string' ? error : `${JSON.stringify(error, undefined, '\t')}`;
+}
+
+export function isUserCancelledError(err: any): boolean {
+	return err instanceof Error && 'type' in err && (<ErrorWithType>err).type === ErrorType.userCancelled;
 }
 
 export function getDateTimeString(): string {
@@ -41,6 +46,15 @@ export function setEnvironmentVariablesForInstallPaths(tools: ITool[], env: Node
 }
 
 /**
+ * returns true if input is undefined or empty
+ *
+ * @param input - input value to test
+ */
+export function isUndefinedOrEmpty(input: any): boolean {
+	return input === undefined || (typeof input === 'string' && input.length === 0);
+}
+
+/**
  * Throws an Error with given {@link message} unless {@link condition} is true.
  * This also tells the typescript compiler that the condition is 'truthy' in the remainder of the scope
  * where this function was called.
@@ -61,4 +75,23 @@ export async function tryExecuteAction<T>(action: () => T | PromiseLike<T>): Pro
 		error = e;
 	}
 	return { result, error };
+}
+
+export function deepClone<T>(obj: T): T {
+	if (!obj || typeof obj !== 'object') {
+		return obj;
+	}
+	if (obj instanceof RegExp) {
+		// See https://github.com/Microsoft/TypeScript/issues/10990
+		return obj as any;
+	}
+	const result: any = Array.isArray(obj) ? [] : {};
+	Object.keys(<any>obj).forEach((key: string) => {
+		if ((<any>obj)[key] && typeof (<any>obj)[key] === 'object') {
+			result[key] = deepClone((<any>obj)[key]);
+		} else {
+			result[key] = (<any>obj)[key];
+		}
+	});
+	return result;
 }

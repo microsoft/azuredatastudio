@@ -18,8 +18,8 @@ import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceItemType, AzureResourceServiceNames } from '../constants';
 import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
-import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureResourceNodeWithProviderId } from '../../azureResource/interfaces';
-import { AzureAccount } from '../../account-provider/interfaces';
+import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService } from '../../azureResource/interfaces';
+import { AzureAccount } from 'azurecore';
 import { AzureResourceService } from '../resourceService';
 import { AzureResourceResourceTreeNode } from '../resourceTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';
@@ -39,11 +39,22 @@ export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 		this._id = `account_${this.account.key.accountId}`;
 		this.setCacheKey(`${this._id}.dataresources`);
 		this._label = account.displayInfo.displayName;
+		this._loader = new FlatAccountTreeNodeLoader(appContext, this._resourceService, this._subscriptionService, this._subscriptionFilterService, this.account, this);
+		this._loader.onNewResourcesAvailable(() => {
+			this.treeChangeHandler.notifyNodeChanged(this);
+		});
+
+		this._loader.onLoadingStatusChanged(async () => {
+			await this.updateLabel();
+			this.treeChangeHandler.notifyNodeChanged(this);
+		});
 	}
 
 	public async updateLabel(): Promise<void> {
-		const subscriptionInfo = await this.getSubscriptionInfo();
-		if (subscriptionInfo.total !== 0) {
+		const subscriptionInfo = await getSubscriptionInfo(this.account, this._subscriptionService, this._subscriptionFilterService);
+		if (this._loader.isLoading) {
+			this._label = localize('azure.resource.tree.accountTreeNode.titleLoading', "{0} - Loading...", this.account.displayInfo.displayName);
+		} else if (subscriptionInfo.total !== 0) {
 			this._label = localize({
 				key: 'azure.resource.tree.accountTreeNode.title',
 				comment: [
@@ -57,79 +68,13 @@ export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 		}
 	}
 
-	private async getSubscriptionInfo(): Promise<{
-		subscriptions: azureResource.AzureResourceSubscription[],
-		total: number,
-		selected: number
-	}> {
-		let subscriptions: azureResource.AzureResourceSubscription[] = [];
-		try {
-			for (const tenant of this.account.properties.tenants) {
-				const token = await azdata.accounts.getAccountSecurityToken(this.account, tenant.id, azdata.AzureResource.ResourceManagement);
-
-				subscriptions.push(...(await this._subscriptionService.getSubscriptions(this.account, new TokenCredentials(token.token, token.tokenType), tenant.id) || <azureResource.AzureResourceSubscription[]>[]));
-			}
-		} catch (error) {
-			throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
-		}
-		const total = subscriptions.length;
-		let selected = total;
-
-		const selectedSubscriptions = await this._subscriptionFilterService.getSelectedSubscriptions(this.account);
-		const selectedSubscriptionIds = (selectedSubscriptions || <azureResource.AzureResourceSubscription[]>[]).map((subscription) => subscription.id);
-		if (selectedSubscriptionIds.length > 0) {
-			subscriptions = subscriptions.filter((subscription) => selectedSubscriptionIds.indexOf(subscription.id) !== -1);
-			selected = selectedSubscriptionIds.length;
-		}
-		return {
-			subscriptions,
-			total,
-			selected
-		};
-	}
-
 	public async getChildren(): Promise<TreeNode[]> {
-		try {
-			let dataResources: IAzureResourceNodeWithProviderId[] = [];
-			if (this._isClearingCache) {
-				let subscriptions: azureResource.AzureResourceSubscription[] = (await this.getSubscriptionInfo()).subscriptions;
-
-				if (subscriptions.length === 0) {
-					return [AzureResourceMessageTreeNode.create(FlatAccountTreeNode.noSubscriptionsLabel, this)];
-				} else {
-					// Filter out everything that we can't authenticate to.
-					subscriptions = subscriptions.filter(async s => {
-						const token = await azdata.accounts.getAccountSecurityToken(this.account, s.tenant, azdata.AzureResource.ResourceManagement);
-						if (!token) {
-							console.info(`Account does not have permissions to view subscription ${JSON.stringify(s)}.`);
-							return false;
-						}
-						return true;
-					});
-				}
-
-				const resourceProviderIds = await this._resourceService.listResourceProviderIds();
-				for (const subscription of subscriptions) {
-					for (const providerId of resourceProviderIds) {
-						const resourceTypes = await this._resourceService.getRootChildren(providerId, this.account, subscription, subscription.tenant);
-						for (const resourceType of resourceTypes) {
-							dataResources.push(...await this._resourceService.getChildren(providerId, resourceType.resourceNode, true));
-						}
-					}
-				}
-				dataResources = dataResources.sort((a, b) => { return a.resourceNode.treeItem.label.localeCompare(b.resourceNode.treeItem.label); });
-				this.updateCache(dataResources);
-				this._isClearingCache = false;
-			} else {
-				dataResources = this.getCache<IAzureResourceNodeWithProviderId[]>();
-			}
-
-			return dataResources.map(dr => new AzureResourceResourceTreeNode(dr, this, this.appContext));
-		} catch (error) {
-			if (error instanceof AzureResourceCredentialError) {
-				vscode.commands.executeCommand('azure.resource.signin');
-			}
-			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
+		if (this._isClearingCache) {
+			this._loader.start();
+			this._isClearingCache = false;
+			return [];
+		} else {
+			return this._loader.nodes;
 		}
 	}
 
@@ -162,12 +107,126 @@ export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 		return this._id;
 	}
 
-	private _subscriptionService: IAzureResourceSubscriptionService = undefined;
-	private _subscriptionFilterService: IAzureResourceSubscriptionFilterService = undefined;
-	private _resourceService: AzureResourceService = undefined;
+	private _subscriptionService: IAzureResourceSubscriptionService;
+	private _subscriptionFilterService: IAzureResourceSubscriptionFilterService;
+	private _resourceService: AzureResourceService;
+	private _loader: FlatAccountTreeNodeLoader;
+	private _id: string;
+	private _label: string;
+}
 
-	private _id: string = undefined;
-	private _label: string = undefined;
+async function getSubscriptionInfo(account: AzureAccount, subscriptionService: IAzureResourceSubscriptionService, subscriptionFilterService: IAzureResourceSubscriptionFilterService): Promise<{
+	subscriptions: azureResource.AzureResourceSubscription[],
+	total: number,
+	selected: number
+}> {
+	let subscriptions: azureResource.AzureResourceSubscription[] = [];
+	try {
+		for (const tenant of account.properties.tenants) {
+			const token = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
+			subscriptions.push(...(await subscriptionService.getSubscriptions(account, new TokenCredentials(token.token, token.tokenType), tenant.id) || <azureResource.AzureResourceSubscription[]>[]));
+		}
+	} catch (error) {
+		throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', "Failed to get credential for account {0}. Please go to the accounts dialog and refresh the account.", account.key.accountId), error);
+	}
+	const total = subscriptions.length;
+	let selected = total;
 
-	private static readonly noSubscriptionsLabel = localize('azure.resource.tree.accountTreeNode.noSubscriptionsLabel', "No Subscriptions found.");
+	const selectedSubscriptions = await subscriptionFilterService.getSelectedSubscriptions(account);
+	const selectedSubscriptionIds = (selectedSubscriptions || <azureResource.AzureResourceSubscription[]>[]).map((subscription) => subscription.id);
+	if (selectedSubscriptionIds.length > 0) {
+		subscriptions = subscriptions.filter((subscription) => selectedSubscriptionIds.indexOf(subscription.id) !== -1);
+		selected = selectedSubscriptionIds.length;
+	}
+	return {
+		subscriptions,
+		total,
+		selected
+	};
+}
+class FlatAccountTreeNodeLoader {
+
+	private _isLoading: boolean = false;
+	private _nodes: TreeNode[];
+	private readonly _onNewResourcesAvailable = new vscode.EventEmitter<void>();
+	public readonly onNewResourcesAvailable = this._onNewResourcesAvailable.event;
+	private readonly _onLoadingStatusChanged = new vscode.EventEmitter<void>();
+	public readonly onLoadingStatusChanged = this._onLoadingStatusChanged.event;
+
+	constructor(private readonly appContext: AppContext,
+		private readonly _resourceService: AzureResourceService,
+		private readonly _subscriptionService: IAzureResourceSubscriptionService,
+		private readonly _subscriptionFilterService: IAzureResourceSubscriptionFilterService,
+		private readonly _account: AzureAccount,
+		private readonly _accountNode: TreeNode) {
+	}
+
+	public get isLoading(): boolean {
+		return this._isLoading;
+	}
+
+	public get nodes(): TreeNode[] {
+		return this._nodes;
+	}
+
+	public async start(): Promise<void> {
+		if (this._isLoading) {
+			return;
+		}
+		this._isLoading = true;
+		this._nodes = [];
+		this._onLoadingStatusChanged.fire();
+		let newNodesAvailable = false;
+
+		// Throttle the refresh events to at most once per 500ms
+		const refreshHandle = setInterval(() => {
+			if (newNodesAvailable) {
+				this._onNewResourcesAvailable.fire();
+				newNodesAvailable = false;
+			}
+			if (!this.isLoading) {
+				clearInterval(refreshHandle);
+			}
+		}, 500);
+		try {
+			let subscriptions: azureResource.AzureResourceSubscription[] = (await getSubscriptionInfo(this._account, this._subscriptionService, this._subscriptionFilterService)).subscriptions;
+
+			if (subscriptions.length !== 0) {
+				// Filter out everything that we can't authenticate to.
+				subscriptions = subscriptions.filter(async s => {
+					const token = await azdata.accounts.getAccountSecurityToken(this._account, s.tenant, azdata.AzureResource.ResourceManagement);
+					if (!token) {
+						console.info(`Account does not have permissions to view subscription ${JSON.stringify(s)}.`);
+						return false;
+					}
+					return true;
+				});
+			}
+
+			const resourceProviderIds = await this._resourceService.listResourceProviderIds();
+			for (const subscription of subscriptions) {
+				for (const providerId of resourceProviderIds) {
+					const resourceTypes = await this._resourceService.getRootChildren(providerId, this._account, subscription, subscription.tenant);
+					for (const resourceType of resourceTypes) {
+						const resources = await this._resourceService.getChildren(providerId, resourceType.resourceNode, true);
+						if (resources.length > 0) {
+							this._nodes.push(...resources.map(dr => new AzureResourceResourceTreeNode(dr, this._accountNode, this.appContext)));
+							this._nodes = this.nodes.sort((a, b) => {
+								return a.getNodeInfo().label.localeCompare(b.getNodeInfo().label);
+							});
+							newNodesAvailable = true;
+						}
+					}
+				}
+			}
+		} catch (error) {
+			if (error instanceof AzureResourceCredentialError) {
+				vscode.commands.executeCommand('azure.resource.signin');
+			}
+			this._nodes = [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this._accountNode)];
+		}
+
+		this._isLoading = false;
+		this._onLoadingStatusChanged.fire();
+	}
 }

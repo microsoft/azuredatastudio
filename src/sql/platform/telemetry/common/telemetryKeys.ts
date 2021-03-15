@@ -6,14 +6,13 @@
 // Telemetry Event Names
 
 export const DatabaseConnected = 'DatabaseConnected';
+export const DatabaseConnectionError = 'DatabaseConnectionError';
 export const DatabaseDisconnected = 'DatabaseDisconnected';
 export const DeleteConnection = 'DeleteConnection';
 export const AddServerGroup = 'AddServerGroup';
 export const MoveServerGroup = 'MoveServerGroup';
 export const MoveServerConnection = 'MoveServerConnection';
 export const DeleteServerGroup = 'DeleteServerGroup';
-export const ModalDialogClosed = 'ModalDialogClosed';
-export const ModalDialogOpened = 'ModalDialogOpened';
 export const BackupCreated = 'BackupCreated';
 export const RestoreRequested = 'RestoreRequested';
 export const ChartCreated = 'ChartCreated';
@@ -45,24 +44,16 @@ export const FireWallRule = 'FirewallRule';
 export const AutoOAuth = 'AutoOAuth';
 export const AddNewDashboardTab = 'AddNewDashboardTab';
 export const ProfilerFilter = 'ProfilerFilter';
+export const CalloutDialog = 'CalloutDialog';
 
-// SQL Agent Events:
-
-// Views
-export const JobsView = 'JobsViewOpened';
-export const JobHistoryView = 'JobHistoryViewOpened';
-export const JobStepsView = 'JobStepsViewOpened';
-
-// Actions
-export const RunAgentJob = 'RunAgentJob';
-export const StopAgentJob = 'StopAgentJob';
-export const DeleteAgentJob = 'DeleteAgentJob';
-export const DeleteAgentJobStep = 'DeleteAgentJobStep';
-export const DeleteAgentAlert = 'DeleteAgentAlert';
-export const DeleteAgentOperator = 'DeleteAgentOperator';
-export const DeleteAgentProxy = 'DeleteAgentProxy';
 
 export enum TelemetryView {
+	Agent = 'Agent',
+	AgentJobs = 'AgentJobs',
+	AgentJobHistory = 'AgentJobHistory',
+	AgentJobSteps = 'AgentJobSteps',
+	AgentNotebookHistory = 'AgentNotebookHistory',
+	AgentNotebooks = 'AgentNotebooks',
 	Shell = 'Shell',
 	ExtensionRecommendationDialog = 'ExtensionRecommendationDialog',
 	ResultsPanel = 'ResultsPanel',
@@ -71,8 +62,24 @@ export enum TelemetryView {
 }
 
 export enum TelemetryAction {
+	adsCommandExecuted = 'adsCommandExecuted',
 	Click = 'Click',
 	Open = 'Open',
-	ModelViewDashboardOpened = 'ModelViewDashboardOpened'
+	ModelViewDashboardOpened = 'ModelViewDashboardOpened',
+	ModalDialogClosed = 'ModalDialogClosed',
+	ModalDialogOpened = 'ModalDialogOpened',
+	RunAgentJob = 'RunAgentJob',
+	StopAgentJob = 'StopAgentJob',
+	DeleteAgentJob = 'DeleteAgentJob',
+	DeleteAgentJobStep = 'DeleteAgentJobStep',
+	DeleteAgentAlert = 'DeleteAgentAlert',
+	DeleteAgentOperator = 'DeleteAgentOperator',
+	DeleteAgentProxy = 'DeleteAgentProxy',
+	WizardPagesNavigation = 'WizardPagesNavigation'
+}
+
+export enum NbTelemetryAction {
+	RunCell = 'RunCell',
+	RunAll = 'RunNotebook'
 }
 

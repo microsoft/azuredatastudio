@@ -10,9 +10,10 @@
 	"serviceStarting": "Démarrage du service",
 	"flatFileImport.serviceStartFailed": "Le démarrage du service d'importation {0} a échoué",
 	"installingServiceDetailed": "Installation du service {0} sur {1}",
-	"installingService": "Installation du Service",
-	"serviceInstalled": "INSTALLÉ",
-	"downloadingService": "Téléchargement de {0} en cours",
+	"installingService": "Installation du service",
+	"serviceInstalled": "Installé",
+	"downloadingService": "Téléchargement de {0}",
+	"downloadingServiceSize": "({0} Ko)",
 	"downloadingServiceStatus": "Service de téléchargement",
-	"downloadingServiceComplete": "Terminé !"
+	"downloadingServiceComplete": "Terminé !"
 }

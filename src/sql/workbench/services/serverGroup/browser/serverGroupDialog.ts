@@ -11,17 +11,16 @@ import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachInputBoxStyler, attachCheckboxStyler } from 'vs/platform/theme/common/styler';
+import { attachInputBoxStyler, attachCheckboxStyler, attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { Modal } from 'sql/workbench/browser/modal/modal';
+import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ServerGroupViewModel } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -82,7 +81,7 @@ export class ServerGroupDialog extends Modal {
 		const okLabel = localize('serverGroup.ok', "OK");
 		const cancelLabel = localize('serverGroup.cancel', "Cancel");
 		this._addServerButton = this.addFooterButton(okLabel, () => this.addGroup());
-		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
+		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel(), 'right', true);
 		this.isRendered = true;
 		this.registerListeners();
 	}
@@ -361,11 +360,11 @@ export class ServerGroupDialog extends Modal {
 
 	public cancel() {
 		this._onCancel.fire();
-		this.close();
+		this.close('cancel');
 	}
 
-	public close() {
-		this.hide();
+	public close(hideReason: HideReason = 'close') {
+		this.hide(hideReason);
 		this.withRenderedDialog.groupNameInputBox.hideMessage();
 		this._onCloseEvent.fire();
 	}

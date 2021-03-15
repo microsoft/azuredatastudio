@@ -117,6 +117,22 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 		return this.getProperties().iconHeight ?? undefined;
 	}
 
+	public get textHeight(): string | undefined {
+		return this.calculateTextContainerHeight();
+	}
+
+	public calculateTextContainerHeight(): string | undefined {
+		if (this.cardHeight.endsWith('px') && this.iconHeight.endsWith('px')) {
+			const padding = 30; // icon-container padding + text-container padding
+			let height = Number.parseInt(this.cardHeight.substr(0, this.cardHeight.length - 2)) - Number.parseInt(this.iconHeight.substr(0, this.cardHeight.length - 2));
+			height = height - padding;
+
+			return height.toString() + 'px';
+		} else {
+			return undefined;
+		}
+	}
+
 	public get selectedCardId(): string | undefined {
 		return this.getProperties().selectedCardId ?? undefined;
 	}
@@ -174,9 +190,9 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 		event.stopPropagation();
 		this.fireEvent({
 			eventType: ComponentEventType.onDidClick,
-			args: {
+			args: <azdata.RadioCardLinkClickEvent>{
 				cardId,
-				textContents: deepClone(textContents),
+				description: deepClone(textContents),
 				card: deepClone(this.getCardById(cardId))
 			}
 		});
@@ -208,5 +224,12 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 
 	public onCardBlur(cardId: string): void {
 		this.focusedCardId = undefined;
+	}
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth(),
+			'height': this.getHeight()
+		});
 	}
 }

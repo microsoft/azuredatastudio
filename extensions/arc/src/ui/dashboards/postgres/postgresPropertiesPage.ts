@@ -7,10 +7,11 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
-import { KeyValueContainer, KeyValue, InputKeyValue, TextKeyValue } from '../../components/keyValueContainer';
+import { KeyValueContainer, KeyValue, InputKeyValue, TextKeyValue, LinkKeyValue } from '../../components/keyValueContainer';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
+import { ControllerDashboard } from '../controller/controllerDashboard';
 
 export class PostgresPropertiesPage extends DashboardPage {
 	private loading?: azdata.LoadingComponent;
@@ -49,6 +50,7 @@ export class PostgresPropertiesPage extends DashboardPage {
 		}).component());
 
 		this.keyValueContainer = new KeyValueContainer(this.modelView.modelBuilder, this.getProperties());
+		this.keyValueContainer.container.updateCssStyles({ 'max-width': '750px' });
 		this.disposables.push(this.keyValueContainer);
 
 		this.loading = this.modelView.modelBuilder.loadingComponent()
@@ -93,17 +95,17 @@ export class PostgresPropertiesPage extends DashboardPage {
 	private getProperties(): KeyValue[] {
 		const endpoint = this._postgresModel.endpoint;
 		const status = this._postgresModel.config?.status;
+		const controllerDashboard = new ControllerDashboard(this._controllerModel);
 
 		return [
 			new InputKeyValue(this.modelView.modelBuilder, loc.coordinatorEndpoint, endpoint ? `postgresql://postgres@${endpoint.ip}:${endpoint.port}` : ''),
 			new InputKeyValue(this.modelView.modelBuilder, loc.postgresAdminUsername, 'postgres'),
-			new TextKeyValue(this.modelView.modelBuilder, loc.status, status ? `${status.state} (${status.readyPods} ${loc.podsReady})` : loc.unknown),
-			// TODO: Make this a LinkKeyValue that opens the controller dashboard
-			new TextKeyValue(this.modelView.modelBuilder, loc.dataController, this._controllerModel.controllerConfig?.metadata.namespace ?? ''),
-			new TextKeyValue(this.modelView.modelBuilder, loc.nodeConfiguration, this._postgresModel.scaleConfiguration ?? ''),
-			new TextKeyValue(this.modelView.modelBuilder, loc.postgresVersion, this._postgresModel.engineVersion ?? ''),
+			new InputKeyValue(this.modelView.modelBuilder, loc.subscriptionId, this._controllerModel.controllerConfig?.spec.settings.azure.subscription ?? ''),
 			new TextKeyValue(this.modelView.modelBuilder, loc.resourceGroup, this._controllerModel.controllerConfig?.spec.settings.azure.resourceGroup ?? ''),
-			new TextKeyValue(this.modelView.modelBuilder, loc.subscriptionId, this._controllerModel.controllerConfig?.spec.settings.azure.subscription ?? '')
+			new LinkKeyValue(this.modelView.modelBuilder, loc.dataController, this._controllerModel.controllerConfig?.metadata.name ?? '', () => controllerDashboard.showDashboard()),
+			new TextKeyValue(this.modelView.modelBuilder, loc.nodeConfiguration, this._postgresModel.scaleConfiguration ?? ''),
+			new TextKeyValue(this.modelView.modelBuilder, loc.status, status ? `${status.state} (${status.readyPods} ${loc.podsReady})` : loc.unknown),
+			new TextKeyValue(this.modelView.modelBuilder, loc.postgresVersion, this._postgresModel.engineVersion ?? ''),
 		];
 	}
 

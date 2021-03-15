@@ -6,6 +6,11 @@
 declare module 'azdata' {
 	import * as vscode from 'vscode';
 
+	/**
+	 * The version of the application.
+	 */
+	export const version: string;
+
 	// EXPORTED NAMESPACES /////////////////////////////////////////////////
 	/**
 	 * Namespace for Data Management Protocol global methods
@@ -2104,7 +2109,7 @@ declare module 'azdata' {
 		 * Launches a flyout dialog that will display the information on how to complete device
 		 * code OAuth login to the user. Only one flyout can be opened at once and each must be closed
 		 * by calling {@link endAutoOAuthDeviceCode}.
-		 * @param providerId	ID of the provider that's requesting the flyout be opened
+		 * @param providerId ID of the provider that's requesting the flyout be opened
 		 */
 		export function beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void>;
 
@@ -2128,7 +2133,8 @@ declare module 'azdata' {
 
 		/**
 		 * Generates a security token by asking the account's provider
-		 * @param account Account to generate security token for (defaults to
+		 * @param account Account to generate security token for
+		 * @param resource Type of resource to get the security token for (defaults to
 		 * AzureResource.ResourceManagement if not given)
 		 * @return Promise to return the security token
 		 * @deprecated use getAccountSecurityToken
@@ -2137,11 +2143,12 @@ declare module 'azdata' {
 
 		/**
 		 * Generates a security token by asking the account's provider
-		 * @param account
-		 * @param tenant
-		 * @param resource
+		 * @param account The account to retrieve the security token for
+		 * @param tenantId The ID of the tenant associated with this account
+		 * @param resource Type of resource to get the security token for (defaults to
+		 * AzureResource.ResourceManagement if not given)
 		 */
-		export function getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<{ token: string, tokenType?: string } | undefined>;
+		export function getAccountSecurityToken(account: Account, tenantId: string, resource: AzureResource): Thenable<{ token: string, tokenType?: string } | undefined>;
 
 		/**
 		 * An [event](#Event) which fires when the accounts have changed.
@@ -2220,12 +2227,33 @@ declare module 'azdata' {
 	}
 
 	export enum AzureResource {
+		/**
+		 * Azure Resource Management (ARM)
+		 */
 		ResourceManagement = 0,
+		/**
+		 * SQL Azure
+		 */
 		Sql = 1,
+		/**
+		 * OSS RDMS
+		 */
 		OssRdbms = 2,
+		/**
+		 * Azure Key Vault
+		 */
 		AzureKeyVault = 3,
+		/**
+		 * Azure AD Graph
+		 */
 		Graph = 4,
+		/**
+		 * Microsoft Resource Management
+		 */
 		MicrosoftResourceManagement = 5,
+		/**
+		 * Azure Dev Ops
+		 */
 		AzureDevOps = 6
 	}
 
@@ -2561,7 +2589,6 @@ declare module 'azdata' {
 		divContainer(): DivBuilder;
 		flexContainer(): FlexBuilder;
 		splitViewContainer(): SplitViewBuilder;
-		dom(): ComponentBuilder<DomComponent, DomProperties>;
 		/**
 		 * @deprecated please use radioCardGroup component.
 		 */
@@ -3155,11 +3182,14 @@ declare module 'azdata' {
 		CSSStyles?: { [key: string]: string };
 	}
 
+	export type ThemedIconPath = { light: string | vscode.Uri; dark: string | vscode.Uri };
+	export type IconPath = string | vscode.Uri | ThemedIconPath;
+
 	export interface ComponentWithIcon {
 		/**
 		 * @deprecated This will be moved to `ComponentWithIconProperties`
 		 */
-		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		iconPath?: IconPath;
 		/**
 		 * @deprecated This will be moved to `ComponentWithIconProperties`
 		 */
@@ -3201,6 +3231,9 @@ declare module 'azdata' {
 		headerCssClass?: string;
 		toolTip?: string;
 		type?: ColumnType;
+		/**
+		 * @deprecated options property is deprecated, use specific column types to access the options directly
+		 */
 		options?: CheckboxColumnOption | TextColumnOption;
 	}
 
@@ -3223,9 +3256,9 @@ declare module 'azdata' {
 	}
 
 	export enum ColumnSizingMode {
-		ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
-		AutoFit = 1,	// columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit
-		DataFit = 2		// columns use sizing based on cell data, horiz scroll bar present if more cells than visible in view area
+		ForceFit = 0, // all columns will be sized to fit in viewable space, no horiz scroll bar
+		AutoFit = 1, // columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit
+		DataFit = 2 // columns use sizing based on cell data, horiz scroll bar present if more cells than visible in view area
 	}
 
 	export interface TableComponentProperties extends ComponentProperties {
@@ -3341,13 +3374,6 @@ declare module 'azdata' {
 		options?: vscode.WebviewOptions;
 	}
 
-	export interface DomProperties extends ComponentProperties {
-		/**
-		 * Contents of the DOM component.
-		 */
-		html?: string;
-	}
-
 	/**
 	 * Editor properties for the editor component
 	 */
@@ -3400,9 +3426,22 @@ declare module 'azdata' {
 	}
 
 	export interface LoadingComponentProperties extends ComponentProperties {
+		/**
+		 * Whether to show the loading spinner instead of the contained component. True by default
+		 */
 		loading?: boolean;
+		/**
+		 * Whether to show the loading text next to the spinner
+		 */
 		showText?: boolean;
+		/**
+		 * The text to display while loading is set to true
+		 */
 		loadingText?: string;
+		/**
+		 * The text to display while loading is set to false. Will also be announced through screen readers
+		 * once loading is completed.
+		 */
 		loadingCompletedText?: string;
 	}
 
@@ -3436,9 +3475,6 @@ declare module 'azdata' {
 		onCardSelectedChanged: vscode.Event<any>;
 	}
 
-	export interface DomComponent extends Component, DomProperties {
-	}
-
 	export interface TextComponent extends Component, TextComponentProperties {
 	}
 
@@ -3458,6 +3494,7 @@ declare module 'azdata' {
 
 	export interface RadioButtonComponent extends Component, RadioButtonProperties {
 		/**
+		 * @deprecated use onDidChangeCheckedState event instead
 		 * An event called when the radio button is clicked
 		 */
 		onDidClick: vscode.Event<any>;
@@ -3595,7 +3632,7 @@ declare module 'azdata' {
 	 * Component used to wrap another component that needs to be loaded, and show a loading spinner
 	 * while the contained component is loading
 	 */
-	export interface LoadingComponent extends Component {
+	export interface LoadingComponent extends Component, LoadingComponentProperties {
 		/**
 		 * Whether to show the loading spinner instead of the contained component. True by default
 		 */
@@ -4539,12 +4576,12 @@ declare module 'azdata' {
 		 * provider are defined in the `package.json:
 		 * ```json
 		 * {
-		 * 	"contributes": {
-		 * 		"notebook.providers": [{
-		 * 			"provider": "providername",
-		 * 			"fileExtensions": ["FILEEXT"]
-		 * 		}]
-		 * 	}
+		 *    "contributes": {
+		 *       "notebook.providers": [{
+		 *          "provider": "providername",
+		 *          "fileExtensions": ["FILEEXT"]
+		 *        }]
+		 *    }
 		 * }
 		 * ```
 		 * @param notebook provider
@@ -4659,8 +4696,8 @@ declare module 'azdata' {
 		}
 
 		/**
-		* @deprecated Use IKernelSpec instead
-		*/
+		 * @deprecated Use IKernelSpec instead
+		 */
 		export interface IKernelInfo {
 			name: string;
 			language?: string;

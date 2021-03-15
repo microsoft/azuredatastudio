@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { MigrationStateModel, StateChangeEvent } from './stateMachine';
 export abstract class MigrationWizardPage {
 	constructor(
-		private readonly wizard: azdata.window.Wizard,
+		protected readonly wizard: azdata.window.Wizard,
 		protected readonly wizardPage: azdata.window.WizardPage,
 		protected readonly migrationStateModel: MigrationStateModel
 	) { }
@@ -27,14 +27,14 @@ export abstract class MigrationWizardPage {
 		});
 	}
 
-	protected abstract async registerContent(view: azdata.ModelView): Promise<void>;
+	protected abstract registerContent(view: azdata.ModelView): Promise<void>;
 
 	public getwizardPage(): azdata.window.WizardPage {
 		return this.wizardPage;
 	}
 
-	public abstract async onPageEnter(): Promise<void>;
-	public abstract async onPageLeave(): Promise<void>;
+	public abstract onPageEnter(): Promise<void>;
+	public abstract onPageLeave(): Promise<void>;
 
 	private readonly stateChanges: (() => Promise<void>)[] = [];
 	protected async onStateChangeEvent(e: StateChangeEvent) {
@@ -66,7 +66,7 @@ export abstract class MigrationWizardPage {
 		this.queueActive = false;
 	}
 
-	protected abstract async handleStateChange(e: StateChangeEvent): Promise<void>;
+	protected abstract handleStateChange(e: StateChangeEvent): Promise<void>;
 
 	public canEnter(): Promise<boolean> {
 		return Promise.resolve(true);

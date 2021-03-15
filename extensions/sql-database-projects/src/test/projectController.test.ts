@@ -6,19 +6,20 @@
 import * as should from 'should';
 import * as path from 'path';
 import * as os from 'os';
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
 import * as sinon from 'sinon';
+import * as dataworkspace from 'dataworkspace';
 import * as baselines from './baselines/baselines';
 import * as templates from '../templates/templates';
 import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
+import * as mssql from '../../../mssql';
 
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
-import { createContext, TestContext, mockDacFxResult } from './testContext';
+import { createContext, TestContext, mockDacFxResult, mockConnectionProfile } from './testContext';
 import { Project, reservedProjectFolders, SystemDatabase, FileProjectEntry, SystemDatabaseReferenceProjectEntry } from '../models/project';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
@@ -28,25 +29,10 @@ import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
+import { ImportDataModel } from '../models/api/import';
 
 let testContext: TestContext;
-
-// Mock test data
-const mockConnectionProfile: azdata.IConnectionProfile = {
-	connectionName: 'My Connection',
-	serverName: 'My Server',
-	databaseName: 'My Database',
-	userName: 'My User',
-	password: 'My Pwd',
-	authenticationType: 'SqlLogin',
-	savePassword: false,
-	groupFullName: 'My groupName',
-	groupId: 'My GroupId',
-	providerName: 'My Server',
-	saveProfile: true,
-	id: 'My Id',
-	options: undefined as any
-};
 
 describe('ProjectsController', function (): void {
 	before(async function (): Promise<void> {
@@ -65,64 +51,26 @@ describe('ProjectsController', function (): void {
 	describe('project controller operations', function (): void {
 		describe('Project file operations and prompting', function (): void {
 			it('Should create new sqlproj file with correct values', async function (): Promise<void> {
-				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				const projController = new ProjectsController();
 				const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
 
-				const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), false, 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
+				const projFilePath = await projController.createNewProject({
+					newProjName: 'TestProjectName',
+					folderUri: vscode.Uri.file(projFileDir),
+					projectTypeId: constants.emptySqlDatabaseProjectTypeId,
+					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575'
+				});
 
 				let projFileText = (await fs.readFile(projFilePath)).toString();
 
 				should(projFileText).equal(baselines.newProjectFileBaseline);
 			});
 
-			it('Should load Project and associated DataSources', async function (): Promise<void> {
-				// setup test files
-				const folderPath = await testUtils.generateTestFolderPath();
-				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, folderPath);
-				await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
-
-				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-
-				const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
-
-				should(project.files.length).equal(10); // detailed sqlproj tests in their own test file
-				should(project.dataSources.length).equal(3); // detailed datasources tests in their own test file
-			});
-
-			it('Should load both project and referenced project', async function (): Promise<void> {
-				// setup test projects
-				const folderPath = await testUtils.generateTestFolderPath();
-				await fs.mkdir(path.join(folderPath, 'proj1'));
-				await fs.mkdir(path.join(folderPath, 'ReferencedProject'));
-
-				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectWithProjectReferencesBaseline, path.join(folderPath, 'proj1'));
-				await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, path.join(folderPath, 'ReferencedProject'));
-
-				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-				await projController.openProject(vscode.Uri.file(sqlProjPath));
-
-				should(projController.projects.length).equal(2, 'Referenced project should have been opened when the project referencing it was opened');
-			});
-
-			it('Should not keep failed to load project in project list.', async function (): Promise<void> {
-				const folderPath = await testUtils.generateTestFolderPath();
-				const sqlProjPath = await testUtils.createTestSqlProjFile('empty file with no valid xml', folderPath);
-				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-
-				try {
-					await projController.openProject(vscode.Uri.file(sqlProjPath));
-					should.fail(null, null, 'The given project not expected to open');
-				}
-				catch {
-					should(projController.projects.length).equal(0, 'The added project should be removed');
-				}
-			});
-
 			it('Should return silently when no SQL object name provided in prompts', async function (): Promise<void> {
 				for (const name of ['', '    ', undefined]) {
 					const showInputBoxStub = sinon.stub(vscode.window, 'showInputBox').resolves(name);
 					const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
-					const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+					const projController = new ProjectsController();
 					const project = new Project('FakePath');
 
 					should(project.files.length).equal(0);
@@ -138,7 +86,7 @@ describe('ProjectsController', function (): void {
 				const tableName = 'table1';
 				sinon.stub(vscode.window, 'showInputBox').resolves(tableName);
 				const spy = sinon.spy(vscode.window, 'showErrorMessage');
-				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				const projController = new ProjectsController();
 				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 
 				should(project.files.length).equal(0, 'There should be no files');
@@ -154,14 +102,13 @@ describe('ProjectsController', function (): void {
 				const folderName = 'folder1';
 				const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
 
-				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				const projController = new ProjectsController();
 				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 				const projectRoot = new ProjectRootTreeItem(project);
 
 				should(project.files.length).equal(0, 'There should be no other folders');
-				await projController.addFolderPrompt(projectRoot);
+				await projController.addFolderPrompt(createWorkspaceTreeItem(projectRoot));
 				should(project.files.length).equal(1, 'Folder should be successfully added');
-				projController.refreshProjectsTree();
 				stub.restore();
 				await verifyFolderNotAdded(folderName, projController, project, projectRoot);
 
@@ -175,7 +122,7 @@ describe('ProjectsController', function (): void {
 				const folderName = 'folder1';
 				const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
 
-				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				const projController = new ProjectsController();
 				const project = await testUtils.createTestProject(baselines.openProjectFileBaseline);
 				const projectRoot = new ProjectRootTreeItem(project);
 
@@ -190,7 +137,7 @@ describe('ProjectsController', function (): void {
 			async function verifyFolderAdded(folderName: string, projController: ProjectsController, project: Project, node: BaseProjectTreeItem): Promise<void> {
 				const beforeFileCount = project.files.length;
 				const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
-				await projController.addFolderPrompt(node);
+				await projController.addFolderPrompt(createWorkspaceTreeItem(node));
 				should(project.files.length).equal(beforeFileCount + 1, `File count should be increased by one after adding the folder ${folderName}`);
 				stub.restore();
 			}
@@ -199,7 +146,7 @@ describe('ProjectsController', function (): void {
 				const beforeFileCount = project.files.length;
 				const showInputBoxStub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
 				const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
-				await projController.addFolderPrompt(node);
+				await projController.addFolderPrompt(createWorkspaceTreeItem(node));
 				should(showErrorMessageSpy.calledOnce).be.true('showErrorMessage should have been called exactly once');
 				const msg = constants.folderAlreadyExists(folderName);
 				should(showErrorMessageSpy.calledWith(msg)).be.true(`showErrorMessage not called with expected message '${msg}' Actual '${showErrorMessageSpy.getCall(0).args[0]}'`);
@@ -210,16 +157,17 @@ describe('ProjectsController', function (): void {
 
 			it('Should delete nested ProjectEntry from node', async function (): Promise<void> {
 				let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
+
 				const setupResult = await setupDeleteExcludeTest(proj);
 				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1], preDeployEntry = setupResult[2], postDeployEntry = setupResult[3], noneEntry = setupResult[4];
 
-				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				const projController = new ProjectsController();
 
-				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0] /* LowerFolder */);
-				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'anotherScript.sql')!);
-				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment1.sql')!);
-				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment2.sql')!);
-				await projController.delete(projTreeRoot.children.find(x => x.friendlyName === 'Script.PostDeployment1.sql')!);
+				await projController.delete(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0]) /* LowerFolder */);
+				await projController.delete(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'anotherScript.sql')!));
+				await projController.delete(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment1.sql')!));
+				await projController.delete(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment2.sql')!));
+				await projController.delete(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'Script.PostDeployment1.sql')!));
 
 				proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
 
@@ -239,7 +187,7 @@ describe('ProjectsController', function (): void {
 			it('Should delete database references', async function (): Promise<void> {
 				// setup - openProject baseline has a system db reference to master
 				const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
-				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				const projController = new ProjectsController();
 				sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
 
 				// add dacpac reference
@@ -261,9 +209,9 @@ describe('ProjectsController', function (): void {
 				should(proj.databaseReferences.length).equal(3, 'Should start with 3 database references');
 
 				const databaseReferenceNodeChildren = projTreeRoot.children.find(x => x.friendlyName === constants.databaseReferencesNodeName)?.children;
-				await projController.delete(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'master')!);   // system db reference
-				await projController.delete(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'test2')!);    // dacpac reference
-				await projController.delete(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'project1')!); // project reference
+				await projController.delete(createWorkspaceTreeItem(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'master')!));   // system db reference
+				await projController.delete(createWorkspaceTreeItem(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'test2')!));    // dacpac reference
+				await projController.delete(createWorkspaceTreeItem(databaseReferenceNodeChildren?.find(x => x.friendlyName === 'project1')!)); // project reference
 
 				// confirm result
 				should(proj.databaseReferences.length).equal(0, 'All database references should have been deleted');
@@ -274,13 +222,13 @@ describe('ProjectsController', function (): void {
 				const setupResult = await setupDeleteExcludeTest(proj);
 				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1], preDeployEntry = setupResult[2], postDeployEntry = setupResult[3], noneEntry = setupResult[4];
 
-				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				const projController = new ProjectsController();
 
-				await projController.exclude(<FolderNode>projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0] /* LowerFolder */);
-				await projController.exclude(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'anotherScript.sql')!);
-				await projController.exclude(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment1.sql')!);
-				await projController.exclude(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment2.sql')!);
-				await projController.exclude(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'Script.PostDeployment1.sql')!);
+				await projController.exclude(createWorkspaceTreeItem(<FolderNode>projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0]) /* LowerFolder */);
+				await projController.exclude(createWorkspaceTreeItem(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'anotherScript.sql')!));
+				await projController.exclude(createWorkspaceTreeItem(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment1.sql')!));
+				await projController.exclude(createWorkspaceTreeItem(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment2.sql')!));
+				await projController.exclude(createWorkspaceTreeItem(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'Script.PostDeployment1.sql')!));
 
 				proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
 
@@ -302,18 +250,22 @@ describe('ProjectsController', function (): void {
 				const folderPath = await testUtils.generateTestFolderPath();
 				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline, folderPath);
 				const treeProvider = new SqlDatabaseProjectTreeViewProvider();
-				const projController = new ProjectsController(treeProvider);
-				const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
+				const projController = new ProjectsController();
+				const project = await Project.openProject(vscode.Uri.file(sqlProjPath).fsPath);
+				treeProvider.load([project]);
 
 				// change the sql project file
 				await fs.writeFile(sqlProjPath, baselines.newProjectFileWithScriptBaseline);
 				should(project.files.length).equal(0);
 
 				// call reload project
-				await projController.reloadProject(vscode.Uri.file(project.projectFilePath));
-				should(project.files.length).equal(1);
+				await projController.reloadProject({ treeDataProvider: treeProvider, element: { root: { project: project } } });
+				// calling this because this gets called in the projectProvider.getProjectTreeDataProvider(), which is called by workspaceTreeDataProvider
+				// when notifyTreeDataChanged() happens
+				treeProvider.load([project]);
 
 				// check that the new project is in the tree
+				should(project.files.length).equal(1);
 				should(treeProvider.getChildren()[0].children.find(c => c.friendlyName === 'Script1.sql')).not.equal(undefined);
 			});
 
@@ -321,7 +273,7 @@ describe('ProjectsController', function (): void {
 				const preDeployScriptName = 'PreDeployScript1.sql';
 				const postDeployScriptName = 'PostDeployScript1.sql';
 
-				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				const projController = new ProjectsController();
 				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 
 				sinon.stub(vscode.window, 'showInputBox').resolves(preDeployScriptName);
@@ -339,9 +291,9 @@ describe('ProjectsController', function (): void {
 			it('Should change target platform', async function (): Promise<void> {
 				sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.sqlAzure });
 
-				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+				const projController = new ProjectsController();
 				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
-				const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
+				const project = await Project.openProject(sqlProjPath);
 				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(constants.sqlServer2019));
 				should(project.databaseReferences.length).equal(1, 'Project should have one database reference to master');
 				should(project.databaseReferences[0].fsUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlServer2019));
@@ -387,12 +339,12 @@ describe('ProjectsController', function (): void {
 				let projController = TypeMoq.Mock.ofType(ProjectsController);
 				projController.callBase = true;
 				projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => publishDialog.object);
-				projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IPublishSettings => true))).returns(() => {
+				projController.setup(x => x.publishProjectCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IPublishSettings => true))).returns(() => {
 					holler = publishHoller;
 					return Promise.resolve(undefined);
 				});
 
-				projController.setup(x => x.executionCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptSettings => true))).returns(() => {
+				projController.setup(x => x.publishProjectCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptSettings => true))).returns(() => {
 					holler = generateHoller;
 					return Promise.resolve(undefined);
 				});
@@ -430,7 +382,7 @@ describe('ProjectsController', function (): void {
 
 				projController.setup(x => x.getDaxFxService()).returns(() => Promise.resolve(testContext.dacFxService.object));
 
-				await projController.object.executionCallback(new Project(''), { connectionUri: '', databaseName: '' });
+				await projController.object.publishProjectCallback(new Project(''), { connectionUri: '', databaseName: '' });
 
 				should(builtDacpacPath).not.equal('', 'built dacpac path should be set');
 				should(publishedDacpacPath).not.equal('', 'published dacpac path should be set');
@@ -440,11 +392,15 @@ describe('ProjectsController', function (): void {
 		});
 	});
 
-	describe('import operations', function (): void {
+	describe('Create project from database operations and dialog', function (): void {
+		afterEach(() => {
+			sinon.restore();
+		});
+
 		it('Should create list of all files and folders correctly', async function (): Promise<void> {
 			const testFolderPath = await testUtils.createDummyFileStructure();
 
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+			const projController = new ProjectsController();
 			const fileList = await projController.generateList(testFolderPath);
 
 			should(fileList.length).equal(15);	// Parent folder + 2 files under parent folder + 2 directories with 5 files each
@@ -456,7 +412,7 @@ describe('ProjectsController', function (): void {
 			let testFolderPath = await testUtils.generateTestFolderPath();
 			testFolderPath += '_nonexistentFolder';	// Modify folder path to point to a nonexistent location
 
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+			const projController = new ProjectsController();
 
 			await projController.generateList(testFolderPath);
 			should(spy.calledOnce).be.true('showErrorMessage should have been called');
@@ -464,103 +420,78 @@ describe('ProjectsController', function (): void {
 			should(spy.calledWith(msg)).be.true(`showErrorMessage not called with expected message '${msg}' Actual '${spy.getCall(0).args[0]}'`);
 		});
 
-		it('Should show error when no project name provided', async function (): Promise<void> {
-			for (const name of ['', '    ', undefined]) {
-				sinon.stub(vscode.window, 'showInputBox').resolves(name);
-				const spy = sinon.spy(vscode.window, 'showErrorMessage');
+		it('Create project from Database dialog should open from ProjectController', async function (): Promise<void> {
+			let opened = false;
 
-				const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-				await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
-				should(spy.calledOnce).be.true('showErrorMessage should have been called');
-				should(spy.calledWith(constants.projectNameRequired)).be.true(`showErrorMessage not called with expected message '${constants.projectNameRequired}' Actual '${spy.getCall(0).args[0]}'`);
-				sinon.restore();
-			}
-		});
+			let createProjectFromDatabaseDialog = TypeMoq.Mock.ofType(CreateProjectFromDatabaseDialog, undefined, undefined, mockConnectionProfile);
+			createProjectFromDatabaseDialog.setup(x => x.openDialog()).returns(() => { opened = true; return Promise.resolve(undefined); });
 
-		it('Should show error when no target information provided', async function (): Promise<void> {
-			sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
-			sinon.stub(vscode.window, 'showQuickPick').resolves(undefined);
-			sinon.stub(vscode.window, 'showOpenDialog').resolves([vscode.Uri.file('fakePath')]);
-			const spy = sinon.spy(vscode.window, 'showErrorMessage');
-
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-			await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
-			should(spy.calledOnce).be.true('showErrorMessage should have been called');
-			should(spy.calledWith(constants.extractTargetRequired)).be.true(`showErrorMessage not called with expected message '${constants.extractTargetRequired}' Actual '${spy.getCall(0).args[0]}'`);
-		});
-
-		it('Should show error when no location provided with ExtractTarget = File', async function (): Promise<void> {
-			sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
-			sinon.stub(vscode.window, 'showOpenDialog').resolves(undefined);
-			sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.file });
-			const spy = sinon.spy(vscode.window, 'showErrorMessage');
-
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-			await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
-			should(spy.calledOnce).be.true('showErrorMessage should have been called');
-			should(spy.calledWith(constants.projectLocationRequired)).be.true(`showErrorMessage not called with expected message '${constants.projectLocationRequired}' Actual '${spy.getCall(0).args[0]}'`);
-		});
-
-		it('Should show error when no location provided with ExtractTarget = SchemaObjectType', async function (): Promise<void> {
-			sinon.stub(vscode.window, 'showInputBox').resolves('MyProjectName');
-			sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.schemaObjectType });
-			sinon.stub(vscode.window, 'showOpenDialog').resolves(undefined);
-			const spy = sinon.spy(vscode.window, 'showErrorMessage');
-
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-			await projController.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
-			should(spy.calledOnce).be.true('showErrorMessage should have been called');
-			should(spy.calledWith(constants.projectLocationRequired)).be.true(`showErrorMessage not called with expected message '${constants.projectLocationRequired}' Actual '${spy.getCall(0).args[0]}'`);
-		});
-
-		it('Should set model filePath correctly for ExtractType = File and not-File.', async function (): Promise<void> {
-			const projectName = 'MyProjectName';
-			let folderPath = await testUtils.generateTestFolderPath();
-
-			sinon.stub(vscode.window, 'showInputBox').resolves(projectName);
-			const showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.file });
-			sinon.stub(vscode.window, 'showOpenDialog').callsFake(() => Promise.resolve([vscode.Uri.file(folderPath)]));
-
-			let importPath;
-
-			let projController = TypeMoq.Mock.ofType(ProjectsController, undefined, undefined, new SqlDatabaseProjectTreeViewProvider());
+			let projController = TypeMoq.Mock.ofType(ProjectsController);
 			projController.callBase = true;
+			projController.setup(x => x.getCreateProjectFromDatabaseDialog(TypeMoq.It.isAny())).returns(() => createProjectFromDatabaseDialog.object);
 
-			projController.setup(x => x.importApiCall(TypeMoq.It.isAny())).returns(async (model) => { importPath = model.filePath; });
-
-			await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
-			should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName, projectName + '.sql')).fsPath, `model.filePath should be set to a specific file for ExtractTarget === file, but was ${importPath}`);
-
-			// reset for counter-test
-			importPath = undefined;
-			folderPath = await testUtils.generateTestFolderPath();
-			showQuickPickStub.resolves({ label: constants.schemaObjectType });
-
-			await projController.object.importNewDatabaseProject({ connectionProfile: mockConnectionProfile });
-			should(importPath).equal(vscode.Uri.file(path.join(folderPath, projectName)).fsPath, `model.filePath should be set to a folder for ExtractTarget !== file, but was ${importPath}`);
+			await projController.object.createProjectFromDatabase(mockConnectionProfile);
+			should(opened).equal(true);
 		});
 
-		it('Should establish Import context correctly for ObjectExplorer and palette launch points', async function (): Promise<void> {
-			const connectionId = 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575';
-			// test welcome button and palette launch points (context-less)
-			let mockDbSelection = 'FakeDatabase';
-			sinon.stub(azdata.connection, 'listDatabases').resolves([]);
-			sinon.stub(vscode.window, 'showQuickPick').resolves({ label: mockDbSelection });
-			sinon.stub(azdata.connection, 'openConnectionDialog').resolves({
-				providerName: 'MSSQL',
-				connectionId: connectionId,
-				options: {}
+		it.skip('Callbacks are hooked up and called from create project from database dialog', async function (): Promise<void> {
+			const createProjectFromDbHoller = 'hello from callback for createProjectFromDatabase()';
+
+			let holler = 'nothing';
+
+			const createProjectFromDatabaseDialog = TypeMoq.Mock.ofType(CreateProjectFromDatabaseDialog, undefined, undefined, undefined);
+			createProjectFromDatabaseDialog.callBase = true;
+			createProjectFromDatabaseDialog.setup(x => x.handleCreateButtonClick()).returns(async () => {
+				await projController.object.createProjectFromDatabaseCallback({
+					serverId: 'My Id',
+					database: 'My Database',
+					projName: 'testProject',
+					filePath: 'testLocation',
+					version: '1.0.0.0',
+					extractTarget: mssql.ExtractTarget['schemaObjectType']
+				});
+
+				return Promise.resolve(undefined);
 			});
 
-			let projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+			const projController = TypeMoq.Mock.ofType(ProjectsController);
+			projController.callBase = true;
+			projController.setup(x => x.getCreateProjectFromDatabaseDialog(TypeMoq.It.isAny())).returns(() => createProjectFromDatabaseDialog.object);
+			projController.setup(x => x.createProjectFromDatabaseCallback(TypeMoq.It.isAny())).returns(() => {
+				holler = createProjectFromDbHoller;
+				return Promise.resolve(undefined);
+			});
 
-			let result = await projController.getModelFromContext(undefined);
+			let dialog = await projController.object.createProjectFromDatabase(undefined);
+			await dialog.handleCreateButtonClick();
 
-			should(result).deepEqual({ database: mockDbSelection, serverId: connectionId });
+			should(holler).equal(createProjectFromDbHoller, 'executionCallback() is supposed to have been setup and called for create project from database scenario');
+		});
 
-			// test launch via Object Explorer context
-			result = await projController.getModelFromContext(mockConnectionProfile);
-			should(result).deepEqual({ database: 'My Database', serverId: 'My Id' });
+		it('Should set model filePath correctly for ExtractType = File', async function (): Promise<void> {
+			let folderPath = await testUtils.generateTestFolderPath();
+			let projectName = 'My Project';
+			let importPath;
+			let model: ImportDataModel = { serverId: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['file'] };
+
+			const projController = new ProjectsController();
+			projController.setFilePath(model);
+			importPath = model.filePath;
+
+			should(importPath.toUpperCase()).equal(vscode.Uri.file(path.join(folderPath, projectName + '.sql')).fsPath.toUpperCase(), `model.filePath should be set to a specific file for ExtractTarget === file, but was ${importPath}`);
+		});
+
+		it('Should set model filePath correctly for ExtractType = Schema/Object Type', async function (): Promise<void> {
+			let folderPath = await testUtils.generateTestFolderPath();
+			let projectName = 'My Project';
+			let importPath;
+			let model: ImportDataModel = { serverId: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'] };
+
+			const projController = new ProjectsController();
+			projController.setFilePath(model);
+			importPath = model.filePath;
+
+			should(importPath.toUpperCase()).equal(vscode.Uri.file(path.join(folderPath)).fsPath.toUpperCase(), `model.filePath should be set to a folder for ExtractTarget !== file, but was ${importPath}`);
 		});
 	});
 
@@ -590,14 +521,16 @@ describe('ProjectsController', function (): void {
 			const addDbReferenceDialog = TypeMoq.Mock.ofType(AddDatabaseReferenceDialog, undefined, undefined, proj);
 			addDbReferenceDialog.callBase = true;
 			addDbReferenceDialog.setup(x => x.addReferenceClick()).returns(() => {
-				projController.object.addDatabaseReferenceCallback(proj, { systemDb: SystemDatabase.master, databaseName: 'master', suppressMissingDependenciesErrors: false });
+				projController.object.addDatabaseReferenceCallback(proj,
+					{ systemDb: SystemDatabase.master, databaseName: 'master', suppressMissingDependenciesErrors: false },
+					{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
 				return Promise.resolve(undefined);
 			});
 
 			const projController = TypeMoq.Mock.ofType(ProjectsController);
 			projController.callBase = true;
 			projController.setup(x => x.getAddDatabaseReferenceDialog(TypeMoq.It.isAny())).returns(() => addDbReferenceDialog.object);
-			projController.setup(x => x.addDatabaseReferenceCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IDacpacReferenceSettings => true))).returns(() => {
+			projController.setup(x => x.addDatabaseReferenceCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IDacpacReferenceSettings => true), TypeMoq.It.isAny())).returns(() => {
 				holler = addDbRefHoller;
 				return Promise.resolve(undefined);
 			});
@@ -609,14 +542,16 @@ describe('ProjectsController', function (): void {
 		});
 
 		it('Should not allow adding circular project references', async function (): Promise<void> {
-			const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
-
 			const projPath1 = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
 			const projPath2 = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-			const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+			const projController = new ProjectsController();
 
-			const project1 = await projController.openProject(vscode.Uri.file(projPath1));
-			const project2 = await projController.openProject(vscode.Uri.file(projPath2));
+			const project1 = await Project.openProject(vscode.Uri.file(projPath1).fsPath);
+			const project2 = await Project.openProject(vscode.Uri.file(projPath2).fsPath);
+			const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
+			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
+			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny())).returns(() => [vscode.Uri.file(project1.projectFilePath), vscode.Uri.file(project2.projectFilePath)]);
+			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object });
 
 			// add project reference from project1 to project2
 			await projController.addDatabaseReferenceCallback(project1, {
@@ -624,7 +559,8 @@ describe('ProjectsController', function (): void {
 				projectName: 'TestProject',
 				projectRelativePath: undefined,
 				suppressMissingDependenciesErrors: false
-			});
+			},
+				{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
 			should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
 
 			// try to add circular reference
@@ -633,74 +569,13 @@ describe('ProjectsController', function (): void {
 				projectName: 'TestProjectName',
 				projectRelativePath: undefined,
 				suppressMissingDependenciesErrors: false
-			});
+			},
+				{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
 			should(showErrorMessageSpy.called).be.true('showErrorMessage should have been called');
 		});
 
 	});
 });
-
-describe.skip('ProjectsController: round trip feature with SSDT', function (): void {
-	it('Should show warning message for SSDT project opened in Azure Data Studio', async function (): Promise<void> {
-		const stub = sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.noString));
-
-		// setup test files
-		const folderPath = await testUtils.generateTestFolderPath();
-		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
-		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
-
-		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-
-		await projController.openProject(vscode.Uri.file(sqlProjPath));
-		should(stub.calledOnce).be.true('showWarningMessage should have been called exactly once');
-		should(stub.calledWith(constants.updateProjectForRoundTrip)).be.true(`showWarningMessage not called with expected message '${constants.updateProjectForRoundTrip}' Actual '${stub.getCall(0).args[0]}'`);
-	});
-
-	it('Should not show warning message for non-SSDT projects that have the additional information for Build', async function (): Promise<void> {
-		// setup test files
-		const folderPath = await testUtils.generateTestFolderPath();
-		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline, folderPath);
-		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
-
-		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-
-		const project = await projController.openProject(vscode.Uri.file(sqlProjPath));	// no error thrown
-
-		should(project.importedTargets.length).equal(3); // additional target should exist by default
-	});
-
-	it('Should not update project and no backup file should be created when update to project is rejected', async function (): Promise<void> {
-		sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.noString));
-		// setup test files
-		const folderPath = await testUtils.generateTestFolderPath();
-		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
-		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
-
-		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-
-		const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
-
-		should(await exists(sqlProjPath + '_backup')).equal(false);	// backup file should not be generated
-		should(project.importedTargets.length).equal(2); // additional target should not be added by updateProjectForRoundTrip method
-	});
-
-	it('Should load Project and associated import targets when update to project is accepted', async function (): Promise<void> {
-		sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
-
-		// setup test files
-		const folderPath = await testUtils.generateTestFolderPath();
-		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline, folderPath);
-		await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, folderPath);
-
-		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
-
-		const project = await projController.openProject(vscode.Uri.file(sqlProjPath));
-
-		should(await exists(sqlProjPath + '_backup')).equal(true);	// backup file should be generated before the project is updated
-		should(project.importedTargets.length).equal(3); // additional target added by updateProjectForRoundTrip method
-	});
-});
-
 
 async function setupDeleteExcludeTest(proj: Project): Promise<[FileProjectEntry, ProjectRootTreeItem, FileProjectEntry, FileProjectEntry, FileProjectEntry]> {
 	await proj.addFolderItem('UpperFolder');
@@ -724,4 +599,11 @@ async function setupDeleteExcludeTest(proj: Project): Promise<[FileProjectEntry,
 	should((await fs.readFile(scriptEntry.fsUri.fsPath)).toString()).equal('not a real script');
 
 	return [scriptEntry, projTreeRoot, preDeployEntry, postDeployEntry, noneEntry];
+}
+
+function createWorkspaceTreeItem(node: BaseProjectTreeItem): dataworkspace.WorkspaceTreeItem {
+	return {
+		element: node,
+		treeDataProvider: new SqlDatabaseProjectTreeViewProvider()
+	};
 }

@@ -12,6 +12,7 @@ import { DeploymentType, NotebookWizardDeploymentProvider, NotebookWizardInfo } 
 import { IPlatformService } from '../../services/platformService';
 import { NotebookWizardAutoSummaryPage } from './notebookWizardAutoSummaryPage';
 import { NotebookWizardPage } from './notebookWizardPage';
+import { isUserCancelledError } from '../../common/utils';
 
 export class NotebookWizardModel extends ResourceTypeModel {
 	private _inputComponents: InputComponents = {};
@@ -54,20 +55,30 @@ export class NotebookWizardModel extends ResourceTypeModel {
 		this.wizard.setPages(this.getPages());
 	}
 
-	public onCancel(): void {
-	}
-
 	/**
-	 * Generates the notebook and returns true on successful generation
+	 * Generates the notebook and returns true if generation was done and so the wizard should be closed.
 	 **/
 	public async onGenerateScript(): Promise<boolean> {
 		const lastPage = this.wizard.lastPage! as NotebookWizardPage;
 		if (lastPage.validatePage()) {
-			const notebook = await this.prepareNotebookAndEnvironment();
-			await this.openNotebook(notebook);
-			return true;
+			let notebook: Notebook | undefined;
+			try {
+				notebook = await this.prepareNotebookAndEnvironment();
+			} catch (e) {
+				// If there was a user prompt while preparing the Notebook environment (such as prompting for password) and the user
+				// cancelled out of that then we shouldn't display an error since that's a normal case but should still keep the Wizard
+				// open so they can make any changes they want and try again without needing to re-enter the information again.
+				if (isUserCancelledError(e)) {
+					return false;
+				}
+				throw e;
+			}
+			if (notebook) { // open the notebook if it was successfully prepared
+				await this.openNotebook(notebook);
+			}
+			return true; // generation done (or cancelled at user request) so close the wizard
 		} else {
-			return false;
+			return false; // validation failed so do not attempt to generate the notebook and do not close the wizard
 		}
 	}
 
@@ -82,7 +93,7 @@ export class NotebookWizardModel extends ResourceTypeModel {
 		return await this.notebookService.openNotebookWithContent(notebookPath, JSON.stringify(notebook, undefined, 4));
 	}
 
-	private async prepareNotebookAndEnvironment() {
+	private async prepareNotebookAndEnvironment(): Promise<Notebook> {
 		await setModelValues(this.inputComponents, this);
 		const env: NodeJS.ProcessEnv = process.env;
 		this.setEnvironmentVariables(env, (varName) => {

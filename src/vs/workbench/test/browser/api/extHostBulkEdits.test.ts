@@ -43,6 +43,16 @@ suite('ExtHostBulkEdits.applyWorkspaceEdit', () => {
 		bulkEdits = new ExtHostBulkEdits(rpcProtocol, documentsAndEditors, null!);
 	});
 
+	test('uses version id if document available', async () => {
+		let edit = new extHostTypes.WorkspaceEdit();
+		edit.replace(resource, new extHostTypes.Range(0, 0, 0, 0), 'hello');
+		await bulkEdits.applyWorkspaceEdit(edit);
+		assert.equal(workspaceResourceEdits.edits.length, 1);
+		const [first] = workspaceResourceEdits.edits;
+		assertType(first._type === WorkspaceEditType.Text);
+		assert.equal(first.modelVersionId, 1337);
+	});
+
 	test('does not use version id if document is not available', async () => {
 		let edit = new extHostTypes.WorkspaceEdit();
 		edit.replace(URI.parse('foo:bar2'), new extHostTypes.Range(0, 0, 0, 0), 'hello');

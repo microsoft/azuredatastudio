@@ -31,10 +31,13 @@ export function msgBookPinned(book: string): string { return localize('msgBookPi
 export function msgBookUnpinned(book: string): string { return localize('msgBookUnpinned', "Book {0} is no longer pinned in this workspace", book); }
 export const missingTocError = localize('bookInitializeFailed', "Failed to find a Table of Contents file in the specified book.");
 export const noBooksSelectedError = localize('noBooksSelected', "No books are currently selected in the viewlet.");
+export const labelBookSection = localize('labelBookSection', "Select Book Section");
+export const labelAddToLevel = localize('labelAddToLevel', "Add to this level");
 
-export function missingFileError(title: string): string { return localize('missingFileError', "Missing file : {0}", title); }
+export function missingFileError(title: string, path: string): string { return localize('missingFileError', "Missing file : {0} from {1}", title, path); }
 export function invalidTocFileError(): string { return localize('InvalidError.tocFile', "Invalid toc file"); }
 export function invalidTocError(title: string): string { return localize('Invalid toc.yml', "Error: {0} has an incorrect toc.yml file", title); }
+export function configFileError(): string { return localize('configFileError', "Configuration file missing"); }
 
 export function openFileError(path: string, error: string): string { return localize('openBookError', "Open book {0} failed: {1}", path, error); }
 export function readBookError(path: string, error: string): string { return localize('readBookError', "Failed to read book {0}: {1}", path, error); }
@@ -43,6 +46,10 @@ export function openMarkdownError(resource: string, error: string): string { ret
 export function openUntitledNotebookError(resource: string, error: string): string { return localize('openUntitledNotebookError', "Open untitled notebook {0} as untitled failed: {1}", resource, error); }
 export function openExternalLinkError(resource: string, error: string): string { return localize('openExternalLinkError', "Open link {0} failed: {1}", resource, error); }
 export function closeBookError(resource: string, error: string): string { return localize('closeBookError', "Close book {0} failed: {1}", resource, error); }
+export function duplicateFileError(title: string, path: string, newPath: string): string { return localize('duplicateFileError', "File {0} already exists in the destination folder {1} \n The file has been renamed to {2} to prevent data loss.", title, path, newPath); }
+export function editBookError(path: string, error: string): string { return localize('editBookError', "Error while editing book {0}: {1}", path, error); }
+export function selectBookError(error: string): string { return localize('selectBookError', "Error while selecting a book or a section to edit: {0}", error); }
+export function sectionNotFound(section: string, tocPath: string): string { return localize('sectionNotFound', "Failed to find section {0} in {1}.", section, tocPath); }
 
 // Remote Book dialog constants
 export const url = localize('url', "URL");
@@ -75,3 +82,20 @@ export const msgReleaseNotFound = localize('msgReleaseNotFound', "Releases not F
 export const msgUndefinedAssetError = localize('msgUndefinedAssetError', "The selected book is not valid");
 export function httpRequestError(code: number, message: string): string { return localize('httpRequestError', "Http Request failed with error: {0} {1}", code, message); }
 export function msgDownloadLocation(downloadLocation: string): string { return localize('msgDownloadLocation', "Downloading to {0}", downloadLocation); }
+
+// Create Book dialog constants
+export const newGroup = localize('newGroup', "New Book");
+export const groupDescription = localize('groupDescription', "Books are used to organize Notebooks.");
+export const locationBrowser = localize('locationBrowser', "Browse locations...");
+export const selectContentFolder = localize('selectContentFolder', "Select content folder");
+export const browse = localize('browse', "Browse");
+export const create = localize('create', "Create");
+export const name = localize('name', "Name");
+export const saveLocation = localize('saveLocation', "Save location");
+export const contentFolder = localize('contentFolder', "Content folder (Optional)");
+export const msgContentFolderError = localize('msgContentFolderError', "Content folder path does not exist");
+export const msgSaveFolderError = localize('msgSaveFolderError', "Save location path does not exist");
+export function msgCreateBookWarningMsg(file: string): string { return localize('msgCreateBookWarningMsg', "Error while trying to access: {0}", file); }
+
+
+

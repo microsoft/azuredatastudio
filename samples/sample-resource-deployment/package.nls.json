@@ -22,6 +22,9 @@
 	"resource.type.wizard.display.name": "Test controller",
 	"resource.type.wizard.description": "Creates a Test controller",
 
+	"validation.wizard.display.name": "Validation Wizard",
+	"validation.wizard.description": "A wizard to test out validations",
+
 	"wizard.new.wizard.title": "Create Test controller",
 	"wizard.cluster.environment.title": "What is your target existing Kubernetes cluster environment?",
 	"wizard.select.cluster.title": "Select from installed existing Kubernetes clusters",
@@ -52,6 +55,15 @@
 	"wizard.data.controller.agreement": "I accept {0} and {1}.",
 	"contoso.agreement.privacy.statement":"contoso Privacy Statement",
 	"wizard.agreement.contosoCmd.eula":"contoso cmd license terms",
-	"deploy.wizard.action":"Script to notebook"
+	"deploy.wizard.action":"Script to notebook",
 
+	"cores-limit.label": "Cores Limit",
+	"cores-limit.description": "The cores limit must be an integer.",
+	"cores-request.label": "Cores Request",
+	"cores-request.description": "The requested cores must be an integer.",
+
+	"requested.cores.should.be.integer": "Requested cores must be an integer",
+	"cores.limit.should.be.integer": "Cores limit must be an integer",
+	"requested.cores.less.than.or.equal.to.cores.limit": "Requested cores must be <= cores limit",
+	"cores.limit.greater.than.or.equal.to.requested.cores": "Cores limit must be >= requested cores"
 }

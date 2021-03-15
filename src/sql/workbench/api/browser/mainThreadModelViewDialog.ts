@@ -75,6 +75,11 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		let dialog = this.getDialog(handle);
 		const options = assign({}, DefaultDialogOptions);
 		options.width = dialog.width;
+		options.dialogStyle = dialog.dialogStyle;
+		options.dialogPosition = dialog.dialogPosition;
+		options.renderHeader = dialog.renderHeader;
+		options.renderFooter = dialog.renderFooter;
+		options.dialogProperties = dialog.dialogProperties;
 		this._dialogService.showDialog(dialog, dialogName, options);
 		return Promise.resolve();
 	}
@@ -88,11 +93,16 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	public $setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void> {
 		let dialog = this._dialogs.get(handle);
 		if (!dialog) {
-			dialog = new Dialog(details.title, details.width);
-			let okButton = this.getButton(details.okButton);
-			let cancelButton = this.getButton(details.cancelButton);
-			dialog.okButton = okButton;
-			dialog.cancelButton = cancelButton;
+			dialog = new Dialog(details.title, details.width, details.dialogStyle, details.dialogPosition, details.renderHeader, details.renderFooter, details.dialogProperties);
+
+			/**
+			 * Only peform actions on footer if it is shown.
+			 */
+			if (details.renderFooter !== false) {
+				dialog.okButton = this.getButton(details.okButton);
+				dialog.cancelButton = this.getButton(details.cancelButton);
+			}
+
 			dialog.onValidityChanged(valid => this._proxy.$onPanelValidityChanged(handle, valid));
 			dialog.registerCloseValidator(() => this.validateDialogClose(handle));
 			this._dialogs.set(handle, dialog);
@@ -110,7 +120,6 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		if (details.customButtons) {
 			dialog.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
 		}
-
 		dialog.message = details.message;
 
 		return Promise.resolve();
@@ -135,6 +144,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			button = new DialogButton(details.label, details.enabled);
 			button.position = details.position;
 			button.hidden = details.hidden;
+			button.secondary = details.secondary;
 			button.onClick(() => this.onButtonClick(handle));
 			this._buttons.set(handle, button);
 		} else {
@@ -143,6 +153,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			button.hidden = details.hidden;
 			button.focused = details.focused;
 			button.position = details.position;
+			button.secondary = details.secondary;
 		}
 
 		return Promise.resolve();
@@ -151,7 +162,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	public $setWizardPageDetails(handle: number, details: IModelViewWizardPageDetails): Thenable<void> {
 		let page = this._wizardPages.get(handle);
 		if (!page) {
-			page = new WizardPage(details.title, details.content);
+			page = new WizardPage(details.title, details.content, details.pageName);
 			page.onValidityChanged(valid => this._proxy.$onPanelValidityChanged(handle, valid));
 			this._wizardPages.set(handle, page);
 			this._wizardPageHandles.set(page, handle);
@@ -161,6 +172,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		page.content = details.content;
 		page.enabled = details.enabled;
 		page.description = details.description;
+		page.pageName = details.pageName;
 		if (details.customButtons !== undefined) {
 			page.customButtons = details.customButtons.map(buttonHandle => this.getButton(buttonHandle));
 		}

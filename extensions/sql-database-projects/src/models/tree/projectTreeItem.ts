@@ -25,7 +25,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	fileSystemUri: vscode.Uri;
 
 	constructor(project: Project) {
-		super(vscode.Uri.parse(path.basename(project.projectFilePath, sqlprojExtension)), undefined);
+		super(vscode.Uri.file(project.projectFilePath), undefined);
 
 		this.project = project;
 		this.fileSystemUri = vscode.Uri.file(project.projectFilePath);
@@ -48,6 +48,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 		const projectItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Expanded);
 		projectItem.contextValue = DatabaseProjectItemType.project;
 		projectItem.iconPath = IconPathHelper.databaseProject;
+		projectItem.label = path.basename(this.uri.fsPath, sqlprojExtension);
 
 		return projectItem;
 	}

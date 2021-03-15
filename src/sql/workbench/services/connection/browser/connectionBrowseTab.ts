@@ -3,50 +3,55 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/connectionBrowseTab';
+import { IConnectionProfile } from 'azdata';
+import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { ITreeItem } from 'sql/workbench/common/views';
 import { IConnectionTreeDescriptor, IConnectionTreeService } from 'sql/workbench/services/connection/common/connectionTreeService';
+import { AsyncRecentConnectionTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/asyncRecentConnectionTreeDataSource';
+import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { ConnectionProfileRenderer, TreeNodeRenderer } from 'sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer';
+import { ServerTreeRenderer } from 'sql/workbench/services/objectExplorer/browser/serverTreeRenderer';
+import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
+import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import * as DOM from 'vs/base/browser/dom';
+import { status } from 'vs/base/browser/ui/aria/aria';
 import { IIdentityProvider, IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
+import { ProgressBar } from 'vs/base/browser/ui/progressbar/progressbar';
 import { IAsyncDataSource, ITreeNode, ITreeRenderer } from 'vs/base/browser/ui/tree/tree';
+import { IAction } from 'vs/base/common/actions';
+import { debounce } from 'vs/base/common/decorators';
+import { Emitter, Event } from 'vs/base/common/event';
 import { Iterable } from 'vs/base/common/iterator';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { basename, dirname } from 'vs/base/common/resources';
 import { isString } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
+import 'vs/css!./media/connectionBrowseTab';
 import { localize } from 'vs/nls';
+import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { FileKind } from 'vs/platform/files/common/files';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { WorkbenchAsyncDataTree } from 'vs/platform/list/browser/listService';
+import { attachProgressBarStyler } from 'vs/platform/theme/common/styler';
+import { ColorScheme } from 'vs/platform/theme/common/theme';
 import { FileThemeIcon, FolderThemeIcon, IThemeService, ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { IResourceLabel, ResourceLabels } from 'vs/workbench/browser/labels';
 import { ITreeItemLabel, ITreeViewDataProvider, TreeItemCollapsibleState, TreeViewItemHandleArg } from 'vs/workbench/common/views';
-import { Emitter, Event } from 'vs/base/common/event';
-import { AsyncRecentConnectionTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/asyncRecentConnectionTreeDataSource';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
-import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
-import { ServerTreeRenderer } from 'sql/workbench/services/objectExplorer/browser/serverTreeRenderer';
-import { ConnectionProfileRenderer, TreeNodeRenderer } from 'sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer';
-import { ColorScheme } from 'vs/platform/theme/common/theme';
-import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
-import { debounce } from 'vs/base/common/decorators';
-import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
-import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { IAction } from 'vs/base/common/actions';
-import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { IConnectionProfile } from 'azdata';
+
+
 
 export type TreeElement = ConnectionDialogTreeProviderElement | ITreeItemFromProvider | SavedConnectionNode | ServerTreeElement;
 
@@ -70,6 +75,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 	private treeLabels: ResourceLabels | undefined;
 	private treeDataSource: DataSource | undefined;
 	private readonly contextKey = new ContextKey(this.contextKeyService);
+	private filterProgressBar: ProgressBar | undefined;
 
 	public onDidChangeVisibility = Event.None;
 
@@ -102,6 +108,9 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 			placeholder: localize('connectionDialog.FilterPlaceHolder', "Type here to filter the list"),
 			ariaLabel: localize('connectionDialog.FilterInputTitle', "Filter connections")
 		});
+		this.filterProgressBar = new ProgressBar(this.filterInput.element);
+		this._register(this.filterProgressBar);
+		this._register(attachProgressBarStyler(this.filterProgressBar, this.themeService));
 		this.filterInput.element.style.margin = '5px';
 		this._register(this.filterInput);
 		this._register(attachInputBoxStyler(this.filterInput, this.themeService));
@@ -112,9 +121,17 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 
 	@debounce(500)
 	async applyFilter(): Promise<void> {
+		const applyingFilterStatusMessage = this.filterInput.value ? localize('connectionDialog.ApplyingFilter', "Applying filter")
+			: localize('connectionDialog.RemovingFilter', "Removing filter");
+		const filterAppliedStatusMessage = this.filterInput.value ? localize('connectionDialog.FilterApplied', "Filter applied")
+			: localize('connectionDialog.FilterRemoved', "Filter removed");
+		status(applyingFilterStatusMessage);
+		this.filterProgressBar.infinite().show(100);
 		this.treeDataSource.setFilter(this.filterInput.value);
 		await this.refresh();
 		await this.expandAll();
+		this.filterProgressBar.hide();
+		status(filterAppliedStatusMessage);
 	}
 
 	async expandAll(): Promise<void> {
@@ -174,7 +191,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 				const primary: IAction[] = [];
 				const secondary: IAction[] = [];
 				const result = { primary, secondary };
-				createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, this.contextMenuService);
+				createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result);
 
 				this.contextMenuService.showContextMenu({
 					getAnchor: () => e.anchor,

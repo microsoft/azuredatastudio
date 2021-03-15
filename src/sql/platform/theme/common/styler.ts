@@ -7,6 +7,7 @@ import * as colors from './colors';
 
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
+import * as sqlcr from 'sql/platform/theme/common/colorRegistry';
 import { attachStyler, IColorMapping, IStyleOverrides } from 'vs/platform/theme/common/styler';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IThemable } from 'vs/base/common/styler';
@@ -283,24 +284,45 @@ export function attachEditableDropdownStyler(widget: IThemable, themeService: IT
 	}, widget);
 }
 
-export function attachButtonStyler(widget: IThemable, themeService: IThemeService, style?: {
-	buttonForeground?: cr.ColorIdentifier,
-	buttonBackground?: cr.ColorIdentifier,
-	buttonHoverBackground?: cr.ColorIdentifier,
-	buttonFocusOutline?: cr.ColorIdentifier
-}): IDisposable {
-	return attachStyler(themeService, {
-		buttonForeground: (style && style.buttonForeground) || cr.buttonForeground,
-		buttonBackground: (style && style.buttonBackground) || cr.buttonBackground,
-		buttonHoverBackground: (style && style.buttonHoverBackground) || cr.buttonHoverBackground,
-		buttonBorder: cr.contrastBorder,
-		buttonFocusOutline: (style && style.buttonFocusOutline) || colors.buttonFocusOutline
-	}, widget);
-}
-
 export function attachCheckboxStyler(widget: IThemable, themeService: IThemeService, style?: { disabledCheckboxForeground?: cr.ColorIdentifier })
 	: IDisposable {
 	return attachStyler(themeService, {
 		disabledCheckboxForeground: (style && style.disabledCheckboxForeground) || colors.disabledCheckboxForeground
 	}, widget);
+}
+
+export interface IInfoBoxStyleOverrides {
+	informationBackground: cr.ColorIdentifier,
+	warningBackground: cr.ColorIdentifier,
+	errorBackground: cr.ColorIdentifier,
+	successBackground: cr.ColorIdentifier
+}
+
+export const defaultInfoBoxStyles: IInfoBoxStyleOverrides = {
+	informationBackground: sqlcr.infoBoxInformationBackground,
+	warningBackground: sqlcr.infoBoxWarningBackground,
+	errorBackground: sqlcr.infoBoxErrorBackground,
+	successBackground: sqlcr.infoBoxSuccessBackground
+};
+
+export function attachInfoBoxStyler(widget: IThemable, themeService: IThemeService, style?: IInfoBoxStyleOverrides): IDisposable {
+	return attachStyler(themeService, { ...defaultInfoBoxStyles, ...style }, widget);
+}
+
+export interface IInfoButtonStyleOverrides {
+	buttonBackground: cr.ColorIdentifier,
+	buttonForeground: cr.ColorIdentifier,
+	buttonBorder: cr.ColorIdentifier,
+	buttonHoverBackground: cr.ColorIdentifier
+}
+
+export const defaultInfoButtonStyles: IInfoButtonStyleOverrides = {
+	buttonBackground: sqlcr.infoButtonBackground,
+	buttonForeground: sqlcr.infoButtonForeground,
+	buttonBorder: sqlcr.infoButtonBorder,
+	buttonHoverBackground: sqlcr.infoButtonHoverBackground
+};
+
+export function attachInfoButtonStyler(widget: IThemable, themeService: IThemeService, style?: IInfoButtonStyleOverrides): IDisposable {
+	return attachStyler(themeService, { ...defaultInfoButtonStyles, ...style }, widget);
 }

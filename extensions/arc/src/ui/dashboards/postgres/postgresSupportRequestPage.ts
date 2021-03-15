@@ -44,6 +44,11 @@ export class PostgresSupportRequestPage extends DashboardPage {
 			CSSStyles: { ...cssStyles.text, 'margin-bottom': '20px' }
 		}).component());
 
+		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: loc.supportRequestNote,
+			CSSStyles: { ...cssStyles.text, 'margin-bottom': '20px' }
+		}).component());
+
 		const supportRequestButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			iconPath: IconPathHelper.support,
 			label: loc.newSupportRequest,
@@ -55,7 +60,7 @@ export class PostgresSupportRequestPage extends DashboardPage {
 				const azure = this._controllerModel.controllerConfig?.spec.settings.azure;
 				if (azure) {
 					vscode.env.openExternal(vscode.Uri.parse(
-						`https://portal.azure.com/#resource/subscriptions/${azure.subscription}/resourceGroups/${azure.resourceGroup}/providers/Microsoft.AzureData/${ResourceType.postgresInstances}/${this._postgresModel.info.name}/supportrequest`));
+						`https://portal.azure.com/#resource/subscriptions/${azure.subscription}/resourceGroups/${azure.resourceGroup}/providers/Microsoft.AzureArcData/${ResourceType.postgresInstances}/${this._postgresModel.info.name}/supportrequest`));
 				} else {
 					vscode.window.showErrorMessage(loc.couldNotFindControllerRegistration);
 				}

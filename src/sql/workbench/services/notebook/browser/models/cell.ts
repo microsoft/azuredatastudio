@@ -12,7 +12,7 @@ import { localize } from 'vs/nls';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -28,10 +28,17 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
+
+export interface QueryResultId {
+	batchId: number;
+	id: number;
+}
 
 export class CellModel extends Disposable implements ICellModel {
 	public id: string;
@@ -43,6 +50,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _cellGuid: string;
 	private _future: FutureInternal;
 	private _outputs: nb.ICellOutput[] = [];
+	private _outputsIdMap: Map<nb.ICellOutput, QueryResultId> = new Map<nb.ICellOutput, QueryResultId>();
 	private _renderedOutputTextContent: string[] = [];
 	private _isEditMode: boolean;
 	private _onOutputsChanged = new Emitter<IOutputChangedEvent>();
@@ -73,12 +81,17 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
 	private _isInjectedParameter: boolean;
+	private _previousChartState: IInsightOptions[] = [];
+	private _outputCounter = 0; // When re-executing the same cell, ensure that we apply chart options in the same order
+	private _attachments: nb.ICellAttachments;
+	private _preventNextChartCache: boolean = false;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
 		@optional(INotebookService) private _notebookService?: INotebookService,
 		@optional(ICommandService) private _commandService?: ICommandService,
-		@optional(IConfigurationService) private _configurationService?: IConfigurationService
+		@optional(IConfigurationService) private _configurationService?: IConfigurationService,
+		@optional(IAdsTelemetryService) private _telemetryService?: IAdsTelemetryService,
 	) {
 		super();
 		this.id = `${modelId++}`;
@@ -121,6 +134,19 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get onCellModeChanged(): Event<boolean> {
 		return this._onCellModeChanged.event;
+	}
+
+	public set metadata(data: any) {
+		this._metadata = data;
+		this.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
+	}
+
+	public get metadata(): any {
+		return this._metadata;
+	}
+
+	public get attachments() {
+		return this._attachments;
 	}
 
 	public get isEditMode(): boolean {
@@ -238,6 +264,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this._cellType = type;
 			// Regardless, get rid of outputs; this matches Jupyter behavior
 			this._outputs = [];
+			this._outputsIdMap.clear();
 		}
 	}
 
@@ -253,6 +280,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this.cellSourceChanged = true;
 		}
 		this._modelContentChangedEvent = undefined;
+		this._preventNextChartCache = true;
 	}
 
 	public get modelContentChangedEvent(): IModelContentChangedEvent {
@@ -468,6 +496,10 @@ export class CellModel extends Disposable implements ICellModel {
 			if (!kernel) {
 				return false;
 			}
+			this._outputCounter = 0;
+			this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunCell)
+				.withAdditionalProperties({ cell_language: kernel.name })
+				.send();
 			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
 			// This matches the same behavior as JupyterLab
 			if (this.future && this.future.inProgress) {
@@ -515,6 +547,7 @@ export class CellModel extends Disposable implements ICellModel {
 							try {
 								// Need to reset outputs here (kernels do this on their own)
 								this._outputs = [];
+								this._outputsIdMap.clear();
 								let commandExecuted = this._commandService?.executeCommand(result.commandId, result.args);
 								// This will ensure that the run button turns into a stop button
 								this.fireExecutionStateChanged();
@@ -599,18 +632,31 @@ export class CellModel extends Disposable implements ICellModel {
 		if (this._future) {
 			this._future.dispose();
 		}
-		this.clearOutputs();
+		this.clearOutputs(true);
 		this._future = future;
 		future.setReplyHandler({ handle: (msg) => this.handleReply(msg) });
 		future.setIOPubHandler({ handle: (msg) => this.handleIOPub(msg) });
 		future.setStdInHandler({ handle: (msg) => this.handleSdtIn(msg) });
 	}
-
-	public clearOutputs(): void {
+	/**
+	 * Clear outputs can be done as part of the "Clear Outputs" action on a cell or as part of running a cell
+	 * @param runCellPending If a cell has been run
+	 */
+	public clearOutputs(runCellPending = false): void {
+		if (runCellPending) {
+			this.cacheChartStateIfExists();
+		} else {
+			this.clearPreviousChartState();
+		}
 		this._outputs = [];
+		this._outputsIdMap.clear();
 		this.fireOutputsChanged();
 
 		this.executionCount = undefined;
+	}
+
+	public get previousChartState(): any[] {
+		return this._previousChartState;
 	}
 
 	private fireOutputsChanged(shouldScroll: boolean = false): void {
@@ -632,6 +678,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get outputs(): Array<nb.ICellOutput> {
 		return this._outputs;
+	}
+
+	public getOutputId(output: nb.ICellOutput): QueryResultId | undefined {
+		return this._outputsIdMap.get(output);
 	}
 
 	public get renderedOutputTextContent(): string[] {
@@ -662,16 +712,25 @@ export class CellModel extends Disposable implements ICellModel {
 				// Check if the table already exists
 				for (let i = 0; i < this._outputs.length; i++) {
 					if (this._outputs[i].output_type === 'execute_result') {
-						let resultSet: ResultSetSummary = this._outputs[i].metadata.resultSet;
-						let newResultSet: ResultSetSummary = output.metadata.resultSet;
-						if (resultSet.batchId === newResultSet.batchId && resultSet.id === newResultSet.id) {
+						let currentOutputId: QueryResultId = this._outputsIdMap.get(this._outputs[i]);
+						if (currentOutputId.batchId === (<QueryResultId>msg.metadata).batchId
+							&& currentOutputId.id === (<QueryResultId>msg.metadata).id) {
 							// If it does, update output with data resource and html table
 							(<nb.IExecuteResult>this._outputs[i]).data = (<nb.IExecuteResult>output).data;
-							this._outputs[i].metadata = output.metadata;
 							added = true;
 							break;
 						}
 					}
+				}
+				if (!added) {
+					if (this._previousChartState[this._outputCounter]) {
+						if (!output.metadata) {
+							output.metadata = {};
+						}
+						output.metadata.azdata_chartOptions = this._previousChartState[this._outputCounter];
+					}
+					this._outputsIdMap.set(output, { batchId: (<QueryResultId>msg.metadata).batchId, id: (<QueryResultId>msg.metadata).id });
+					this._outputCounter++;
 				}
 				break;
 			case 'execute_result_update':
@@ -689,6 +748,10 @@ export class CellModel extends Disposable implements ICellModel {
 				if (this._outputs.length > 0) {
 					for (let i = 0; i < this._outputs.length; i++) {
 						if (this._outputs[i].output_type === 'execute_result') {
+							// Deletes transient node in the serialized JSON
+							// "Optional transient data introduced in 5.1. Information not to be persisted to a notebook or other documents."
+							// (https://jupyter-client.readthedocs.io/en/stable/messaging.html)
+							delete output['transient'];
 							this._outputs.splice(i, 0, this.rewriteOutputUrls(output));
 							this.fireOutputsChanged();
 							added = true;
@@ -812,6 +875,8 @@ export class CellModel extends Disposable implements ICellModel {
 			if (this._configurationService?.getValue('notebook.saveConnectionName')) {
 				metadata.connection_name = this._savedConnectionName;
 			}
+		} else if (this._cellType === CellTypes.Markdown && this._attachments) {
+			cellJson.attachments = this._attachments;
 		}
 		return cellJson as nb.ICellContents;
 	}
@@ -833,7 +898,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this._isParameter = false;
 			this._isInjectedParameter = false;
 		}
-
+		this._attachments = cell.attachments;
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);
 		this._savedConnectionName = this._metadata.connection_name;
@@ -843,6 +908,19 @@ export class CellModel extends Disposable implements ICellModel {
 				this.addOutput(output);
 			}
 		}
+	}
+
+	public get currentMode(): CellEditModes {
+		if (this._cellType === CellTypes.Code) {
+			return CellEditModes.CODE;
+		}
+		if (this._showMarkdown && this._showPreview) {
+			return CellEditModes.SPLIT;
+		} else if (this._showMarkdown && !this._showPreview) {
+			return CellEditModes.MARKDOWN;
+		}
+		// defaulting to WYSIWYG
+		return CellEditModes.WYSIWYG;
 	}
 
 	private setLanguageFromContents(cell: nb.ICellContents): void {
@@ -970,4 +1048,33 @@ export class CellModel extends Disposable implements ICellModel {
 			}));
 		}
 	}
+
+	/**
+	 * Cache start state for any existing charts.
+	 * This ensures that data can be passed to the grid output component when a cell is re-executed
+	 */
+	private cacheChartStateIfExists(): void {
+		this.clearPreviousChartState();
+		// If a cell's source was changed, don't cache chart state
+		if (!this._preventNextChartCache) {
+			this._outputs?.forEach(o => {
+				if (dataResourceDataExists(o)) {
+					if (o.metadata?.azdata_chartOptions) {
+						this._previousChartState.push(o.metadata.azdata_chartOptions);
+					} else {
+						this._previousChartState.push(undefined);
+					}
+				}
+			});
+		}
+		this._preventNextChartCache = false;
+	}
+
+	private clearPreviousChartState(): void {
+		this._previousChartState = [];
+	}
+}
+
+function dataResourceDataExists(metadata: nb.ICellOutput): boolean {
+	return metadata['data']?.['application/vnd.dataresource+json'];
 }

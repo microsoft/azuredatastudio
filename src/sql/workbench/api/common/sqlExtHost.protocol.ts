@@ -22,10 +22,10 @@ import {
 	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, ISingleNotebookEditOperation,
 	NotebookChangeKind
 } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
+import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -658,7 +658,8 @@ export const SqlMainContext = {
 	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
 	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook'),
 	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors'),
-	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement')
+	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement'),
+	MainThreadWorkspace: createMainId<MainThreadWorkspaceShape>('MainThreadWorkspace')
 };
 
 export const SqlExtHostContext = {
@@ -679,7 +680,8 @@ export const SqlExtHostContext = {
 	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor'),
 	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook'),
 	ExtHostNotebookDocumentsAndEditors: createExtId<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors'),
-	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement')
+	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement'),
+	ExtHostWorkspace: createExtId<ExtHostWorkspaceShape>('ExtHostWorkspace')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
@@ -756,6 +758,18 @@ export interface ExtHostBackgroundTaskManagementShape {
 	$removeTask(operationId: string): void;
 }
 
+export interface ExtHostWorkspaceShape {
+	$createAndEnterWorkspace(folder: vscode.Uri, workspaceFile: vscode.Uri): Promise<void>;
+	$enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+	$saveAndEnterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+}
+
+export interface MainThreadWorkspaceShape {
+	$createAndEnterWorkspace(folder: vscode.Uri, workspaceFile: vscode.Uri): Promise<void>;
+	$enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+	$saveAndEnterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+}
+
 export interface MainThreadBackgroundTaskManagementShape extends IDisposable {
 	$registerTask(taskInfo: azdata.TaskInfo): void;
 	$updateTask(taskProgressInfo: azdata.TaskProgressInfo): void;
@@ -765,7 +779,7 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$registerProvider(id: string): void;
 	$initializeModel(handle: number, rootComponent: IComponentShape): Thenable<void>;
 	$clearContainer(handle: number, componentId: string): Thenable<void>;
-	$addToContainer(handle: number, containerId: string, item: IItemConfig, index?: number): Thenable<void>;
+	$addToContainer(handle: number, containerId: string, items: { itemConfig: IItemConfig, index?: number }[]): Thenable<void>;
 	$removeFromContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void>;
 	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;
 	$setItemLayout(handle: number, componentId: string, item: IItemConfig): Thenable<void>;

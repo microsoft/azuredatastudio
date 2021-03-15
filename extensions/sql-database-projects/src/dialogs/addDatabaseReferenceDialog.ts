@@ -13,16 +13,13 @@ import { Project, SystemDatabase } from '../models/project';
 import { cssStyles } from '../common/uiConstants';
 import { IconPathHelper } from '../common/iconHelper';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
+import { Deferred } from '../common/promise';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 export enum ReferenceType {
 	project,
 	systemDb,
 	dacpac
-}
-
-interface Deferred<T> {
-	resolve: (result: T | Promise<T>) => void;
-	reject: (reason: any) => void;
 }
 
 export class AddDatabaseReferenceDialog {
@@ -43,6 +40,8 @@ export class AddDatabaseReferenceDialog {
 	public serverVariableTextbox: azdata.InputBoxComponent | undefined;
 	public suppressMissingDependenciesErrorsCheckbox: azdata.CheckBoxComponent | undefined;
 	public exampleUsage: azdata.TextComponent | undefined;
+	private projectRadioButton: azdata.RadioButtonComponent | undefined;
+	private systemDatabaseRadioButton: azdata.RadioButtonComponent | undefined;
 
 	public currentReferenceType: ReferenceType | undefined;
 
@@ -53,7 +52,7 @@ export class AddDatabaseReferenceDialog {
 	public addReference: ((proj: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings) => any) | undefined;
 
 	constructor(private project: Project) {
-		this.dialog = azdata.window.createModelViewDialog(constants.addDatabaseReferenceDialogName);
+		this.dialog = azdata.window.createModelViewDialog(constants.addDatabaseReferenceDialogName, 'addDatabaseReferencesDialog');
 		this.addDatabaseReferenceTab = azdata.window.createTab(constants.addDatabaseReferenceDialogName);
 	}
 
@@ -118,6 +117,12 @@ export class AddDatabaseReferenceDialog {
 			await view.initializeModel(formModel);
 			this.updateEnabledInputBoxes();
 
+			if (this.currentReferenceType === ReferenceType.project) {
+				this.projectRadioButton?.focus();
+			} else {
+				this.systemDatabaseRadioButton?.focus();
+			}
+
 			this.initDialogComplete?.resolve();
 		});
 	}
@@ -153,29 +158,33 @@ export class AddDatabaseReferenceDialog {
 			};
 		}
 
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
+			.withAdditionalProperties({ referenceType: this.currentReferenceType!.toString() })
+			.send();
+
 		await this.addReference!(this.project, referenceSettings);
 
 		this.dispose();
 	}
 
 	private createRadioButtons(): azdata.FormComponent {
-		const projectRadioButton = this.view!.modelBuilder.radioButton()
+		this.projectRadioButton = this.view!.modelBuilder.radioButton()
 			.withProperties({
 				name: 'referenceType',
 				label: constants.projectRadioButtonTitle
 			}).component();
 
-		projectRadioButton.onDidClick(() => {
+		this.projectRadioButton.onDidClick(() => {
 			this.projectRadioButtonClick();
 		});
 
-		const systemDatabaseRadioButton = this.view!.modelBuilder.radioButton()
+		this.systemDatabaseRadioButton = this.view!.modelBuilder.radioButton()
 			.withProperties({
 				name: 'referenceType',
 				label: constants.systemDatabaseRadioButtonTitle
 			}).component();
 
-		systemDatabaseRadioButton.onDidClick(() => {
+		this.systemDatabaseRadioButton.onDidClick(() => {
 			this.systemDbRadioButtonClick();
 		});
 
@@ -190,19 +199,19 @@ export class AddDatabaseReferenceDialog {
 		});
 
 		if (this.projectDropdown?.values?.length) {
-			projectRadioButton.checked = true;
+			this.projectRadioButton.checked = true;
 			this.currentReferenceType = ReferenceType.project;
 		} else {
-			systemDatabaseRadioButton.checked = true;
+			this.systemDatabaseRadioButton.checked = true;
 			this.currentReferenceType = ReferenceType.systemDb;
 
 			// disable projects radio button if there aren't any projects that can be added as a reference
-			projectRadioButton.enabled = false;
+			this.projectRadioButton.enabled = false;
 		}
 
 		let flexRadioButtonsModel: azdata.FlexContainer = this.view!.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withItems([projectRadioButton, systemDatabaseRadioButton, dacpacRadioButton])
+			.withItems([this.projectRadioButton, this.systemDatabaseRadioButton, dacpacRadioButton])
 			.withProperties({ ariaRole: 'radiogroup' })
 			.component();
 
@@ -261,26 +270,12 @@ export class AddDatabaseReferenceDialog {
 			this.setDefaultDatabaseValues();
 		});
 
-		// get projects in workspace
-		const workspaceFolders = vscode.workspace.workspaceFolders;
-		if (workspaceFolders?.length) {
-			let projectFiles = await utils.getSqlProjectFilesInFolder(workspaceFolders[0].uri.fsPath);
+		// get projects in workspace and filter to only sql projects
+		let projectFiles: vscode.Uri[] = utils.getSqlProjectsInWorkspace();
 
-			// check if current project is in same open folder (should only be able to add a reference to another project in
-			// the folder if the current project is also in the folder)
-			if (projectFiles.find(p => p === utils.getPlatformSafeFileEntryPath(this.project.projectFilePath))) {
-				// filter out current project
-				projectFiles = projectFiles.filter(p => p !== utils.getPlatformSafeFileEntryPath(this.project.projectFilePath));
-
-				projectFiles.forEach(p => {
-					projectFiles[projectFiles.indexOf(p)] = path.parse(p).name;
-				});
-
-				this.projectDropdown.values = projectFiles;
-			} else {
-				this.projectDropdown.values = [];
-			}
-		}
+		// filter out current project
+		projectFiles = projectFiles.filter(p => p.fsPath !== this.project.projectFilePath);
+		this.projectDropdown.values = projectFiles.map(p => path.parse(p.fsPath).name);
 
 		return {
 			component: this.projectDropdown,

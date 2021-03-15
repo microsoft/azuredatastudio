@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/dialogModal';
-import { Modal, IModalOptions } from 'sql/workbench/browser/modal/modal';
+import { Modal, IModalOptions, HideReason } from 'sql/workbench/browser/modal/modal';
 import { Wizard, DialogButton, WizardPage } from 'sql/workbench/services/dialog/common/dialogTypes';
 import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
@@ -27,6 +27,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { status } from 'vs/base/browser/ui/aria/aria';
+import { TelemetryView, TelemetryAction } from 'sql/platform/telemetry/common/telemetryKeys';
 
 export class WizardModal extends Modal {
 	private _dialogPanes = new Map<WizardPage, DialogPane>();
@@ -49,14 +50,14 @@ export class WizardModal extends Modal {
 		options: IModalOptions,
 		@ILayoutService layoutService: ILayoutService,
 		@IThemeService themeService: IThemeService,
-		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
+		@IAdsTelemetryService private _telemetryEventService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(_wizard.title, _wizard.name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
+		super(_wizard.title, _wizard.name, _telemetryEventService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
 		this._useDefaultMessageBoxLocation = false;
 	}
 
@@ -99,7 +100,7 @@ export class WizardModal extends Modal {
 	}
 
 	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true, requirePageValid: boolean = false): Button {
-		let buttonElement = this.addFooterButton(button.label, onSelect, button.position);
+		let buttonElement = this.addFooterButton(button.label, onSelect, button.position, button.secondary);
 		buttonElement.enabled = button.enabled;
 		if (registerClickEvent) {
 			button.registerClickEvent(buttonElement.onDidClick);
@@ -175,6 +176,7 @@ export class WizardModal extends Modal {
 
 	public async showPage(index: number, validate: boolean = true, focus: boolean = false, readHeader: boolean = true): Promise<void> {
 		let pageToShow = this._wizard.pages[index];
+		const prevPageIndex = this._wizard.currentPage;
 		if (!pageToShow) {
 			this.done(validate).catch(err => onUnexpectedError(err));
 			return;
@@ -187,8 +189,8 @@ export class WizardModal extends Modal {
 		this._dialogPanes.forEach((dialogPane, page) => {
 			if (page === pageToShow) {
 				dialogPaneToShow = dialogPane;
-				dialogPane.layout(true);
 				dialogPane.show(focus);
+				dialogPane.layout(true);
 			} else {
 				dialogPane.hide();
 			}
@@ -209,6 +211,15 @@ export class WizardModal extends Modal {
 				this._doneButton.enabled = this._wizard.doneButton.enabled && pageToShow.valid;
 			}
 		});
+
+		if (index !== prevPageIndex) {
+			this._telemetryEventService.createActionEvent(TelemetryView.Shell, TelemetryAction.WizardPagesNavigation)
+				.withAdditionalProperties({
+					wizardName: this._wizard.name,
+					pageNavigationFrom: this._wizard.pages[prevPageIndex].pageName ?? prevPageIndex,
+					pageNavigationTo: this._wizard.pages[index].pageName ?? index
+				}).send();
+		}
 	}
 
 	private setButtonsForPage(index: number) {
@@ -263,14 +274,18 @@ export class WizardModal extends Modal {
 			}
 			this._onDone.fire();
 			this.dispose();
-			this.hide('done');
+			this.hide('ok');
 		}
 	}
 
-	public cancel(): void {
+	public close(): void {
+		this.cancel('close');
+	}
+	public cancel(hideReason: HideReason = 'cancel'): void {
+		const currentPage = this._wizard.pages[this._wizard.currentPage];
 		this._onCancel.fire();
 		this.dispose();
-		this.hide('cancel');
+		this.hide(hideReason, currentPage.pageName ?? this._wizard.currentPage.toString());
 	}
 
 	private async validateNavigation(newPage: number): Promise<boolean> {

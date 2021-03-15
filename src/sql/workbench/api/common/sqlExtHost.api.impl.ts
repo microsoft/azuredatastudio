@@ -33,6 +33,8 @@ import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IExtensionApiFactory as vsIApiFactory, createApiFactoryAndRegisterActors as vsApiFactory } from 'vs/workbench/api/common/extHost.api.impl';
 import { IExtHostCommands } from 'vs/workbench/api/common/extHostCommands';
+import { ExtHostWorkspace } from 'sql/workbench/api/common/extHostWorkspace';
+import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitDataService';
 
 export interface IAzdataExtensionApiFactory {
 	(extension: IExtensionDescription): typeof azdata;
@@ -67,6 +69,7 @@ export interface IAdsExtensionApiFactory {
  * This method instantiates and returns the extension API surface
  */
 export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionApiFactory {
+	const initData = accessor.get(IExtHostInitDataService);
 	const uriTransformer = accessor.get(IURITransformerService);
 	const rpcProtocol = accessor.get(IExtHostRpcService);
 	const extHostLogService = accessor.get(ILogService);
@@ -92,6 +95,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
 	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol));
 	const extHostExtensionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostExtensionManagement, new ExtHostExtensionManagement(rpcProtocol));
+	const extHostWorkspace = rpcProtocol.set(SqlExtHostContext.ExtHostWorkspace, new ExtHostWorkspace(rpcProtocol));
 
 	return {
 		azdata: function (extension: IExtensionDescription): typeof azdata {
@@ -137,7 +141,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				},
 				connect(connectionProfile: azdata.IConnectionProfile, saveConnection: boolean, showDashboard: boolean): Thenable<azdata.ConnectionResult> {
 					return extHostConnectionManagement.$connect(connectionProfile, saveConnection, showDashboard);
-				},
+				}
 			};
 
 			// Backcompat "sqlops" APIs
@@ -412,14 +416,17 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 					return extHostModalDialogs.createDialog(name);
 				},
 				// the 'width' parameter used to be boolean type named 'isWide', the optional boolean type for 'width' parameter is added for backward compatibility support of 'isWide' parameter.
-				createModelViewDialog(title: string, dialogName?: string, width?: boolean | azdata.window.DialogWidth): azdata.window.Dialog {
+				createModelViewDialog(title: string, dialogName?: string, width?: boolean | sqlExtHostTypes.DialogWidth, dialogStyle?: sqlExtHostTypes.DialogStyle, dialogPosition?: sqlExtHostTypes.DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogProperties?: sqlExtHostTypes.IDialogProperties): azdata.window.Dialog {
 					let dialogWidth: azdata.window.DialogWidth;
 					if (typeof width === 'boolean') {
 						dialogWidth = width === true ? 'wide' : 'narrow';
 					} else {
 						dialogWidth = width;
 					}
-					return extHostModelViewDialog.createDialog(title, dialogName, extension, dialogWidth);
+					if (dialogStyle === undefined) {
+						dialogStyle = 'flyout';
+					}
+					return extHostModelViewDialog.createDialog(title, dialogName, extension, dialogWidth, dialogStyle, dialogPosition, renderHeader, renderFooter, dialogProperties);
 				},
 				createTab(title: string): azdata.window.DialogTab {
 					return extHostModelViewDialog.createTab(title, extension);
@@ -433,8 +440,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				closeDialog(dialog: azdata.window.Dialog) {
 					return extHostModelViewDialog.closeDialog(dialog);
 				},
-				createWizardPage(title: string): azdata.window.WizardPage {
-					return extHostModelViewDialog.createWizardPage(title, extension);
+				createWizardPage(title: string, pageName?: string): azdata.window.WizardPage {
+					return extHostModelViewDialog.createWizardPage(title, extension, pageName);
 				},
 				createWizard(title: string, name?: string, width?: azdata.window.DialogWidth): azdata.window.Wizard {
 					return extHostModelViewDialog.createWizard(title, name, width);
@@ -459,6 +466,15 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard,
 				createModelViewEditor(title: string, options?: azdata.ModelViewEditorOptions, name?: string): azdata.workspace.ModelViewEditor {
 					return extHostModelViewDialog.createModelViewEditor(title, extension, name, options);
+				},
+				createAndEnterWorkspace(location: vscode.Uri, workspaceFile: vscode.Uri): Promise<void> {
+					return extHostWorkspace.$createAndEnterWorkspace(location, workspaceFile);
+				},
+				enterWorkspace(workspaceFile: vscode.Uri): Promise<void> {
+					return extHostWorkspace.$enterWorkspace(workspaceFile);
+				},
+				saveAndEnterWorkspace(workspaceFile: vscode.Uri): Promise<void> {
+					return extHostWorkspace.$saveAndEnterWorkspace(workspaceFile);
 				}
 			};
 
@@ -537,6 +553,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			};
 
 			return {
+				version: initData.version,
 				accounts,
 				ButtonType: sqlExtHostTypes.ButtonType,
 				connection,

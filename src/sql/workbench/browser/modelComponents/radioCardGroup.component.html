@@ -1,5 +1,4 @@
-<div role="radiogroup" *ngIf="cards" [class]="orientation + ' card-group'" class="card-group" style="flex-wrap:wrap"
-	[style.height]="height" [style.width]="width" [attr.aria-label]="ariaLabel" (keydown)="onKeyDown($event)">
+<div role="radiogroup" *ngIf="cards" [ngStyle]="CSSStyles" [class]="orientation + ' card-group'" class="card-group" [attr.aria-label]="ariaLabel" (keydown)="onKeyDown($event)">
 	<div #cardDiv role="radio" *ngFor="let card of cards" class="model-card" (click)="selectCard(card.id)"
 		[attr.aria-checked]="isCardSelected(card.id)" [tabIndex]="getTabIndex(card.id)" [style.width]="cardWidth"
 		[style.height]="cardHeight" (focus)="onCardFocus(card.id)" (blur)="onCardBlur(card.id)" style="flex:0 0 auto;">
@@ -11,7 +10,7 @@
 			<div *ngIf="card.icon" class="icon-container">
 				<div [class]="getIconClass(card.id)" [style.width]="iconWidth" [style.height]="iconHeight"> </div>
 			</div>
-			<div class="text-container">
+			<div class="text-container" [style.height]="textHeight">
 				<div *ngFor="let description of card.descriptions" class="inner-text-content">
 					<span class="text-value" [ngStyle]="description.textStyles">{{description.textValue}}</span>
 					<a *ngIf="description.linkDisplayValue" class="link-value" href="#"

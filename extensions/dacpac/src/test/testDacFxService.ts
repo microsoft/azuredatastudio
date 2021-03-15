@@ -35,7 +35,7 @@ export class DacFxTestService implements mssql.IDacFxService {
 		this.dacfxResult.operationId = extractOperationId;
 		return Promise.resolve(this.dacfxResult);
 	}
-	importDatabaseProject(databaseName: string, targetFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: mssql.ExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Promise<mssql.DacFxResult> {
+	createProjectFromDatabase(databaseName: string, targetFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: mssql.ExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Promise<mssql.DacFxResult> {
 		this.dacfxResult.operationId = importOperationId;
 		return Promise.resolve(this.dacfxResult);
 	}

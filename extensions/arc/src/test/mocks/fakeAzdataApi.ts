@@ -49,7 +49,9 @@ export class FakeAzdataApi implements azdataExt.IAzdataApi {
 							replaceEngineSettings?: boolean,
 							workers?: number
 						},
-						_additionalEnvVars?: { [key: string]: string }): Promise<azdataExt.AzdataOutput<void>> { throw new Error('Method not implemented.'); }
+						_engineVersion?: string,
+						_additionalEnvVars?: azdataExt.AdditionalEnvVars
+					): Promise<azdataExt.AzdataOutput<void>> { throw new Error('Method not implemented.'); }
 				}
 			},
 			sql: {
@@ -73,8 +75,11 @@ export class FakeAzdataApi implements azdataExt.IAzdataApi {
 	getPath(): Promise<string> {
 		throw new Error('Method not implemented.');
 	}
-	login(_endpoint: string, _username: string, _password: string): Promise<azdataExt.AzdataOutput<any>> {
+	login(_endpoint: string, _username: string, _password: string): Promise<azdataExt.AzdataOutput<void>> {
 		return <any>undefined;
+	}
+	acquireSession(_endpoint: string, _username: string, _password: string): Promise<azdataExt.AzdataSession> {
+		return Promise.resolve({ dispose: () => { } });
 	}
 	version(): Promise<azdataExt.AzdataOutput<string>> {
 		throw new Error('Method not implemented.');

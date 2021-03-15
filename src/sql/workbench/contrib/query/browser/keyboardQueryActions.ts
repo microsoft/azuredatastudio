@@ -9,6 +9,7 @@ import { Action } from 'vs/base/common/actions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 import * as azdata from 'azdata';
+import { escape } from 'sql/base/common/strings';
 
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -21,6 +22,7 @@ import { EditDataEditor } from 'sql/workbench/contrib/editData/browser/editDataE
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
+import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 const singleQuote = '\'';
 
@@ -131,6 +133,79 @@ export class RunCurrentQueryKeyboardAction extends Action {
 	}
 }
 
+export class CopyQueryWithResultsKeyboardAction extends Action {
+	public static ID = 'copyQueryWithResultsKeyboardAction';
+	public static LABEL = nls.localize('copyQueryWithResultsKeyboardAction', "Copy Query With Results");
+
+	constructor(
+		id: string,
+		label: string,
+		@IEditorService private _editorService: IEditorService,
+		@IClipboardService private _clipboardService: IClipboardService,
+		@IQueryModelService protected readonly queryModelService: IQueryModelService,
+		@INotificationService private readonly notificationService: INotificationService
+	) {
+		super(id, label);
+	}
+
+	public async getFormattedResults(editor): Promise<ClipboardData> {
+		let queryRunner = this.queryModelService.getQueryRunner(editor.input.uri);
+		let allResults = '';
+		let allHtmlResults = '';
+
+		if (queryRunner && queryRunner.batchSets.length > 0) {
+			for (let i = 0; i < queryRunner.batchSets[0].resultSetSummaries.length; i++) {
+				let resultSummary = queryRunner.batchSets[0].resultSetSummaries[i];
+				let result = await queryRunner.getQueryRows(0, resultSummary.rowCount, resultSummary.batchId, resultSummary.id);
+				let tableHeaders = resultSummary.columnInfo.map((col, i) => (col.columnName));
+				let htmlTableHeaders = `<thead><tr style="background-color:DarkGray">${resultSummary.columnInfo.map((col, i) => (`<th style="border:1.0pt solid black;padding:3pt;font-size:9pt;font-weight: bold;">${escape(col.columnName)}</th>`)).join('')}</tr></thead>`;
+				let copyString = '\n';
+				let htmlCopyString = '';
+
+				for (let rowEntry of result.rows) {
+					htmlCopyString = htmlCopyString + '<tr>';
+					for (let colIdx = 0; colIdx < rowEntry.length; colIdx++) {
+						let value = rowEntry[colIdx].displayValue;
+						copyString = `${copyString}${value}\t`;
+						htmlCopyString = `${htmlCopyString}<td style="border:1.0pt solid black;padding:3pt;font-size:9pt;">${escape(value)}</td>`;
+					}
+					// Removes the tab seperator from the end of a row
+					copyString = copyString.slice(0, -1 * '\t'.length) + '\n';
+					htmlCopyString = htmlCopyString + '</tr>';
+				}
+
+				allResults = `${allResults}${tableHeaders.join('\t')}${copyString}\n`;
+				allHtmlResults = `${allHtmlResults}<div><br/><br/>
+				<table cellPadding="5" cellSpacing="1" style="border:1;border-color:Black;font-family:Segoe UI;font-size:9pt;border-collapse:collapse">
+				${htmlTableHeaders}${htmlCopyString}
+				</table></div>`;
+			}
+		}
+
+		return { text: allResults, html: allHtmlResults };
+	}
+
+	public async run(): Promise<void> {
+		const editor = this._editorService.activeEditorPane;
+		if (editor instanceof QueryEditor) {
+			let allResults = await this.getFormattedResults(editor);
+			let queryText = editor.getAllText();
+
+			let data = {
+				text: `${queryText}\n\n${allResults.text}`,
+				html: `<div style="font-family: Consolas, 'Courier New', monospace;font-weight: normal;font-size: 10pt;">${escape(queryText).replace(/\r\n|\n|\r/gm, '<br/>')}</div>${allResults.html}`
+			};
+
+			await this._clipboardService.write(data);
+
+			this.notificationService.notify({
+				severity: Severity.Info,
+				message: nls.localize('queryActions.queryResultsCopySuccess', "Successfully copied query and results.")
+			});
+		}
+	}
+}
+
 export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 	public static ID = 'runCurrentQueryWithActualPlanKeyboardAction';
 	public static LABEL = nls.localize('runCurrentQueryWithActualPlanKeyboardAction', "Run Current Query with Actual Plan");
@@ -228,6 +303,32 @@ export class ToggleQueryResultsKeyboardAction extends Action {
 			editor.toggleResultsEditorVisibility();
 		}
 		return Promise.resolve(null);
+	}
+}
+
+
+
+/**
+ * Toggle the focus between query editor and results pane
+ */
+export class ToggleFocusBetweenQueryEditorAndResultsAction extends Action {
+	public static ID = 'ToggleFocusBetweenQueryEditorAndResultsAction';
+	public static LABEL = nls.localize('ToggleFocusBetweenQueryEditorAndResultsAction', "Toggle Focus Between Query And Results");
+
+	constructor(
+		id: string,
+		label: string,
+		@IEditorService private _editorService: IEditorService
+	) {
+		super(id, label);
+		this.enabled = true;
+	}
+
+	public async run(): Promise<void> {
+		const editor = this._editorService.activeEditorPane;
+		if (editor instanceof QueryEditor) {
+			editor.toggleFocusBetweenQueryEditorAndResults();
+		}
 	}
 }
 

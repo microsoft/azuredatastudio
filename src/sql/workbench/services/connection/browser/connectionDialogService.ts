@@ -42,7 +42,7 @@ export interface IConnectionComponentCallbacks {
 	onCreateNewServerGroup?: () => void;
 	onAdvancedProperties?: () => void;
 	onSetAzureTimeOut?: () => void;
-	onFetchDatabases?: (serverName: string, authenticationType: string, userName?: string, password?: string, azureAccount?: string) => Promise<string[]>;
+	onFetchDatabases?: (serverName: string, authenticationType: string, userName?: string, password?: string, token?: string) => Promise<string[]>;
 	onAzureTenantSelection?: (azureTenantId?: string) => void;
 }
 
@@ -201,7 +201,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private handleOnCancel(params: INewConnectionParams): void {
 		if (this.ignoreNextConnect) {
 			this._connectionDialog.resetConnection();
-			this._connectionDialog.close();
+			this._connectionDialog.close('cancel');
 			this.ignoreNextConnect = false;
 			this._dialogDeferredPromise.resolve(undefined);
 			return;
@@ -229,7 +229,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private async handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile): Promise<void> {
 		if (this.ignoreNextConnect) {
 			this._connectionDialog.resetConnection();
-			this._connectionDialog.close();
+			this._connectionDialog.close('ok');
 			this.ignoreNextConnect = false;
 			this._connecting = false;
 			this._dialogDeferredPromise.resolve(connection);
@@ -253,7 +253,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			const connectionResult = await this._connectionManagementService.connectAndSaveProfile(connection, uri, options, params && params.input);
 			this._connecting = false;
 			if (connectionResult && connectionResult.connected) {
-				this._connectionDialog.close();
+				this._connectionDialog.close('ok');
 				if (this._dialogDeferredPromise) {
 					this._dialogDeferredPromise.resolve(connectionResult.connectionProfile);
 				}

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';	// {{SQL CARBON EDIT}}
 import { URI } from 'vs/base/common/uri';
 import { $ } from 'vs/base/browser/dom';
 
@@ -12,6 +12,11 @@ export class BrowserClipboardService implements IClipboardService {
 	declare readonly _serviceBrand: undefined;
 
 	private readonly mapTextToType = new Map<string, string>(); // unsupported in web (only in-memory)
+
+	// {{SQL CARBON EDIT}}
+	async write(data: ClipboardData, type?: string): Promise<void> {
+		throw new Error('Not Implemented');
+	}
 
 	async writeText(text: string, type?: string): Promise<void> {
 

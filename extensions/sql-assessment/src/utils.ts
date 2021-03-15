@@ -47,7 +47,7 @@ export async function readHistoryFileNames(targetName: string): Promise<TargetWi
 			};
 
 			const datePart = `_${targetFile.split('_')[1]}`;
-			result.children.push(...files.filter(f => f.endsWith(datePart)));
+			result.children.push(...files.filter(f => f.endsWith(datePart) && f !== targetFile));
 			result.children = result.children.map(c => path.join(dirPath, c));
 
 			return result;
@@ -96,3 +96,12 @@ export function htmlEscape(html: string): string {
 function escapeFileName(str: string): string {
 	return str.replace(/\*/g, '_');
 }
+
+export function limitLongName(name: string, maxLength: number): string {
+	if (name.length > maxLength) {
+		return name.slice(0, maxLength) + '...';
+	}
+	return name;
+}
+
+

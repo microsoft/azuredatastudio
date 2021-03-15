@@ -100,7 +100,7 @@ export class LanguagesTable extends LanguageViewBase {
 		let languages: mssql.ExternalLanguage[] | undefined;
 
 		languages = await this.listLanguages();
-		let tableData: any[][] = [];
+		let tableData: azdata.DeclarativeTableCellValue[][] = [];
 
 		if (languages) {
 
@@ -113,10 +113,10 @@ export class LanguagesTable extends LanguageViewBase {
 			});
 		}
 
-		this._table.data = tableData;
+		this._table.dataValues = tableData;
 	}
 
-	private createTableRow(language: mssql.ExternalLanguage, content: mssql.ExternalLanguageContent): any[] {
+	private createTableRow(language: mssql.ExternalLanguage, content: mssql.ExternalLanguageContent): azdata.DeclarativeTableCellValue[] {
 		if (this._modelBuilder) {
 			let dropLanguageButton = this._modelBuilder.button().withProperties({
 				label: '',
@@ -153,7 +153,7 @@ export class LanguagesTable extends LanguageViewBase {
 					newLang: false
 				});
 			});
-			return [language.name, content.platform, language.createdDate, dropLanguageButton, editLanguageButton];
+			return [{ value: language.name }, { value: content.platform || '' }, { value: language.createdDate || '' }, { value: dropLanguageButton }, { value: editLanguageButton }];
 		}
 
 		return [];

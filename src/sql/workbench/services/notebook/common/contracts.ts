@@ -41,6 +41,7 @@ export enum NotebookChangeType {
 	CellOutputUpdated,
 	DirtyStateChanged,
 	KernelChanged,
+	MetadataChanged,
 	TrustChanged,
 	Saved,
 	CellExecuted,
@@ -48,3 +49,5 @@ export enum NotebookChangeType {
 	CellOutputCleared,
 	CellMetadataUpdated
 }
+
+export const ImageMimeTypes = ['image/bmp', 'image/png', 'image/jpeg', 'image/gif'];

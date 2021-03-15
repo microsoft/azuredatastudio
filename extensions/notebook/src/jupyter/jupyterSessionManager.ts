@@ -9,7 +9,6 @@ import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { EOL } from 'os';
 import * as utils from '../common/utils';
 const localize = nls.loadMessageBundle();
 
@@ -184,7 +183,7 @@ export class JupyterSession implements nb.ISession {
 		skipSettingEnvironmentVars?: boolean,
 		private _pythonEnvVarPath?: string) {
 		this.setEnvironmentVars(skipSettingEnvironmentVars).catch(error => {
-			console.error(`Unexpected exception setting Jupyter Session variables : ${error}`);
+			console.error('Unexpected exception setting Jupyter Session variables : ', error);
 			// We don't want callers to hang forever waiting - it's better to continue on even if we weren't
 			// able to set environment variables
 			this._messagesComplete.resolve();
@@ -240,7 +239,7 @@ export class JupyterSession implements nb.ISession {
 				await this._installation.promptForPythonInstall(kernelInfo.display_name);
 			} catch (err) {
 				// Have to swallow the error here to prevent hangs when changing back to the old kernel.
-				console.error(err.toString());
+				console.error('Exception encountered prompting for Python install', err);
 				return this._kernel;
 			}
 		}
@@ -259,7 +258,7 @@ export class JupyterSession implements nb.ISession {
 
 	public async configureKernel(): Promise<void> {
 		let sparkmagicConfDir = path.join(utils.getUserHome(), '.sparkmagic');
-		await utils.mkDir(sparkmagicConfDir);
+		await utils.ensureDir(sparkmagicConfDir);
 
 		// Default to localhost in config file.
 		let creds: ICredentials = {
@@ -364,15 +363,15 @@ export class JupyterSession implements nb.ISession {
 			let allCode: string = '';
 			// Ensure cwd matches notebook path (this follows Jupyter behavior)
 			if (this.path && path.dirname(this.path)) {
-				allCode += `%cd ${path.dirname(this.path)}${EOL}`;
+				allCode += `%cd ${path.dirname(this.path)}\n`;
 			}
 			for (let i = 0; i < Object.keys(process.env).length; i++) {
 				let key = Object.keys(process.env)[i];
 				if (key.toLowerCase() === 'path' && this._pythonEnvVarPath) {
-					allCode += `%set_env ${key}=${this._pythonEnvVarPath}${EOL}`;
+					allCode += `%set_env ${key}=${this._pythonEnvVarPath}\n`;
 				} else {
 					// Jupyter doesn't seem to alow for setting multiple variables at once, so doing it with multiple commands
-					allCode += `%set_env ${key}=${process.env[key]}${EOL}`;
+					allCode += `%set_env ${key}=${process.env[key]}\n`;
 				}
 			}
 
@@ -395,7 +394,8 @@ async function getClusterController(controllerEndpoint: string, authType: bdc.Au
 		username,
 		password);
 	try {
-		await controller.getClusterConfig();
+		// We just want to test the connection - so using getEndpoints since that is available to all users (not just admin)
+		await controller.getEndPoints();
 		return controller;
 	} catch (err) {
 		// Initial username/password failed so prompt user for username password until either user
@@ -426,7 +426,8 @@ async function getClusterController(controllerEndpoint: string, authType: bdc.Au
 			}
 			const controller = bdcApi.getClusterController(controllerEndpoint, authType, newUsername, newPassword);
 			try {
-				await controller.getClusterConfig();
+				// We just want to test the connection - so using getEndpoints since that is available to all users (not just admin)
+				await controller.getEndPoints();
 				return controller;
 			} catch (err) {
 				errorMessage = localize('bdcConnectError', "Error: {0}. ", err.message ?? err);

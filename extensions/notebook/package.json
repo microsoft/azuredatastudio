@@ -8,6 +8,7 @@
     "vscode": "*",
     "azdata": "*"
   },
+  "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
   "main": "./out/extension",
   "activationEvents": [
     "*"
@@ -239,6 +240,10 @@
         "title": "%title.closeJupyterNotebook%"
       },
       {
+        "command": "notebook.command.moveTo",
+        "title": "%title.moveTo%"
+      },
+      {
         "command": "notebook.command.createBook",
         "title": "%title.createJupyterBook%",
         "category": "%books-preview-category%",
@@ -385,6 +390,10 @@
           "when": "false"
         },
         {
+          "command": "notebook.command.moveTo",
+          "when": "false"
+        },
+        {
           "command": "notebook.command.revealInBooksViewlet",
           "when": "false"
         },
@@ -455,6 +464,10 @@
         {
           "command": "notebook.command.closeNotebook",
           "when": "view == bookTreeView && viewItem == savedNotebook"
+        },
+        {
+          "command": "notebook.command.moveTo",
+          "when": "view == bookTreeView && viewItem == savedNotebook || view == bookTreeView && viewItem == section"
         },
         {
           "command": "notebook.command.pinNotebook",
@@ -609,6 +622,7 @@
   },
   "dependencies": {
     "@jupyterlab/services": "^3.2.1",
+    "@microsoft/ads-extension-telemetry": "^1.1.3",
     "adm-zip": "^0.4.14",
     "error-ex": "^1.3.1",
     "fast-glob": "^3.1.0",
@@ -642,6 +656,9 @@
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
     "vscodetestcover": "^1.1.0"
+  },
+  "resolutions": {
+    "url-parse": "^1.5.1"
   },
   "enableProposedApi": true
 }

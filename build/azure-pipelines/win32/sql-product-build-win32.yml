@@ -6,6 +6,7 @@ steps:
     displayName: Prepare cache flag
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    displayName: Restore Cache - Compiled Files
     inputs:
       keyfile: 'build/.cachesalt, .build/commit, .build/quality'
       targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
@@ -44,7 +45,7 @@ steps:
       $ErrorActionPreference = "Stop"
       "machine github.com`nlogin azuredatastudio`npassword $(github-distro-mixin-password)" | Out-File "$env:USERPROFILE\_netrc" -Encoding ASCII
 
-      exec { git config user.email "andresse@microsoft.com" }
+      exec { git config user.email "sqltools@service.microsoft.com" }
       exec { git config user.name "AzureDataStudio" }
     displayName: Prepare tooling
 
@@ -55,6 +56,7 @@ steps:
     displayName: Merge distro
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    displayName: Restore Cache - Node Modules
     inputs:
       keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
       targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
@@ -71,6 +73,7 @@ steps:
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
+    displayName: Save Cache - Node Modules
     inputs:
       keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
       targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
@@ -135,13 +138,13 @@ steps:
     displayName: Run integration tests (Electron)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - powershell: |
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      exec { .\scripts\test-unstable.bat --build --tfs }
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
-    displayName: Run unstable tests
+  # - powershell: |
+  #     . build/azure-pipelines/win32/exec.ps1
+  #     $ErrorActionPreference = "Stop"
+  #     exec { .\scripts\test-unstable.bat --build --tfs }
+  #   continueOnError: true
+  #   condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
+  #   displayName: Run unstable tests
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'Sign out code'
@@ -290,7 +293,7 @@ steps:
       searchFolder: '$(Build.SourcesDirectory)'
       failTaskOnFailedTests: true
     continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
+    condition: and(succeededOrFailed(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection'

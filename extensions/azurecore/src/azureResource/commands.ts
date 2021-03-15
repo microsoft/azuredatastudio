@@ -17,11 +17,12 @@ import { AzureResourceTreeProvider } from './tree/treeProvider';
 import { AzureResourceAccountTreeNode } from './tree/accountTreeNode';
 import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService } from '../azureResource/interfaces';
 import { AzureResourceServiceNames } from './constants';
-import { AzureAccount, Tenant } from '../account-provider/interfaces';
+import { AzureAccount, Tenant } from 'azurecore';
 import { FlatAccountTreeNode } from './tree/flatAccountTreeNode';
 import { ConnectionDialogTreeProvider } from './tree/connectionDialogTreeProvider';
 
-export function registerAzureResourceCommands(appContext: AppContext, trees: (AzureResourceTreeProvider | ConnectionDialogTreeProvider)[]): void {
+export function registerAzureResourceCommands(appContext: AppContext, azureViewTree: AzureResourceTreeProvider, connectionDialogTree: ConnectionDialogTreeProvider): void {
+	const trees = [azureViewTree, connectionDialogTree];
 	vscode.commands.registerCommand('azure.resource.startterminal', async (node?: TreeNode) => {
 		try {
 			const enablePreviewFeatures = vscode.workspace.getConfiguration('workbench').get('enablePreviewFeatures');
@@ -168,10 +169,12 @@ export function registerAzureResourceCommands(appContext: AppContext, trees: (Az
 		}
 	});
 
-	vscode.commands.registerCommand('azure.resource.refresh', async (node?: TreeNode) => {
-		for (const tree of trees) {
-			await tree.refresh(node, true);
-		}
+	vscode.commands.registerCommand('azure.resource.azureview.refresh', async (node?: TreeNode) => {
+		await azureViewTree.refresh(node, true);
+	});
+
+	vscode.commands.registerCommand('azure.resource.connectiondialog.refresh', async (node?: TreeNode) => {
+		await connectionDialogTree.refresh(node, true);
 	});
 
 	vscode.commands.registerCommand('azure.resource.signin', async (node?: TreeNode) => {

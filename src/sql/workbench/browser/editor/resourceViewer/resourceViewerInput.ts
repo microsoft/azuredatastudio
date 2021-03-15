@@ -12,12 +12,12 @@ import { DataGridProvider, IDataGridProviderService } from 'sql/workbench/servic
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { getDataGridFormatter } from 'sql/workbench/services/dataGridProvider/browser/dataGridProviderUtils';
+import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
 
-export interface ColumnDefinition extends Slick.Column<azdata.DataGridItem> {
+export interface ColumnDefinition extends FilterableColumn<azdata.DataGridItem> {
 	name: string;
 	// actions is a special internal type for the More Actions column
 	type: azdata.DataGridColumnType | 'actions';
-	filterable?: boolean;
 }
 
 export class ResourceViewerInput extends EditorInput {
@@ -44,8 +44,7 @@ export class ResourceViewerInput extends EditorInput {
 		this.actionsColumn = new ButtonColumn<azdata.DataGridItem>({
 			id: 'actions',
 			iconCssClass: 'toggle-more',
-			title: nls.localize('resourceViewer.showActions', "Show Actions"),
-			sortable: false
+			title: nls.localize('resourceViewer.showActions', "Show Actions")
 		});
 		this.refresh().catch(err => onUnexpectedError(err));
 	}

@@ -9,8 +9,6 @@ import * as vscode from 'vscode';
 import { ConnectionMode, IconPath, IconPathHelper } from '../constants';
 import * as loc from '../localizedConstants';
 
-export class UserCancelledError extends Error { }
-
 /**
  * Converts the resource type name into the localized Display Name for that type.
  * @param resourceType The resource type name to convert
@@ -67,7 +65,7 @@ export function getResourceTypeIcon(resourceType: string | undefined): IconPath 
 
 /**
  * Returns the text to display for known connection modes
- * @param connectionMode The string repsenting the connection mode
+ * @param connectionMode The string representing the connection mode
  */
 export function getConnectionModeDisplayText(connectionMode: string | undefined): string {
 	connectionMode = connectionMode ?? '';
@@ -111,7 +109,7 @@ export function getDatabaseStateDisplayText(state: string): string {
  * @returns Promise resolving to the user's input if it passed validation,
  * or undefined if the input box was closed for any other reason
  */
-async function promptInputBox(title: string, options: vscode.InputBoxOptions): Promise<string> {
+async function promptInputBox(title: string, options: vscode.InputBoxOptions): Promise<string | undefined> {
 	const inputBox = vscode.window.createInputBox();
 	inputBox.title = title;
 	inputBox.prompt = options.prompt;
@@ -186,6 +184,30 @@ export async function promptAndConfirmPassword(validate: (input: string) => stri
 	return undefined;
 }
 
+export function generateGuid(): string {
+	let hexValues: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
+	// c.f. rfc4122 (UUID version 4 = xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx)
+	let oct: string = '';
+	let tmp: number;
+	/* tslint:disable:no-bitwise */
+	for (let a: number = 0; a < 4; a++) {
+		tmp = (4294967296 * Math.random()) | 0;
+		oct += hexValues[tmp & 0xF] +
+			hexValues[tmp >> 4 & 0xF] +
+			hexValues[tmp >> 8 & 0xF] +
+			hexValues[tmp >> 12 & 0xF] +
+			hexValues[tmp >> 16 & 0xF] +
+			hexValues[tmp >> 20 & 0xF] +
+			hexValues[tmp >> 24 & 0xF] +
+			hexValues[tmp >> 28 & 0xF];
+	}
+
+	// 'Set the two most significant bits (bits 6 and 7) of the clock_seq_hi_and_reserved to zero and one, respectively'
+	let clockSequenceHi: string = hexValues[8 + (Math.random() * 4) | 0];
+	return oct.substr(0, 8) + '-' + oct.substr(9, 4) + '-4' + oct.substr(13, 3) + '-' + clockSequenceHi + oct.substr(16, 3) + '-' + oct.substr(19, 12);
+	/* tslint:enable:no-bitwise */
+}
+
 /**
  * Gets the message to display for a given error object that may be a variety of types.
  * @param error The error object
@@ -200,12 +222,16 @@ export function getErrorMessage(error: any, useMessageWithLink: boolean = false)
 
 /**
  * Parses an address into its separate ip and port values. Address must be in the form <ip>:<port>
+ * or <ip>,<port>
  * @param address The address to parse
  */
 export function parseIpAndPort(address: string): { ip: string, port: string } {
-	const sections = address.split(':');
+	let sections = address.split(':');
 	if (sections.length !== 2) {
-		throw new Error(`Invalid address format for ${address}. Address must be in the form <ip>:<port>`);
+		sections = address.split(',');
+		if (sections.length !== 2) {
+			throw new Error(`Invalid address format for ${address}. Address must be in the form <ip>:<port> or <ip>,<port>`);
+		}
 	}
 	return {
 		ip: sections[0],
@@ -282,8 +308,50 @@ export function convertToGibibyteString(value: string): string {
  * @param condition
  * @param message
  */
-export function throwUnless(condition: boolean, message?: string): asserts condition {
+export function throwUnless(condition: any, message?: string): asserts condition {
 	if (!condition) {
 		throw new Error(message);
 	}
+}
+
+export async function tryExecuteAction<T>(action: () => T | PromiseLike<T>): Promise<{ result: T | undefined, error: any }> {
+	let error: any, result: T | undefined;
+	try {
+		result = await action();
+	} catch (e) {
+		error = e;
+	}
+	return { result, error };
+}
+
+function decorate(decorator: (fn: Function, key: string) => Function): Function {
+	return (_target: any, key: string, descriptor: any) => {
+		let fnKey: string | null = null;
+		let fn: Function | null = null;
+
+		if (typeof descriptor.value === 'function') {
+			fnKey = 'value';
+			fn = descriptor.value;
+		} else if (typeof descriptor.get === 'function') {
+			fnKey = 'get';
+			fn = descriptor.get;
+		}
+
+		if (!fn || !fnKey) {
+			throw new Error('not supported');
+		}
+
+		descriptor[fnKey] = decorator(fn, key);
+	};
+}
+
+export function debounce(delay: number): Function {
+	return decorate((fn, key) => {
+		const timerKey = `$debounce$${key}`;
+
+		return function (this: any, ...args: any[]) {
+			clearTimeout(this[timerKey]);
+			this[timerKey] = setTimeout(() => fn.apply(this, args), delay);
+		};
+	});
 }

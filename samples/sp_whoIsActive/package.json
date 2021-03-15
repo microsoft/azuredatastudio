@@ -242,8 +242,7 @@
     "build": "gulp build",
     "compile": "gulp compile",
     "watch": "gulp watch",
-    "typings": "gulp copytypings",
-    "postinstall": "node ./node_modules/vscode/bin/install && node ./node_modules/azdata/bin/install"
+    "typings": "gulp copytypings"
   },
   "dependencies": {
     "fs-extra": "^5.0.0",
@@ -251,9 +250,10 @@
     "openurl": "^1.1.1"
   },
   "devDependencies": {
-    "azdata": "^1.0.0",
+    "@types/azdata": "^1.25.0",
     "@types/mocha": "^2.2.42",
     "@types/node": "^7.0.43",
+    "@types/vscode": "^1.51.0",
     "child-process-promise": "^2.2.1",
     "del": "^3.0.0",
     "gulp": "^4.0.0",
@@ -265,8 +265,7 @@
     "temp-write": "^3.4.0",
     "tslint": "^3.14.0",
     "typemoq": "^2.1.0",
-    "typescript": "^2.6.1",
-    "vsce": "1.36.2",
-    "vscode": "^1.1.6"
+    "typescript": "^4.1.2",
+    "vsce": "1.36.2"
   }
 }

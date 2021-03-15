@@ -20,7 +20,7 @@
 	"darwinBundleIdentifier": "com.azuredatastudio.oss",
 	"linuxIconName": "com.azuredatastudio.oss",
 	"licenseFileName": "LICENSE.txt",
-	"reportIssueUrl": "https://github.com/Microsoft/azuredatastudio/issues/new?labels=customer%20reported%20issue",
+	"reportIssueUrl": "https://github.com/Microsoft/azuredatastudio/issues/new",
 	"requestFeatureUrl": "https://go.microsoft.com/fwlink/?linkid=2118021",
 	"privacyStatementUrl": "https://privacy.microsoft.com/en-us/privacystatement",
 	"telemetryOptOutUrl": "https://github.com/Microsoft/azuredatastudio/wiki/How-to-Disable-Telemetry-Reporting",
@@ -30,13 +30,13 @@
 		"asimovKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e"
 	},
 	"sendASmile": {
-		"reportIssueUrl": "https://github.com/Microsoft/azuredatastudio/issues/new?labels=customer%20reported%20issue",
+		"reportIssueUrl": "https://github.com/Microsoft/azuredatastudio/issues/new",
 		"requestFeatureUrl": "https://go.microsoft.com/fwlink/?linkid=2118115"
 	},
 	"gettingStartedUrl": "https://go.microsoft.com/fwlink/?linkid=862039",
 	"releaseNotesUrl": "https://go.microsoft.com/fwlink/?linkid=875578",
 	"documentationUrl": "https://go.microsoft.com/fwlink/?linkid=862277",
-	"vscodeVersion": "1.48.0",
+	"vscodeVersion": "1.51.0",
 	"commit": "9ca6200018fc206d67a47229f991901a8a453781",
 	"date": "2017-12-15T12:00:00.000Z",
 	"recommendedExtensions": [
@@ -57,6 +57,8 @@
 		"Microsoft.schema-compare",
 		"Microsoft.sql-assessment",
 		"Microsoft.datavirtualization",
+		"Microsoft.sql-database-projects",
+		"Microsoft.machine-learning",
 		"Redgate.sql-prompt",
 		"Redgate.sql-search",
 		"IDERA.sqldm-performance-insights",
@@ -70,8 +72,8 @@
 	"extensionAllowedProposedApi": [
 		"ms-vscode.vscode-js-profile-flame",
 		"ms-vscode.vscode-js-profile-table",
-		"ms-vscode.references-view",
-		"ms-vscode.github-browser"
+		"ms-vscode.github-browser",
+		"ms-vscode.github-richnav"
 	],
 	"extensionsGallery": {
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
@@ -79,7 +81,7 @@
 	"builtInExtensions": [
 		{
 			"name": "Microsoft.sqlservernotebook",
-			"version": "0.3.8",
+			"version": "0.3.9",
 			"repo": "https://github.com/Microsoft/azuredatastudio"
 		}
 	],

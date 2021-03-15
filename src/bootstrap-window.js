@@ -21,10 +21,16 @@
 		globalThis.MonacoBootstrapWindow = factory();
 	}
 }(this, function () {
+	const bootstrapLib = bootstrap();
 	const preloadGlobals = globals();
 	const sandbox = preloadGlobals.context.sandbox;
 	const webFrame = preloadGlobals.webFrame;
-	const safeProcess = sandbox ? preloadGlobals.process : process;
+	const safeProcess = preloadGlobals.process;
+	const configuration = parseWindowConfiguration();
+
+	// Start to resolve process.env before anything gets load
+	// so that we can run loading and resolving in parallel
+	const whenEnvResolved = safeProcess.resolveEnv(configuration.userEnv);
 
 	/**
 	 * @param {string[]} modulePaths
@@ -32,18 +38,6 @@
 	 * @param {{ forceEnableDeveloperKeybindings?: boolean, disallowReloadKeybinding?: boolean, removeDeveloperKeybindingsAfterLoad?: boolean, canModifyDOM?: (config: object) => void, beforeLoaderConfig?: (config: object, loaderConfig: object) => void, beforeRequire?: () => void }=} options
 	 */
 	function load(modulePaths, resultCallback, options) {
-		const args = parseURLQueryArgs();
-		/**
-		 * // configuration: INativeWindowConfiguration
-		 * @type {{
-		 * zoomLevel?: number,
-		 * extensionDevelopmentPath?: string[],
-		 * extensionTestsPath?: string,
-		 * userEnv?: { [key: string]: string | undefined },
-		 * appRoot?: string,
-		 * nodeCachedDataDir?: string
-		 * }} */
-		const configuration = JSON.parse(args['config'] || '{}') || {};
 
 		// Apply zoom level early to avoid glitches
 		const zoomLevel = configuration.zoomLevel;
@@ -101,11 +95,27 @@
 
 		window['MonacoEnvironment'] = {};
 
+		const baseUrl = sandbox ?
+			`${bootstrapLib.fileUriFromPath(configuration.appRoot, { isWindows: safeProcess.platform === 'win32', scheme: 'vscode-file', fallbackAuthority: 'vscode-app' })}/out` :
+			`${bootstrapLib.fileUriFromPath(configuration.appRoot, { isWindows: safeProcess.platform === 'win32' })}/out`;
+
 		const loaderConfig = {
-			baseUrl: `${uriFromPath(configuration.appRoot)}/out`,
+			baseUrl: baseUrl,
 			'vs/nls': nlsConfig,
 			amdModulesPattern: /^(vs|sql)\//, // {{SQL CARBON EDIT}} include sql in regex
+			preferScriptTags: sandbox
 		};
+		// use a trusted types policy when loading via script tags
+		if (loaderConfig.preferScriptTags && window && window.trustedTypes) { // {{SQL CARBON EDIT}} fix uglify error
+			loaderConfig.trustedTypesPolicy = window.trustedTypes.createPolicy('amdLoader', {
+				createScriptURL(value) {
+					if (value.startsWith(window.location.origin)) {
+						return value;
+					}
+					throw new Error(`Invalid script url: ${value}`);
+				}
+			});
+		}
 
 		// cached data config
 		if (configuration.nodeCachedDataDir) {
@@ -131,17 +141,23 @@
 			options.beforeRequire();
 		}
 
-		require(modulePaths, result => {
+		require(modulePaths, async result => {
 			try {
+
+				// Wait for process environment being fully resolved
+				const perf = perfLib();
+				perf.mark('willWaitForShellEnv');
+				await whenEnvResolved;
+				perf.mark('didWaitForShellEnv');
+
+				// Callback only after process environment is resolved
 				const callbackResult = resultCallback(result, configuration);
-				if (callbackResult && typeof callbackResult.then === 'function') {
-					callbackResult.then(() => {
-						if (developerToolsUnbind && options && options.removeDeveloperKeybindingsAfterLoad) {
-							developerToolsUnbind();
-						}
-					}, error => {
-						onUnexpectedError(error, enableDeveloperTools);
-					});
+				if (callbackResult instanceof Promise) {
+					await callbackResult;
+
+					if (developerToolsUnbind && options && options.removeDeveloperKeybindingsAfterLoad) {
+						developerToolsUnbind();
+					}
 				}
 			} catch (error) {
 				onUnexpectedError(error, enableDeveloperTools);
@@ -150,20 +166,30 @@
 	}
 
 	/**
-	 * @returns {{[param: string]: string }}
+	 * Parses the contents of the `INativeWindowConfiguration` that
+	 * is passed into the URL from the `electron-main` side.
+	 *
+	 * @returns {{
+	 * zoomLevel?: number,
+	 * extensionDevelopmentPath?: string[],
+	 * extensionTestsPath?: string,
+	 * userEnv?: { [key: string]: string | undefined },
+	 * appRoot: string,
+	 * nodeCachedDataDir?: string
+	 * }}
 	 */
-	function parseURLQueryArgs() {
-		const search = window.location.search || '';
-
-		return search.split(/[?&]/)
+	function parseWindowConfiguration() {
+		const rawConfiguration = (window.location.search || '').split(/[?&]/)
 			.filter(function (param) { return !!param; })
 			.map(function (param) { return param.split('='); })
 			.filter(function (param) { return param.length === 2; })
 			.reduce(function (r, param) { r[param[0]] = decodeURIComponent(param[1]); return r; }, {});
+
+		return JSON.parse(rawConfiguration['config'] || '{}') || {};
 	}
 
 	/**
-	 * @param {boolean} disallowReloadKeybinding
+	 * @param {boolean | undefined} disallowReloadKeybinding
 	 * @returns {() => void}
 	 */
 	function registerDeveloperKeybindings(disallowReloadKeybinding) {
@@ -184,6 +210,7 @@
 		const TOGGLE_DEV_TOOLS_KB_ALT = '123'; // F12
 		const RELOAD_KB = (safeProcess.platform === 'darwin' ? 'meta-82' : 'ctrl-82'); // mac: Cmd-R, rest: Ctrl-R
 
+		/** @type {((e: any) => void) | undefined} */
 		let listener = function (e) {
 			const key = extractKey(e);
 			if (key === TOGGLE_DEV_TOOLS_KB || key === TOGGLE_DEV_TOOLS_KB_ALT) {
@@ -221,6 +248,14 @@
 	}
 
 	/**
+	 * @return {{ fileUriFromPath: (path: string, config: { isWindows?: boolean, scheme?: string, fallbackAuthority?: string }) => string; }}
+	 */
+	function bootstrap() {
+		// @ts-ignore (defined in bootstrap.js)
+		return globalThis.MonacoBootstrap;
+	}
+
+	/**
 	 * @return {typeof import('./vs/base/parts/sandbox/electron-sandbox/globals')}
 	 */
 	function globals() {
@@ -253,8 +288,26 @@
 		return uri.replace(/#/g, '%23');
 	}
 
+	/**
+	 * @return {{ mark: (name: string) => void }}
+	 */
+	function perfLib() {
+		globalThis.MonacoPerformanceMarks = globalThis.MonacoPerformanceMarks || [];
+
+		return {
+			/**
+			 * @param {string} name
+			 */
+			mark(name) {
+				globalThis.MonacoPerformanceMarks.push(name, Date.now());
+				performance.mark(name);
+			}
+		};
+	}
+
 	return {
 		load,
-		globals
+		globals,
+		perfLib
 	};
 }));

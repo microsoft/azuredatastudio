@@ -144,8 +144,12 @@ export class FileConfigPage extends ImportPage {
 		}).component();
 
 		// Handle server changes
-		this.serverDropdown.onValueChanged(async (params) => {
-			this.model.server = (this.serverDropdown.value as ConnectionDropdownValue).connection;
+		this.serverDropdown.onValueChanged(async () => {
+			const connectionValue = this.serverDropdown.value as ConnectionDropdownValue;
+			if (!connectionValue) {
+				return;
+			}
+			this.model.server = connectionValue.connection;
 
 			await this.populateDatabaseDropdown();
 			await this.populateSchemaDropdown();
@@ -165,10 +169,7 @@ export class FileConfigPage extends ImportPage {
 
 		this.model.server = values[0].connection;
 
-
-		this.serverDropdown.updateProperties({
-			values: values
-		});
+		this.serverDropdown.values = values;
 		return true;
 	}
 
@@ -178,9 +179,15 @@ export class FileConfigPage extends ImportPage {
 		}).component();
 
 		// Handle database changes
-		this.databaseDropdown.onValueChanged(async (db) => {
-			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
-			//this.populateTableNames();
+		this.databaseDropdown.onValueChanged(async () => {
+			const nameValue = this.databaseDropdown.value as azdata.CategoryValue;
+			if (!nameValue) {
+				return;
+			}
+			this.model.database = nameValue.name;
+			if (!this.model.server) {
+				return;
+			}
 			let connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(this.model.server.providerName, azdata.DataProviderType.ConnectionProvider);
 			let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 			connectionProvider.changeDatabase(connectionUri, this.model.database);
@@ -195,8 +202,8 @@ export class FileConfigPage extends ImportPage {
 
 	private async populateDatabaseDropdown(): Promise<boolean> {
 		this.databaseDropdown.loading = true;
-		this.databaseDropdown.updateProperties({ values: [] });
-		this.schemaDropdown.updateProperties({ values: [] });
+		this.databaseDropdown.values = [];
+		this.schemaDropdown.values = [];
 
 		if (!this.model.server) {
 			//TODO handle error case
@@ -238,6 +245,7 @@ export class FileConfigPage extends ImportPage {
 
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: constants.browseFilesText,
+			secondary: true
 		}).component();
 
 		this.fileButton.onDidClick(async (click) => {
@@ -340,7 +348,11 @@ export class FileConfigPage extends ImportPage {
 		this.schemaLoader = this.view.modelBuilder.loadingComponent().withItem(this.schemaDropdown).component();
 
 		this.schemaDropdown.onValueChanged(() => {
-			this.model.schema = (<azdata.CategoryValue>this.schemaDropdown.value).name;
+			const schemaValue = this.schemaDropdown.value as azdata.CategoryValue;
+			if (!schemaValue) {
+				return;
+			}
+			this.model.schema = schemaValue.name;
 		});
 
 
@@ -356,22 +368,22 @@ export class FileConfigPage extends ImportPage {
 
 		let values = await this.getSchemaValues();
 
-		this.model.schema = values[0].name;
+		this.model.schema = values[0]?.name;
 
-		this.schemaDropdown.updateProperties({
-			values: values
-		});
+		this.schemaDropdown.values = values;
 
 		this.schemaLoader.loading = false;
 		return true;
 	}
 
 	public async getSchemaValues(): Promise<{ displayName: string, name: string }[]> {
+		if (!this.model.server) {
+			return [];
+		}
 		let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 		let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
 
 		let results = await queryProvider.runQueryAndReturn(connectionUri, constants.selectSchemaQuery);
-
 		let idx = -1;
 		let count = -1;
 

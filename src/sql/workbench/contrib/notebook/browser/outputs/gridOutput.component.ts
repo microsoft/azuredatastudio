@@ -36,11 +36,13 @@ import { ChartView } from 'sql/workbench/contrib/charts/browser/chartView';
 import { ToggleableAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { values } from 'vs/base/common/collections';
 import { URI } from 'vs/base/common/uri';
 import { assign } from 'vs/base/common/objects';
-
+import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
+import { equals } from 'vs/base/common/arrays';
 @Component({
 	selector: GridOutputComponent.SELECTOR,
 	template: `<div #output class="notebook-cellTable"></div>`
@@ -94,16 +96,13 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		this._cellOutput = value;
 	}
 
-	@Input() set batchId(value: number | undefined) {
-		this._batchId = value;
-	}
-
-	@Input() set id(value: number | undefined) {
-		this._id = value;
-	}
-
 	ngOnInit() {
 		if (this.cellModel) {
+			let outputId: QueryResultId = this.cellModel.getOutputId(this._cellOutput);
+			if (outputId) {
+				this._batchId = outputId.batchId;
+				this._id = outputId.id;
+			}
 			this._register(this.cellModel.onTableUpdated(e => {
 				if (e.resultSet.batchId === this._batchId && e.resultSet.id === this._id) {
 					this.updateResult(e.resultSet, e.rows);
@@ -119,6 +118,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		}
 		if (!this._table) {
 			let source = <IDataResource><any>this._bundleOptions.data[this.mimeType];
+			reorderGridData(source);
 			let state = new GridTableState(0, 0);
 			this._table = this.instantiationService.createInstance(DataResourceTable, source, this.cellModel, this.cellOutput, state);
 			let outputElement = <HTMLElement>this.output.nativeElement;
@@ -146,6 +146,44 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	}
 }
 
+function reorderGridData(source: IDataResource): void {
+	// Get Column Names list from the data resource schema
+	const columnNames: string[] = source.schema.fields.map(field => field.name);
+	// Check to see if data source is ordered properly based on schema
+	// Papermill executed notebooks with KQL for instance will organize the
+	// row data in alphabetical order as a result the outputted grid will be
+	// unordered and not based on the data resource schema
+	if (source.data.length > 0) {
+		let rowKeys = Object.keys(source.data[0]);
+		if (!equals(columnNames, rowKeys)) {
+			// SQL notebooks do not use columnName as key (instead use indices)
+			// Indicies indicate the row is ordered properly
+			// We must check the data to know if it is in index form
+			let notIndexOrderKeys = false;
+			for (let index = 0; index < rowKeys.length - 1; index++) {
+				// Index form (all numbers, start at 0 and increase by 1)
+				let value = Number(rowKeys[index]);
+				if (isNaN(value) || value !== index) {
+					// break if key is not a number or in index form
+					notIndexOrderKeys = true;
+					break;
+				}
+			}
+			// Only reorder data that is not in index form
+			if (notIndexOrderKeys) {
+				source.data.forEach((row, index) => {
+					// Order each row based on the schema
+					let reorderedData = {};
+					for (let key of columnNames) {
+						reorderedData[key] = row[key];
+					}
+					source.data[index] = reorderedData;
+				});
+			}
+		}
+	}
+}
+
 class DataResourceTable extends GridTableBase<any> {
 
 	private _gridDataProvider: DataResourceDataProvider;
@@ -161,9 +199,10 @@ class DataResourceTable extends GridTableBase<any> {
 		@IInstantiationService protected instantiationService: IInstantiationService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IQueryModelService queryModelService: IQueryModelService
 	) {
-		super(state, createResultSet(source), { actionOrientation: ActionsOrientation.HORIZONTAL }, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
+		super(state, createResultSet(source), { actionOrientation: ActionsOrientation.HORIZONTAL }, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel);
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 
@@ -239,11 +278,13 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 
 	public updateChartData(rowCount: number, columnCount: number, gridDataProvider: IGridDataProvider): void {
-		gridDataProvider.getRowData(0, rowCount).then(result => {
-			let range = new Slick.Range(0, 0, rowCount - 1, columnCount - 1);
-			let columns = gridDataProvider.getColumnHeaders(range);
-			this._chart.setData(result.rows, columns);
-		});
+		if (this.chartDisplayed) {
+			gridDataProvider.getRowData(0, rowCount).then(result => {
+				let range = new Slick.Range(0, 0, rowCount - 1, columnCount - 1);
+				let columns = gridDataProvider.getColumnHeaders(range);
+				this._chart.setData(result.rows, columns);
+			});
+		}
 	}
 
 	private setChartOptions(options: IInsightOptions | undefined) {
@@ -254,6 +295,7 @@ class DataResourceTable extends GridTableBase<any> {
 	public updateResultSet(resultSet: ResultSetSummary, rows: ICellValue[][]): void {
 		this._gridDataProvider.updateResultSet(resultSet, rows);
 		super.updateResult(resultSet);
+		this.updateChartData(resultSet?.rowCount, resultSet?.columnInfo?.length, this._gridDataProvider);
 	}
 }
 

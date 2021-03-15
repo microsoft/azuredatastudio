@@ -325,9 +325,11 @@ export function renderSVG(options: renderSVG.IRenderOptions): Promise<void> {
 	// Unpack the options.
 	let { host, source, trusted, unconfined } = options;
 
+	// Clear the content in the host.
+	host.textContent = '';
+
 	// Clear the content if there is no source.
 	if (!source) {
-		host.textContent = '';
 		return Promise.resolve(undefined);
 	}
 

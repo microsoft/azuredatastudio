@@ -2,7 +2,7 @@
   "name": "asde-deployment",
   "displayName": "%extension-displayName%",
   "description": "%extension-description%",
-  "version": "0.4.0",
+  "version": "0.4.2",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -10,7 +10,7 @@
   "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
   "engines": {
     "vscode": "*",
-    "azdata": "*"
+    "azdata": ">=1.25.0"
   },
   "repository": {
     "type": "git",
@@ -43,8 +43,12 @@
                 "displayName": "%sql-edge-remote-display-name%"
               },
               {
-                "name": "azure-create-new",
+                "name": "azure-create-new-password-auth",
                 "displayName": "%sql-edge-azure-display-name%"
+              },
+              {
+                "name": "azure-create-new-sshkey-auth",
+                "displayName": "%sql-edge-azure-sshkey-display-name%"
               },
               {
                 "name": "azure-single-device",
@@ -59,6 +63,7 @@
         ],
         "providers": [
           {
+            "name": "sql-edge_local",
             "dialog": {
               "notebook": "./notebooks/edge/deploy-sql-edge-local.ipynb",
               "title": "%sql-edge-local-title%",
@@ -152,6 +157,7 @@
             "when": "type=local"
           },
           {
+            "name": "sql-edge_remote",
             "dialog": {
               "notebook": "./notebooks/edge/deploy-sql-edge-remote.ipynb",
               "title": "%sql-edge-remote-title%",
@@ -269,6 +275,7 @@
             "when": "type=remote"
           },
           {
+            "name": "sql-edge-azure-create-new-password-auth",
             "dialog": {
               "notebook": "./notebooks/edge/deploy-sql-edge-azure.ipynb",
               "title": "%sql-edge-azure-title%",
@@ -296,7 +303,6 @@
                           "defaultValue": "westus",
                           "required": true,
                           "locationVariableName": "AZDATA_NB_VAR_ASDE_AZURE_LOCATION",
-                          "displayLocationVariableName": "AZDATA_NB_VAR_ASDE_AZURE_LOCATION_TEXT",
                           "locations": [
                             "australiaeast",
                             "australiasoutheast",
@@ -339,9 +345,13 @@
                           "confirmationRequired": true,
                           "confirmationLabel": "%vm_password_confirm%",
                           "required": true,
-                          "textValidationRequired": true,
-                          "textValidationRegex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])[A-Za-z\\d\\W_]{12,123}$",
-                          "textValidationDescription": "%vm_password_validation_error_message%"
+                          "validations": [
+                            {
+                              "type": "regex_match",
+                              "regex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_])[A-Za-z\\d\\W_]{12,123}$",
+                              "description": "%vm_password_validation_error_message%"
+                            }
+                          ]
                         }
                       ]
                     },
@@ -393,9 +403,132 @@
                 "version": "2.13.0"
               }
             ],
-            "when": "type=azure-create-new"
+            "when": "type=azure-create-new-password-auth"
           },
           {
+            "name": "sql-edge-azure-create-new-sshkey-auth",
+            "dialog": {
+              "notebook": "./notebooks/edge/deploy-sql-edge-azure-sshkey.ipynb",
+              "title": "%sql-edge-azure-title%",
+              "name": "sql-edge-azure-dialog",
+              "tabs": [
+                {
+                  "title": "",
+                  "sections": [
+                    {
+                      "title": "%azure-info-section-title%",
+                      "collapsible": true,
+                      "fields": [
+                        {
+                          "subscriptionVariableName": "AZDATA_NB_VAR_ASDE_SUBSCRIPTIONID",
+                          "resourceGroupVariableName": "AZDATA_NB_VAR_ASDE_RESOURCEGROUP",
+                          "type": "azure_account",
+                          "required": true,
+                          "allowNewResourceGroup": true,
+                          "newResourceGroupFlagVariableName": "AZDATA_NB_VAR_ASDE_NEW_RESOURCEGROUP",
+                          "newResourceGroupNameVariableName": "AZDATA_NB_VAR_ASDE_NEW_RESOURCEGROUP_NAME"
+                        },
+                        {
+                          "type": "azure_locations",
+                          "label": "%azure_location%",
+                          "defaultValue": "westus",
+                          "required": true,
+                          "locationVariableName": "AZDATA_NB_VAR_ASDE_AZURE_LOCATION",
+                          "locations": [
+                            "australiaeast",
+                            "australiasoutheast",
+                            "brazilsouth",
+                            "canadacentral",
+                            "canadaeast",
+                            "centralindia",
+                            "centralus",
+                            "eastasia",
+                            "eastus",
+                            "eastus2",
+                            "francecentral",
+                            "japaneast",
+                            "japanwest",
+                            "koreacentral",
+                            "koreasouth",
+                            "northcentralus",
+                            "northeurope",
+                            "southcentralus",
+                            "southindia",
+                            "southeastasia",
+                            "uksouth",
+                            "ukwest",
+                            "westcentralus",
+                            "westeurope",
+                            "westus",
+                            "westus2"
+                          ]
+                        },
+                        {
+                          "label": "%vm_admin%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_VM_ADMIN",
+                          "type": "text",
+                          "required": true
+                        },
+                        {
+                          "label": "%vm_ssh_public_key%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_VM_PASSWORD",
+                          "type": "text",
+                          "required": true
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%sqlserver-info-section-title%",
+                      "collapsible": true,
+                      "fields": [
+                        {
+                          "label": "%docker-sql-password-field%",
+                          "variableName": "AZDATA_NB_VAR_SA_PASSWORD",
+                          "type": "sql_password",
+                          "userName": "sa",
+                          "confirmationRequired": true,
+                          "confirmationLabel": "%docker-confirm-sql-password-field%",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "%docker-sql-port-field%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_SQL_PORT",
+                          "type": "number",
+                          "defaultValue": 31433,
+                          "required": true
+                        },
+                        {
+                          "label": "%package_path%",
+                          "description": "%package_path_description%",
+                          "variableName": "AZDATA_NB_VAR_ASDE_PACKAGE_PATH",
+                          "type": "file_picker",
+                          "required": false,
+                          "filter": {
+                            "displayName": "%package-files%",
+                            "fileTypes": [
+                              "zip",
+                              "bacpac",
+                              "dacpac"
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli",
+                "version": "2.13.0"
+              }
+            ],
+            "when": "type=azure-create-new-sshkey-auth"
+          },
+          {
+            "name": "sql-edge_azure-single-device",
             "dialog": {
               "notebook": "./notebooks/edge/deploy-sql-edge-single-device.ipynb",
               "title": "%sql-edge-azure-single-device-title%",
@@ -486,6 +619,7 @@
             "when": "type=azure-single-device"
           },
           {
+            "name": "sql-edge_azure-multi-device",
             "dialog": {
               "notebook": "./notebooks/edge/deploy-sql-edge-multi-device.ipynb",
               "title": "%sql-edge-azure-multi-device-title%",
@@ -579,19 +713,22 @@
             "when": "type=azure-multi-device"
           }
         ],
-        "agreement": {
-          "template": "%edge-agreement%",
-          "links": [
-            {
-              "text": "%microsoft-privacy-statement%",
-              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
-            },
-            {
-              "text": "%edge-eula%",
-              "url": "https://go.microsoft.com/fwlink/?linkid=2128283"
-            }
-          ]
-        }
+        "agreements": [
+          {
+            "template": "%edge-agreement%",
+            "links": [
+              {
+                "text": "%microsoft-privacy-statement%",
+                "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+              },
+              {
+                "text": "%edge-eula%",
+                "url": "https://go.microsoft.com/fwlink/?linkid=2128283"
+              }
+            ],
+            "when": "true"
+          }
+        ]
       }
     ]
   },

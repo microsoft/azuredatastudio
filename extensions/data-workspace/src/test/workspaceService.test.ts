@@ -5,9 +5,13 @@
 
 import 'mocha';
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import * as sinon from 'sinon';
 import * as should from 'should';
 import * as path from 'path';
+import * as TypeMoq from 'typemoq';
+import * as constants from '../common/constants';
+import * as utils from '../common/utils';
 import { WorkspaceService } from '../services/workspaceService';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import { createProjectProvider } from './projectProviderRegistry.test';
@@ -60,8 +64,17 @@ function createMockExtension(id: string, isActive: boolean, projectTypes: string
 	};
 }
 
+interface ExtensionGlobalMemento extends vscode.Memento {
+	setKeysForSync(keys: string[]): void;
+}
+
 suite('WorkspaceService Tests', function (): void {
-	const service = new WorkspaceService();
+	const mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+	const mockGlobalState = TypeMoq.Mock.ofType<ExtensionGlobalMemento>();
+	mockGlobalState.setup(x => x.update(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
+	mockExtensionContext.setup(x => x.globalState).returns(() => mockGlobalState.object);
+
+	const service = new WorkspaceService(mockExtensionContext.object);
 
 	this.afterEach(() => {
 		sinon.restore();
@@ -111,10 +124,14 @@ suite('WorkspaceService Tests', function (): void {
 
 		const provider1 = createProjectProvider([
 			{
+				id: 'tp1',
+				description: '',
 				projectFileExtension: 'testproj',
 				icon: '',
 				displayName: 'test project'
 			}, {
+				id: 'tp2',
+				description: '',
 				projectFileExtension: 'testproj1',
 				icon: '',
 				displayName: 'test project 1'
@@ -122,6 +139,8 @@ suite('WorkspaceService Tests', function (): void {
 		]);
 		const provider2 = createProjectProvider([
 			{
+				id: 'sp1',
+				description: '',
 				projectFileExtension: 'sqlproj',
 				icon: '',
 				displayName: 'sql project'
@@ -149,10 +168,12 @@ suite('WorkspaceService Tests', function (): void {
 		const extension2 = createMockExtension('ext2', false, ['sqlproj']);
 		const extension3 = createMockExtension('ext3', false, ['dbproj']);
 		stubAllExtensions([extension1, extension2, extension3].map(ext => ext.extension));
-		const getProviderByProjectTypeStub = sinon.stub(ProjectProviderRegistry, 'getProviderByProjectType');
+		const getProviderByProjectTypeStub = sinon.stub(ProjectProviderRegistry, 'getProviderByProjectExtension');
 		getProviderByProjectTypeStub.onFirstCall().returns(undefined);
 		getProviderByProjectTypeStub.onSecondCall().returns(createProjectProvider([
 			{
+				id: 'sp1',
+				description: '',
 				projectFileExtension: 'sqlproj',
 				icon: '',
 				displayName: 'test project'
@@ -167,6 +188,8 @@ suite('WorkspaceService Tests', function (): void {
 
 		getProviderByProjectTypeStub.reset();
 		getProviderByProjectTypeStub.returns(createProjectProvider([{
+			id: 'tp2',
+			description: '',
 			projectFileExtension: 'csproj',
 			icon: '',
 			displayName: 'test cs project'
@@ -187,6 +210,7 @@ suite('WorkspaceService Tests', function (): void {
 		const updateConfigurationStub = sinon.stub();
 		const getConfigurationStub = sinon.stub().returns([processPath('folder1/proj2.sqlproj')]);
 		const onWorkspaceProjectsChangedStub = sinon.stub();
+		const showInformationMessageStub = sinon.stub(vscode.window, 'showInformationMessage');
 		const onWorkspaceProjectsChangedDisposable = service.onDidWorkspaceProjectsChange(() => {
 			onWorkspaceProjectsChangedStub();
 		});
@@ -203,6 +227,8 @@ suite('WorkspaceService Tests', function (): void {
 		]);
 		should.strictEqual(updateConfigurationStub.calledOnce, true, 'update configuration should have been called once');
 		should.strictEqual(updateWorkspaceFoldersStub.calledOnce, true, 'updateWorkspaceFolders should have been called once');
+		should.strictEqual(showInformationMessageStub.calledOnce, true, 'showInformationMessage should be called once');
+		should(showInformationMessageStub.calledWith(constants.ProjectAlreadyOpened(processPath('/test/folder/folder1/proj2.sqlproj')))).be.true(`showInformationMessage not called with expected message '${constants.ProjectAlreadyOpened(processPath('/test/folder/folder1/proj2.sqlproj'))}' Actual '${showInformationMessageStub.getCall(0).args[0]}'`);
 		should.strictEqual(updateConfigurationStub.calledWith('projects', sinon.match.array.deepEquals([
 			processPath('folder1/proj2.sqlproj'),
 			processPath('proj1.sqlproj'),
@@ -211,6 +237,64 @@ suite('WorkspaceService Tests', function (): void {
 		should.strictEqual(updateWorkspaceFoldersStub.calledWith(1, null, sinon.match((arg) => {
 			return arg.uri.path === '/test/other';
 		})), true, 'updateWorkspaceFolder parameters does not match expectation');
+		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, true, 'the onDidWorkspaceProjectsChange event should have been fired');
+		onWorkspaceProjectsChangedDisposable.dispose();
+	});
+
+	test('test addProjectsToWorkspace when no workspace open', async () => {
+		stubWorkspaceFile(undefined);
+		const onWorkspaceProjectsChangedStub = sinon.stub();
+		const onWorkspaceProjectsChangedDisposable = service.onDidWorkspaceProjectsChange(() => {
+			onWorkspaceProjectsChangedStub();
+		});
+		const createWorkspaceStub = sinon.stub(azdata.workspace, 'createAndEnterWorkspace').resolves(undefined);
+
+		await service.addProjectsToWorkspace([
+			vscode.Uri.file('/test/folder/proj1.sqlproj')
+		]);
+
+		should.strictEqual(createWorkspaceStub.calledOnce, true, 'createAndEnterWorkspace should have been called once');
+		should.strictEqual(onWorkspaceProjectsChangedStub.notCalled, true, 'the onDidWorkspaceProjectsChange event should not have been fired');
+		onWorkspaceProjectsChangedDisposable.dispose();
+	});
+
+	test('test addProjectsToWorkspace when untitled workspace is open', async () => {
+		stubWorkspaceFile(undefined);
+		const onWorkspaceProjectsChangedStub = sinon.stub();
+		const onWorkspaceProjectsChangedDisposable = service.onDidWorkspaceProjectsChange(() => {
+			onWorkspaceProjectsChangedStub();
+		});
+		const saveWorkspaceStub = sinon.stub(azdata.workspace, 'saveAndEnterWorkspace').resolves(undefined);
+		sinon.stub(utils, 'isCurrentWorkspaceUntitled').returns(true);
+		sinon.stub(vscode.workspace, 'workspaceFolders').value(['folder1']);
+
+		await service.addProjectsToWorkspace([
+			vscode.Uri.file('/test/folder/proj1.sqlproj')
+		]);
+
+		should.strictEqual(saveWorkspaceStub.calledOnce, true, 'saveAndEnterWorkspace should have been called once');
+		should.strictEqual(onWorkspaceProjectsChangedStub.notCalled, true, 'the onDidWorkspaceProjectsChange event should not have been fired');
+		onWorkspaceProjectsChangedDisposable.dispose();
+	});
+
+	test('test loadTempProjects', async () => {
+		const processPath = (original: string): string => {
+			return original.replace(/\//g, path.sep);
+		};
+		stubWorkspaceFile('/test/folder/proj1.code-workspace');
+		const updateConfigurationStub = sinon.stub();
+		const getConfigurationStub = sinon.stub().returns([processPath('folder1/proj2.sqlproj')]);
+		const onWorkspaceProjectsChangedStub = sinon.stub();
+		const onWorkspaceProjectsChangedDisposable = service.onDidWorkspaceProjectsChange(() => {
+			onWorkspaceProjectsChangedStub();
+		});
+		stubGetConfigurationValue(getConfigurationStub, updateConfigurationStub);
+		sinon.stub(azdata.workspace, 'createAndEnterWorkspace').resolves(undefined);
+		sinon.stub(vscode.workspace, 'workspaceFolders').value(['folder1']);
+		mockGlobalState.setup(x => x.get(TypeMoq.It.isAny())).returns(() => [processPath('folder1/proj2.sqlproj')]);
+
+		await service.loadTempProjects();
+
 		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, true, 'the onDidWorkspaceProjectsChange event should have been fired');
 		onWorkspaceProjectsChangedDisposable.dispose();
 	});
@@ -235,4 +319,30 @@ suite('WorkspaceService Tests', function (): void {
 		onWorkspaceProjectsChangedDisposable.dispose();
 	});
 
+	test('test checkForProjectsNotAddedToWorkspace', async () => {
+		const previousSetting = await vscode.workspace.getConfiguration(constants.projectsConfigurationKey)[constants.showNotAddedProjectsMessageKey];
+		await vscode.workspace.getConfiguration(constants.projectsConfigurationKey).update(constants.showNotAddedProjectsMessageKey, true, true);
+
+		sinon.stub(service, 'getProjectsInWorkspace').returns([vscode.Uri.file('abc.sqlproj'), vscode.Uri.file('folder1/abc1.sqlproj')]);
+		sinon.stub(vscode.workspace, 'workspaceFolders').value([{uri: vscode.Uri.file('.')}]);
+		sinon.stub(service, 'getAllProjectTypes').resolves([{
+			projectFileExtension: 'sqlproj',
+			id: 'sql project',
+			displayName: 'sql project',
+			description: '',
+			icon: ''
+		}]);
+		const infoMessageStub = sinon.stub(vscode.window, 'showInformationMessage').resolves(<any>constants.DoNotShowAgain);
+		const getProjectsInwWorkspaceFolderStub = sinon.stub(service, 'getAllProjectsInWorkspaceFolder').resolves([vscode.Uri.file('abc.sqlproj').fsPath, vscode.Uri.file('folder1/abc1.sqlproj').fsPath]);
+
+		await service.checkForProjectsNotAddedToWorkspace();
+		should(infoMessageStub.notCalled).be.true('Should not have found projects not added to workspace');
+
+		// add a project to the workspace folder not added to the workspace yet
+		getProjectsInwWorkspaceFolderStub.resolves([vscode.Uri.file('abc.sqlproj').fsPath, vscode.Uri.file('folder1/abc1.sqlproj').fsPath, vscode.Uri.file('folder2/abc2.sqlproj').fsPath]);
+		await service.checkForProjectsNotAddedToWorkspace();
+		should(infoMessageStub.calledOnce).be.true('Should have found a project that was not added to the workspace');
+
+		await vscode.workspace.getConfiguration(constants.projectsConfigurationKey).update(constants.showNotAddedProjectsMessageKey, previousSetting, true);
+	});
 });

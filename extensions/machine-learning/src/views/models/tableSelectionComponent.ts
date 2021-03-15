@@ -30,6 +30,7 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	private _form: azdata.FormContainer | undefined;
 	private _databases: azdata.DropDownComponent | undefined;
 	private _selectedTableName: string = '';
+	private _selectedDatabaseName: string = '';
 	private _tables: azdata.DropDownComponent | undefined;
 	private _dbNames: string[] = [];
 	private _tableNames: DatabaseTable[] = [];
@@ -62,8 +63,11 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 			width: '275px'
 		}).component();
 
-		this._databases.onValueChanged(async () => {
-			await this.onDatabaseSelected();
+		this._databases.onValueChanged(async (value) => {
+			if (this._databases?.values && this._selectedDatabaseName !== value.selected) {
+				this._selectedDatabaseName = value.selected;
+				await this.onDatabaseSelected();
+			}
 		});
 
 		this._existingTableButton = modelBuilder.radioButton().withProperties({
@@ -115,10 +119,10 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 		this._tables.onValueChanged(async (value) => {
 			// There's an issue with dropdown doesn't set the value in editable mode. this is the workaround
 
-			if (this._tables && value) {
+			if (this._tables && value && this._selectedTableName !== value.selected) {
 				this._selectedTableName = value.selected;
+				await this.onTableSelected();
 			}
-			await this.onTableSelected();
 		});
 
 		const databaseForm = modelBuilder.formContainer().withFormItems([{
@@ -281,7 +285,6 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 		}
 
 		await this.onTableSelected();
-
 	}
 
 	private refreshTableComponent(): void {

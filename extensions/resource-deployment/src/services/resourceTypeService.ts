@@ -9,7 +9,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption } from '../interfaces';
+import { DeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfNotebookBasedDialogInfo, instanceOfNotebookDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfWizardDeploymentProvider, NotebookInfo, NotebookPathInfo, ResourceType, ResourceTypeOption, ResourceSubType, AgreementInfo, HelpText, InitialVariableValues } from '../interfaces';
 import { AzdataService } from './azdataService';
 import { KubeService } from './kubeService';
 import { INotebookService } from './notebookService';
@@ -17,13 +17,21 @@ import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
 import * as loc from './../localizedConstants';
 import { ResourceTypeWizard } from '../ui/resourceTypeWizard';
+import { deepClone } from '../common/utils';
 
 const localize = nls.loadMessageBundle();
+
+/**
+ * Used to filter the specific optionValues that the deployment wizard shows
+ */
+export interface OptionValuesFilter {
+	[key: string]: Record<string, string[]>
+}
 
 export interface IResourceTypeService {
 	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
 	validateResourceTypes(resourceTypes: ResourceType[]): string[];
-	startDeployment(resourceType: ResourceType): void;
+	startDeployment(resourceType: ResourceType, optionValuesFilter?: OptionValuesFilter, initialVariableValues?: InitialVariableValues): void;
 }
 
 export class ResourceTypeService implements IResourceTypeService {
@@ -38,15 +46,21 @@ export class ResourceTypeService implements IResourceTypeService {
 	getResourceTypes(filterByPlatform: boolean = true): ResourceType[] {
 		if (this._resourceTypes.length === 0) {
 			vscode.extensions.all.forEach((extension) => {
-				const extensionResourceTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.resourceDeploymentTypes as ResourceType[];
-				if (extensionResourceTypes) {
-					extensionResourceTypes.forEach((resourceType: ResourceType) => {
-						this.updatePathProperties(resourceType, extension.extensionPath);
-						resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
-						resourceType.getOkButtonText = (selectedOptions) => { return this.getOkButtonText(resourceType, selectedOptions); };
-						this._resourceTypes.push(resourceType);
-					});
-				}
+				const extensionResourceTypes = extension.packageJSON.contributes?.resourceDeploymentTypes as ResourceType[];
+				extensionResourceTypes?.forEach((extensionResourceType: ResourceType) => {
+					// Clone the object - we modify it by adding complex types and so if we modify the original contribution then
+					// we can break VS Code functionality since it will sometimes pass this object over the RPC layer which requires
+					// stringifying it - which can break with some of the complex types we add.
+					const resourceType = deepClone(extensionResourceType);
+					this.updatePathProperties(resourceType, extension.extensionPath);
+					resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
+					resourceType.getOkButtonText = (selectedOptions) => { return this.getOkButtonText(resourceType, selectedOptions); };
+					resourceType.getAgreementInfo = (selectedOptions) => { return this.getAgreementInfo(resourceType, selectedOptions); };
+					resourceType.getHelpText = (selectedOptions) => { return this.getHelpText(resourceType, selectedOptions); };
+					this.getResourceSubTypes(resourceType);
+					this._resourceTypes.push(resourceType);
+				});
+
 			});
 		}
 
@@ -66,24 +80,28 @@ export class ResourceTypeService implements IResourceTypeService {
 			resourceType.icon.light = path.join(extensionPath, resourceType.icon.light);
 		}
 		resourceType.providers.forEach((provider) => {
-			if (instanceOfNotebookDeploymentProvider(provider)) {
-				this.updateNotebookPath(provider, extensionPath);
-			} else if (instanceOfDialogDeploymentProvider(provider) && instanceOfNotebookBasedDialogInfo(provider.dialog)) {
-				this.updateNotebookPath(provider.dialog, extensionPath);
-			}
-			else if ('bdcWizard' in provider) {
-				this.updateNotebookPath(provider.bdcWizard, extensionPath);
-			}
-			else if ('notebookWizard' in provider) {
-				this.updateNotebookPath(provider.notebookWizard, extensionPath);
-			}
-			else if ('azureSQLVMWizard' in provider) {
-				this.updateNotebookPath(provider.azureSQLVMWizard, extensionPath);
-			}
-			else if ('azureSQLDBWizard' in provider) {
-				this.updateNotebookPath(provider.azureSQLDBWizard, extensionPath);
-			}
+			this.updateProviderPathProperties(provider, extensionPath);
 		});
+	}
+
+	private updateProviderPathProperties(provider: DeploymentProvider, extensionPath: string): void {
+		if (instanceOfNotebookDeploymentProvider(provider)) {
+			this.updateNotebookPath(provider, extensionPath);
+		} else if (instanceOfDialogDeploymentProvider(provider) && instanceOfNotebookBasedDialogInfo(provider.dialog)) {
+			this.updateNotebookPath(provider.dialog, extensionPath);
+		}
+		else if ('bdcWizard' in provider) {
+			this.updateNotebookPath(provider.bdcWizard, extensionPath);
+		}
+		else if ('notebookWizard' in provider) {
+			this.updateNotebookPath(provider.notebookWizard, extensionPath);
+		}
+		else if ('azureSQLVMWizard' in provider) {
+			this.updateNotebookPath(provider.azureSQLVMWizard, extensionPath);
+		}
+		else if ('azureSQLDBWizard' in provider) {
+			this.updateNotebookPath(provider.azureSQLDBWizard, extensionPath);
+		}
 	}
 
 	private updateNotebookPath(objWithNotebookProperty: { notebook: string | NotebookPathInfo | NotebookInfo[] } | undefined, extensionPath: string): void {
@@ -106,6 +124,42 @@ export class ResourceTypeService implements IResourceTypeService {
 				}
 			}
 		}
+	}
+
+	private getResourceSubTypes(resourceType: ResourceType): void {
+		const resourceSubTypes: ResourceSubType[] = [];
+		vscode.extensions.all.forEach((extension) => {
+			const extensionResourceSubTypes = extension.packageJSON.contributes?.resourceDeploymentSubTypes as ResourceSubType[];
+			extensionResourceSubTypes?.forEach((extensionResourceSubType: ResourceSubType) => {
+				const resourceSubType = deepClone(extensionResourceSubType);
+				if (resourceSubType.resourceName === resourceType.name) {
+					this.updateProviderPathProperties(resourceSubType.provider, extension.extensionPath);
+					resourceSubTypes.push(resourceSubType);
+					const tagSet = new Set(resourceType.tags);
+					resourceSubType.tags?.forEach(tag => tagSet.add(tag));
+					resourceType.tags = Array.from(tagSet);
+					resourceType.providers.push(resourceSubType.provider);
+					if (resourceSubType.okButtonText) {
+						resourceType.okButtonText?.push(resourceSubType.okButtonText!);
+					}
+					if (resourceSubType.options) {
+						resourceType.options.forEach((roption) => {
+							resourceSubType.options.forEach((soption) => {
+								if (roption.name === soption.name) {
+									roption.values = roption.values.concat(soption.values);
+								}
+							});
+						});
+					}
+					if (resourceSubType.agreement) {
+						resourceType.agreements?.push(resourceSubType.agreement!);
+					}
+					if (resourceSubType.helpText) {
+						resourceType.helpTexts.push(resourceSubType.helpText);
+					}
+				}
+			});
+		});
 	}
 
 	/**
@@ -172,6 +226,7 @@ export class ResourceTypeService implements IResourceTypeService {
 
 					if (dupePositions.length !== 0) {
 						errorMessages.push(`Option values with same name or display name are found at the following positions: ${i + 1}, ${dupePositions.join(',')}.${positionInfo} `);
+						errorMessages.push(JSON.stringify(option));
 					}
 				}
 			}
@@ -245,9 +300,30 @@ export class ResourceTypeService implements IResourceTypeService {
 		return loc.select;
 	}
 
+	private getAgreementInfo(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): AgreementInfo | undefined {
+		if (resourceType.agreements) {
+			for (const possibleOption of resourceType.agreements) {
+				if (processWhenClause(possibleOption.when, selectedOptions)) {
+					return possibleOption;
+				}
+			}
+		}
+		return undefined;
+	}
 
-	public startDeployment(resourceType: ResourceType): void {
-		const wizard = new ResourceTypeWizard(resourceType, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this);
+	private getHelpText(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): HelpText | undefined {
+		if (resourceType.helpTexts) {
+			for (const possibleOption of resourceType.helpTexts) {
+				if (processWhenClause(possibleOption.when, selectedOptions)) {
+					return possibleOption;
+				}
+			}
+		}
+		return undefined;
+	}
+
+	public startDeployment(resourceType: ResourceType, optionValuesFilter?: OptionValuesFilter, initialVariableValues?: InitialVariableValues): void {
+		const wizard = new ResourceTypeWizard(resourceType, new KubeService(), new AzdataService(this.platformService), this.notebookService, this.toolsService, this.platformService, this, optionValuesFilter, initialVariableValues);
 		wizard.open();
 	}
 

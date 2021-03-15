@@ -23,7 +23,7 @@ const TEST_EDITOR_ID = 'MyTestEditorForEditorsObserver';
 const TEST_EDITOR_INPUT_ID = 'testEditorInputForEditorsObserver';
 const TEST_SERIALIZABLE_EDITOR_INPUT_ID = 'testSerializableEditorInputForEditorsObserver';
 
-suite.skip('EditorsObserver', function () { //{{SQL CARBON EDIT}} disable failing tests due to tabcolormode
+suite.skip('EditorsObserver', function () { // {{SQL CARBON EDIT}} disable failing tests due to tabcolormode
 
 	let disposables: IDisposable[] = [];
 
@@ -298,7 +298,7 @@ suite.skip('EditorsObserver', function () { //{{SQL CARBON EDIT}} disable failin
 		assert.equal(observer.hasEditor(input2.resource), true);
 		assert.equal(observer.hasEditor(input3.resource), true);
 
-		storage._onWillSaveState.fire({ reason: WillSaveStateReason.SHUTDOWN });
+		storage.emitWillSaveState(WillSaveStateReason.SHUTDOWN);
 
 		const restoredObserver = new EditorsObserver(part, storage);
 		await part.whenRestored;
@@ -350,7 +350,7 @@ suite.skip('EditorsObserver', function () { //{{SQL CARBON EDIT}} disable failin
 		assert.equal(observer.hasEditor(input2.resource), true);
 		assert.equal(observer.hasEditor(input3.resource), true);
 
-		storage._onWillSaveState.fire({ reason: WillSaveStateReason.SHUTDOWN });
+		storage.emitWillSaveState(WillSaveStateReason.SHUTDOWN);
 
 		const restoredObserver = new EditorsObserver(part, storage);
 		await part.whenRestored;
@@ -390,7 +390,7 @@ suite.skip('EditorsObserver', function () { //{{SQL CARBON EDIT}} disable failin
 		assert.equal(currentEditorsMRU[0].editor, input1);
 		assert.equal(observer.hasEditor(input1.resource), true);
 
-		storage._onWillSaveState.fire({ reason: WillSaveStateReason.SHUTDOWN });
+		storage.emitWillSaveState(WillSaveStateReason.SHUTDOWN);
 
 		const restoredObserver = new EditorsObserver(part, storage);
 		await part.whenRestored;

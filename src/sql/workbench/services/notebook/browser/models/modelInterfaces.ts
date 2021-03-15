@@ -22,6 +22,12 @@ import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/no
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICellValue, ResultSetSummary } from 'sql/workbench/services/query/common/query';
+import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
+
+export enum ViewMode {
+	Notebook,
+	Views,
+}
 
 export interface ICellRange {
 	readonly start: number;
@@ -302,6 +308,12 @@ export interface INotebookModel {
 	 * or undefined if none.
 	 */
 	readonly savedConnectionName: string | undefined;
+
+	/**
+	 * The connection mode of the notebook (single vs multiple connections)
+	 */
+	multiConnectionMode: boolean;
+
 	/**
 	 * Event fired on first initialization of the cells and
 	 * on subsequent change events
@@ -332,6 +344,22 @@ export interface INotebookModel {
 	 * Current notebook provider id
 	 */
 	providerId: string;
+
+	/**
+	 * View mode for this model. It determines what editor mode
+	 * will be displayed.
+	 */
+	viewMode: ViewMode;
+
+	/**
+	 * Add custom metadata values to the notebook
+	 */
+	setMetaValue(key: string, value: any);
+
+	/**
+	 * Get a custom metadata value from the notebook
+	 */
+	getMetaValue(key: string): any;
 
 	/**
 	 * Change the current kernel from the Kernel dropdown
@@ -464,11 +492,13 @@ export interface ICellModel {
 	source: string | string[];
 	cellType: CellType;
 	trustedMode: boolean;
+	metadata: any | undefined;
 	active: boolean;
 	hover: boolean;
 	executionCount: number | undefined;
 	readonly future: FutureInternal;
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
+	getOutputId(output: nb.ICellOutput): QueryResultId | undefined;
 	renderedOutputTextContent?: string[];
 	readonly onOutputsChanged: Event<IOutputChangedEvent>;
 	readonly onTableUpdated: Event<ITableUpdatedEvent>;
@@ -500,6 +530,8 @@ export interface ICellModel {
 	sendChangeToNotebook(change: NotebookChangeType): void;
 	cellSourceChanged: boolean;
 	readonly savedConnectionName: string | undefined;
+	readonly attachments: nb.ICellAttachments;
+	readonly currentMode: CellEditModes;
 }
 
 export interface IModelFactory {
@@ -554,4 +586,11 @@ export interface INotebookContentsEditable {
 	metadata: nb.INotebookMetadata;
 	nbformat: number;
 	nbformat_minor: number;
+}
+
+export enum CellEditModes {
+	'CODE',
+	'MARKDOWN',
+	'SPLIT',
+	'WYSIWYG'
 }

@@ -6,13 +6,15 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
-import { AgreementInfo, DeploymentProvider, ITool, ResourceType, ResourceTypeOptionValue, ToolRequirementInfo, ToolStatus } from '../interfaces';
+import { AgreementInfo, DeploymentProvider, HelpText, ITool, ResourceType, ResourceTypeOptionValue, ToolRequirementInfo, ToolStatus } from '../interfaces';
 import { createFlexContainer } from './modelViewUtils';
 import * as loc from '../localizedConstants';
 import { IToolsService } from '../services/toolsService';
-import { getErrorMessage } from '../common/utils';
+import { deepClone, getErrorMessage } from '../common/utils';
 import { ResourceTypePage } from './resourceTypePage';
 import { ResourceTypeWizard } from './resourceTypeWizard';
+import { OptionValuesFilter as OptionValuesFilter } from '../services/resourceTypeService';
+import { TelemetryAction, TelemetryReporter, TelemetryView } from '../services/telemetryService';
 
 const localize = nls.loadMessageBundle();
 
@@ -25,24 +27,20 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 	private _toolsLoadingComponent!: azdata.LoadingComponent;
 	private _agreementContainer!: azdata.DivContainer;
+	private _helpTextContainer!: azdata.DivContainer;
 	private _agreementCheckBox!: azdata.CheckBoxComponent;
 	private _installToolButton!: azdata.ButtonComponent;
 	private _installationInProgress: boolean = false;
 	private _tools: ITool[] = [];
 	private _eulaValidationSucceeded: boolean = false;
 	private _isInitialized = false;
-	private _isDoneButtonEnabled = false;
 	private _resourceType: ResourceType;
-
-	public set resourceProvider(provider: DeploymentProvider) {
-		this.wizard.provider = provider;
-	}
 
 	public get toolsService(): IToolsService {
 		return this.wizard.toolsService;
 	}
 
-	constructor(wizard: ResourceTypeWizard) {
+	constructor(wizard: ResourceTypeWizard, private optionValuesFilter?: OptionValuesFilter) {
 		super(localize('notebookWizard.toolsAndEulaPageTitle', "Deployment pre-requisites"), '', wizard);
 		this._resourceType = wizard.resourceType;
 	}
@@ -50,6 +48,25 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	public async onEnter(): Promise<void> {
 		this.wizard.wizardObject.generateScriptButton.hidden = true;
 		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
+			for (let i = 0; i < this._tools.length; i++) {
+				switch (this._tools[i].status) {
+					case ToolStatus.Installing:
+						this.wizard.wizardObject.message = {
+							text: loc.getToolInstallingMessage(this._tools[i]),
+							level: azdata.window.MessageLevel.Information
+						};
+						return false;
+					case ToolStatus.Installed:
+						continue;
+					default:
+						this.wizard.wizardObject.message = {
+							text: localize('deploymentDialog.FailedToolsInstallation', "Some tools were still not discovered. Please make sure that they are installed, running and discoverable"),
+							level: azdata.window.MessageLevel.Error
+						};
+						return false;
+				}
+			}
+
 			if (!this._eulaValidationSucceeded && !(await this.acquireEulaAndProceed())) {
 				this.wizard.wizardObject.message = {
 					text: localize('deploymentDialog.FailedEulaValidation', "To proceed, you must accept the terms of the End User License Agreement(EULA)"),
@@ -58,14 +75,14 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 				return false; // we return false so that the workflow does not proceed and user gets to either click acceptEulaAndSelect again or cancel
 			}
 
-			if (!this._isDoneButtonEnabled) {
-				this.wizard.wizardObject.message = {
-					text: localize('deploymentDialog.FailedToolsInstallation', "Some tools were still not discovered. Please make sure that they are installed, running and discoverable"),
-					level: azdata.window.MessageLevel.Error
-				};
-				return false;
-			}
-
+			this.wizard.wizardObject.message = {
+				text: ''
+			};
+			TelemetryReporter.createActionEvent(TelemetryView.ResourceTypeWizard, TelemetryAction.SelectedDeploymentType)
+				.withAdditionalProperties({
+					'resourceType': this._resourceType.name,
+					'provider': this.getCurrentProvider().name
+				}).send();
 			return true;
 		});
 	}
@@ -80,6 +97,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			const tableWidth = 1060;
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
+			this._helpTextContainer = view.modelBuilder.divContainer().component();
 			const toolColumn: azdata.TableColumn = {
 				value: loc.toolText,
 				width: 105
@@ -126,6 +144,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					'display': 'none',
 				},
 				width: '100px',
+				secondary: true
 			}).component();
 
 			this.wizard.registerDisposable(this._installToolButton.onDidClick(() => {
@@ -135,6 +154,8 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			this.form = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
+						component: this._helpTextContainer,
+					}, {
 						component: this._optionsContainer,
 					}, {
 						component: this._agreementContainer,
@@ -151,7 +172,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			);
 			return view.initializeModel(this.form!.withLayout({ width: '100%' }).component()).then(() => {
 				this._agreementContainer.clearItems();
-				if (this._resourceType.agreement) {
+				if (this._resourceType.agreements) {
 					const agreementTitle = this.view.modelBuilder.text().withProps({
 						value: localize('resourceDeployment.AgreementTitle', "Accept terms of use"),
 						CSSStyles: {
@@ -160,7 +181,6 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 						}
 					}).component();
 					this._agreementContainer.addItem(agreementTitle);
-					this._agreementContainer.addItem(this.createAgreementCheckbox(this._resourceType.agreement));
 				} else {
 					this.form.removeFormItem({
 						component: this._agreementContainer
@@ -172,7 +192,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 				if (this._resourceType.options) {
 					let resourceTypeOptions: ResourceTypeOptionValue[] = [];
 					const optionsTitle = this.view.modelBuilder.text().withProps({
-						value: 'Options',
+						value: loc.optionsText,
 						CSSStyles: {
 							'font-size': '14px',
 							'padding': '0'
@@ -180,27 +200,37 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					}).component();
 					this._optionsContainer.addItem(optionsTitle);
 					this._resourceType.options.forEach((option, index) => {
+						let optionValues = deepClone(option.values);
+						const optionValueFilter = this.optionValuesFilter?.[this._resourceType.name]?.[option.name];
+						if (optionValueFilter) {
+							optionValues = optionValues.filter(optionValue => optionValueFilter.includes(optionValue.name));
+						}
 						const optionLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 							value: option.displayName,
 						}).component();
 						optionLabel.width = '150px';
 
+						const optionSelectedValue = (this.wizard.toolsEulaPagePresets) ? this.wizard.toolsEulaPagePresets[index] : optionValues[0];
 						const optionSelectBox = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
-							values: option.values,
-							value: (this.wizard.toolsEulaPagePresets) ? this.wizard.toolsEulaPagePresets[index] : option.values[0],
+							values: optionValues,
+							value: optionSelectedValue,
 							width: '300px',
 							ariaLabel: option.displayName
 						}).component();
 
-						resourceTypeOptions.push(option.values[0]);
+
+						resourceTypeOptions.push(optionSelectedValue);
 
 						this.wizard.registerDisposable(optionSelectBox.onValueChanged(async () => {
-							resourceTypeOptions[index] = <ResourceTypeOptionValue>optionSelectBox.value;
-							this.wizard.provider = this.getCurrentProvider();
-							await this.wizard.open();
+							if (resourceTypeOptions[index].name !== (<ResourceTypeOptionValue>optionSelectBox.value).name) {
+								resourceTypeOptions[index] = <ResourceTypeOptionValue>optionSelectBox.value;
+								this.wizard.provider = this.getCurrentProvider();
+								await this.wizard.open();
+							}
 						}));
 
 						this._optionDropDownMap.set(option.name, optionSelectBox);
+						this.wizard.provider = this.getCurrentProvider();
 						const row = this.view.modelBuilder.flexContainer().withItems([optionLabel, optionSelectBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '20px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 						this._optionsContainer.addItem(row);
 					});
@@ -209,6 +239,16 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					this.form.removeFormItem({
 						component: this._optionsContainer
 					});
+				}
+
+				const agreementInfo = this._resourceType.getAgreementInfo(this.getSelectedOptions());
+				if (agreementInfo) {
+					this._agreementContainer.addItem(this.createAgreementCheckbox(agreementInfo));
+				}
+
+				const helpText = this._resourceType.getHelpText(this.getSelectedOptions());
+				if (helpText) {
+					this._helpTextContainer.addItem(this.createHelpText(helpText));
 				}
 
 				this.updateOkButtonText();
@@ -232,12 +272,20 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		return createFlexContainer(this.view, [this._agreementCheckBox, text]);
 	}
 
+	private createHelpText(helpText: HelpText): azdata.FlexContainer {
+		const helpTextComponent = this.view.modelBuilder.text().withProps({
+			value: helpText.template,
+			links: helpText.links,
+		}).component();
+		return createFlexContainer(this.view, [helpTextComponent]);
+	}
+
 	private getAgreementDisplayText(agreementInfo: AgreementInfo): string {
 		// the agreement template will have {index} as placeholder for hyperlinks
 		// this method will get the display text after replacing the placeholders
 		let text = agreementInfo.template;
-		for (let i: number = 0; i < agreementInfo.links.length; i++) {
-			text = text.replace(`{${i}}`, agreementInfo.links[i].text);
+		for (let i: number = 0; i < agreementInfo.links!.length; i++) {
+			text = text.replace(`{${i}}`, agreementInfo.links![i].text);
 		}
 		return text;
 	}
@@ -259,26 +307,23 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 	}
 
 	private getCurrentProvider(): DeploymentProvider {
-		const options: { option: string, value: string }[] = [];
 
-		this._optionDropDownMap.forEach((selectBox, option) => {
-			let selectedValue: azdata.CategoryValue = selectBox.value as azdata.CategoryValue;
-			options.push({ option: option, value: selectedValue.name });
-		});
+		const options = this.getSelectedOptions();
 
-		this.resourceProvider = this._resourceType.getProvider(options)!;
 		return this._resourceType.getProvider(options)!;
 	}
 
 	private getCurrentOkText(): string {
-		const options: { option: string, value: string }[] = [];
+		return this._resourceType.getOkButtonText(this.getSelectedOptions())!;
+	}
 
+	private getSelectedOptions(): { option: string, value: string }[] {
+		const options: { option: string, value: string }[] = [];
 		this._optionDropDownMap.forEach((selectBox, option) => {
 			let selectedValue: azdata.CategoryValue = selectBox.value as azdata.CategoryValue;
 			options.push({ option: option, value: selectedValue.name });
 		});
-
-		return this._resourceType.getOkButtonText(options)!;
+		return options;
 	}
 
 	private updateOkButtonText(): void {
@@ -293,6 +338,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		this._installationInProgress = true;
 		let tool: ITool;
 		try {
+			this.setDoneAndNextButtonEnabledState(false);
 			const toolRequirements = this.toolRequirements;
 			let toolsNotInstalled: ITool[] = [];
 			for (let i: number = 0; i < toolRequirements.length; i++) {
@@ -302,7 +348,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					// Update the informational message
 					this.wizard.wizardObject.message = {
 						level: azdata.window.MessageLevel.Information,
-						text: localize('deploymentDialog.InstallingTool', "Required tool '{0}' [ {1} ] is being installed now.", tool.displayName, tool.homePage)
+						text: loc.getToolInstallingMessage(tool)
 					};
 					await this._tools[i].install();
 					if (tool.status === ToolStatus.Installed && toolReq.version && !tool.isSameOrNewerThan(toolReq.version)) {
@@ -313,7 +359,9 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 						);
 					}
 				} else {
-					toolsNotInstalled.push(tool);
+					if (this._tools[i].status !== ToolStatus.Installed) {
+						toolsNotInstalled.push(tool);
+					}
 				}
 			}
 			// Update the informational message
@@ -322,7 +370,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 					level: azdata.window.MessageLevel.Information,
 					text: localize('deploymentDialog.InstalledTools', "All required tools are installed now.")
 				};
-				this.enableDoneButton(true);
+				this.setDoneAndNextButtonEnabledState(true);
 			} else {
 				this.wizard.wizardObject.message = {
 					level: azdata.window.MessageLevel.Information,
@@ -365,7 +413,6 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		this._agreementContainer.enabled = enable;
 		this._optionsContainer.enabled = enable;
 		this.wizard.wizardObject.cancelButton.enabled = enable;
-		// select and install tools buttons are controlled separately
 	}
 
 	public async onLeave(): Promise<void> {
@@ -428,7 +475,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 				'display': erroredOrFailedTool || minVersionCheckFailed || (toolsToAutoInstall.length === 0) ? 'none' : 'inline'
 			}
 		});
-		this.enableDoneButton(!erroredOrFailedTool && messages.length === 0 && !minVersionCheckFailed && (toolsToAutoInstall.length === 0));
+		this.setDoneAndNextButtonEnabledState(!erroredOrFailedTool && messages.length === 0 && !minVersionCheckFailed && (toolsToAutoInstall.length === 0));
 		if (messages.length !== 0) {
 			if (messages.length > 1) {
 				messages = messages.map(message => `•	${message}`);
@@ -459,8 +506,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 				level: azdata.window.MessageLevel.Warning,
 				text: infoText.join(EOL)
 			};
-		}
-		if (!this.areToolsEulaAccepted()) {
+		} else if (!this.areToolsEulaAccepted()) {
 			this.wizard.wizardObject.doneButton.label = loc.acceptEulaAndSelect;
 			this.wizard.wizardObject.nextButton.label = loc.acceptEulaAndSelect;
 		}
@@ -484,13 +530,13 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		});
 		if (this.toolRequirements.length === 0) {
 			this._toolsLoadingComponent.loading = false;
-			this.enableDoneButton(true);
+			this.setDoneAndNextButtonEnabledState(true);
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
 			this._tools = [];
 		} else {
 			this._tools = this.toolRequirements.map(toolReq => this.toolsService.getToolByName(toolReq.name)!);
 			this._toolsLoadingComponent.loading = true;
-			this.enableDoneButton(false);
+			this.setDoneAndNextButtonEnabledState(false);
 			let toolsLoadingErrors: string[] = [];
 			Promise.all(
 				this._tools.map(
@@ -502,9 +548,8 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		}
 	}
 
-	private enableDoneButton(enable: boolean) {
-		this._isDoneButtonEnabled = enable;
-		this.wizard.wizardObject.doneButton.enabled = enable;
-		this.wizard.wizardObject.nextButton.enabled = enable;
+	private setDoneAndNextButtonEnabledState(enabled: boolean) {
+		this.wizard.wizardObject.doneButton.enabled = enabled;
+		this.wizard.wizardObject.nextButton.enabled = enabled;
 	}
 }

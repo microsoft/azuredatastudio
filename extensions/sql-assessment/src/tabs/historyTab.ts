@@ -88,7 +88,11 @@ export class SqlAssessmentHistoryTab extends SqlAssessmentTab {
 				this.resultGrid.displayResult(historyResult.result, AssessmentType.InvokeAssessment);
 				title.value = localize('asmt.history.resultsTitle', "Assessment Results from {0}", new Date(historyResult.dateUpdated).toLocaleString());
 				root.addItem(infoPanel, { flex: `0 0 50px` });
-				root.addItem(this.resultGrid.component);
+				root.addItem(this.resultGrid.component, {
+					flex: '1 1 auto', CSSStyles: {
+						'padding-bottom': '10px'
+					}
+				});
 				this.summaryTable.selectedRows = [];
 			}
 

@@ -325,7 +325,7 @@
 		"watch-web": "npx webpack-cli --config extension-browser.webpack.config --mode none --watch --info-verbosity verbose"
 	},
 	"dependencies": {
-		"highlight.js": "9.15.10",
+		"highlight.js": "10.4.1",
 		"markdown-it": "^10.0.0",
 		"markdown-it-front-matter": "^0.2.1",
 		"vscode-extension-telemetry": "0.1.1",
@@ -341,7 +341,6 @@
 		"mocha-multi-reporters": "^1.1.7",
 		"ts-loader": "^6.2.1",
 		"typescript": "^3.7.3",
-		"vscode": "^1.1.10",
 		"webpack": "^4.41.2",
 		"webpack-cli": "^3.3.0"
 	}

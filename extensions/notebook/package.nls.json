@@ -40,13 +40,14 @@
 	"title.ProvidedBooks": "Provided Books",
 	"title.PinnedBooks": "Pinned notebooks",
 	"title.PreviewLocalizedBook": "Get localized SQL Server 2019 guide",
-	"title.openJupyterBook": "Open Jupyter Book",
-	"title.closeJupyterBook": "Close Jupyter Book",
-	"title.closeJupyterNotebook": "Close Jupyter Notebook",
+	"title.openJupyterBook": "Open Book",
+	"title.closeJupyterBook": "Close Book",
+	"title.closeJupyterNotebook": "Close Notebook",
 	"title.revealInBooksViewlet": "Reveal in Books",
 	"title.createJupyterBook": "Create Book (Preview)",
 	"title.openNotebookFolder": "Open Notebooks in Folder",
-	"title.openRemoteJupyterBook": "Add Remote Jupyter Book",
+	"title.openRemoteJupyterBook": "Add Remote Book",
 	"title.pinNotebook": "Pin Notebook",
-	"title.unpinNotebook": "Unpin Notebook"
+	"title.unpinNotebook": "Unpin Notebook",
+	"title.moveTo": "Move to ..."
 }

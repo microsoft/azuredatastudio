@@ -12,6 +12,7 @@
     "azdata": "*"
   },
   "activationEvents": [
+    "onCommand:azdata.resource.deploy",
     "onCommand:bigDataClusters.command.mount",
     "onCommand:bigDataClusters.command.refreshmount",
     "onCommand:bigDataClusters.command.deletemount",
@@ -178,6 +179,174 @@
         "contents": "%bdc.view.welcome.loading%",
         "when": "!bdc.loaded"
       }
+    ],
+    "resourceDeploymentTypes": [
+      {
+        "name": "sql-bdc",
+        "displayIndex": 3,
+        "displayName": "%resource-type-sql-bdc-display-name%",
+        "description": "%resource-type-sql-bdc-description%",
+        "platforms": "*",
+        "icon": "./images/sql_bdc.svg",
+        "tags": [
+          "On-premises",
+          "SQL Server",
+          "Cloud"
+        ],
+        "options": [
+          {
+            "name": "version",
+            "displayName": "%version-display-name%",
+            "values": [
+              {
+                "name": "bdc2019",
+                "displayName": "%bdc-2019-display-name%"
+              }
+            ]
+          },
+          {
+            "name": "target",
+            "displayName": "%bdc-deployment-target%",
+            "values": [
+              {
+                "name": "new-aks",
+                "displayName": "%bdc-deployment-target-new-aks%"
+              },
+              {
+                "name": "existing-aks",
+                "displayName": "%bdc-deployment-target-existing-aks%"
+              },
+              {
+                "name": "existing-kubeadm",
+                "displayName": "%bdc-deployment-target-existing-kubeadm%"
+              },
+              {
+                "name": "existing-aro",
+                "displayName": "%bdc-deployment-target-existing-aro%"
+              },
+              {
+                "name": "existing-openshift",
+                "displayName": "%bdc-deployment-target-existing-openshift%"
+              }
+            ]
+          }
+        ],
+        "providers": [
+          {
+            "name": "sql-bdc_new-aks_bdc2019",
+            "bdcWizard": {
+              "type": "new-aks",
+              "notebook": "./notebooks/deployment/2019/deploy-bdc-aks.ipynb"
+            },
+            "requiredTools": [
+              {
+                "name": "kubectl",
+                "version": "1.13.0"
+              },
+              {
+                "name": "azure-cli"
+              },
+              {
+                "name": "azdata-old",
+                "version": "20.3.1"
+              }
+            ],
+            "when": "target=new-aks&&version=bdc2019"
+          },
+          {
+            "name": "sql-bdc_existing-aks_bdc2019",
+            "bdcWizard": {
+              "type": "existing-aks",
+              "notebook": "./notebooks/deployment/2019/deploy-bdc-existing-aks.ipynb"
+            },
+            "requiredTools": [
+              {
+                "name": "kubectl",
+                "version": "1.13.0"
+              },
+              {
+                "name": "azdata-old",
+                "version": "20.3.1"
+              }
+            ],
+            "when": "target=existing-aks&&version=bdc2019"
+          },
+          {
+            "name": "sql-bdc_existing-kubeadm_bdc2019",
+            "bdcWizard": {
+              "type": "existing-kubeadm",
+              "notebook": "./notebooks/deployment/2019/deploy-bdc-existing-kubeadm.ipynb"
+            },
+            "requiredTools": [
+              {
+                "name": "kubectl",
+                "version": "1.13.0"
+              },
+              {
+                "name": "azdata-old",
+                "version": "20.3.1"
+              }
+            ],
+            "when": "target=existing-kubeadm&&version=bdc2019"
+          },
+          {
+            "name": "sql-bdc_existing-aro_bdc2019",
+            "bdcWizard": {
+              "type": "existing-aro",
+              "notebook": "./notebooks/deployment/2019/deploy-bdc-existing-aro.ipynb"
+            },
+            "requiredTools": [
+              {
+                "name": "kubectl",
+                "version": "1.13.0"
+              },
+              {
+                "name": "azdata-old",
+                "version": "20.3.1"
+              }
+            ],
+            "when": "target=existing-aro&&version=bdc2019"
+          },
+          {
+            "name": "sql-bdc_existing-openshift_bdc2019",
+            "bdcWizard": {
+              "type": "existing-openshift",
+              "notebook": "./notebooks/deployment/2019/deploy-bdc-existing-openshift.ipynb"
+            },
+            "requiredTools": [
+              {
+                "name": "kubectl",
+                "version": "1.13.0"
+              },
+              {
+                "name": "azdata-old",
+                "version": "20.3.1"
+              }
+            ],
+            "when": "target=existing-openshift&&version=bdc2019"
+          }
+        ],
+        "agreements": [
+          {
+            "template": "%bdc-agreement%",
+            "links": [
+              {
+                "text": "%microsoft-privacy-statement%",
+                "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+              },
+              {
+                "text": "%bdc-agreement-bdc-eula%",
+                "url": "https://go.microsoft.com/fwlink/?LinkId=2002534"
+              },
+              {
+                "text": "%bdc-agreement-azdata-eula%",
+                "url": "https://aka.ms/eula-azdata-en"
+              }
+            ],
+            "when": "true"
+          }
+        ]
+      }
     ]
   },
   "dependencies": {
@@ -186,7 +355,6 @@
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
-    "@types/request": "^2.48.3",
-    "vscode": "^1.1.36"
+    "@types/request": "^2.48.3"
   }
 }

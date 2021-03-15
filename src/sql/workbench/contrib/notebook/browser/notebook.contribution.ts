@@ -5,7 +5,7 @@
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
 import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions, ActiveEditorContext } from 'vs/workbench/common/editor';
 
@@ -44,12 +44,14 @@ import { registerCellComponent } from 'sql/platform/notebooks/common/outputRegis
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { NotebookThemingContribution } from 'sql/workbench/contrib/notebook/browser/notebookThemingContribution';
-import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { ToggleTabFocusModeAction } from 'vs/editor/contrib/toggleTabFocusMode/toggleTabFocusMode';
 import { NotebookExplorerViewletViewsContribution, OpenNotebookExplorerViewletAction } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import 'vs/css!./media/notebook.contribution';
 import { isMacintosh } from 'vs/base/common/platform';
 import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
+import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(FileNotebookInput.ID, FileNoteBookEditorInputFactory);
@@ -150,6 +152,20 @@ CommandsRegistry.registerCommand({
 	}
 });
 
+const LAUNCH_FIND_IN_NOTEBOOK = 'notebook.action.launchFindInNotebook';
+
+CommandsRegistry.registerCommand({
+	id: LAUNCH_FIND_IN_NOTEBOOK,
+	handler: async (accessor: ServicesAccessor, searchTerm: string) => {
+		const notebookEditor = accessor.get(IEditorService).activeEditorPane;
+		if (notebookEditor instanceof NotebookEditor) {
+			if (notebookEditor) {
+				await notebookEditor.setNotebookModel();
+				await notebookEditor.launchFind(searchTerm);
+			}
+		}
+	}
+});
 
 MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 	command: {
@@ -231,6 +247,12 @@ configurationRegistry.registerConfiguration({
 			'default': false,
 			'description': localize('notebook.saveConnectionName', "(Preview) Save connection name in notebook metadata.")
 		},
+		'notebook.markdownPreviewLineHeight': {
+			'type': 'number',
+			'default': 1.5,
+			'minimum': 1,
+			'description': localize('notebook.markdownPreviewLineHeight', "Controls the line height used in the notebook markdown preview. This number is relative to the font size.")
+		}
 	}
 });
 
@@ -254,7 +276,7 @@ registerComponentType({
  * A mime renderer component for images.
  */
 registerComponentType({
-	mimeTypes: ['image/bmp', 'image/png', 'image/jpeg', 'image/gif'],
+	mimeTypes: ImageMimeTypes,
 	rank: 90,
 	safe: true,
 	ctor: MimeRendererComponent,

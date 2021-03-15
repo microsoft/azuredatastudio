@@ -13,7 +13,7 @@ import { FolderNode, FileNode, sortFileFolderNodes } from '../models/tree/fileFo
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { DatabaseProjectItemType } from '../common/constants';
 
-describe.skip('Project Tree tests', function (): void {
+describe('Project Tree tests', function (): void {
 	it('Should correctly order tree nodes by type, then by name', function (): void {
 		const root = os.platform() === 'win32' ? 'Z:\\' : '/';
 
@@ -68,7 +68,6 @@ describe.skip('Project Tree tests', function (): void {
 
 		const tree = new ProjectRootTreeItem(proj);
 		should(tree.children.map(x => x.uri.path)).deepEqual([
-			'/TestProj.sqlproj/Data Sources',
 			'/TestProj.sqlproj/Database References',
 			'/TestProj.sqlproj/duplicateFolder',
 			'/TestProj.sqlproj/someFolder',
@@ -81,7 +80,6 @@ describe.skip('Project Tree tests', function (): void {
 			'/TestProj.sqlproj/someFolder/bNestedTest.sql']);
 
 		should(tree.children.map(x => x.treeItem.contextValue)).deepEqual([
-			DatabaseProjectItemType.dataSourceRoot,
 			DatabaseProjectItemType.referencesRoot,
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.folder,
@@ -106,7 +104,6 @@ describe.skip('Project Tree tests', function (): void {
 
 		const tree = new ProjectRootTreeItem(proj);
 		should(tree.children.map(x => x.uri.path)).deepEqual([
-			'/TestProj.sqlproj/Data Sources',
 			'/TestProj.sqlproj/Database References',
 			'/TestProj.sqlproj/someFolder1']);
 
@@ -118,7 +115,7 @@ describe.skip('Project Tree tests', function (): void {
 	});
 
 	it('Should be able to parse and include relative paths outside project folder', function (): void {
-		const root = os.platform() === 'win32' ? 'Z:\\Level1\\Level2\\' : '/Root/Level1/Level2';
+		const root = os.platform() === 'win32' ? 'Z:\\Level1\\Level2\\' : '/Root/Level1/Level2/';
 		const proj = new Project(vscode.Uri.file(`${root}TestProj.sqlproj`).fsPath);
 
 		// nested entries before explicit top-level folder entry
@@ -129,9 +126,8 @@ describe.skip('Project Tree tests', function (): void {
 
 		const tree = new ProjectRootTreeItem(proj);
 		should(tree.children.map(x => x.uri.path)).deepEqual([
-			'/TestProj.sqlproj/Data Sources',
-			'/TestProj.sqlproj/Database References',
-			'/TestProj.sqlproj/MyFile1.sql',
-			'/TestProj.sqlproj/MyFile2.sql']);
+			'/Root/Level1/Level2/TestProj.sqlproj/Database References',
+			'/Root/Level1/Level2/TestProj.sqlproj/MyFile1.sql',
+			'/Root/Level1/Level2/TestProj.sqlproj/MyFile2.sql']);
 	});
 });

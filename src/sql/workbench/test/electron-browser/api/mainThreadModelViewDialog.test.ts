@@ -112,6 +112,11 @@ suite('MainThreadModelViewDialog Tests', () => {
 		dialogDetails = {
 			title: 'dialog1',
 			width: 'narrow',
+			dialogStyle: 'callout',
+			dialogPosition: 'left',
+			renderHeader: true,
+			renderFooter: true,
+			dialogProperties: { xPos: 1200, yPos: 100, width: 20, height: 20 },
 			content: [tab1Handle, tab2Handle],
 			okButton: okButtonHandle,
 			cancelButton: cancelButtonHandle,
@@ -140,14 +145,16 @@ suite('MainThreadModelViewDialog Tests', () => {
 			content: 'content1',
 			enabled: true,
 			customButtons: [],
-			description: 'description1'
+			description: 'description1',
+			pageName: 'pageName1'
 		};
 		page2Details = {
 			title: 'page2',
 			content: 'content2',
 			enabled: true,
 			customButtons: [button1Handle, button2Handle],
-			description: 'description2'
+			description: 'description2',
+			pageName: undefined
 		};
 		wizardDetails = {
 			backButton: backButtonHandle,
@@ -302,7 +309,8 @@ suite('MainThreadModelViewDialog Tests', () => {
 			content: 'content_3',
 			customButtons: [],
 			enabled: true,
-			description: undefined
+			description: undefined,
+			pageName: undefined
 		};
 
 		// If I open the wizard and then add a page

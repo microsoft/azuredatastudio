@@ -4,9 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { IWorkspaceService } from './interfaces';
-import { UnknownProjectsErrorMessage } from './constants';
+import { ProjectsFailedToLoad, UnknownProjectsError } from './constants';
 import { WorkspaceTreeItem } from 'dataworkspace';
+import { TelemetryReporter } from './telemetry';
 
 /**
  * Tree data provider for the workspace main view
@@ -37,32 +39,69 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 		else {
 			// if the element is undefined return the project tree items
 			const projects = await this._workspaceService.getProjectsInWorkspace();
+			await vscode.commands.executeCommand('setContext', 'isProjectsViewEmpty', projects.length === 0);
 			const unknownProjects: string[] = [];
 			const treeItems: WorkspaceTreeItem[] = [];
+
+			const typeMetric: Record<string, number> = {};
+
+			let errorCount = 0;
 			for (const project of projects) {
-				const projectProvider = await this._workspaceService.getProjectProvider(project);
-				if (projectProvider === undefined) {
-					unknownProjects.push(project.path);
-					continue;
-				}
-				const treeDataProvider = await projectProvider.getProjectTreeDataProvider(project);
-				if (treeDataProvider.onDidChangeTreeData) {
-					treeDataProvider.onDidChangeTreeData((e: any) => {
-						this._onDidChangeTreeData?.fire(e);
+				try {
+					const projectProvider = await this._workspaceService.getProjectProvider(project);
+
+					this.incrementProjectTypeMetric(typeMetric, project);
+
+					if (projectProvider === undefined) {
+						unknownProjects.push(project.path);
+						continue;
+					}
+					const treeDataProvider = await projectProvider.getProjectTreeDataProvider(project);
+					if (treeDataProvider.onDidChangeTreeData) {
+						treeDataProvider.onDidChangeTreeData((e: any) => {
+							this._onDidChangeTreeData?.fire(e);
+						});
+					}
+					const children = await treeDataProvider.getChildren(element);
+					children?.forEach(child => {
+						treeItems.push({
+							treeDataProvider: treeDataProvider,
+							element: child
+						});
 					});
+				} catch (e) {
+					errorCount++;
+					console.error(e.message);
 				}
-				const children = await treeDataProvider.getChildren(element);
-				children?.forEach(child => {
-					treeItems.push({
-						treeDataProvider: treeDataProvider,
-						element: child
-					});
-				});
 			}
+
+			if (errorCount > 0) {
+				vscode.window.showErrorMessage(ProjectsFailedToLoad);
+			}
+
+			TelemetryReporter.sendMetricsEvent(typeMetric, 'OpenWorkspaceProjectTypes');
+			TelemetryReporter.sendMetricsEvent(
+				{
+					'handled': projects.length - unknownProjects.length,
+					'unhandled': unknownProjects.length
+				},
+				'OpenWorkspaceProjectsHandled');
+
 			if (unknownProjects.length > 0) {
-				vscode.window.showErrorMessage(UnknownProjectsErrorMessage(unknownProjects));
+				vscode.window.showErrorMessage(UnknownProjectsError(unknownProjects));
 			}
+
 			return treeItems;
 		}
+	}
+
+	private incrementProjectTypeMetric(typeMetric: Record<string, number>, projectUri: vscode.Uri) {
+		const ext = path.extname(projectUri.fsPath);
+
+		if (!typeMetric.hasOwnProperty(ext)) {
+			typeMetric[ext] = 0;
+		}
+
+		typeMetric[ext]++;
 	}
 }

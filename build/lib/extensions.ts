@@ -250,7 +250,6 @@ const externalExtensions = [
 	'azurehybridtoolkit',
 	'cms',
 	'dacpac',
-	'data-workspace',
 	'import',
 	'kusto',
 	'liveshare',
@@ -258,9 +257,10 @@ const externalExtensions = [
 	'profiler',
 	'query-history',
 	'schema-compare',
+	'server-report',
 	'sql-assessment',
 	'sql-database-projects',
-	'sql-migration',
+	'sql-migration'
 ];
 
 // extensions that require a rebuild since they have native parts

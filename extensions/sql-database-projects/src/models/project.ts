@@ -15,6 +15,7 @@ import { Uri, window } from 'vscode';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 /**
  * Class representing a Project, and providing functions for operating on it
@@ -53,6 +54,7 @@ export class Project {
 	public static async openProject(projectFilePath: string): Promise<Project> {
 		const proj = new Project(projectFilePath);
 		await proj.readProjFile();
+		await proj.updateProjectForRoundTrip();
 
 		return proj;
 	}
@@ -60,7 +62,7 @@ export class Project {
 	/**
 	 * Reads the project setting and contents from the file
 	 */
-	public async readProjFile() {
+	public async readProjFile(): Promise<void> {
 		this.resetProject();
 
 		const projFileText = await fs.readFile(this.projectFilePath);
@@ -178,7 +180,7 @@ export class Project {
 		}
 	}
 
-	private resetProject() {
+	private resetProject(): void {
 		this.files = [];
 		this.importedTargets = [];
 		this.databaseReferences = [];
@@ -189,11 +191,29 @@ export class Project {
 		this.projFileXmlDoc = undefined;
 	}
 
-	public async updateProjectForRoundTrip() {
-		await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
-		await this.updateImportToSupportRoundTrip();
-		await this.updatePackageReferenceInProjFile();
-		await this.updateAfterCleanTargetInProjFile();
+	public async updateProjectForRoundTrip(): Promise<void> {
+		if (this.importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences()) {
+			return;
+		}
+
+		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectForRoundtrip);
+
+		if (!this.importedTargets.includes(constants.NetCoreTargets)) {
+			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
+				await this.updateImportToSupportRoundTrip();
+				await this.updatePackageReferenceInProjFile();
+				await this.updateBeforeBuildTargetInProjFile();
+				await this.updateSystemDatabaseReferencesInProjFile();
+			}
+		} else if (this.containsSSDTOnlySystemDatabaseReferences()) {
+			const result = await window.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip, constants.yesString, constants.noString);
+			if (result === constants.yesString) {
+				await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
+				await this.updateSystemDatabaseReferencesInProjFile();
+			}
+		}
 	}
 
 	private async updateImportToSupportRoundTrip(): Promise<void> {
@@ -215,21 +235,21 @@ export class Project {
 		await this.updateImportedTargetsToProjFile(constants.NetCoreCondition, constants.NetCoreTargets, undefined);
 	}
 
-	private async updateAfterCleanTargetInProjFile(): Promise<void> {
+	private async updateBeforeBuildTargetInProjFile(): Promise<void> {
 		// Search if clean target already present, update it
 		for (let i = 0; i < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Target).length; i++) {
-			const afterCleanNode = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Target)[i];
-			const name = afterCleanNode.getAttribute(constants.Name);
-			if (name === constants.AfterCleanTarget) {
-				return await this.createCleanFileNode(afterCleanNode);
+			const beforeBuildNode = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Target)[i];
+			const name = beforeBuildNode.getAttribute(constants.Name);
+			if (name === constants.BeforeBuildTarget) {
+				return await this.createCleanFileNode(beforeBuildNode);
 			}
 		}
 
 		// If clean target not found, create new
-		const afterCleanNode = this.projFileXmlDoc.createElement(constants.Target);
-		afterCleanNode.setAttribute(constants.Name, constants.AfterCleanTarget);
-		this.projFileXmlDoc.documentElement.appendChild(afterCleanNode);
-		await this.createCleanFileNode(afterCleanNode);
+		const beforeBuildNode = this.projFileXmlDoc.createElement(constants.Target);
+		beforeBuildNode.setAttribute(constants.Name, constants.BeforeBuildTarget);
+		this.projFileXmlDoc.documentElement.appendChild(beforeBuildNode);
+		await this.createCleanFileNode(beforeBuildNode);
 	}
 
 	private async createCleanFileNode(parentNode: any): Promise<void> {
@@ -267,17 +287,24 @@ export class Project {
 	public async addScriptItem(relativeFilePath: string, contents?: string, itemType?: string): Promise<FileProjectEntry> {
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
 
+		// check if file already exists if content was passed to write to a new file
+		if (contents !== undefined && contents !== '' && await utils.exists(absoluteFilePath)) {
+			throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
+		}
+
+		// create the file if contents were passed in
 		if (contents) {
 			await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
 			await fs.writeFile(absoluteFilePath, contents);
 		}
 
-		//Check that file actually exists
+		// check that file exists
 		let exists = await utils.exists(absoluteFilePath);
 		if (!exists) {
 			throw new Error(constants.noFileExist(absoluteFilePath));
 		}
 
+		// update sqlproj XML
 		const fileEntry = this.createFileProjectEntry(relativeFilePath, EntryType.File);
 
 		let xmlTag;
@@ -349,7 +376,7 @@ export class Project {
 			// update any system db references
 			const systemDbReferences = this.databaseReferences.filter(r => r instanceof SystemDatabaseReferenceProjectEntry) as SystemDatabaseReferenceProjectEntry[];
 			if (systemDbReferences.length > 0) {
-				systemDbReferences.forEach((r) => {
+				for (let r of systemDbReferences) {
 					// remove old entry in sqlproj
 					this.removeDatabaseReferenceFromProjFile(r);
 
@@ -358,11 +385,18 @@ export class Project {
 					r.ssdtUri = this.getSystemDacpacSsdtUri(`${r.databaseName}.dacpac`);
 
 					// add updated system db reference to sqlproj
-					this.addDatabaseReferenceToProjFile(r);
-				});
+					await this.addDatabaseReferenceToProjFile(r);
+				}
 			}
 
 			await this.serializeToProjFile(this.projFileXmlDoc);
+
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.changePlatformType)
+				.withAdditionalProperties({
+					from: this.getProjectTargetVersion(),
+					to: compatLevel
+				})
+				.send();
 		}
 	}
 
@@ -460,7 +494,7 @@ export class Project {
 	 * @param name name of the variable
 	 * @param defaultValue
 	 */
-	public async addSqlCmdVariable(name: string, defaultValue: string) {
+	public async addSqlCmdVariable(name: string, defaultValue: string): Promise<void> {
 		const sqlCmdVariableEntry = new SqlCmdVariableProjectEntry(name, defaultValue);
 		await this.addToProjFile(sqlCmdVariableEntry);
 	}
@@ -706,10 +740,10 @@ export class Project {
 		referenceNode.appendChild(privateElement);
 	}
 
-	public addSqlCmdVariableToProjFile(entry: SqlCmdVariableProjectEntry): void {
+	public async addSqlCmdVariableToProjFile(entry: SqlCmdVariableProjectEntry): Promise<void> {
 		// Remove any entries with the same variable name. It'll be replaced with a new one
 		if (Object.keys(this.sqlCmdVariables).includes(entry.variableName)) {
-			this.removeFromProjFile(entry);
+			await this.removeFromProjFile(entry);
 		}
 
 		const sqlCmdVariableNode = this.projFileXmlDoc.createElement(constants.SqlCmdVariable);
@@ -830,6 +864,10 @@ export class Project {
 				await this.addSystemDatabaseReference({ databaseName: databaseVariableName, systemDb: systemDb, suppressMissingDependenciesErrors: suppressMissingDependences });
 			}
 		}
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateSystemDatabaseReferencesInProjFile)
+			.withAdditionalMeasurements({ referencesCount: this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length })
+			.send();
 	}
 
 	private async addToProjFile(entry: ProjectEntry, xmlTag?: string, attributes?: Map<string, string>): Promise<void> {
@@ -844,14 +882,14 @@ export class Project {
 				await this.addDatabaseReferenceToProjFile(<IDatabaseReferenceProjectEntry>entry);
 				break;
 			case EntryType.SqlCmdVariable:
-				this.addSqlCmdVariableToProjFile(<SqlCmdVariableProjectEntry>entry);
+				await this.addSqlCmdVariableToProjFile(<SqlCmdVariableProjectEntry>entry);
 				break; // not required but adding so that we dont miss when we add new items
 		}
 
 		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
-	private async removeFromProjFile(entries: ProjectEntry | ProjectEntry[]) {
+	private async removeFromProjFile(entries: ProjectEntry | ProjectEntry[]): Promise<void> {
 		if (entries instanceof ProjectEntry) {
 			entries = [entries];
 		}
@@ -876,30 +914,41 @@ export class Project {
 		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
-	private async serializeToProjFile(projFileContents: any) {
+	private async serializeToProjFile(projFileContents: any): Promise<void> {
 		let xml = new xmldom.XMLSerializer().serializeToString(projFileContents);
-		xml = xmlFormat(xml, <any>{ collapseContent: true, indentation: '  ', lineSeparator: os.EOL }); // TODO: replace <any>
+		xml = xmlFormat(xml, <any>{
+			collapseContent: true,
+			indentation: '  ',
+			lineSeparator: os.EOL,
+			whiteSpaceAtEndOfSelfclosingTag: true
+		}); // TODO: replace <any>
 
 		await fs.writeFile(this.projectFilePath, xml);
 	}
 
 	/**
 	 * Adds the list of sql files and directories to the project, and saves the project file
-	 * @param absolutePath Absolute path of the folder
+	 * @param list list of files and folder Uris. Files and folders must already exist. No files or folders will be added if any do not exist.
 	 */
-	public async addToProject(list: string[]): Promise<void> {
+	public async addToProject(list: Uri[]): Promise<void> {
+		// verify all files/folders exist. If not all exist, none will be added
+		for (let file of list) {
+			const exists = await utils.exists(file.fsPath);
 
-		for (let i = 0; i < list.length; i++) {
-			let file: string = list[i];
-			const relativePath = utils.trimChars(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(file)), '/');
+			if (!exists) {
+				throw new Error(constants.fileOrFolderDoesNotExist(file.fsPath));
+			}
+		}
+
+		for (let file of list) {
+			const relativePath = utils.trimChars(utils.trimUri(Uri.file(this.projectFilePath), file), '/');
 
 			if (relativePath.length > 0) {
-				let fileStat = await fs.stat(file);
+				const fileStat = await fs.stat(file.fsPath);
 
-				if (fileStat.isFile() && file.toLowerCase().endsWith(constants.sqlFileExtension)) {
+				if (fileStat.isFile() && file.fsPath.toLowerCase().endsWith(constants.sqlFileExtension)) {
 					await this.addScriptItem(relativePath);
-				}
-				else if (fileStat.isDirectory()) {
+				} else if (fileStat.isDirectory()) {
 					await this.addFolderItem(relativePath);
 				}
 			}

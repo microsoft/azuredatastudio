@@ -3,18 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
-import { IntervalTimer } from 'vs/base/common/async';
-import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { localize } from 'vs/nls';
-import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { parseNumAsTimeString } from 'sql/platform/connection/common/utils';
-import { Event } from 'vs/base/common/event';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
-import { IStatusbarService, IStatusbarEntryAccessor, StatusbarAlignment } from 'vs/workbench/services/statusbar/common/statusbar';
-
+import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import { IntervalTimer } from 'vs/base/common/async';
+import { Event } from 'vs/base/common/event';
+import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { localize } from 'vs/nls';
+import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from 'vs/workbench/services/statusbar/common/statusbar';
 export class TimeElapsedStatusBarContributions extends Disposable implements IWorkbenchContribution {
 
 	private static readonly ID = 'status.query.timeElapsed';
@@ -251,5 +250,56 @@ export class QueryStatusStatusBarContributions extends Disposable implements IWo
 
 	private show() {
 		this.statusbarService.updateEntryVisibility(QueryStatusStatusBarContributions.ID, true);
+	}
+}
+
+export class QueryResultSelectionSummaryStatusBarContribution extends Disposable implements IWorkbenchContribution {
+	private static readonly ID = 'status.query.selection-summary';
+	private statusItem: IStatusbarEntryAccessor;
+
+	constructor(
+		@IStatusbarService private readonly statusbarService: IStatusbarService,
+		@IEditorService private editorService: IEditorService,
+		@IQueryModelService queryModelService: IQueryModelService
+	) {
+		super();
+		this.statusItem = this._register(
+			this.statusbarService.addEntry({
+				text: '',
+				ariaLabel: ''
+			},
+				QueryResultSelectionSummaryStatusBarContribution.ID,
+				localize('status.query.selection-summary', "Selection Summary"),
+				StatusbarAlignment.RIGHT, 100)
+		);
+		this._register(editorService.onDidActiveEditorChange(() => { this.hide(); }, this));
+		this._register(queryModelService.onRunQueryStart(() => { this.hide(); }));
+		this._register(queryModelService.onCellSelectionChanged((data: string[]) => {
+			this.onCellSelectionChanged(data);
+		}));
+	}
+
+	private hide(): void {
+		this.statusbarService.updateEntryVisibility(QueryResultSelectionSummaryStatusBarContribution.ID, false);
+	}
+
+	private show(): void {
+		this.statusbarService.updateEntryVisibility(QueryResultSelectionSummaryStatusBarContribution.ID, true);
+	}
+
+	private onCellSelectionChanged(data: string[]): void {
+		const numericValues = data?.filter(value => !Number.isNaN(Number(value))).map(value => Number(value));
+		if (numericValues?.length < 2 || !(this.editorService.activeEditor instanceof QueryEditorInput)) {
+			this.hide();
+			return;
+		}
+
+		const sum = numericValues.reduce((previous, current, idx, array) => previous + current);
+		const summaryText = localize('status.query.summaryText', "Average: {0}  Count: {1}  Sum: {2}", Number((sum / numericValues.length).toFixed(3)), data.length, sum);
+		this.statusItem.update({
+			text: summaryText,
+			ariaLabel: summaryText
+		});
+		this.show();
 	}
 }

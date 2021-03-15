@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 
 import * as constants from '../../../common/constants';
 import { DataInfoComponent } from '../../dataInfoComponent';
-import { ModelActionType, ModelViewBase } from '../modelViewBase';
+import { ModelActionType, ModelViewBase, ModelSourceType } from '../modelViewBase';
 import { CurrentModelsTable } from './currentModelsTable';
 import { ApiWrapper } from '../../../common/apiWrapper';
 import { IPageView, IComponentSettings } from '../../interfaces';
@@ -139,18 +139,20 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 	}
 
 	public addComponents(formBuilder: azdata.FormBuilder) {
-		this._formBuilder = formBuilder;
-		if (this._tableSelectionComponent && this._dataTable && this._tableDataCountContainer && this._labelContainer && this._subheadingContainer) {
-			formBuilder.addFormItem({ title: '', component: this._subheadingContainer });
-			this._tableSelectionComponent.addComponents(formBuilder);
-			formBuilder.addFormItem({ title: '', component: this._tableDataCountContainer });
-			this._dataTable.addComponents(formBuilder);
+		if (this.modelSourceType === ModelSourceType.RegisteredModels) {
+			this._formBuilder = formBuilder;
+			if (this._tableSelectionComponent && this._dataTable && this._tableDataCountContainer && this._labelContainer && this._subheadingContainer) {
+				formBuilder.addFormItem({ title: '', component: this._subheadingContainer });
+				this._tableSelectionComponent.addComponents(formBuilder);
+				formBuilder.addFormItem({ title: '', component: this._tableDataCountContainer });
+				this._dataTable.addComponents(formBuilder);
 
-			if (this._dataTable.isEmpty) {
-				formBuilder.addFormItem({ title: '', component: this._labelContainer });
-			}
-			if (this._tableDataCountComponent) {
-				this._tableDataCountComponent.value = constants.getDataCount(this._dataTable.modelCounts);
+				if (this._dataTable.isEmpty) {
+					formBuilder.addFormItem({ title: '', component: this._labelContainer });
+				}
+				if (this._tableDataCountComponent) {
+					this._tableDataCountComponent.value = constants.getDataCount(this._dataTable.modelCounts);
+				}
 			}
 		}
 	}
@@ -206,8 +208,10 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 
 	private async onTableSelected(): Promise<void> {
 		if (this._tableSelectionComponent?.data) {
-			this.importTable = this._tableSelectionComponent?.data;
-			await this.storeImportConfigTable();
+			if (this._tableSelectionComponent?.isDataValid) {
+				this.importTable = this._tableSelectionComponent?.data;
+				await this.storeImportConfigTable();
+			}
 			if (this._dataTable) {
 				await this._dataTable.refresh();
 				if (this._emptyModelsComponent) {

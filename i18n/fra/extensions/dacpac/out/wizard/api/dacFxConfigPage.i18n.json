@@ -9,5 +9,5 @@
 	"dacFx.targetServerDropdownTitle": "Serveur cible",
 	"dacFx.sourceServerDropdownTitle": "Serveur source",
 	"dacFx.databaseNameTextBox": "Base de données cible",
-	"dacFx.sourceDatabaseDropdownTitle": "Base de données source "
+	"dacFx.sourceDatabaseDropdownTitle": "Base de données source"
 }

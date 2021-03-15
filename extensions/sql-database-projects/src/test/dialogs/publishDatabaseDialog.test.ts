@@ -14,21 +14,28 @@ import * as TypeMoq from 'typemoq';
 
 import { PublishDatabaseDialog } from '../../dialogs/publishDatabaseDialog';
 import { Project } from '../../models/project';
-import { SqlDatabaseProjectTreeViewProvider } from '../../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../../controllers/projectController';
 import { IPublishSettings, IGenerateScriptSettings } from '../../models/IPublishSettings';
+import { emptySqlDatabaseProjectTypeId } from '../../common/constants';
+import { mockDacFxOptionsResult } from '../testContext';
 
-describe.skip('Publish Database Dialog', () => {
+describe('Publish Database Dialog', () => {
 	before(async function (): Promise<void> {
 		await templates.loadTemplates(path.join(__dirname, '..', '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
 	});
 
 	it('Should open dialog successfully ', async function (): Promise<void> {
-		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+		const projController = new ProjectsController();
 		const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
 
-		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), true, 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
+		const projFilePath = await projController.createNewProject({
+			newProjName: 'TestProjectName',
+			folderUri: vscode.Uri.file(projFileDir),
+			projectTypeId: emptySqlDatabaseProjectTypeId,
+			projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575'
+		});
+
 		const project = new Project(projFilePath);
 		const publishDatabaseDialog = new PublishDatabaseDialog(project);
 		publishDatabaseDialog.openDialog();
@@ -36,11 +43,17 @@ describe.skip('Publish Database Dialog', () => {
 	});
 
 	it('Should create default database name correctly ', async function (): Promise<void> {
-		const projController = new ProjectsController(new SqlDatabaseProjectTreeViewProvider());
+		const projController = new ProjectsController();
 		const projFolder = `TestProject_${new Date().getTime()}`;
 		const projFileDir = path.join(os.tmpdir(), projFolder);
 
-		const projFilePath = await projController.createNewProject('TestProjectName', vscode.Uri.file(projFileDir), true, 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575');
+		const projFilePath = await projController.createNewProject({
+			newProjName: 'TestProjectName',
+			folderUri: vscode.Uri.file(projFileDir),
+			projectTypeId: emptySqlDatabaseProjectTypeId,
+			projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575'
+		});
+
 		const project = new Project(projFilePath);
 
 		const publishDatabaseDialog = new PublishDatabaseDialog(project);
@@ -52,18 +65,22 @@ describe.skip('Publish Database Dialog', () => {
 		const dialog = TypeMoq.Mock.ofType(PublishDatabaseDialog, undefined, undefined, proj);
 		dialog.setup(x => x.getConnectionUri()).returns(() => { return Promise.resolve('Mock|Connection|Uri'); });
 		dialog.setup(x => x.getTargetDatabaseName()).returns(() => 'MockDatabaseName');
+		dialog.setup(x => x.getSqlCmdVariablesForPublish()).returns(() => proj.sqlCmdVariables);
+		dialog.setup(x => x.getDeploymentOptions()).returns(() => { return Promise.resolve(mockDacFxOptionsResult.deploymentOptions); });
 		dialog.callBase = true;
 
 		let profile: IPublishSettings | IGenerateScriptSettings | undefined;
 
-		const expectedPublish: IPublishSettings  = {
+		const expectedPublish: IPublishSettings = {
 			databaseName: 'MockDatabaseName',
 			connectionUri: 'Mock|Connection|Uri',
 			upgradeExisting: true,
 			sqlCmdVariables: {
 				'ProdDatabaseName': 'MyProdDatabase',
 				'BackupDatabaseName': 'MyBackupDatabase'
-			}
+			},
+			deploymentOptions: mockDacFxOptionsResult.deploymentOptions,
+			profileUsed: false
 		};
 
 		dialog.object.publish = (_, prof) => { profile = prof; };
@@ -77,7 +94,9 @@ describe.skip('Publish Database Dialog', () => {
 			sqlCmdVariables: {
 				'ProdDatabaseName': 'MyProdDatabase',
 				'BackupDatabaseName': 'MyBackupDatabase'
-			}
+			},
+			deploymentOptions: mockDacFxOptionsResult.deploymentOptions,
+			profileUsed: false
 		};
 
 		dialog.object.generateScript = (_, prof) => { profile = prof; };

@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { SOURCE_CONFIGURATION_PAGE_TITLE, COLLECTING_SOURCE_CONFIGURATIONS, COLLECTING_SOURCE_CONFIGURATIONS_INFO, COLLECTING_SOURCE_CONFIGURATIONS_ERROR } from '../models/strings';
+import { SOURCE_CONFIGURATION_PAGE_TITLE, COLLECTING_SOURCE_CONFIGURATIONS, COLLECTING_SOURCE_CONFIGURATIONS_INFO, COLLECTING_SOURCE_CONFIGURATIONS_ERROR } from '../constants/strings';
 import { MigrationStateModel, StateChangeEvent, State } from '../models/stateMachine';
 import { Disposable } from 'vscode';
 
@@ -33,7 +33,7 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 
 		await view.initializeModel(form);
 
-		let connectionUri: string = await azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnection.connectionId);
+		let connectionUri: string = await azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId);
 		this.migrationStateModel.migrationService.getAssessments(connectionUri).then(results => {
 			if (results) {
 				this.migrationStateModel.assessmentResults = results.items;

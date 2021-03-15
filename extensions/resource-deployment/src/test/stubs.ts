@@ -17,7 +17,7 @@ export class TestChildProcessPromise<T> implements cp.ChildProcessPromise {
 			this.reject = reject;
 		});
 	}
-	resolve!: (value?: T | PromiseLike<T>) => void;
+	resolve!: (value: T | PromiseLike<T>) => void;
 	reject!: (reason?: any) => void;
 	then<TResult1 = T, TResult2 = never>(onFulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null, onRejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null): Promise<TResult1 | TResult2> {
 		return this._promise.then(onFulfilled, onRejected);

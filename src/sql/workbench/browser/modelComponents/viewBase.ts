@@ -31,7 +31,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	public readonly onDestroy = this._onDestroy.event;
 	constructor(protected changeRef: ChangeDetectorRef, protected logService: ILogService) {
 		super();
-		this.modelStore = new ModelStore();
+		this.modelStore = new ModelStore(logService);
 	}
 
 	// Properties needed by the model view code
@@ -68,9 +68,14 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		this.setLayout(component.id, component.layout, true);
 		this.registerEvent(component.id, true);
 		if (component.itemConfigs) {
-			for (let item of component.itemConfigs) {
-				this.addToContainer(component.id, item, undefined, true);
-			}
+			const items = component.itemConfigs.map(itemConfig => {
+				return {
+					itemConfig,
+					index: undefined,
+					initial: true
+				};
+			});
+			this.addToContainer(component.id, items, true);
 		}
 
 		return descriptor;
@@ -88,25 +93,60 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 	clearContainer(componentId: string): void {
 		this.logService.debug(`Queuing action to clear component ${componentId}`);
 		this.queueAction(componentId, (component) => {
+			if (!component.clearContainer) {
+				this.logService.warn(`Trying to clear container ${componentId} but does not implement clearContainer!`);
+				return;
+			}
 			this.logService.debug(`Clearing component ${componentId}`);
 			component.clearContainer();
 		});
 	}
 
-	addToContainer(containerId: string, itemConfig: IItemConfig, index?: number, initial: boolean = false): void {
-		this.logService.debug(`Queueing action to add component ${itemConfig.componentShape.id} to container ${containerId}`);
+	addToContainer(containerId: string, items: { itemConfig: IItemConfig, index?: number }[], initial?: boolean): void {
+		if (items.length === 0) {
+			// If we don't have any items save ourselves the time and just exit early. This can happen when
+			// an item is defined since we may have components definitions which have empty itemConfigs
+			return;
+		}
+		const itemNames = items.map(item => item.itemConfig.componentShape.id).join(',');
+		this.logService.debug(`Queueing action to add components ${itemNames} to container ${containerId}`);
 		// Do not return the promise as this should be non-blocking
 		this.queueAction(containerId, (component) => {
-			this.logService.debug(`Adding component ${itemConfig.componentShape.id} to container ${containerId}`);
-			let childDescriptor = this.defineComponent(itemConfig.componentShape);
-			component.addToContainer(childDescriptor, itemConfig.config, index);
+			if (!component.addToContainer) {
+				this.logService.warn(`Container ${containerId} is trying to add components ${itemNames} but does not implement addToContainer!`);
+				return;
+			}
+			this.logService.debug(`Adding components ${itemNames} to container ${containerId}`);
+			const itemConfigs = items.map(item => {
+				const componentDescriptor = this.defineComponent(item.itemConfig.componentShape);
+				return {
+					componentDescriptor,
+					config: item.itemConfig.config,
+					index: item.index
+				};
+			});
+
+			component.addToContainer(itemConfigs);
 		}, initial);
 	}
 
 	removeFromContainer(containerId: string, itemConfig: IItemConfig): void {
 		this.logService.debug(`Queueing action to remove component ${itemConfig.componentShape.id} from container ${containerId}`);
-		let childDescriptor = this.modelStore.getComponentDescriptor(itemConfig.componentShape.id);
+		const childDescriptor = this.modelStore.getComponentDescriptor(itemConfig.componentShape.id);
+		if (!childDescriptor) {
+			// This should ideally never happen but it's possible for a race condition to happen when adding/removing components quickly where
+			// the child component is unregistered after it is defined because a component is only unregistered when it's destroyed by Angular
+			// which can take a while and we don't wait on that to happen currently.
+			// While this happening isn't desirable there isn't much we can do here currently until that's fixed so for now just continue on since
+			// it doesn't typically seem to have any huge impacts when this does happen (which is generally rare)
+			this.logService.warn(`Could not find descriptor for child component ${itemConfig.componentShape.id} when removing from container ${containerId}`);
+			return;
+		}
 		this.queueAction(containerId, (component) => {
+			if (!component.removeFromContainer) {
+				this.logService.warn(`Container ${containerId} is trying to remove component ${itemConfig.componentShape.id} but does not implement removeFromContainer!`);
+				return;
+			}
 			this.logService.debug(`Removing component ${itemConfig.componentShape.id} from container ${containerId}`);
 			component.removeFromContainer(childDescriptor);
 			this.removeComponent(itemConfig.componentShape);

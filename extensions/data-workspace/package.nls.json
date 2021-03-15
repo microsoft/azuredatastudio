@@ -3,8 +3,13 @@
 	"extension-description": "Data workspace",
 	"data-workspace-view-container-name": "Projects",
 	"main-view-name": "Projects",
-	"add-project-command": "Add Project",
+	"new-command": "New",
 	"refresh-workspace-command": "Refresh",
+	"close-workspace-command": "Close Workspace",
 	"remove-project-command": "Remove Project",
-	"projects-view-no-workspace-content": "To use projects, open a workspace and add projects to it, or use the 'Add Project' feature and we will create a workspace for you.\n[Open Workspace](command:workbench.action.openWorkspace)\n[Add Project](command:projects.addProject)"
+	"projects-view-no-workspace-content": "Create new or open existing to get started.\n[Create new](command:projects.new)\n[Open existing](command:projects.openExisting)\nTo learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).",
+	"projects-view-no-project-content": "No projects open in current workspace.\n[Create new](command:projects.new)\n[Open existing](command:projects.openExisting)\nTo learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).\n",
+	"open-existing-command": "Open existing",
+	"projects.defaultProjectSaveLocation": "Full path to folder where new projects are saved by default.",
+	"projects.showNotAddedProjectsInWorkspacePrompt": "Always show information message when the current workspace folders contain projects that have not been added to the workspace's projects."
 }

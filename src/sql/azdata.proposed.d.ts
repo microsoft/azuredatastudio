@@ -6,7 +6,6 @@
 // This is the place for API experiments and proposal.
 
 import * as vscode from 'vscode';
-import { LoadingComponentProperties } from 'azdata';
 
 declare module 'azdata' {
 	/**
@@ -74,17 +73,22 @@ declare module 'azdata' {
 			data: any;
 		}
 
-		export interface ICellOutputMetadata {
-			resultSet?: ResultSetSummary;
-		}
-
 		export interface INotebookMetadata {
 			connection_name?: string;
+			multi_connection_mode?: boolean;
 		}
 
 		export interface ICellMetadata {
 			connection_name?: string;
 		}
+
+		export interface ICellContents {
+			attachments?: ICellAttachments;
+		}
+
+		export type ICellAttachments = { [key: string]: ICellAttachment };
+		export type ICellAttachment = { [key: string]: string };
+
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
@@ -270,9 +274,20 @@ declare module 'azdata' {
 
 	export interface HyperlinkComponent {
 		/**
-		 * An event called when the text is clicked
+		 * An event called when the hyperlink is clicked
 		 */
 		onDidClick: vscode.Event<any>;
+	}
+
+	export interface HyperlinkComponentProperties {
+		showLinkIcon?: boolean;
+	}
+
+	export interface RadioButtonComponent {
+		/**
+		 * An event called when the value of radio button changes
+		 */
+		onDidChangeCheckedState: vscode.Event<boolean>;
 	}
 
 	export interface DeclarativeTableColumn {
@@ -294,6 +309,11 @@ declare module 'azdata' {
 
 	export interface DeclarativeTableComponent extends Component, DeclarativeTableProperties {
 		onRowSelected: vscode.Event<DeclarativeTableRowSelectedEvent>;
+		/**
+		 * Sets the filter currently applied to this table - only rows with index in the given array will be visible. undefined
+		 * will clear the filter
+		 */
+		setFilter(rowIndexes: number[] | undefined): void;
 	}
 
 	/*
@@ -324,6 +344,7 @@ declare module 'azdata' {
 		tabbedPanel(): TabbedPanelComponentBuilder;
 		separator(): ComponentBuilder<SeparatorComponent, SeparatorComponentProperties>;
 		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent, PropertiesContainerComponentProperties>;
+		infoBox(): ComponentBuilder<InfoBoxComponent, InfoBoxComponentProperties>;
 	}
 
 	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
@@ -336,7 +357,7 @@ declare module 'azdata' {
 	export interface RadioCard {
 		id: string;
 		descriptions: RadioCardDescription[];
-		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		icon?: IconPath;
 	}
 
 	export interface RadioCardDescription {
@@ -362,7 +383,7 @@ declare module 'azdata' {
 	}
 
 	export type RadioCardSelectionChangedEvent = { cardId: string; card: RadioCard };
-	export type RadioCardLinkClickEvent = { cardId: string, card: RadioCard, selectorText: RadioCardDescription };
+	export type RadioCardLinkClickEvent = { cardId: string, card: RadioCard, description: RadioCardDescription };
 
 	export interface RadioCardGroupComponent extends Component, RadioCardGroupComponentProperties {
 		/**
@@ -415,7 +436,7 @@ declare module 'azdata' {
 	}
 
 	export interface DeclarativeTableCellValue {
-		value: string | number | boolean;
+		value: string | number | boolean | Component;
 		ariaLabel?: string;
 		style?: CssStyles
 	}
@@ -428,7 +449,7 @@ declare module 'azdata' {
 		/**
 		 * The path for the icon with optional dark-theme away alternative
 		 */
-		iconPath?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		iconPath?: IconPath;
 		/**
 		 * The height of the icon
 		 */
@@ -525,7 +546,7 @@ declare module 'azdata' {
 		/**
 		 * Icon of the tab
 		 */
-		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		icon?: IconPath;
 	}
 
 	/**
@@ -544,7 +565,7 @@ declare module 'azdata' {
 	}
 
 	/**
-	 * Builder for TabbedPannelComponent
+	 * Builder for TabbedPanelComponent
 	 */
 	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties> {
 		/**
@@ -598,6 +619,32 @@ declare module 'azdata' {
 		propertyItems?: PropertiesContainerItem[];
 	}
 
+	/**
+	 * Component to display text with an icon representing the severity
+	 */
+	export interface InfoBoxComponent extends Component, InfoBoxComponentProperties {
+	}
+
+	export type InfoBoxStyle = 'information' | 'warning' | 'error' | 'success';
+
+	/**
+	 * Properties for configuring a InfoBoxComponent
+	 */
+	export interface InfoBoxComponentProperties extends ComponentProperties {
+		/**
+		 * The style of the InfoBox
+		 */
+		style: InfoBoxStyle;
+		/**
+		 * The display text of the InfoBox
+		 */
+		text: string;
+		/**
+		 * Controls whether the text should be announced by the screen reader. Default value is false.
+		 */
+		announceText?: boolean;
+	}
+
 	export namespace nb {
 		/**
 		 * An event that is emitted when the active Notebook editor is changed.
@@ -622,9 +669,35 @@ declare module 'azdata' {
 
 		export interface Dialog {
 			/**
-			 * Width of the dialog
+			 * Width of the dialog.
+			 * Default is 'narrrow'.
 			 */
 			width?: DialogWidth;
+			/**
+			 * Dialog style type: normal, flyout, callout.
+			 * Default is 'flyout'.
+			 */
+			dialogStyle?: DialogStyle;
+			/**
+			 * Dialog position type: left, below and undefined.
+			 * Default is undefined.
+			 */
+			dialogPosition?: DialogPosition;
+			/**
+			 * Specify whether or not to render the Dialog header.
+			 * Default is true.
+			 */
+			renderHeader?: boolean;
+			/**
+			 * Specify whether or not to render the Dialog footer.
+			 * Default is true.
+			 */
+			renderFooter?: boolean;
+			/**
+			 * Positional data prior to opening of dialog.
+			 * Default is undefined.
+			 */
+			dialogProperties?: IDialogProperties;
 		}
 
 		export interface Wizard {
@@ -638,15 +711,49 @@ declare module 'azdata' {
 			width?: DialogWidth;
 		}
 
-		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
+		export interface WizardPage extends ModelViewPanel {
+			/**
+			 * An optional name for the page. If provided it will be used for telemetry
+			 */
+			pageName?: string;
+		}
+
+		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number | string;
+
+		/**
+		 * These dialog styles affect how the dialog dispalys in the application.
+		 * normal: Positioned top and centered.
+		 * flyout (default): Existing panel appearance - positioned full screen height, opens from the right side of the application.
+		 * callout: Opens below or beside button clicked, contains footer section with buttons.
+		 */
+		export type DialogStyle = 'normal' | 'flyout' | 'callout';
+
+		export type DialogPosition = 'left' | 'below';
+
+		/**
+		 * These are positional data prior to opening of dialog.
+		 * They are needed for positioning relative to the button which triggers the opening of the dialog.
+		 * Default is undefined.
+		 */
+		export interface IDialogProperties {
+			xPos: number,
+			yPos: number,
+			width: number,
+			height: number
+		}
 
 		/**
 		 * Create a dialog with the given title
-		 * @param title The title of the dialog, displayed at the top
-		 * @param dialogName the name of the dialog
-		 * @param width width of the dialog, default is 'wide'
+		 * @param title Title of the dialog, displayed at the top.
+		 * @param dialogName Name of the dialog.
+		 * @param width Width of the dialog, default is 'narrow'.
+		 * @param dialogStyle Defines the dialog style, default is 'flyout'.
+		 * @param dialogPosition Defines the dialog position, default is undefined
+		 * @param renderHeader Specify whether or not to render the Dialog header, default is true.
+		 * @param renderFooter Specify whether or not to render the Dialog footer, default is true.
+		 * @param dialogProperties Positional data prior to opening of dialog, default is undefined.
 		 */
-		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth): Dialog;
+		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogProperties?: IDialogProperties): Dialog;
 
 		/**
 		 * Create a wizard with the given title and width
@@ -655,6 +762,20 @@ declare module 'azdata' {
 		 * @param width The width of the wizard, default value is 'narrow'
 		 */
 		export function createWizard(title: string, name?: string, width?: DialogWidth): Wizard;
+
+		/**
+		 * Create a wizard page with the given title, for inclusion in a wizard
+		 * @param title The title of the page
+		 * @param pageName The optional page name parameter will be used for telemetry
+		 */
+		export function createWizardPage(title: string, pageName?: string): WizardPage;
+
+		export interface Button {
+			/**
+			 * Specifies whether this is a secondary button. Default is false.
+			 */
+			secondary?: boolean;
+		}
 	}
 
 	export namespace workspace {
@@ -707,7 +828,7 @@ declare module 'azdata' {
 	}
 
 	export interface ButtonColumnOption {
-		icon?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+		icon?: IconPath;
 	}
 
 	export interface ButtonCell extends TableCell {
@@ -756,7 +877,7 @@ declare module 'azdata' {
 		generateAssessmentScript(items: SqlAssessmentResultItem[]): Promise<ResultStatus>;
 	}
 
-	export interface TreeItem2 extends vscode.TreeItem2 {
+	export interface TreeItem2 extends vscode.TreeItem {
 		payload?: IConnectionProfile;
 		childProvider?: string;
 		type?: ExtensionNodeType;
@@ -800,6 +921,10 @@ declare module 'azdata' {
 		* Description text to display inside button element.
 		*/
 		description?: string;
+		/**
+		 * Specifies whether this is a secondary button. Default value is false.
+		 */
+		secondary?: boolean;
 	}
 
 	export enum ButtonType {
@@ -815,6 +940,25 @@ declare module 'azdata' {
 		title: string;
 	}
 
+	export namespace workspace {
+		/**
+		 * Creates and enters a workspace at the specified location
+		 */
+		export function createAndEnterWorkspace(location: vscode.Uri, workspaceFile?: vscode.Uri): Promise<void>;
+
+		/**
+		 * Enters the workspace with the provided path
+		 * @param workspacefile
+		 */
+		export function enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+
+		/**
+		 * Saves and enters the workspace with the provided path
+		 * @param workspacefile
+		 */
+		export function saveAndEnterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+	}
+
 	export interface TableComponentProperties {
 		/**
 		 * Specifies whether to use headerFilter plugin
@@ -824,24 +968,105 @@ declare module 'azdata' {
 
 	export interface TableComponent {
 		/**
-		 * Append data to an exsiting table data.
+		 * Append data to an existing table data.
 		 */
-		appendData(data: any[][]);
+		appendData(data: any[][]): Thenable<void>;
 	}
 
 	export interface IconColumnCellValue {
-		icon: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
-		ariaLabel: string;
+		/**
+		 * The icon to be displayed.
+		 */
+		icon: IconPath;
+		/**
+		 * The title of the icon.
+		 */
+		title: string;
+	}
+
+	export interface ButtonColumnCellValue {
+		/**
+		 * The icon to be displayed.
+		 */
+		icon?: IconPath;
+		/**
+		 * The title of the button.
+		 */
+		title?: string;
+	}
+
+	export interface HyperlinkColumnCellValue {
+		/**
+		 * The icon to be displayed.
+		 */
+		icon?: IconPath;
+		/**
+		 * The title of the hyperlink.
+		 */
+		title?: string;
+
+		/**
+		 * The url to open.
+		 */
+		url?: string;
 	}
 
 	export enum ColumnType {
-		icon = 3
+		icon = 3,
+		hyperlink = 4
 	}
 
 	export interface TableColumn {
 		/**
-		* The text to display on the column heading. 'value' property will be used, if not specified
-		**/
+		 * The text to display on the column heading. 'value' property will be used, if not specified
+		 */
 		name?: string;
+	}
+
+	export interface IconColumnOptions {
+		/**
+		 * The icon to use for all the cells in this column.
+		 */
+		icon?: IconPath;
+	}
+
+	export interface ButtonColumn extends IconColumnOptions, TableColumn {
+		/**
+		 * Whether to show the text, default value is false.
+		 */
+		showText?: boolean;
+	}
+
+	export interface HyperlinkColumn extends IconColumnOptions, TableColumn {
+	}
+
+	export interface CheckboxColumn extends TableColumn {
+		action: ActionOnCellCheckboxCheck;
+	}
+
+	export enum AzureResource {
+		/**
+		 * Microsoft Graph
+		 */
+		MsGraph = 7
+	}
+
+	export interface ResultSetSummary {
+		/**
+		 * The visualization options for the result set.
+		 */
+		visualization?: VisualizationOptions;
+	}
+
+	/**
+	 * Defines all the supported visualization types
+	 */
+	export type VisualizationType = 'bar' | 'count' | 'doughnut' | 'horizontalBar' | 'image' | 'line' | 'pie' | 'scatter' | 'table' | 'timeSeries';
+
+	/**
+	 * Defines the configuration options for visualization
+	 */
+	export interface VisualizationOptions {
+		type: VisualizationType;
 	}
 }

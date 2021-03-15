@@ -24,13 +24,13 @@ import { Schemas } from 'vs/base/common/network';
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
 import { getInstalledExtensions, IExtensionStatus, onExtensionChanged, isKeymapExtension } from 'vs/workbench/contrib/extensions/common/extensionsUtils';
 import { IExtensionManagementService, IExtensionGalleryService, ILocalExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionRecommendationsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
-import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lifecycle';
+import { IWorkbenchExtensionEnablementService, EnablementState } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { ILifecycleService, StartupKind } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
-import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { buttonSecondaryBackground, buttonSecondaryBorder, buttonSecondary, buttonSecondaryHoverColor, tileBorder, disabledButton, disabledButtonBackground, gradientOne, gradientTwo, gradientBackground, extensionPackHeaderShadow, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, tileBoxShadow, hoverShadow } from 'sql/platform/theme/common/colorRegistry';
-import { registerColor, foreground, textLinkActiveForeground, descriptionForeground, activeContrastBorder, buttonForeground, menuBorder, menuForeground, editorWidgetBorder, selectBackground, buttonHoverBackground, selectBorder, iconForeground, textLinkForeground, inputBackground, focusBorder, listFocusBackground, listFocusForeground } from 'vs/platform/theme/common/colorRegistry';
+import { IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { tileBorder, gradientOne, gradientTwo, gradientBackground, extensionPackHeaderShadow, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, tileBoxShadow, hoverShadow } from 'sql/platform/theme/common/colorRegistry';
+import { registerColor, foreground, textLinkActiveForeground, descriptionForeground, activeContrastBorder, buttonForeground, menuBorder, menuForeground, editorWidgetBorder, selectBackground, buttonHoverBackground, selectBorder, iconForeground, textLinkForeground, inputBackground, focusBorder, listFocusBackground, listFocusForeground, buttonSecondaryBackground, buttonSecondaryBorder, buttonDisabledForeground, buttonDisabledBackground, buttonSecondaryForeground, buttonSecondaryHoverBackground } from 'vs/platform/theme/common/colorRegistry';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IEditorInputFactory, EditorInput } from 'vs/workbench/common/editor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -52,6 +52,8 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ICommandAction, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IExtensionRecommendationsService } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
@@ -184,10 +186,10 @@ const extensionPacks: ExtensionSuggestion[] = [
 ];
 
 const extensionPackExtensions: ExtensionPackExtensions[] = [
-	{ name: 'SQL Server Agent', icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.agent"}` },
-	{ name: 'SQL Server Profiler', icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.profiler"}` },
-	{ name: 'SQL Server Import', icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.import"}` },
-	{ name: 'SQL Server Dacpac', icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.dacpac"}` }
+	{ name: localize('welcomePage.sqlServerAgent', "SQL Server Agent"), icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.agent"}` },
+	{ name: localize('welcomePage.sqlServerProfiler', "SQL Server Profiler"), icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.profiler"}` },
+	{ name: localize('welcomePage.sqlServerImport', "SQL Server Import"), icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.import"}` },
+	{ name: localize('welcomePage.sqlServerDacpac', "SQL Server Dacpac"), icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.dacpac"}` }
 ];
 
 const extensions: ExtensionSuggestion[] = [
@@ -247,7 +249,8 @@ class WelcomePage extends Disposable {
 		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
 		@ICommandService private readonly commandService: ICommandService,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
-		@IContextKeyService private readonly contextKeyService: IContextKeyService) {
+		@IContextKeyService private readonly contextKeyService: IContextKeyService,
+		@IThemeService private themeService: IThemeService) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
 		const recentlyOpened = this.workspacesService.getRecentlyOpened();
@@ -296,7 +299,8 @@ class WelcomePage extends Disposable {
 			attributes: true,
 			attributeFilter: ['style']
 		});
-		const defaultBreakpoints = { SM: 480, MD: 640, LG: 1024, XL: 1365 };
+
+		const defaultBreakpoints = { XS: 435, SM: 608, MD: 824, LG: 906, XL: 1192 };
 		const startingWidth = parseInt(welcomeContainerContainer.style.width);
 		adsHomepage.classList.add('XS');
 		Object.keys(defaultBreakpoints).forEach(function (breakpoint) {
@@ -326,16 +330,20 @@ class WelcomePage extends Disposable {
 			workspaces = workspaces.filter(recent => !this.contextService.isCurrentWorkspace(isRecentWorkspace(recent) ? recent.workspace : recent.folderUri));
 			if (!workspaces.length) {
 				const recent = container.querySelector('.welcomePage') as HTMLElement;
+				const moreRecent = container.querySelector('.moreRecent') as HTMLElement;
+				moreRecent.remove();
 				recent.classList.add('emptyRecent');
+
 				return;
 			}
 			const ul = container.querySelector('.recent ul') as HTMLElement;
 			if (!ul) {
 				return;
 			}
+
 			const workspacesToShow = workspaces.slice(0, 5);
 			clearNode(ul);
-			await this.mapListEntries(workspacesToShow, fileService, container, ul);
+			await this.mapListEntries(workspacesToShow, container);
 		}).then(undefined, onUnexpectedError);
 		this.addExtensionList(container, '.extension-list');
 		this.addExtensionPack(container, '.extensionPack');
@@ -434,7 +442,6 @@ class WelcomePage extends Disposable {
 		guidedTourNotificationContainer.classList.add('guided-tour-banner');
 		containerLeft.classList.add(...flexClassesLeft);
 		containerRight.classList.add(...flexClassesRight);
-		icon.classList.add('diamond-icon');
 		removeTourBtn.classList.add(...removeBtnClasses);
 		p.appendChild(b);
 		p.innerText = localize('WelcomePage.TakeATour', "Would you like to take a quick tour of Azure Data Studio?");
@@ -469,21 +476,16 @@ class WelcomePage extends Disposable {
 		}, 3000);
 	}
 
-	private async createListEntries(container: HTMLElement, fileService: IFileService, fullPath: URI, windowOpenable: IWindowOpenable, relativePath: string): Promise<HTMLElement[]> {
+	private async createListEntries(container: HTMLElement, fullPath: string, windowOpenable: IWindowOpenable): Promise<HTMLElement[]> {
 		let result: HTMLElement[] = [];
-		const value = await fileService.resolve(fullPath);
-		let date = new Date(value.mtime);
-		let mtime: Date = date;
-		const options = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-		const lastOpened: string = mtime.toLocaleDateString(undefined, options);
-		const { name, parentPath } = splitName(relativePath);
+		const { name, parentPath } = splitName(fullPath);
 		const li = document.createElement('li');
 		const icon = document.createElement('i');
 		const a = document.createElement('a');
 		const span = document.createElement('span');
-		icon.title = relativePath;
+		icon.title = fullPath;
 		a.innerText = name;
-		a.title = relativePath;
+		a.title = fullPath;
 		a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
 		a.setAttribute('role', 'button');
 		a.href = 'javascript:void(0)';
@@ -503,8 +505,8 @@ class WelcomePage extends Disposable {
 		li.appendChild(a);
 		span.classList.add('path');
 		span.classList.add('detail');
-		span.innerText = lastOpened;
-		span.title = relativePath;
+		span.innerText = parentPath;
+		span.title = parentPath;
 		li.appendChild(span);
 		const ul = container.querySelector('.list');
 		ul.appendChild(li);
@@ -512,22 +514,20 @@ class WelcomePage extends Disposable {
 		return result;
 	}
 
-	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], fileService: IFileService, container: HTMLElement, ul: HTMLElement): Promise<HTMLElement[]> {
+	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], container: HTMLElement): Promise<HTMLElement[]> {
 		const result: HTMLElement[] = [];
 		for (let i = 0; i < recents.length; i++) {
 			const recent = recents[i];
-			let relativePath: string;
-			let fullPath: URI;
+			let fullPath: string;
 			let windowOpenable: IWindowOpenable;
 			if (isRecentFolder(recent)) {
 				windowOpenable = { folderUri: recent.folderUri };
-				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
-				fullPath = recent.folderUri;
+				fullPath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
 			} else {
-				relativePath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
+				fullPath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
 				windowOpenable = { workspaceUri: recent.workspace.configPath };
 			}
-			const elements = await this.createListEntries(container, fileService, fullPath, windowOpenable, relativePath);
+			const elements = await this.createListEntries(container, fullPath, windowOpenable);
 			result.push(...elements);
 		}
 		return result;
@@ -576,6 +576,7 @@ class WelcomePage extends Disposable {
 			extensionPacks.forEach((extension) => {
 				const installText = localize('welcomePage.install', "Install");
 				let dropdownBtn = this._register(new Button(btnContainer));
+				this._register(attachButtonStyler(dropdownBtn, this.themeService));
 				dropdownBtn.label = installText;
 				const classes = ['btn'];
 				const getDropdownBtn = container.querySelector('.extensionPack .monaco-button:first-of-type') as HTMLAnchorElement;
@@ -605,6 +606,7 @@ class WelcomePage extends Disposable {
 				installedButton.label = installedText;
 				installedButton.enabled = false;
 				const getInstalledButton = container.querySelector('.extensionPack .monaco-button:nth-of-type(2)') as HTMLAnchorElement;
+				this._register(attachButtonStyler(installedButton, this.themeService));
 
 				getInstalledButton.innerText = localize('welcomePage.installed', "Installed");
 				getInstalledButton.title = extension.isKeymap ? localize('welcomePage.installedKeymap', "{0} keymap is already installed", extension.name) : localize('welcomePage.installedExtensionPack', "{0} support is already installed", extension.name);
@@ -881,7 +883,7 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonHoverBackgroundColor = theme.getColor(buttonHoverBackground);
 	if (buttonHoverBackgroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary:hover { background: ${buttonHoverBackgroundColor}}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-primary:hover { background-color: ${buttonHoverBackgroundColor}}`);
 	}
 	const buttonSecondaryBackgroundColor = theme.getColor(buttonSecondaryBackground);
 	if (buttonSecondaryBackgroundColor) {
@@ -891,13 +893,13 @@ registerThemingParticipant((theme, collector) => {
 	if (buttonSecondaryBorderColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary .monaco-button{ border: 1px solid ${buttonSecondaryBorderColor}}`);
 	}
-	const buttonSecondaryColor = theme.getColor(buttonSecondary);
+	const buttonSecondaryColor = theme.getColor(buttonSecondaryForeground);
 	if (buttonSecondaryColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary { color: ${buttonSecondaryColor} !important}`);
 	}
-	const buttonSecondaryHover = theme.getColor(buttonSecondaryHoverColor);
+	const buttonSecondaryHover = theme.getColor(buttonSecondaryHoverBackground);
 	if (buttonSecondaryColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary:hover:not(.disabled) { color: ${buttonSecondaryHover};}`);
+		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .btn-secondary:hover:not(.disabled) { background-color: ${buttonSecondaryHover};}`);
 	}
 	const selectBackgroundColor = theme.getColor(selectBackground);
 	if (selectBackgroundColor) {
@@ -940,11 +942,11 @@ registerThemingParticipant((theme, collector) => {
 	if (descriptionColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .detail { color: ${descriptionColor}; }`);
 	}
-	const disabledButtonColor = theme.getColor(disabledButton);
+	const disabledButtonColor = theme.getColor(buttonDisabledForeground);
 	if (disabledButtonColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .btn:disabled { color: ${disabledButtonColor}; }`);
 	}
-	const disabledButtonBackgroundColor = theme.getColor(disabledButtonBackground);
+	const disabledButtonBackgroundColor = theme.getColor(buttonDisabledBackground);
 	if (disabledButtonColor) {
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .btn:disabled { background: ${disabledButtonBackgroundColor}; }`);
 	}

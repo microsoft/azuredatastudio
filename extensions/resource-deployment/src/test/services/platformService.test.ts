@@ -126,9 +126,10 @@ describe('PlatformService', () => {
 		it('openFile', () => {
 			const stub = sinon.stub(vscode.commands, 'executeCommand').resolves(); //resolves with a known string
 			platformService.openFile(filePath);
+			const expectedFilePath = vscode.Uri.file(filePath).fsPath;
 			stub.callCount.should.equal(1);
 			stub.getCall(0).args[0].should.equal('vscode.open');
-			stub.getCall(0).args[1].path.should.equal(filePath);
+			(stub.getCall(0).args[1] as vscode.Uri).fsPath.should.equal(expectedFilePath);
 		});
 		it('readTextFile', async () => {
 			sinon.stub(fs.promises, 'readFile').resolves(contents);

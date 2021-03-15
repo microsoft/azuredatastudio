@@ -228,13 +228,6 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
-	dom(): azdata.ComponentBuilder<azdata.DomComponent, azdata.DomProperties> {
-		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<azdata.DomComponent, azdata.DomProperties> = this.getComponentBuilder(new DomComponentWrapper(this._proxy, this._handle, id), id);
-		this._componentBuilders.set(id, builder);
-		return builder;
-	}
-
 	hyperlink(): azdata.ComponentBuilder<azdata.HyperlinkComponent, azdata.HyperlinkComponentProperties> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.HyperlinkComponent, azdata.HyperlinkComponentProperties> = this.getComponentBuilder(new HyperlinkComponentWrapper(this._proxy, this._handle, id), id);
@@ -266,6 +259,14 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 	propertiesContainer(): azdata.ComponentBuilder<azdata.PropertiesContainerComponent, azdata.PropertiesContainerComponentProperties> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.PropertiesContainerComponent, azdata.PropertiesContainerComponentProperties> = this.getComponentBuilder(new PropertiesContainerComponentWrapper(this._proxy, this._handle, id), id);
+
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	infoBox(): azdata.ComponentBuilder<azdata.InfoBoxComponent, azdata.InfoBoxComponentProperties> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.InfoBoxComponent, azdata.InfoBoxComponentProperties> = this.getComponentBuilder(new InfoBoxComponentWrapper(this._proxy, this._handle, id), id);
 
 		this._componentBuilders.set(id, builder);
 		return builder;
@@ -539,7 +540,7 @@ function createFromTabs(items: (azdata.Tab | azdata.TabGroup)[]): InternalItemCo
 	return itemConfigs;
 }
 
-function toTabItemConfig(content: azdata.Component, title: string, id?: string, group?: string, icon?: string | URI | { light: string | URI; dark: string | URI }): InternalItemConfig {
+function toTabItemConfig(content: azdata.Component, title: string, id?: string, group?: string, icon?: azdata.IconPath): InternalItemConfig {
 	return new InternalItemConfig(content as ComponentWrapper, {
 		title: title,
 		group: group,
@@ -699,9 +700,12 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public addItems(items: Array<azdata.Component>, itemLayout?: any): void {
-		for (let item of items) {
-			this.addItem(item, itemLayout);
-		}
+		const itemConfigs = items.map(item => {
+			return {
+				itemConfig: this.createAndAddItemConfig(item, itemLayout).toIItemConfig()
+			};
+		});
+		this._proxy.$addToContainer(this._handle, this.id, itemConfigs).then(undefined, (err) => this.handleError(err));
 	}
 
 	public removeItemAt(index: number): boolean {
@@ -727,11 +731,22 @@ class ComponentWrapper implements azdata.Component {
 	}
 
 	public addItem(item: azdata.Component, itemLayout?: any, index?: number): void {
-		let itemImpl = item as ComponentWrapper;
+		const config = this.createAndAddItemConfig(item, itemLayout, index);
+		this._proxy.$addToContainer(this._handle, this.id, [{ itemConfig: config.toIItemConfig(), index }]).then(undefined, (err) => this.handleError(err));
+	}
+
+	/**
+	 * Creates the internal item config for the component and adds it to the list of child configs for this component.
+	 * @param item The child component to add
+	 * @param itemLayout The optional layout to apply to the child component
+	 * @param index The optional index to insert the child component at
+	 */
+	private createAndAddItemConfig(item: azdata.Component, itemLayout?: any, index?: number): InternalItemConfig {
+		const itemImpl = item as ComponentWrapper;
 		if (!itemImpl) {
 			throw new Error(nls.localize('unknownComponentType', "Unknown component type. Must use ModelBuilder to create objects"));
 		}
-		let config = new InternalItemConfig(itemImpl, itemLayout);
+		const config = new InternalItemConfig(itemImpl, itemLayout);
 		if (index !== undefined && index >= 0 && index <= this.items.length) {
 			this.itemConfigs.splice(index, 0, config);
 		} else if (!index) {
@@ -739,7 +754,7 @@ class ComponentWrapper implements azdata.Component {
 		} else {
 			throw new Error(nls.localize('invalidIndex', "The index {0} is invalid.", index));
 		}
-		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig(), index).then(undefined, (err) => this.handleError(err));
+		return config;
 	}
 
 	public setLayout(layout: any): Thenable<void> {
@@ -845,10 +860,10 @@ class ComponentWithIconWrapper extends ComponentWrapper {
 		super(proxy, handle, type, id);
 	}
 
-	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
+	public get iconPath(): azdata.IconPath {
 		return this.properties['iconPath'];
 	}
-	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
+	public set iconPath(v: azdata.IconPath) {
 		this.setProperty('iconPath', v);
 	}
 
@@ -912,10 +927,10 @@ class CardWrapper extends ComponentWrapper implements azdata.CardComponent {
 	public set actions(a: azdata.ActionDescriptor[]) {
 		this.setProperty('actions', a);
 	}
-	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
+	public get iconPath(): azdata.IconPath {
 		return this.properties['iconPath'];
 	}
-	public set iconPath(v: string | URI | { light: string | URI; dark: string | URI }) {
+	public set iconPath(v: azdata.IconPath) {
 		this.setProperty('iconPath', v);
 	}
 
@@ -1111,21 +1126,6 @@ class WebViewWrapper extends ComponentWrapper implements azdata.WebViewComponent
 	}
 }
 
-class DomComponentWrapper extends ComponentWrapper implements azdata.DomComponent {
-
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.Dom, id);
-		this.properties = {};
-	}
-
-	public get html(): string {
-		return this.properties['html'];
-	}
-	public set html(html: string) {
-		this.setProperty('html', html);
-	}
-}
-
 class EditorWrapper extends ComponentWrapper implements azdata.EditorComponent {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Editor, id);
@@ -1271,6 +1271,7 @@ class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonC
 		super(proxy, handle, ModelComponentTypes.RadioButton, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<boolean>());
 	}
 
 	public get name(): string {
@@ -1304,6 +1305,11 @@ class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonC
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
 	}
+
+	public get onDidChangeCheckedState(): vscode.Event<boolean> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
 }
 
 class TextComponentWrapper extends ComponentWrapper implements azdata.TextComponentProperties {
@@ -1325,6 +1331,13 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	}
 	public set title(title: string) {
 		this.setProperty('title', title);
+	}
+
+	public get requiredIndicator(): boolean {
+		return this.properties['requiredIndicator'];
+	}
+	public set requiredIndicator(requiredIndicator: boolean) {
+		this.setProperty('requiredIndicator', requiredIndicator);
 	}
 }
 
@@ -1427,8 +1440,8 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		return emitter && emitter.event;
 	}
 
-	public appendData(v: any[][]): void {
-		this.doAction(ModelViewAction.AppendData, v);
+	public appendData(v: any[][]): Thenable<void> {
+		return this.doAction(ModelViewAction.AppendData, v);
 	}
 }
 
@@ -1550,6 +1563,10 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		this.setProperty('selectEffect', v);
 	}
 
+	public setFilter(rowIndexes: number[]): void {
+		this._proxy.$doAction(this._handle, this._id, ModelViewAction.Filter, rowIndexes);
+	}
+
 	public toComponentShape(): IComponentShape {
 		// Overridden to ensure we send the correct properties mapping.
 		return <IComponentShape>{
@@ -1570,19 +1587,36 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		// data property though since the caller would still expect that to contain
 		// the Component objects they created
 		const properties = assign({}, this.properties);
-		if (properties.data) {
+		const componentsToAdd: ComponentWrapper[] = [];
+		if (properties.data?.length > 0) {
+
 			properties.data = properties.data.map((row: any[]) => row.map(cell => {
 				if (cell instanceof ComponentWrapper) {
 					// First ensure that we register the component using addItem
 					// such that it gets added to the ModelStore. We don't want to
 					// make the table component an actual container since that exposes
 					// a lot of functionality we don't need.
-					this.addItem(cell);
+					componentsToAdd.push(cell);
 					return cell.id;
 				}
 				return cell;
 			}));
+		} else {
+			if (properties.dataValues) {
+				properties.dataValues = properties.dataValues.map((row: azdata.DeclarativeTableCellValue[]) => row.map(cell => {
+					if (cell.value instanceof ComponentWrapper) {
+						// First ensure that we register the component using addItem
+						// such that it gets added to the ModelStore. We don't want to
+						// make the table component an actual container since that exposes
+						// a lot of functionality we don't need.
+						componentsToAdd.push(cell.value);
+						return { value: cell.value.id, ariaLabel: cell.ariaLabel, style: cell.style };
+					}
+					return cell;
+				}));
+			}
 		}
+		this.addItems(componentsToAdd);
 		return properties;
 	}
 }
@@ -1639,8 +1673,9 @@ class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonCom
 class LoadingComponentWrapper extends ComponentWrapper implements azdata.LoadingComponent {
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.LoadingComponent, id);
-		this.properties = {};
-		this.loading = true;
+		this.properties = {
+			loading: true
+		};
 	}
 
 	public get loading(): boolean {
@@ -1649,6 +1684,30 @@ class LoadingComponentWrapper extends ComponentWrapper implements azdata.Loading
 
 	public set loading(value: boolean) {
 		this.setProperty('loading', value);
+	}
+
+	public get showText(): boolean {
+		return this.properties['showText'];
+	}
+
+	public set showText(value: boolean) {
+		this.setProperty('showText', value);
+	}
+
+	public get loadingText(): string {
+		return this.properties['loadingText'];
+	}
+
+	public set loadingText(value: string) {
+		this.setProperty('loadingText', value);
+	}
+
+	public get loadingCompletedText(): string {
+		return this.properties['loadingCompletedText'];
+	}
+
+	public set loadingCompletedText(value: string) {
+		this.setProperty('loadingCompletedText', value);
 	}
 
 	public get component(): azdata.Component {
@@ -1929,6 +1988,37 @@ class PropertiesContainerComponentWrapper extends ComponentWrapper implements az
 	}
 	public set loading(v: boolean) {
 		this.setProperty('loading', v);
+	}
+}
+
+class InfoBoxComponentWrapper extends ComponentWrapper implements azdata.InfoBoxComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.InfoBox, id);
+		this.properties = {};
+	}
+
+	public get style(): azdata.InfoBoxStyle {
+		return this.properties['style'];
+	}
+
+	public set style(v: azdata.InfoBoxStyle) {
+		this.setProperty('style', v);
+	}
+
+	public get text(): string {
+		return this.properties['text'];
+	}
+
+	public set text(v: string) {
+		this.setProperty('text', v);
+	}
+
+	public get announceText(): boolean {
+		return this.properties['announceText'];
+	}
+
+	public set announceText(v: boolean) {
+		this.setProperty('announceText', v);
 	}
 }
 

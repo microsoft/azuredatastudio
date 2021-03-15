@@ -14,11 +14,32 @@ declare module 'dataworkspace' {
 	 */
 	export interface IExtension {
 		/**
-		 * register a project provider
-		 * @param provider new project provider
-		 * @requires a disposable object, upon disposal, the provider will be unregistered.
+		 * Returns all the projects in the workspace
+		 * @param ext project extension to filter on. If this is passed in, this will only return projects with this file extension
 		 */
-		registerProjectProvider(provider: IProjectProvider): vscode.Disposable;
+		getProjectsInWorkspace(ext?: string): vscode.Uri[];
+
+		/**
+		 * Add projects to the workspace
+		 * @param projectFiles Uris of project files to add,
+		 * @param workspaceFilePath workspace file to create if no workspace is open
+		 */
+		addProjectsToWorkspace(projectFiles: vscode.Uri[], workspaceFilePath?: vscode.Uri): Promise<void>;
+
+		/**
+		 * Change focus to Projects view
+		 */
+		showProjectsView(): void;
+
+		/**
+		 * Returns the default location to save projects
+		 */
+		defaultProjectSaveLocation: vscode.Uri | undefined;
+
+		/**
+	 	* Verifies that a workspace is open or if it should be automatically created
+	 	*/
+		validateWorkspace(): Promise<boolean>;
 	}
 
 	/**
@@ -38,6 +59,14 @@ declare module 'dataworkspace' {
 		RemoveProject(projectFile: vscode.Uri): Promise<void>;
 
 		/**
+		 *
+		 * @param name Create a project
+		 * @param location the parent directory of the project
+		 * @param projectTypeId the identifier of the selected project type
+		 */
+		createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
+
+		/**
 		 * Gets the supported project types
 		 */
 		readonly supportedProjectTypes: IProjectType[];
@@ -48,9 +77,19 @@ declare module 'dataworkspace' {
 	 */
 	export interface IProjectType {
 		/**
+		 * id of the project type
+		 */
+		readonly id: string;
+
+		/**
 		 * display name of the project type
 		 */
 		readonly displayName: string;
+
+		/**
+		 * description of the project type
+		 */
+		readonly description: string;
 
 		/**
 		 * project file extension, e.g. sqlproj

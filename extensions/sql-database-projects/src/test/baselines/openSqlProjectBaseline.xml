@@ -98,14 +98,14 @@
     </ArtifactReference>
   </ItemGroup>
   <ItemGroup>
-    <PreDeploy Include="Script.PreDeployment1.sql"/>
-    <None Include="Script.PreDeployment2.sql"/>
+    <PreDeploy Include="Script.PreDeployment1.sql" />
+    <None Include="Script.PreDeployment2.sql" />
   </ItemGroup>
   <ItemGroup>
-    <PostDeploy Include="Script.PostDeployment1.sql"/>
-    <None Include="Tables\Script.PostDeployment1.sql"/>
+    <PostDeploy Include="Script.PostDeployment1.sql" />
+    <None Include="Tables\Script.PostDeployment1.sql" />
   </ItemGroup>
-  <Target Name="AfterClean">
+  <Target Name="BeforeBuild">
     <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />
   </Target>
 </Project>

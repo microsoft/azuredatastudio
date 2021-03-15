@@ -129,12 +129,16 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
+							let session: azdataExt.AzdataSession | undefined = undefined;
 							try {
+								session = await this._miaaModel.controllerModel.acquireAzdataSession();
 								await this._azdataApi.azdata.arc.sql.mi.edit(
-									this._miaaModel.info.name, this.saveArgs);
+									this._miaaModel.info.name, this.saveArgs, this._miaaModel.controllerModel.azdataAdditionalEnvVars, session);
 							} catch (err) {
 								this.saveButton!.enabled = true;
 								throw err;
+							} finally {
+								session?.dispose();
 							}
 
 							await this._miaaModel.refresh();
@@ -179,7 +183,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.coresLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 1,
-			validationErrorMessage: loc.coresValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
@@ -197,7 +200,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.coresRequestBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 1,
-			validationErrorMessage: loc.coresValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
@@ -215,7 +217,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.memoryLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 2,
-			validationErrorMessage: loc.memoryLimitValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
@@ -233,7 +234,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.memoryRequestBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 2,
-			validationErrorMessage: loc.memoryRequestValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();

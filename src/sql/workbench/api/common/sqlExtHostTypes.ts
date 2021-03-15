@@ -170,19 +170,20 @@ export enum ModelComponentTypes {
 	FileBrowserTree,
 	Editor,
 	DiffEditor,
-	Dom,
 	Hyperlink,
 	Image,
 	RadioCardGroup,
 	ListView,
 	TabbedPanel,
 	Separator,
-	PropertiesContainer
+	PropertiesContainer,
+	InfoBox
 }
 
 export enum ModelViewAction {
 	SelectTab = 'selectTab',
-	AppendData = 'appendData'
+	AppendData = 'appendData',
+	Filter = 'filter'
 }
 
 export enum ColumnSizingMode {
@@ -257,6 +258,11 @@ export interface IModelViewDialogDetails {
 	customButtons: number[];
 	message: DialogMessage;
 	width: DialogWidth;
+	dialogStyle: DialogStyle;
+	dialogPosition: DialogPosition;
+	renderHeader: boolean;
+	renderFooter: boolean;
+	dialogProperties: IDialogProperties;
 }
 
 export interface IModelViewTabDetails {
@@ -270,6 +276,7 @@ export interface IModelViewButtonDetails {
 	hidden: boolean;
 	focused?: boolean;
 	position?: 'left' | 'right';
+	secondary?: boolean;
 }
 
 export interface IModelViewWizardPageDetails {
@@ -278,6 +285,7 @@ export interface IModelViewWizardPageDetails {
 	enabled: boolean;
 	customButtons: number[];
 	description: string;
+	pageName?: string;
 }
 
 export interface IModelViewWizardDetails {
@@ -296,7 +304,18 @@ export interface IModelViewWizardDetails {
 	width: DialogWidth;
 }
 
-export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
+export type DialogWidth = 'narrow' | 'medium' | 'wide' | number | string;
+
+export type DialogStyle = 'normal' | 'flyout' | 'callout';
+
+export type DialogPosition = 'left' | 'below';
+
+export interface IDialogProperties {
+	xPos: number,
+	yPos: number,
+	width: number,
+	height: number
+}
 
 export enum MessageLevel {
 	Error = 0,
@@ -411,7 +430,8 @@ export enum AzureResource {
 	AzureKeyVault = 3,
 	Graph = 4,
 	MicrosoftResourceManagement = 5,
-	AzureDevOps = 6
+	AzureDevOps = 6,
+	MsGraph = 7
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
@@ -812,7 +832,8 @@ export enum ColumnType {
 	text = 0,
 	checkBox = 1,
 	button = 2,
-	icon = 3
+	icon = 3,
+	hyperlink = 4
 }
 
 export enum ActionOnCellCheckboxCheck {

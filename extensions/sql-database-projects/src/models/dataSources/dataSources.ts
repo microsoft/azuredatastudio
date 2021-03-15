@@ -5,7 +5,6 @@
 
 import { promises as fs } from 'fs';
 import * as constants from '../../common/constants';
-import { SqlConnectionDataSource } from './sqlConnectionStringSource';
 
 /**
  * Abstract class for a datasource in a project
@@ -53,11 +52,11 @@ export async function load(dataSourcesFilePath: string): Promise<DataSource[]> {
 	// TODO: do we have a construct for parsing version numbers?
 	switch (rawJsonContents.version) {
 		case '0.0.0':
-			const dataSources: DataSourceFileJson = rawJsonContents as DataSourceFileJson;
+			// const dataSources: DataSourceFileJson = rawJsonContents as DataSourceFileJson;
 
-			for (const source of dataSources.datasources) {
-				output.push(createDataSource(source));
-			}
+			// for (const source of dataSources.datasources) {
+			// 	output.push(createDataSource(source));
+			// }
 
 			break;
 		default:
@@ -70,11 +69,12 @@ export async function load(dataSourcesFilePath: string): Promise<DataSource[]> {
 /**
  * Creates DataSource object from JSON
  */
-function createDataSource(json: DataSourceJson): DataSource {
-	switch (json.type) {
-		case SqlConnectionDataSource.type:
-			return SqlConnectionDataSource.fromJson(json);
-		default:
-			throw new Error(constants.unknownDataSourceType + json.type);
-	}
-}
+// Commenting this out because circular dependency with SqlConnectionDataSource was causing extension to not activate
+// function createDataSource(json: DataSourceJson): DataSource {
+// 	switch (json.type) {
+// 		case SqlConnectionDataSource.type:
+// 			return SqlConnectionDataSource.fromJson(json);
+// 		default:
+// 			throw new Error(constants.unknownDataSourceType + json.type);
+// 	}
+// }

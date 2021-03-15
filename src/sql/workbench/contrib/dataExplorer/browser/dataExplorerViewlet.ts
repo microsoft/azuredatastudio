@@ -6,7 +6,7 @@
 import { localize } from 'vs/nls';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IAction } from 'vs/base/common/actions';
-import { append, $, addClass, toggleClass, Dimension } from 'vs/base/browser/dom';
+import { toggleClass, Dimension } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -89,8 +89,6 @@ export class DataExplorerViewlet extends Viewlet {
 export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 	private root?: HTMLElement;
 
-	private dataSourcesBox?: HTMLElement;
-
 	constructor(
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -109,12 +107,10 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 
 	create(parent: HTMLElement): void {
-		addClass(parent, 'dataExplorer-viewlet');
 		this.root = parent;
 
-		this.dataSourcesBox = append(this.root, $('.dataSources'));
-
-		return super.create(this.dataSourcesBox);
+		super.create(parent);
+		parent.classList.add('dataExplorer-viewlet');
 	}
 
 	public updateStyles(): void {
@@ -152,11 +148,13 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 }
 
+export const dataExplorerIconId = 'dataExplorer';
+
 export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
 	name: localize('dataexplorer.name', "Connections"),
 	ctorDescriptor: new SyncDescriptor(DataExplorerViewPaneContainer),
-	icon: 'dataExplorer',
+	icon: { id: 'dataExplorer' },
 	order: 0,
 	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Sidebar, true);

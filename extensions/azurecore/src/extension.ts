@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import * as resourceDeployment from 'resource-deployment';
 
 import { AppContext } from './appContext';
 import { AzureAccountProviderService } from './account-provider/azureAccountProviderService';
@@ -86,10 +87,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	registerAzureServices(appContext);
 	const azureResourceTree = new AzureResourceTreeProvider(appContext);
 	const connectionDialogTree = new ConnectionDialogTreeProvider(appContext);
-	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
 	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
+	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
 	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e), this));
-	registerAzureResourceCommands(appContext, [azureResourceTree, connectionDialogTree]);
+	registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree);
 	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext));
 	vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
 		const portalEndpoint = item.portalEndpoint;
@@ -105,13 +106,47 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 		}
 	});
 
+	// Don't block on this since there's a bit of a circular dependency here with the extension activation since resource deployment
+	// depends on this extension too. It's fine to wait a bit for that to finish before registering the provider
+	vscode.extensions.getExtension(resourceDeployment.extension.name).activate().then((api: resourceDeployment.IExtension) => {
+		context.subscriptions.push(api.registerValueProvider({
+			id: 'subscription-id-to-tenant-id',
+			getValue: async (triggerValue: string) => {
+				if (triggerValue === '') {
+					return '';
+				}
+				let accounts: azdata.Account[] = [];
+				try {
+					accounts = await azdata.accounts.getAllAccounts();
+				} catch (err) {
+					console.warn(`Error fetching accounts for subscription-id-to-tenant-id provider : ${err}`);
+					return '';
+				}
+
+				for (const account of accounts) {
+					// Ignore any errors - they'll be logged in the called function and we still want to look
+					// at any subscriptions that are returned - worst case we'll just return an empty string if we didn't
+					// find the matching subscription
+					const subs = await azureResourceUtils.getSubscriptions(appContext, account, true);
+					const sub = subs.subscriptions.find(sub => sub.id === triggerValue);
+					if (sub) {
+						return sub.tenant;
+					}
+
+				}
+				console.error(`Unable to find subscription with ID ${triggerValue} when mapping subscription ID to tenant ID`);
+				return '';
+			}
+		}));
+	});
+
 	return {
-		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean, selectedOnly: boolean = false): Thenable<azurecore.GetSubscriptionsResult> {
+		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean, selectedOnly: boolean = false): Promise<azurecore.GetSubscriptionsResult> {
 			return selectedOnly
 				? azureResourceUtils.getSelectedSubscriptions(appContext, account, ignoreErrors)
 				: azureResourceUtils.getSubscriptions(appContext, account, ignoreErrors);
 		},
-		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Thenable<azurecore.GetResourceGroupsResult> { return azureResourceUtils.getResourceGroups(appContext, account, subscription, ignoreErrors); },
+		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<azurecore.GetResourceGroupsResult> { return azureResourceUtils.getResourceGroups(appContext, account, subscription, ignoreErrors); },
 		provideResources(): azureResource.IAzureResourceProvider[] {
 			const arcFeaturedEnabled = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('enableArcFeatures');
 			const providers: azureResource.IAzureResourceProvider[] = [
@@ -128,6 +163,47 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 				);
 			}
 			return providers;
+		},
+		getSqlManagedInstances(account: azdata.Account,
+			subscriptions: azureResource.AzureResourceSubscription[],
+			ignoreErrors: boolean): Promise<azurecore.GetSqlManagedInstancesResult> {
+			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azureResource.AzureResourceType.sqlManagedInstance}"`);
+		},
+		getSqlServers(account: azdata.Account,
+			subscriptions: azureResource.AzureResourceSubscription[],
+			ignoreErrors: boolean): Promise<azurecore.GetSqlServersResult> {
+			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azureResource.AzureResourceType.sqlServer}"`);
+		},
+		getSqlVMServers(account: azdata.Account,
+			subscriptions: azureResource.AzureResourceSubscription[],
+			ignoreErrors: boolean): Promise<azurecore.GetSqlVMServersResult> {
+			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azureResource.AzureResourceType.virtualMachines}" and properties.storageProfile.imageReference.publisher == "microsoftsqlserver"`);
+		},
+		getStorageAccounts(account: azdata.Account,
+			subscriptions: azureResource.AzureResourceSubscription[],
+			ignoreErrors: boolean): Promise<azurecore.GetStorageAccountResult> {
+			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azureResource.AzureResourceType.storageAccount}"`);
+		},
+		getBlobContainers(account: azdata.Account,
+			subscription: azureResource.AzureResourceSubscription,
+			storageAccount: azureResource.AzureGraphResource,
+			ignoreErrors: boolean): Promise<azurecore.GetBlobContainersResult> {
+			return azureResourceUtils.getBlobContainers(account, subscription, storageAccount, ignoreErrors);
+		},
+		getFileShares(account: azdata.Account,
+			subscription: azureResource.AzureResourceSubscription,
+			storageAccount: azureResource.AzureGraphResource,
+			ignoreErrors: boolean): Promise<azurecore.GetFileSharesResult> {
+			return azureResourceUtils.getFileShares(account, subscription, storageAccount, ignoreErrors);
+		},
+		makeAzureRestRequest(account: azdata.Account,
+			subscription: azureResource.AzureResourceSubscription,
+			path: string,
+			requestType: azurecore.HttpRequestMethod,
+			requestBody: any,
+			ignoreErrors: boolean,
+			host: string = 'https://management.azure.com'): Promise<azurecore.AzureRestResponse> {
+			return azureResourceUtils.makeHttpRequest(account, subscription, path, requestType, requestBody, ignoreErrors, host);
 		},
 		getRegionDisplayName: utils.getRegionDisplayName,
 		runGraphQuery<T extends azureResource.AzureGraphResource>(account: azdata.Account,

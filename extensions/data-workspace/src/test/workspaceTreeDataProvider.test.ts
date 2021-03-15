@@ -7,13 +7,23 @@ import 'mocha';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
 import * as should from 'should';
+import * as TypeMoq from 'typemoq';
 import { WorkspaceTreeDataProvider } from '../common/workspaceTreeDataProvider';
 import { WorkspaceService } from '../services/workspaceService';
 import { IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import { MockTreeDataProvider } from './projectProviderRegistry.test';
 
+interface ExtensionGlobalMemento extends vscode.Memento {
+	setKeysForSync(keys: string[]): void;
+}
+
 suite('workspaceTreeDataProvider Tests', function (): void {
-	const workspaceService = new WorkspaceService();
+	const mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+	const mockGlobalState = TypeMoq.Mock.ofType<ExtensionGlobalMemento>();
+	mockGlobalState.setup(x => x.update(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
+	mockExtensionContext.setup(x => x.globalState).returns(() => mockGlobalState.object);
+
+	const workspaceService = new WorkspaceService(mockExtensionContext.object);
 	const treeProvider = new WorkspaceTreeDataProvider(workspaceService);
 
 	this.afterEach(() => {
@@ -66,15 +76,20 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 		const treeDataProvider = new MockTreeDataProvider();
 		const projectProvider: IProjectProvider = {
 			supportedProjectTypes: [{
+				id: 'sp1',
 				projectFileExtension: 'sqlproj',
 				icon: '',
-				displayName: 'sql project'
+				displayName: 'sql project',
+				description: ''
 			}],
 			RemoveProject: (projectFile: vscode.Uri): Promise<void> => {
 				return Promise.resolve();
 			},
 			getProjectTreeDataProvider: (projectFile: vscode.Uri): Promise<vscode.TreeDataProvider<any>> => {
 				return Promise.resolve(treeDataProvider);
+			},
+			createProject: (name: string, location: vscode.Uri): Promise<vscode.Uri> => {
+				return Promise.resolve(location);
 			}
 		};
 		const getProjectProviderStub = sinon.stub(workspaceService, 'getProjectProvider');

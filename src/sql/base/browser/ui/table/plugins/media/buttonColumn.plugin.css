@@ -1,0 +1,30 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.slick-plugin-button {
+	cursor: pointer;
+	height: 100%;
+	text-align: center;
+	padding-right: 0px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+.slick-plugin-button.slick-plugin-text-button {
+	border-width: 1px;
+	width: 100%;
+}
+
+.slick-plugin-icon.slick-plugin-button.slick-plugin-text-button {
+	text-align: left;
+	padding-left: 0px;
+	width: 100%;
+}
+
+.slick-plugin-button.slick-plugin-image-only-button {
+	border-width: 0px;
+	background-color: transparent;
+}
+

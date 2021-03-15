@@ -9,7 +9,7 @@
 	line-height: 1.4em;
 	white-space: nowrap;
 	flex-wrap: wrap;
-	padding: 3px 0px;
+	padding: 8px 0px;
 }
 
 .modelview-toolbar-container.toolbar-horizontal {
@@ -22,6 +22,12 @@
 
 .modelview-toolbar-container.toolbar-vertical {
 	flex-direction: column;
+}
+
+.modelview-toolbar-container.toolbar-horizontal .taskbarSeparator {
+	min-width: 1px;
+	border-width: 0 0 0 1px;
+	margin: 0px 6px;
 }
 
 .modelview-toolbar-container .modelview-toolbar-item {
@@ -51,17 +57,17 @@
 }
 
 .modelview-toolbar-container .modelview-toolbar-component modelview-button .monaco-text-button.icon {
-	padding-left: 19px;
-	background-size: 15px;
+	padding-left: 19px !important;
+	background-size: 15px !important;
 	margin-right: 0.3em;
 }
 
 /* Vertical button handling */
 .modelview-toolbar-container.toolbar-vertical  .modelview-toolbar-component modelview-button .monaco-text-button.icon {
-	padding: 20px 16px 20px 16px;
-	background-size: 20px;
+	padding: 20px 16px 20px 16px !important;
+	background-size: 20px !important;
 	margin-right: 0.3em;
-	background-position: 50% 50%;
+	background-position: 50% 50% !important;
 
 }
 

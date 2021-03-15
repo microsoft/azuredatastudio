@@ -14,7 +14,6 @@ import * as azdata from 'azdata';
 import { Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { ModelComponentWrapper } from 'sql/workbench/browser/modelComponents/modelComponentWrapper.component';
-import { URI } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -22,8 +21,6 @@ import { IComponentDescriptor, IComponent, IModelStore, IComponentEventArgs, Com
 import { convertSize } from 'sql/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
-
-export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
 
 export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) { }
@@ -86,17 +83,9 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 	public refreshDataProvider(item: any): void {
 	}
 
-	public updateStyles(): void {
-		const element = (<HTMLElement>this._el.nativeElement);
-		for (const style in this.CSSStyles) {
-			element.style[style] = this.CSSStyles[style];
-		}
-	}
-
 	public setProperties(properties: { [key: string]: any; }): void {
 		properties = properties || {};
 		this.properties = properties;
-		this.updateStyles();
 		this.layout();
 		this.validate().catch(onUnexpectedError);
 	}
@@ -105,7 +94,6 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 	public updateProperty(key: string, value: any): void {
 		if (key) {
 			this.properties[key] = value;
-			this.updateStyles();
 			this.layout();
 			this.validate().catch(onUnexpectedError);
 		}
@@ -209,12 +197,12 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 		this.setPropertyFromUI<boolean>((props, value) => props.ariaHidden = value, newValue);
 	}
 
-	public get CSSStyles(): { [key: string]: string } {
-		return this.getPropertyOrDefault<{ [key: string]: string }>((props) => props.CSSStyles, {});
+	public get CSSStyles(): azdata.CssStyles {
+		return this.getPropertyOrDefault<azdata.CssStyles>((props) => props.CSSStyles, {});
 	}
 
-	public set CSSStyles(newValue: { [key: string]: string }) {
-		this.setPropertyFromUI<{ [key: string]: string }>((properties, CSSStyles) => { properties.CSSStyles = CSSStyles; }, newValue);
+	public set CSSStyles(newValue: azdata.CssStyles) {
+		this.setPropertyFromUI<azdata.CssStyles>((properties, CSSStyles) => { properties.CSSStyles = CSSStyles; }, newValue);
 	}
 
 	protected getWidth(): string {
@@ -274,6 +262,17 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 	protected onkeydown(domNode: HTMLElement, listener: (e: StandardKeyboardEvent) => void): void {
 		this._register(addDisposableListener(domNode, EventType.KEY_DOWN, (e: KeyboardEvent) => listener(new StandardKeyboardEvent(e))));
 	}
+
+	protected mergeCss(...styles: azdata.CssStyles[]): azdata.CssStyles {
+		const x = styles.reduce((previous, current) => {
+			if (current) {
+				return Object.assign(previous, current);
+			}
+			return previous;
+		}, {});
+
+		return x;
+	}
 }
 
 export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProperties = azdata.ComponentProperties> extends ComponentBase<TPropertyBag> {
@@ -298,32 +297,34 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 	}
 
 	/// IComponent container-related implementation
-	public addToContainer(componentDescriptor: IComponentDescriptor, config: any, index?: number): void {
-		this.logService.debug(`Adding component ${componentDescriptor.id} to container ${this.descriptor.id}`);
-		if (!componentDescriptor) {
-			return;
-		}
-		if (this.items.some(item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type)) {
-			return;
-		}
-		if (index !== undefined && index !== null && index >= 0 && index <= this.items.length) {
-			this.items.splice(index, 0, new ItemDescriptor(componentDescriptor, config));
-		} else if (!index) {
-			this.items.push(new ItemDescriptor(componentDescriptor, config));
-		} else {
-			throw new Error(nls.localize('invalidIndex', "The index {0} is invalid.", index));
-		}
+	public addToContainer(items: { componentDescriptor: IComponentDescriptor, config: any, index?: number }[]): void {
+		items.forEach(newItem => {
+			this.logService.debug(`Adding component ${newItem.componentDescriptor.id} to container ${this.descriptor.id}`);
+			if (!newItem.componentDescriptor) {
+				return;
+			}
+			if (this.items.some(item => item.descriptor.id === newItem.componentDescriptor.id && item.descriptor.type === newItem.componentDescriptor.type)) {
+				return;
+			}
+			if (newItem.index !== undefined && newItem.index !== null && newItem.index >= 0 && newItem.index <= this.items.length) {
+				this.items.splice(newItem.index, 0, new ItemDescriptor(newItem.componentDescriptor, newItem.config));
+			} else if (!newItem.index) {
+				this.items.push(new ItemDescriptor(newItem.componentDescriptor, newItem.config));
+			} else {
+				throw new Error(nls.localize('invalidIndex', "The index {0} is invalid.", newItem.index));
+			}
 
-		this.logService.debug(`Queueing up action to register validation event handler on component ${componentDescriptor.id} in container ${this.descriptor.id}`);
-		this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => {
-			this.logService.debug(`Registering validation event handler on component ${componentDescriptor.id} in container ${this.descriptor.id}`);
-			component.registerEventHandler(async event => {
-				if (event.eventType === ComponentEventType.validityChanged) {
-					this.logService.debug(`Running validation on container ${this.descriptor.id} because validity of child component ${componentDescriptor.id} changed`);
-					this.validate().catch(onUnexpectedError);
-				}
-			});
-		}, true);
+			this.logService.debug(`Queueing up action to register validation event handler on component ${newItem.componentDescriptor.id} in container ${this.descriptor.id}`);
+			this.modelStore.eventuallyRunOnComponent(newItem.componentDescriptor.id, component => {
+				this.logService.debug(`Registering validation event handler on component ${newItem.componentDescriptor.id} in container ${this.descriptor.id}`);
+				component.registerEventHandler(async event => {
+					if (event.eventType === ComponentEventType.validityChanged) {
+						this.logService.debug(`Running validation on container ${this.descriptor.id} because validity of child component ${newItem.componentDescriptor.id} changed`);
+						this.validate().catch(onUnexpectedError);
+					}
+				});
+			}, true);
+		});
 		this._changeRef.detectChanges();
 		this.onItemsUpdated();
 		return;
@@ -354,7 +355,8 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 		super.setProperties(properties);
 		this.items.forEach(item => {
 			let component = this.modelStore.getComponent(item.descriptor.id);
-			if (component) {
+			// Let child components control their own enabled status if we don't have one specifically set
+			if (component && properties.enabled !== undefined) {
 				component.enabled = this.enabled;
 			}
 		});
@@ -384,17 +386,6 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 			throw new Error(`Unable to set item layout - unknown item ${componentDescriptor.id}`);
 		}
 		return;
-	}
-
-	public mergeCss(...styles: azdata.CssStyles[]): azdata.CssStyles {
-		const x = styles.reduce((previous, current) => {
-			if (current) {
-				return Object.assign(previous, current);
-			}
-			return previous;
-		}, {});
-
-		return x;
 	}
 
 	protected onItemsUpdated(): void {

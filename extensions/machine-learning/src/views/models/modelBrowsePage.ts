@@ -21,6 +21,7 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 
 	private _form: azdata.FormContainer | undefined;
 	private _title: string = constants.localModelPageTitle;
+	private _currentModelSourceType: ModelSourceType | undefined;
 	private _formBuilder: azdata.FormBuilder | undefined;
 	public localModelsComponent: LocalModelsComponent | undefined;
 	public azureModelsComponent: AzureModelsComponent | undefined;
@@ -76,28 +77,32 @@ export class ModelBrowsePage extends ModelViewBase implements IPageView, IDataCo
 	 */
 	public async refresh(): Promise<void> {
 		if (this._formBuilder) {
-			if (this.modelSourceType === ModelSourceType.Local) {
-				if (this.localModelsComponent && this.azureModelsComponent && this.registeredModelsComponent) {
-					this.azureModelsComponent.removeComponents(this._formBuilder);
-					this.registeredModelsComponent.removeComponents(this._formBuilder);
-					this.localModelsComponent.addComponents(this._formBuilder);
-					await this.localModelsComponent.refresh();
-				}
+			if (this._currentModelSourceType !== this.modelSourceType) {
+				this._currentModelSourceType = this.modelSourceType;
 
-			} else if (this.modelSourceType === ModelSourceType.Azure) {
-				if (this.localModelsComponent && this.azureModelsComponent && this.registeredModelsComponent) {
-					this.localModelsComponent.removeComponents(this._formBuilder);
-					this.azureModelsComponent.addComponents(this._formBuilder);
-					this.registeredModelsComponent.removeComponents(this._formBuilder);
-					await this.azureModelsComponent.refresh();
-				}
+				if (this.modelSourceType === ModelSourceType.Local) {
+					if (this.localModelsComponent && this.azureModelsComponent && this.registeredModelsComponent) {
+						this.azureModelsComponent.removeComponents(this._formBuilder);
+						this.registeredModelsComponent.removeComponents(this._formBuilder);
+						await this.localModelsComponent.refresh();
+						this.localModelsComponent.addComponents(this._formBuilder);
+					}
 
-			} else if (this.modelSourceType === ModelSourceType.RegisteredModels) {
-				if (this.localModelsComponent && this.azureModelsComponent && this.registeredModelsComponent) {
-					this.localModelsComponent.removeComponents(this._formBuilder);
-					this.azureModelsComponent.removeComponents(this._formBuilder);
-					this.registeredModelsComponent.addComponents(this._formBuilder);
-					await this.registeredModelsComponent.refresh();
+				} else if (this.modelSourceType === ModelSourceType.Azure) {
+					if (this.localModelsComponent && this.azureModelsComponent && this.registeredModelsComponent) {
+						this.localModelsComponent.removeComponents(this._formBuilder);
+						this.registeredModelsComponent.removeComponents(this._formBuilder);
+						await this.azureModelsComponent.refresh();
+						this.azureModelsComponent.addComponents(this._formBuilder);
+					}
+
+				} else if (this.modelSourceType === ModelSourceType.RegisteredModels) {
+					if (this.localModelsComponent && this.azureModelsComponent && this.registeredModelsComponent) {
+						this.localModelsComponent.removeComponents(this._formBuilder);
+						this.azureModelsComponent.removeComponents(this._formBuilder);
+						await this.registeredModelsComponent.refresh();
+						this.registeredModelsComponent.addComponents(this._formBuilder);
+					}
 				}
 			}
 		}

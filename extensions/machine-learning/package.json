@@ -2,12 +2,12 @@
   "name": "machine-learning",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.5.0",
+  "version": "0.8.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
     "vscode": "^1.25.0",
-    "azdata": ">=1.21.0"
+    "azdata": ">=1.27.0"
   },
   "activationEvents": [
     "onCommand:ml.command.managePackages",

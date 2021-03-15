@@ -79,6 +79,10 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Yes<u>Hello test</u>', 'Basic underline span no space failed');
 		htmlString = '<h1>Yes<span style="text-decoration-line:underline; font-style:italic; font-weight:bold; background-color: yellow">Hello test</span></h1>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '# Yes<u>_**<mark>Hello test</mark>**_</u>', 'Compound elements span failed');
+		htmlString = '<span style="background-color: yellow;"><b>Hello test</b></span>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '<mark>**Hello test**</mark>', 'Span with inner html not parsed correctly');
+		htmlString = '<b><span style="background-color: yellow;">Hello test</span></b>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**<mark>Hello test</mark>**', 'Span inside bold tag parsed correctly');
 		htmlString = '<span style="color: orangered">Hello test</span>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Span with color style should not be altered');
 		htmlString = '<span style="font-size: 10.0pt">Hello test</span>';
@@ -137,15 +141,25 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '[msft](https://www.microsoft.com/images/msft.png)', 'Basic https link test failed');
 		htmlString = '<a href="http://www.microsoft.com/images/msft.png">msft</a>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '[msft](http://www.microsoft.com/images/msft.png)', 'Basic http link test failed');
+		htmlString = 'Test <a href="http://www.microsoft.com/images/msft.png">msft</a>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Test [msft](http://www.microsoft.com/images/msft.png)', 'Basic http link + text test failed');
 	});
 
 	test('Should transform <li> tags', () => {
 		htmlString = '<ul><li>Test</li></ul>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test`, 'Basic unordered list test failed');
+		htmlString = '<ul><li><span>Test</span><br></li><li>Test2</li></ul>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test\n- Test2`, 'Basic unordered list test with span and line break failed');
+		htmlString = '<ul><li><span>Test</span><br><br></li><li>Test2</li></ul>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test  \n      \n    \n- Test2`, 'Basic unordered list test with span and line break failed');
 		htmlString = '<ul><li>Test</li><li>Test2</li></ul>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test\n- Test2`, 'Basic unordered 2 item list test failed');
-		htmlString = '<ul><li>Test<ul><li>Test2</li></ul><li>Test3</li></ul>';
+		htmlString = '<ul><li>Test</li><ul><li>Test2</li></ul><li>Test3</li></ul>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test\n    - Test2\n- Test3`, 'Nested item list test failed');
+		htmlString = '<ul><li>Test</li><ul><li>Test2</li></ul><ul></ul><li>Test3</li></ul>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test\n    - Test2\n- Test3`, 'Nested item list test empty list failed');
+		htmlString = '<ul><li><span>Hello</span><br></li><li><span>Hello</span></li></ul>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Hello\n- Hello`, 'Nested item list test empty list failed');
 		htmlString = '<ol><li>Test</li></ol>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `1. Test`, 'Basic ordered item test failed');
 		htmlString = '<ol><li>Test</li><li>Test2</li></ol>';
@@ -156,9 +170,9 @@ suite('HTML Markdown Converter', function (): void {
 
 	test('Should keep < > tag', () => {
 		htmlString = '&lt;test&gt';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<test>', 'Non-HTML tag test failed to escape');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '\\<test\\>', 'Non-HTML tag test failed to escape');
 		htmlString = '&lt;test&gt<span style="background:red">message</span>&lt;test&gt';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<test><span style="background:red">message</span><test>', 'Non-HTML tag inside span tag test failed to escape');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '\\<test\\><span style="background:red">message</span>\\<test\\>', 'Non-HTML tag inside span tag test failed to escape');
 		htmlString = '<h1>&lt;test&gt;<h1>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '# \\<test\\>', 'Non-HTML tag inside H1 tag test failed to escape');
 		htmlString = '<h2>&lt;test&gt;<h2>';
@@ -172,19 +186,19 @@ suite('HTML Markdown Converter', function (): void {
 		htmlString = '<em>&lt;Italicize test&gt;</em>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '_\\<Italicize test\\>_', 'Basic italicize non-HTML tag test failed to escape');
 		htmlString = '<u>&lt;Underline_test&gt;</u> ';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<u>&lt;Underline_test&gt;</u>', 'Basic underline non-HTML tag test failed to escape');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '<u>\\<Underline\\_test\\></u>', 'Basic underline non-HTML tag test failed to escape');
 		htmlString = '<ul><li>&lt;test&gt;</li></ul>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '- \\<test\\>', 'Basic unordered list non-HTML tag item test failed to escape');
 		htmlString = '<ol><li>&lt;test&gt;</li></ol>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '1. \\<test\\>', 'Basic ordered list non-HTML tag item test failed to escape');
 		htmlString = '<mark>&lt;test&gt;</mark>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<mark>&lt;test&gt;</mark>', 'Basic highlighting Non-HTML tag test failed to escape');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '<mark>\\<test\\></mark>', 'Basic highlighting Non-HTML tag test failed to escape');
 		htmlString = '<mark><h1>&lt;test&gt;</h1></mark>';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<mark><h1>&lt;test&gt;</h1></mark>', 'Non-HTML tag inside multiple html tags test failed to escape');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '<mark>\n\n# \\<test\\>\n\n</mark>', 'Non-HTML tag inside multiple html tags test failed to escape');
 		htmlString = '<p>&lt;style&gt</p>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '\\<style\\>', 'Style tag as a non-HTML tag test failed to escape');
 		htmlString = '&lt;test&gt <u>Underlined Text style</u> end';
-		assert.equal(htmlMarkdownConverter.convert(htmlString), '<test> <u>Underlined Text style</u> end', 'Non-HTML tag outside with style and underline test failed to escape');
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '\\<test\\> <u>Underlined Text style</u> end', 'Non-HTML tag outside with style and underline test failed to escape');
 
 	});
 
@@ -201,5 +215,55 @@ suite('HTML Markdown Converter', function (): void {
 	test('Should transform table with header', () => {
 		htmlString = '<table>\n<thead>\n<tr>\n<th>Test</th>\n<th>Test</th>\n<th>Test</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test | Test | Test |\n| --- | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with header failed');
+	});
+
+	test('Should transform table with no thead', () => {
+		htmlString = '<table>\n<tr>\n<th>Test</th>\n<th>Test</th>\n<th>Test</th>\n</tr>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test | Test | Test |\n| --- | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with no thead failed');
+	});
+
+	test('Should transform <b> and <strong> tags', () => {
+		htmlString = '<b>test string</b>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**test string**', 'Basic bold test failed');
+		htmlString = '<b style="background-color: yellow">test string</b>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**<mark>test string</mark>**', 'Highlight bold test failed');
+		htmlString = '<b style="background-color: yellow"><i>test string</i></b>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**<mark>_test string_</mark>**', 'Highlight bold italic test failed');
+		htmlString = '<b style="blah: nothing">test string</b>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**test string**', 'Incorrect style bold test failed');
+		htmlString = '<strong>test string</strong>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**test string**', 'Basic strong test failed');
+		htmlString = '<strong style="background-color: yellow">test string</strong>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**<mark>test string</mark>**', 'Highlight strong test failed');
+		htmlString = '<strong style="blah: nothing">test string</strong>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**test string**', 'Incorrect style strong test failed');
+	});
+	test('Should transform <i> and <em> tags', () => {
+		htmlString = '<i>test string</i>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_test string_', 'Basic italic test failed');
+		htmlString = '<p><i>test string</i></p>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_test string_', 'Basic italic test failed');
+		htmlString = '<i style="background-color: yellow">test string</i>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_<mark>test string</mark>_', 'Highlight italic test failed');
+		htmlString = '<i style="background-color: yellow"><b>test string</b></i>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_<mark>**test string**</mark>_', 'Highlight italic bold test failed');
+		htmlString = '<i style="blah: nothing">test string</i>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_test string_', 'Incorrect style italic test failed');
+		htmlString = '<em>test string</em>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_test string_', 'Basic em test failed');
+		htmlString = '<em style="background-color: yellow">test string</em>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_<mark>test string</mark>_', 'Highlight em test failed');
+		htmlString = '<em style="blah: nothing">test string</em>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_test string_', 'Incorrect style em test failed');
+		htmlString = '<em style="background-color: yellow"><b>test string</b></em>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '_<mark>**test string**</mark>_', 'Highlight em bold test failed');
+	});
+	test('Should transform <u> when necessary', () => {
+		htmlString = '<u>test string</u>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), htmlString, 'Basic underline test failed');
+		htmlString = '<u style="background-color: yellow">test string</u>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '<u><mark>test string</mark></u>', 'Highlight underline test failed');
+		htmlString = '<b><u style="background-color: yellow">test string</u></b>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '**<u><mark>test string</mark></u>**', 'Underline as inner element failed');
 	});
 });

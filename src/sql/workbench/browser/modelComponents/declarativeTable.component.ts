@@ -15,7 +15,7 @@ import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBa
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { equals as arrayEquals } from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 
@@ -36,6 +36,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	@Input() modelStore: IModelStore;
 
 	private _data: azdata.DeclarativeTableCellValue[][] = [];
+	private _filteredRowIndexes: number[] | undefined = undefined;
 	private columns: azdata.DeclarativeTableColumn[] = [];
 	private _selectedRow: number;
 
@@ -242,7 +243,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	private static ACCEPTABLE_VALUES = new Set<string>(['number', 'string', 'boolean']);
 	public setProperties(properties: azdata.DeclarativeTableProperties): void {
 		const basicData: any[][] = properties.data ?? [];
-		const complexData: azdata.DeclarativeTableCellValue[][] = properties.dataValues;
+		const complexData: azdata.DeclarativeTableCellValue[][] = properties.dataValues ?? [];
 		let finalData: azdata.DeclarativeTableCellValue[][];
 
 		finalData = basicData.map(row => {
@@ -277,13 +278,6 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		if (isDataPropertyChanged) {
 			this.clearContainer();
 			this._data = finalData;
-			this.data?.forEach(row => {
-				for (let i = 0; i < row.length; i++) {
-					if (this.isComponent(i)) {
-						this.addToContainer(this.getItemDescriptor(row[i].value as string), undefined);
-					}
-				}
-			});
 		}
 		super.setProperties(properties);
 	}
@@ -316,5 +310,31 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 				}
 			});
 		}
+	}
+
+	public doAction(action: string, ...args: any[]): void {
+		if (action === ModelViewAction.Filter) {
+			this._filteredRowIndexes = args[0];
+		}
+		this._changeRef.detectChanges();
+	}
+
+	/**
+	 * Checks whether a given row is filtered (not visible)
+	 * @param rowIndex The row to check
+	 */
+	public isFiltered(rowIndex: number): boolean {
+		if (this._filteredRowIndexes === undefined) {
+			return false;
+		}
+		return this._filteredRowIndexes.includes(rowIndex) ? false : true;
+	}
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth(),
+			'height': this.getHeight()
+		});
+
 	}
 }

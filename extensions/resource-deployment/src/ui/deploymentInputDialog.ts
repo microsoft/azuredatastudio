@@ -12,7 +12,7 @@ import { INotebookService } from '../services/notebookService';
 import { IPlatformService } from '../services/platformService';
 import { DialogBase } from './dialogBase';
 import { Model } from './model';
-import { initializeDialog, InputComponentInfo, InputComponents, setModelValues, Validator } from './modelViewUtils';
+import { initializeDialog, InputComponent, InputComponentInfo, InputComponents, setModelValues, Validator } from './modelViewUtils';
 import { IToolsService } from '../services/toolsService';
 
 const localize = nls.loadMessageBundle();
@@ -69,7 +69,7 @@ export class DeploymentInputDialog extends DialogBase {
 			onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 				this._toDispose.push(disposable);
 			},
-			onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo): void => {
+			onNewInputComponentCreated: (name: string, inputComponentInfo: InputComponentInfo<InputComponent>): void => {
 				this.inputComponents[name] = inputComponentInfo;
 			},
 			onNewValidatorCreated: (validator: Validator): void => {

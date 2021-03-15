@@ -4,14 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./markdownToolbar';
 import * as DOM from 'vs/base/browser/dom';
+import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
 import { Component, Input, Inject, ViewChild, ElementRef } from '@angular/core';
 import { localize } from 'vs/nls';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { TransformMarkdownAction, MarkdownButtonType, ToggleViewAction } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
+import { TransformMarkdownAction, MarkdownTextTransformer, MarkdownButtonType, ToggleViewAction, insertFormattedMarkdown } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
+import { ICellEditorProvider, INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { AngularDisposable } from 'sql/base/browser/lifecycle';
+import { ILinkCalloutDialogOptions, LinkCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/linkCalloutDialog';
+import { TextModel } from 'vs/editor/common/model/textModel';
+import { IEditor } from 'vs/editor/common/editorCommon';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
@@ -19,8 +26,10 @@ export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 	selector: MARKDOWN_TOOLBAR_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./markdownToolbar.component.html'))
 })
-export class MarkdownToolbarComponent {
+export class MarkdownToolbarComponent extends AngularDisposable {
 	@ViewChild('mdtoolbar', { read: ElementRef }) private mdtoolbar: ElementRef;
+
+	public previewFeaturesEnabled: boolean = false;
 
 	public buttonBold = localize('buttonBold', "Bold");
 	public buttonItalic = localize('buttonItalic', "Italic");
@@ -37,6 +46,8 @@ export class MarkdownToolbarComponent {
 	public optionHeading2 = localize('optionHeading2', "Heading 2");
 	public optionHeading3 = localize('optionHeading3', "Heading 3");
 	public optionParagraph = localize('optionParagraph', "Paragraph");
+	public insertLinkHeading = localize('callout.insertLinkHeading', "Insert link");
+	public insertImageHeading = localize('callout.insertImageHeading', "Insert image");
 
 	public richTextViewButton = localize('richTextViewButton', "Rich Text View");
 	public splitViewButton = localize('splitViewButton', "Split View");
@@ -44,33 +55,78 @@ export class MarkdownToolbarComponent {
 
 	private _taskbarContent: Array<ITaskbarContent>;
 	private _wysiwygTaskbarContent: Array<ITaskbarContent>;
+	private _previewModeTaskbarContent: Array<ITaskbarContent>;
+	private _linkCallout: LinkCalloutDialog;
 
 	@Input() public cellModel: ICellModel;
+	@Input() public output: ElementRef;
 	private _actionBar: Taskbar;
 	_toggleTextViewAction: ToggleViewAction;
 	_toggleSplitViewAction: ToggleViewAction;
 	_toggleMarkdownViewAction: ToggleViewAction;
+	private _notebookEditor: INotebookEditor;
+	private _cellEditor: ICellEditorProvider;
 
 	constructor(
+		@Inject(INotebookService) private _notebookService: INotebookService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
-		@Inject(IContextMenuService) private contextMenuService: IContextMenuService
-	) { }
+		@Inject(IContextMenuService) private _contextMenuService: IContextMenuService,
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService
+	) {
+		super();
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
+		}));
+	}
 
 	ngOnInit() {
 		this.initActionBar();
 	}
 
 	private initActionBar() {
+		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
+
+		let linkButton: TransformMarkdownAction;
+		let imageButton: TransformMarkdownAction;
+		let linkButtonContainer: HTMLElement;
+		let imageButtonContainer: HTMLElement;
+
+		if (this.previewFeaturesEnabled) {
+			linkButtonContainer = DOM.$('li.action-item');
+			linkButtonContainer.setAttribute('role', 'presentation');
+			let linkButton = new Button(linkButtonContainer);
+			linkButton.element.setAttribute('class', 'action-label codicon insert-link masked-icon');
+			let buttonStyle: IButtonStyles = {
+				buttonBackground: null
+			};
+			linkButton.style(buttonStyle);
+
+			this._register(DOM.addDisposableListener(linkButtonContainer, DOM.EventType.CLICK, async e => {
+				await this.onInsertButtonClick(e, MarkdownButtonType.LINK_PREVIEW);
+			}));
+
+			imageButtonContainer = DOM.$('li.action-item');
+			imageButtonContainer.setAttribute('role', 'presentation');
+			let imageButton = new Button(imageButtonContainer);
+			imageButton.element.setAttribute('class', 'action-label codicon insert-image masked-icon');
+
+			imageButton.style(buttonStyle);
+
+			this._register(DOM.addDisposableListener(imageButtonContainer, DOM.EventType.CLICK, async e => {
+				await this.onInsertButtonClick(e, MarkdownButtonType.IMAGE_PREVIEW);
+			}));
+		} else {
+			linkButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.linkText', '', 'insert-link masked-icon', this.buttonLink, this.cellModel, MarkdownButtonType.LINK);
+			imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'insert-image masked-icon', this.buttonImage, this.cellModel, MarkdownButtonType.IMAGE);
+		}
+
 		let boldButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.boldText', '', 'bold masked-icon', this.buttonBold, this.cellModel, MarkdownButtonType.BOLD);
 		let italicButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.italicText', '', 'italic masked-icon', this.buttonItalic, this.cellModel, MarkdownButtonType.ITALIC);
 		let underlineButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.underlineText', '', 'underline masked-icon', this.buttonUnderline, this.cellModel, MarkdownButtonType.UNDERLINE);
 		let highlightButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.highlightText', '', 'highlight masked-icon', this.buttonHighlight, this.cellModel, MarkdownButtonType.HIGHLIGHT);
 		let codeButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.codeText', '', 'code masked-icon', this.buttonCode, this.cellModel, MarkdownButtonType.CODE);
-		let linkButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.linkText', '', 'insert-link masked-icon', this.buttonLink, this.cellModel, MarkdownButtonType.LINK);
 		let listButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.listText', '', 'list masked-icon', this.buttonList, this.cellModel, MarkdownButtonType.UNORDERED_LIST);
 		let orderedListButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.orderedText', '', 'ordered-list masked-icon', this.buttonOrderedList, this.cellModel, MarkdownButtonType.ORDERED_LIST);
-		let imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'insert-image masked-icon', this.buttonImage, this.cellModel, MarkdownButtonType.IMAGE);
-
 		let headingDropdown = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading', '', 'heading', this.dropdownHeading, this.cellModel, null);
 		let heading1 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading1', this.optionHeading1, 'heading 1', this.optionHeading1, this.cellModel, MarkdownButtonType.HEADING1);
 		let heading2 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading2', this.optionHeading2, 'heading 2', this.optionHeading2, this.cellModel, MarkdownButtonType.HEADING2);
@@ -90,11 +146,11 @@ export class MarkdownToolbarComponent {
 		let dropdownMenuActionViewItem = new DropdownMenuActionViewItem(
 			headingDropdown,
 			[heading1, heading2, heading3, paragraph],
-			this.contextMenuService,
+			this._contextMenuService,
 			undefined,
 			this._actionBar.actionRunner,
 			undefined,
-			'notebook-button masked-pseudo-after dropdown-arrow',
+			'masked-pseudo-after dropdown-arrow',
 			this.optionParagraph,
 			undefined
 		);
@@ -122,6 +178,7 @@ export class MarkdownToolbarComponent {
 			{ action: underlineButton },
 			{ action: highlightButton },
 			{ action: codeButton },
+			{ element: linkButtonContainer },
 			{ action: listButton },
 			{ action: orderedListButton },
 			{ element: buttonDropdownContainer },
@@ -129,20 +186,80 @@ export class MarkdownToolbarComponent {
 			{ action: this._toggleSplitViewAction },
 			{ action: this._toggleMarkdownViewAction }
 		];
+
+		this._previewModeTaskbarContent = [
+			{ action: boldButton },
+			{ action: italicButton },
+			{ action: underlineButton },
+			{ action: highlightButton },
+			{ action: codeButton },
+			{ element: linkButtonContainer },
+			{ action: listButton },
+			{ action: orderedListButton },
+			{ element: imageButtonContainer },
+			{ element: buttonDropdownContainer },
+			{ action: this._toggleTextViewAction },
+			{ action: this._toggleSplitViewAction },
+			{ action: this._toggleMarkdownViewAction }
+		];
+
 		// Hide link and image buttons in WYSIWYG mode
 		if (this.cellModel.showPreview && !this.cellModel.showMarkdown) {
 			this._actionBar.setContent(this._wysiwygTaskbarContent);
 		} else {
-			this._actionBar.setContent(this._taskbarContent);
+			if (this.previewFeaturesEnabled) {
+				this._actionBar.setContent(this._previewModeTaskbarContent);
+			} else {
+				this._actionBar.setContent(this._taskbarContent);
+			}
+		}
+		this._notebookEditor = this._notebookService.findNotebookEditor(this.cellModel?.notebookModel?.notebookUri);
+	}
+
+	public async onInsertButtonClick(event: MouseEvent, type: MarkdownButtonType): Promise<void> {
+		DOM.EventHelper.stop(event, true);
+		let triggerElement = event.target as HTMLElement;
+		let needsTransform = true;
+		let linkCalloutResult: ILinkCalloutDialogOptions;
+
+		if (type === MarkdownButtonType.LINK_PREVIEW) {
+			linkCalloutResult = await this.createCallout(type, triggerElement);
+			// If no URL is present, no-op
+			if (!linkCalloutResult.insertUnescapedLinkUrl) {
+				return;
+			}
+			// If cell edit mode isn't WYSIWYG, use result from callout. No need for further transformation.
+			if (this.cellModel.currentMode !== CellEditModes.WYSIWYG) {
+				needsTransform = false;
+			} else {
+				// Otherwise, re-focus on the output element, and insert the link directly.
+				this.output?.nativeElement?.focus();
+				// Callout is responsible for returning escaped strings
+				document.execCommand('insertHTML', false, `<a href="${linkCalloutResult?.insertUnescapedLinkUrl}">${linkCalloutResult?.insertUnescapedLinkLabel}</a>`);
+				return;
+			}
+		}
+
+		const transformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
+		if (needsTransform) {
+			await transformer.transformText(type);
+		} else if (!needsTransform) {
+			if (type === MarkdownButtonType.LINK_PREVIEW) {
+				await insertFormattedMarkdown(linkCalloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
+			}
 		}
 	}
 
-	public hideLinkAndImageButtons() {
+	public hideImageButton() {
 		this._actionBar.setContent(this._wysiwygTaskbarContent);
 	}
 
 	public showLinkAndImageButtons() {
-		this._actionBar.setContent(this._taskbarContent);
+		if (this.previewFeaturesEnabled) {
+			this._actionBar.setContent(this._previewModeTaskbarContent);
+		} else {
+			this._actionBar.setContent(this._taskbarContent);
+		}
 	}
 
 	public removeActiveClassFromModeActions() {
@@ -152,5 +269,54 @@ export class MarkdownToolbarComponent {
 				action.class = action.class.replace(activeClass, '');
 			}
 		}
+	}
+
+	/**
+	 * Instantiate modal for use as callout when inserting Link or Image into markdown.
+	 * @param calloutStyle Style of callout passed in to determine which callout is rendered.
+	 * Returns markup created after user enters values and submits the callout.
+	 */
+	private async createCallout(type: MarkdownButtonType, triggerElement: HTMLElement): Promise<ILinkCalloutDialogOptions> {
+		const triggerPosX = triggerElement.getBoundingClientRect().left;
+		const triggerPosY = triggerElement.getBoundingClientRect().top;
+		const triggerHeight = triggerElement.offsetHeight;
+		const triggerWidth = triggerElement.offsetWidth;
+		const dialogProperties = { xPos: triggerPosX, yPos: triggerPosY, width: triggerWidth, height: triggerHeight };
+		const dialogPosition = window.innerHeight - triggerPosY < 250 ? 'above' : 'below';
+		let calloutOptions;
+
+		if (type === MarkdownButtonType.LINK_PREVIEW) {
+			const defaultLabel = this.getCurrentSelectionText();
+			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogPosition, dialogProperties, defaultLabel);
+			this._linkCallout.render();
+			calloutOptions = await this._linkCallout.open();
+		}
+		return calloutOptions;
+	}
+
+	private getCurrentSelectionText(): string {
+		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
+			return document.getSelection()?.toString() || '';
+		} else {
+			const editorControl = this.getCellEditorControl();
+			const selection = editorControl?.getSelection();
+			if (selection && !selection.isEmpty()) {
+				const textModel = editorControl?.getModel() as TextModel;
+				const value = textModel?.getValueInRange(selection);
+				return value || '';
+			}
+			return '';
+		}
+	}
+
+	private getCellEditorControl(): IEditor | undefined {
+		// If control doesn't exist, editor may have been destroyed previously when switching edit modes
+		if (!this._cellEditor?.getEditor()?.getControl()) {
+			this._cellEditor = this._notebookEditor?.cellEditors?.find(e => e.cellGuid() === this.cellModel?.cellGuid);
+		}
+		if (this._cellEditor?.hasEditor) {
+			return this._cellEditor.getEditor()?.getControl();
+		}
+		return undefined;
 	}
 }

@@ -5,6 +5,10 @@
 
 import * as should from 'should';
 import * as path from 'path';
+import * as sinon from 'sinon';
+import * as vscode from 'vscode';
+import * as TypeMoq from 'typemoq';
+import * as dataworkspace from 'dataworkspace';
 import * as baselines from '../baselines/baselines';
 import * as templates from '../../templates/templates';
 import * as testUtils from '../testUtils';
@@ -15,6 +19,16 @@ describe('Add Database Reference Dialog', () => {
 	before(async function (): Promise<void> {
 		await templates.loadTemplates(path.join(__dirname, '..', '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
+	});
+
+	beforeEach(function (): void {
+		const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
+		dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny())).returns(() => []);
+		sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object });
+	});
+
+	afterEach(function (): void {
+		sinon.restore();
 	});
 
 	it('Should open dialog successfully', async function (): Promise<void> {

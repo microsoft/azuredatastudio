@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/hyperlink';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
 	OnDestroy, AfterViewInit, ElementRef
@@ -20,7 +21,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-hyperlink',
-	template: `<a [href]="url" [title]="title" [attr.aria-label]="ariaLabel" target="blank">{{label}}</a>`
+	template: `<a [href]="url" [title]="title" [attr.aria-label]="ariaLabel" target="blank" [ngStyle]="CSSStyles" [class]="cssClass">{{label}}</a>`
 })
 export default class HyperlinkComponent extends TitledComponent<azdata.HyperlinkComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
@@ -44,6 +45,10 @@ export default class HyperlinkComponent extends TitledComponent<azdata.Hyperlink
 		this.baseDestroy();
 	}
 
+	public get cssClass(): string {
+		return this.showLinkIcon ? 'link-with-icon' : '';
+	}
+
 	public setLayout(layout: any): void {
 		this.layout();
 	}
@@ -62,6 +67,10 @@ export default class HyperlinkComponent extends TitledComponent<azdata.Hyperlink
 
 	public get url(): string {
 		return this.getPropertyOrDefault<string>((props) => props.url, '');
+	}
+
+	public get showLinkIcon(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.showLinkIcon, false);
 	}
 
 	public onClick(e: MouseEvent): void {

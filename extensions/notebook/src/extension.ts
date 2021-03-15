@@ -6,7 +6,6 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import * as path from 'path';
 
 import { JupyterController } from './jupyter/jupyterController';
 import { AppContext } from './common/appContext';
@@ -19,6 +18,7 @@ import { RemoteBookDialog } from './dialog/remoteBookDialog';
 import { RemoteBookDialogModel } from './dialog/remoteBookDialogModel';
 import { IconPathHelper } from './common/iconHelper';
 import { ExtensionContextHelper } from './common/extensionContextHelper';
+import { BookTreeItem } from './book/bookTreeItem';
 
 const localize = nls.loadMessageBundle();
 
@@ -30,7 +30,6 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	IconPathHelper.setExtensionContext(extensionContext);
 
 	const appContext = new AppContext(extensionContext);
-	const createBookPath: string = path.posix.join(extensionContext.extensionPath, 'resources', 'notebooks', 'JupyterBooksCreate.ipynb');
 	/**
 	 *  									***** IMPORTANT *****
 	 * If changes are made to bookTreeView.openBook, please ensure backwards compatibility with its current state.
@@ -59,14 +58,11 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	}));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createBook', async () => {
-		let untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${createBookPath}`);
-		await vscode.workspace.openTextDocument(createBookPath).then((document) => {
-			azdata.nb.showNotebookDocument(untitledFileName, {
-				connectionProfile: null,
-				initialContent: document.getText(),
-				initialDirtyState: false
-			});
-		});
+		await bookTreeViewProvider.createBook();
+	}));
+
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.moveTo', async (book: BookTreeItem) => {
+		await bookTreeViewProvider.editBook(book);
 	}));
 
 	let model = new RemoteBookDialogModel();
@@ -114,6 +110,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 				cellType = selection.id;
 			}
 		} catch (err) {
+			console.error('Unexpected error adding new cell: ', err);
 			return;
 		}
 		if (cellType) {

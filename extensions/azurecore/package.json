@@ -141,7 +141,12 @@
         "icon": "$(refresh)"
       },
       {
-        "command": "azure.resource.refresh",
+        "command": "azure.resource.azureview.refresh",
+        "title": "%azure.resource.refresh.title%",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "azure.resource.connectiondialog.refresh",
         "title": "%azure.resource.refresh.title%",
         "icon": "$(refresh)"
       },
@@ -209,7 +214,11 @@
           "when": "false"
         },
         {
-          "command": "azure.resource.refresh",
+          "command": "azure.resource.azureview.refresh",
+          "when": "false"
+        },
+        {
+          "command": "azure.resource.connectiondialog.refresh",
           "when": "false"
         },
         {
@@ -245,12 +254,12 @@
           "group": "azurecore"
         },
         {
-          "command": "azure.resource.refresh",
+          "command": "azure.resource.azureview.refresh",
           "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer)$/",
           "group": "inline"
         },
         {
-          "command": "azure.resource.refresh",
+          "command": "azure.resource.azureview.refresh",
           "when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer)$/",
           "group": "azurecore"
         },
@@ -287,7 +296,7 @@
           "group": "navigation"
         },
         {
-          "command": "azure.resource.refresh",
+          "command": "azure.resource.connectiondialog.refresh",
           "when": "contextValue == azure.resource.itemType.account",
           "group": "navigation"
         },
@@ -313,7 +322,7 @@
   "dependencies": {
     "@azure/arm-resourcegraph": "^2.0.0",
     "@azure/arm-subscriptions": "1.0.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "qs": "^6.9.1",
     "vscode-nls": "^4.0.0",
     "ws": "^7.2.0"

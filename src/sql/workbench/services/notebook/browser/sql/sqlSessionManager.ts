@@ -70,6 +70,26 @@ export interface NotebookConfig {
 	useExistingPython: boolean;
 }
 
+export interface NotebookConfig {
+	cellToolbarLocation: string;
+	collapseBookItems: boolean;
+	diff: { enablePreview: boolean };
+	displayOrder: Array<string>;
+	kernelProviderAssociations: Array<string>;
+	maxBookSearchDepth: number;
+	maxTableRows: number;
+	overrideEditorTheming: boolean;
+	pinnedNotebooks: Array<string>;
+	pythonPath: string;
+	remoteBookDownloadTimeout: number;
+	showAllKernels: boolean;
+	showCellStatusBar: boolean;
+	showNotebookConvertActions: boolean;
+	sqlStopOnError: boolean;
+	trustedBooks: Array<string>;
+	useExistingPython: boolean;
+}
+
 export class SqlSessionManager implements nb.SessionManager {
 	private static _sessions: nb.ISession[] = [];
 
@@ -527,6 +547,10 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			this._dataToSaveMap.set(key, data);
 			this._rowsMap.set(key, []);
 			this.sendIOPubMessage(data, set);
+			// If rows are returned in the initial result set, make sure to convert and send to notebook
+			if (set.rowCount > 0) {
+				this.handleResultSetUpdate(set);
+			}
 		}
 	}
 
@@ -593,13 +617,14 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			},
 			content: <nb.IExecuteResult>{
 				output_type: 'execute_result',
-				metadata: {
-					resultSet: resultSet
-				},
+				metadata: undefined,
 				execution_count: this._executionCount,
 				data: data
 			},
-			metadata: undefined,
+			metadata: {
+				batchId: resultSet.batchId,
+				id: resultSet.id
+			},
 			parent_header: undefined
 		};
 		this.ioHandler.handle(msg);

@@ -5,6 +5,10 @@
 Notebooks to help with HADR tasks in a Hybrid Cloud environment.
 
 ## Notebooks in this Chapter
+
+### Blob Storage Backup:
 - [Backup Database to Blob Storage](backup-to-blob.ipynb)
 
-- [Add Azure Passive Secondary Replica](add-passive-secondary.ipynb)
+### Availability Group Configuration:
+- [Create Failover Cluster](configure-failover.ipynb)
+- [Create Availability Group](configure-ag.ipynb)

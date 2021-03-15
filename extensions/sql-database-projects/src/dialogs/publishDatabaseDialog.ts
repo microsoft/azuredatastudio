@@ -14,6 +14,8 @@ import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSet
 import { DeploymentOptions, SchemaObjectType } from '../../../mssql/src/mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
+import { getConnectionName } from './utils';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -39,6 +41,7 @@ export class PublishDatabaseDialog {
 	private connectionIsDataSource: boolean | undefined;
 	private sqlCmdVars: Record<string, string> | undefined;
 	private deploymentOptions: DeploymentOptions | undefined;
+	private profileUsed: boolean = false;
 
 	private toDispose: vscode.Disposable[] = [];
 
@@ -47,7 +50,7 @@ export class PublishDatabaseDialog {
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
 	constructor(private project: Project) {
-		this.dialog = azdata.window.createModelViewDialog(constants.publishDialogName);
+		this.dialog = azdata.window.createModelViewDialog(constants.publishDialogName, 'sqlProjectPublishDialog');
 		this.publishTab = azdata.window.createTab(constants.publishDialogName);
 	}
 
@@ -141,6 +144,8 @@ export class PublishDatabaseDialog {
 
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
+
+			this.loadProfileTextBox!.focus();
 		});
 	}
 
@@ -176,13 +181,13 @@ export class PublishDatabaseDialog {
 	}
 
 	public async publishClick(): Promise<void> {
-		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
 		const settings: IPublishSettings = {
 			databaseName: this.getTargetDatabaseName(),
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
-			sqlCmdVariables: sqlCmdVars,
-			deploymentOptions: await this.getDeploymentOptions()
+			sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
+			deploymentOptions: await this.getDeploymentOptions(),
+			profileUsed: this.profileUsed
 		};
 
 		azdata.window.closeDialog(this.dialog);
@@ -192,12 +197,15 @@ export class PublishDatabaseDialog {
 	}
 
 	public async generateScriptClick(): Promise<void> {
+		TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.generateScriptClicked);
+
 		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
 		const settings: IGenerateScriptSettings = {
 			databaseName: this.getTargetDatabaseName(),
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars,
-			deploymentOptions: await this.getDeploymentOptions()
+			deploymentOptions: await this.getDeploymentOptions(),
+			profileUsed: this.profileUsed
 		};
 
 		azdata.window.closeDialog(this.dialog);
@@ -209,7 +217,7 @@ export class PublishDatabaseDialog {
 		this.dispose();
 	}
 
-	private async getDeploymentOptions(): Promise<DeploymentOptions> {
+	public async getDeploymentOptions(): Promise<DeploymentOptions> {
 		// eventually, database options will be configurable in this dialog
 		// but for now, just send the default DacFx deployment options if no options were loaded from a publish profile
 		if (!this.deploymentOptions) {
@@ -227,7 +235,7 @@ export class PublishDatabaseDialog {
 		return this.deploymentOptions;
 	}
 
-	private getSqlCmdVariablesForPublish(): Record<string, string> {
+	public getSqlCmdVariablesForPublish(): Record<string, string> {
 		// get SQLCMD variables from table
 		let sqlCmdVariables = { ...this.sqlCmdVars };
 		return sqlCmdVariables;
@@ -481,18 +489,7 @@ export class PublishDatabaseDialog {
 			let connection = await azdata.connection.openConnectionDialog();
 			this.connectionId = connection.connectionId;
 
-			// show connection name if there is one, otherwise show connection in format that shows in OE
-			let connectionTextboxValue: string;
-			if (connection.options['connectionName']) {
-				connectionTextboxValue = connection.options['connectionName'];
-			} else {
-				let user = connection.options['user'];
-				if (!user) {
-					user = constants.defaultUser;
-				}
-
-				connectionTextboxValue = `${connection.options['server']} (${user})`;
-			}
+			let connectionTextboxValue: string = getConnectionName(connection);
 
 			this.updateConnectionComponents(connectionTextboxValue, this.connectionId);
 
@@ -510,7 +507,7 @@ export class PublishDatabaseDialog {
 
 	private async updateConnectionComponents(connectionTextboxValue: string, connectionId: string) {
 		this.targetConnectionTextBox!.value = connectionTextboxValue;
-		this.targetConnectionTextBox!.placeHolder = connectionTextboxValue;
+		this.targetConnectionTextBox!.updateProperty('title', connectionTextboxValue);
 
 		// populate database dropdown with the databases for this connection
 		if (connectionId) {
@@ -583,7 +580,7 @@ export class PublishDatabaseDialog {
 
 				// show file path in text box and hover text
 				this.loadProfileTextBox!.value = fileUris[0].fsPath;
-				this.loadProfileTextBox!.placeHolder = fileUris[0].fsPath;
+				this.loadProfileTextBox!.updateProperty('title', fileUris[0].fsPath);
 			}
 		});
 

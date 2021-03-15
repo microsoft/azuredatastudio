@@ -4,48 +4,61 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as path from 'path';
 import { WorkspaceTreeDataProvider } from './common/workspaceTreeDataProvider';
 import { WorkspaceService } from './services/workspaceService';
-import { AllProjectTypes, SelectProjectFileActionName } from './common/constants';
-import { WorkspaceTreeItem } from 'dataworkspace';
+import { WorkspaceTreeItem, IExtension } from 'dataworkspace';
+import { DataWorkspaceExtension } from './common/dataWorkspaceExtension';
+import { NewProjectDialog } from './dialogs/newProjectDialog';
+import { OpenExistingDialog } from './dialogs/openExistingDialog';
+import { IWorkspaceService } from './common/interfaces';
+import { IconPathHelper } from './common/iconHelper';
 
-export function activate(context: vscode.ExtensionContext): void {
-	const workspaceService = new WorkspaceService();
+export function activate(context: vscode.ExtensionContext): Promise<IExtension> {
+	const workspaceService = new WorkspaceService(context);
+	workspaceService.loadTempProjects();
+	workspaceService.checkForProjectsNotAddedToWorkspace();
+	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => {
+		workspaceService.checkForProjectsNotAddedToWorkspace();
+	}));
+
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
+	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
-	context.subscriptions.push(vscode.commands.registerCommand('projects.addProject', async () => {
-		// To Sakshi - You can replace the implementation with your complete dialog implementation
-		// but all the code here should be reusable by you
-		if (vscode.workspace.workspaceFile) {
-			const filters: { [name: string]: string[] } = {};
-			const projectTypes = await workspaceService.getAllProjectTypes();
-			filters[AllProjectTypes] = projectTypes.map(type => type.projectFileExtension);
-			projectTypes.forEach(type => {
-				filters[type.displayName] = [type.projectFileExtension];
-			});
-			let fileUris = await vscode.window.showOpenDialog({
-				canSelectFiles: true,
-				canSelectFolders: false,
-				canSelectMany: false,
-				defaultUri: vscode.Uri.file(path.dirname(vscode.workspace.workspaceFile.path)),
-				openLabel: SelectProjectFileActionName,
-				filters: filters
-			});
-			if (!fileUris || fileUris.length === 0) {
-				return;
-			}
-			await workspaceService.addProjectsToWorkspace(fileUris);
-		}
+	context.subscriptions.push(vscode.extensions.onDidChange(() => {
+		setProjectProviderContextValue(workspaceService);
+	}));
+	setProjectProviderContextValue(workspaceService);
+
+	context.subscriptions.push(vscode.commands.registerCommand('projects.new', async () => {
+		const dialog = new NewProjectDialog(workspaceService);
+		await dialog.open();
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('projects.openExisting', async () => {
+		const dialog = new OpenExistingDialog(workspaceService, context);
+		await dialog.open();
+
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.refresh', () => {
 		workspaceTreeDataProvider.refresh();
 	}));
 
+	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.close', () => {
+		vscode.commands.executeCommand('workbench.action.closeFolder');
+	}));
+
 	context.subscriptions.push(vscode.commands.registerCommand('projects.removeProject', async (treeItem: WorkspaceTreeItem) => {
 		await workspaceService.removeProject(vscode.Uri.file(treeItem.element.project.projectFilePath));
 	}));
+
+	IconPathHelper.setExtensionContext(context);
+
+	return Promise.resolve(dataWorkspaceExtension);
+}
+
+function setProjectProviderContextValue(workspaceService: IWorkspaceService): void {
+	vscode.commands.executeCommand('setContext', 'isProjectProviderAvailable', workspaceService.isProjectProviderAvailable);
 }
 
 export function deactivate(): void {

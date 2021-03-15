@@ -15,7 +15,7 @@ import { Selection } from 'vs/editor/common/core/selection';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
-
+import { IEditor } from 'vs/editor/common/editorCommon';
 
 export class TransformMarkdownAction extends Action {
 
@@ -31,20 +31,14 @@ export class TransformMarkdownAction extends Action {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
 	}
-	public run(context: any): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			try {
-				if (!context?.cellModel?.showMarkdown && context?.cellModel?.showPreview) {
-					this.transformDocumentCommand();
-				} else {
-					let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel);
-					markdownTextTransformer.transformText(this._type);
-				}
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
-		});
+	public async run(context: any): Promise<boolean> {
+		if (!context?.cellModel?.showMarkdown && context?.cellModel?.showPreview) {
+			this.transformDocumentCommand();
+		} else {
+			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel);
+			await markdownTextTransformer.transformText(this._type);
+		}
+		return true;
 	}
 
 	private transformDocumentCommand() {
@@ -65,15 +59,54 @@ export class TransformMarkdownAction extends Action {
 				document.execCommand('formatBlock', false, 'H3');
 				break;
 			case MarkdownButtonType.HIGHLIGHT:
-				document.execCommand('hiliteColor', false, 'Yellow');
+				let selectionFocusNode = document.getSelection()?.focusNode;
+				// Find if element is wrapped in <mark></mark>
+				while (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() && selectionFocusNode?.parentNode?.nodeName?.toLowerCase() !== 'mark') {
+					selectionFocusNode = selectionFocusNode.parentNode;
+				}
+				// Find if element is wrapped in <span background-color="yellow">
+				if (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() !== 'mark') {
+					selectionFocusNode = document.getSelection()?.focusNode;
+					while (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() && selectionFocusNode?.parentNode?.nodeName?.toLowerCase() !== 'span' && selectionFocusNode?.parentElement?.style?.backgroundColor !== 'yellow') {
+						selectionFocusNode = selectionFocusNode.parentNode;
+					}
+				}
+				let nodeName = selectionFocusNode?.parentNode?.nodeName?.toLowerCase();
+				let backgroundColor = selectionFocusNode?.parentElement?.style?.backgroundColor;
+				if (nodeName === 'mark') {
+					let oldParent = selectionFocusNode.parentNode;
+					let newParent = selectionFocusNode.parentNode.parentNode;
+					let oldParentNextSibling = oldParent.nextSibling;
+					// Remove mark element, reparent
+					while (oldParent.childNodes.length > 0) {
+						// If no next sibling, then old parent was the final child node, so we can append
+						if (!oldParentNextSibling) {
+							newParent.appendChild(oldParent.firstChild);
+						} else {
+							newParent.insertBefore(oldParent.firstChild, oldParentNextSibling);
+						}
+					}
+					// Empty span required to force an input so that HTML change is seen from text cell component
+					// This span doesn't have any effect on the markdown generated.
+					document.execCommand('formatBlock', false, 'span');
+				} else if (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() === 'span' && backgroundColor === 'yellow') {
+					selectionFocusNode.parentElement.style.backgroundColor = '';
+					// Empty span required to force an input so that HTML change is seen from text cell component
+					// This span doesn't have any effect on the markdown generated.
+					document.execCommand('formatBlock', false, 'span');
+				} else {
+					document.execCommand('hiliteColor', false, 'Yellow');
+				}
 				break;
 			case MarkdownButtonType.IMAGE:
+			case MarkdownButtonType.IMAGE_PREVIEW:
 				// TODO
 				break;
 			case MarkdownButtonType.ITALIC:
 				document.execCommand('italic');
 				break;
 			case MarkdownButtonType.LINK:
+			case MarkdownButtonType.LINK_PREVIEW:
 				document.execCommand('createLink', false, window.getSelection()?.focusNode?.textContent);
 				break;
 			case MarkdownButtonType.ORDERED_LIST:
@@ -103,7 +136,7 @@ export class MarkdownTextTransformer {
 		return this._notebookEditor;
 	}
 
-	public transformText(type: MarkdownButtonType): void {
+	public async transformText(type: MarkdownButtonType): Promise<void> {
 		let editorControl = this.getEditorControl();
 		if (editorControl) {
 			let selections = editorControl.getSelections();
@@ -361,9 +394,11 @@ export enum MarkdownButtonType {
 	CODE,
 	HIGHLIGHT,
 	LINK,
+	LINK_PREVIEW,
 	UNORDERED_LIST,
 	ORDERED_LIST,
 	IMAGE,
+	IMAGE_PREVIEW,
 	HEADING1,
 	HEADING2,
 	HEADING3,
@@ -432,12 +467,14 @@ function getStartTextToInsert(type: MarkdownButtonType): string {
 		case MarkdownButtonType.CODE:
 			return '```\n';
 		case MarkdownButtonType.LINK:
+		case MarkdownButtonType.LINK_PREVIEW:
 			return '[';
 		case MarkdownButtonType.UNORDERED_LIST:
 			return '- ';
 		case MarkdownButtonType.ORDERED_LIST:
 			return '1. ';
 		case MarkdownButtonType.IMAGE:
+		case MarkdownButtonType.IMAGE_PREVIEW:
 			return '![';
 		case MarkdownButtonType.HIGHLIGHT:
 			return '<mark>';
@@ -467,7 +504,9 @@ function getEndTextToInsert(type: MarkdownButtonType): string {
 		case MarkdownButtonType.CODE:
 			return '\n```';
 		case MarkdownButtonType.LINK:
+		case MarkdownButtonType.LINK_PREVIEW:
 		case MarkdownButtonType.IMAGE:
+		case MarkdownButtonType.IMAGE_PREVIEW:
 			return ']()';
 		case MarkdownButtonType.HIGHLIGHT:
 			return '</mark>';
@@ -515,11 +554,43 @@ function getColumnOffsetForSelection(type: MarkdownButtonType, nothingSelected: 
 	}
 	switch (type) {
 		case MarkdownButtonType.LINK:
+		case MarkdownButtonType.LINK_PREVIEW:
 			return 2;
 		case MarkdownButtonType.IMAGE:
+		case MarkdownButtonType.IMAGE_PREVIEW:
 			return 2;
 		// -1 is considered as having no explicit offset, so do not do anything with selection
 		default: return -1;
+	}
+}
+
+/**
+ * When markdown is already formatted correctly and doesn't need transformed, insert markdown based on current editor selection
+ * @param markdownToInsert formatted markdown
+ * @param editorControl editor control for cell
+ */
+export async function insertFormattedMarkdown(markdownToInsert: string, editorControl?: IEditor): Promise<void> {
+	if (editorControl) {
+		let selections = editorControl.getSelections();
+		let selection = selections[0];
+		let startRange: IRange = {
+			startColumn: selection.startColumn,
+			endColumn: selection.startColumn,
+			startLineNumber: selection.startLineNumber,
+			endLineNumber: selection.startLineNumber
+		};
+
+		let editorModel = editorControl.getModel() as TextModel;
+
+		startRange = {
+			startColumn: selection.startColumn,
+			endColumn: selection.endColumn,
+			startLineNumber: selection.startLineNumber,
+			endLineNumber: selection.endLineNumber
+		};
+		editorModel.pushEditOperations(selections, [
+			{ range: startRange, text: markdownToInsert },
+		], undefined);
 	}
 }
 
@@ -541,9 +612,9 @@ export class ToggleViewAction extends Action {
 		this.class += ' active';
 		context.cellModel.showPreview = this.showPreview;
 		context.cellModel.showMarkdown = this.showMarkdown;
-		// Hide link and image buttons in WYSIWYG mode
+		// Hide image button in WYSIWYG mode
 		if (this.showPreview && !this.showMarkdown) {
-			context.hideLinkAndImageButtons();
+			context.hideImageButton();
 		} else {
 			context.showLinkAndImageButtons();
 		}

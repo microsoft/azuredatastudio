@@ -6,8 +6,8 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { NotebookWizardPageInfo } from '../../interfaces';
-import { initializeWizardPage, InputComponentInfo, setModelValues, Validator } from '../modelViewUtils';
+import { InitialVariableValues, NotebookWizardPageInfo } from '../../interfaces';
+import { initializeWizardPage, InputComponent, InputComponentInfo, setModelValues, Validator } from '../modelViewUtils';
 import { ResourceTypePage } from '../resourceTypePage';
 import { WizardPageInfo } from '../wizardPageInfo';
 import { NotebookWizardModel } from './notebookWizardModel';
@@ -47,19 +47,20 @@ export class NotebookWizardPage extends ResourceTypePage {
 		return !!this._model.wizardInfo.scriptAction;
 	}
 
-	public initialize(): void {
+	public initialize(initialParamValues?: InitialVariableValues): void {
 		initializeWizardPage({
 			container: this.wizard.wizardObject,
 			inputComponents: this._model.inputComponents,
 			wizardInfo: this._model.wizardInfo,
 			pageInfo: this.pageInfo,
 			page: this.pageObject,
+			initialVariableValues: initialParamValues,
 			onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 				this.wizard.registerDisposable(disposable);
 			},
 			onNewInputComponentCreated: (
 				name: string,
-				inputComponentInfo: InputComponentInfo
+				inputComponentInfo: InputComponentInfo<InputComponent>
 			): void => {
 				if (name) {
 					this._model.inputComponents[name] = inputComponentInfo;

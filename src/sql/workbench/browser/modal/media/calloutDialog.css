@@ -1,0 +1,82 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.modal.callout-dialog {
+	background-color: transparent;
+}
+.modal.callout-dialog .modal-dialog {
+	border-radius: 2px;
+	border-width: 1px;
+	border-style: solid;
+	max-height: 300px;
+	position: absolute;
+}
+
+.modal.callout-dialog .modal-content p {
+	margin: 0;
+}
+.modal.callout-dialog .modal-content .button-icon {
+	cursor: pointer;
+	margin-left: 10px;
+}
+.modal.callout-dialog .modal-content .row  {
+	margin-bottom: 16px;
+}
+.hc-black .modal.callout-dialog .modal-dialog {
+	box-shadow: none;
+}
+
+.callout-arrow:before {
+	border-style: solid;
+	border-width: 1px;
+	content: '';
+	display: block;
+	height: 10px;
+	position: absolute;
+	width: 10px;
+}
+.callout-arrow.from-below:before {
+	left: 24px;
+	top: -6px;
+	transform: rotate(135deg);
+}
+.callout-arrow.from-above:before {
+	bottom: -6px;
+	left: 24px;
+	transform: rotate(-45deg);
+}
+.callout-arrow.from-left:before {
+	height: 26px;
+	right: -14px;
+	top: 26px;
+	transform: rotate(-135deg);
+	width: 26px;
+}
+
+.hc-black .callout-arrow:before {
+	box-shadow: none;
+}
+.hc-black .callout-arrow.from-left:before {
+	box-shadow: none;
+}
+
+.modal.callout-dialog .modal-header {
+	padding: 18px 24px 8px 24px;
+}
+
+.modal.callout-dialog .modal-footer {
+	padding: 15px 24px 15px 24px;
+}
+
+.modal.callout-dialog .modal-body {
+	padding: 8px 24px;
+}
+
+.modal.callout-dialog.compact .modal-header {
+	padding: 16px 24px 4px 24px;
+}
+.modal.callout-dialog.compact .modal-body {
+	padding: 4px 24px 16px 24px;
+}

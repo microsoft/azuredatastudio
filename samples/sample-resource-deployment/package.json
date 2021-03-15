@@ -24,80 +24,177 @@
   "contributes": {
     "resourceDeploymentTypes": [
       {
-				"name": "test-wizard",
-				"displayName": "%resource.type.wizard.display.name%",
-				"description": "%resource.type.wizard.description%",
-				"platforms": "*",
+        "name": "validations-wizard",
+        "displayName": "%validation.wizard.display.name%",
+        "description": "%validation.wizard.description%",
+        "platforms": "*",
         "icon": {
           "light": "./images/book.svg",
           "dark": "./images/book_inverse.svg"
         },
-				"providers": [
-					{
-						"notebookWizard": {
+        "providers": [
+          {
+            "name": "validations-wizard",
+            "notebookWizard": {
               "notebook": "%deployment-notebook-1%",
-							"type": "new-arc-control-plane",
-							"runNotebook": false,
-							"codeCellInsertionPosition": 1,
-							"actionText": "%deploy.wizard.action%",
-							"title": "%wizard.new.wizard.title%",
-							"name": "wizard.new.wizard",
-							"labelPosition": "left",
-							"generateSummaryPage": false,
-							"pages": [
-								{
-									"title": "%wizard.select.cluster.title%",
-									"sections": [
-										{
-											"fields": [
-												{
-													"type": "kube_cluster_context_picker",
-													"label": "%wizard.kube.cluster.context%",
-													"required": true,
-													"inputWidth":  "350px",
-													"variableName": "AZDATA_NB_VAR_CLUSTER_CONTEXT",
-													"configFileVariableName": "AZDATA_NB_VAR_CONFIG_FILE"
-												}
-											]
-										}
-									]
-								},
-								{
-									"title": "%wizard.cluster.config.profile.title%",
-									"sections": [
-										{
-											"fields": [
+              "runNotebook": false,
+              "codeCellInsertionPosition": 1,
+              "actionText": "%deploy.wizard.action%",
+              "title": "%wizard.new.wizard.title%",
+              "name": "wizard.new.wizard",
+              "labelPosition": "left",
+              "generateSummaryPage": false,
+              "pages": [
+                {
+                  "title": "%wizard.select.cluster.title%",
+                  "sections": [
+                    {
+                      "fields": [
                         {
-													"type": "readonly_text",
-													"label": "%wizard.project.details.description%",
-													"labelWidth": "600px"
-												},
-												{
-													"type": "options",
-													"label": "%wizard.cluster.config.profile%",
-													"required": true,
-													"variableName": "AZDATA_NB_VAR_PROFILE",
-													"editable": false,
-													"options": {
-														"values":[
-															"aks-dev-test",
-															"aks-dev-test-ha",
-															"aks-dev-test",
-															"aks-private-preview",
-															"kubeadm-dev-test",
-															"kubeadm-private-preview"
-														],
-														"defaultValue": "aks-dev-test",
-														"optionsType": "radio"
-													}
+                          "label": "%cores-limit.label%",
+                          "description": "%cores-limit.description%",
+                          "variableName": "AZDATA_NB_VAR_CORES_LIMIT",
+                          "type": "number",
+                          "defaultValue": 5,
+                          "required": false,
+                          "validations": [
+                            {
+                              "type": "is_integer",
+                              "description": "%cores.limit.should.be.integer%"
+                            },
+                            {
+                              "type": ">=",
+                              "target": "AZDATA_NB_VAR_CORES_REQUEST",
+                              "description": "%cores.limit.greater.than.or.equal.to.requested.cores%"
+                            }
+                          ]
                         },
                         {
-													"type": "options",
-													"label": "%wizard.data.controllers%",
-													"required": true,
-													"variableName": "AZDATA_NB_VAR_CONTROLLER",
-													"editable": false,
-													"options": {
+                          "label": "%cores-request.label%",
+                          "description": "%cores-request.description%",
+                          "variableName": "AZDATA_NB_VAR_CORES_REQUEST",
+                          "type": "number",
+                          "defaultValue": 2,
+                          "required": false,
+                          "validations": [
+                            {
+                              "type": "is_integer",
+                              "description": "%requested.cores.should.be.integer%"
+                            },
+                            {
+                              "type": "<=",
+                              "target": "AZDATA_NB_VAR_CORES_LIMIT",
+                              "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [
+              {
+                "name": "kubectl"
+              }
+            ],
+            "when": true
+          }
+        ],
+        "agreements": [
+          {
+            "template": "%wizard.data.controller.agreement%",
+            "links": [
+              {
+                "text": "%contoso.agreement.privacy.statement%",
+                "url": "https://go.contoso.com/fwlink/?LinkId=853010"
+              },
+              {
+                "text": "%wizard.agreement.contosoCmd.eula%",
+                "url": "https://aka.ms/eula-contosoCmd-en"
+              }
+            ],
+            "when": true
+          }
+        ]
+      },
+      {
+        "name": "test-wizard",
+        "displayName": "%resource.type.wizard.display.name%",
+        "description": "%resource.type.wizard.description%",
+        "platforms": "*",
+        "icon": {
+          "light": "./images/book.svg",
+          "dark": "./images/book_inverse.svg"
+        },
+        "providers": [
+          {
+            "name": "test-wizard",
+            "notebookWizard": {
+              "notebook": "%deployment-notebook-1%",
+              "type": "new-arc-control-plane",
+              "runNotebook": false,
+              "codeCellInsertionPosition": 1,
+              "actionText": "%deploy.wizard.action%",
+              "title": "%wizard.new.wizard.title%",
+              "name": "wizard.new.wizard",
+              "labelPosition": "left",
+              "generateSummaryPage": false,
+              "pages": [
+                {
+                  "title": "%wizard.select.cluster.title%",
+                  "sections": [
+                    {
+                      "fields": [
+                        {
+                          "type": "kube_cluster_context_picker",
+                          "label": "%wizard.kube.cluster.context%",
+                          "required": true,
+                          "inputWidth": "350px",
+                          "variableName": "AZDATA_NB_VAR_CLUSTER_CONTEXT",
+                          "configFileVariableName": "AZDATA_NB_VAR_CONFIG_FILE"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "title": "%wizard.cluster.config.profile.title%",
+                  "sections": [
+                    {
+                      "fields": [
+                        {
+                          "type": "readonly_text",
+                          "label": "%wizard.project.details.description%",
+                          "labelWidth": "600px"
+                        },
+                        {
+                          "type": "options",
+                          "label": "%wizard.cluster.config.profile%",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_PROFILE",
+                          "editable": false,
+                          "options": {
+                            "values": [
+                              "aks-dev-test",
+                              "aks-dev-test-ha",
+                              "aks-dev-test",
+                              "aks-private-preview",
+                              "kubeadm-dev-test",
+                              "kubeadm-private-preview"
+                            ],
+                            "defaultValue": "aks-dev-test",
+                            "optionsType": "radio"
+                          }
+                        },
+                        {
+                          "type": "options",
+                          "label": "%wizard.data.controllers%",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_CONTROLLER",
+                          "editable": false,
+                          "options": {
                             "source": {
                               "type": "ArcControllersOptionsSource",
                               "variableNames": {
@@ -106,173 +203,180 @@
                                 "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
                               }
                             },
-														"values":[
-															"ignored1",
-															"ignored2"
-														],
-														"optionsType": "dropdown"
-													}
+                            "values": [
+                              "ignored1",
+                              "ignored2"
+                            ],
+                            "optionsType": "dropdown"
+                          }
                         },
                         {
                           "label": "%wizard.dropdown.options.field%",
                           "variableName": "AZDATA_NB_VAR_DROPDOWN_OPTIONS",
                           "type": "options",
                           "options": {
-                            "values": ["1","2","3"],
+                            "values": [
+                              "1",
+                              "2",
+                              "3"
+                            ],
                             "defaultValue": "2",
                             "optionsType": "dropdown"
                           }
                         }
-											]
-										}
-									]
-								},
-								{
-									"title": "%wizard.data.controller.create.summary.title%",
-									"isSummaryPage": true,
-									"fieldHeight": "16px",
-									"sections": [
-										{
-											"title": "",
-											"collapsible": false,
-											"fieldWidth": "200px",
-											"fieldHeight": "12px",
-											"spaceBetweenFields": 0,
-											"rows": [
-												{
-													"items": [
-														{
-															"items": [
-																{
-																	"label": "%wizard.summary.data.controller%",
-																	"type": "readonly_text",
-																	"enabled": true,
-																	"labelWidth": "185px"
-																}
-															]
-														},
-														{
-															"items": [
-																{
-																	"label": "%wizard.summary.estimated.cost.per.month%",
-																	"type": "readonly_text",
-																	"enabled": true,
-																	"labelWidth": "190px",
-																	"labelCSSStyles": {
-																		"fontWeight": "Bold"
-																	}
-
-																}
-															]
-														}
-													]
-												},
-												{
-													"items": [
-														{
-															"items": [
-																{
-																	"label": "%wizard.summary.by.contoso%",
-																	"type": "readonly_text",
-																	"labelWidth": "185px"
-																}
-															]
-														},
-														{
-															"items": [
-																{
-																	"label": "%wizard.summary.free%",
-																	"type": "readonly_text",
-																	"enabled": true,
-																	"defaultValue": "",
-																	"labelWidth": "100px"
-																}
-															]
-														}
-													]
-												},
-												{
-													"items": [
-														{
-															"items": [
-																{
-																	"label": "{0}",
-																	"type": "readonly_text",
-																	"enabled": true,
-																	"labelCSSStyles": { "color": "#0078D4" },
-																	"labelWidth": "67px",
-																	"links": [
-																		{
-																			"text": "%wizard.summary.terms.of.use%",
-																			"url": "https://aka.ms/eula-azdata-en"
-																		}
-																	]
-																},
-																{
-																	"label": "|",
-																	"type": "readonly_text",
-																	"enabled": true,
-																	"defaultValue": "",
-																	"labelWidth": "4px",
-																	"fieldWidth": "6px"
-																},
-																{
-																	"label": "{0}",
-																	"type": "readonly_text",
-																	"enabled": true,
-																	"labelCSSStyles": { "color": "#0078D4" },
-																	"labelWidth": "102px",
-																	"links": [
-																		{
-																			"text": "%wizard.summary.terms.privacy.policy%",
-																			"url": "https://go.contoso.com/fwlink/?LinkId=853010"
-																		}
-																	]
-																}
-															]
-														}
-													]
-												}
-											]
-										},
-										{
-											"title": "%wizard.summary.terms%",
-											"fieldHeight": "88px",
-											"fields":[
-												{
-													"label": "%wizard.summary.terms.description%",
-													"type": "readonly_text",
-													"enabled": true,
-													"labelWidth": "750px"
-												}
-											]
-										},
-										{
-											"title": "%wizard.summary.kubernetes%",
-											"fields":[
-												{
-													"label": "%wizard.summary.kube.config.file.path%",
-													"type": "readonly_text",
-													"isEvaluated": true,
-													"defaultValue": "$(AZDATA_NB_VAR_CONFIG_FILE)"
-												},
-												{
-													"label": "%wizard.summary.cluster.context%",
-													"type": "readonly_text",
-													"isEvaluated": true,
-													"defaultValue": "$(AZDATA_NB_VAR_CLUSTER_CONTEXT)"
-												},
-												{
-													"label": "%wizard.summary.profile%",
-													"type": "readonly_text",
-													"isEvaluated": true,
-													"defaultValue": "$(AZDATA_NB_VAR_PROFILE)"
-												},
-												{
-													"label": "%wizard.dropdown.options.field%",
-													"type": "readonly_text",
-													"isEvaluated": true,
-													"defaultValue": "$(AZDATA_NB_VAR_DROPDOWN_OPTIONS)"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "title": "%wizard.data.controller.create.summary.title%",
+                  "isSummaryPage": true,
+                  "fieldHeight": "16px",
+                  "sections": [
+                    {
+                      "title": "",
+                      "collapsible": false,
+                      "fieldWidth": "200px",
+                      "fieldHeight": "12px",
+                      "spaceBetweenFields": 0,
+                      "rows": [
+                        {
+                          "items": [
+                            {
+                              "items": [
+                                {
+                                  "label": "%wizard.summary.data.controller%",
+                                  "type": "readonly_text",
+                                  "enabled": true,
+                                  "labelWidth": "185px"
+                                }
+                              ]
+                            },
+                            {
+                              "items": [
+                                {
+                                  "label": "%wizard.summary.estimated.cost.per.month%",
+                                  "type": "readonly_text",
+                                  "enabled": true,
+                                  "labelWidth": "190px",
+                                  "labelCSSStyles": {
+                                    "fontWeight": "Bold"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "items": [
+                            {
+                              "items": [
+                                {
+                                  "label": "%wizard.summary.by.contoso%",
+                                  "type": "readonly_text",
+                                  "labelWidth": "185px"
+                                }
+                              ]
+                            },
+                            {
+                              "items": [
+                                {
+                                  "label": "%wizard.summary.free%",
+                                  "type": "readonly_text",
+                                  "enabled": true,
+                                  "defaultValue": "",
+                                  "labelWidth": "100px"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "items": [
+                            {
+                              "items": [
+                                {
+                                  "label": "{0}",
+                                  "type": "readonly_text",
+                                  "enabled": true,
+                                  "labelCSSStyles": {
+                                    "color": "#0078D4"
+                                  },
+                                  "labelWidth": "67px",
+                                  "links": [
+                                    {
+                                      "text": "%wizard.summary.terms.of.use%",
+                                      "url": "https://aka.ms/eula-azdata-en"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "label": "|",
+                                  "type": "readonly_text",
+                                  "enabled": true,
+                                  "defaultValue": "",
+                                  "labelWidth": "4px",
+                                  "fieldWidth": "6px"
+                                },
+                                {
+                                  "label": "{0}",
+                                  "type": "readonly_text",
+                                  "enabled": true,
+                                  "labelCSSStyles": {
+                                    "color": "#0078D4"
+                                  },
+                                  "labelWidth": "102px",
+                                  "links": [
+                                    {
+                                      "text": "%wizard.summary.terms.privacy.policy%",
+                                      "url": "https://go.contoso.com/fwlink/?LinkId=853010"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%wizard.summary.terms%",
+                      "fieldHeight": "88px",
+                      "fields": [
+                        {
+                          "label": "%wizard.summary.terms.description%",
+                          "type": "readonly_text",
+                          "enabled": true,
+                          "labelWidth": "750px"
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%wizard.summary.kubernetes%",
+                      "fields": [
+                        {
+                          "label": "%wizard.summary.kube.config.file.path%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_CONFIG_FILE)"
+                        },
+                        {
+                          "label": "%wizard.summary.cluster.context%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_CLUSTER_CONTEXT)"
+                        },
+                        {
+                          "label": "%wizard.summary.profile%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_PROFILE)"
+                        },
+                        {
+                          "label": "%wizard.dropdown.options.field%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_DROPDOWN_OPTIONS)"
                         },
                         {
                           "label": "%wizard.summary.controller%",
@@ -298,34 +402,37 @@
                           "isEvaluated": true,
                           "defaultValue": "$(AZDATA_NB_VAR_CONTROLLER_PASSWORD)"
                         }
-											]
-										}
-									]
-								}
-							]
-						},
-						"requiredTools": [
-							{
-								"name": "kubectl"
-							}
-						],
-						"when": true
-					}
-				],
-				"agreement": {
-					"template": "%wizard.data.controller.agreement%",
-					"links": [
-						{
-							"text": "%contoso.agreement.privacy.statement%",
-							"url": "https://go.contoso.com/fwlink/?LinkId=853010"
-						},
-						{
-							"text": "%wizard.agreement.contosoCmd.eula%",
-							"url": "https://aka.ms/eula-contosoCmd-en"
-						}
-					]
-				}
-			},
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [
+              {
+                "name": "kubectl"
+              }
+            ],
+            "when": true
+          }
+        ],
+        "agreements": [
+          {
+            "template": "%wizard.data.controller.agreement%",
+            "links": [
+              {
+                "text": "%contoso.agreement.privacy.statement%",
+                "url": "https://go.contoso.com/fwlink/?LinkId=853010"
+              },
+              {
+                "text": "%wizard.agreement.contosoCmd.eula%",
+                "url": "https://aka.ms/eula-contosoCmd-en"
+              }
+            ],
+            "when": true
+          }
+        ]
+      },
       {
         "name": "x-data-service",
         "displayName": "%resource-type-display-name%",
@@ -357,6 +464,7 @@
         ],
         "providers": [
           {
+            "name": "edition_evaluation",
             "dialog": {
               "notebook": "%deployment-notebook-1%",
               "title": "%dialog-title-1%",
@@ -388,7 +496,7 @@
                           "type": "kube_cluster_context_picker",
                           "label": "%kube.cluster.context%",
                           "required": true,
-                          "inputWidth":  "350px",
+                          "inputWidth": "350px",
                           "variableName": "AZDATA_NB_VAR_CLUSTER_CONTEXT",
                           "configFileVariableName": "AZDATA_NB_VAR_CONFIG_FILE"
                         },
@@ -415,6 +523,7 @@
             "when": "edition=evaluation"
           },
           {
+            "name": "edition_standard",
             "dialog": {
               "notebook": "%deployment-notebook-2%",
               "title": "%dialog-title-2%",
@@ -465,19 +574,22 @@
             "when": "edition=standard"
           }
         ],
-        "agreement": {
-          "template": "%agreement%",
-          "links": [
-            {
-              "text": "%agreement-1-name%",
-              "url": "https://www.contoso.com"
-            },
-            {
-              "text": "%agreement-2-name%",
-              "url": "https://portal.azure.com"
-            }
-          ]
-        }
+        "agreements": [
+          {
+            "template": "%agreement%",
+            "links": [
+              {
+                "text": "%agreement-1-name%",
+                "url": "https://www.contoso.com"
+              },
+              {
+                "text": "%agreement-2-name%",
+                "url": "https://portal.azure.com"
+              }
+            ],
+            "when": "edition=standard"
+          }
+        ]
       }
     ]
   }

@@ -24,18 +24,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 	vscode.window.registerTreeDataProvider('azureArc', treeDataProvider);
 
 	vscode.commands.registerCommand('arc.createController', async () => {
-		await vscode.commands.executeCommand('azdata.resource.deploy', 'arc.control.create', ['arc.control.create']);
+		await vscode.commands.executeCommand('azdata.resource.deploy', 'arc-controller', ['arc-controller']);
 	});
 
 	vscode.commands.registerCommand('arc.connectToController', async () => {
-		const nodes = await treeDataProvider.getChildren();
-		if (nodes.length > 0) {
-			const response = await vscode.window.showErrorMessage(loc.onlyOneControllerSupported, loc.yes, loc.no);
-			if (response !== loc.yes) {
-				return;
-			}
-			await treeDataProvider.removeController(nodes[0] as ControllerTreeNode);
-		}
 		const dialog = new ConnectToControllerDialog(treeDataProvider);
 		dialog.showDialog();
 		const model = await dialog.waitForClose();
@@ -67,7 +59,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 
 	// register option sources
 	const rdApi = <rd.IExtension>vscode.extensions.getExtension(rd.extension.name)?.exports;
-	rdApi.registerOptionsSourceProvider(new ArcControllersOptionsSourceProvider(treeDataProvider));
+	context.subscriptions.push(rdApi.registerOptionsSourceProvider(new ArcControllersOptionsSourceProvider(treeDataProvider)));
 
 	return arcApi(treeDataProvider);
 }

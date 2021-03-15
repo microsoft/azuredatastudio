@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { Modal } from 'sql/workbench/browser/modal/modal';
+import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -20,6 +19,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 export class WebViewDialog extends Modal {
 
@@ -49,7 +49,7 @@ export class WebViewDialog extends Modal {
 		@IWebviewService private readonly webviewService: IWebviewService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', TelemetryKeys.WebView, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.WebView, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 		this._okLabel = localize('webViewDialog.ok', "OK");
 		this._closeLabel = localize('webViewDialog.close', "Close");
 	}
@@ -136,11 +136,11 @@ export class WebViewDialog extends Modal {
 
 	public ok(): void {
 		this._onOk.fire();
-		this.close();
+		this.close('ok');
 	}
 
-	public close() {
-		this.hide();
+	public close(hideReason: HideReason = 'close') {
+		this.hide(hideReason);
 		this._onClosed.fire();
 	}
 

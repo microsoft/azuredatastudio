@@ -57,8 +57,10 @@
   sections:
   - title: Backup Database to Blob Storage
     url: hadr/backup-to-blob
-  - title: Add Azure Passive Secondary Replica
-    url: hadr/add-passive-secondary
+  - title: Create Failover Cluster
+    url: hadr/configure-failover
+  - title: Create Availability Group
+    url: hadr/configure-ag
 - title: Offline Migration
   url: /offline-migration/readme
   not_numbered: true
@@ -68,13 +70,9 @@
     url: offline-migration/instance-to-VM
   - title: Migrate Database to Azure SQL VM
     url: offline-migration/db-to-VM
-  - title: Migrate Instance to Azure SQL MI
-    url: offline-migration/instance-to-MI
-  - title: Migrate Database to Azure SQL MI
-    url: offline-migration/db-to-MI
   - title: Migrate Database to Azure SQL DB
     url: offline-migration/db-to-SQLDB
 - title: Glossary
   url: /glossary
 - title: Appendices
-  url: /appendices
+  url: /Appendices
