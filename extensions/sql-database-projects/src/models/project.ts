@@ -352,10 +352,6 @@ export class Project {
 		await Promise.all(toDeleteFiles.map(x => fs.unlink(x.fsUri.fsPath)));
 		await Promise.all(toDeleteFolders.map(x => fs.rmdir(x.fsUri.fsPath, { recursive: true })));
 
-		// for (const folder of toDeleteFolders) {
-		// 	await fs.rmdir(folder.fsUri.fsPath); // TODO: replace .sort() and iteration with rmdir recursive flag once that's unbugged
-		// }
-
 		await this.exclude(entry);
 	}
 
