@@ -23,9 +23,9 @@
 		}
 	}
 }(this, function () {
-	const Module = require('module');
-	const path = require('path');
-	const fs = require('fs');
+	const Module = typeof require === 'function' ? require('module') : undefined;
+	const path = typeof require === 'function' ? require('path') : undefined;
+	const fs = typeof require === 'function' ? require('fs') : undefined;
 
 	//#region global bootstrapping
 
@@ -34,9 +34,11 @@
 
 	// Workaround for Electron not installing a handler to ignore SIGPIPE
 	// (https://github.com/electron/electron/issues/13254)
-	process.on('SIGPIPE', () => {
-		console.error(new Error('Unexpected SIGPIPE'));
-	});
+	if (typeof process !== 'undefined') {
+		process.on('SIGPIPE', () => {
+			console.error(new Error('Unexpected SIGPIPE'));
+		});
+	}
 
 	//#endregion
 
@@ -89,21 +91,32 @@
 	//#region URI helpers
 
 	/**
-	 * @param {string} _path
+	 * @param {string} path
+	 * @param {{ isWindows?: boolean, scheme?: string, fallbackAuthority?: string }} config
 	 * @returns {string}
 	 */
-	function fileUriFromPath(_path) {
-		let pathName = path.resolve(_path).replace(/\\/g, '/');
+	function fileUriFromPath(path, config) {
+
+		// Since we are building a URI, we normalize any backlsash
+		// to slashes and we ensure that the path begins with a '/'.
+		let pathName = path.replace(/\\/g, '/');
 		if (pathName.length > 0 && pathName.charAt(0) !== '/') {
 			pathName = `/${pathName}`;
 		}
 
 		/** @type {string} */
 		let uri;
-		if (process.platform === 'win32' && pathName.startsWith('//')) { // specially handle Windows UNC paths
-			uri = encodeURI(`file:${pathName}`);
-		} else {
-			uri = encodeURI(`file://${pathName}`);
+
+		// Windows: in order to support UNC paths (which start with '//')
+		// that have their own authority, we do not use the provided authority
+		// but rather preserve it.
+		if (config.isWindows && pathName.startsWith('//')) {
+			uri = encodeURI(`${config.scheme || 'file'}:${pathName}`);
+		}
+
+		// Otherwise we optionally add the provided authority if specified
+		else {
+			uri = encodeURI(`${config.scheme || 'file'}://${config.fallbackAuthority || ''}${pathName}`);
 		}
 
 		return uri.replace(/#/g, '%23');
