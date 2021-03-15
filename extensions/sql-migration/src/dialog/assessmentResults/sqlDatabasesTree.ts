@@ -32,6 +32,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private _objectDetailsSample!: azdata.TextComponent;
 	private _moreInfo!: azdata.TextComponent;
 	private _assessmentType!: string;
+	private _assessmentTitle!: azdata.TextComponent;
 
 	constructor(model: MigrationStateModel, assessmentData: Map<string, Issues[]>, assessmentType: string) {
 		super();
@@ -188,7 +189,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			if (rowInfo) {
 				this._assessmentResultsTable.component().dataValues = [];
 				this._dbName.value = rowInfo.name;
-				this._recommendation.value = `Assessment Results (${rowInfo.issues.length} issues found)`;
+				this._recommendation.value = `Warnings (${rowInfo.issues.length} issues found)`;
 				// Need some kind of refresh method for declarative tables
 				let dataValues: string[][] = [];
 				rowInfo.issues.forEach(async (issue) => {
@@ -336,7 +337,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			}
 		}).component();
 
-		container.addItem(impactedObjects, { flex: '0 0 auto' });
+		container.addItem(impactedObjects, { flex: '0 0 auto', CSSStyles: { 'border-right': 'solid 1px' } });
 		container.addItem(rightContainer, { flex: '1 1 auto' });
 		return container;
 	}
@@ -537,15 +538,15 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 
 	private createAssessmentTitle(view: azdata.ModelView): azdata.TextComponent {
-		const title = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		this._assessmentTitle = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: '',
 			CSSStyles: {
 				'font-size': '14px',
 				'border-bottom': 'solid 1px'
 			}
-		});
+		}).component();
 
-		return title.component();
+		return this._assessmentTitle;
 	}
 
 	private createTitleComponent(view: azdata.ModelView): azdata.TextComponent {
@@ -591,7 +592,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private createAssessmentResultsTitle(view: azdata.ModelView): azdata.TextComponent {
 		this._recommendation = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			title: 'Recommendation', // TODO localize
-			value: 'Assessment Results',
+			value: 'Warnings',
 			CSSStyles: {
 				'font-size': '14px',
 				'font-weight': 'bold',
@@ -671,6 +672,8 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 					]);
 				});
+
+				this._assessmentTitle.value = this._issues.moreInfo;
 
 				this._impactedObjectsTable.component().updateProperties({
 					dataValues: data
