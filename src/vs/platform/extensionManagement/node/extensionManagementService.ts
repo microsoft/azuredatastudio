@@ -160,7 +160,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 
 			const manifest = await getManifest(zipPath);
 			const identifier = { id: getGalleryExtensionId(manifest.publisher, manifest.name) };
-			// let operation: InstallOperation = InstallOperation.Install; {{ SQL CARBON EDIT }}
+			// let operation: InstallOperation = InstallOperation.Install; {{SQL CARBON EDIT}}
 			// {{SQL CARBON EDIT}}
 			if (manifest.engines?.vscode && !isEngineValid(manifest.engines.vscode, product.vscodeVersion)) {
 				throw new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with the current VS Code engine version '{1}'.", identifier.id, product.vscodeVersion));
@@ -175,7 +175,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			if (existing) {
 				options.isMachineScoped = options.isMachineScoped || existing.isMachineScoped;
 				options.isBuiltin = options.isBuiltin || existing.isBuiltin;
-				// operation = InstallOperation.Update; {{ SQL CARBON EDIT }}
+				// operation = InstallOperation.Update; {{SQL CARBON EDIT}}
 				if (identifierWithVersion.equals(new ExtensionIdentifierWithVersion(existing.identifier, existing.manifest.version))) {
 					try {
 						await this.extensionsScanner.removeExtension(existing, 'existing');

@@ -346,8 +346,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.workerMemoryLimitBox.onTextChanged(() => {
 				if (!(this.saveValueToEdit(this.workerMemoryLimitBox!, this.currentConfiguration.workerMemoryLimit!))) {
 					this.saveArgs.workerMemoryLimit = undefined;
-				} else if (this.workerMemoryLimitBox!.value === '""') {
-					this.saveArgs.workerMemoryLimit = this.workerMemoryLimitBox!.value;
+				} else if (this.workerMemoryLimitBox!.value === '') {
+					this.saveArgs.workerMemoryLimit = '""';
 				} else {
 					this.saveArgs.workerMemoryLimit = this.workerMemoryLimitBox!.value + 'Gi';
 				}

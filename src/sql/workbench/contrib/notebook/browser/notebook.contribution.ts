@@ -5,7 +5,7 @@
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
 import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions, ActiveEditorContext } from 'vs/workbench/common/editor';
 
@@ -51,6 +51,7 @@ import 'vs/css!./media/notebook.contribution';
 import { isMacintosh } from 'vs/base/common/platform';
 import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
 import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(FileNotebookInput.ID, FileNoteBookEditorInputFactory);
@@ -151,6 +152,20 @@ CommandsRegistry.registerCommand({
 	}
 });
 
+const LAUNCH_FIND_IN_NOTEBOOK = 'notebook.action.launchFindInNotebook';
+
+CommandsRegistry.registerCommand({
+	id: LAUNCH_FIND_IN_NOTEBOOK,
+	handler: async (accessor: ServicesAccessor, searchTerm: string) => {
+		const notebookEditor = accessor.get(IEditorService).activeEditorPane;
+		if (notebookEditor instanceof NotebookEditor) {
+			if (notebookEditor) {
+				await notebookEditor.setNotebookModel();
+				await notebookEditor.launchFind(searchTerm);
+			}
+		}
+	}
+});
 
 MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 	command: {

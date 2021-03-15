@@ -31,10 +31,10 @@ export class AssessmentResultsDialog {
 	private _tree: SqlDatabaseTree;
 
 
-	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string, private skuRecommendationPage: SKURecommendationPage) {
+	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string, private skuRecommendationPage: SKURecommendationPage, migrationType: string) {
 		this._model = model;
 		let assessmentData = this.parseData(this._model);
-		this._tree = new SqlDatabaseTree(this._model, assessmentData);
+		this._tree = new SqlDatabaseTree(this._model, assessmentData, migrationType);
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
@@ -68,7 +68,7 @@ export class AssessmentResultsDialog {
 	public async openDialog(dialogName?: string) {
 		if (!this._isOpen) {
 			this._isOpen = true;
-			this.dialog = azdata.window.createModelViewDialog(this.title, this.title, true);
+			this.dialog = azdata.window.createModelViewDialog(this.title, this.title, '90%');
 
 			this.dialog.okButton.label = AssessmentResultsDialog.OkButtonText;
 			this.dialog.okButton.onClick(async () => await this.execute());
@@ -128,6 +128,7 @@ export class AssessmentResultsDialog {
 	protected async execute() {
 		this.model._migrationDbs = this._tree.selectedDbs();
 		this.skuRecommendationPage.refreshDatabaseCount(this._model._migrationDbs.length);
+		this.model.refreshDatabaseBackupPage = true;
 		this._isOpen = false;
 	}
 
