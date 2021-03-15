@@ -152,7 +152,8 @@ export class Project {
 						dacpacFileLocation: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
 						databaseName: name,
 						suppressMissingDependenciesErrors: suppressMissingDependencies
-					}));
+					},
+						Uri.file(this.projectFilePath)));
 				}
 			}
 		}
@@ -463,7 +464,7 @@ export class Project {
 	 * @param databaseName name of the database
 	 */
 	public async addDatabaseReference(settings: IDacpacReferenceSettings): Promise<void> {
-		const databaseReferenceEntry = new DacpacReferenceProjectEntry(settings);
+		const databaseReferenceEntry = new DacpacReferenceProjectEntry(settings, Uri.file(this.projectFilePath));
 
 		// check if reference to this database already exists
 		if (this.databaseReferenceExists(databaseReferenceEntry)) {
@@ -1008,8 +1009,8 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 	serverSqlCmdVariable?: string;
 	suppressMissingDependenciesErrors: boolean;
 
-	constructor(settings: IDacpacReferenceSettings) {
-		super(settings.dacpacFileLocation, '', EntryType.DatabaseReference);
+	constructor(settings: IDacpacReferenceSettings, projectFileUri: Uri) {
+		super(settings.dacpacFileLocation, utils.trimUri(projectFileUri, settings.dacpacFileLocation), EntryType.DatabaseReference);
 		this.databaseSqlCmdVariable = settings.databaseVariable;
 		this.databaseVariableLiteralValue = settings.databaseName;
 		this.serverName = settings.serverName;
@@ -1022,6 +1023,10 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 	 */
 	public get databaseName(): string {
 		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
+	}
+
+	public pathForSqlProj(): string {
+		return utils.convertSlashesForSqlProj(this.relativePath);
 	}
 }
 
