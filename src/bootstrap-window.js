@@ -106,8 +106,8 @@
 			preferScriptTags: sandbox
 		};
 		// use a trusted types policy when loading via script tags
-		if (loaderConfig.preferScriptTags) {
-			loaderConfig.trustedTypesPolicy = window.trustedTypes?.createPolicy('amdLoader', {
+		if (loaderConfig.preferScriptTags && window && window.trustedTypes) { // {{SQL CARBON EDIT}} fix uglify error
+			loaderConfig.trustedTypesPolicy = window.trustedTypes.createPolicy('amdLoader', {
 				createScriptURL(value) {
 					if (value.startsWith(window.location.origin)) {
 						return value;
