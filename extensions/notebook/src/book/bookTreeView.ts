@@ -226,6 +226,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					if (sourceBook) {
 						sourceBook.watchTOC();
 					}
+					TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.MoveNotebook).send();
 				}
 			}
 		}
