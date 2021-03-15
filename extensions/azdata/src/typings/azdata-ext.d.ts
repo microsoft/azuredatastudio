@@ -173,7 +173,7 @@ declare module 'azdata-ext' {
 		spec: {
 			engine: {
 				extensions: {
-					name: string // "citus"kind: string
+					name: string // "citus"
 				}[],
 				settings: {
 					default: { [key: string]: string } // { "max_connections": "101", "work_mem": "4MB" }
