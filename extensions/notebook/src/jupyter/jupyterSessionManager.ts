@@ -65,7 +65,7 @@ export class JupyterSessionManager implements nb.SessionManager {
 	private static _sessions: JupyterSession[] = [];
 	private _installation: JupyterServerInstallation;
 
-	constructor(private _pythonEnvVarPath?: string) {
+	constructor() {
 		this._isReady = false;
 		this._ready = new Deferred<void>();
 	}
@@ -130,7 +130,7 @@ export class JupyterSessionManager implements nb.SessionManager {
 			return Promise.reject(new Error(localize('errorStartBeforeReady', "Cannot start a session, the manager is not yet initialized")));
 		}
 		let sessionImpl = await this._sessionManager.startNew(options);
-		let jupyterSession = new JupyterSession(sessionImpl, this._installation, skipSettingEnvironmentVars, this._pythonEnvVarPath);
+		let jupyterSession = new JupyterSession(sessionImpl, this._installation, skipSettingEnvironmentVars, this._installation.pythonEnvVarPath);
 		await jupyterSession.messagesComplete;
 		let index = JupyterSessionManager._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
@@ -187,9 +187,6 @@ export class JupyterSession implements nb.ISession {
 			// We don't want callers to hang forever waiting - it's better to continue on even if we weren't
 			// able to set environment variables
 			this._messagesComplete.resolve();
-		});
-		_installation.pythonInstallationChanged(async () => {
-			this.changeKernel(await this._kernel.getSpec());
 		});
 	}
 

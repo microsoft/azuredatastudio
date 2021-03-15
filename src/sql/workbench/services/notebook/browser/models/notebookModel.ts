@@ -887,23 +887,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public async restartSession(): Promise<void> {
 		if (this._activeClientSession && this._activeClientSession.isReady) {
-			let kernel = this._activeClientSession.kernel;
-			let spec = await kernel.getSpec();
-			this._activeClientSession.stopServer();
-			// this._activeClientSession.shutdown();
-			// this._activeClientSession = undefined;
-			// await this.startSession(this.notebookManager, spec.display_name, true);
-			// await this._activeClientSession.changeKernel(spec, this._oldKernel);
+			this.shutdownActiveSession();
+			await this.notebookManager?.serverManager.stopServer();
+			await this.startSession(this.notebookManager, this._selectedKernelDisplayName, true);
 		}
-
-		// await this.shutdownActiveSession();
-
-		// let manager = this.getNotebookManager(this._providerId);
-		// if (manager) {
-		// 	await this.startSession(manager, this._selectedKernelDisplayName, false, undefined);
-		// } else {
-		// 	throw new Error(localize('ProviderNoManager', "Can't find notebook manager for provider {0}", this._providerId));
-		// }
 	}
 
 	public changeKernel(displayName: string): void {
