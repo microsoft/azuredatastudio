@@ -59,6 +59,12 @@ export const LocationSelectorTitle = localize('dataworkspace.locationSelectorTit
 export const ProjectFilePlaceholder = localize('dataworkspace.projectFilePlaceholder', "Select project (.sqlproj) file");
 export const WorkspacePlaceholder = localize('dataworkspace.workspacePlaceholder', "Select workspace ({0}) file", WorkspaceFileExtension);
 export const ProjectAlreadyOpened = (path: string): string => { return localize('dataworkspace.projectAlreadyOpened', "Project '{0}' is already opened.", path); };
+export const Local = localize('dataworksapce.local', 'Local');
+export const RemoteGitRepo = localize('dataworkspace.remoteGitRepo', "Remote git repository");
+export const GitRepoUrlTitle = localize('dataworkspace.gitRepoUrlTitle', "Git repository URL");
+export const GitRepoUrlPlaceholder = localize('dataworkspace.gitRepoUrlPlaceholder', "Enter remote git repository URL");
+export const LocalClonePathTitle = localize('dataworkspace.localClonePathTitle', "Local project clone path");
+export const LocalClonePathPlaceholder = localize('dataworkspace.localClonePathPlaceholder', "Select location to clone project locally");
 
 // Workspace settings for saving new projects
 export const ProjectConfigurationKey = 'projects';
