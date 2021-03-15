@@ -53,10 +53,8 @@ export class PostgresModel extends ResourceModel {
 
 	/** Returns the major version of Postgres */
 	public get engineVersion(): string | undefined {
-		const kind = this._config?.kind;
-		return kind
-			? kind.substring(kind.lastIndexOf('-') + 1)
-			: undefined;
+		const kind = this._config?.spec.engine.version;
+		return kind;
 	}
 
 	/** Returns the IP address and port of Postgres */
