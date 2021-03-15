@@ -442,7 +442,7 @@ export function isBookItemPinned(notebookPath: string): boolean {
 	return false;
 }
 
-export function getNotebookType(book: BookTreeItemFormat): string {
+export function getNotebookType(book: BookTreeItemFormat): BookTreeItemType {
 	if (book.tableOfContents.sections) {
 		return BookTreeItemType.savedBookNotebook;
 	}

@@ -277,7 +277,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async removeNotebook(bookItem: BookTreeItem): Promise<void> {
-		await this.bookTocManager.removeNotebook(bookItem);
+		return this.bookTocManager.removeNotebook(bookItem);
 	}
 
 	async closeBook(book: BookTreeItem): Promise<void> {

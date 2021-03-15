@@ -391,7 +391,7 @@ export class BookTocManager implements IBookTocManager {
 	public async updateBook(element: BookTreeItem, targetBook: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
 		if (element.contextValue === 'section') {
 			// modify the sourceBook toc and remove the section
-			const findSection: JupyterBookSection = { file: element.book.page.file?.replace(/\\/g, '/'), title: element.book.page.title };
+			const findSection: JupyterBookSection = { file: element.book.page.file, title: element.book.page.title };
 			await this.addSection(element, targetBook);
 			await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
 			if (targetSection) {
@@ -409,7 +409,7 @@ export class BookTocManager implements IBookTocManager {
 		}
 		else if (element.contextValue === 'savedNotebook' || element.contextValue === 'savedBookNotebook') {
 			// the notebook is part of a book so we need to modify its toc as well
-			const findSection = { file: element.book.page?.file?.replace(/\\/g, '/'), title: element.book.page?.title };
+			const findSection = { file: element.book.page.file, title: element.book.page.title };
 			await this.addNotebook(element, targetBook);
 			if (element.tableOfContentsPath) {
 				await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
@@ -430,7 +430,7 @@ export class BookTocManager implements IBookTocManager {
 	}
 
 	public async removeNotebook(element: BookTreeItem): Promise<void> {
-		const findSection = { file: element.book.page?.file?.replace(/\\/g, '/'), title: element.book.page?.title };
+		const findSection = { file: element.book.page.file, title: element.book.page.title };
 		await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
 	}
 
