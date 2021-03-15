@@ -535,7 +535,7 @@ describe('BookTocManagerTests', function () {
 						return false;
 					});
 					should(JSON.stringify(listFiles).includes('notebook5.ipynb')).be.true('Notebook 5 should be still under the content folder');
-					should(notebookInToc).be.false('The toc file does not include the removed notebook entry');
+					should(notebookInToc).be.false('The notebook has been removed from toc');
 				});
 
 				it('Add duplicated notebook to book', async () => {
