@@ -263,7 +263,7 @@ export class Project {
 	 * Adds a folder to the project, and saves the project file
 	 * @param relativeFolderPath Relative path of the folder
 	 */
-	public async addFolderItem(relativeFolderPath: string): Promise<ProjectEntry> {
+	public async addFolderItem(relativeFolderPath: string): Promise<FileProjectEntry> {
 		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
 
 		//If folder doesn't exist, create it

@@ -246,26 +246,53 @@ describe('ProjectsController', function (): void {
 			});
 
 			it('Should delete folders with excluded items', async function (): Promise<void> {
+				// Adapted from setupDeleteExcludeTest but with all files under UpperFolder
 				let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
-				const setupResult = await setupDeleteExcludeTest(proj);
-				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1], preDeployEntry = setupResult[2], postDeployEntry = setupResult[3], noneEntry = setupResult[4];
+				const upperFolder = await proj.addFolderItem('UpperFolder');
+				const preDeployEntry = await proj.addScriptItem('UpperFolder/Script.PreDeployment1.sql', 'pre-deployment stuff', templates.preDeployScript);
+				const noneEntry = await proj.addScriptItem('UpperFolder/Script.PreDeployment2.sql', 'more pre-deployment stuff', templates.preDeployScript);
+				const postDeployEntry = await proj.addScriptItem('UpperFolder/Script.PostDeployment1.sql', 'post-deployment stuff', templates.postDeployScript);
+				const lowerFolder = await proj.addFolderItem('UpperFolder/LowerFolder');
+				await proj.addScriptItem('UpperFolder/LowerFolder/someScript.sql', 'not a real script');
+				await proj.addScriptItem('UpperFolder/LowerFolder/someOtherScript.sql', 'Also not a real script');
+				await proj.addScriptItem('UpperFolder/regularScript.sql', 'A regular script');
 
 				const projController = new ProjectsController();
 
+				// Confirm setup
+				should(proj.files.length).equal(5, 'number of file/folder entries');
+				should(proj.preDeployScripts.length).equal(1, 'number of pre-deployment script entries');
+				should(proj.postDeployScripts.length).equal(1, 'number of post-deployment script entries');
+				should(proj.noneDeployScripts.length).equal(1, 'number of none script entries');
+
+				const projTreeRoot = new ProjectRootTreeItem(proj);
+				sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
+
 				// Exclude all folders and files under UpperFolder
-				await projController.exclude(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0]) /* LowerFolder */);
-				await projController.exclude(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'anotherScript.sql')!));
-				await projController.exclude(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment1.sql')!));
-				await projController.exclude(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment2.sql')!));
-				await projController.exclude(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'Script.PostDeployment1.sql')!));
+				const folderTreeItem = projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!;
+				await projController.exclude(createWorkspaceTreeItem(folderTreeItem.children.find(x => x.friendlyName === 'LowerFolder')!));
+				await projController.exclude(createWorkspaceTreeItem(folderTreeItem.children.find(x => x.friendlyName === 'regularScript.sql')!));
+				await projController.exclude(createWorkspaceTreeItem(folderTreeItem.children.find(x => x.friendlyName === 'Script.PreDeployment1.sql')!));
+				await projController.exclude(createWorkspaceTreeItem(folderTreeItem.children.find(x => x.friendlyName === 'Script.PreDeployment2.sql')!));
+				await projController.exclude(createWorkspaceTreeItem(folderTreeItem.children.find(x => x.friendlyName === 'Script.PostDeployment1.sql')!));
 
 				// Delete UpperFolder
-				await projController.delete(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!));
+				await projController.delete(createWorkspaceTreeItem(folderTreeItem));
 
-				proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
+				// Reload edited sqlproj from disk
+				proj = await Project.openProject(proj.projectFilePath);
 
 				// confirm result
-				should(proj.files.length).equal(0, 'UpperFolder and all its contents should be deleted');
+				should(proj.files.length).equal(0);
+				should(proj.preDeployScripts.length).equal(0);
+				should(proj.postDeployScripts.length).equal(0);
+				should(proj.noneDeployScripts.length).equal(0);
+
+				should(await exists(preDeployEntry.fsUri.fsPath)).equal(false, 'pre-deployment script is supposed to be deleted');
+				should(await exists(postDeployEntry.fsUri.fsPath)).equal(false, 'post-deployment script is supposed to be deleted');
+				should(await exists(noneEntry.fsUri.fsPath)).equal(false, 'none entry pre-deployment script is supposed to be deleted');
+				should(await exists(lowerFolder.fsUri.fsPath)).equal(false, 'LowerFolder is supposed to be deleted');
+				should(await exists(upperFolder.fsUri.fsPath)).equal(false, 'UpperFolder is supposed to be deleted');
 			});
 
 			it('Should reload correctly after changing sqlproj file', async function (): Promise<void> {
