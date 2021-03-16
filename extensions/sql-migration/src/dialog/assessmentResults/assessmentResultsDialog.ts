@@ -94,9 +94,9 @@ export class AssessmentResultsDialog {
 		// map assessment result items to description, recommendation, more info & impacted objects
 
 		let dbMap = new Map<string, Issues[]>();
-		// if (model.assessmentResults && !model.assessmentResults![0].targetName.includes(':')) {
-		// 	this._serverName = model.assessmentResults![0].targetName;
-		// }
+		if (model.assessmentResults && !model.assessmentResults![0].targetName.includes(':')) {
+			this._serverName = model.assessmentResults![0].targetName;
+		}
 
 
 		model.assessmentResults?.forEach((element) => {
