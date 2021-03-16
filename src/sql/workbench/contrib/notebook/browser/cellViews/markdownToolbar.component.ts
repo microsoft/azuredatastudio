@@ -235,18 +235,16 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			if (this.cellModel.currentMode !== CellEditModes.WYSIWYG) {
 				needsTransform = false;
 			} else {
-				let result = undefined;
-				const isFile = URI.parse(linkCalloutResult?.insertUnescapedLinkUrl).scheme === 'file';
-				if (isFile && !path.isAbsolute(linkCalloutResult?.insertUnescapedLinkUrl)) {
+				let linkUrl = linkCalloutResult?.insertUnescapedLinkUrl;
+				const isFile = URI.parse(linkUrl).scheme === 'file';
+				if (isFile && !path.isAbsolute(linkUrl)) {
 					const notebookDirName = path.dirname(this.cellModel?.notebookModel?.notebookUri.fsPath);
 					const relativePath = (linkCalloutResult?.insertUnescapedLinkUrl).replace(/\\/g, path.posix.sep);
-					result = path.resolve(notebookDirName, relativePath);
+					linkUrl = path.resolve(notebookDirName, relativePath);
 				}
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
-				result = result ?? linkCalloutResult?.insertUnescapedLinkUrl;
-				// Callout is responsible for returning escaped strings.
-				document.execCommand('insertHTML', false, `<a href="${escape(result)}">${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
+				document.execCommand('insertHTML', false, `<a href="${escape(linkUrl)}">${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
 				return;
 			}
 		}
