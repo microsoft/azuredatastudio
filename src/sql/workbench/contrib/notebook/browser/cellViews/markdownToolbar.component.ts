@@ -235,12 +235,12 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				needsTransform = false;
 			} else {
 				let result = undefined;
-				const isFile = !URI.parse(linkCalloutResult?.insertUnescapedLinkUrl).scheme.includes('http');
+				const isFile = URI.parse(linkCalloutResult?.insertUnescapedLinkUrl).scheme.includes('file');
 				if (!path.isAbsolute(linkCalloutResult?.insertUnescapedLinkUrl) && isFile) {
+					// Counts the number of ..\ intermediate directories when user enters a relative path
 					let midDirectories = (linkCalloutResult?.insertUnescapedLinkUrl.match(/..\\/g) || []).length;
 					let dirName = path.dirname(this.cellModel?.notebookModel?.notebookUri.fsPath);
 					const relativePath = linkCalloutResult?.insertUnescapedLinkUrl.replace(/\.\\/g, '/');
-
 					while (midDirectories > 1) {
 						dirName = path.dirname(dirName);
 						midDirectories--;
