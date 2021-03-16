@@ -11,6 +11,7 @@ import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { getDatabaseMigration } from '../api/azure';
 import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatusDialog';
 import { MigrationCategory } from '../dialog/migrationStatus/migrationStatusDialogModel';
+import { count } from 'console';
 
 interface IActionMetadata {
 	title?: string,
@@ -22,11 +23,22 @@ interface IActionMetadata {
 
 const maxWidth = 800;
 
+interface StatusCard {
+	container: azdata.DivContainer;
+	count: azdata.TextComponent
+}
+
 export class DashboardWidget {
 
 	private _migrationStatusCardsContainer!: azdata.FlexContainer;
 	private _migrationStatusCardLoadingContainer!: azdata.LoadingComponent;
 	private _view!: azdata.ModelView;
+
+
+	private _inProgressMigrationButton!: StatusCard;
+	private _successfulMigrationButton!: StatusCard;
+	private _notStartedMigrationCard!: StatusCard;
+	private _migrationStatus!: MigrationContext[];
 
 	constructor() {
 	}
@@ -202,43 +214,22 @@ export class DashboardWidget {
 
 	private async refreshMigrations(): Promise<void> {
 		this._migrationStatusCardLoadingContainer.loading = true;
-		this._migrationStatusCardsContainer.clearItems();
 		try {
-			const migrationStatus = await this.getMigrations();
+			this._migrationStatus = await this.getMigrations();
 
-			const inProgressMigrations = migrationStatus.filter((value) => {
+			const inProgressMigrations = this._migrationStatus.filter((value) => {
 				const status = value.migrationContext.properties.migrationStatus;
 				return status === 'InProgress' || status === 'Creating' || status === 'Completing';
 			});
-			const inProgressMigrationButton = this.createStatusCard(
-				IconPathHelper.inProgressMigration,
-				loc.MIGRATION_IN_PROGRESS,
-				loc.LOG_SHIPPING_IN_PROGRESS,
-				inProgressMigrations.length
-			);
-			inProgressMigrationButton.onDidClick((e) => {
-				const dialog = new MigrationStatusDialog(migrationStatus, MigrationCategory.ONGOING);
-				dialog.initialize();
-			});
-			this._migrationStatusCardsContainer.addItem(inProgressMigrationButton);
 
-			const successfulMigration = migrationStatus.filter((value) => {
+			this._inProgressMigrationButton.count.value = inProgressMigrations.length.toString();
+
+			const successfulMigration = this._migrationStatus.filter((value) => {
 				const status = value.migrationContext.properties.migrationStatus;
 				return status === 'Succeeded';
 			});
-			const successfulMigrationButton = this.createStatusCard(
-				IconPathHelper.completedMigration,
-				loc.MIGRATION_COMPLETED,
-				loc.SUCCESSFULLY_MIGRATED_TO_AZURE_SQL,
-				successfulMigration.length
-			);
-			successfulMigrationButton.onDidClick((e) => {
-				const dialog = new MigrationStatusDialog(migrationStatus, MigrationCategory.SUCCEEDED);
-				dialog.initialize();
-			});
-			this._migrationStatusCardsContainer.addItem(
-				successfulMigrationButton
-			);
+
+			this._successfulMigrationButton.count.value = successfulMigration.length.toString();
 
 			const currentConnection = (await azdata.connection.getCurrentConnection());
 			const localMigrations = MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection);
@@ -249,18 +240,7 @@ export class DashboardWidget {
 					return value.migrationContext.properties.sourceDatabaseName;
 				}));
 			const serverDatabases = await azdata.connection.listDatabases(currentConnection.connectionId);
-			const notStartedMigrationCard = this.createStatusCard(
-				IconPathHelper.notStartedMigration,
-				loc.MIGRATION_NOT_STARTED,
-				loc.CHOOSE_TO_MIGRATE_TO_AZURE_SQL,
-				serverDatabases.length - migrationDatabases.size
-			);
-			notStartedMigrationCard.onDidClick((e) => {
-				vscode.window.showInformationMessage('Feature coming soon');
-			});
-			this._migrationStatusCardsContainer.addItem(
-				notStartedMigrationCard
-			);
+			this._notStartedMigrationCard.count.value = (serverDatabases.length - migrationDatabases.size).toString();
 		} catch (error) {
 			console.log(error);
 		} finally {
@@ -293,9 +273,8 @@ export class DashboardWidget {
 	private createStatusCard(
 		cardIconPath: IconPath,
 		cardTitle: string,
-		cardDescription: string,
-		count: number
-	): azdata.DivContainer {
+		cardDescription: string
+	): StatusCard {
 
 		const cardTitleText = this._view.modelBuilder.text().withProps({ value: cardTitle }).withProps({
 			CSSStyles: {
@@ -371,7 +350,10 @@ export class DashboardWidget {
 			ariaLabel: 'show status',
 			clickable: true
 		}).component();
-		return compositeButton;
+		return {
+			container: compositeButton,
+			count: cardCount
+		};
 	}
 
 	private async createFooter(view: azdata.ModelView): Promise<azdata.Component> {
@@ -472,9 +454,46 @@ export class DashboardWidget {
 			flexFlow: 'row'
 		}).component();
 
-
-
 		this._migrationStatusCardsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+
+		this._inProgressMigrationButton = this.createStatusCard(
+			IconPathHelper.inProgressMigration,
+			loc.MIGRATION_IN_PROGRESS,
+			loc.LOG_SHIPPING_IN_PROGRESS
+		);
+		this._inProgressMigrationButton.container.onDidClick((e) => {
+			const dialog = new MigrationStatusDialog(this._migrationStatus, MigrationCategory.ONGOING);
+			dialog.initialize();
+		});
+		this._migrationStatusCardsContainer.addItem(
+			this._inProgressMigrationButton.container
+		);
+
+		this._successfulMigrationButton = this.createStatusCard(
+			IconPathHelper.completedMigration,
+			loc.MIGRATION_COMPLETED,
+			loc.SUCCESSFULLY_MIGRATED_TO_AZURE_SQL
+		);
+		this._successfulMigrationButton.container.onDidClick((e) => {
+			const dialog = new MigrationStatusDialog(this._migrationStatus, MigrationCategory.SUCCEEDED);
+			dialog.initialize();
+		});
+		this._migrationStatusCardsContainer.addItem(
+			this._successfulMigrationButton.container
+		);
+
+		this._notStartedMigrationCard = this.createStatusCard(
+			IconPathHelper.notStartedMigration,
+			loc.MIGRATION_NOT_STARTED,
+			loc.CHOOSE_TO_MIGRATE_TO_AZURE_SQL
+		);
+		this._notStartedMigrationCard.container.onDidClick((e) => {
+			vscode.window.showInformationMessage('Feature coming soon');
+		});
+		this._migrationStatusCardsContainer.addItem(
+			this._notStartedMigrationCard.container
+		);
+
 		this._migrationStatusCardLoadingContainer = view.modelBuilder.loadingComponent().withItem(this._migrationStatusCardsContainer).component();
 
 		statusContainer.addItem(

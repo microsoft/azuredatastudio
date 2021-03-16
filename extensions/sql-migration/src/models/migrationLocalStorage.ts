@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
-import { DatabaseMigration, SqlMigrationController, SqlManagedInstance } from '../api/azure';
+import { DatabaseMigration, SqlMigrationService, SqlManagedInstance } from '../api/azure';
 import * as azdata from 'azdata';
 
 
@@ -41,7 +41,7 @@ export class MigrationLocalStorage {
 		targetMI: SqlManagedInstance,
 		azureAccount: azdata.Account,
 		subscription: azureResource.AzureResourceSubscription,
-		controller: SqlMigrationController): void {
+		controller: SqlMigrationService): void {
 		try {
 			const migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
 			migrationMementos.push({
@@ -69,5 +69,5 @@ export interface MigrationContext {
 	targetManagedInstance: SqlManagedInstance,
 	azureAccount: azdata.Account,
 	subscription: azureResource.AzureResourceSubscription,
-	controller: SqlMigrationController
+	controller: SqlMigrationService
 }
