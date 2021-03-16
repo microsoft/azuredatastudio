@@ -243,9 +243,9 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				}
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
-				result = result ? result : linkCalloutResult?.insertUnescapedLinkUrl;
+				result = result ?? linkCalloutResult?.insertUnescapedLinkUrl;
 				// Callout is responsible for returning escaped strings
-				document.execCommand('insertHTML', false, `<a href="${result}">${linkCalloutResult?.insertUnescapedLinkLabel}</a>`);
+				document.execCommand('insertHTML', false, `<a href="${escape(result)}">${escape(linkCalloutResult?.insertUnescapedLinkLabel).replace(/%20/g, ' ')}</a>`);
 				return;
 			}
 		}
