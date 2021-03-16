@@ -33,8 +33,10 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private _moreInfo!: azdata.TextComponent;
 	private _assessmentType!: string;
 	private _assessmentTitle!: azdata.TextComponent;
+	private _serverName: string;
+	private _serverMapIssue!: Map<number, DbIssues>;
 
-	constructor(model: MigrationStateModel, assessmentData: Map<string, Issues[]>, assessmentType: string) {
+	constructor(model: MigrationStateModel, assessmentData: Map<string, Issues[]>, assessmentType: string, serverFlag: string) {
 		super();
 		this._assessmentData = assessmentData;
 		this._model = model;
@@ -42,6 +44,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		if (this._assessmentType === 'vm') {
 			this._assessmentData.clear();
 		}
+		this._serverName = serverFlag;
 	}
 
 	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
@@ -63,6 +66,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private async createDatabaseComponent(view: azdata.ModelView): Promise<azdata.DivContainer> {
 
 		let mapRowIssue = new Map<number, DbIssues>();
+		this._serverMapIssue = new Map<number, DbIssues>();
 		const styleLeft: azdata.CssStyles = {
 			'border': 'none',
 			'text-align': 'left',
@@ -121,6 +125,31 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 		if (dbList.length > 0) {
 			let rowNumber = 0;
+			if (this._serverName) {
+				this.instanceTable.component().dataValues?.push(
+					[
+						{
+							value: false,
+							style: styleLeft
+						},
+						{
+							value: this._serverName,
+							style: styleLeft
+						},
+						{
+							value: this._assessmentData.get(this._serverName)!.length,
+							style: styleRight
+						}
+					]
+
+				);
+				let dbIssues = {
+					name: this._serverName,
+					issues: this._assessmentData.get(this._serverName)!
+				};
+				this._serverMapIssue.set(rowNumber, dbIssues);
+				this._assessmentData.delete(this._serverName);
+			}
 			this._assessmentData.forEach((value, key) => {
 				this.databaseTable.component().dataValues?.push(
 					[
@@ -267,18 +296,31 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					}
 				],
 				dataValues: [
-					[
-						{
-							value: 'SQL Server 1',
-							style: styleLeft
-						},
-						{
-							value: 2,
-							style: styleRight
-						}
-					]
+					[]
 				]
 			});
+
+		this.instanceTable.component().onRowSelected(({ row }) => {
+			const rowInfo = this._serverMapIssue.get(row);
+			if (rowInfo) {
+				this._assessmentResultsTable.component().dataValues = [];
+				this._dbName.value = rowInfo.name;
+				this._recommendation.value = `Assessment Results (${rowInfo.issues.length} issues found)`;
+				// Need some kind of refresh method for declarative tables
+				let dataValues: string[][] = [];
+				rowInfo.issues.forEach(async (issue) => {
+					dataValues.push([
+						issue.description
+					]);
+
+				});
+
+				this._assessmentResultsTable.component().updateProperties({
+					data: dataValues
+				});
+
+			}
+		});
 
 		const instanceContainer = view.modelBuilder.divContainer().withItems([this.instanceTable.component()]).withProps({
 			CSSStyles: {
