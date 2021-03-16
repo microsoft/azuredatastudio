@@ -235,11 +235,11 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			if (this.cellModel.currentMode !== CellEditModes.WYSIWYG) {
 				needsTransform = false;
 			} else {
-				let linkUrl = linkCalloutResult?.insertUnescapedLinkUrl;
+				let linkUrl = linkCalloutResult.insertUnescapedLinkUrl;
 				const isFile = URI.parse(linkUrl).scheme === 'file';
 				if (isFile && !path.isAbsolute(linkUrl)) {
 					const notebookDirName = path.dirname(this.cellModel?.notebookModel?.notebookUri.fsPath);
-					const relativePath = (linkCalloutResult?.insertUnescapedLinkUrl).replace(/\\/g, path.posix.sep);
+					const relativePath = (linkUrl).replace(/\\/g, path.posix.sep);
 					linkUrl = path.resolve(notebookDirName, relativePath);
 				}
 				// Otherwise, re-focus on the output element, and insert the link directly.
