@@ -245,6 +245,29 @@ describe('ProjectsController', function (): void {
 				should(await exists(noneEntry.fsUri.fsPath)).equal(true, 'none entry pre-deployment script is supposed to still exist on disk');
 			});
 
+			it('Should delete folders with excluded items', async function (): Promise<void> {
+				let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
+				const setupResult = await setupDeleteExcludeTest(proj);
+				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1], preDeployEntry = setupResult[2], postDeployEntry = setupResult[3], noneEntry = setupResult[4];
+
+				const projController = new ProjectsController();
+
+				// Exclude all folders and files under UpperFolder
+				await projController.exclude(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0]) /* LowerFolder */);
+				await projController.exclude(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'anotherScript.sql')!));
+				await projController.exclude(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment1.sql')!));
+				await projController.exclude(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'Script.PreDeployment2.sql')!));
+				await projController.exclude(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'Script.PostDeployment1.sql')!));
+
+				// Delete UpperFolder
+				await projController.delete(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!));
+
+				proj = await Project.openProject(proj.projectFilePath); // reload edited sqlproj from disk
+
+				// confirm result
+				should(proj.files.length).equal(0, 'UpperFolder and all its contents should be deleted');
+			});
+
 			it('Should reload correctly after changing sqlproj file', async function (): Promise<void> {
 				// create project
 				const folderPath = await testUtils.generateTestFolderPath();
