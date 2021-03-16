@@ -54,6 +54,9 @@ export class CreateSqlMigrationServiceDialog {
 			}).component();
 
 			this._formSubmitButton.onDidClick(async (e) => {
+				this._dialogObject.message = {
+					text: ''
+				};
 				this._statusLoadingComponent.loading = true;
 				this._formSubmitButton.enabled = false;
 
@@ -88,6 +91,7 @@ export class CreateSqlMigrationServiceDialog {
 					this._statusLoadingComponent.loading = false;
 				} catch (e) {
 					console.log(e);
+					this.setDialogMessage(e.message);
 					this._statusLoadingComponent.loading = false;
 					this._formSubmitButton.enabled = true;
 					return;

@@ -155,6 +155,15 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
+		this.wizard.registerNavigationValidator(pageChangeInfo => {
+			if (this.migrationStateModel._azureAccount.isStale === true) {
+				this.wizard.message = {
+					text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount)
+				};
+				return false;
+			}
+			return true;
+		});
 	}
 
 	public async onPageLeave(): Promise<void> {

@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AzureAccount } from 'azurecore';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -47,7 +48,9 @@ export function accountLinkedMessage(count: number): string {
 	return count === 1 ? localize('sql.migration.wizard.account.count.single.message', '{0} account linked', count) : localize('sql.migration.wizard.account.count.multiple.message', '{0} accounts linked', count);
 }
 export const AZURE_TENANT = localize('sql.migration.azure.tenant', "Azure AD tenant");
-
+export function ACCOUNT_STALE_ERROR(account: AzureAccount) {
+	return localize('azure.accounts.accountStaleError', "The access token for selected account '{0}' is no longer valid. Please click the 'Link Account' button and refresh the account or select a different account.", `${account.displayInfo.displayName} (${account.displayInfo.userId})`);
+}
 
 // database backup page
 export const DATABASE_BACKUP_PAGE_TITLE = localize('sql.migration.database.page.title', "Database Backup");
