@@ -21,6 +21,7 @@ import { TextModel } from 'vs/editor/common/model/textModel';
 import { IEditor } from 'vs/editor/common/editorCommon';
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
+import { escape } from 'vs/base/common/strings';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
@@ -245,7 +246,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				this.output?.nativeElement?.focus();
 				result = result ?? linkCalloutResult?.insertUnescapedLinkUrl;
 				// Callout is responsible for returning escaped strings. We replace %20 for whitespaces to allow spaces in the link's display text
-				document.execCommand('insertHTML', false, `<a href="${encodeURI(result)}">${escape(linkCalloutResult?.insertUnescapedLinkLabel).replace(/%20/g, ' ')}</a>`);
+				document.execCommand('insertHTML', false, `<a href="${escape(result)}">${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
 				return;
 			}
 		}
