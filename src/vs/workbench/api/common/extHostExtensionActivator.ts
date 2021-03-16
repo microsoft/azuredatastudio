@@ -242,6 +242,11 @@ export class ExtensionsActivator {
 		}]);
 	}
 
+	// {{SQL CARBON EDIT}}
+	private isPythonExtensionDependency(currentExtensionId: string): boolean {
+		return currentExtensionId === 'ms-python.python';
+	}
+
 	/**
 	 * Handle semantics related to dependencies for `currentExtension`.
 	 * semantics: `redExtensions` must wait for `greenExtensions`.
@@ -258,6 +263,13 @@ export class ExtensionsActivator {
 			this._host.onExtensionActivationError(currentActivation.id, new MissingDependencyError(currentActivation.id.value));
 			const error = new Error(`Unknown dependency '${currentActivation.id.value}'`);
 			this._activatedExtensions.set(ExtensionIdentifier.toKey(currentActivation.id), new FailedExtension(error));
+			return;
+		}
+
+		// {{SQL CARBON EDIT}}
+		// remove jupyter extension dependency from python extension
+		if (this.isPythonExtensionDependency(currentExtension.identifier.value)) {
+			greenExtensions[ExtensionIdentifier.toKey(currentExtension.identifier)] = currentActivation;
 			return;
 		}
 

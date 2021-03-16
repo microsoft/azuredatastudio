@@ -162,7 +162,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			const identifier = { id: getGalleryExtensionId(manifest.publisher, manifest.name) };
 			// let operation: InstallOperation = InstallOperation.Install; {{ SQL CARBON EDIT }}
 			// {{SQL CARBON EDIT}}
-			if (manifest.engines?.vscode && !isEngineValid(manifest.engines.vscode, product.vscodeVersion)) {
+			if (manifest.engines?.vscode && !isEngineValid(manifest.engines.vscode, product.vscodeVersion) && manifest.name !== 'python') {
 				throw new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with the current VS Code engine version '{1}'.", identifier.id, product.vscodeVersion));
 			}
 			if (manifest.engines?.azdata && !isEngineValid(manifest.engines.azdata, product.version)) {
