@@ -59,6 +59,7 @@ export class UserDataAutoSyncEnablementService extends Disposable implements _IU
 	}
 
 	isEnabled(defaultEnablement?: boolean): boolean {
+		/* {{SQL CARBON EDIT}} Disable unused sync service
 		switch (this.environmentService.sync) {
 			case 'on':
 				return true;
@@ -66,6 +67,8 @@ export class UserDataAutoSyncEnablementService extends Disposable implements _IU
 				return false;
 			default: return this.storageService.getBoolean(enablementKey, StorageScope.GLOBAL, !!defaultEnablement); // {{SQL CARBON EDIT}} strict-null-checks move this to a default case
 		}
+		*/
+		return false;
 	}
 
 	canToggleEnablement(): boolean {

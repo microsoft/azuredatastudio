@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import { azureResource } from 'azureResource';
+import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getMigrationControllers, getSubscriptions, SqlMigrationController, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer } from '../api/azure';
@@ -52,15 +53,15 @@ export interface NetworkShare {
 export interface DatabaseBackupModel {
 	migrationCutover: MigrationCutover;
 	networkContainerType: NetworkContainerType;
-	networkShareLocation: string;
+	networkShareLocations: string[];
 	windowsUser: string;
 	password: string;
 	subscription: azureResource.AzureResourceSubscription;
 	storageAccount: StorageAccount;
 	storageKey: string;
 	azureSecurityToken: string;
-	fileShare: azureResource.FileShare;
-	blobContainer: azureResource.BlobContainer;
+	fileShares: azureResource.FileShare[];
+	blobContainers: azureResource.BlobContainer[];
 }
 export interface Model {
 	readonly sourceConnectionId: string;
@@ -79,6 +80,7 @@ export interface StateChangeEvent {
 export class MigrationStateModel implements Model, vscode.Disposable {
 	public _azureAccounts!: azdata.Account[];
 	public _azureAccount!: azdata.Account;
+	public _accountTenants!: azurecore.Tenant[];
 
 	public _subscriptions!: azureResource.AzureResourceSubscription[];
 
@@ -91,6 +93,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _storageAccounts!: StorageAccount[];
 	public _fileShares!: azureResource.FileShare[];
 	public _blobContainers!: azureResource.BlobContainer[];
+	public _refreshNetworkShareLocation!: azureResource.BlobContainer[];
+	public _targetDatabaseNames!: string[];
 
 	public _migrationController!: SqlMigrationController;
 	public _migrationControllers!: SqlMigrationController[];
@@ -102,7 +106,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _skuRecommendations: SKURecommendations | undefined;
 	private _assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined;
 
-
+	public refreshDatabaseBackupPage!: boolean;
 
 	constructor(
 		private readonly _extensionContext: vscode.ExtensionContext,
@@ -193,6 +197,19 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public getAccount(index: number): azdata.Account {
 		return this._azureAccounts[index];
+	}
+
+	public getTenantValues(): azdata.CategoryValue[] {
+		return this._accountTenants.map(tenant => {
+			return {
+				displayName: tenant.displayName,
+				name: tenant.id
+			};
+		});
+	}
+
+	public getTenant(index: number): azurecore.Tenant {
+		return this._accountTenants[index];
 	}
 
 	public async getSubscriptionsDropdownValues(): Promise<azdata.CategoryValue[]> {
@@ -467,7 +484,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					},
 					SourceLocation: {
 						FileShare: {
-							Path: this._databaseBackup.networkShareLocation,
+							Path: '',
 							Username: this._databaseBackup.windowsUser,
 							Password: this._databaseBackup.password,
 						}
@@ -482,19 +499,19 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 		};
 
-		this._migrationDbs.forEach(async (db) => {
+		this._migrationDbs.forEach(async (db, index) => {
 
 			requestBody.properties.SourceDatabaseName = db;
 			try {
+				requestBody.properties.BackupConfiguration.SourceLocation.FileShare.Path = this._databaseBackup.networkShareLocations[index];
 				const response = await startDatabaseMigration(
 					this._azureAccount,
 					this._targetSubscription,
 					this._migrationController?.properties.location!,
 					this._targetServerInstance,
-					db,
+					this._targetDatabaseNames[index],
 					requestBody
 				);
-
 				if (response.status === 201) {
 					MigrationLocalStorage.saveMigration(
 						currentConnection!,
@@ -507,11 +524,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					vscode.window.showInformationMessage(localize("sql.migration.starting.migration.message", 'Starting migration for database {0} to {1}', db, this._targetServerInstance.name));
 				}
 			} catch (e) {
+				console.log(e);
 				vscode.window.showInformationMessage(e);
 			}
 
 		});
-
-		vscode.window.showInformationMessage(constants.MIGRATION_STARTED);
 	}
 }

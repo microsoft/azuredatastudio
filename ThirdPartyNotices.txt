@@ -12,7 +12,7 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     angular2-grid: https://github.com/BTMorton/angular2-grid
     angular2-slickgrid: https://github.com/Microsoft/angular2-slickgrid
     applicationinsights: https://github.com/Microsoft/ApplicationInsights-node.js
-		axios: https://github.com/axios/axios
+        axios: https://github.com/axios/axios
     bootstrap: https://github.com/twbs/bootstrap
     chart.js: https://github.com/Timer/chartjs
     chokidar: https://github.com/paulmillr/chokidar
@@ -39,7 +39,7 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     jschardet: https://github.com/aadsm/jschardet
     jupyter-powershell: https://github.com/vors/jupyter-powershell
     JupyterLab: https://github.com/jupyterlab/jupyterlab
-		keytar: https://github.com/atom/node-keytar
+    keytar: https://github.com/atom/node-keytar
     make-error: https://github.com/JsCommunity/make-error
     mark.js: https://github.com/julmot/mark.js
     minimist: https://github.com/substack/minimist
@@ -54,7 +54,8 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     primeng: https://github.com/primefaces/primeng
     process-nextick-args: https://github.com/calvinmetcalf/process-nextick-args
     pty.js: https://github.com/chjj/pty.js
-		qs: https://github.com/ljharb/qs
+    pyzmq: https://github.com/zeromq/pyzmq
+    qs: https://github.com/ljharb/qs
     reflect-metadata: https://github.com/rbuckton/reflect-metadata
     request: https://github.com/request/request
     rxjs: https://github.com/ReactiveX/RxJS
@@ -1547,6 +1548,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 =========================================
 END OF pty.js NOTICES AND INFORMATION
+
+%% PyZMQ NOTICES AND INFORMATION BEGIN HERE
+=========================================
+Copyright (c) 2009-2012, Brian Granger, Min Ragan-Kelley
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+Neither the name of PyZMQ nor the names of its contributors may be used to
+endorse or promote products derived from this software without specific prior
+written permission.
+
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=========================================
+END OF pyzmq NOTICES AND INFORMATION
 
 %% reflect-metadata NOTICES AND INFORMATION BEGIN HERE
 =========================================
