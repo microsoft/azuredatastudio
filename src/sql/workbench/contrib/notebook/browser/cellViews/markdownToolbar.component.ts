@@ -21,7 +21,6 @@ import { TextModel } from 'vs/editor/common/model/textModel';
 import { IEditor } from 'vs/editor/common/editorCommon';
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
-import { encode } from 'iconv-lite-umd';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
