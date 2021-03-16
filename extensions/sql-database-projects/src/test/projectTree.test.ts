@@ -43,7 +43,7 @@ describe('Project Tree tests', function (): void {
 			new FileNode(vscode.Uri.file(`${root}D`), parent)
 		];
 
-		should(inputNodes.map(n => n.uri.path)).deepEqual(expectedNodes.map(n => n.uri.path));
+		should(inputNodes.map(n => n.projectUri.path)).deepEqual(expectedNodes.map(n => n.projectUri.path));
 	});
 
 	it('Should build tree from Project file correctly', function (): void {
@@ -67,17 +67,17 @@ describe('Project Tree tests', function (): void {
 		proj.files.push(proj.createFileProjectEntry('duplicateFolder', EntryType.Folder));
 
 		const tree = new ProjectRootTreeItem(proj);
-		should(tree.children.map(x => x.uri.path)).deepEqual([
-			'/TestProj.sqlproj/Database References',
-			'/TestProj.sqlproj/duplicateFolder',
-			'/TestProj.sqlproj/someFolder',
-			'/TestProj.sqlproj/duplicate.sql']);
+		should(tree.children.map(x => x.projectUri.path)).deepEqual([
+			'/TestProj/Database References',
+			'/TestProj/duplicateFolder',
+			'/TestProj/someFolder',
+			'/TestProj/duplicate.sql']);
 
-		should(tree.children.find(x => x.uri.path === '/TestProj.sqlproj/someFolder')?.children.map(y => y.uri.path)).deepEqual([
-			'/TestProj.sqlproj/someFolder/aNestedFolder',
-			'/TestProj.sqlproj/someFolder/bNestedFolder',
-			'/TestProj.sqlproj/someFolder/aNestedTest.sql',
-			'/TestProj.sqlproj/someFolder/bNestedTest.sql']);
+		should(tree.children.find(x => x.projectUri.path === '/TestProj/someFolder')?.children.map(y => y.projectUri.path)).deepEqual([
+			'/TestProj/someFolder/aNestedFolder',
+			'/TestProj/someFolder/bNestedFolder',
+			'/TestProj/someFolder/aNestedTest.sql',
+			'/TestProj/someFolder/bNestedTest.sql']);
 
 		should(tree.children.map(x => x.treeItem.contextValue)).deepEqual([
 			DatabaseProjectItemType.referencesRoot,
@@ -85,34 +85,13 @@ describe('Project Tree tests', function (): void {
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.file]);
 
-		should(tree.children.find(x => x.uri.path === '/TestProj.sqlproj/someFolder')?.children.map(y => y.treeItem.contextValue)).deepEqual([
+		should(tree.children.find(x => x.projectUri.path === '/TestProj/someFolder')?.children.map(y => y.treeItem.contextValue)).deepEqual([
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.folder,
 			DatabaseProjectItemType.file,
 			DatabaseProjectItemType.file]);
 	});
 
-	it('Should be able to parse windows relative path as platform safe path', function (): void {
-		const root = os.platform() === 'win32' ? 'Z:\\' : '/';
-		const proj = new Project(vscode.Uri.file(`${root}TestProj.sqlproj`).fsPath);
-
-		// nested entries before explicit top-level folder entry
-		// also, ordering of files/folders at all levels
-		proj.files.push(proj.createFileProjectEntry('someFolder1\\MyNestedFolder1\\MyFile1.sql', EntryType.File));
-		proj.files.push(proj.createFileProjectEntry('someFolder1\\MyNestedFolder2', EntryType.Folder));
-		proj.files.push(proj.createFileProjectEntry('someFolder1\\MyFile2.sql', EntryType.File));
-
-		const tree = new ProjectRootTreeItem(proj);
-		should(tree.children.map(x => x.uri.path)).deepEqual([
-			'/TestProj.sqlproj/Database References',
-			'/TestProj.sqlproj/someFolder1']);
-
-		// Why are we only matching names - https://github.com/microsoft/azuredatastudio/issues/11026
-		should(tree.children.find(x => x.uri.path === '/TestProj.sqlproj/someFolder1')?.children.map(y => path.basename(y.uri.path))).deepEqual([
-			'MyNestedFolder1',
-			'MyNestedFolder2',
-			'MyFile2.sql']);
-	});
 
 	it('Should be able to parse and include relative paths outside project folder', function (): void {
 		const root = os.platform() === 'win32' ? 'Z:\\Level1\\Level2\\' : '/Root/Level1/Level2/';
@@ -125,9 +104,9 @@ describe('Project Tree tests', function (): void {
 		proj.files.push(proj.createFileProjectEntry('..\\..\\someFolder3', EntryType.Folder)); // folder should not be counted (same as SSDT)
 
 		const tree = new ProjectRootTreeItem(proj);
-		should(tree.children.map(x => x.uri.path)).deepEqual([
-			'/Root/Level1/Level2/TestProj.sqlproj/Database References',
-			'/Root/Level1/Level2/TestProj.sqlproj/MyFile1.sql',
-			'/Root/Level1/Level2/TestProj.sqlproj/MyFile2.sql']);
+		should(tree.children.map(x => x.projectUri.path)).deepEqual([
+			'/TestProj/Database References',
+			'/TestProj/MyFile1.sql',
+			'/TestProj/MyFile2.sql']);
 	});
 });

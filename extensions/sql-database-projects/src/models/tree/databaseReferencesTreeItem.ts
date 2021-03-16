@@ -19,7 +19,7 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 	private references: DatabaseReferenceTreeItem[] = [];
 
 	constructor(project: ProjectRootTreeItem) {
-		super(vscode.Uri.file(path.join(project.uri.path, constants.databaseReferencesNodeName)), project);
+		super(vscode.Uri.file(path.join(path.parse(project.projectUri.fsPath).base, constants.databaseReferencesNodeName)), project);
 
 		this.construct();
 	}
@@ -35,7 +35,7 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		const refFolderItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Collapsed);
+		const refFolderItem = new vscode.TreeItem(this.projectUri, vscode.TreeItemCollapsibleState.Collapsed);
 		refFolderItem.contextValue = constants.DatabaseProjectItemType.referencesRoot;
 		refFolderItem.iconPath = IconPathHelper.referenceGroup;
 
@@ -45,7 +45,7 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 
 export class DatabaseReferenceTreeItem extends BaseProjectTreeItem {
 	constructor(private reference: IDatabaseReferenceProjectEntry, referencesTreeItem: DatabaseReferencesTreeItem) {
-		super(vscode.Uri.file(path.join(referencesTreeItem.uri.path, reference.databaseName)), referencesTreeItem);
+		super(vscode.Uri.file(path.join(referencesTreeItem.projectUri.path, reference.databaseName)), referencesTreeItem);
 	}
 
 	public get children(): BaseProjectTreeItem[] {
@@ -53,7 +53,7 @@ export class DatabaseReferenceTreeItem extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		const refItem = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.None);
+		const refItem = new vscode.TreeItem(this.projectUri, vscode.TreeItemCollapsibleState.None);
 		refItem.label = this.reference.databaseName;
 		refItem.contextValue = constants.DatabaseProjectItemType.reference;
 		refItem.iconPath = IconPathHelper.referenceDatabase;
