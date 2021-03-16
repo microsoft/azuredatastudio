@@ -21,6 +21,7 @@ import { TextModel } from 'vs/editor/common/model/textModel';
 import { IEditor } from 'vs/editor/common/editorCommon';
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
+import { encode } from 'iconv-lite-umd';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
@@ -236,16 +237,16 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			} else {
 				let result = undefined;
 				const isFile = URI.parse(linkCalloutResult?.insertUnescapedLinkUrl).scheme === 'file';
-				if (!path.isAbsolute(linkCalloutResult?.insertUnescapedLinkUrl) && isFile) {
+				if (isFile && !path.isAbsolute(linkCalloutResult?.insertUnescapedLinkUrl)) {
 					const notebookDirName = path.dirname(this.cellModel?.notebookModel?.notebookUri.fsPath);
-					const relativePath = linkCalloutResult?.insertUnescapedLinkUrl.replace(/(\.\\ | \.\/)/g, '/');
+					const relativePath = (linkCalloutResult?.insertUnescapedLinkUrl).replace(/\\/g, path.posix.sep);
 					result = path.resolve(notebookDirName, relativePath);
 				}
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
 				result = result ?? linkCalloutResult?.insertUnescapedLinkUrl;
-				// Callout is responsible for returning escaped strings
-				document.execCommand('insertHTML', false, `<a href="${escape(result)}">${escape(linkCalloutResult?.insertUnescapedLinkLabel).replace(/%20/g, ' ')}</a>`);
+				// Callout is responsible for returning escaped strings. We replace %20 for whitespaces to allow spaces in the link's display text
+				document.execCommand('insertHTML', false, `<a href="${encodeURI(result)}">${escape(linkCalloutResult?.insertUnescapedLinkLabel).replace(/%20/g, ' ')}</a>`);
 				return;
 			}
 		}
