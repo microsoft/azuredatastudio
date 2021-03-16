@@ -364,9 +364,15 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		const impactedObjects = this.createImpactedObjectsDescription(view);
 
 
-		const container = view.modelBuilder.flexContainer().withItems([description, impactedObjects]).withLayout({
+		const container = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row'
+		}).withProps({
+			CSSStyles: {
+				'height': '100%'
+			}
 		}).component();
+		container.addItem(description, { flex: '1 1 auto', CSSStyles: { 'width': '50%' } });
+		container.addItem(impactedObjects, { flex: '1 1 auto', CSSStyles: { 'width': '50%' } });
 
 		return container;
 	}
@@ -673,7 +679,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					]);
 				});
 
-				this._assessmentTitle.value = this._issues.moreInfo;
+				this._assessmentTitle.value = this._issues.description;
 
 				this._impactedObjectsTable.component().updateProperties({
 					dataValues: data
