@@ -149,7 +149,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				rowNumber = rowNumber + 1;
 			});
 
-			dbList.forEach((value) => {
+			dbList.filter(db => db !== 'master' && db !== 'model' && db !== 'tempdb' && db !== 'msdb').forEach((value) => {
 				this.databaseTable.component().dataValues?.push(
 					[
 						{
