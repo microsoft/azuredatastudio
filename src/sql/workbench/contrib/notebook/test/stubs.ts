@@ -308,9 +308,6 @@ export class ClientSessionStub implements IClientSession {
 	shutdown(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
-	stopServer(): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
 	selectKernel(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}

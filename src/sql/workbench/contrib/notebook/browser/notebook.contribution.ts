@@ -7,7 +7,7 @@ import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } fro
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
-import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions, ActiveEditorContext } from 'vs/workbench/common/editor';
+import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions, ActiveEditorContext, IEditorInput } from 'vs/workbench/common/editor';
 
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
@@ -52,6 +52,9 @@ import { isMacintosh } from 'vs/base/common/platform';
 import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
 import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(FileNotebookInput.ID, FileNoteBookEditorInputFactory);
@@ -172,10 +175,18 @@ const RESTART_NOTEBOOK_SESSION = 'notebook.action.restartNotebookSessions';
 CommandsRegistry.registerCommand({
 	id: RESTART_NOTEBOOK_SESSION,
 	handler: async (accessor: ServicesAccessor) => {
-		const notebookEditor = accessor.get(IEditorService).activeEditorPane;
-		if (notebookEditor instanceof NotebookEditor) {
-			if (notebookEditor) {
-				await (await notebookEditor.getNotebookModel()).restartSession();
+		const editorService: IEditorService = accessor.get(IEditorService);
+		const editors: readonly IEditorInput[] = editorService.editors;
+		let jupyterServerStopped = false;
+		for (let editor of editors) {
+			if (editor instanceof NotebookInput) {
+				let model: INotebookModel = editor.notebookModel;
+				if (!jupyterServerStopped) {
+					let jupyterProvider: INotebookManager = model.notebookManagers.find(manager => manager.providerId === 'jupyter');
+					await jupyterProvider.serverManager.stopServer();
+					jupyterServerStopped = true;
+				}
+				await model.restartSession();
 			}
 		}
 	}
