@@ -8,7 +8,7 @@ import 'vs/css!./media/slick.grid';
 import 'vs/css!./media/slickColorTheme';
 
 import { TableDataView } from './tableDataView';
-import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
+import { ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 
 import * as DOM from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';
@@ -19,6 +19,7 @@ import { isArray, isBoolean } from 'vs/base/common/types';
 import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
 import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
+import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{

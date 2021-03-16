@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
+import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { Emitter, Event } from 'vs/base/common/event';
 
@@ -209,6 +209,14 @@ export class AsyncDataProvider<T extends Slick.SlickData> implements IDisposable
 	get onSortComplete(): Event<Slick.OnSortEventArgs<T>> { return this._onSortComplete.event; }
 
 	constructor(public dataRows: IObservableCollection<T>) { }
+
+	public get isDataInMemory(): boolean {
+		return false;
+	}
+
+	getRangeAsync(startIndex: number, length: number): Promise<T[]> {
+		throw new Error('Method not implemented.');
+	}
 
 	getFilteredColumnValues(column: Slick.Column<T>): Promise<string[]> {
 		throw new Error('Method not implemented.');

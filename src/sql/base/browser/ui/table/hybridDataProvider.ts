@@ -4,8 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AsyncDataProvider, IObservableCollection } from 'sql/base/browser/ui/table/asyncDataView';
-import { FilterableColumn, IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
+import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
 import { CellValueGetter, TableDataView, TableFilterFunc, TableSortFunc } from 'sql/base/browser/ui/table/tableDataView';
+import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { Event, Emitter } from 'vs/base/common/event';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 
@@ -46,6 +47,14 @@ export class HybridDataProvider<T extends Slick.SlickData> implements IDisposabl
 		this._disposableStore.add(this._tableDataProvider.onSortComplete((args) => {
 			this._onSortComplete.fire(args);
 		}));
+	}
+
+	public get isDataInMemory(): boolean {
+		return this._dataCached;
+	}
+
+	async getRangeAsync(startIndex: number, length: number): Promise<T[]> {
+		return this.provider.getRangeAsync(startIndex, length);
 	}
 
 	public async getColumnValues(column: Slick.Column<T>): Promise<string[]> {

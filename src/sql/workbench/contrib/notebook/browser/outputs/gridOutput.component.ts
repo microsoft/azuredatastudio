@@ -43,6 +43,7 @@ import { URI } from 'vs/base/common/uri';
 import { assign } from 'vs/base/common/objects';
 import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
 import { equals } from 'vs/base/common/arrays';
+import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 @Component({
 	selector: GridOutputComponent.SELECTOR,
 	template: `<div #output class="notebook-cellTable"></div>`
@@ -356,13 +357,13 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		return Promise.resolve(resultSubset);
 	}
 
-	async copyResults(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
-		return this.copyResultsAsync(selection, includeHeaders);
+	async copyResults(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
+		return this.copyResultsAsync(selection, includeHeaders, tableView);
 	}
 
-	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
+	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
 		try {
-			let results = await getResultsString(this, selection, includeHeaders);
+			let results = await getResultsString(this, selection, includeHeaders, tableView);
 			this._clipboardService.writeText(results);
 		} catch (error) {
 			this._notificationService.error(localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));

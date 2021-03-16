@@ -7,7 +7,8 @@ import { Event, Emitter } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
 import { compare as stringCompare } from 'vs/base/common/strings';
 
-import { FilterableColumn, IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
+import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
+import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 
 export interface IFindPosition {
 	col: number;
@@ -102,6 +103,14 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		};
 		this._filterEnabled = false;
 		this._cellValueGetter = this._cellValueGetter ? this._cellValueGetter : (cellValue) => cellValue?.toString();
+	}
+
+	public get isDataInMemory(): boolean {
+		return true;
+	}
+
+	async getRangeAsync(startIndex: number, length: number): Promise<T[]> {
+		return this._data.slice(startIndex, startIndex + length);
 	}
 
 	public async getFilteredColumnValues(column: Slick.Column<T>): Promise<string[]> {

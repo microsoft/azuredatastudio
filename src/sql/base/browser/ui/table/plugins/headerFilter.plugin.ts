@@ -5,11 +5,12 @@ import { IButtonStyles } from 'vs/base/browser/ui/button/button';
 import { localize } from 'vs/nls';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { FilterableColumn, IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
+import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
 import { escape } from 'sql/base/common/strings';
 import { addDisposableListener } from 'vs/base/browser/dom';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { withNullAsUndefined } from 'vs/base/common/types';
+import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 
 export type HeaderFilterCommands = 'sort-asc' | 'sort-desc';
 export interface CommandEventArgs<T extends Slick.SlickData> {
