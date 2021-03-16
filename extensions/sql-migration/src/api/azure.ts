@@ -307,7 +307,7 @@ export interface IntegrationRuntimeNode {
 export interface StartDatabaseMigrationRequest {
 	location: string,
 	properties: {
-		sqlMigrationServices: string,
+		sourceDatabaseName: string,
 		migrationService: string,
 		backupConfiguration: {
 			targetLocation: {

@@ -475,7 +475,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		const requestBody: StartDatabaseMigrationRequest = {
 			location: this._sqlMigrationService?.properties.location!,
 			properties: {
-				sqlMigrationServices: '',
+				sourceDatabaseName: '',
 				migrationService: this._sqlMigrationService?.id!,
 				backupConfiguration: {
 					targetLocation: {
@@ -501,7 +501,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 		this._migrationDbs.forEach(async (db, index) => {
 
-			requestBody.properties.sqlMigrationServices = db;
+			requestBody.properties.sourceDatabaseName = db;
 			try {
 				requestBody.properties.backupConfiguration.sourceLocation.fileShare!.path = this._databaseBackup.networkShareLocations[index];
 				const response = await startDatabaseMigration(

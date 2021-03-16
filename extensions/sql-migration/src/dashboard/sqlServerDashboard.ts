@@ -11,7 +11,6 @@ import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { getDatabaseMigration } from '../api/azure';
 import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatusDialog';
 import { MigrationCategory } from '../dialog/migrationStatus/migrationStatusDialogModel';
-import { count } from 'console';
 
 interface IActionMetadata {
 	title?: string,
@@ -295,7 +294,7 @@ export class DashboardWidget {
 			}
 		}).component();
 		const cardCount = this._view.modelBuilder.text().withProps({
-			value: count.toString(),
+			value: '0',
 			CSSStyles: {
 				'font-size': '28px',
 				'line-height': '36px',
