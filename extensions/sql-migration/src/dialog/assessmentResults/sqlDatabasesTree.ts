@@ -98,14 +98,14 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					{
 						displayName: 'Databases', // TODO localize
 						valueType: azdata.DeclarativeDataType.string,
-						width: '80%',
+						width: '75%',
 						isReadOnly: true,
 						headerCssStyles: styleLeft
 					},
 					{
 						displayName: 'Issues', // Incidents
 						valueType: azdata.DeclarativeDataType.string,
-						width: '10%',
+						width: '15%',
 						isReadOnly: true,
 						headerCssStyles: styleRight,
 						ariaLabel: 'Issue Count' // TODO localize
@@ -299,7 +299,8 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			height: '100%'
 		}).withProps({
 			CSSStyles: {
-				'margin-left': '10px'
+				'margin-left': '10px',
+				'margin-right': '15px'
 			}
 		}).component();
 
@@ -371,8 +372,8 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				'height': '100%'
 			}
 		}).component();
-		container.addItem(description, { flex: '1 1 auto', CSSStyles: { 'width': '50%' } });
-		container.addItem(impactedObjects, { flex: '1 1 auto', CSSStyles: { 'width': '50%' } });
+		container.addItem(description, { flex: '1 1 auto', CSSStyles: { 'width': '50%', 'margin-right': '10px' } });
+		container.addItem(impactedObjects, { flex: '1 1 auto', CSSStyles: { 'width': '50%', 'margin-left': '10px' } });
 
 		return container;
 	}
@@ -447,6 +448,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		const objectDetailsTitle = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: 'Object details',
 			CSSStyles: {
+				'margin-top': '10px',
 				'font-size': '14px',
 				'margin-block-start': '0px',
 				'margin-block-end': '0px'
@@ -548,6 +550,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			value: '',
 			CSSStyles: {
 				'font-size': '14px',
+				'padding-bottom': '15px',
 				'border-bottom': 'solid 1px'
 			}
 		}).component();
