@@ -191,7 +191,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 										memoryRequest: this.saveArgs.workerMemoryRequest,
 										memoryLimit: this.saveArgs.workerMemoryLimit
 									},
-									this._postgresModel.engineVersion,
 									this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 									session
 								);
@@ -204,7 +203,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 										memoryRequest: this.saveArgs.coordinatorMemoryRequest,
 										memoryLimit: this.saveArgs.coordinatorMemoryLimit
 										},
-										this._postgresModel.engineVersion,
 										this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 										session
 									);
