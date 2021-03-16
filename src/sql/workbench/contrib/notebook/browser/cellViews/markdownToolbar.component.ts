@@ -235,17 +235,11 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				needsTransform = false;
 			} else {
 				let result = undefined;
-				const isFile = URI.parse(linkCalloutResult?.insertUnescapedLinkUrl).scheme.includes('file');
+				const isFile = URI.parse(linkCalloutResult?.insertUnescapedLinkUrl).scheme === 'file';
 				if (!path.isAbsolute(linkCalloutResult?.insertUnescapedLinkUrl) && isFile) {
-					// Counts the number of ..\ intermediate directories when user enters a relative path
-					let midDirectories = (linkCalloutResult?.insertUnescapedLinkUrl.match(/..\\/g) || []).length;
-					let dirName = path.dirname(this.cellModel?.notebookModel?.notebookUri.fsPath);
-					const relativePath = linkCalloutResult?.insertUnescapedLinkUrl.replace(/\.\\/g, '/');
-					while (midDirectories > 1) {
-						dirName = path.dirname(dirName);
-						midDirectories--;
-					}
-					result = path.join(dirName, relativePath);
+					const notebookDirName = path.dirname(this.cellModel?.notebookModel?.notebookUri.fsPath);
+					const relativePath = linkCalloutResult?.insertUnescapedLinkUrl.replace(/(\.\\ | \.\/)/g, '/');
+					result = path.resolve(notebookDirName, relativePath);
 				}
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
