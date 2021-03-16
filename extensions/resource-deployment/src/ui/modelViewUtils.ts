@@ -422,7 +422,7 @@ async function hookUpValueProviders(context: WizardPageContext): Promise<void> {
 					console.error(`Could not find target component ${field.valueProvider.triggerField} when hooking up value providers for ${field.label}`);
 					return;
 				}
-				const provider = valueProviderService.getValueProvider(field.valueProvider.providerId);
+				const provider = await valueProviderService.getValueProvider(field.valueProvider.providerId);
 				const updateFields = async () => {
 					const targetComponentValue = await targetComponent.getValue();
 					const newFieldValue = await provider.getValue(targetComponentValue?.toString() ?? '');
@@ -619,7 +619,7 @@ async function processOptionsTypeField(context: FieldContext): Promise<void> {
 	throwUnless('optionsType' in context.fieldInfo.options, loc.optionsTypeNotFound);
 	if (context.fieldInfo.options.source?.providerId) {
 		try {
-			context.fieldInfo.options.source.provider = optionsSourcesService.getOptionsSource(context.fieldInfo.options.source.providerId);
+			context.fieldInfo.options.source.provider = await optionsSourcesService.getOptionsSource(context.fieldInfo.options.source.providerId);
 		}
 		catch (e) {
 			disableControlButtons(context.container);
