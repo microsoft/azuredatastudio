@@ -7,27 +7,60 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
 
 export interface ISliderOptions {
-	label: string;
-	min: number,
-	max: number,
+	/**
+	 * The value selected on the slider. Default initial value is the minimum value.
+	 */
 	value?: number,
+	/**
+	 * The minimum value of the slider. Default value is 1.
+	 */
+	min?: number,
+	/**
+	 * The maximum value of the slider. Default value is 100.
+	 */
+	max?: number,
+	/**
+	 * The value between each "tick" of the slider. Default is 1.
+	 */
 	step?: number,
+	/**
+	 * Whether to show the tick marks on the slider. Default is false.
+	 */
+	showTicks?: boolean
+	/**
+	 * The width of the slider, not including the value box.
+	 */
+	width?: number | string;
+	/**
+	 * Whether the control is enabled or not.
+	 */
 	enabled?: boolean;
-	showTicks?: boolean;
+	/**
+	 * Callback called whenever the user stops dragging the slider.
+	 */
 	onChange?: (val: number) => void;
+	/**
+	 * Callback called whenever the value of the slider changes while being dragged.
+	 */
+	onInput?: (val: number) => void;
+	/**
+	 * The aria label to apply to the element for screen readers.
+	 */
 	ariaLabel?: string;
 }
 
-export interface ISliderStyles {
+/**
+ * Counter to user for creating unique datalist IDs for the displayed ticks
+ */
+let TICKS_DATALIST_ID = 1;
 
-}
-
-let TICKS_ID = 1;
+export const DEFAULT_MIN = '1';
+export const DEFAULT_MAX = '100';
+export const DEFAULT_STEP = '1';
 
 export class Slider extends Widget {
 	private _el: HTMLInputElement;
 	private _datalist: HTMLDataListElement | undefined = undefined;
-	private _label: HTMLSpanElement;
 	private _showTicks: boolean = false;
 
 	private _onChange = new Emitter<number>();
@@ -49,25 +82,25 @@ export class Slider extends Widget {
 
 		this._el = document.createElement('input');
 		this._el.type = 'range';
-		this._el.step = opts.step?.toString() || '';
-		this._el.min = opts.min.toString() || '';
-		this._el.max = opts.max.toString() || '';
-		this._el.value = opts.value?.toString() || '';
+		this.width = opts.width?.toString() || '';
+		this.step = opts.step;
+		this.min = opts.min;
+		this.max = opts.max;
+		this.value = opts.value;
 		this._showTicks = opts.showTicks;
 
 		this.updateTicksDisplay();
 
 		const flexContainer = document.createElement('div');
-		flexContainer.style.flex = '1 1 auto';
+		flexContainer.style.display = 'flex';
 		flexContainer.style.flexFlow = 'row';
 
 		const valueBox = document.createElement('input');
 		valueBox.type = 'text';
 		valueBox.disabled = true;
 		valueBox.value = this.value.toString();
-		// TODO: Styles in CSS
-		valueBox.style.width = '40px';
 		valueBox.style.textAlign = 'center';
+		valueBox.style.width = '40px';
 
 		if (opts.ariaLabel) {
 			this.ariaLabel = opts.ariaLabel;
@@ -82,19 +115,18 @@ export class Slider extends Widget {
 			this._onInput.fire(this.value);
 		});
 
-		this._label = document.createElement('span');
-		this._label.style.verticalAlign = 'middle';
-
-		this.label = opts.label;
 		this.enabled = opts.enabled || true;
 
 		if (opts.onChange) {
-			this.onChange(opts.onChange);
+			this._register(this.onChange(opts.onChange));
+		}
+
+		if (opts.onInput) {
+			this._register(this.onInput(opts.onInput));
 		}
 
 		flexContainer.append(this._el, valueBox);
 		this._container.appendChild(flexContainer);
-		// this._container.appendChild(this._label);
 	}
 
 	private updateTicksDisplay(): void {
@@ -103,7 +135,7 @@ export class Slider extends Widget {
 			// Create the datalist if we haven't already
 			if (!this._datalist) {
 				this._datalist = document.createElement('datalist');
-				this._datalist.id = `ticks-${TICKS_ID++}`;
+				this._datalist.id = `slider-ticks-${TICKS_DATALIST_ID++}`;
 				this._container.appendChild(this._datalist);
 			}
 
@@ -119,41 +151,32 @@ export class Slider extends Widget {
 		}
 	}
 
-	public set label(val: string) {
-		this._label.innerText = val;
-		// Default the aria label to the label if one wasn't specifically set by the user
-		if (!this.ariaLabel) {
-			this.ariaLabel = val;
-		}
-	}
-
 	public set enabled(val: boolean) {
 		this._el.disabled = !val;
-		this.updateStyle();
 	}
 
 	public get enabled(): boolean {
 		return !this._el.disabled;
 	}
 
-	public set min(val: number) {
-		this._el.min = val.toString();
+	public set min(val: number | undefined) {
+		this._el.min = val?.toString() || DEFAULT_MIN;
 	}
 
 	public get min(): number {
 		return Number(this._el.min);
 	}
 
-	public set max(val: number) {
-		this._el.max = val.toString();
+	public set max(val: number | undefined) {
+		this._el.max = val?.toString() || DEFAULT_MAX;
 	}
 
 	public get max(): number {
 		return Number(this._el.max);
 	}
 
-	public set value(val: number) {
-		this._el.value = val.toString();
+	public set value(val: number | undefined) {
+		this._el.value = val?.toString() || this.min.toString();
 	}
 
 	public get value(): number {
@@ -161,11 +184,19 @@ export class Slider extends Widget {
 	}
 
 	public set step(val: number | undefined) {
-		this._el.step = val.toString();
+		this._el.step = val?.toString() || DEFAULT_STEP;
 	}
 
-	public get step(): number | undefined {
+	public get step(): number {
 		return Number(this._el.step);
+	}
+
+	public set width(val: string) {
+		this._el.style.width = val;
+	}
+
+	public get width(): string {
+		return this._el.style.width;
 	}
 
 	public set showTicks(val: boolean) {
@@ -203,13 +234,5 @@ export class Slider extends Widget {
 
 	public setWidth(value: string) {
 		this._el.style.width = value;
-	}
-
-	public style(styles: ISliderStyles): void {
-		this.updateStyle();
-	}
-
-	private updateStyle(): void {
-
 	}
 }

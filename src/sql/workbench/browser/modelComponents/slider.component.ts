@@ -15,6 +15,7 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { Slider } from 'sql/base/browser/ui/slider/slider';
+import { convertSize } from 'sql/base/browser/dom';
 
 @Component({
 	selector: 'modelview-slider',
@@ -38,7 +39,7 @@ export default class SliderComponent extends ComponentBase<azdata.SliderComponen
 
 	ngAfterViewInit(): void {
 		this._slider = this._register(new Slider(this._sliderContainer.nativeElement, {
-			label: 'test',
+			width: convertSize(this.width),
 			min: this.min,
 			max: this.max,
 			value: this.value,
@@ -73,7 +74,6 @@ export default class SliderComponent extends ComponentBase<azdata.SliderComponen
 	/// IComponent implementation
 
 	public setLayout(layout: any): void {
-		// TODO allow configuring the look and feel
 		this.layout();
 	}
 
@@ -91,31 +91,32 @@ export default class SliderComponent extends ComponentBase<azdata.SliderComponen
 		slider.showTicks = this.showTicks;
 		slider.ariaLabel = this.ariaLabel;
 		slider.enabled = this.enabled;
+		slider.width = convertSize(this.width);
 	}
 
 	// CSS-bound properties
 
-	public get value(): number {
-		return this.getPropertyOrDefault<number>((props) => props.value, 0);
+	public get value(): number | undefined {
+		return this.getPropertyOrDefault<number>((props) => props.value, undefined);
 	}
 
-	public set value(newValue: number) {
+	public set value(newValue: number | undefined) {
 		this.setPropertyFromUI<number>((props, value) => props.value = value, newValue);
 	}
 
-	public get min(): number {
-		return this.getPropertyOrDefault<number>((props) => props.min, 0);
+	public get min(): number | undefined {
+		return this.getPropertyOrDefault<number>((props) => props.min, undefined);
 	}
 
-	public set min(newValue: number) {
+	public set min(newValue: number | undefined) {
 		this.setPropertyFromUI<number>((props, value) => props.min = value, newValue);
 	}
 
-	public get max(): number {
-		return this.getPropertyOrDefault<number>((props) => props.max, 0);
+	public get max(): number | undefined {
+		return this.getPropertyOrDefault<number>((props) => props.max, undefined);
 	}
 
-	public set max(newValue: number) {
+	public set max(newValue: number | undefined) {
 		this.setPropertyFromUI<number>((props, value) => props.max = value, newValue);
 	}
 
