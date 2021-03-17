@@ -418,7 +418,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async findAndExpandParentNode(notebookPath: string): Promise<BookTreeItem> {
-		let bookItem: BookTreeItem = this.currentBook?.getNotebook(notebookPath);
+		let bookItem: BookTreeItem = this.currentBook?.getNotebook(notebookPath) || this.books.find(b => b.isNotebook ? (b.bookPath === notebookPath) : undefined).bookItems[0];
 		// if the node is not expanded getNotebook returns undefined, try to expand the parent node or getChildren of
 		// the root node.
 		if (!bookItem) {
