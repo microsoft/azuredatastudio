@@ -20,6 +20,7 @@ import { getPinnedNotebooks, confirmReplace, getNotebookType } from '../common/u
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { CreateBookDialog } from '../dialog/createBookDialog';
+import { AddNotebookDialog } from '../dialog/addNotebookDialog';
 import { getContentPath } from './bookVersionHandler';
 import { TelemetryReporter, BookTelemetryView, NbTelemetryActions } from '../telemetry';
 
@@ -274,6 +275,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (notebookPath) {
 			await this.closeBook(bookItem);
 		}
+	}
+
+	async addNotebookToBook(): Promise<void> {
+		const dialog = new AddNotebookDialog(this.bookTocManager, this.books);
+		dialog.createDialog();
 	}
 
 	async removeNotebook(bookItem: BookTreeItem): Promise<void> {

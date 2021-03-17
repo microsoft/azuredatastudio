@@ -11,12 +11,13 @@ import { BookVersion, convertTo } from './bookVersionHandler';
 import * as vscode from 'vscode';
 import * as loc from '../common/localizedConstants';
 import { BookModel } from './bookModel';
+import { NotebookUtils } from '../common/notebookUtils';
 
 export interface IBookTocManager {
 	updateBook(element: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
 	removeNotebook(element: BookTreeItem): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
-	addNewNotebook(nbName: string, book: BookModel, fileType: FileType): Promise<void>;
+	addNewNotebook(notebookName: string, notebookPath: string, fileType: FileType, book?: BookModel): Promise<void>;
 	recovery(): Promise<void>
 }
 
@@ -435,18 +436,32 @@ export class BookTocManager implements IBookTocManager {
 		}
 	}
 
-	public async addNewNotebook(nbName: string, book: BookModel, fileType: FileType): Promise<void> {
-		let toc = yaml.safeLoad((await fs.readFile(book.tableOfContentsPath, 'utf8')));
-		let notebookToc: JupyterBookSection = {
-			title: nbName,
-			file: path.posix.join(path.posix.sep, nbName)
-		};
-		if (book.version === BookVersion.v1) {
-			notebookToc = convertTo(book.version, notebookToc);
+	public async addNewNotebook(notebookName: string, notebookPath: string, fileType: FileType, book?: BookModel): Promise<void> {
+		if (book) {
+			let toc = yaml.safeLoad((await fs.readFile(book.tableOfContentsPath, 'utf8')));
+			let notebookToc: JupyterBookSection = {
+				title: notebookName,
+				file: path.posix.join(path.posix.sep, notebookName)
+			};
+			if (book.version === BookVersion.v1) {
+				notebookToc = convertTo(book.version, notebookToc);
+			}
+			toc.push(notebookToc);
+			await fs.writeFile(notebookPath.concat(fileType), '');
+			if (fileType === FileType.Notebook) {
+				const notebookUtils = new NotebookUtils();
+				await notebookUtils.newNotebook(undefined, notebookPath.concat(fileType));
+			}
+			await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(toc, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
+		} else {
+			await fs.writeFile(notebookPath.concat(fileType), '');
+			if (fileType === FileType.Notebook) {
+				const notebookUtils = new NotebookUtils();
+				await notebookUtils.newNotebook(undefined, notebookPath.concat(fileType));
+			}
+			vscode.commands.executeCommand('bookTreeView.openBook', notebookPath.concat(fileType), false, notebookPath.concat(fileType), true);
 		}
-		toc.push(notebookToc);
-		await fs.writeFile(path.join(book.contentFolderPath, nbName).concat(fileType), '');
-		await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(toc, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
+
 	}
 
 	public async removeNotebook(element: BookTreeItem): Promise<void> {

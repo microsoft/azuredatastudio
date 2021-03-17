@@ -50,5 +50,6 @@
 	"title.openRemoteJupyterBook": "Add Remote Book",
 	"title.pinNotebook": "Pin Notebook",
 	"title.unpinNotebook": "Unpin Notebook",
-	"title.moveTo": "Move to ..."
+	"title.moveTo": "Move to ...",
+	"title.addNotebook": "Add Notebook"
 }
