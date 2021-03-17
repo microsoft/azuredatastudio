@@ -180,12 +180,14 @@ CommandsRegistry.registerCommand({
 		for (let editor of editors) {
 			if (editor instanceof NotebookInput) {
 				let model: INotebookModel = editor.notebookModel;
-				// The old Jupyter server only needs to be stopped once
-				if (!jupyterServerStopped) {
-					await model.restartSession(true);
-					jupyterServerStopped = true;
+				if (model.providerId === 'jupyter') {
+					// The old Jupyter server only needs to be stopped once
+					if (!jupyterServerStopped) {
+						await model.restartSession(true);
+						jupyterServerStopped = true;
+					}
+					await model.restartSession(false);
 				}
-				await model.restartSession(false);
 			}
 		}
 	}
