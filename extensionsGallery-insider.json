@@ -3051,6 +3051,10 @@
 									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/qpi/qpi-0.1.6.vsix"
 								},
 								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/jocapc/AzureDataStudio-QPI/master/package.json"
+								},
+								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
 									"source": "https://raw.githubusercontent.com/jocapc/AzureDataStudio-QPI/master/README.md"
 								},

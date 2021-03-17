@@ -3055,6 +3055,10 @@
 									"source": "https://raw.githubusercontent.com/jocapc/AzureDataStudio-QPI/master/README.md"
 								},
 								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/jocapc/AzureDataStudio-QPI/master/package.json"
+								},
+								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
 									"source": "https://raw.githubusercontent.com/jocapc/AzureDataStudio-QPI/master/LICENSE"
 								}
