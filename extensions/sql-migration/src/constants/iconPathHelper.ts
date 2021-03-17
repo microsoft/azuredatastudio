@@ -22,6 +22,8 @@ export class IconPathHelper {
 	public static inProgressMigration: IconPath;
 	public static completedMigration: IconPath;
 	public static notStartedMigration: IconPath;
+	public static sqlVmLogo: IconPath;
+	public static sqlMiLogo: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -67,6 +69,14 @@ export class IconPathHelper {
 		IconPathHelper.cutover = {
 			light: context.asAbsolutePath('images/cutover.svg'),
 			dark: context.asAbsolutePath('images/cutover.svg')
+		};
+		IconPathHelper.sqlMiLogo = {
+			light: context.asAbsolutePath('images/sqlMI.svg'),
+			dark: context.asAbsolutePath('images/sqlMI.svg')
+		};
+		IconPathHelper.sqlVmLogo = {
+			light: context.asAbsolutePath('images/sqlVM.svg'),
+			dark: context.asAbsolutePath('images/sqlVM.svg')
 		};
 	}
 }
