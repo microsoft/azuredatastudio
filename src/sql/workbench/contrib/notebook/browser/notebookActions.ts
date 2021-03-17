@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 
-import { Action } from 'vs/base/common/actions';
+import { Action, IAction, Separator } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
@@ -26,8 +26,12 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
+import { CellActionBase, CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { URI } from 'vs/base/common/uri';
+import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -39,6 +43,7 @@ const msgSelectConnection = localize('selectConnection', "Select Connection");
 const msgLocalHost = localize('localhost', "localhost");
 
 export const noKernel: string = localize('noKernel', "No Kernel");
+const moreActionsLabel = localize('moreActionsLabel', "More");
 
 // Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {
@@ -271,6 +276,70 @@ export class CollapseCellsAction extends ToggleableAction {
 		return true;
 	}
 }
+
+// Run Notebook with Parameters
+export class RunParametersAction extends Action {
+	constructor(
+		id: string, label: string, cssClass: string,
+		@INotificationService private notificationService: INotificationService,
+	) {
+		super(id, label, cssClass);
+	}
+	public async runParamters(): Promise<void> {
+		return Promise.resolve();
+	}
+}
+export class ToggleMoreActions extends Action {
+
+	private static readonly ID = 'toggleMore';
+	private static readonly LABEL = moreActionsLabel;
+	private static readonly ICON = 'masked-icon more';
+
+	constructor(
+		private readonly _actions: Array<IAction>,
+		private readonly _context: CellContext,
+		@IContextMenuService private readonly _contextMenuService: IContextMenuService
+	) {
+		super(ToggleMoreActions.ID, ToggleMoreActions.LABEL, ToggleMoreActions.ICON);
+	}
+
+	run(context: StandardKeyboardEvent): Promise<boolean> {
+		this._contextMenuService.showContextMenu({
+			getAnchor: () => context.target,
+			getActions: () => this._actions,
+			getActionsContext: () => this._context
+		});
+		return Promise.resolve(true);
+	}
+}
+
+export class NotebookToggleMoreActions {
+	private _actions: (Action)[] = [];
+	private _moreActions: ActionBar;
+	private _moreActionsElement: HTMLElement;
+	constructor(
+		@IInstantiationService private instantiationService: IInstantiationService
+	) {
+		this._actions.push(
+			instantiationService.createInstance(RunParametersAction, 'runParameters', localize('notebook.runParameters', "Run with parameters")),
+			// new Separator(),
+			// instantiationService.createInstance(TrustedAction, 'trustedAction', localize('notebook.Trusted', "Trust Notebook")),
+		);
+	}
+
+	public onInit(elementRef: HTMLElement, context: CellContext) {
+		this._moreActionsElement = elementRef;
+		this._moreActionsElement.setAttribute('aria-haspopup', 'menu');
+		if (this._moreActionsElement.childNodes.length > 0) {
+			this._moreActionsElement.removeChild(this._moreActionsElement.childNodes[0]);
+		}
+		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL, ariaLabel: moreActionsLabel });
+		this._moreActions.context = { target: this._moreActionsElement };
+		let validActions = this._actions.filter(a => a instanceof Separator || a instanceof CellActionBase && a.canRun(context));
+		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreActions, validActions, context), { icon: true, label: false });
+	}
+}
+
 
 const showAllKernelsConfigName = 'notebook.showAllKernels';
 const workbenchPreviewConfigName = 'workbench.enablePreviewFeatures';
