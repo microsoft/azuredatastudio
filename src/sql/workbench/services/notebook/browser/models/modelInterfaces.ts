@@ -361,7 +361,7 @@ export interface INotebookModel {
 	 */
 	getMetaValue(key: string): any;
 
-	restartSession(): Promise<void>;
+	restartSession(restartServer: boolean): Promise<void>;
 
 	/**
 	 * Change the current kernel from the Kernel dropdown

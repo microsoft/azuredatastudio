@@ -885,9 +885,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._language = language.toLowerCase();
 	}
 
-	public async restartSession(): Promise<void> {
+	public async restartSession(restartServer: boolean): Promise<void> {
 		if (this._activeClientSession && this._activeClientSession.isReady) {
 			await this.shutdownActiveSession();
+			if (restartServer) {
+				await this.notebookManager?.serverManager.stopServer();
+			}
 			await this.startSession(this.notebookManager, this._selectedKernelDisplayName, true);
 		}
 	}

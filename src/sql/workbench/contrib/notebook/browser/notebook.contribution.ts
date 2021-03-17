@@ -54,7 +54,6 @@ import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(FileNotebookInput.ID, FileNoteBookEditorInputFactory);
@@ -181,12 +180,12 @@ CommandsRegistry.registerCommand({
 		for (let editor of editors) {
 			if (editor instanceof NotebookInput) {
 				let model: INotebookModel = editor.notebookModel;
+
 				if (!jupyterServerStopped) {
-					let jupyterProvider: INotebookManager = model.notebookManagers.find(manager => manager.providerId === 'jupyter');
-					await jupyterProvider.serverManager.stopServer();
+					await model.restartSession(true);
 					jupyterServerStopped = true;
 				}
-				await model.restartSession();
+				await model.restartSession(false);
 			}
 		}
 	}
