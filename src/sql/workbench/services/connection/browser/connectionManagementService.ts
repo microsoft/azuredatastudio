@@ -306,6 +306,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			// Fill in the Azure account token if needed and open the connection dialog if it fails
 			let tokenFillSuccess = await this.fillInOrClearToken(newConnection);
 
+			// If there is no authentication type set, set it using configuration
+			if (!newConnection.authenticationType || newConnection.authenticationType === '') {
+				newConnection.authenticationType = this.getDefaultAuthenticationTypeId();
+			}
+			// // If an azure account token is needed, fill it in and open the connection dialog if it fails  //TODO: Delete?
+			// tokenFillSuccess = false;
+			// if (newConnection.authenticationType === (Constants.azureMFA || Constants.azureMFAAndUser)) {
+			// 	tokenFillSuccess = await this.fillInOrClearToken(newConnection);
+			// }
 			// If the password is required and still not loaded show the dialog
 			if ((!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
 				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options);
@@ -778,6 +787,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public getDefaultProviderId(): string | undefined {
 		let defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultEngine);
 		return defaultProvider && this._providers.has(defaultProvider) ? defaultProvider : undefined;
+	}
+
+	public getDefaultAuthenticationTypeId(): string {
+		let defaultAuthenticationType = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultAuthenticationType);
+		return defaultAuthenticationType;
 	}
 
 	/**

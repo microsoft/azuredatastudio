@@ -31,6 +31,7 @@ import { CmsConnectionController } from 'sql/workbench/services/connection/brows
 import { entries } from 'sql/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+//import { ConnectionOptionSpecialType } from 'azdata';  //TODO: Remove?
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -150,6 +151,22 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 		// as a fallback, default to MSSQL if the value from settings is not available
 		return defaultProvider || Constants.mssqlProviderName;
+	}
+
+	private getDefaultAuthenticationTypeName(): string {
+		let defaultAuthenticationType: string;
+		if (!defaultAuthenticationType && this._configurationService) {
+			defaultAuthenticationType = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultAuthenticationType);
+		}
+		// TODO: Delete this?
+		// let mything = this._model.serverCapabilities.connectionOptions.find(option => option.specialValueType === ConnectionOptionSpecialType.authType);
+		// if (mything) {
+
+		// }
+		// //mything = this._model.serverCapabilities.connectionOptions;
+
+		return defaultAuthenticationType || Constants.sqlLogin;  // as a fallback, default to sql login if the value from settings is not available
+
 	}
 
 	private handleOnConnect(params: INewConnectionParams, profile?: IConnectionProfile): void {
@@ -377,6 +394,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		if (model && !model.providerName) {
 			model.providerName = providerName;
 		}
+
+		const defaultAuthenticationType = this.getDefaultAuthenticationTypeName();
+		let authenticationTypeName = model ? model.authenticationType : defaultAuthenticationType;
+		authenticationTypeName = authenticationTypeName ? authenticationTypeName : defaultAuthenticationType;
+		if (model && !model.authenticationType) {
+			model.authenticationType = authenticationTypeName;
+		}
+
 		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
 		newProfile.saveProfile = true;
 		newProfile.generateNewId();

@@ -133,7 +133,7 @@ configurationRegistry.registerConfiguration({
 				localize('sql.defaultAuthenticationType.AzureMFAAndUser', ""),
 				localize('sql.defaultAuthenticationType.Integrated', "Windows Authentication"),
 			],
-			'default': 'AzureMFA'
+			'default': 'SqlLogin'
 		},
 		'sql.defaultEngine': {
 			'type': 'string',
