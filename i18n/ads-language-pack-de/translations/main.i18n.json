@@ -9256,9 +9256,6 @@
 		"nsions/azurecore/out/azureResource/resourceTreeNode": {
 			"azure.resource.resourceTreeNode.noResourcesLabel": "Keine Ressourcen gefunden."
 		},
-		"sql/base/browser/ui/table/utils": {
-			"azure.resource.error": "Fehler: {0}"
-		},
 		"nsions/azurecore/out/azureResource/providers/database/databaseTreeDataProvider": {
 			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL-Datenbanken"
 		},
@@ -9527,10 +9524,6 @@
 			"downloadingServiceStatus": "Download-Dienst",
 			"downloadingServiceComplete": "Fertig!"
 		},
-		"sql/platform/telemetry/telemetry": {
-			"import.serviceCrashButton": "Feedback geben",
-			"serviceCrashMessage": "Die Dienstkomponente konnte nicht gestartet werden."
-		},
 		"nsions/import/out/wizard/flatFileWizard": {
 			"import.needConnection": "Bitte verbinden Sie sich mit einem Server, bevor Sie diesen Assistenten verwenden.",
 			"flatFileImport.wizardName": "Assistent zum Importieren von Flatfiles",
@@ -9583,6 +9576,10 @@
 		},
 		"sql/platform/clipboard/browser/clipboardService": {
 			"imageCopyingNotSupported": "Das Kopieren von Images wird nicht unterstützt."
+		},
+		"sql/platform/telemetry/telemetry": {
+			"import.serviceCrashButton": "Feedback geben",
+			"serviceCrashMessage": "Die Dienstkomponente konnte nicht gestartet werden."
 		},
 		"sql/workbench/update/electron-browser/releaseNotes": {
 			"gettingStarted": "Erste Schritte",
