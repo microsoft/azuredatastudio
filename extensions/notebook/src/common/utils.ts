@@ -489,10 +489,10 @@ export interface IBookNotebook {
 }
 
 //Confirmation message dialog
-export async function confirmReplace(prompter: IPrompter): Promise<boolean> {
+export async function confirmReplace(prompter: IPrompter, msg: string): Promise<boolean> {
 	return await prompter.promptSingle<boolean>(<IQuestion>{
 		type: QuestionTypes.confirm,
-		message: loc.confirmReplace,
+		message: msg,
 		default: false
 	});
 }

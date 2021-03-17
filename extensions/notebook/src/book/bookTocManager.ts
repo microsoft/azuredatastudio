@@ -11,7 +11,7 @@ import { BookVersion, convertTo } from './bookVersionHandler';
 import * as vscode from 'vscode';
 import * as loc from '../common/localizedConstants';
 import { BookModel } from './bookModel';
-import { NotebookUtils } from '../common/notebookUtils';
+import * as azdata from 'azdata';
 
 export interface IBookTocManager {
 	updateBook(element: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
@@ -437,6 +437,11 @@ export class BookTocManager implements IBookTocManager {
 	}
 
 	public async addNewNotebook(notebookName: string, notebookPath: string, fileType: FileType, book?: BookModel): Promise<void> {
+		if (fileType === FileType.Notebook) {
+			await this.createNotebook(notebookPath.concat(fileType), undefined);
+		} else {
+			await fs.writeFile(notebookPath.concat(fileType), '');
+		}
 		if (book) {
 			let toc = yaml.safeLoad((await fs.readFile(book.tableOfContentsPath, 'utf8')));
 			let notebookToc: JupyterBookSection = {
@@ -447,18 +452,8 @@ export class BookTocManager implements IBookTocManager {
 				notebookToc = convertTo(book.version, notebookToc);
 			}
 			toc.push(notebookToc);
-			await fs.writeFile(notebookPath.concat(fileType), '');
-			if (fileType === FileType.Notebook) {
-				const notebookUtils = new NotebookUtils();
-				await notebookUtils.newNotebook(undefined, notebookPath.concat(fileType));
-			}
 			await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(toc, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
 		} else {
-			await fs.writeFile(notebookPath.concat(fileType), '');
-			if (fileType === FileType.Notebook) {
-				const notebookUtils = new NotebookUtils();
-				await notebookUtils.newNotebook(undefined, notebookPath.concat(fileType));
-			}
 			vscode.commands.executeCommand('bookTreeView.openBook', notebookPath.concat(fileType), false, notebookPath.concat(fileType), true);
 		}
 
@@ -467,6 +462,21 @@ export class BookTocManager implements IBookTocManager {
 	public async removeNotebook(element: BookTreeItem): Promise<void> {
 		const findSection = { file: element.book.page.file, title: element.book.page.title };
 		await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
+	}
+
+
+	public async createNotebook(notebookPath: string, connectionProfile?: azdata.IConnectionProfile): Promise<azdata.nb.NotebookEditor> {
+		await fs.writeFile(notebookPath, '');
+		const notebookUri = vscode.Uri.parse(notebookPath);
+		const options: azdata.nb.NotebookShowOptions = connectionProfile ? {
+			viewColumn: null,
+			preserveFocus: true,
+			preview: null,
+			providerId: null,
+			connectionProfile: connectionProfile,
+			defaultKernel: null
+		} : null;
+		return azdata.nb.showNotebookDocument(notebookUri, options);
 	}
 
 	public get modifiedDir(): Set<string> {

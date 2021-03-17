@@ -278,7 +278,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async addNotebookToBook(): Promise<void> {
-		const dialog = new AddNotebookDialog(this.bookTocManager, this.books);
+		const books: BookModel[] = this.books.filter(b => {
+			if (!b.isNotebook) {
+				return b;
+			}
+			return undefined;
+		});
+		const dialog = new AddNotebookDialog(this.bookTocManager, books);
 		dialog.createDialog();
 	}
 
@@ -485,7 +491,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(this.currentBook.bookPath)));
 				if (destinationUri) {
 					if (await fs.pathExists(destinationUri.fsPath)) {
-						let doReplace = await confirmReplace(this.prompter);
+						let doReplace = await confirmReplace(this.prompter, loc.confirmReplace);
 						if (!doReplace) {
 							return undefined;
 						}

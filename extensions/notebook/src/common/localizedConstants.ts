@@ -94,8 +94,13 @@ export const name = localize('name', "Name");
 export const saveLocation = localize('saveLocation', "Save location");
 export const contentFolder = localize('contentFolder', "Content folder (Optional)");
 export const msgContentFolderError = localize('msgContentFolderError', "Content folder path does not exist");
-export const msgSaveFolderError = localize('msgSaveFolderError', "Save location path does not exist");
+export const msgSaveFolderError = localize('msgSaveFolderError', "Save location path does not exist.");
 export function msgCreateBookWarningMsg(file: string): string { return localize('msgCreateBookWarningMsg', "Error while trying to access: {0}", file); }
 
+// Add a notebook dialog constants
+export const notebookDescription = localize('notebookDescription', "Notebooks are documents that contain code, descriptions and visualizations.");
+export const newNotebook = localize('newNotebook', "New Notebook");
+export const FileType = localize('FileType', "File Type");
+export const confirmReplaceFile = localize('confirmReplaceFile', "File already exists. Are you sure you want to delete and replace this file?");
 
 

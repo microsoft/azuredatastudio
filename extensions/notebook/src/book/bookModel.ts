@@ -147,7 +147,7 @@ export class BookModel {
 			root: this.notebookRootPath ? this.notebookRootPath : pathDetails.dir,
 			tableOfContents: { sections: undefined },
 			page: { sections: undefined },
-			type: BookTreeItemType.Notebook,
+			type: pathDetails.ext === '.ipynb' ? BookTreeItemType.Notebook : BookTreeItemType.Markdown,
 			treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
 			isUntitled: this.openAsUntitled,
 		},

@@ -9,25 +9,26 @@ import { pathExists, remove } from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IconPathHelper } from '../common/iconHelper';
 import { FileType, IBookTocManager } from '../book/bookTocManager';
-import { confirmReplace } from '../common/utils';
+import { confirmReplace, getDropdownValue } from '../common/utils';
 import { IPrompter } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookModel } from '../book/bookModel';
+import { BookTreeItemType } from '../book/bookTreeItem';
 
 export class AddNotebookDialog {
-
 	private dialog: azdata.window.Dialog;
 	public view: azdata.ModelView;
 	private formModel: azdata.FormContainer;
 	private notebookNameInputBox: azdata.InputBoxComponent;
 	private booksDropdown: azdata.DropDownComponent;
+	private notebookTypeDropdown: azdata.DropDownComponent;
 	private saveLocationInputBox: azdata.InputBoxComponent;
 	private prompter: IPrompter;
-	private bookNames: string[] = [];
+	private bookNames: string[];
 
 	constructor(private tocManager: IBookTocManager, private books: BookModel[]) {
 		this.prompter = new CodeAdapter();
-		this.bookNames = this.books.map(b => b.bookItems[0].title);
+		this.bookNames = this.books.length > 0 ? this.books.map(b => b.bookItems[0].title) : [];
 		this.bookNames.unshift('-');
 	}
 
@@ -52,10 +53,10 @@ export class AddNotebookDialog {
 		return undefined;
 	}
 
-	public async validatePath(folderPath: string): Promise<boolean> {
-		const destinationUri = path.join(folderPath, path.basename(this.notebookNameInputBox.value));
+	public async validatePath(folderPath: string, fileBasename: string): Promise<boolean> {
+		const destinationUri = path.join(folderPath, fileBasename);
 		if (await pathExists(destinationUri)) {
-			const doReplace = await confirmReplace(this.prompter);
+			const doReplace = await confirmReplace(this.prompter, loc.confirmReplaceFile);
 			if (doReplace) {
 				//remove folder if exists
 				await remove(destinationUri);
@@ -67,13 +68,13 @@ export class AddNotebookDialog {
 	}
 
 	public async createDialog(): Promise<void> {
-		this.dialog = azdata.window.createModelViewDialog('New Notebook');
+		this.dialog = azdata.window.createModelViewDialog(loc.newNotebook);
 		this.dialog.registerContent(async view => {
 			this.view = view;
 
 			const notebookLabel = this.view.modelBuilder.text()
 				.withProperties({
-					value: 'Notebooks are documents that contain code, descriptions and visualizations.',
+					value: loc.notebookDescription,
 					CSSStyles: { 'margin-bottom': '0px', 'margin-top': '0px', 'font-size': 'small' }
 				}).component();
 
@@ -97,6 +98,12 @@ export class AddNotebookDialog {
 				width: '400px'
 			}).component();
 
+			this.notebookTypeDropdown = this.view.modelBuilder.dropDown().withProperties({
+				values: ['-', BookTreeItemType.Notebook, BookTreeItemType.Markdown],
+				value: '',
+				width: '400px'
+			}).component();
+
 			const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 				ariaLabel: loc.browse,
 				iconPath: IconPathHelper.folder,
@@ -109,7 +116,7 @@ export class AddNotebookDialog {
 			});
 
 			this.booksDropdown.onValueChanged(async () => {
-				const book = this.books.find(b => b.bookItems[0].title === this.booksDropdown.value.toString());
+				const book = this.books.find(b => b.bookItems[0].title === getDropdownValue(this.booksDropdown));
 				this.saveLocationInputBox.value = book?.contentFolderPath;
 			});
 
@@ -126,34 +133,40 @@ export class AddNotebookDialog {
 							required: true
 						},
 						{
-							title: loc.saveLocation,
+							title: loc.FileType,
 							required: true,
-							component: this.createHorizontalContainer(view, [this.saveLocationInputBox, browseFolderButton])
+							component: this.notebookTypeDropdown
 						},
 						{
-							title: 'Book',
+							title: loc.book,
 							required: false,
 							component: this.booksDropdown
 						},
+						{
+							title: loc.saveLocation,
+							required: true,
+							component: this.createHorizontalContainer(view, [this.saveLocationInputBox, browseFolderButton])
+						}
 					],
 					title: ''
 				}]).component();
 			await this.view.initializeModel(this.formModel);
 		});
-		this.dialog.okButton.label = loc.create;
+		this.dialog.okButton.label = loc.add;
 		this.dialog.registerCloseValidator(async () => await this.create());
 		azdata.window.openDialog(this.dialog);
 	}
 
 	private async create(): Promise<boolean> {
 		try {
-			const isValid = await this.validatePath(this.saveLocationInputBox.value);
+			const type = getDropdownValue(this.notebookTypeDropdown) === BookTreeItemType.Notebook ? FileType.Notebook : FileType.Markdown;
+			const isValid = await this.validatePath(this.saveLocationInputBox.value, path.basename(this.notebookNameInputBox.value).concat(type));
 			if (!isValid) {
 				throw (new Error(loc.msgSaveFolderError));
 			}
 			const notebookPath = path.join(this.saveLocationInputBox.value, this.notebookNameInputBox.value);
-			const book = this.books.find(b => b.bookItems[0].title === this.booksDropdown.value.toString());
-			await this.tocManager.addNewNotebook(this.notebookNameInputBox.value, notebookPath, FileType.Notebook, book);
+			const book = this.books.find(b => b.bookItems[0].title === getDropdownValue(this.booksDropdown));
+			await this.tocManager.addNewNotebook(this.notebookNameInputBox.value, notebookPath, type, book);
 			return true;
 		} catch (error) {
 			this.dialog.message = {

@@ -51,7 +51,7 @@ export class CreateBookDialog {
 	public async validatePath(folderPath: string): Promise<boolean> {
 		const destinationUri = path.join(folderPath, path.basename(this.bookNameInputBox.value));
 		if (await pathExists(destinationUri)) {
-			const doReplace = await confirmReplace(this.prompter);
+			const doReplace = await confirmReplace(this.prompter, loc.confirmReplace);
 			if (doReplace) {
 				//remove folder if exists
 				await remove(destinationUri);
