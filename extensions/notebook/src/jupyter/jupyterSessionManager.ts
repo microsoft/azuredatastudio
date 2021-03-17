@@ -130,7 +130,7 @@ export class JupyterSessionManager implements nb.SessionManager {
 			return Promise.reject(new Error(localize('errorStartBeforeReady', "Cannot start a session, the manager is not yet initialized")));
 		}
 		let sessionImpl = await this._sessionManager.startNew(options);
-		let jupyterSession = new JupyterSession(sessionImpl, this._installation, skipSettingEnvironmentVars, this._installation.pythonEnvVarPath);
+		let jupyterSession = new JupyterSession(sessionImpl, this._installation, skipSettingEnvironmentVars, this._installation?.pythonEnvVarPath);
 		await jupyterSession.messagesComplete;
 		let index = JupyterSessionManager._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
