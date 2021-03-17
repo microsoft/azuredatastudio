@@ -196,6 +196,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
 					this.saveButton!.enabled = false;
+					this.parameterUpdates!.clear();
 				}
 			})
 		);

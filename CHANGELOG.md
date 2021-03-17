@@ -1,5 +1,20 @@
 # Change Log
 
+## Version 1.27.0
+* Release date: March 17, 2021
+* Release status: General Availability
+* New Notebook Features:
+    * Added create book dialog
+* Extension Updates:
+    * Import
+    * Dacpac
+    * Machine Learning
+    * SQL Assessment
+    * Arc
+    * SQL Database Projects
+    * ASDE Deployment
+* Bux Fixes
+
 ## Version 1.26.1
 * Release date: February 25, 2021
 * Release status: General Availability
