@@ -521,7 +521,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						this._targetSubscription,
 						this._sqlMigrationService
 					);
-					vscode.window.showInformationMessage(localize("sql.migration.starting.migration.message", 'Starting migration for database {0} to {1}', db, this._targetServerInstance.name));
+					vscode.window.showInformationMessage(localize("sql.migration.starting.migration.message", 'Starting migration for database {0} to {1} - {2}', db, this._targetServerInstance.name, this._targetDatabaseNames[index]));
 				}
 			} catch (e) {
 				console.log(e);

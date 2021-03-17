@@ -4,18 +4,32 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as path from 'path';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
-import { Product, ProductLookupTable } from '../models/product';
+import { Product } from '../models/product';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
 import * as constants from '../constants/strings';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
+import { IconPathHelper } from '../constants/iconPathHelper';
 
 // import { SqlMigrationService } from '../../../../extensions/mssql/src/sqlMigration/sqlMigrationService';
 
 export class SKURecommendationPage extends MigrationWizardPage {
+
+	private supportedProducts: Product[] = [
+		{
+			type: 'AzureSQLMI',
+			name: constants.SKU_RECOMMENDATION_MI_CARD_TEXT,
+			icon: IconPathHelper.sqlMiLogo
+		},
+		{
+			type: 'AzureSQLVM',
+			name: constants.SKU_RECOMMENDATION_VM_CARD_TEXT,
+			icon: IconPathHelper.sqlVmLogo
+		}
+	];
+
 	// For future reference: DO NOT EXPOSE WIZARD DIRECTLY THROUGH HERE.
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.SKU_RECOMMENDATION_PAGE_TITLE), migrationStateModel);
@@ -179,7 +193,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private constructTargets(): void {
-		const products: Product[] = Object.values(ProductLookupTable);
+		const products: Product[] = this.supportedProducts;
 
 		this._rbg = this._view!.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
 			cards: [],
@@ -191,7 +205,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}).component();
 
 		products.forEach((product) => {
-			const imagePath = path.resolve(this.migrationStateModel.getExtensionPath(), 'media', product.icon ?? 'ads.svg');
 			let dbCount = 0;
 			if (product.type === 'AzureSQLVM') {
 				dbCount = this._dbCount;
@@ -238,7 +251,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 			this._rbg.cards.push({
 				id: product.type,
-				icon: imagePath,
+				icon: product.icon,
 				descriptions
 			});
 		});
@@ -248,7 +261,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._rbg.onLinkClick(async (value) => {
 
 			//check which card is being selected, and open correct dialog based on link
-			console.log(value);
 			if (value.description.linkDisplayValue === 'View/Change') {
 				if (value.cardId === 'AzureSQLVM') {
 					await vmDialog.openDialog();

@@ -29,6 +29,8 @@ export const SKU_RECOMMENDATION_SOME_SUCCESSFUL = (migratableCount: number, data
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose a target Azure SQL");
 
 export const SKU_RECOMMENDATION_NONE_SUCCESSFUL = localize('sql.migration.sku.none', "Based on the results of our source configuration scans, none of your databases can be migrated to Azure SQL.");
+export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure Managed Instance (Microsoft managed)");
+export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "Azure SQL Virtual Machine (Customer managed)'");
 
 export const SUBSCRIPTION_SELECTION_PAGE_TITLE = localize('sql.migration.wizard.subscription.title', "Azure Subscription Selection");
 export const SUBSCRIPTION_SELECTION_AZURE_ACCOUNT_TITLE = localize('sql.migration.wizard.subscription.azure.account.title', "Azure Account");
@@ -255,6 +257,7 @@ export function ACTIVE_BACKUP_FILES_ITEMS(fileCount: number) {
 //Migration status dialog
 export const SEARCH_FOR_MIGRATIONS = localize('sql.migration.search.for.migration', "Search for migrations");
 export const ONLINE = localize('sql.migration.online', "Online");
+export const OFFLINE = localize('sql.migration.offline', "Offline");
 export const DATABASE = localize('sql.migration.database', "Database");
 export const TARGET_AZURE_SQL_INSTANCE_NAME = localize('sql.migration.target.azure.sql.instance.name', "Target Azure SQL Instance Name");
 export const CUTOVER_TYPE = localize('sql.migration.cutover.type', "Cutover type");

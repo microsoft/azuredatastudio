@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import { MigrationContext, MigrationLocalStorage } from '../models/migrationLocalStorage';
 import * as loc from '../constants/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
-import { getDatabaseMigration } from '../api/azure';
 import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatusDialog';
 import { MigrationCategory } from '../dialog/migrationStatus/migrationStatusDialogModel';
 
@@ -38,6 +37,8 @@ export class DashboardWidget {
 	private _successfulMigrationButton!: StatusCard;
 	private _notStartedMigrationCard!: StatusCard;
 	private _migrationStatus!: MigrationContext[];
+
+	private _viewAllMigrationsButton!: azdata.ButtonComponent;
 
 	constructor() {
 	}
@@ -212,6 +213,7 @@ export class DashboardWidget {
 	}
 
 	private async refreshMigrations(): Promise<void> {
+		this._viewAllMigrationsButton.enabled = false;
 		this._migrationStatusCardLoadingContainer.loading = true;
 		try {
 			this._migrationStatus = await this.getMigrations();
@@ -231,11 +233,8 @@ export class DashboardWidget {
 			this._successfulMigrationButton.count.value = successfulMigration.length.toString();
 
 			const currentConnection = (await azdata.connection.getCurrentConnection());
-			const localMigrations = MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection);
 			const migrationDatabases = new Set(
-				localMigrations.filter((value) => {
-
-				}).map((value) => {
+				this._migrationStatus.map((value) => {
 					return value.migrationContext.properties.sourceDatabaseName;
 				}));
 			const serverDatabases = await azdata.connection.listDatabases(currentConnection.connectionId);
@@ -244,29 +243,14 @@ export class DashboardWidget {
 			console.log(error);
 		} finally {
 			this._migrationStatusCardLoadingContainer.loading = false;
+			this._viewAllMigrationsButton.enabled = true;
 		}
 
 	}
 
 	private async getMigrations(): Promise<MigrationContext[]> {
 		const currentConnection = (await azdata.connection.getCurrentConnection());
-		const localMigrations = MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection);
-		for (let i = 0; i < localMigrations.length; i++) {
-			const localMigration = localMigrations[i];
-			try {
-				localMigration.migrationContext = await getDatabaseMigration(
-					localMigration.azureAccount,
-					localMigration.subscription,
-					localMigration.targetManagedInstance.location,
-					localMigration.migrationContext.id
-				);
-			} catch (e) {
-				console.log(e);
-			}
-
-			localMigration.sourceConnectionProfile = currentConnection;
-		}
-		return localMigrations;
+		return await MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection, true);
 	}
 
 	private createStatusCard(
@@ -397,7 +381,7 @@ export class DashboardWidget {
 			}
 		}).component();
 
-		const viewAllButton = view.modelBuilder.hyperlink().withProps({
+		this._viewAllMigrationsButton = view.modelBuilder.hyperlink().withProps({
 			label: loc.VIEW_ALL,
 			url: '',
 			CSSStyles: {
@@ -405,8 +389,8 @@ export class DashboardWidget {
 			}
 		}).component();
 
-		viewAllButton.onDidClick(async (e) => {
-			new MigrationStatusDialog(await this.getMigrations(), MigrationCategory.ALL).initialize();
+		this._viewAllMigrationsButton.onDidClick(async (e) => {
+			new MigrationStatusDialog(this._migrationStatus ? this._migrationStatus : await this.getMigrations(), MigrationCategory.ALL).initialize();
 		});
 
 		const refreshButton = view.modelBuilder.hyperlink().withProps({
@@ -428,7 +412,7 @@ export class DashboardWidget {
 			justifyContent: 'flex-end',
 		}).component();
 
-		buttonContainer.addItem(viewAllButton, {
+		buttonContainer.addItem(this._viewAllMigrationsButton, {
 			flex: 'auto',
 			CSSStyles: {
 				'border-right': '1px solid ',

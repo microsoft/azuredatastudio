@@ -182,6 +182,9 @@ export async function getDatabaseMigration(account: azdata.Account, subscription
 	const path = `${migrationId}?api-version=2020-09-01-preview`;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 	if (response.errors.length > 0) {
+		if (response.response.status === 404 && response.response.data.error.code === 'ResourceDoesNotExist') {
+			throw new Error(response.response.data.error.code);
+		}
 		throw new Error(response.errors.toString());
 	}
 	return response.response.data;
@@ -352,10 +355,12 @@ export interface DatabaseMigrationProperties {
 	provisioningState: string;
 	migrationStatus: string;
 	migrationStatusDetails?: MigrationStatusDetails;
+	startedOn: string;
+	endedOn: string;
 	sourceSqlConnection: SqlConnectionInfo;
 	sourceDatabaseName: string;
 	targetDatabaseCollation: string;
-	sqlMigrationService: string;
+	migrationService: string;
 	migrationOperationId: string;
 	backupConfiguration: BackupConfiguration;
 	autoCutoverConfiguration: AutoCutoverConfiguration;
