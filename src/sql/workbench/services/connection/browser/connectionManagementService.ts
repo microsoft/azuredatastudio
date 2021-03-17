@@ -659,7 +659,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStatusManager.getActiveConnectionProfiles(providers);
 	}
 
-	public getConnectionUriFromId(connectionId: string): string {
+	public getConnectionUriFromId(connectionId: string): string | undefined {
 		let connectionInfo = this._connectionStatusManager.findConnectionByProfileId(connectionId);
 		if (connectionInfo) {
 			return connectionInfo.ownerUri;
@@ -676,7 +676,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	public getAdvancedProperties(): azdata.ConnectionOption[] {
+	public getAdvancedProperties(): azdata.ConnectionOption[] | undefined {
 
 		let providers = this._capabilitiesService.providers;
 		if (providers) {
@@ -775,7 +775,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	public getDefaultProviderId(): string {
+	public getDefaultProviderId(): string | undefined {
 		let defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultEngine);
 		return defaultProvider && this._providers.has(defaultProvider) ? defaultProvider : undefined;
 	}
@@ -1226,7 +1226,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStatusManager.isConnected(fileUri) ? this._connectionStatusManager.findConnection(fileUri) : undefined;
 	}
 
-	public listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult> {
+	public listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult | undefined> {
 		const self = this;
 		if (self.isConnected(connectionUri)) {
 			return self.sendListDatabasesRequest(connectionUri);

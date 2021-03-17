@@ -68,6 +68,7 @@ export class AssessmentResultGrid implements vscode.Disposable {
 						width: 10,
 						headerCssClass: headerCssClass,
 						toolTip: localize('asmt.column.targetType', "Target Type"),
+						resizable: false,
 					},
 					{ value: LocalizedStrings.TARGET_COLUMN_NAME, headerCssClass: headerCssClass, width: 125 },
 					{ value: LocalizedStrings.SEVERITY_COLUMN_NAME, headerCssClass: headerCssClass, width: 100 },
