@@ -144,7 +144,7 @@ export class CreateSqlMigrationServiceDialog {
 
 	private migrationServiceDropdownContainer(): azdata.FlexContainer {
 		const dialogDescription = this._view.modelBuilder.text().withProps({
-			value: constants.IR_PAGE_DESCRIPTION
+			value: constants.MIGRATION_SERVICE_DIALOG_DESCRIPTION
 		}).component();
 
 		const formHeading = this._view.modelBuilder.text().withProps({
