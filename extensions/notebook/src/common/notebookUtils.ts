@@ -21,7 +21,7 @@ export class NotebookUtils {
 
 	public async newNotebook(connectionProfile?: azdata.IConnectionProfile): Promise<azdata.nb.NotebookEditor> {
 		const title = this.findNextUntitledEditorName();
-		let untitledUri = vscode.Uri.parse(`untitled:${title}`);
+		const untitledUri = vscode.Uri.parse(`untitled:${title}`);
 		const options: azdata.nb.NotebookShowOptions = connectionProfile ? {
 			viewColumn: null,
 			preserveFocus: true,

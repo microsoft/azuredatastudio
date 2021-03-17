@@ -12,7 +12,6 @@ import * as azdata from 'azdata';
 import * as crypto from 'crypto';
 import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey, AUTHTYPE, INTEGRATED_AUTH, KNOX_ENDPOINT_PORT, KNOX_ENDPOINT_SERVER } from './constants';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
-import * as loc from '../common/localizedConstants';
 import { BookTreeItemFormat, BookTreeItemType } from '../book/bookTreeItem';
 
 const localize = nls.loadMessageBundle();

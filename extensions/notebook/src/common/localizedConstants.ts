@@ -99,7 +99,7 @@ export function msgCreateBookWarningMsg(file: string): string { return localize(
 
 // Add a notebook dialog constants
 export const notebookDescription = localize('notebookDescription', "Notebooks are documents that contain code, descriptions and visualizations.");
-export const newNotebook = localize('newNotebook', "New Notebook");
+export const newNotebook = localize('newNotebook', "New Notebook (Preview)");
 export const FileType = localize('FileType', "File Type");
 export const confirmReplaceFile = localize('confirmReplaceFile', "File already exists. Are you sure you want to delete and replace this file?");
 
