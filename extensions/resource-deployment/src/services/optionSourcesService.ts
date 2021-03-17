@@ -7,8 +7,13 @@ import * as vscode from 'vscode';
 import * as rd from 'resource-deployment';
 import * as loc from '../localizedConstants';
 
+interface OptionsSourceContribution {
+	id: string;
+}
+
 class OptionsSourcesService {
 	private _optionsSourceStore = new Map<string, rd.IOptionsSourceProvider>();
+
 	registerOptionsSourceProvider(provider: rd.IOptionsSourceProvider): vscode.Disposable {
 		if (this._optionsSourceStore.has(provider.id)) {
 			throw new Error(loc.optionsSourceAlreadyDefined(provider.id));
@@ -23,12 +28,23 @@ class OptionsSourcesService {
 		this._optionsSourceStore.delete(providerId);
 	}
 
-	getOptionsSource(optionsSourceProviderId: string): rd.IOptionsSourceProvider {
-		const optionsSource = this._optionsSourceStore.get(optionsSourceProviderId);
+	async getOptionsSource(optionsSourceProviderId: string): Promise<rd.IOptionsSourceProvider> {
+		let optionsSource = this._optionsSourceStore.get(optionsSourceProviderId);
 		if (optionsSource === undefined) {
-			throw new Error(loc.noOptionsSourceDefined(optionsSourceProviderId));
+			// We don't have the provider registered yet so try to find and activate the extension that contributes it
+			const ext = vscode.extensions.all.find(extension => {
+				return !!(extension.packageJSON.contributes?.resourceDeploymentOptionsSources as OptionsSourceContribution[])?.find(optionsSource => optionsSource.id === optionsSourceProviderId);
+			});
+			if (ext) {
+				await ext.activate();
+			}
+			optionsSource = this._optionsSourceStore.get(optionsSourceProviderId);
+			// Still don't have it registered - is the extension not properly registering it?
+			if (optionsSource === undefined) {
+				throw new Error(loc.noOptionsSourceDefined(optionsSourceProviderId));
+			}
 		}
-		return optionsSource;
+		return optionsSource!;
 	}
 }
 

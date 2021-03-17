@@ -132,7 +132,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					text: ''
 				};
 				this.migrationStateModel._migrationController = this.migrationStateModel.getMigrationController(value.index);
-				await this.loadControllerStatus();
+				if (value !== constants.MIGRATION_CONTROLLER_NOT_FOUND_ERROR) {
+					await this.loadControllerStatus();
+				}
 			}
 		});
 
@@ -150,7 +152,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	public async populateMigrationController(): Promise<void> {
 		this.migrationControllerDropdown.loading = true;
 		try {
-			this.migrationControllerDropdown.values = await this.migrationStateModel.getMigrationControllerValues(this.migrationStateModel._targetSubscription, this.migrationStateModel._targetManagedInstance);
+			this.migrationControllerDropdown.values = await this.migrationStateModel.getMigrationControllerValues(this.migrationStateModel._targetSubscription, this.migrationStateModel._targetServerInstance);
 			if (this.migrationStateModel._migrationController) {
 				this.migrationControllerDropdown.value = {
 					name: this.migrationStateModel._migrationController.id,
@@ -169,7 +171,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 	private async loadControllerStatus(): Promise<void> {
 		this._statusLoadingComponent.loading = true;
-
 		try {
 			this._migrationDetailsContainer.clearItems();
 

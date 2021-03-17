@@ -22,8 +22,8 @@ export class CustomDialogService {
 		let name = dialogName ? dialogName : 'CustomDialog';
 
 		if (options && (options.dialogStyle === 'callout')) {
-			options.positionX = document.activeElement.getBoundingClientRect().left;
-			options.positionY = document.activeElement.getBoundingClientRect().top;
+			options.dialogProperties.xPos = document.activeElement.getBoundingClientRect().left;
+			options.dialogProperties.yPos = document.activeElement.getBoundingClientRect().top;
 			options.renderFooter = false;
 		}
 		let dialogModal = this._instantiationService.createInstance(DialogModal, dialog, name, options || DefaultDialogOptions);
@@ -44,7 +44,7 @@ export class CustomDialogService {
 	}
 
 	public closeWizard(wizard: Wizard): void {
-		this._wizardModals.get(wizard)?.cancel();
+		this._wizardModals.get(wizard)?.close();
 	}
 
 	public getWizardModal(wizard: Wizard): WizardModal | undefined {

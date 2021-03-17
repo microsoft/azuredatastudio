@@ -759,13 +759,15 @@ export interface ExtHostBackgroundTaskManagementShape {
 }
 
 export interface ExtHostWorkspaceShape {
-	$createWorkspace(folder: vscode.Uri, workspaceFile: vscode.Uri): Promise<void>;
+	$createAndEnterWorkspace(folder: vscode.Uri, workspaceFile: vscode.Uri): Promise<void>;
 	$enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+	$saveAndEnterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 }
 
 export interface MainThreadWorkspaceShape {
-	$createWorkspace(folder: vscode.Uri, workspaceFile: vscode.Uri): Promise<void>;
+	$createAndEnterWorkspace(folder: vscode.Uri, workspaceFile: vscode.Uri): Promise<void>;
 	$enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+	$saveAndEnterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 }
 
 export interface MainThreadBackgroundTaskManagementShape extends IDisposable {

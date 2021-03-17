@@ -14,7 +14,7 @@ import { AzureResourceResourceTreeNode } from '../../azureResource/resourceTreeN
 import { AppContext } from '../../appContext';
 import { AzureResourceServiceNames } from '../../azureResource/constants';
 import settings from '../../account-provider/providerSettings';
-import { AzureAccount } from '../../account-provider/interfaces';
+import { AzureAccount } from 'azurecore';
 
 // Mock test data
 const mockAccount: AzureAccount = {
