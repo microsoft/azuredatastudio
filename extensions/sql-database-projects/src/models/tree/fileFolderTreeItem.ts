@@ -111,5 +111,5 @@ function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootT
 		localUri = parts[parts.length - 1];
 	}
 
-	return vscode.Uri.file(path.join(path.parse(projectNode.projectUri.fsPath).base, localUri));
+	return vscode.Uri.file(path.join(projectNode.projectUri.fsPath, localUri));
 }

@@ -45,7 +45,7 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 
 export class DatabaseReferenceTreeItem extends BaseProjectTreeItem {
 	constructor(private reference: IDatabaseReferenceProjectEntry, referencesTreeItem: DatabaseReferencesTreeItem) {
-		super(vscode.Uri.file(path.join(referencesTreeItem.projectUri.path, reference.databaseName)), referencesTreeItem);
+		super(vscode.Uri.file(path.join(referencesTreeItem.projectUri.fsPath, reference.databaseName)), referencesTreeItem);
 	}
 
 	public get children(): BaseProjectTreeItem[] {
