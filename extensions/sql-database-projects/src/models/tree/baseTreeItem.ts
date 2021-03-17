@@ -10,7 +10,7 @@ import * as path from 'path';
  * Base class for an item that appears in the ADS project tree
  */
 export abstract class BaseProjectTreeItem {
-	projectUri: vscode.Uri;
+	projectUri: vscode.Uri; // project-relative URI that's compatible with the project tree
 	parent?: BaseProjectTreeItem;
 
 	constructor(uri: vscode.Uri, parent?: BaseProjectTreeItem) {
