@@ -2038,19 +2038,19 @@ class SliderComponentWrapper extends ComponentWrapper implements azdata.SliderCo
 		this._emitterMap.set(ComponentEventType.onInput, new Emitter<number>());
 	}
 
-	public get min(): number {
+	public get min(): number | undefined {
 		return this.properties['min'];
 	}
 
-	public set min(v: number) {
+	public set min(v: number | undefined) {
 		this.setProperty('min', v);
 	}
 
-	public get max(): number {
+	public get max(): number | undefined {
 		return this.properties['max'];
 	}
 
-	public set max(v: number) {
+	public set max(v: number | undefined) {
 		this.setProperty('max', v);
 	}
 
@@ -2062,11 +2062,11 @@ class SliderComponentWrapper extends ComponentWrapper implements azdata.SliderCo
 		this.setProperty('step', v);
 	}
 
-	public get value(): number {
+	public get value(): number | undefined {
 		return this.properties['value'];
 	}
 
-	public set value(v: number) {
+	public set value(v: number | undefined) {
 		this.setProperty('value', v);
 	}
 
