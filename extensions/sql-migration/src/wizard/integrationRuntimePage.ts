@@ -279,8 +279,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					connectionStatusLoader.loading = false;
 				});
 
+				const state = migrationService.properties.integrationRuntimeState;
 				if (migrationService) {
-					const state = migrationService.properties.integrationRuntimeState;
 					if (state === 'Online') {
 						connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
 							text: constants.SERVICE_READY(this.migrationStateModel._sqlMigrationService!.name, this.migrationStateModel._nodeNames.join(', ')),
@@ -371,7 +371,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 				refreshKey2Button.onDidClick((e) => {//TODO: add refresh logic
 				});
-
 
 				migrationServiceAuthKeyTable.updateProperties({
 					dataValues: [

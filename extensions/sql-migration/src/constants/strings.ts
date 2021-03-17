@@ -111,10 +111,10 @@ export const ENTER_BLOB_CONTAINER_INFORMATION = localize('sql.migration.blob.con
 export const ENTER_FILE_SHARE_INFORMATION = localize('sql.migration.enter.file.share.information', "Enter the target name and select the file share location of selected databases");
 
 // integration runtime page
-export const IR_PAGE_TITLE = localize('sql.migration.ir.page.title', "Azure Database Migration Service (DMS)");
-export const IR_PAGE_DESCRIPTION = localize('sql.migration.ir.page.description', "A DMS is an ARM (Azure Resource Manager) resource created in your Azure subscription and it is needed to coordinate and monitor data migration activities. If one already exists in your subscription, you can reuse it here. Alternatively you can create a new one by clicking New. {0}");
+export const IR_PAGE_TITLE = localize('sql.migration.ir.page.title', "Azure Database Migration Service");
+export const IR_PAGE_DESCRIPTION = localize('sql.migration.ir.page.description', "Azure Database Migration Service (DMS) orchestrates database migration activities and tracks their progress. You can select an existing DMS for Azure SQL target if you have created one previously or create a new one below. {0}");
 export const IR_PAGE_NOTE = localize('sql.migration.ir.page.note', "Note: DMS will run in your Azure subscription in the chosen resource group and does not incur any cost for running it.");
-export const SELECT_A_SQL_MIGRATION_SERVICE = localize('sql.migration.select.a.migration.service', "Select a DMS");
+export const SELECT_A_SQL_MIGRATION_SERVICE = localize('sql.migration.select.a.migration.service', "Select Azure Data Migration Service");
 export const DEFAULT_SETUP_BUTTON = localize('sql.migration.default.setup.button', "Setup with defaults: Add DMS with one click express setup using default options.");
 export const CUSTOM_SETUP_BUTTON = localize('sql.migration.custom.setup.button', "Custom setup: Add DMS after customizing most options.");
 export const SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR = localize('sql.migration.ir.page.sql.migration.service.not.found', "No DMS found. Please create a new one");
@@ -123,11 +123,12 @@ export const INVALID_SERVICE_ERROR = localize('sql.migration.invalid.migration.s
 export const SERVICE_OFFLINE_ERROR = localize('sql.migration.invalid.migration.service.offline.error', "Please select a DMS that is connected to a node");
 export const AUTHENTICATION_KEYS = localize('sql.migration.authentication.types', "Authentication Keys");
 export function SQL_MIGRATION_SERVICE_DETAILS_HEADER(sqlMigrationServiceName: string) {
-	return localize('sql.migration.service.header', "DMS \"{0}\" details:`", sqlMigrationServiceName);
+	return localize('sql.migration.service.header', "Azure Data Migration Service \"{0}\" details:`", sqlMigrationServiceName);
 }
 
 // create migration service dialog
-export const MIGRATION_SERVICE_DIALOG_DESCRIPTION = localize('sql.migration.services.container.description', "A Migration Service is an ARM (Azure Resource Manager) resource created in your Azure subscription and it is needed to coordinate and monitor data migration activities. {0}");
+export const CREATE_MIGRATION_SERVICE_TITLE = localize('sql.migration.services.dialog.title', "Create Azure Data Migration Service");
+export const MIGRATION_SERVICE_DIALOG_DESCRIPTION = localize('sql.migration.services.container.description', "Enter the information below to add a new Azure Data Migration Service.");
 export const LOADING_MIGRATION_SERVICES = localize('sql.migration.service.container.loading.help', "Loading Migration Services");
 export const CREATE_SERVICE_FORM_HEADING = localize('sql.migration.service.dialog.create.service.form.heading', "Enter the information below to add a new Migration Service.");
 export const SERVICE_CONTAINER_HEADING = localize('sql.migration.service.container.heading', "Setup Integration Runtime");
@@ -144,10 +145,10 @@ export const REFRESH_KEYS = localize('sql.migration.refresh.keys', "Refresh keys
 export const COPY_KEY = localize('sql.migration.copy.key', "Copy key");
 export const AUTH_KEY_COLUMN_HEADER = localize('sql.migration.authkeys.header', "Authentication key");
 export function SERVICE_NOT_READY(serviceName: string): string {
-	return localize('sql.migration.service.not.ready', "Migration Service {0} is not connected to self-hosted Integration Runtime on any node.", serviceName);
+	return localize('sql.migration.service.not.ready', "Azure Data Migration Service is not registered. Azure Data Migration Service '{0}' needs to be registered with self-hosted Integration Runtime on any node.", serviceName);
 }
 export function SERVICE_READY(serviceName: string, host: string): string {
-	return localize('sql.migration.service.ready', "Migration Service '{0}' is connected to self-hosted Integration Runtime on the node - {1}", serviceName, host);
+	return localize('sql.migration.service.ready', "Azure Data Migration Service '{0}' is connected to self-hosted Integration Runtime running on the node - {1}", serviceName, host);
 }
 export const RESOURCE_GROUP_NOT_FOUND = localize('sql.migration.resource.group.not.found', "No resource Groups found");
 export const INVALID_RESOURCE_GROUP_ERROR = localize('sql.migration.invalid.resourceGroup.error', "Please select a valid resource group to proceed.");

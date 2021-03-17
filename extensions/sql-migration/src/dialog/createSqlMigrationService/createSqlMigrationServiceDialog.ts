@@ -37,7 +37,7 @@ export class CreateSqlMigrationServiceDialog {
 	private createdMigrationServiceNodeNames!: string[];
 
 	constructor(private migrationStateModel: MigrationStateModel, private irPage: IntergrationRuntimePage) {
-		this._dialogObject = azdata.window.createModelViewDialog(constants.IR_PAGE_TITLE, 'MigrationServiceDialog', 'medium');
+		this._dialogObject = azdata.window.createModelViewDialog(constants.CREATE_MIGRATION_SERVICE_TITLE, 'MigrationServiceDialog', 'medium');
 	}
 
 	initialize() {
@@ -144,13 +144,7 @@ export class CreateSqlMigrationServiceDialog {
 
 	private migrationServiceDropdownContainer(): azdata.FlexContainer {
 		const dialogDescription = this._view.modelBuilder.text().withProps({
-			value: constants.IR_PAGE_DESCRIPTION,
-			links: [
-				{
-					text: constants.LEARN_MORE,
-					url: 'https://www.microsoft.com' // TODO: add a proper link to the docs.
-				}
-			]
+			value: constants.IR_PAGE_DESCRIPTION
 		}).component();
 
 		const formHeading = this._view.modelBuilder.text().withProps({
