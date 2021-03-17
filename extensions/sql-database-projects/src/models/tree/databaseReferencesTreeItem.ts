@@ -19,7 +19,7 @@ export class DatabaseReferencesTreeItem extends BaseProjectTreeItem {
 	private references: DatabaseReferenceTreeItem[] = [];
 
 	constructor(project: ProjectRootTreeItem) {
-		super(vscode.Uri.file(path.join(path.parse(project.projectUri.fsPath).base, constants.databaseReferencesNodeName)), project);
+		super(vscode.Uri.file(path.join(project.projectUri.fsPath, constants.databaseReferencesNodeName)), project);
 
 		this.construct();
 	}
