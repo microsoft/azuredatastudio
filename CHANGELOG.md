@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 1.27.0
+* Release date: March 17, 2021
+* Release status: General Availability
+* 
+
 ## Version 1.26.1
 * Release date: February 25, 2021
 * Release status: General Availability
