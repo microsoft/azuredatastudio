@@ -270,10 +270,10 @@ export class BigDataClusterDeploymentProfile {
 	}
 
 	public setAuthenticationMode(mode: string): void {
-		// If basic authentication is picked, the security section must be removed
+		// If basic authentication is picked, the activeDirectory security section must be removed
 		// otherwise azdata will throw validation error
-		if (mode === AuthenticationMode.Basic && 'security' in this._controlConfig) {
-			delete this._controlConfig.security;
+		if (mode === AuthenticationMode.Basic && 'security' in this._controlConfig && 'activeDirectory' in this._controlConfig.security) {
+			delete this._controlConfig.security.activeDirectory;
 		}
 	}
 

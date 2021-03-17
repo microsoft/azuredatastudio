@@ -135,7 +135,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			headerCssClass: col.headerCssClass,
 			toolTip: col.toolTip,
 			formatter: iconCssFormatter,
-			filterable: false
+			filterable: false,
+			resizable: col.resizable
 		};
 	}
 
@@ -148,7 +149,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			cssClass: col.cssClass,
 			headerCssClass: col.headerCssClass,
 			toolTip: col.toolTip,
-			formatter: textFormatter
+			formatter: textFormatter,
+			resizable: col.resizable
 		};
 	}
 
@@ -410,7 +412,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				width: col.width,
 				cssClass: col.cssClass,
 				headerCssClass: col.headerCssClass,
-				actionOnCheck: checkboxAction,
+				actionOnCheck: checkboxAction
 			}, index);
 
 			this._register(this._checkboxColumns[col.value].onChange((state) => {
@@ -436,7 +438,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				iconCssClass: icon ? this.createIconCssClassInternal(icon) : undefined,
 				field: col.value,
 				showText: col.showText,
-				name: col.name
+				name: col.name,
+				resizable: col.resizable
 			});
 
 			this._register(this._buttonColumns[col.value].onClick((state) => {
@@ -460,7 +463,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				width: col.width,
 				iconCssClass: col.icon ? this.createIconCssClassInternal(col.icon) : undefined,
 				field: col.value,
-				name: col.name
+				name: col.name,
+				resizable: col.resizable
 			});
 
 			this._hyperlinkColumns[col.value] = hyperlinkColumn;

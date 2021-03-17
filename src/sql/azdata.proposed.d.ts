@@ -1035,6 +1035,11 @@ declare module 'azdata' {
 		 * The text to display on the column heading. 'value' property will be used, if not specified
 		 */
 		name?: string;
+
+		/**
+		 * whether the column is resizable. Default value is true.
+		 */
+		resizable?: boolean;
 	}
 
 	export interface IconColumnOptions {
