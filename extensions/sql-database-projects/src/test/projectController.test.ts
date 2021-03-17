@@ -282,7 +282,7 @@ describe('ProjectsController', function (): void {
 				// Reload edited sqlproj from disk
 				proj = await Project.openProject(proj.projectFilePath);
 
-				// Confirm result
+				// confirm result
 				should(proj.files.length).equal(0);
 				should(proj.preDeployScripts.length).equal(0);
 				should(proj.postDeployScripts.length).equal(0);
