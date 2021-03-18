@@ -345,6 +345,7 @@ declare module 'azdata' {
 		separator(): ComponentBuilder<SeparatorComponent, SeparatorComponentProperties>;
 		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent, PropertiesContainerComponentProperties>;
 		infoBox(): ComponentBuilder<InfoBoxComponent, InfoBoxComponentProperties>;
+		slider(): ComponentBuilder<SliderComponent, SliderComponentProperties>;
 	}
 
 	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
@@ -586,6 +587,38 @@ declare module 'azdata' {
 
 	export interface CheckBoxProperties {
 		required?: boolean;
+	}
+
+	export interface SliderComponentProperties extends ComponentProperties {
+		/**
+		 * The value selected on the slider. Default initial value is the minimum value.
+		 */
+		value?: number,
+		/**
+		 * The minimum value of the slider. Default value is 1.
+		 */
+		min?: number,
+		/**
+		 * The maximum value of the slider. Default value is 100.
+		 */
+		max?: number,
+		/**
+		 * The value between each "tick" of the slider. Default is 1.
+		 */
+		step?: number,
+		/**
+		 * Whether to show the tick marks on the slider. Default is false.
+		 */
+		showTicks?: boolean
+		/**
+		 * The width of the slider, not including the value box.
+		 */
+		width?: number | string;
+	}
+
+	export interface SliderComponent extends Component, SliderComponentProperties {
+		onChanged: vscode.Event<number>;
+		onInput: vscode.Event<number>;
 	}
 
 	/**
