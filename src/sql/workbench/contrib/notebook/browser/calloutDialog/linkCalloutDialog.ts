@@ -7,9 +7,9 @@ import 'vs/css!./media/linkCalloutDialog';
 import * as DOM from 'vs/base/browser/dom';
 import * as styler from 'vs/platform/theme/common/styler';
 import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
-import { CalloutDialog } from 'sql/workbench/browser/modal/calloutDialog';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { Modal, IDialogProperties, DialogPosition, DialogWidth } from 'sql/workbench/browser/modal/modal';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IDialogProperties } from 'sql/workbench/browser/modal/modal';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -19,11 +19,9 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { escapeLabel, escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
-
-const DEFAULT_DIALOG_WIDTH = 452;
 
 export interface ILinkCalloutDialogOptions {
 	insertTitle?: string,
@@ -32,7 +30,9 @@ export interface ILinkCalloutDialogOptions {
 	insertUnescapedLinkUrl?: string
 }
 
-export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> {
+const DEFAULT_DIALOG_WIDTH: DialogWidth = 452;
+
+export class LinkCalloutDialog extends Modal {
 	private _selectionComplete: Deferred<ILinkCalloutDialogOptions> = new Deferred<ILinkCalloutDialogOptions>();
 	private _linkTextLabel: HTMLElement;
 	private _linkTextInputBox: InputBox;
@@ -42,6 +42,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 
 	constructor(
 		title: string,
+		dialogPosition: DialogPosition,
 		dialogProperties: IDialogProperties,
 		private readonly _defaultLabel: string = '',
 		@IContextViewService private readonly _contextViewService: IContextViewService,
@@ -55,20 +56,28 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 	) {
 		super(
 			title,
-			DEFAULT_DIALOG_WIDTH,
-			dialogProperties,
-			themeService,
-			layoutService,
+			TelemetryKeys.CalloutDialog,
 			telemetryService,
-			contextKeyService,
+			layoutService,
 			clipboardService,
+			themeService,
 			logService,
-			textResourcePropertiesService
+			textResourcePropertiesService,
+			contextKeyService,
+			{
+				dialogStyle: 'callout',
+				dialogPosition: dialogPosition,
+				dialogProperties: dialogProperties,
+				width: DEFAULT_DIALOG_WIDTH
+			}
 		);
 		let selection = window.getSelection();
 		if (selection.rangeCount > 0) {
 			this._previouslySelectedRange = selection?.getRangeAt(0);
 		}
+	}
+
+	protected layout(height?: number): void {
 	}
 
 	/**
@@ -82,7 +91,8 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 
 	public render(): void {
 		super.render();
-		attachModalDialogStyler(this, this._themeService);
+		attachCalloutDialogStyler(this, this._themeService);
+
 		this.addFooterButton(constants.insertButtonText, () => this.insert());
 		this.addFooterButton(constants.cancelButtonText, () => this.cancel(), undefined, true);
 		this.registerListeners();
@@ -144,7 +154,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 	}
 
 	public insert(): void {
-		this.hide();
+		this.hide('ok');
 		let escapedLabel = escapeLabel(this._linkTextInputBox.value);
 		let escapedUrl = escapeUrl(this._linkUrlInputBox.value);
 
@@ -163,7 +173,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 	}
 
 	public cancel(): void {
-		super.cancel();
+		this.hide('cancel');
 		this._selectionComplete.resolve({
 			insertEscapedMarkdown: '',
 			insertUnescapedLinkLabel: escapeLabel(this._linkTextInputBox.value)

@@ -14,7 +14,7 @@ import { ServerTreeDragAndDrop } from 'sql/workbench/services/objectExplorer/bro
 import { TestTree } from 'sql/workbench/test/treeMock';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { mssqlProviderName, pgsqlProviderName } from 'sql/platform/connection/common/constants';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 
 
@@ -48,9 +48,29 @@ suite('SQL Drag And Drop Controller tests', () => {
 		id: 'd936bb32-422b-49c3-963f-ae9532d63dc5'
 	};
 
+	let iConnectionProfileId_pgsql: IConnectionProfile = {
+		connectionName: 'new name',
+		serverName: 'new server',
+		databaseName: 'database',
+		userName: 'user',
+		password: 'password',
+		authenticationType: '',
+		savePassword: true,
+		groupFullName: 'g2/g2-2',
+		groupId: 'group id',
+		getOptionsKey: undefined!,
+		matches: undefined!,
+		providerName: pgsqlProviderName,
+		options: {},
+		saveProfile: true,
+		id: 'd936bb32-422b-49c3-963f-ae9532d63dc6'
+	};
+
 	let connectionProfileId = new ConnectionProfile(capabilitiesService, iConnectionProfileId);
-	let connectionProfileArray = [connectionProfileId];
+	let connectionProfileId_pgsql = new ConnectionProfile(capabilitiesService, iConnectionProfileId_pgsql);
+	let connectionProfileArray = [connectionProfileId, connectionProfileId_pgsql];
 	let connectionProfileGroupId = new ConnectionProfileGroup('name', undefined, 'd936bb32-422b-49c3-963f-ae9532d63dc5', 'color', 'description');
+	connectionProfileGroupId.addConnections([connectionProfileId_pgsql]);
 	let connectionProfileGroupArray = [connectionProfileGroupId];
 	let treeNode = new TreeNode('Column', 'label', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
 	let treeNodeArray = [treeNode];
@@ -79,8 +99,10 @@ suite('SQL Drag And Drop Controller tests', () => {
 	});
 
 	test('able to get DragURI', async () => {
-		let uri = serverTreeDragAndDrop.getDragURI(testTree, connectionProfileId);
-		assert.equal(connectionProfileId.id, uri);
+		connectionProfileArray.forEach(connectionProfile => {
+			let uri = serverTreeDragAndDrop.getDragURI(testTree, connectionProfile);
+			assert.equal(connectionProfile.id, uri);
+		});
 
 		let uriGroup = serverTreeDragAndDrop.getDragURI(testTree, connectionProfileGroupId);
 		assert.equal(connectionProfileGroupId.id, uriGroup);

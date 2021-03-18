@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 export const IAdsTelemetryService = createDecorator<IAdsTelemetryService>('adsTelemetryService');
@@ -19,16 +20,6 @@ export interface ITelemetryEventProperties {
  */
 export interface ITelemetryEventMeasures {
 	[key: string]: number;
-}
-
-/**
- * Connection info properties to add into an event.
- */
-export interface ITelemetryConnectionInfo {
-	authenticationType?: string;
-	providerName?: string;
-	serverType?: string;
-	engineType?: string;
 }
 
 export interface ITelemetryEvent {
@@ -51,9 +42,15 @@ export interface ITelemetryEvent {
 
 	/**
 	 * Adds additional connection-related information to this event.
-	 * @param connectionInfo The connection info to add. Only the fields in TelemetryConnectionInfo are included, all others are ignored.
+	 * @param connectionInfo The connection info to add.
 	 */
-	withConnectionInfo(connectionInfo: ITelemetryConnectionInfo): ITelemetryEvent;
+	withConnectionInfo(connectionInfo?: azdata.IConnectionProfile): ITelemetryEvent;
+
+	/**
+	 * Adds additional server-related information to this event.
+	 * @param serverInfo The server info to add.
+	 */
+	withServerInfo(serverInfo?: azdata.ServerInfo): ITelemetryEvent;
 }
 
 export interface ITelemetryInfo {

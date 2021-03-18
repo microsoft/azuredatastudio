@@ -16,7 +16,7 @@
 	<tbody role="rowgroup">
 		<ng-container *ngIf="data.length > 0">
 			<ng-container *ngFor="let row of data;let r = index;">
-				<tr [style.display]="isFiltered(r) ? 'none' : ''" class="declarative-table-row" [class.selected]="isRowSelected(r)" role="row">
+				<tr [style.display]="isFiltered(r) ? 'none' : ''" class="declarative-table-row" [ngStyle]="getRowStyle(r)" role="row">
 					<ng-container *ngFor="let cellData of row;let c = index;trackBy:trackByFnCols">
 						<td class="declarative-table-cell" [style.width]="getColumnWidth(c)"
 							[attr.aria-label]="getAriaLabel(r, c)"

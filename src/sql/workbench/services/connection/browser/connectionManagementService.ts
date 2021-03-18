@@ -659,7 +659,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStatusManager.getActiveConnectionProfiles(providers);
 	}
 
-	public getConnectionUriFromId(connectionId: string): string {
+	public getConnectionUriFromId(connectionId: string): string | undefined {
 		let connectionInfo = this._connectionStatusManager.findConnectionByProfileId(connectionId);
 		if (connectionInfo) {
 			return connectionInfo.ownerUri;
@@ -676,7 +676,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	public getAdvancedProperties(): azdata.ConnectionOption[] {
+	public getAdvancedProperties(): azdata.ConnectionOption[] | undefined {
 
 		let providers = this._capabilitiesService.providers;
 		if (providers) {
@@ -775,7 +775,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	public getDefaultProviderId(): string {
+	public getDefaultProviderId(): string | undefined {
 		let defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultEngine);
 		return defaultProvider && this._providers.has(defaultProvider) ? defaultProvider : undefined;
 	}
@@ -955,14 +955,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 			connection.connectHandler(true);
 			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.DatabaseConnected)
-				.withAdditionalProperties({
-					connectionType: connection.serverInfo ? (connection.serverInfo.isCloud ? 'Azure' : 'Standalone') : '',
-					provider: connection.connectionProfile.providerName,
-					serverVersion: connection.serverInfo ? connection.serverInfo.serverVersion : '',
-					serverEdition: connection.serverInfo ? connection.serverInfo.serverEdition : '',
-					serverEngineEdition: connection.serverInfo ? connection.serverInfo.engineEditionId : '',
-					isBigDataCluster: connection.serverInfo?.options?.isBigDataCluster ?? false,
-				}).withAdditionalMeasurements({
+				.withConnectionInfo(connection.connectionProfile)
+				.withServerInfo(connection.serverInfo)
+				.withAdditionalMeasurements({
 					extensionConnectionTimeMs: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
 					serviceConnectionTimeMs: connection.serviceTimer.elapsed()
 				})
@@ -974,9 +969,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		} else {
 			connection.connectHandler(false, info.errorMessage, info.errorNumber, info.messages);
 			this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.DatabaseConnectionError, info.errorNumber.toString())
-				.withAdditionalProperties({
-					provider: connection.connectionProfile.providerName,
-				})
+				.withConnectionInfo(connection.connectionProfile)
 				.withAdditionalMeasurements({
 					extensionConnectionTimeMs: connection.extensionTimer.elapsed() - connection.serviceTimer.elapsed(),
 					serviceConnectionTimeMs: connection.serviceTimer.elapsed()
@@ -1131,9 +1124,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				if (this._connectionStatusManager.isDefaultTypeUri(fileUri)) {
 					this._connectionGlobalStatus.setStatusToDisconnected(fileUri);
 				}
-
-				// TODO: send telemetry events
-				// Telemetry.sendTelemetryEvent('DatabaseDisconnected');
 			}
 
 			return result;
@@ -1145,19 +1135,21 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public disconnect(input: string | interfaces.IConnectionProfile): Promise<void> {
 		let uri: string;
 		let profile: interfaces.IConnectionProfile;
+		let info: ConnectionManagementInfo | undefined;
 		if (typeof input === 'object') {
 			uri = Utils.generateUri(input);
 			profile = input;
+			info = this.getConnectionInfo(uri);
 		} else if (typeof input === 'string') {
 			profile = this.getConnectionProfile(input);
+			info = this.getConnectionInfo(input);
 			uri = input;
 		}
 		return this.doDisconnect(uri, profile).then(result => {
 			if (result) {
 				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.DatabaseDisconnected)
-					.withAdditionalProperties({
-						provider: profile.providerName
-					})
+					.withConnectionInfo(profile)
+					.withServerInfo(info?.serverInfo)
 					.send();
 				this._connectionStatusManager.removeConnection(uri);
 			} else {
@@ -1226,15 +1218,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStatusManager.isConnecting(fileUri);
 	}
 
-	public getConnectionProfile(fileUri: string): interfaces.IConnectionProfile {
+	public getConnectionProfile(fileUri: string): interfaces.IConnectionProfile | undefined {
 		return this._connectionStatusManager.isConnected(fileUri) ? this._connectionStatusManager.getConnectionProfile(fileUri) : undefined;
 	}
 
-	public getConnectionInfo(fileUri: string): ConnectionManagementInfo {
+	public getConnectionInfo(fileUri: string): ConnectionManagementInfo | undefined {
 		return this._connectionStatusManager.isConnected(fileUri) ? this._connectionStatusManager.findConnection(fileUri) : undefined;
 	}
 
-	public listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult> {
+	public listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult | undefined> {
 		const self = this;
 		if (self.isConnected(connectionUri)) {
 			return self.sendListDatabasesRequest(connectionUri);

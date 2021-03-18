@@ -68,6 +68,7 @@ export class AssessmentResultGrid implements vscode.Disposable {
 						width: 10,
 						headerCssClass: headerCssClass,
 						toolTip: localize('asmt.column.targetType', "Target Type"),
+						resizable: false,
 					},
 					{ value: LocalizedStrings.TARGET_COLUMN_NAME, headerCssClass: headerCssClass, width: 125 },
 					{ value: LocalizedStrings.SEVERITY_COLUMN_NAME, headerCssClass: headerCssClass, width: 100 },
@@ -159,8 +160,9 @@ export class AssessmentResultGrid implements vscode.Disposable {
 		let filteredValues = this.filterOutNotSupportedKind(asmtResult.items);
 		if (this.dataItems) {
 			this.dataItems.push(...filteredValues);
+
 		}
-		this.table.appendData(filteredValues.map(item => this.convertToDataView(item)));
+		await this.table.appendData(filteredValues.map(item => this.convertToDataView(item)));
 	}
 
 	private async showDetails(rowNumber: number) {

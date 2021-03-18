@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/calloutDialog';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { IDialogProperties, Modal, DialogWidth } from 'sql/workbench/browser/modal/modal';
+import { IDialogProperties, Modal, DialogWidth, DialogPosition } from 'sql/workbench/browser/modal/modal';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -20,6 +20,7 @@ export abstract class CalloutDialog<T> extends Modal {
 		title: string,
 		width: DialogWidth,
 		dialogProperties: IDialogProperties,
+		dialogPosition: DialogPosition,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
@@ -40,7 +41,7 @@ export abstract class CalloutDialog<T> extends Modal {
 			contextKeyService,
 			{
 				dialogStyle: 'callout',
-				dialogPosition: 'below',
+				dialogPosition: dialogPosition,
 				dialogProperties: dialogProperties,
 				width: width
 			});
@@ -51,7 +52,7 @@ export abstract class CalloutDialog<T> extends Modal {
 	public abstract open(): Promise<T>;
 
 	public cancel(): void {
-		this.hide();
+		this.hide('cancel');
 		this.dispose();
 	}
 

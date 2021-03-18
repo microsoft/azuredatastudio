@@ -32,8 +32,8 @@ export class TempTargetSelectionPage extends MigrationWizardPage {
 		this._managedInstanceSubscriptionDropdown.onValueChanged((e) => {
 			if (e.selected) {
 				this.migrationStateModel._targetSubscription = this.migrationStateModel.getSubscription(e.index);
-				this.migrationStateModel._targetManagedInstance = undefined!;
-				this.migrationStateModel._migrationController = undefined!;
+				this.migrationStateModel._targetServerInstance = undefined!;
+				this.migrationStateModel._sqlMigrationService = undefined!;
 				this.populateManagedInstanceDropdown();
 			}
 		});
@@ -48,8 +48,8 @@ export class TempTargetSelectionPage extends MigrationWizardPage {
 			}).component();
 		this._managedInstanceDropdown.onValueChanged((e) => {
 			if (e.selected) {
-				this.migrationStateModel._migrationControllers = undefined!;
-				this.migrationStateModel._targetManagedInstance = this.migrationStateModel.getManagedInstance(e.index);
+				this.migrationStateModel._sqlMigrationServices = undefined!;
+				this.migrationStateModel._targetServerInstance = this.migrationStateModel.getManagedInstance(e.index);
 			}
 		});
 
@@ -97,7 +97,7 @@ export class TempTargetSelectionPage extends MigrationWizardPage {
 	}
 
 	private async populateManagedInstanceDropdown(): Promise<void> {
-		if (!this.migrationStateModel._targetManagedInstance) {
+		if (!this.migrationStateModel._targetServerInstance) {
 			this._managedInstanceDropdown.loading = true;
 			try {
 				this._managedInstanceDropdown.values = await this.migrationStateModel.getManagedInstanceValues(this.migrationStateModel._targetSubscription);

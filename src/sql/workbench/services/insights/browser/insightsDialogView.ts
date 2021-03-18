@@ -414,7 +414,7 @@ export class InsightsDialogView extends Modal {
 
 
 	public close() {
-		this.hide();
+		this.hide('close');
 		dispose(this._taskButtonDisposables);
 		this._taskButtonDisposables = [];
 	}
