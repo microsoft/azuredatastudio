@@ -194,6 +194,40 @@ declare module 'azdata' {
 		 * @param connectionProfile connection profile
 		 */
 		export function connect(connectionProfile: IConnectionProfile, saveConnection?: boolean, showDashboard?: boolean): Thenable<ConnectionResult>;
+
+		/**
+		 * Supported connection event types
+		 */
+		export type ConnectionEventType =
+			| 'onConnect'
+			| 'onDisconnect'
+			| 'onConnectionChanged';
+
+		/**
+		 * Connection Event Lister
+		 */
+		export interface ConnectionEventListener {
+			/**
+			 * Connection event handler
+			 * @param type Connection event type
+			 * @param ownerUri Connection's owner uri
+			 * @param args Connection profile
+			 */
+			onConnectionEvent(type: ConnectionEventType, ownerUri: string, args: IConnectionProfile): void;
+		}
+
+		/**
+		 * Register a connection event listener
+		 * @param listener The connection event listener
+		 */
+		export function registerConnectionEventListener(listener: connection.ConnectionEventListener): vscode.Disposable;
+
+		/**
+		 * Get connection profile by its owner uri
+		 * @param ownerUri The owner uri of the connection
+		 * @returns Thenable to return the connection profile matching the ownerUri
+		 */
+		export function getConnection(ownerUri: string): Thenable<ConnectionProfile>;
 	}
 
 	/**
@@ -2254,7 +2288,11 @@ declare module 'azdata' {
 		/**
 		 * Azure Dev Ops
 		 */
-		AzureDevOps = 6
+		AzureDevOps = 6,
+		/**
+		 * Microsoft Graph
+		 */
+		MsGraph = 7
 	}
 
 	export interface DidChangeAccountsParams {
@@ -2615,6 +2653,9 @@ declare module 'azdata' {
 		loadingComponent(): LoadingComponentBuilder;
 		fileBrowserTree(): ComponentBuilder<FileBrowserTreeComponent, FileBrowserTreeProperties>;
 		hyperlink(): ComponentBuilder<HyperlinkComponent, HyperlinkComponentProperties>;
+		separator(): ComponentBuilder<SeparatorComponent, SeparatorComponentProperties>;
+		infoBox(): ComponentBuilder<InfoBoxComponent, InfoBoxComponentProperties>;
+		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent, PropertiesContainerComponentProperties>;
 	}
 
 	export interface TreeComponentDataProvider<T> extends vscode.TreeDataProvider<T> {
@@ -3177,6 +3218,10 @@ declare module 'azdata' {
 		 */
 		ariaSelected?: boolean;
 		/**
+		 * Corresponds to the aria-hidden accessibility attribute for this component
+		 */
+		ariaHidden?: boolean;
+		/**
 		 * Matches the CSS style key and its available values.
 		 */
 		CSSStyles?: { [key: string]: string };
@@ -3185,19 +3230,25 @@ declare module 'azdata' {
 	export type ThemedIconPath = { light: string | vscode.Uri; dark: string | vscode.Uri };
 	export type IconPath = string | vscode.Uri | ThemedIconPath;
 
-	export interface ComponentWithIcon {
+	export interface ComponentWithIcon extends ComponentWithIconProperties { }
+
+	export interface ComponentWithIconProperties extends ComponentProperties {
 		/**
-		 * @deprecated This will be moved to `ComponentWithIconProperties`
+		 * The path for the icon with optional dark-theme away alternative
 		 */
 		iconPath?: IconPath;
 		/**
-		 * @deprecated This will be moved to `ComponentWithIconProperties`
+		 * The height of the icon
 		 */
 		iconHeight?: number | string;
 		/**
-		 * @deprecated This will be moved to `ComponentWithIconProperties`
+		 * The width of the icon
 		 */
 		iconWidth?: number | string;
+		/**
+		 * The title for the icon. This title will show when hovered over
+		 */
+		title?: string;
 	}
 
 	export interface InputBoxProperties extends ComponentProperties {
@@ -3214,7 +3265,7 @@ declare module 'azdata' {
 		 */
 		min?: number;
 		/**
-		 * The maxmimum value allowed for the input. Only valid for number inputs.
+		 * The maximum value allowed for the input. Only valid for number inputs.
 		 */
 		max?: number;
 		/**
@@ -3222,6 +3273,20 @@ declare module 'azdata' {
 		 * means the event will propagate up to any parents that have handlers (such as validate on Dialogs)
 		 */
 		stopEnterPropagation?: boolean;
+		/**
+		 * The error message to show when custom validation fails. Note that built-in validations
+		 * (such as min/max values) will use the default error messages for those validations
+		 * as appropriate.
+		 */
+		validationErrorMessage?: string;
+		/**
+		 * Whether the input box is marked with the 'readonly' attribute
+		 */
+		readOnly?: boolean;
+		/**
+		* This title will show when hovered over
+		*/
+		title?: string;
 	}
 
 	export interface TableColumn {
@@ -3284,8 +3349,19 @@ declare module 'azdata' {
 	}
 
 	export interface CheckBoxProperties extends ComponentProperties {
+		/**
+		 * Whether the checkbox is checked.
+		 */
 		checked?: boolean;
+		/**
+		 * The label to display next to the checkbox.
+		 */
 		label?: string;
+		/**
+		 * Whether the component is marked with the 'required' property - making
+		 * it required to be checked for component validation.
+		 */
+		required?: boolean;
 	}
 
 	export interface TreeProperties extends ComponentProperties {
@@ -3325,12 +3401,20 @@ declare module 'azdata' {
 		url: string;
 	}
 
-	export interface HyperlinkComponentProperties extends ComponentProperties, TitledComponentProperties {
+	export interface HyperlinkComponentProperties extends TitledComponentProperties {
 		label: string;
 		url: string;
+		/**
+		 * Whether to show the 'external link' icon next to the hyperlink
+		 */
+		showLinkIcon?: boolean;
 	}
 
-	export interface DropDownProperties extends ComponentProperties {
+	export interface ImageComponent extends ComponentWithIcon { }
+
+	export interface ImageComponentProperties extends ComponentWithIconProperties { }
+
+	export interface DropDownProperties extends LoadingComponentProperties {
 		value?: string | CategoryValue;
 		values?: string[] | CategoryValue[];
 		editable?: boolean;
@@ -3482,6 +3566,10 @@ declare module 'azdata' {
 	}
 
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
+		/**
+		 * An event called when the hyperlink is clicked
+		 */
+		onDidClick: vscode.Event<void>;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
@@ -3569,6 +3657,10 @@ declare module 'azdata' {
 
 	export interface DiffEditorComponent extends Component {
 		/**
+		 * Title of editor
+		 */
+		title: string;
+		/**
 		 * The content inside the left text editor
 		 */
 		contentLeft: string;
@@ -3642,6 +3734,70 @@ declare module 'azdata' {
 		 * The component displayed when the loading property is false
 		 */
 		component: Component;
+	}
+
+	/**
+	 * A component that adds a line dividing UI components such as toolbar buttons
+	 */
+	export interface SeparatorComponent extends Component { }
+
+	/**
+	 * The properties for the separator component
+	 */
+	export interface SeparatorComponentProperties extends ComponentProperties { }
+
+	/**
+	 * Component to display text with an icon representing the severity
+	 */
+	export interface InfoBoxComponent extends Component, InfoBoxComponentProperties { }
+
+	export type InfoBoxStyle = 'information' | 'warning' | 'error' | 'success';
+
+	/**
+	 * Properties for configuring a InfoBoxComponent
+	 */
+	export interface InfoBoxComponentProperties extends ComponentProperties {
+		/**
+		 * The style of the InfoBox
+		 */
+		style: InfoBoxStyle;
+		/**
+		 * The display text of the InfoBox
+		 */
+		text: string;
+		/**
+		 * Controls whether the text should be announced by the screen reader. Default value is false.
+		 */
+		announceText?: boolean;
+	}
+
+	/**
+	 * A property to be displayed in the PropertiesContainerComponent
+	 */
+	export interface PropertiesContainerItem {
+		/**
+		 * The name of the property to display
+		 */
+		displayName: string;
+		/**
+		 * The value of the property to display
+		 */
+		value: string;
+	}
+
+	/**
+	 * Component to display a list of property values.
+	 */
+	export interface PropertiesContainerComponent extends Component, PropertiesContainerComponentProperties { }
+
+	/**
+	 * Properties for configuring a PropertiesContainerComponent
+	 */
+	export interface PropertiesContainerComponentProperties extends ComponentProperties {
+		/**
+		 * The properties to display
+		 */
+		propertyItems?: PropertiesContainerItem[];
 	}
 
 	/**
@@ -3738,14 +3894,17 @@ declare module 'azdata' {
 		/**
 		 * Create a wizard page with the given title, for inclusion in a wizard
 		 * @param title The title of the page
+		 * @param pageName The optional page name parameter will be used for telemetry
 		 */
-		export function createWizardPage(title: string): WizardPage;
+		export function createWizardPage(title: string, pageName?: string): WizardPage;
 
 		/**
-		 * Create a wizard with the given title and pages
+		 * Create a wizard with the given title and width
 		 * @param title The title of the wizard
+		 * @param name The name used to identify the wizard in telemetry
+		 * @param width The width of the wizard, default value is 'narrow'
 		 */
-		export function createWizard(title: string): Wizard;
+		export function createWizard(title: string, name?: string, width?: DialogWidth): Wizard;
 
 		/**
 		 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -3941,6 +4100,11 @@ declare module 'azdata' {
 			 * The title of the wizard
 			 */
 			title: string;
+
+			/**
+			 * The name used to identify the wizard in telemetry
+			 */
+			name?: string;
 
 			/**
 			 * The wizard's pages. Pages can be added/removed while the dialog is open by using
