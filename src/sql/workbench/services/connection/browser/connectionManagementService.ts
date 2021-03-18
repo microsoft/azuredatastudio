@@ -310,11 +310,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			if (!newConnection.authenticationType || newConnection.authenticationType === '') {
 				newConnection.authenticationType = this.getDefaultAuthenticationTypeId();
 			}
-			// // If an azure account token is needed, fill it in and open the connection dialog if it fails  //TODO: Delete?
-			// tokenFillSuccess = false;
-			// if (newConnection.authenticationType === (Constants.azureMFA || Constants.azureMFAAndUser)) {
-			// 	tokenFillSuccess = await this.fillInOrClearToken(newConnection);
-			// }
+
 			// If the password is required and still not loaded show the dialog
 			if ((!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
 				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options);
