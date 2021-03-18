@@ -86,7 +86,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				} else {
 					this.migrationStateModel._targetServerInstance = this.migrationStateModel.getManagedInstance(e.index);
 				}
-
 			}
 		});
 
@@ -385,9 +384,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
-		switch (e.newState) {
-
-		}
 	}
 
 	public refreshDatabaseCount(count: number): void {

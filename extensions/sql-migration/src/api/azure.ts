@@ -331,6 +331,7 @@ export interface StartDatabaseMigrationRequest {
 			},
 		},
 		sourceSqlConnection: {
+			authentication: string,
 			dataSource: string,
 			username: string,
 			password: string

@@ -13,13 +13,17 @@ type DbIssues = {
 	issues: Issues[]
 };
 export class SqlDatabaseTree extends AssessmentDialogComponent {
+	static EXCLUDED_DB = [
+		'master',
+		'tempdb',
+		'msdb',
+		'model'
+	];
 
-	private _model!: MigrationStateModel;
-	private instanceTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
-	private databaseTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
-	private _assessmentResultsTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
-	private _impactedObjectsTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
-	private _assessmentData: Map<string, Issues[]>;
+	private _instanceTable!: azdata.DeclarativeTableComponent;
+	private _databaseTable!: azdata.DeclarativeTableComponent;
+	private _assessmentResultsTable!: azdata.DeclarativeTableComponent;
+	private _impactedObjectsTable!: azdata.DeclarativeTableComponent;
 
 	private _recommendation!: azdata.TextComponent;
 	private _dbName!: azdata.TextComponent;
@@ -31,13 +35,12 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private _objectDetailsName!: azdata.TextComponent;
 	private _objectDetailsSample!: azdata.TextComponent;
 	private _moreInfo!: azdata.TextComponent;
-	private _assessmentType!: string;
 
-	constructor(model: MigrationStateModel, assessmentData: Map<string, Issues[]>, assessmentType: string) {
+	constructor(
+		private _model: MigrationStateModel,
+		private _assessmentData: Map<string, Issues[]>,
+		private _assessmentType: string) {
 		super();
-		this._assessmentData = assessmentData;
-		this._model = model;
-		this._assessmentType = assessmentType;
 		if (this._assessmentType === 'vm') {
 			this._assessmentData.clear();
 		}
@@ -60,7 +63,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	}
 
 	private async createDatabaseComponent(view: azdata.ModelView): Promise<azdata.DivContainer> {
-
 		let mapRowIssue = new Map<number, DbIssues>();
 		const styleLeft: azdata.CssStyles = {
 			'border': 'none',
@@ -77,7 +79,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			'overflow': 'hidden'
 		};
 
-		this.databaseTable = view.modelBuilder.declarativeTable().withProps(
+		this._databaseTable = view.modelBuilder.declarativeTable().withProps(
 			{
 				selectEffect: true,
 				width: '350px',
@@ -114,14 +116,14 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				dataValues: [
 				]
 			}
-		);
+		).component();
 
-		let dbList = await azdata.connection.listDatabases(this._model.sourceConnectionId);
+		let dbList = (await azdata.connection.listDatabases(this._model.sourceConnectionId)).filter(db => !SqlDatabaseTree.EXCLUDED_DB.includes(db));
 
 		if (dbList.length > 0) {
 			let rowNumber = 0;
 			this._assessmentData.forEach((value, key) => {
-				this.databaseTable.component().dataValues?.push(
+				this._databaseTable.dataValues?.push(
 					[
 						{
 							value: false,
@@ -149,7 +151,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			});
 
 			dbList.forEach((value) => {
-				this.databaseTable.component().dataValues?.push(
+				this._databaseTable.dataValues?.push(
 					[
 						{
 							value: true,
@@ -183,10 +185,10 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			});
 		}
 
-		this.databaseTable.component().onRowSelected(({ row }) => {
+		this._databaseTable.onRowSelected(({ row }) => {
 			const rowInfo = mapRowIssue.get(row);
 			if (rowInfo) {
-				this._assessmentResultsTable.component().dataValues = [];
+				this._assessmentResultsTable.dataValues = [];
 				this._dbName.value = rowInfo.name;
 				this._recommendation.value = `Assessment Results (${rowInfo.issues.length} issues found)`;
 				// Need some kind of refresh method for declarative tables
@@ -198,7 +200,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 				});
 
-				this._assessmentResultsTable.component().updateProperties({
+				this._assessmentResultsTable.updateProperties({
 					data: dataValues
 				});
 
@@ -207,7 +209,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		});
 
 
-		const tableContainer = view.modelBuilder.divContainer().withItems([this.databaseTable.component()]).withProps({
+		const tableContainer = view.modelBuilder.divContainer().withItems([this._databaseTable]).withProps({
 			CSSStyles: {
 				'margin-left': '15px',
 			},
@@ -244,7 +246,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			'text-align': 'right'
 		};
 
-		this.instanceTable = view.modelBuilder.declarativeTable().withProps(
+		this._instanceTable = view.modelBuilder.declarativeTable().withProps(
 			{
 				selectEffect: true,
 				width: '100%',
@@ -277,9 +279,9 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 						}
 					]
 				]
-			});
+			}).component();
 
-		const instanceContainer = view.modelBuilder.divContainer().withItems([this.instanceTable.component()]).withProps({
+		const instanceContainer = view.modelBuilder.divContainer().withItems([this._instanceTable]).withProps({
 			CSSStyles: {
 				'margin-left': '15px',
 			},
@@ -420,10 +422,10 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					]
 				]
 			}
-		);
+		).component();
 
 
-		this._impactedObjectsTable.component().onRowSelected(({ row }) => {
+		this._impactedObjectsTable.onRowSelected(({ row }) => {
 			if (this._dbName.value) {
 				this._impactedObjects = this._issues.impactedObjects;
 			}
@@ -473,7 +475,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			}
 		}).component();
 
-		const container = view.modelBuilder.flexContainer().withItems([impactedObjectsTitle, this._impactedObjectsTable.component(), objectDetailsTitle, this._objectDetailsType, this._objectDetailsName, this._objectDetailsSample]).withLayout({
+		const container = view.modelBuilder.flexContainer().withItems([impactedObjectsTitle, this._impactedObjectsTable, objectDetailsTitle, this._objectDetailsType, this._objectDetailsName, this._objectDetailsSample]).withLayout({
 			flexFlow: 'column'
 		}).component();
 
@@ -650,10 +652,10 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					]
 				]
 			}
-		);
+		).component();
 
-		this._assessmentResultsTable.component().onRowSelected(({ row }) => {
-			this._descriptionText.value = this._assessmentResultsTable.component().data![row][0];
+		this._assessmentResultsTable.onRowSelected(({ row }) => {
+			this._descriptionText.value = this._assessmentResultsTable.data![row][0];
 
 			if (this._dbName.value) {
 				this._issues = this._assessmentData.get(this._dbName.value)![row];
@@ -672,24 +674,22 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					]);
 				});
 
-				this._impactedObjectsTable.component().updateProperties({
+				this._impactedObjectsTable.updateProperties({
 					dataValues: data
 				});
 			}
 		});
 
-		return this._assessmentResultsTable.component();
+		return this._assessmentResultsTable;
 	}
 
 	public selectedDbs(): string[] {
 		let result: string[] = [];
-
-		this.databaseTable.component().dataValues?.forEach((arr) => {
+		this._databaseTable.dataValues?.forEach((arr) => {
 			if (arr[0].value === true) {
 				result.push(arr[1].value.toString());
 			}
 		});
-
 		return result;
 	}
 

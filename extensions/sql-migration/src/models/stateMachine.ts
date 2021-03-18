@@ -82,6 +82,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _azureAccount!: azdata.Account;
 	public _accountTenants!: azurecore.Tenant[];
 
+	public _authenticationType!: string;
+	public _sqlServerUsername!: string;
+	public _sqlServerPassword!: string;
+
 	public _subscriptions!: azureResource.AzureResourceSubscription[];
 
 	public _targetSubscription!: azureResource.AzureResourceSubscription;
@@ -210,6 +214,17 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public getTenant(index: number): azurecore.Tenant {
 		return this._accountTenants[index];
+	}
+
+	public async getSourceConnectionProfile(): Promise<azdata.connection.ConnectionProfile> {
+		const sqlConnections = await azdata.connection.getConnections();
+		return sqlConnections.find((value) => {
+			if (value.connectionId === this.sourceConnectionId) {
+				return true;
+			} else {
+				return false;
+			}
+		})!;
 	}
 
 	public async getSubscriptionsDropdownValues(): Promise<azdata.CategoryValue[]> {
@@ -470,7 +485,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				return false;
 			}
 		});
-		const connectionPassword = await azdata.connection.getCredentials(this.sourceConnectionId);
 
 		const requestBody: StartDatabaseMigrationRequest = {
 			location: this._sqlMigrationService?.properties.location!,
@@ -492,8 +506,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				},
 				sourceSqlConnection: {
 					dataSource: currentConnection?.serverName!,
-					username: currentConnection?.userName!,
-					password: connectionPassword.password
+					authentication: this._authenticationType,
+					username: this._sqlServerUsername,
+					password: this._sqlServerPassword
 				},
 				scope: this._targetServerInstance.id
 			}
