@@ -158,12 +158,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		if (!defaultAuthenticationType && this._configurationService) {
 			defaultAuthenticationType = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultAuthenticationType);
 		}
-		// TODO: Delete this?
-		// let mything = this._model.serverCapabilities.connectionOptions.find(option => option.specialValueType === ConnectionOptionSpecialType.authType);
-		// if (mything) {
-
-		// }
-		// //mything = this._model.serverCapabilities.connectionOptions;
 
 		return defaultAuthenticationType || Constants.sqlLogin;  // as a fallback, default to sql login if the value from settings is not available
 

@@ -134,7 +134,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	public async getChildren(node: ITreeItem, viewId: string, configurationService: IConfigurationService): Promise<ITreeItem[]> {
 		if (node.payload) {
-			if (node.payload.authenticationType && node.payload.authenticationType === '') {
+			if (node.payload.authenticationType !== undefined && node.payload.authenticationType === '') {
 				node.payload.authenticationType = this.getDefaultAuthenticationType(configurationService);  // we need to set auth type here, because it's value is part of the session key
 			}
 
