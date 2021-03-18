@@ -4836,10 +4836,6 @@ declare module 'azdata' {
 			startNew(options: ISessionOptions): Thenable<ISession>;
 
 			shutdown(id: string): Thenable<void>;
-
-			shutdownAll(): Thenable<void>;
-
-			dispose(): void;
 		}
 
 		export interface ISession {

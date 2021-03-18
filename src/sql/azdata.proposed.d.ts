@@ -89,6 +89,16 @@ declare module 'azdata' {
 		export type ICellAttachments = { [key: string]: ICellAttachment };
 		export type ICellAttachment = { [key: string]: string };
 
+		export interface SessionManager {
+			/**
+			 * Shutdown all sessions.
+			 */
+			shutdownAll(): Thenable<void>;
+			/**
+			 * Disposes the session manager.
+			 */
+			dispose(): void;
+		}
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
