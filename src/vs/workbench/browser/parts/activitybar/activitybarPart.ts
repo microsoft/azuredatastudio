@@ -44,7 +44,7 @@ import { Action2, registerAction2 } from 'vs/platform/actions/common/actions';
 import { CATEGORIES } from 'vs/workbench/common/actions';
 import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
 
-import { AccountsActionViewItem } from 'sql/workbench/browser/parts/activitybar/activitybarActions'; // {{ SQL CARBON EDIT }} - use the ADS account management action
+import { AccountsActionViewItem } from 'sql/workbench/browser/parts/activitybar/activitybarActions'; // {{SQL CARBON EDIT}} - use the ADS account management action
 
 interface IPlaceholderViewContainer {
 	readonly id: string;
@@ -71,7 +71,7 @@ interface ICachedViewContainer {
 	views?: { when?: string }[];
 }
 
-const settingsViewBarIcon = registerIcon('settings-view-bar-icon', Codicon.settingsGear, nls.localize('settingsViewBarIcon', 'Settings icon in the view bar.'));
+export const settingsViewBarIcon = registerIcon('settings-view-bar-icon', Codicon.settingsGear, nls.localize('settingsViewBarIcon', 'Settings icon in the view bar.')); // {{SQL CARBON EDIT}} exporting to use it in getting started tour
 const accountsViewBarIcon = registerIcon('accounts-view-bar-icon', Codicon.account, nls.localize('accountsViewBarIcon', 'Accounts icon in the view bar.'));
 
 export class ActivitybarPart extends Part implements IActivityBarService {

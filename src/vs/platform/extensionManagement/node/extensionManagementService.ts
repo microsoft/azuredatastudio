@@ -160,8 +160,8 @@ export class ExtensionManagementService extends Disposable implements IExtension
 
 			const manifest = await getManifest(zipPath);
 			const identifier = { id: getGalleryExtensionId(manifest.publisher, manifest.name) };
-			// let operation: InstallOperation = InstallOperation.Install; {{ SQL CARBON EDIT }}
-			// {{ SQL CARBON EDIT }}
+			// let operation: InstallOperation = InstallOperation.Install; {{SQL CARBON EDIT}}
+			// {{SQL CARBON EDIT}}
 			if (manifest.engines?.vscode && !isEngineValid(manifest.engines.vscode, product.vscodeVersion)) {
 				throw new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with the current VS Code engine version '{1}'.", identifier.id, product.vscodeVersion));
 			}
@@ -175,7 +175,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			if (existing) {
 				options.isMachineScoped = options.isMachineScoped || existing.isMachineScoped;
 				options.isBuiltin = options.isBuiltin || existing.isBuiltin;
-				// operation = InstallOperation.Update; {{ SQL CARBON EDIT }}
+				// operation = InstallOperation.Update; {{SQL CARBON EDIT}}
 				if (identifierWithVersion.equals(new ExtensionIdentifierWithVersion(existing.identifier, existing.manifest.version))) {
 					try {
 						await this.extensionsScanner.removeExtension(existing, 'existing');
@@ -213,7 +213,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 					},
 					error => { this._onDidInstallExtension.fire({ identifier, zipPath, error, operation: InstallOperation.Install }); return Promise.reject(error); }
 				);
-			// {{ SQL CARBON EDIT }}
+			// {{SQL CARBON EDIT}}
 			// let metadata: IGalleryMetadata | undefined;
 			// try {
 			// 	metadata = await this.getGalleryMetadata(getGalleryExtensionId(manifest.publisher, manifest.name));
@@ -242,7 +242,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 		return downloadedLocation;
 	}
 
-	// {{ SQL CARBON EDIT }}
+	// {{SQL CARBON EDIT}}
 	/*private async installFromZipPath(identifierWithVersion: ExtensionIdentifierWithVersion, zipPath: string, metadata: IMetadata | undefined, operation: InstallOperation, token: CancellationToken): Promise<ILocalExtension> {
 		try {
 			const local = await this.installExtension({ zipPath, identifierWithVersion, metadata }, token);
@@ -521,7 +521,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 		return local;
 	}
 
-	// {{ SQL CARBON EDIT }}
+	// {{SQL CARBON EDIT}}
 	/*private async getGalleryMetadata(extensionName: string): Promise<IGalleryMetadata | undefined> {
 		const galleryExtension = await this.findGalleryExtensionByName(extensionName);
 		return galleryExtension ? <IGalleryMetadata>{ id: galleryExtension.identifier.uuid, publisherDisplayName: galleryExtension.publisherDisplayName, publisherId: galleryExtension.publisherId } : undefined;

@@ -278,11 +278,13 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 
 	public updateChartData(rowCount: number, columnCount: number, gridDataProvider: IGridDataProvider): void {
-		gridDataProvider.getRowData(0, rowCount).then(result => {
-			let range = new Slick.Range(0, 0, rowCount - 1, columnCount - 1);
-			let columns = gridDataProvider.getColumnHeaders(range);
-			this._chart.setData(result.rows, columns);
-		});
+		if (this.chartDisplayed) {
+			gridDataProvider.getRowData(0, rowCount).then(result => {
+				let range = new Slick.Range(0, 0, rowCount - 1, columnCount - 1);
+				let columns = gridDataProvider.getColumnHeaders(range);
+				this._chart.setData(result.rows, columns);
+			});
+		}
 	}
 
 	private setChartOptions(options: IInsightOptions | undefined) {
@@ -293,6 +295,7 @@ class DataResourceTable extends GridTableBase<any> {
 	public updateResultSet(resultSet: ResultSetSummary, rows: ICellValue[][]): void {
 		this._gridDataProvider.updateResultSet(resultSet, rows);
 		super.updateResult(resultSet);
+		this.updateChartData(resultSet?.rowCount, resultSet?.columnInfo?.length, this._gridDataProvider);
 	}
 }
 

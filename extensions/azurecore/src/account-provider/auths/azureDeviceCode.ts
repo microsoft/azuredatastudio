@@ -18,12 +18,9 @@ import {
 	AzureAccountProviderMetadata,
 	AzureAuthType,
 	Tenant,
-	Resource,
-	Deferred,
-	// Tenant,
-	// Subscription
-} from '../interfaces';
-
+	Resource
+} from 'azurecore';
+import { Deferred } from '../interfaces';
 import { SimpleTokenCache } from '../simpleTokenCache';
 import { Logger } from '../../utils/Logger';
 const localize = nls.loadMessageBundle();

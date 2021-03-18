@@ -18,7 +18,7 @@ import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { Modal } from 'sql/workbench/browser/modal/modal';
+import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ServerGroupViewModel } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
@@ -72,7 +72,7 @@ export class ServerGroupDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(localize('ServerGroupsDialogTitle', "Server Groups"), TelemetryKeys.ServerGroups, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
+		super(localize('ServerGroupsDialogTitle', "Server Groups"), TelemetryKeys.ModalDialogName.ServerGroups, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
 	}
 
 	public render() {
@@ -360,11 +360,11 @@ export class ServerGroupDialog extends Modal {
 
 	public cancel() {
 		this._onCancel.fire();
-		this.close();
+		this.close('cancel');
 	}
 
-	public close() {
-		this.hide();
+	public close(hideReason: HideReason = 'close') {
+		this.hide(hideReason);
 		this.withRenderedDialog.groupNameInputBox.hideMessage();
 		this._onCloseEvent.fire();
 	}

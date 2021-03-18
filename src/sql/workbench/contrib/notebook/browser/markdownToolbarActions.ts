@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Action } from 'vs/base/common/actions';
-import { localize } from 'vs/nls';
 import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { IRange, Range } from 'vs/editor/common/core/range';
@@ -16,9 +15,7 @@ import { Selection } from 'vs/editor/common/core/selection';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
-import { CalloutDialog, CalloutType } from 'sql/workbench/browser/modal/calloutDialog';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IEditor } from 'vs/editor/common/editorCommon';
 
 export class TransformMarkdownAction extends Action {
 
@@ -29,8 +26,7 @@ export class TransformMarkdownAction extends Action {
 		tooltip: string,
 		private _cellModel: ICellModel,
 		private _type: MarkdownButtonType,
-		@INotebookService private _notebookService: INotebookService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@INotebookService private _notebookService: INotebookService
 	) {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
@@ -39,7 +35,7 @@ export class TransformMarkdownAction extends Action {
 		if (!context?.cellModel?.showMarkdown && context?.cellModel?.showPreview) {
 			this.transformDocumentCommand();
 		} else {
-			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel, this._instantiationService);
+			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel);
 			await markdownTextTransformer.transformText(this._type);
 		}
 		return true;
@@ -130,21 +126,17 @@ export class TransformMarkdownAction extends Action {
 }
 
 export class MarkdownTextTransformer {
-	private _callout: CalloutDialog;
-	private readonly insertLinkHeading = localize('callout.insertLinkHeading', "Insert link");
-	private readonly insertImageHeading = localize('callout.insertImageHeading', "Insert image");
 
 	constructor(
 		private _notebookService: INotebookService,
 		private _cellModel: ICellModel,
-		private _instantiationService: IInstantiationService,
 		private _notebookEditor?: INotebookEditor) { }
 
 	public get notebookEditor(): INotebookEditor {
 		return this._notebookEditor;
 	}
 
-	public async transformText(type: MarkdownButtonType, triggerElement?: HTMLElement): Promise<void> {
+	public async transformText(type: MarkdownButtonType): Promise<void> {
 		let editorControl = this.getEditorControl();
 		if (editorControl) {
 			let selections = editorControl.getSelections();
@@ -158,15 +150,8 @@ export class MarkdownTextTransformer {
 				endLineNumber: selection.startLineNumber
 			};
 
-			let beginInsertedText: string;
-			let endInsertedText: string;
-
-			if (type === MarkdownButtonType.IMAGE_PREVIEW || type === MarkdownButtonType.LINK_PREVIEW) {
-				beginInsertedText = await this.createCallout(type, triggerElement);
-			} else {
-				beginInsertedText = getStartTextToInsert(type);
-				endInsertedText = getEndTextToInsert(type);
-			}
+			let beginInsertedText = getStartTextToInsert(type);
+			let endInsertedText = getEndTextToInsert(type);
 
 			let endRange: IRange = {
 				startColumn: selection.endColumn,
@@ -196,37 +181,6 @@ export class MarkdownTextTransformer {
 			// Always give focus back to the editor after pressing the button
 			editorControl.focus();
 		}
-	}
-
-	/**
-	 * Instantiate modal for use as callout when inserting Link or Image into markdown.
-	 * @param calloutStyle Style of callout passed in to determine which callout is rendered.
-	 * Returns markup created after user enters values and submits the callout.
-	 */
-	private async createCallout(type: MarkdownButtonType, triggerElement: HTMLElement): Promise<string> {
-		const triggerPosX = triggerElement.getBoundingClientRect().left;
-		const triggerPosY = triggerElement.getBoundingClientRect().top;
-		const triggerHeight = triggerElement.offsetHeight;
-		const triggerWidth = triggerElement.offsetWidth;
-		/**
-		 * Width value here reflects designs for Notebook callouts.
-		 */
-		const width: DialogWidth = 452;
-
-		const calloutType: CalloutType = type === MarkdownButtonType.IMAGE_PREVIEW ? 'IMAGE' : 'LINK';
-
-		let title = type === MarkdownButtonType.IMAGE_PREVIEW ? this.insertImageHeading : this.insertLinkHeading;
-
-		if (!this._callout) {
-			const dialogProperties = { xPos: triggerPosX, yPos: triggerPosY, width: triggerWidth, height: triggerHeight };
-			this._callout = this._instantiationService.createInstance(CalloutDialog, calloutType, title, width, dialogProperties);
-			this._callout.render();
-		}
-		let calloutOptions = await this._callout.open();
-		calloutOptions.insertTitle = title;
-		calloutOptions.calloutType = calloutType;
-
-		return calloutOptions.insertMarkup;
 	}
 
 	private getEditorControl(): CodeEditorWidget | undefined {
@@ -610,6 +564,36 @@ function getColumnOffsetForSelection(type: MarkdownButtonType, nothingSelected: 
 	}
 }
 
+/**
+ * When markdown is already formatted correctly and doesn't need transformed, insert markdown based on current editor selection
+ * @param markdownToInsert formatted markdown
+ * @param editorControl editor control for cell
+ */
+export async function insertFormattedMarkdown(markdownToInsert: string, editorControl?: IEditor): Promise<void> {
+	if (editorControl) {
+		let selections = editorControl.getSelections();
+		let selection = selections[0];
+		let startRange: IRange = {
+			startColumn: selection.startColumn,
+			endColumn: selection.startColumn,
+			startLineNumber: selection.startLineNumber,
+			endLineNumber: selection.startLineNumber
+		};
+
+		let editorModel = editorControl.getModel() as TextModel;
+
+		startRange = {
+			startColumn: selection.startColumn,
+			endColumn: selection.endColumn,
+			startLineNumber: selection.startLineNumber,
+			endLineNumber: selection.endLineNumber
+		};
+		editorModel.pushEditOperations(selections, [
+			{ range: startRange, text: markdownToInsert },
+		], undefined);
+	}
+}
+
 export class ToggleViewAction extends Action {
 	constructor(
 		id: string,
@@ -628,9 +612,9 @@ export class ToggleViewAction extends Action {
 		this.class += ' active';
 		context.cellModel.showPreview = this.showPreview;
 		context.cellModel.showMarkdown = this.showMarkdown;
-		// Hide link and image buttons in WYSIWYG mode
+		// Hide image button in WYSIWYG mode
 		if (this.showPreview && !this.showMarkdown) {
-			context.hideLinkAndImageButtons();
+			context.hideImageButton();
 		} else {
 			context.showLinkAndImageButtons();
 		}

@@ -8,7 +8,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { InputBox, OnLoseFocusParams } from 'sql/base/browser/ui/inputBox/inputBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
-import { Modal } from 'sql/workbench/browser/modal/modal';
+import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { FileBrowserTreeView } from 'sql/workbench/services/fileBrowser/browser/fileBrowserTreeView';
@@ -59,7 +59,7 @@ export class FileBrowserDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(title, TelemetryKeys.Backup, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'flyout', hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
+		super(title, TelemetryKeys.ModalDialogName.FileBrowser, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'flyout', hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
 		this._viewModel = this._instantiationService.createInstance(FileBrowserViewModel);
 		this._viewModel.onAddFileTree(args => this.handleOnAddFileTree(args.rootNode, args.selectedNode, args.expandedNodes).catch(err => onUnexpectedError(err)));
 		this._viewModel.onPathValidate(args => this.handleOnValidate(args.succeeded, args.message));
@@ -185,7 +185,7 @@ export class FileBrowserDialog extends Modal {
 
 	private ok() {
 		this._onOk.fire(this._selectedFilePath);
-		this.close();
+		this.close('ok');
 	}
 
 	private handleOnValidate(succeeded: boolean, errorMessage: string) {
@@ -197,12 +197,12 @@ export class FileBrowserDialog extends Modal {
 		}
 	}
 
-	private close(): void {
+	private close(hideReason: HideReason = 'close'): void {
 		if (this._fileBrowserTreeView) {
 			this._fileBrowserTreeView.dispose();
 		}
 		this._onOk.dispose();
-		this.hide();
+		this.hide(hideReason);
 		this._viewModel.closeFileBrowser().catch(err => onUnexpectedError(err));
 	}
 

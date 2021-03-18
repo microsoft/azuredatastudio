@@ -78,7 +78,7 @@ export class FirewallRuleDialog extends Modal {
 	) {
 		super(
 			localize('createNewFirewallRule', "Create new firewall rule"),
-			TelemetryKeys.FireWallRule,
+			TelemetryKeys.ModalDialogName.FireWallRule,
 			telemetryService,
 			layoutService,
 			clipboardService,
@@ -265,11 +265,11 @@ export class FirewallRuleDialog extends Modal {
 
 	public cancel() {
 		this._onCancel.fire();
-		this.close();
+		this.hide('cancel');
 	}
 
 	public close() {
-		this.hide();
+		this.hide('close');
 	}
 
 	public createFirewallRule() {

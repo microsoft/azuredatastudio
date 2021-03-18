@@ -2,10 +2,11 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import { IconPath } from 'azdata';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-export type MigrationProductType = 'AzureSQLMI' | 'AzureSQLVM' | 'AzureSQL';
+export type MigrationProductType = 'AzureSQLMI' | 'AzureSQLVM';
 export interface MigrationProduct {
 	readonly type: MigrationProductType;
 }
@@ -23,11 +24,11 @@ export interface Checks {
 export interface Product extends MigrationProduct {
 	readonly name: string;
 	readonly learnMoreLink?: string;
-	readonly icon?: string;
+	readonly icon?: IconPath;
 }
 
 export class Product implements Product {
-	constructor(public readonly type: MigrationProductType, public readonly name: string, public readonly icon?: string, public readonly learnMoreLink?: string) {
+	constructor(public readonly type: MigrationProductType, public readonly name: string, public readonly icon?: IconPath, public readonly learnMoreLink?: string) {
 
 	}
 
@@ -49,13 +50,11 @@ export const ProductLookupTable: { [key in MigrationProductType]: Product } = {
 	'AzureSQLMI': {
 		type: 'AzureSQLMI',
 		name: localize('sql.migration.products.azuresqlmi.name', 'Azure Managed Instance (Microsoft managed)'),
+		icon: 'sqlMI.svg'
 	},
 	'AzureSQLVM': {
 		type: 'AzureSQLVM',
 		name: localize('sql.migration.products.azuresqlvm.name', 'Azure SQL Virtual Machine (Customer managed)'),
-	},
-	'AzureSQL': {
-		type: 'AzureSQL',
-		name: localize('sql.migration.products.azuresql.name', 'Azure SQL'),
+		icon: 'sqlVM.svg'
 	}
 };

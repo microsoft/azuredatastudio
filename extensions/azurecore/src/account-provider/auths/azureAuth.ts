@@ -12,10 +12,10 @@ import {
 	AzureAccount,
 	AzureAccountProviderMetadata,
 	AzureAuthType,
-	Deferred,
 	Resource,
 	Tenant
-} from '../interfaces';
+} from 'azurecore';
+import { Deferred } from '../interfaces';
 import * as url from 'url';
 
 import { SimpleTokenCache } from '../simpleTokenCache';
@@ -161,7 +161,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const tenant = account.properties.tenants.find(t => t.id === tenantId);
 
 		if (!tenant) {
-			throw new AzureAuthError(localize('azure.tenantNotFound', "Specifed tenant with ID '{0}' not found.", tenantId), `Tenant ${tenantId} not found.`, undefined);
+			throw new AzureAuthError(localize('azure.tenantNotFound', "Specified tenant with ID '{0}' not found.", tenantId), `Tenant ${tenantId} not found.`, undefined);
 		}
 
 		const cachedTokens = await this.getSavedToken(tenant, resource, account.key);
@@ -248,7 +248,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		if (response.data.error) {
 			Logger.error('Response error!', response.data);
-			throw new AzureAuthError(localize('azure.responseError', "Token retrival failed with an error. Open developer tools to view the error"), 'Token retrival failed', undefined);
+			throw new AzureAuthError(localize('azure.responseError', "Token retrieval failed with an error. Open developer tools to view the error"), 'Token retrieval failed', undefined);
 		}
 
 		const accessTokenString = response.data.access_token;

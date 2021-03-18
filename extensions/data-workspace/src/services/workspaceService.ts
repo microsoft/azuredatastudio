@@ -13,6 +13,7 @@ import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
 import { TelemetryReporter, TelemetryViews, calculateRelativity, TelemetryActions } from '../common/telemetry';
+import { isCurrentWorkspaceUntitled } from '../common/utils';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
@@ -26,7 +27,7 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	/**
-	 * Load any temp project that needed to be loaded before the extension host was restarted
+	 * Load any temp project that needed to be loaded before ADS was restarted
 	 * which would happen if a workspace was created in order open or create a project
 	 */
 	async loadTempProjects(): Promise<void> {
@@ -42,7 +43,7 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	/**
-	 * Creates a new workspace in the same folder as the project. Because the extension host gets restarted when
+	 * Creates a new workspace in the same folder as the project. Because ADS gets restarted when
 	 * a new workspace is created and opened, the project needs to be saved as the temp project that will be loaded
 	 * when the extension gets restarted
 	 * @param projectFileFsPath project to add to the workspace
@@ -51,9 +52,15 @@ export class WorkspaceService implements IWorkspaceService {
 		// save temp project
 		await this._context.globalState.update(TempProject, [projectFileFsPath]);
 
-		// create a new workspace
+		// create workspace
 		const projectFolder = vscode.Uri.file(path.dirname(projectFileFsPath));
-		await azdata.workspace.createWorkspace(projectFolder, workspaceFile);
+
+		if (isCurrentWorkspaceUntitled()) {
+			vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders!.length, null, { uri: projectFolder });
+			await azdata.workspace.saveAndEnterWorkspace(workspaceFile!);
+		} else {
+			await azdata.workspace.createAndEnterWorkspace(projectFolder, workspaceFile);
+		}
 	}
 
 	get isProjectProviderAvailable(): boolean {
@@ -67,11 +74,11 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	/**
-	 * Verify that a workspace is open or that if one isn't, it's ok to create a workspace
+	 * Verify that a workspace is open or that if one isn't, it's ok to create a workspace and restart ADS
 	 */
 	async validateWorkspace(): Promise<boolean> {
-		if (!vscode.workspace.workspaceFile) {
-			const result = await vscode.window.showWarningMessage(constants.CreateWorkspaceConfirmation, constants.OkButtonText, constants.CancelButtonText);
+		if (!vscode.workspace.workspaceFile || isCurrentWorkspaceUntitled()) {
+			const result = await vscode.window.showWarningMessage(constants.CreateWorkspaceConfirmation, { modal: true }, constants.OkButtonText);
 			if (result === constants.OkButtonText) {
 				return true;
 			} else {
@@ -84,11 +91,11 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	/**
-	 * Shows confirmation message that the extension host will be restarted and current workspace/file will be closed. If confirmed, the specified workspace will be entered.
+	 * Shows confirmation message that the ADS will be restarted and current workspace/file will be closed. If confirmed, the specified workspace will be entered.
 	 * @param workspaceFile
 	 */
 	async enterWorkspace(workspaceFile: vscode.Uri): Promise<void> {
-		const result = await vscode.window.showWarningMessage(constants.EnterWorkspaceConfirmation, constants.OkButtonText, constants.CancelButtonText);
+		const result = await vscode.window.showWarningMessage(constants.EnterWorkspaceConfirmation, { modal: true }, constants.OkButtonText);
 		if (result === constants.OkButtonText) {
 			await azdata.workspace.enterWorkspace(workspaceFile);
 		} else {
@@ -102,10 +109,10 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 
 		// a workspace needs to be open to add projects
-		if (!vscode.workspace.workspaceFile) {
+		if (!vscode.workspace.workspaceFile || isCurrentWorkspaceUntitled()) {
 			await this.CreateNewWorkspaceForProject(projectFiles[0].fsPath, workspaceFilePath);
 
-			// this won't get hit since the extension host will get restarted, but helps with testing
+			// this won't get hit since ADS will get restarted, but helps with testing
 			return;
 		}
 

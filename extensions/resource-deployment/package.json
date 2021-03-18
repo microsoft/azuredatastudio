@@ -93,6 +93,7 @@
         ],
         "providers": [
           {
+            "name": "sql-image_2017",
             "dialog": {
               "notebook": "./notebooks/docker/2017/deploy-sql2017-image.ipynb",
               "title": "%docker-sql-2017-title%",
@@ -144,6 +145,7 @@
             "when": "version=sql2017"
           },
           {
+            "name": "sql-image_2019",
             "dialog": {
               "notebook": "./notebooks/docker/2019/deploy-sql2019-image.ipynb",
               "title": "%docker-sql-2019-title%",
@@ -197,167 +199,6 @@
         ]
       },
       {
-        "name": "sql-bdc",
-        "displayIndex": 3,
-        "displayName": "%resource-type-sql-bdc-display-name%",
-        "description": "%resource-type-sql-bdc-description%",
-        "platforms": "*",
-        "icon": "./images/sql_bdc.svg",
-        "tags": [
-          "On-premises",
-          "SQL Server",
-          "Cloud"
-        ],
-        "options": [
-          {
-            "name": "version",
-            "displayName": "%version-display-name%",
-            "values": [
-              {
-                "name": "bdc2019",
-                "displayName": "%bdc-2019-display-name%"
-              }
-            ]
-          },
-          {
-            "name": "target",
-            "displayName": "%bdc-deployment-target%",
-            "values": [
-              {
-                "name": "new-aks",
-                "displayName": "%bdc-deployment-target-new-aks%"
-              },
-              {
-                "name": "existing-aks",
-                "displayName": "%bdc-deployment-target-existing-aks%"
-              },
-              {
-                "name": "existing-kubeadm",
-                "displayName": "%bdc-deployment-target-existing-kubeadm%"
-              },
-              {
-                "name": "existing-aro",
-                "displayName": "%bdc-deployment-target-existing-aro%"
-              },
-              {
-                "name": "existing-openshift",
-                "displayName": "%bdc-deployment-target-existing-openshift%"
-              }
-            ]
-          }
-        ],
-        "providers": [
-          {
-            "bdcWizard": {
-              "type": "new-aks",
-              "notebook": "./notebooks/bdc/2019/deploy-bdc-aks.ipynb"
-            },
-            "requiredTools": [
-              {
-                "name": "kubectl",
-                "version": "1.13.0"
-              },
-              {
-                "name": "azure-cli"
-              },
-              {
-                "name": "azdata-old",
-                "version": "20.3.0"
-              }
-            ],
-            "when": "target=new-aks&&version=bdc2019"
-          },
-          {
-            "bdcWizard": {
-              "type": "existing-aks",
-              "notebook": "./notebooks/bdc/2019/deploy-bdc-existing-aks.ipynb"
-            },
-            "requiredTools": [
-              {
-                "name": "kubectl",
-                "version": "1.13.0"
-              },
-              {
-                "name": "azdata-old",
-                "version": "20.3.0"
-              }
-            ],
-            "when": "target=existing-aks&&version=bdc2019"
-          },
-          {
-            "bdcWizard": {
-              "type": "existing-kubeadm",
-              "notebook": "./notebooks/bdc/2019/deploy-bdc-existing-kubeadm.ipynb"
-            },
-            "requiredTools": [
-              {
-                "name": "kubectl",
-                "version": "1.13.0"
-              },
-              {
-                "name": "azdata-old",
-                "version": "20.3.0"
-              }
-            ],
-            "when": "target=existing-kubeadm&&version=bdc2019"
-          },
-          {
-            "bdcWizard": {
-              "type": "existing-aro",
-              "notebook": "./notebooks/bdc/2019/deploy-bdc-existing-aro.ipynb"
-            },
-            "requiredTools": [
-              {
-                "name": "kubectl",
-                "version": "1.13.0"
-              },
-              {
-                "name": "azdata-old",
-                "version": "20.3.0"
-              }
-            ],
-            "when": "target=existing-aro&&version=bdc2019"
-          },
-          {
-            "bdcWizard": {
-              "type": "existing-openshift",
-              "notebook": "./notebooks/bdc/2019/deploy-bdc-existing-openshift.ipynb"
-            },
-            "requiredTools": [
-              {
-                "name": "kubectl",
-                "version": "1.13.0"
-              },
-              {
-                "name": "azdata-old",
-                "version": "20.3.0"
-              }
-            ],
-            "when": "target=existing-openshift&&version=bdc2019"
-          }
-        ],
-        "agreements": [
-          {
-            "template": "%bdc-agreement%",
-            "links": [
-              {
-                "text": "%microsoft-privacy-statement%",
-                "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
-              },
-              {
-                "text": "%bdc-agreement-bdc-eula%",
-                "url": "https://go.microsoft.com/fwlink/?LinkId=2002534"
-              },
-              {
-                "text": "%bdc-agreement-azdata-eula%",
-                "url": "https://aka.ms/eula-azdata-en"
-              }
-            ],
-            "when": "true"
-          }
-        ]
-      },
-      {
         "name": "sql-windows-setup",
         "displayIndex": 1,
         "displayName": "%resource-type-sql-windows-setup-display-name%",
@@ -391,11 +232,13 @@
         ],
         "providers": [
           {
+            "name": "sql-windows-setup_2017",
             "downloadUrl": "https://go.microsoft.com/fwlink/?linkid=853016",
             "requiredTools": [],
             "when": "version=sql2017"
           },
           {
+            "name": "sql-windows-setup_2019",
             "downloadUrl": "https://go.microsoft.com/fwlink/?linkid=866662",
             "requiredTools": [],
             "when": "version=sql2019"
@@ -449,6 +292,7 @@
         ],
         "providers": [
           {
+            "name": "sql-azure-setup_single-database",
             "azureSQLDBWizard": {
               "notebook": "./notebooks/azuredb/create-sqldb.ipynb"
             },
@@ -460,11 +304,13 @@
             "when": "resource-type=single-database"
           },
           {
+            "name": "sql-azure-setup_elastic-pool",
             "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLElasticDatabasePool",
             "requiredTools": [],
             "when": "resource-type=elastic-pool"
           },
           {
+            "name": "sql-azure-setup_database-server",
             "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLServer",
             "requiredTools": [],
             "when": "resource-type=database-server"
@@ -504,6 +350,7 @@
         ],
         "providers": [
           {
+            "name": "azure-sql-vm",
             "azureSQLVMWizard": {
               "notebook": "./notebooks/azurevm/create-sqlvm.ipynb"
             },
@@ -549,6 +396,7 @@
         ],
         "providers": [
           {
+            "name": "azure-sql-mi_azure-sql-mi",
             "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLManagedInstance",
             "requiredTools": [],
             "when": "mi-type=azure-sql-mi"
@@ -604,6 +452,7 @@
     ]
   },
   "dependencies": {
+    "@microsoft/ads-extension-telemetry": "^1.1.3",
     "axios": "^0.19.2",
     "linux-release-info": "^2.0.0",
     "promisify-child-process": "^3.1.1",

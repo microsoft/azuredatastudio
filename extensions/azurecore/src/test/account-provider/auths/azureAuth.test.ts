@@ -5,14 +5,10 @@
 
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
-// import * as azdata from 'azdata';
-// import * as vscode from 'vscode';
-// import * as sinon from 'sinon';
 import 'mocha';
 import { AzureAuthCodeGrant } from '../../../account-provider/auths/azureAuthCodeGrant';
-// import { AzureDeviceCode } from '../../../account-provider/auths/azureDeviceCode';
 import { Token, TokenClaims, AccessToken, RefreshToken, OAuthTokenResponse, TokenPostData } from '../../../account-provider/auths/azureAuth';
-import { Tenant, AzureAccount } from '../../../account-provider/interfaces';
+import { Tenant, AzureAccount } from 'azurecore'
 import providerSettings from '../../../account-provider/providerSettings';
 import { AzureResource } from 'azdata';
 import { AxiosResponse } from 'axios';

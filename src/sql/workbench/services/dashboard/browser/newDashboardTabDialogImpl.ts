@@ -117,7 +117,7 @@ export class NewDashboardTabDialog extends Modal {
 	) {
 		super(
 			localize('newDashboardTab.openDashboardExtensions', "Open dashboard extensions"),
-			TelemetryKeys.AddNewDashboardTab,
+			TelemetryKeys.ModalDialogName.AddNewDashboardTab,
 			telemetryService,
 			layoutService,
 			clipboardService,
