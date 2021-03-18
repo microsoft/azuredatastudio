@@ -56,7 +56,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 			_clipboardService, _configurationService, _accountManagementService, _logService);
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		if (authTypeOption) {
-			let authTypeDefault = this.getAuthTypeDefault(authTypeOption, OS, _configurationService);
+			let authTypeDefault = this.getAuthTypeDefault(authTypeOption, OS);
 			let authTypeDefaultDisplay = this.getAuthTypeDisplayName(authTypeDefault);
 			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeDefaultDisplay, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
 		}
