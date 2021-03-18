@@ -3903,7 +3903,7 @@ declare module 'azdata' {
 		 * @param title The title of the wizard
 		 * @param name The name used to identify the wizard in telemetry
 		 */
-		export function createWizard(title: string, name?: string): Wizard;
+		export function createWizard(title: string, name?: string, width?: DialogWidth): Wizard;
 
 		/**
 		 * Used to control whether a message in a dialog/wizard is displayed as an error,
