@@ -460,6 +460,7 @@ class PreferencesActionsContribution extends Disposable implements IWorkbenchCon
 				}
 			}
 		});
+		/** {{SQL CARBON EDIT}} Remove unused options (we don't have online services)
 		MenuRegistry.appendMenuItem(MenuId.MenubarPreferencesMenu, {
 			group: '1_settings',
 			command: {
@@ -476,7 +477,7 @@ class PreferencesActionsContribution extends Disposable implements IWorkbenchCon
 			},
 			order: 2
 		});
-
+		**/
 		this.registerSettingsEditorActions();
 
 		this.extensionService.whenInstalledExtensionsRegistered()

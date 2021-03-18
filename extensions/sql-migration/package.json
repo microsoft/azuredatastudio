@@ -2,19 +2,18 @@
   "name": "sql-migration",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
-    "vscode": "^1.25.0",
-    "azdata": ">=1.19.0"
+    "vscode": "*",
+    "azdata": ">=1.27.0"
   },
   "activationEvents": [
     "onDashboardOpen",
     "onCommand:sqlmigration.start",
-    "onCommand:sqlmigration.testDialog",
     "onCommand:sqlmigration.openNotebooks"
   ],
   "main": "./out/main",
@@ -30,11 +29,6 @@
       {
         "command": "sqlmigration.start",
         "title": "SQL Migration Start",
-        "category": "SQL Migration"
-      },
-      {
-        "command": "sqlmigration.testDialog",
-        "title": "SQL Migration test dialog",
         "category": "SQL Migration"
       },
       {
@@ -60,8 +54,8 @@
               "name": "",
               "row": 0,
               "col": 1,
-              "rowspan": 5,
-              "colspan": 5,
+              "rowspan": 2.5,
+              "colspan": 3.5,
               "widget": {
                 "modelview": {
                   "id": "migration.dashboard"

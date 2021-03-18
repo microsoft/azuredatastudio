@@ -24,7 +24,7 @@ class TestUserDataAutoSyncService extends UserDataAutoSyncService {
 	}
 }
 
-suite('UserDataAutoSyncService', () => {
+suite.skip('UserDataAutoSyncService', () => { // {{SQL CARBON EDIT}} Service is disabled so turn off tests
 
 	const disposableStore = new DisposableStore();
 

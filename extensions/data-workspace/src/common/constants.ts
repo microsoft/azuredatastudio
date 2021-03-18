@@ -15,11 +15,12 @@ export const AllProjectTypes = localize('AllProjectTypes', "All Project Types");
 export const ProviderNotFoundForProjectTypeError = (projectType: string): string => { return localize('UnknownProjectTypeError', "No provider was found for project type with id: '{0}'", projectType); };
 export const WorkspaceRequiredMessage = localize('dataworkspace.workspaceRequiredMessage', "A workspace is required in order to use the project feature.");
 export const OpenWorkspace = localize('dataworkspace.openWorkspace', "Open Workspace…");
-export const CreateWorkspaceConfirmation = localize('dataworkspace.createWorkspaceConfirmation', "A new workspace will be created and opened in order to open project. The Extension Host will restart and if there is a folder currently open, it will be closed.");
-export const EnterWorkspaceConfirmation = localize('dataworkspace.enterWorkspaceConfirmation', "To open this workspace, the Extension Host will restart and if there is a workspace or folder currently open, it will be closed.");
+export const CreateWorkspaceConfirmation = localize('dataworkspace.createWorkspaceConfirmation', "A workspace will be created and opened in order to open project. Azure Data Studio will restart and if there is a folder currently open, it will be closed.");
+export const EnterWorkspaceConfirmation = localize('dataworkspace.enterWorkspaceConfirmation', "To open this workspace, Azure Data Studio will restart. If there is a workspace or folder currently open, it will be closed.");
 export const WorkspaceContainsNotAddedProjects = localize('dataworkspace.workspaceContainsNotAddedProjects', "The current workspace contains one or more projects that have not been added to the workspace. Use the 'Open existing' dialog to add projects to the projects pane.");
 export const LaunchOpenExisitingDialog = localize('dataworkspace.launchOpenExistingDialog', "Launch Open existing dialog");
 export const DoNotShowAgain = localize('dataworkspace.doNotShowAgain', "Do not show again");
+export const ProjectsFailedToLoad = localize('dataworkspace.projectsFailedToLoad', "Some projects failed to load. Please open console for more information");
 
 // config settings
 export const projectsConfigurationKey = 'projects';
@@ -41,7 +42,7 @@ export const ProjectNamePlaceholder = localize('dataworkspace.projectNamePlaceho
 export const ProjectLocationTitle = localize('dataworkspace.projectLocationTitle', "Location");
 export const ProjectLocationPlaceholder = localize('dataworkspace.projectLocationPlaceholder', "Select location to create project");
 export const AddProjectToCurrentWorkspace = localize('dataworkspace.AddProjectToCurrentWorkspace', "This project will be added to the current workspace.");
-export const NewWorkspaceWillBeCreated = localize('dataworkspace.NewWorkspaceWillBeCreated', "A new workspace will be created for this project.");
+export const NewWorkspaceWillBeCreated = localize('dataworkspace.NewWorkspaceWillBeCreated', "A workspace will be created for this project.");
 export const WorkspaceLocationTitle = localize('dataworkspace.workspaceLocationTitle', "Workspace location");
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };

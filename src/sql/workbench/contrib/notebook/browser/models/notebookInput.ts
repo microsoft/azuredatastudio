@@ -122,7 +122,7 @@ export class NotebookEditorModel extends EditorModel {
 			this._isFirstKernelChange = false;
 			return;
 		}
-		if (!contentChange?.isDirty) {
+		if (contentChange?.isDirty === false) {
 			return;
 		}
 		this._lastEditFullReplacement = false;

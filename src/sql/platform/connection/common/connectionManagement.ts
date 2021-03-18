@@ -161,13 +161,13 @@ export interface IConnectionManagementService {
 
 	deleteConnectionGroup(group: ConnectionProfileGroup): Promise<boolean>;
 
-	getAdvancedProperties(): azdata.ConnectionOption[];
+	getAdvancedProperties(): azdata.ConnectionOption[] | undefined;
 
 	getConnectionUri(connectionProfile: IConnectionProfile): string;
 
 	getFormattedUri(uri: string, connectionProfile: IConnectionProfile): string;
 
-	getConnectionUriFromId(connectionId: string): string;
+	getConnectionUriFromId(connectionId: string): string | undefined;
 
 	isConnected(fileUri: string): boolean;
 
@@ -193,7 +193,7 @@ export interface IConnectionManagementService {
 
 	addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile>;
 
-	listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult>;
+	listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult | undefined>;
 
 	/**
 	 * Register a connection provider
@@ -204,11 +204,11 @@ export interface IConnectionManagementService {
 
 	editGroup(group: ConnectionProfileGroup): Promise<void>;
 
-	getConnectionProfile(fileUri: string): IConnectionProfile;
+	getConnectionProfile(fileUri: string): IConnectionProfile | undefined;
 
-	getConnectionInfo(fileUri: string): ConnectionManagementInfo;
+	getConnectionInfo(fileUri: string): ConnectionManagementInfo | undefined;
 
-	getDefaultProviderId(): string;
+	getDefaultProviderId(): string | undefined;
 
 	getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string };
 

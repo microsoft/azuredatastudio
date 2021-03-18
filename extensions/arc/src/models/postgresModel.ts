@@ -76,7 +76,9 @@ export class PostgresModel extends ResourceModel {
 		const ramLimit = this._config.spec.scheduling?.default?.resources?.limits?.memory;
 		const cpuRequest = this._config.spec.scheduling?.default?.resources?.requests?.cpu;
 		const ramRequest = this._config.spec.scheduling?.default?.resources?.requests?.memory;
-		const storage = this._config.spec.storage?.data?.size;
+		const dataStorage = this._config.spec.storage?.data?.size;
+		const logStorage = this._config.spec.storage?.logs?.size;
+		const backupsStorage = this._config.spec.storage?.backups?.size;
 
 		// scale.shards was renamed to scale.workers. Check both for backwards compatibility.
 		const scale = this._config.spec.scale;
@@ -94,8 +96,19 @@ export class PostgresModel extends ResourceModel {
 			configuration.push(`${ramLimit ?? ramRequest!} ${loc.ram}`);
 		}
 
-		if (storage) {
-			configuration.push(`${storage} ${loc.storagePerNode}`);
+		let storage: string[] = [];
+		if (dataStorage) {
+			storage.push(loc.dataStorage(dataStorage));
+		}
+		if (logStorage) {
+			storage.push(loc.logStorage(logStorage));
+		}
+		if (backupsStorage) {
+			storage.push(loc.backupsStorage(backupsStorage));
+		}
+		if (dataStorage || logStorage || backupsStorage) {
+			storage.push(`${loc.storagePerNode}`);
+			configuration.push(storage.join(' '));
 		}
 
 		return configuration.join(', ');

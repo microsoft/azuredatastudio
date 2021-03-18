@@ -196,6 +196,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
 					this.saveButton!.enabled = false;
+					this.parameterUpdates!.clear();
 				}
 			})
 		);
@@ -468,7 +469,6 @@ export abstract class PostgresParametersPage extends DashboardPage {
 				readOnly: false,
 				min: parseInt(engineSetting.min!),
 				max: parseInt(engineSetting.max!),
-				validationErrorMessage: loc.outOfRange(engineSetting.min!, engineSetting.max!),
 				inputType: 'number',
 				value: engineSetting.value,
 				width: '150px'
@@ -492,7 +492,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 				width: '15px',
 				height: '15px',
 				enabled: false,
-				title: loc.allowedValue(loc.rangeSetting(engineSetting.min!, engineSetting.max!))
+				title: loc.rangeSetting(engineSetting.min!, engineSetting.max!)
 			}).component();
 			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
 		}
