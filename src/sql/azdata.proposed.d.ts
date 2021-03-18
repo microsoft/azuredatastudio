@@ -621,6 +621,13 @@ declare module 'azdata' {
 		 */
 		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogProperties?: IDialogProperties): Dialog;
 
+		/**
+		 * Create a wizard with the given title and width
+		 * @param title The title of the wizard
+		 * @param name The name used to identify the wizard in telemetry
+		 * @param width The width of the wizard, default value is 'narrow'
+		 */
+		export function createWizard(title: string, name?: string, width?: DialogWidth): Wizard;
 
 		export interface Button {
 			/**
