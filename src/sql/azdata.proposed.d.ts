@@ -540,7 +540,7 @@ declare module 'azdata' {
 		export interface Dialog {
 			/**
 			 * Width of the dialog.
-			 * Default is 'narrrow'.
+			 * Default is 'narrow'.
 			 */
 			width?: DialogWidth;
 			/**
@@ -587,7 +587,7 @@ declare module 'azdata' {
 		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number | string;
 
 		/**
-		 * These dialog styles affect how the dialog dispalys in the application.
+		 * These dialog styles affect how the dialog displays in the application.
 		 * normal: Positioned top and centered.
 		 * flyout (default): Existing panel appearance - positioned full screen height, opens from the right side of the application.
 		 * callout: Opens below or beside button clicked, contains footer section with buttons.

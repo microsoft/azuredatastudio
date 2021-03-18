@@ -266,7 +266,7 @@ declare module 'azdata' {
 		/**
 		 * Get connectionProfile from sessionId
 		 * @param sessionId The id of the session that the node exists on
-		 * @returns The IConnecitonProfile for the session
+		 * @returns The IConnectionProfile for the session
 		 */
 		export function getSessionConnectionProfile(sessionId: string): Thenable<IConnectionProfile>;
 
@@ -1799,7 +1799,7 @@ declare module 'azdata' {
 		getTemplateNotebook(ownerUri: string, targetDatabase: string, jobId: string): Thenable<AgentNotebookTemplateResult>;
 		createNotebook(ownerUri: string, notebook: AgentNotebookInfo, templateFilePath: string): Thenable<CreateAgentNotebookResult>;
 		deleteNotebook(ownerUri: string, notebook: AgentNotebookInfo): Thenable<ResultStatus>;
-		updateNotebook(ownerUri: string, originialNotebookName: string, notebook: AgentNotebookInfo, templateFilePath: string): Thenable<UpdateAgentNotebookResult>;
+		updateNotebook(ownerUri: string, originalNotebookName: string, notebook: AgentNotebookInfo, templateFilePath: string): Thenable<UpdateAgentNotebookResult>;
 		updateNotebookMaterializedName(ownerUri: string, agentNotebookHistory: AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<ResultStatus>;
 		updateNotebookMaterializedPin(ownerUri: string, agentNotebookHistory: AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<ResultStatus>;
 		deleteMaterializedNotebook(ownerUri: string, agentNotebookHistory: AgentNotebookHistoryInfo, targetDatabase: string): Thenable<ResultStatus>;
@@ -2060,7 +2060,7 @@ declare module 'azdata' {
 		defaultView: string;
 
 		/**
-		 * TSQL for creating a session
+		 * T-SQL for creating a session
 		 */
 		createStatement: string;
 	}
@@ -2416,7 +2416,7 @@ declare module 'azdata' {
 
 	export namespace resources {
 		/**
-		 * Registers a resource provider that can suport
+		 * Registers a resource provider that can support
 		 */
 		export function registerResourceProvider(providerMetadata: ResourceProviderMetadata, provider: ResourceProvider): vscode.Disposable;
 	}
@@ -3321,9 +3321,9 @@ declare module 'azdata' {
 	}
 
 	export enum ColumnSizingMode {
-		ForceFit = 0, // all columns will be sized to fit in viewable space, no horiz scroll bar
+		ForceFit = 0, // all columns will be sized to fit in viewable space, no horizontal scroll bar
 		AutoFit = 1, // columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit
-		DataFit = 2 // columns use sizing based on cell data, horiz scroll bar present if more cells than visible in view area
+		DataFit = 2 // columns use sizing based on cell data, horizontal scroll bar present if more cells than visible in view area
 	}
 
 	export interface TableComponentProperties extends ComponentProperties {
@@ -3467,7 +3467,7 @@ declare module 'azdata' {
 		 */
 		content?: string;
 		/**
-		 * The languge mode for this text editor. The language mode is SQL by default.
+		 * The language mode for this text editor. The language mode is SQL by default.
 		 */
 		languageMode?: string;
 		/**
@@ -3669,7 +3669,7 @@ declare module 'azdata' {
 		 */
 		contentRight: string;
 		/**
-		 * The languge mode for this text editor. The language mode is SQL by default.
+		 * The language mode for this text editor. The language mode is SQL by default.
 		 */
 		languageMode: string;
 		/**
@@ -4295,7 +4295,7 @@ declare module 'azdata' {
 		/**
 		 * Resource name for this editor
 		 * File icons might depend on file extension, language id or resource name
-		 * Resource name field needs to be set explitly if file icon for a particular Model View Editor depends on editor resource name
+		 * Resource name field needs to be set explicitly if file icon for a particular Model View Editor depends on editor resource name
 		 */
 		readonly resourceName?: string;
 	}
@@ -5103,7 +5103,7 @@ declare module 'azdata' {
 
 			/**
 			 * Gets the full specification for this kernel, which can be serialized to
-			 * a noteobok file
+			 * a notebook file
 			 */
 			getSpec(): Thenable<IKernelSpec>;
 
