@@ -25,8 +25,8 @@ describe('postgresOverviewPage', () => {
 	let controllerModel: ControllerModel;
 	let postgresModel: PostgresModel;
 
-	let showInformationMessage: sinon.SinonSpy;
-	let showErrorMessage: sinon.SinonSpy;
+	let showInformationMessage: sinon.SinonStub;
+	let showErrorMessage: sinon.SinonStub;
 
 	let informationMessageShown: Deferred;
 	let errorMessageShown: Deferred;
