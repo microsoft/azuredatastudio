@@ -886,13 +886,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public async restartSession(restartServer: boolean): Promise<void> {
-		if (this._activeClientSession && this._activeClientSession.isReady) {
-			await this.shutdownActiveSession();
-			if (restartServer) {
-				await this.notebookManager?.serverManager.stopServer();
-			}
-			await this.startSession(this.notebookManager, this._selectedKernelDisplayName, true);
+		if (restartServer && this.notebookManager) {
+			await this.notebookManager.sessionManager.shutdownAll().then(() =>
+				this.notebookManager.sessionManager.dispose());
+			await this.notebookManager.serverManager.stopServer();
+			let spec: nb.IKernelSpec = this.getKernelSpecFromDisplayName(this._selectedKernelDisplayName);
+			await this.notebookManager.serverManager.startServer(spec);
 		}
+		this._activeClientSession = undefined;
+		await this.startSession(this.notebookManager, this._selectedKernelDisplayName, true);
 	}
 
 	public changeKernel(displayName: string): void {

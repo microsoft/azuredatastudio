@@ -185,8 +185,9 @@ CommandsRegistry.registerCommand({
 					if (!jupyterServerStopped) {
 						await model.restartSession(true);
 						jupyterServerStopped = true;
+					} else {
+						await model.restartSession(false);
 					}
-					await model.restartSession(false);
 				}
 			}
 		}

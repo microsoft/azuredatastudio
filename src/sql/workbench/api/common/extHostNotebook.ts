@@ -126,6 +126,12 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		});
 	}
 
+	$shutdownAll(managerHandle: number): Thenable<void> {
+		return this._withSessionManager(managerHandle, async (sessionManager) => {
+			return sessionManager.shutdownAll();
+		});
+	}
+
 	$changeKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<INotebookKernelDetails> {
 		let session = this._getAdapter<azdata.nb.ISession>(sessionId);
 		return session.changeKernel(kernelInfo).then(kernel => this.saveKernel(kernel));
@@ -205,6 +211,12 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	$disposeFuture(futureId: number): void {
 		let future = this._getAdapter<azdata.nb.IFuture>(futureId);
 		future.dispose();
+	}
+
+	$dispose(managerHandle: number): Thenable<void> {
+		return this._withSessionManager(managerHandle, async (sessionManager) => {
+			return sessionManager.dispose();
+		});
 	}
 
 	//#endregion
