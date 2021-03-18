@@ -66,7 +66,7 @@ export class ImageCalloutDialog extends Modal {
 	) {
 		super(
 			title,
-			TelemetryKeys.CalloutDialog,
+			TelemetryKeys.ModalDialogName.CalloutDialog,
 			telemetryService,
 			layoutService,
 			clipboardService,
