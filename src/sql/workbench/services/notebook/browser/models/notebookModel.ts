@@ -741,6 +741,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
+	public async restartSession(): Promise<void> {
+		if (this._activeClientSession) {
+			// Old active client sessions have already been shutdown by RESTART_JUPYTER_NOTEBOOK_SESSIONS command
+			this._activeClientSession = undefined;
+			await this.startSession(this.notebookManager, this._selectedKernelDisplayName, true);
+		}
+	}
+
 	// When changing kernel, update the active session
 	private updateActiveClientSession(clientSession: IClientSession) {
 		this._activeClientSession = clientSession;
@@ -883,18 +891,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 
 		this._language = language.toLowerCase();
-	}
-
-	public async restartSession(restartServer: boolean): Promise<void> {
-		if (restartServer && this.notebookManager) {
-			await this.notebookManager.sessionManager.shutdownAll().then(() =>
-				this.notebookManager.sessionManager.dispose());
-			await this.notebookManager.serverManager.stopServer();
-			let spec: nb.IKernelSpec = this.getKernelSpecFromDisplayName(this._selectedKernelDisplayName);
-			await this.notebookManager.serverManager.startServer(spec);
-		}
-		this._activeClientSession = undefined;
-		await this.startSession(this.notebookManager, this._selectedKernelDisplayName, true);
 	}
 
 	public changeKernel(displayName: string): void {

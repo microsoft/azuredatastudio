@@ -135,8 +135,9 @@ export class SqlSessionManager implements nb.SessionManager {
 	}
 
 	shutdownAll(): Thenable<void> {
-		// TODO
-		return Promise.resolve();
+		return Promise.all(SqlSessionManager._sessions.map(session => {
+			return this.shutdown(session.id);
+		})).then();
 	}
 
 	dispose(): void {

@@ -363,9 +363,8 @@ export interface INotebookModel {
 
 	/**
 	 * Restart current active session if it exists
-	 * @param restartServer whether or not to restart the server
 	 */
-	restartSession(restartServer: boolean): Promise<void>;
+	restartSession(): Promise<void>;
 
 	/**
 	 * Change the current kernel from the Kernel dropdown
