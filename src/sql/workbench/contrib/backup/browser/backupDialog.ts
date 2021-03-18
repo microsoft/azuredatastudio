@@ -37,7 +37,7 @@ export class BackupDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', TelemetryKeys.Backup, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { isAngular: true, hasErrors: true });
+		super('', TelemetryKeys.ModalDialogName.Backup, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { isAngular: true, hasErrors: true });
 	}
 
 	protected renderBody(container: HTMLElement) {
