@@ -26,7 +26,8 @@ export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
 
 export interface IOEShimService {
 	_serviceBrand: undefined;
-	getChildren(node: ITreeItem, viewId: string, configurationService: IConfigurationService): Promise<ITreeItem[]>; disconnectNode(viewId: string, node: ITreeItem): Promise<boolean>;
+	getChildren(node: ITreeItem, viewId: string, configurationService: IConfigurationService): Promise<ITreeItem[]>;
+	disconnectNode(viewId: string, node: ITreeItem): Promise<boolean>;
 	providerExists(providerId: string): boolean;
 	isNodeConnected(viewId: string, node: ITreeItem): boolean;
 	getNodeInfoForTreeItem(treeItem: ITreeItem): azdata.NodeInfo | undefined;
