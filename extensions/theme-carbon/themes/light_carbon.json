@@ -82,7 +82,10 @@
 		"panel.border": "#888888",
 		"panelTitle.activeForeground": "#212121",
 		"panelTitle.inactiveForeground": "#757575",
-		"panelTitle.activeBorder": "#026dc8"
+		"panelTitle.activeBorder": "#026dc8",
+
+		"sideBarSectionHeader.background": "#0000",
+		"sideBarSectionHeader.border": "#61616130"
 	},
 	"tokenColors": [
 		{
