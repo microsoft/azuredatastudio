@@ -167,6 +167,10 @@
 	background-image: url("./media/light/clear_results.svg");
 }
 
+.notebookEditor :not(.in-preview) .codicon.icon-run-with-parameters {
+	background-image: url("./media/light/run-with-parameters.svg");
+}
+
 .vs-dark .notebookEditor :not(.in-preview) .codicon.icon-clear-results,
 .hc-black .notebookEditor :not(.in-preview) .codicon.icon-clear-results {
 	background-image: url("./media/dark/clear_results_inverse.svg");

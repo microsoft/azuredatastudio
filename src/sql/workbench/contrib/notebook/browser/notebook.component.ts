@@ -389,6 +389,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', true);
 			this._trustedAction.enabled = false;
 
+			let runParametersAction = this.instantiationService.createInstance(RunParametersAction, 'notebook.runParmeters', false);
+
 			let context = new CellContext(this.model, this.cellModel);
 			let moreActionsContainer = DOM.$('li.action-item');
 			this._notebookToggleMoreActions = this.instantiationService.createInstance(NotebookToggleMoreActions);
@@ -425,6 +427,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ action: collapseCellsAction },
 				{ action: clearResultsButton },
 				{ action: this._trustedAction },
+				{ action: runParametersAction },
 				{ element: moreActionsContainer }
 			]);
 		} else {
@@ -454,6 +457,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 			let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', false);
 
+			let runParametersAction = this.instantiationService.createInstance(RunParametersAction, 'notebook.runParmeters', false);
+
+			let context = new CellContext(this.model, this.cellModel);
+			let moreActionsContainer = DOM.$('li.action-item');
+			this._notebookToggleMoreActions = this.instantiationService.createInstance(NotebookToggleMoreActions);
+			this._notebookToggleMoreActions.onInit(moreActionsContainer, context);
+
 			let taskbar = <HTMLElement>this.toolbar.nativeElement;
 			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 			this._actionBar.context = this._notebookParams.notebookUri;
@@ -466,10 +476,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ action: this._trustedAction },
 				{ action: this._runAllCellsAction },
 				{ action: clearResultsButton },
-				{ action: collapseCellsAction }
+				{ action: collapseCellsAction },
+				{ action: runParametersAction },
+				{ element: moreActionsContainer }
 			]);
 		}
-
 	}
 
 	protected initNavSection(): void {

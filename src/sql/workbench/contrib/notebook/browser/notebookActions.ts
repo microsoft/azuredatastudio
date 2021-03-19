@@ -27,6 +27,7 @@ import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/t
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellActionBase, CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
+import { removeDuplicatedAndStartingSeparators } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
 import { URI } from 'vs/base/common/uri';
 import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -278,17 +279,35 @@ export class CollapseCellsAction extends ToggleableAction {
 }
 
 // Run Notebook with Parameters
-export class RunParametersAction extends Action {
-	constructor(
-		id: string, label: string, cssClass: string,
-		@INotificationService private notificationService: INotificationService,
-	) {
-		super(id, label, cssClass);
+export class RunParametersAction extends TooltipFromLabelAction {
+	private static readonly label = localize('runParameters', "Run with Parameters");
+	private static readonly baseClass = 'codicon';
+	private static readonly iconClass = 'icon-run-with-parameters';
+	private static readonly maskedIconClass = 'masked-icon';
+
+	constructor(id: string, toggleTooltip: boolean) {
+		super(id, {
+			label: RunParametersAction.label,
+			baseClass: RunParametersAction.baseClass,
+			iconClass: RunParametersAction.iconClass,
+			maskedIconClass: RunParametersAction.maskedIconClass,
+			shouldToggleTooltip: toggleTooltip
+		});
 	}
-	public async runParamters(): Promise<void> {
+	// Open QuickPick dialog
+	public run(): Promise<void> {
+		// let doOpen = await this.prompter.promptSingle<boolean>(<IQuestion>{
+		// 	type: QuestionTypes.confirm,
+		// 	message: localize('notebook.confirmOpen', "Download and open '{0}'?", url),
+		// 	default: true
+		// });
+		// if (!doOpen) {
+		// 	return;
+		// }
 		return Promise.resolve();
 	}
 }
+
 export class ToggleMoreActions extends Action {
 
 	private static readonly ID = 'toggleMore';
@@ -321,10 +340,8 @@ export class NotebookToggleMoreActions {
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
 		this._actions.push(
-			instantiationService.createInstance(RunParametersAction, 'runParameters', localize('notebook.runParameters', "Run with parameters")),
-			// new Separator(),
-			// instantiationService.createInstance(TrustedAction, 'trustedAction', localize('notebook.Trusted', "Trust Notebook")),
-		);
+			instantiationService.createInstance(RunParametersAction, localize('notebook.runParameters', "Run with parameters"), true),
+			instantiationService.createInstance(TrustedAction, localize('notebook.Trusted', 'Trust Notebook'), true));
 	}
 
 	public onInit(elementRef: HTMLElement, context: CellContext) {
@@ -336,6 +353,7 @@ export class NotebookToggleMoreActions {
 		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL, ariaLabel: moreActionsLabel });
 		this._moreActions.context = { target: this._moreActionsElement };
 		let validActions = this._actions.filter(a => a instanceof Separator || a instanceof CellActionBase && a.canRun(context));
+		removeDuplicatedAndStartingSeparators(validActions);
 		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreActions, validActions, context), { icon: true, label: false });
 	}
 }
