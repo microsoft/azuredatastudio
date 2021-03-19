@@ -428,7 +428,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ action: clearResultsButton },
 				{ action: this._trustedAction },
 				{ action: runParametersAction },
-				{ element: moreActionsContainer }
+				{ element: moreActionsContainer },
 			]);
 		} else {
 			let kernelContainer = document.createElement('div');

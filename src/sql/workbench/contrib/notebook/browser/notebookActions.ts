@@ -27,7 +27,6 @@ import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/t
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellActionBase, CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
-import { removeDuplicatedAndStartingSeparators } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
 import { URI } from 'vs/base/common/uri';
 import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -285,7 +284,8 @@ export class RunParametersAction extends TooltipFromLabelAction {
 	private static readonly iconClass = 'icon-run-with-parameters';
 	private static readonly maskedIconClass = 'masked-icon';
 
-	constructor(id: string, toggleTooltip: boolean) {
+	constructor(id: string, toggleTooltip: boolean,
+		@INotebookService private _notebookService: INotebookService) {
 		super(id, {
 			label: RunParametersAction.label,
 			baseClass: RunParametersAction.baseClass,
@@ -296,14 +296,7 @@ export class RunParametersAction extends TooltipFromLabelAction {
 	}
 	// Open QuickPick dialog
 	public run(): Promise<void> {
-		// let doOpen = await this.prompter.promptSingle<boolean>(<IQuestion>{
-		// 	type: QuestionTypes.confirm,
-		// 	message: localize('notebook.confirmOpen', "Download and open '{0}'?", url),
-		// 	default: true
-		// });
-		// if (!doOpen) {
-		// 	return;
-		// }
+
 		return Promise.resolve();
 	}
 }
@@ -355,6 +348,27 @@ export class NotebookToggleMoreActions {
 		let validActions = this._actions.filter(a => a instanceof Separator || a instanceof CellActionBase && a.canRun(context));
 		removeDuplicatedAndStartingSeparators(validActions);
 		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreActions, validActions, context), { icon: true, label: false });
+	}
+}
+
+export function removeDuplicatedAndStartingSeparators(actions: (Action | CellActionBase)[]): void {
+	let indexesToRemove: number[] = [];
+	for (let i = 0; i < actions.length; i++) {
+		// Handle multiple separators in a row
+		if (i > 0 && actions[i] instanceof Separator && actions[i - 1] instanceof Separator) {
+			indexesToRemove.push(i);
+		}
+	}
+	if (indexesToRemove.length > 0) {
+		for (let i = indexesToRemove.length - 1; i >= 0; i--) {
+			actions.splice(indexesToRemove[i], 1);
+		}
+	}
+	if (actions[0] instanceof Separator) {
+		actions.splice(0, 1);
+	}
+	if (actions[actions.length - 1] instanceof Separator) {
+		actions.splice(actions.length - 1, 1);
 	}
 }
 
