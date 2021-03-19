@@ -29,6 +29,7 @@ export class BookModel {
 	private _errorMessage: string;
 	private _activePromise: Deferred<void> | undefined = undefined;
 	private _queuedPromises: Deferred<void>[] = [];
+	private _rootNode: BookTreeItem;
 
 	constructor(
 		public readonly bookPath: string,
@@ -202,6 +203,7 @@ export class BookModel {
 						dark: this._extensionContext.asAbsolutePath('resources/dark/book_inverse.svg')
 					}
 				);
+				this._rootNode = book;
 				this._bookItems.push(book);
 			} catch (e) {
 				this._errorMessage = loc.readBookError(this.bookPath, e instanceof Error ? e.message : e);
@@ -215,7 +217,16 @@ export class BookModel {
 		return this._bookItems;
 	}
 
-	public async getSections(tableOfContents: IJupyterBookToc, sections: JupyterBookSection[], root: string, book: BookTreeItemFormat): Promise<BookTreeItem[]> {
+	public set bookItems(bookItems: BookTreeItem[]) {
+		bookItems.forEach(b => {
+			// only add unique notebooks
+			if (this._bookItems.indexOf(b) === -1) {
+				this._bookItems.push(b);
+			}
+		});
+	}
+
+	public async getSections(tableOfContents: IJupyterBookToc, sections: JupyterBookSection[], root: string, book: BookTreeItemFormat, element?: BookTreeItem): Promise<BookTreeItem[]> {
 		let notebooks: BookTreeItem[] = [];
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url) {
@@ -228,7 +239,8 @@ export class BookModel {
 					type: BookTreeItemType.ExternalLink,
 					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 					isUntitled: this.openAsUntitled,
-					version: book.version
+					version: book.version,
+					parent: element ?? this._rootNode
 				},
 					{
 						light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
@@ -253,7 +265,8 @@ export class BookModel {
 						type: BookTreeItemType.Notebook,
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 						isUntitled: this.openAsUntitled,
-						version: book.version
+						version: book.version,
+						parent: element ?? this._rootNode
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
@@ -284,13 +297,25 @@ export class BookModel {
 						type: BookTreeItemType.Markdown,
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 						isUntitled: this.openAsUntitled,
-						version: book.version
+						version: book.version,
+						parent: element ?? this._rootNode
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),
 							dark: this._extensionContext.asAbsolutePath('resources/dark/markdown_inverse.svg')
 						}
 					);
+					if (this.openAsUntitled) {
+						if (!this._allNotebooks.get(path.basename(pathToMarkdown))) {
+							this._allNotebooks.set(path.basename(pathToMarkdown), markdown);
+						}
+					} else {
+						// convert to URI to avoid causing issue with drive letters when getting navigation links
+						let uriToNotebook: vscode.Uri = vscode.Uri.file(pathToMarkdown);
+						if (!this._allNotebooks.get(uriToNotebook.fsPath)) {
+							this._allNotebooks.set(uriToNotebook.fsPath, markdown);
+						}
+					}
 					notebooks.push(markdown);
 				} else {
 					this._errorMessage = loc.missingFileError(sections[i].title, book.title);
@@ -298,6 +323,12 @@ export class BookModel {
 				}
 			}
 		}
+		if (element) {
+			element.children = notebooks;
+		} else {
+			this._rootNode.children = notebooks;
+		}
+		this.bookItems = notebooks;
 		return notebooks;
 	}
 
@@ -336,5 +367,8 @@ export class BookModel {
 
 	public get version(): string {
 		return this._bookVersion;
+	}
+	public get rootNode(): BookTreeItem {
+		return this._rootNode;
 	}
 }

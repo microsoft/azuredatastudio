@@ -8,7 +8,7 @@ import * as fs from 'fs';
 import { JupyterBookSection, IJupyterBookToc } from '../contracts/content';
 import * as loc from '../common/localizedConstants';
 import { isBookItemPinned, getNotebookType } from '../common/utils';
-import { BookVersion, getContentPath, getTocPath } from './bookVersionHandler';
+import { getContentPath, getTocPath } from './bookVersionHandler';
 
 export enum BookTreeItemType {
 	Book = 'Book',
@@ -33,7 +33,9 @@ export interface BookTreeItemFormat {
 	type: BookTreeItemType;
 	treeItemCollapsibleState: number;
 	isUntitled: boolean;
-	version?: BookVersion;
+	version?: string;
+	parent?: BookTreeItem;
+	children?: BookTreeItem[];
 }
 
 export class BookTreeItem extends vscode.TreeItem {
@@ -46,6 +48,8 @@ export class BookTreeItem extends vscode.TreeItem {
 	public resourceUri: vscode.Uri;
 	private _rootContentPath: string;
 	private _tableOfContentsPath: string;
+	private _children: BookTreeItem[];
+	private _parent: BookTreeItem;
 
 	constructor(public book: BookTreeItemFormat, icons: any) {
 		super(book.title, book.treeItemCollapsibleState);
@@ -78,6 +82,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		}
 		this.iconPath = icons;
 		this._tableOfContentsPath = undefined;
+		this.parent = book.parent;
 
 		if (this.book.type === BookTreeItemType.ExternalLink) {
 			this.tooltip = `${this._uri}`;
@@ -204,6 +209,22 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	public set tableOfContentsPath(tocPath: string) {
 		this._tableOfContentsPath = tocPath;
+	}
+
+	public get children(): BookTreeItem[] {
+		return this._children;
+	}
+
+	public set children(children: BookTreeItem[]) {
+		this._children = children;
+	}
+
+	public get parent(): BookTreeItem {
+		return this._parent;
+	}
+
+	public set parent(parent: BookTreeItem) {
+		this._parent = parent;
 	}
 
 	/**

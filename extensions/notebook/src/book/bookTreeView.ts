@@ -420,40 +420,31 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async findAndExpandParentNode(notebookPath: string): Promise<BookTreeItem> {
 		let bookItem: BookTreeItem = this.currentBook?.getNotebook(notebookPath);
 		this.currentBook = this.books.length > 1 ? this.books.find(b => notebookPath.indexOf(b.bookPath) > -1) : this.currentBook;
-		// if the node is not expanded getNotebook returns undefined, try to expand the parent node or getChildren of
-		// the root node.
+		// Try to expand the parent node until we get to the notebook
 		if (!bookItem && this.currentBook) {
-			// get the parent node and expand it if it's not already
-			let allNodes = this.currentBook?.getAllNotebooks();
-			if (allNodes.size > 0) {
-				let book = allNodes ? Array.from(allNodes?.keys())?.filter(x => x.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf(path.posix.sep))) > -1) : undefined;
-				let bookNode = book?.length > 0 ? this.currentBook?.getNotebook(book.find(x => x.substring(0, x.lastIndexOf(path.posix.sep)) === notebookPath.substring(0, notebookPath.lastIndexOf(path.sep)))) : undefined;
-				if (bookNode) {
-					if (this._bookViewer?.visible) {
-						await this._bookViewer.reveal(bookNode, { select: true, focus: false, expand: 3 });
-					} else {
-						await this.getChildren(bookNode);
+			// get the children of root node and expand the nodes to the notebook level.
+			await this.getChildren(this.currentBook.rootNode);
+			// number of levels to expand
+			let depthOfNotebookInBook: number = path.relative(notebookPath, this.currentBook.bookPath)?.split(path.sep)?.length ?? 0;
+			if (this.currentBook.bookItems.length > 0 && depthOfNotebookInBook > 1) {
+				while (depthOfNotebookInBook > 0) {
+					// check if the notebook is available in already expanded levels.
+					bookItem = this.currentBook.bookItems.find(b => b.tooltip === notebookPath);
+					if (bookItem) {
+						break;
 					}
-
-					bookItem = this.currentBook?.getNotebook(notebookPath);
-				}
-			}
-			if (!bookItem) {
-				let bookItems = await this.getChildren(this.currentBook.bookItems[0]);
-				// number of levels to expand
-				let depthoNotebookInBook: number = path.relative(notebookPath, this.currentBook.bookPath)?.split(path.sep)?.length ?? 0;
-				if (bookItems && depthoNotebookInBook > 1) {
-					//if book is not expanded to that level, bookItems doesn't have it, we need to expand it to get to the notebook
-					while (depthoNotebookInBook > 1) {
-						bookItem = bookItems.find(b => b.tooltip === notebookPath);
-						if (bookItem) {
-							break;
-						}
-						let book = bookItems.find(b => b.tooltip.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf(path.posix.sep))) > -1);
-						bookItems = await this.getChildren(book);
-						// await this._bookViewer.reveal(book, { select: true, focus: false, expand: 3 });
-						depthoNotebookInBook--;
+					// search for the parent book
+					// notebook can be inside the same folder as parent and can be in a different folder as well
+					// so check for both scenarios.
+					let book = this.currentBook.bookItems.find(b => b.tooltip.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf(path.posix.sep))) > -1) ?? this.currentBook.bookItems.find(b => path.relative(notebookPath, b.tooltip)?.split(path.sep)?.length === depthOfNotebookInBook);
+					if (!book) {
+						break;
 					}
+					if (!book.children) {
+						await this.getChildren(book);
+					}
+					await this._bookViewer.reveal(book, { select: false, focus: true, expand: 3 });
+					depthOfNotebookInBook--;
 				}
 			}
 		}
@@ -635,8 +626,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	getTreeItem(element: BookTreeItem): vscode.TreeItem {
-		return element;
+	async getTreeItem(element: BookTreeItem): Promise<vscode.TreeItem> {
+		let bookItem: BookTreeItem = undefined;
+		let notebookPath = element.tooltip;
+		let bookOfElement = this.books.length > 1 ? this.books.find(b => notebookPath.indexOf(b.bookPath) > -1) : this.currentBook;
+		if (bookOfElement?.bookItems.indexOf(element) > -1) {
+			bookItem = bookOfElement?.bookItems.find(b => b === element);
+		}
+		return bookItem;
 	}
 
 	getChildren(element?: BookTreeItem): Thenable<BookTreeItem[]> {
@@ -662,7 +659,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 */
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
 		// Remove it for perf issues.
-		return undefined;
+		return element?.parent;
 	}
 
 	getUntitledNotebookUri(resource: string): vscode.Uri {
