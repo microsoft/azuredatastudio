@@ -33,34 +33,46 @@ export class PostgresCoordinatorNodeParametersPage extends PostgresParametersPag
 
 	protected async saveParameterEdits(): Promise<void> {
 		/* TODO add correct azdata call for editing coordinator parameters
-			await this._azdataApi.azdata.arc.postgres.server.edit(
-				this._postgresModel.info.name,
-				{ engineSettings: engineSettings.toString() },
-				this._postgresModel.engineVersion,
-				this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-				session);
+			try {
+				await this._azdataApi.azdata.arc.postgres.server.edit(
+					this._postgresModel.info.name,
+					{ engineSettings: engineSettings },
+					this._postgresModel.engineVersion,
+					this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+					session);
+			} catch (error) {
+				throw error;
+			}
 		*/
 	}
 
 	protected async resetAllParameters(): Promise<void> {
 		/* TODO add correct azdata call for editing coordinator parameters
-			await this._azdataApi.azdata.arc.postgres.server.edit(
-				this._postgresModel.info.name,
-				{ engineSettings: `''`, replaceEngineSettings: true },
-				this._postgresModel.engineVersion,
-				this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-				session);
+			try {
+				await this._azdataApi.azdata.arc.postgres.server.edit(
+					this._postgresModel.info.name,
+					{ engineSettings: `''`, replaceEngineSettings: true },
+					this._postgresModel.engineVersion,
+					this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+					session);
+			} catch (error) {
+				throw error;
+			}
 		*/
 	}
 
 	protected async resetParameter(): Promise<void> {
 		/* TODO add correct azdata call for editing coordinator parameters
-			await this._azdataApi.azdata.arc.postgres.server.edit(
-				this._postgresModel.info.name,
-				{ engineSettings: parameterName + '=' },
-				this._postgresModel.engineVersion,
-				this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-				session);
+			try {
+				await this._azdataApi.azdata.arc.postgres.server.edit(
+					this._postgresModel.info.name,
+					{ engineSettings: parameterName + '=' },
+					this._postgresModel.engineVersion,
+					this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+					session);
+			} catch (error) {
+				throw error;
+			}
 		*/
 	}
 

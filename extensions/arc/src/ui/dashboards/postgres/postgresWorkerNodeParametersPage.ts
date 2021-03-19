@@ -36,33 +36,42 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 	}
 
 	protected async saveParameterEdits(engineSettings: string, session: azdataExt.AzdataSession): Promise<void> {
-		await this._azdataApi.azdata.arc.postgres.server.edit(
-			this._postgresModel.info.name,
-			{ engineSettings: engineSettings },
-			this._postgresModel.engineVersion,
-			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-			session);
-
+		try {
+			await this._azdataApi.azdata.arc.postgres.server.edit(
+				this._postgresModel.info.name,
+				{ engineSettings: engineSettings },
+				this._postgresModel.engineVersion,
+				this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+				session);
+		} catch (error) {
+			throw error;
+		}
 	}
 
 	protected async resetAllParameters(session: azdataExt.AzdataSession): Promise<void> {
-		await this._azdataApi.azdata.arc.postgres.server.edit(
-			this._postgresModel.info.name,
-			{ engineSettings: `''`, replaceEngineSettings: true },
-			this._postgresModel.engineVersion,
-			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-			session);
-
+		try {
+			await this._azdataApi.azdata.arc.postgres.server.edit(
+				this._postgresModel.info.name,
+				{ engineSettings: `''`, replaceEngineSettings: true },
+				this._postgresModel.engineVersion,
+				this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+				session);
+		} catch (error) {
+			throw error;
+		}
 	}
 
 	protected async resetParameter(parameterName: string, session: azdataExt.AzdataSession): Promise<void> {
-		await this._azdataApi.azdata.arc.postgres.server.edit(
-			this._postgresModel.info.name,
-			{ engineSettings: parameterName + '=' },
-			this._postgresModel.engineVersion,
-			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-			session);
-
+		try {
+			await this._azdataApi.azdata.arc.postgres.server.edit(
+				this._postgresModel.info.name,
+				{ engineSettings: parameterName + '=' },
+				this._postgresModel.engineVersion,
+				this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+				session);
+		} catch (error) {
+			throw error;
+		}
 	}
 
 	protected refreshParametersTable(): void {
