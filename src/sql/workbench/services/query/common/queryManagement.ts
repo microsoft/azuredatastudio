@@ -215,28 +215,28 @@ export class QueryManagementService implements IQueryManagementService {
 	}
 
 	public cancelQuery(ownerUri: string): Promise<QueryCancelResult> {
-		this.addTelemetry(TelemetryKeys.CancelQuery, ownerUri);
+		this.addTelemetry(TelemetryKeys.TelemetryAction.CancelQuery, ownerUri);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.cancelQuery(ownerUri);
 		});
 	}
 
 	public runQuery(ownerUri: string, range?: IRange, runOptions?: ExecutionPlanOptions): Promise<void> {
-		this.addTelemetry(TelemetryKeys.RunQuery, ownerUri, runOptions);
+		this.addTelemetry(TelemetryKeys.TelemetryAction.RunQuery, ownerUri, runOptions);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQuery(ownerUri, rangeToSelectionData(range), runOptions);
 		});
 	}
 
 	public runQueryStatement(ownerUri: string, line: number, column: number): Promise<void> {
-		this.addTelemetry(TelemetryKeys.RunQueryStatement, ownerUri);
+		this.addTelemetry(TelemetryKeys.TelemetryAction.RunQueryStatement, ownerUri);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQueryStatement(ownerUri, line - 1, column - 1); // we are taking in a vscode IRange which is 1 indexed, but our api expected a 0 index
 		});
 	}
 
 	public runQueryString(ownerUri: string, queryString: string): Promise<void> {
-		this.addTelemetry(TelemetryKeys.RunQueryString, ownerUri);
+		this.addTelemetry(TelemetryKeys.TelemetryAction.RunQueryString, ownerUri);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.runQueryString(ownerUri, queryString);
 		});

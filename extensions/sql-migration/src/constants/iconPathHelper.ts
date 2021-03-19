@@ -12,6 +12,7 @@ export interface IconPath {
 
 export class IconPathHelper {
 	public static copy: IconPath;
+	public static discard: IconPath;
 	public static refresh: IconPath;
 	public static cutover: IconPath;
 	public static sqlMigrationLogo: IconPath;
@@ -21,11 +22,17 @@ export class IconPathHelper {
 	public static inProgressMigration: IconPath;
 	public static completedMigration: IconPath;
 	public static notStartedMigration: IconPath;
+	public static sqlVmLogo: IconPath;
+	public static sqlMiLogo: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
 			light: context.asAbsolutePath('images/copy.svg'),
 			dark: context.asAbsolutePath('images/copy.svg')
+		};
+		IconPathHelper.discard = {
+			light: context.asAbsolutePath('images/discard.svg'),
+			dark: context.asAbsolutePath('images/discard.svg')
 		};
 		IconPathHelper.refresh = {
 			light: context.asAbsolutePath('images/refresh.svg'),
@@ -62,6 +69,14 @@ export class IconPathHelper {
 		IconPathHelper.cutover = {
 			light: context.asAbsolutePath('images/cutover.svg'),
 			dark: context.asAbsolutePath('images/cutover.svg')
+		};
+		IconPathHelper.sqlMiLogo = {
+			light: context.asAbsolutePath('images/sqlMI.svg'),
+			dark: context.asAbsolutePath('images/sqlMI.svg')
+		};
+		IconPathHelper.sqlVmLogo = {
+			light: context.asAbsolutePath('images/sqlVM.svg'),
+			dark: context.asAbsolutePath('images/sqlVM.svg')
 		};
 	}
 }

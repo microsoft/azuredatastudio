@@ -46,7 +46,7 @@ export class SummaryPage extends MigrationWizardPage {
 				createHeadingTextComponent(this._view, constants.DATABASE_BACKUP_PAGE_TITLE),
 				this.createNetworkContainerRows(),
 				createHeadingTextComponent(this._view, constants.IR_PAGE_TITLE),
-				createInformationRow(this._view, constants.IR_PAGE_TITLE, this.migrationStateModel._migrationController?.name!),
+				createInformationRow(this._view, constants.IR_PAGE_TITLE, this.migrationStateModel._sqlMigrationService?.name!),
 				createInformationRow(this._view, constants.SUMMARY_IR_NODE, this.migrationStateModel._nodeNames.join(', ')),
 
 			]
@@ -72,12 +72,16 @@ export class SummaryPage extends MigrationWizardPage {
 				flexContainer.addItems(
 					[
 						createInformationRow(this._view, constants.TYPE, constants.NETWORK_SHARE),
-						createInformationRow(this._view, constants.PATH, this.migrationStateModel._databaseBackup.networkShareLocation),
 						createInformationRow(this._view, constants.USER_ACCOUNT, this.migrationStateModel._databaseBackup.windowsUser),
 						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name),
 						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel._databaseBackup.storageAccount.name),
+						createHeadingTextComponent(this._view, 'Target Databases:')
 					]
 				);
+				this.migrationStateModel._migrationDbs.forEach((db, index) => {
+					flexContainer.addItem(createInformationRow(this._view, constants.TARGET_NAME_FOR_DATABASE(db), this.migrationStateModel._targetDatabaseNames[index]));
+					flexContainer.addItem(createInformationRow(this._view, constants.TARGET_NETWORK_SHARE_LOCATION(db), this.migrationStateModel._databaseBackup.networkShareLocations[index]));
+				});
 				break;
 			case NetworkContainerType.FILE_SHARE:
 				flexContainer.addItems(
@@ -85,19 +89,25 @@ export class SummaryPage extends MigrationWizardPage {
 						createInformationRow(this._view, constants.TYPE, constants.FILE_SHARE),
 						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name),
 						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel._databaseBackup.storageAccount.name),
-						createInformationRow(this._view, constants.FILE_SHARE, this.migrationStateModel._databaseBackup.fileShare.name),
 					]
 				);
+				this.migrationStateModel._migrationDbs.forEach((db, index) => {
+					flexContainer.addItem(createInformationRow(this._view, constants.TARGET_NAME_FOR_DATABASE(db), this.migrationStateModel._targetDatabaseNames[index]));
+					flexContainer.addItem(createInformationRow(this._view, constants.TARGET_FILE_SHARE(db), this.migrationStateModel._databaseBackup.fileShares[index].name));
+				});
 				break;
 			case NetworkContainerType.BLOB_CONTAINER:
 				flexContainer.addItems(
 					[
 						createInformationRow(this._view, constants.TYPE, constants.BLOB_CONTAINER),
-						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.blobContainer.subscription.name),
+						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name),
 						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel._databaseBackup.storageAccount.name),
-						createInformationRow(this._view, constants.BLOB_CONTAINER, this.migrationStateModel._databaseBackup.blobContainer.name),
 					]
 				);
+				this.migrationStateModel._migrationDbs.forEach((db, index) => {
+					flexContainer.addItem(createInformationRow(this._view, constants.TARGET_NAME_FOR_DATABASE(db), this.migrationStateModel._targetDatabaseNames[index]));
+					flexContainer.addItem(createInformationRow(this._view, constants.TARGET_FILE_SHARE(db), this.migrationStateModel._databaseBackup.blobContainers[index].name));
+				});
 		}
 		return flexContainer;
 	}

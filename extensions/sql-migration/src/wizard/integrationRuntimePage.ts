@@ -7,15 +7,15 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
-import { CreateMigrationControllerDialog } from '../dialog/createMigrationDialog/createMigrationControllerDialog';
+import { CreateSqlMigrationServiceDialog } from '../dialog/createSqlMigrationService/createSqlMigrationServiceDialog';
 import * as constants from '../constants/strings';
 import { createInformationRow, WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { getMigrationController, getMigrationControllerAuthKeys, getMigrationControllerMonitoringData } from '../api/azure';
+import { getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlMigrationService } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
 
 export class IntergrationRuntimePage extends MigrationWizardPage {
 
-	private migrationControllerDropdown!: azdata.DropDownComponent;
+	private migrationServiceDropdown!: azdata.DropDownComponent;
 	private _view!: azdata.ModelView;
 	private _form!: azdata.FormBuilder;
 	private _statusLoadingComponent!: azdata.LoadingComponent;
@@ -28,13 +28,13 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
 		this._view = view;
 
-		const createNewController = view.modelBuilder.hyperlink().withProps({
+		const createNewMigrationService = view.modelBuilder.hyperlink().withProps({
 			label: constants.CREATE_NEW,
 			url: ''
 		}).component();
 
-		createNewController.onDidClick((e) => {
-			const dialog = new CreateMigrationControllerDialog(this.migrationStateModel, this);
+		createNewMigrationService.onDidClick((e) => {
+			const dialog = new CreateSqlMigrationServiceDialog(this.migrationStateModel, this);
 			dialog.initialize();
 		});
 
@@ -47,10 +47,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			.withFormItems(
 				[
 					{
-						component: this.migrationControllerDropdownsContainer()
+						component: this.migrationServiceDropdownContainer()
 					},
 					{
-						component: createNewController
+						component: createNewMigrationService
 					},
 					{
 						component: this._statusLoadingComponent
@@ -62,7 +62,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
-		this.populateMigrationController();
+		this.populateMigrationService();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				this.wizard.message = {
@@ -70,18 +70,18 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				};
 				return true;
 			}
-			const state = this.migrationStateModel._migrationController.properties.integrationRuntimeState;
-			if (!this.migrationStateModel._migrationController) {
+			const state = this.migrationStateModel._sqlMigrationService.properties.integrationRuntimeState;
+			if (!this.migrationStateModel._sqlMigrationService) {
 				this.wizard.message = {
 					level: azdata.window.MessageLevel.Error,
-					text: constants.INVALID_CONTROLLER_ERROR
+					text: constants.INVALID_SERVICE_ERROR
 				};
 				return false;
 			}
 			if (state !== 'Online') {
 				this.wizard.message = {
 					level: azdata.window.MessageLevel.Error,
-					text: constants.CONTROLLER_OFFLINE_ERROR
+					text: constants.SERVICE_OFFLINE_ERROR
 				};
 				return false;
 			} else {
@@ -102,7 +102,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
 	}
 
-	private migrationControllerDropdownsContainer(): azdata.FlexContainer {
+	private migrationServiceDropdownContainer(): azdata.FlexContainer {
 		const descriptionText = this._view.modelBuilder.text().withProps({
 			value: constants.IR_PAGE_DESCRIPTION,
 			links: [
@@ -117,96 +117,101 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			value: constants.IR_PAGE_NOTE
 		}).component();
 
-		const migrationControllerDropdownLabel = this._view.modelBuilder.text().withProps({
-			value: constants.SELECT_A_MIGRATION_CONTROLLER
+		const migrationServcieDropdownLabel = this._view.modelBuilder.text().withProps({
+			value: constants.SELECT_A_SQL_MIGRATION_SERVICE
 		}).component();
 
-		this.migrationControllerDropdown = this._view.modelBuilder.dropDown().withProps({
+		this.migrationServiceDropdown = this._view.modelBuilder.dropDown().withProps({
 			required: true,
 			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
 
-		this.migrationControllerDropdown.onValueChanged(async (value) => {
+		this.migrationServiceDropdown.onValueChanged(async (value) => {
 			if (value.selected) {
 				this.wizard.message = {
 					text: ''
 				};
-				this.migrationStateModel._migrationController = this.migrationStateModel.getMigrationController(value.index);
-				await this.loadControllerStatus();
+				this.migrationStateModel._sqlMigrationService = this.migrationStateModel.getMigrationService(value.index);
+				if (value !== constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR) {
+					await this.loadMigrationServiceStatus();
+				}
 			}
 		});
 
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems([
 			descriptionText,
 			noteText,
-			migrationControllerDropdownLabel,
-			this.migrationControllerDropdown
+			migrationServcieDropdownLabel,
+			this.migrationServiceDropdown
 		]).withLayout({
 			flexFlow: 'column'
 		}).component();
 		return flexContainer;
 	}
 
-	public async populateMigrationController(): Promise<void> {
-		this.migrationControllerDropdown.loading = true;
+	public async populateMigrationService(sqlMigrationService?: SqlMigrationService, serviceNodes?: string[]): Promise<void> {
+		this.migrationServiceDropdown.loading = true;
+		if (sqlMigrationService && serviceNodes) {
+			this.migrationStateModel._sqlMigrationService = sqlMigrationService;
+			this.migrationStateModel._nodeNames = serviceNodes;
+		}
 		try {
-			this.migrationControllerDropdown.values = await this.migrationStateModel.getMigrationControllerValues(this.migrationStateModel._targetSubscription, this.migrationStateModel._targetServerInstance);
-			if (this.migrationStateModel._migrationController) {
-				this.migrationControllerDropdown.value = {
-					name: this.migrationStateModel._migrationController.id,
-					displayName: this.migrationStateModel._migrationController.name
+			this.migrationServiceDropdown.values = await this.migrationStateModel.getSqlMigrationServiceValues(this.migrationStateModel._targetSubscription, this.migrationStateModel._targetServerInstance);
+			if (this.migrationStateModel._sqlMigrationService) {
+				this.migrationServiceDropdown.value = {
+					name: this.migrationStateModel._sqlMigrationService.id,
+					displayName: this.migrationStateModel._sqlMigrationService.name
 				};
 			} else {
-				this.migrationStateModel._migrationController = this.migrationStateModel.getMigrationController(0);
+				this.migrationStateModel._sqlMigrationService = this.migrationStateModel.getMigrationService(0);
 			}
 		} catch (error) {
 			console.log(error);
 		} finally {
-			this.migrationControllerDropdown.loading = false;
+			this.migrationServiceDropdown.loading = false;
 		}
 
 	}
 
-	private async loadControllerStatus(): Promise<void> {
+	private async loadMigrationServiceStatus(): Promise<void> {
 		this._statusLoadingComponent.loading = true;
-
 		try {
 			this._migrationDetailsContainer.clearItems();
 
-			if (this.migrationStateModel._migrationController) {
-				const controller = await getMigrationController(
+			if (this.migrationStateModel._sqlMigrationService) {
+				const migrationService = await getSqlMigrationService(
 					this.migrationStateModel._azureAccount,
 					this.migrationStateModel._targetSubscription,
-					this.migrationStateModel._migrationController.properties.resourceGroup,
-					this.migrationStateModel._migrationController.properties.location,
-					this.migrationStateModel._migrationController.name);
-				this.migrationStateModel._migrationController = controller;
-				const controllerMonitoringStatus = await getMigrationControllerMonitoringData(
+					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
+					this.migrationStateModel._sqlMigrationService.properties.location,
+					this.migrationStateModel._sqlMigrationService.name);
+				this.migrationStateModel._sqlMigrationService = migrationService;
+				const migrationServiceMonitoringStatus = await getSqlMigrationServiceMonitoringData(
 					this.migrationStateModel._azureAccount,
 					this.migrationStateModel._targetSubscription,
-					this.migrationStateModel._migrationController.properties.resourceGroup,
-					this.migrationStateModel._migrationController.properties.location,
-					this.migrationStateModel._migrationController!.name);
-				this.migrationStateModel._nodeNames = controllerMonitoringStatus.nodes.map((node) => {
+					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
+					this.migrationStateModel._sqlMigrationService.properties.location,
+					this.migrationStateModel._sqlMigrationService!.name);
+				this.migrationStateModel._nodeNames = migrationServiceMonitoringStatus.nodes.map((node) => {
 					return node.nodeName;
 				});
-				const migrationControllerAuthKeys = await getMigrationControllerAuthKeys(
+				const migrationServiceAuthKeys = await getSqlMigrationServiceAuthKeys(
 					this.migrationStateModel._azureAccount,
 					this.migrationStateModel._targetSubscription,
-					this.migrationStateModel._migrationController.properties.resourceGroup,
-					this.migrationStateModel._migrationController.properties.location,
-					this.migrationStateModel._migrationController!.name
+					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
+					this.migrationStateModel._sqlMigrationService.properties.location,
+					this.migrationStateModel._sqlMigrationService!.name
 				);
 
-				const migrationControllerTitle = this._view.modelBuilder.text().withProps({
-					value: constants.CONTROLLER_DETAILS_HEADER(controller.name),
+				const migrationServiceTitle = this._view.modelBuilder.text().withProps({
+					value: constants.SQL_MIGRATION_SERVICE_DETAILS_HEADER(migrationService.name),
 					CSSStyles: {
 						'font-weight': 'bold'
 					}
 				}).component();
 
 				const connectionStatusLabel = this._view.modelBuilder.text().withProps({
-					value: constants.CONTROLLER_CONNECTION_STATUS,
+					value: constants.SERVICE_CONNECTION_STATUS,
 					CSSStyles: {
 						'font-weight': 'bold',
 						'width': '150px'
@@ -241,32 +246,32 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				refreshStatus.onDidClick(async (e) => {
 					connectionStatusLoader.loading = true;
 
-					const controller = await getMigrationController(
+					const migrationService = await getSqlMigrationService(
 						this.migrationStateModel._azureAccount,
 						this.migrationStateModel._targetSubscription,
-						this.migrationStateModel._migrationController.properties.resourceGroup,
-						this.migrationStateModel._migrationController.properties.location,
-						this.migrationStateModel._migrationController.name);
-					this.migrationStateModel._migrationController = controller;
-					const controllerMonitoringStatus = await getMigrationControllerMonitoringData(
+						this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
+						this.migrationStateModel._sqlMigrationService.properties.location,
+						this.migrationStateModel._sqlMigrationService.name);
+					this.migrationStateModel._sqlMigrationService = migrationService;
+					const migrationServiceMonitoringStatus = await getSqlMigrationServiceMonitoringData(
 						this.migrationStateModel._azureAccount,
 						this.migrationStateModel._targetSubscription,
-						this.migrationStateModel._migrationController.properties.resourceGroup,
-						this.migrationStateModel._migrationController.properties.location,
-						this.migrationStateModel._migrationController!.name);
-					this.migrationStateModel._nodeNames = controllerMonitoringStatus.nodes.map((node) => {
+						this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
+						this.migrationStateModel._sqlMigrationService.properties.location,
+						this.migrationStateModel._sqlMigrationService!.name);
+					this.migrationStateModel._nodeNames = migrationServiceMonitoringStatus.nodes.map((node) => {
 						return node.nodeName;
 					});
 
-					const state = controller.properties.integrationRuntimeState;
+					const state = migrationService.properties.integrationRuntimeState;
 					if (state === 'Online') {
 						connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
-							text: constants.CONTROLLER_READY(this.migrationStateModel._migrationController!.name, this.migrationStateModel._nodeNames.join(', ')),
+							text: constants.SERVICE_READY(this.migrationStateModel._sqlMigrationService!.name, this.migrationStateModel._nodeNames.join(', ')),
 							style: 'success'
 						});
 					} else {
 						connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
-							text: constants.CONTROLLER_NOT_READY(this.migrationStateModel._migrationController!.name),
+							text: constants.SERVICE_NOT_READY(this.migrationStateModel._sqlMigrationService!.name),
 							style: 'error'
 						});
 					}
@@ -274,16 +279,16 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					connectionStatusLoader.loading = false;
 				});
 
-				if (controller) {
-					const state = controller.properties.integrationRuntimeState;
+				const state = migrationService.properties.integrationRuntimeState;
+				if (migrationService) {
 					if (state === 'Online') {
 						connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
-							text: constants.CONTROLLER_READY(this.migrationStateModel._migrationController!.name, this.migrationStateModel._nodeNames.join(', ')),
+							text: constants.SERVICE_READY(this.migrationStateModel._sqlMigrationService!.name, this.migrationStateModel._nodeNames.join(', ')),
 							style: 'success'
 						});
 					} else {
 						connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
-							text: constants.CONTROLLER_NOT_READY(this.migrationStateModel._migrationController!.name),
+							text: constants.SERVICE_NOT_READY(this.migrationStateModel._sqlMigrationService!.name),
 							style: 'error'
 						});
 					}
@@ -296,7 +301,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					}
 				}).component();
 
-				const migrationControllerAuthKeyTable = this._view.modelBuilder.declarativeTable().withProps({
+				const migrationServiceAuthKeyTable = this._view.modelBuilder.declarativeTable().withProps({
 					columns: [
 						{
 							displayName: constants.NAME,
@@ -340,8 +345,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				}).component();
 
 				copyKey1Button.onDidClick((e) => {
-					vscode.env.clipboard.writeText(<string>migrationControllerAuthKeyTable.dataValues![0][1].value);
-					vscode.window.showInformationMessage(constants.CONTROLLER_KEY_COPIED_HELP);
+					vscode.env.clipboard.writeText(<string>migrationServiceAuthKeyTable.dataValues![0][1].value);
+					vscode.window.showInformationMessage(constants.SERVICE_KEY_COPIED_HELP);
 				});
 
 				const copyKey2Button = this._view.modelBuilder.button().withProps({
@@ -349,8 +354,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				}).component();
 
 				copyKey2Button.onDidClick((e) => {
-					vscode.env.clipboard.writeText(<string>migrationControllerAuthKeyTable.dataValues![1][1].value);
-					vscode.window.showInformationMessage(constants.CONTROLLER_KEY_COPIED_HELP);
+					vscode.env.clipboard.writeText(<string>migrationServiceAuthKeyTable.dataValues![1][1].value);
+					vscode.window.showInformationMessage(constants.SERVICE_KEY_COPIED_HELP);
 				});
 
 				const refreshKey1Button = this._view.modelBuilder.button().withProps({
@@ -367,15 +372,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				refreshKey2Button.onDidClick((e) => {//TODO: add refresh logic
 				});
 
-
-				migrationControllerAuthKeyTable.updateProperties({
+				migrationServiceAuthKeyTable.updateProperties({
 					dataValues: [
 						[
 							{
-								value: constants.CONTROLLER_KEY1_LABEL
+								value: constants.SERVICE_KEY1_LABEL
 							},
 							{
-								value: migrationControllerAuthKeys.authKey1
+								value: migrationServiceAuthKeys.authKey1
 							},
 							{
 								value: copyKey1Button
@@ -386,10 +390,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 						],
 						[
 							{
-								value: constants.CONTROLLER_KEY2_LABEL
+								value: constants.SERVICE_KEY2_LABEL
 							},
 							{
-								value: migrationControllerAuthKeys.authKey2
+								value: migrationServiceAuthKeys.authKey2
 							},
 							{
 								value: copyKey2Button
@@ -403,14 +407,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 				this._migrationDetailsContainer.addItems(
 					[
-						migrationControllerTitle,
+						migrationServiceTitle,
 						createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
-						createInformationRow(this._view, constants.RESOURCE_GROUP, controller.properties.resourceGroup),
-						createInformationRow(this._view, constants.LOCATION, controller.properties.location),
+						createInformationRow(this._view, constants.RESOURCE_GROUP, migrationService.properties.resourceGroup),
+						createInformationRow(this._view, constants.LOCATION, migrationService.properties.location),
 						connectionLabelContainer,
 						connectionStatusLoader,
 						authenticationKeysLabel,
-						migrationControllerAuthKeyTable
+						migrationServiceAuthKeyTable
 					]
 				);
 			}

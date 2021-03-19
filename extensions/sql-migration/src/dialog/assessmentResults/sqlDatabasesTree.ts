@@ -14,6 +14,7 @@ type DbIssues = {
 };
 export class SqlDatabaseTree extends AssessmentDialogComponent {
 
+	public static excludeDbs: Array<string> = ['master', 'tempdb', 'msdb', 'model'];
 	private _model!: MigrationStateModel;
 	private instanceTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
 	private databaseTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
@@ -31,11 +32,17 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private _objectDetailsName!: azdata.TextComponent;
 	private _objectDetailsSample!: azdata.TextComponent;
 	private _moreInfo!: azdata.TextComponent;
+	private _assessmentType!: string;
+	private _assessmentTitle!: azdata.TextComponent;
 
-	constructor(model: MigrationStateModel, assessmentData: Map<string, Issues[]>) {
+	constructor(model: MigrationStateModel, assessmentData: Map<string, Issues[]>, assessmentType: string) {
 		super();
 		this._assessmentData = assessmentData;
 		this._model = model;
+		this._assessmentType = assessmentType;
+		if (this._assessmentType === 'vm') {
+			this._assessmentData.clear();
+		}
 	}
 
 	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
@@ -92,14 +99,14 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					{
 						displayName: 'Databases', // TODO localize
 						valueType: azdata.DeclarativeDataType.string,
-						width: '80%',
+						width: '75%',
 						isReadOnly: true,
 						headerCssStyles: styleLeft
 					},
 					{
 						displayName: 'Issues', // Incidents
 						valueType: azdata.DeclarativeDataType.string,
-						width: '10%',
+						width: '15%',
 						isReadOnly: true,
 						headerCssStyles: styleRight,
 						ariaLabel: 'Issue Count' // TODO localize
@@ -143,11 +150,11 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				rowNumber = rowNumber + 1;
 			});
 
-			dbList.forEach((value) => {
+			dbList.filter(db => !SqlDatabaseTree.excludeDbs.includes(db)).forEach((value) => {
 				this.databaseTable.component().dataValues?.push(
 					[
 						{
-							value: false,
+							value: true,
 							style: styleLeft
 						},
 						{
@@ -183,7 +190,12 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			if (rowInfo) {
 				this._assessmentResultsTable.component().dataValues = [];
 				this._dbName.value = rowInfo.name;
-				this._recommendation.value = `Assessment Results (${rowInfo.issues.length} issues found)`;
+				if (rowInfo.issues[0].description === 'No Issues') {
+					this._recommendation.value = `Warnings (0 issues found)`;
+				} else {
+					this._recommendation.value = `Warnings (${rowInfo.issues.length} issues found)`;
+				}
+
 				// Need some kind of refresh method for declarative tables
 				let dataValues: string[][] = [];
 				rowInfo.issues.forEach(async (issue) => {
@@ -293,7 +305,8 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			height: '100%'
 		}).withProps({
 			CSSStyles: {
-				'margin-left': '10px'
+				'margin-left': '10px',
+				'margin-right': '15px'
 			}
 		}).component();
 
@@ -331,7 +344,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			}
 		}).component();
 
-		container.addItem(impactedObjects, { flex: '0 0 auto' });
+		container.addItem(impactedObjects, { flex: '0 0 auto', CSSStyles: { 'border-right': 'solid 1px' } });
 		container.addItem(rightContainer, { flex: '1 1 auto' });
 		return container;
 	}
@@ -358,9 +371,15 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		const impactedObjects = this.createImpactedObjectsDescription(view);
 
 
-		const container = view.modelBuilder.flexContainer().withItems([description, impactedObjects]).withLayout({
+		const container = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row'
+		}).withProps({
+			CSSStyles: {
+				'height': '100%'
+			}
 		}).component();
+		container.addItem(description, { flex: '1 1 auto', CSSStyles: { 'width': '50%', 'margin-right': '10px' } });
+		container.addItem(impactedObjects, { flex: '1 1 auto', CSSStyles: { 'width': '50%', 'margin-left': '10px' } });
 
 		return container;
 	}
@@ -435,6 +454,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		const objectDetailsTitle = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: 'Object details',
 			CSSStyles: {
+				'margin-top': '10px',
 				'font-size': '14px',
 				'margin-block-start': '0px',
 				'margin-block-end': '0px'
@@ -532,15 +552,16 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 
 	private createAssessmentTitle(view: azdata.ModelView): azdata.TextComponent {
-		const title = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		this._assessmentTitle = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: '',
 			CSSStyles: {
 				'font-size': '14px',
+				'padding-bottom': '15px',
 				'border-bottom': 'solid 1px'
 			}
-		});
+		}).component();
 
-		return title.component();
+		return this._assessmentTitle;
 	}
 
 	private createTitleComponent(view: azdata.ModelView): azdata.TextComponent {
@@ -586,7 +607,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private createAssessmentResultsTitle(view: azdata.ModelView): azdata.TextComponent {
 		this._recommendation = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			title: 'Recommendation', // TODO localize
-			value: 'Assessment Results',
+			value: 'Warnings',
 			CSSStyles: {
 				'font-size': '14px',
 				'font-weight': 'bold',
@@ -666,6 +687,8 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 					]);
 				});
+
+				this._assessmentTitle.value = this._issues.description;
 
 				this._impactedObjectsTable.component().updateProperties({
 					dataValues: data

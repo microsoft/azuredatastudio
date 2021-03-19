@@ -142,7 +142,7 @@ export class RestoreDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.Restore, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasErrors: true, width: 'wide', hasSpinner: true });
+		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.ModalDialogName.Restore, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasErrors: true, width: 'wide', hasSpinner: true });
 
 		// view model
 		this.viewModel = new RestoreViewModel(optionsMetadata);

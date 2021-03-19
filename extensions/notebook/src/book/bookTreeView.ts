@@ -16,7 +16,7 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { getPinnedNotebooks, confirmReplace } from '../common/utils';
+import { getPinnedNotebooks, confirmReplace, getNotebookType } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { getContentPath } from './bookVersionHandler';
@@ -131,7 +131,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (bookPathToUpdate) {
 			let pinStatusChanged = await this.bookPinManager.unpinNotebook(bookTreeItem);
 			if (pinStatusChanged) {
-				bookTreeItem.contextValue = 'savedNotebook';
+				bookTreeItem.contextValue = getNotebookType(bookTreeItem.book);
 			}
 		}
 	}
@@ -198,7 +198,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			const updateBook = selectionResults.book;
 			const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
 			if (movingElement.tableOfContents.sections) {
-				if (movingElement.contextValue === 'savedNotebook') {
+				if (movingElement.contextValue === 'savedNotebook' || movingElement.contextValue === 'savedBookNotebook') {
 					let sourceBook = this.books.find(book => book.getNotebook(path.normalize(movingElement.book.contentPath)));
 					movingElement.tableOfContents.sections = sourceBook?.bookItems[0].sections;
 				}
@@ -274,6 +274,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (notebookPath) {
 			await this.closeBook(bookItem);
 		}
+	}
+
+	async removeNotebook(bookItem: BookTreeItem): Promise<void> {
+		return this.bookTocManager.removeNotebook(bookItem);
 	}
 
 	async closeBook(book: BookTreeItem): Promise<void> {
