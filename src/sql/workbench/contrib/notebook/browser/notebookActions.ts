@@ -303,7 +303,7 @@ export class ToggleMoreActions extends Action {
 
 	constructor(
 		private readonly _actions: Array<IAction>,
-		private readonly _context: CellContext,
+		private readonly _context: URI,
 		@IContextMenuService private readonly _contextMenuService: IContextMenuService
 	) {
 		super(ToggleMoreActions.ID, ToggleMoreActions.LABEL, ToggleMoreActions.ICON);
@@ -331,7 +331,7 @@ export class NotebookToggleMoreActions {
 			instantiationService.createInstance(TrustedAction, localize('notebook.Trusted', 'Trust Notebook'), true));
 	}
 
-	public onInit(elementRef: HTMLElement, context: CellContext) {
+	public onInit(elementRef: HTMLElement, context: URI) {
 		this._moreActionsElement = elementRef;
 		this._moreActionsElement.setAttribute('aria-haspopup', 'menu');
 		if (this._moreActionsElement.childNodes.length > 0) {
@@ -339,7 +339,7 @@ export class NotebookToggleMoreActions {
 		}
 		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL, ariaLabel: moreActionsLabel });
 		this._moreActions.context = { target: this._moreActionsElement };
-		let validActions = this._actions.filter(a => a instanceof Separator || a instanceof CellActionBase && a.canRun(context));
+		let validActions = this._actions.filter(a => a instanceof Separator);
 		removeDuplicatedAndStartingSeparators(validActions);
 		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreActions, validActions, context), { icon: true, label: false });
 	}

@@ -52,7 +52,6 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
-import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 @Component({
@@ -389,17 +388,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', true);
 			this._trustedAction.enabled = false;
 
-			let runParametersAction = this.instantiationService.createInstance(RunParametersAction, 'notebook.runParameters', false);
-
-			let context = new CellContext(this.model, this.cellModel);
-			let moreActionsContainer = DOM.$('li.action-item');
-			this._notebookToggleMoreActions = this.instantiationService.createInstance(NotebookToggleMoreActions);
-			this._notebookToggleMoreActions.onInit(moreActionsContainer, context);
+			let runParametersAction = this.instantiationService.createInstance(RunParametersAction, 'notebook.runParameters', true);
 
 			let taskbar = <HTMLElement>this.toolbar.nativeElement;
 			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 			this._actionBar.context = this._notebookParams.notebookUri;
 			taskbar.classList.add('in-preview');
+
+			let moreActionsContainer = DOM.$('li.action-item');
+			this._notebookToggleMoreActions = this.instantiationService.createInstance(NotebookToggleMoreActions);
+			this._notebookToggleMoreActions.onInit(moreActionsContainer, this._actionBar.context);
 
 			let buttonDropdownContainer = DOM.$('li.action-item');
 			buttonDropdownContainer.setAttribute('role', 'presentation');
@@ -459,14 +457,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 			let runParametersAction = this.instantiationService.createInstance(RunParametersAction, 'notebook.runParmeters', false);
 
-			let context = new CellContext(this.model, this.cellModel);
-			let moreActionsContainer = DOM.$('li.action-item');
-			this._notebookToggleMoreActions = this.instantiationService.createInstance(NotebookToggleMoreActions);
-			this._notebookToggleMoreActions.onInit(moreActionsContainer, context);
-
 			let taskbar = <HTMLElement>this.toolbar.nativeElement;
 			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 			this._actionBar.context = this._notebookParams.notebookUri;
+
+			let moreActionsContainer = DOM.$('li.action-item');
+			this._notebookToggleMoreActions = this.instantiationService.createInstance(NotebookToggleMoreActions);
+			this._notebookToggleMoreActions.onInit(moreActionsContainer, this._actionBar.context);
 
 			this._actionBar.setContent([
 				{ action: addCodeCellButton },

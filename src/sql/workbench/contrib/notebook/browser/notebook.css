@@ -63,6 +63,10 @@
 	background-size: contain;
 }
 
+.notebookEditor .in-preview .actions-container .action-item .more.codicon:before {
+	height: 21px;
+}
+
 .notebookEditor
 	.in-preview
 	.actions-container
