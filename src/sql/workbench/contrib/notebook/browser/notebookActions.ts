@@ -32,6 +32,7 @@ import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/acti
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { QuickInputBox } from 'vs/base/parts/quickinput/browser/quickInputBox';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -44,6 +45,8 @@ const msgLocalHost = localize('localhost', "localhost");
 
 export const noKernel: string = localize('noKernel', "No Kernel");
 const moreActionsLabel = localize('moreActionsLabel', "More");
+const baseIconClass = 'codicon';
+const maskedIconClass = 'masked-icon';
 
 // Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {
@@ -106,17 +109,15 @@ export abstract class TooltipFromLabelAction extends Action {
 // Action to clear outputs of all code cells.
 export class ClearAllOutputsAction extends TooltipFromLabelAction {
 	private static readonly label = localize('clearResults', "Clear Results");
-	private static readonly baseClass = 'codicon';
 	private static readonly iconClass = 'icon-clear-results';
-	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(id: string, toggleTooltip: boolean,
 		@INotebookService private _notebookService: INotebookService) {
 		super(id, {
 			label: ClearAllOutputsAction.label,
-			baseClass: ClearAllOutputsAction.baseClass,
+			baseClass: baseIconClass,
 			iconClass: ClearAllOutputsAction.iconClass,
-			maskedIconClass: ClearAllOutputsAction.maskedIconClass,
+			maskedIconClass: maskedIconClass,
 			shouldToggleTooltip: toggleTooltip
 		});
 	}
@@ -175,24 +176,22 @@ export class TrustedAction extends ToggleableAction {
 	// Constants
 	private static readonly trustedLabel = localize('trustLabel', "Trusted");
 	private static readonly notTrustedLabel = localize('untrustLabel', "Not Trusted");
-	private static readonly baseClass = 'codicon';
 	private static readonly previewTrustedCssClass = 'icon-shield';
 	private static readonly trustedCssClass = 'icon-trusted';
 	private static readonly previewNotTrustedCssClass = 'icon-shield-x';
 	private static readonly notTrustedCssClass = 'icon-notTrusted';
-	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(
 		id: string, toggleTooltip: boolean,
 		@INotebookService private _notebookService: INotebookService
 	) {
 		super(id, {
-			baseClass: TrustedAction.baseClass,
+			baseClass: baseIconClass,
 			toggleOnLabel: TrustedAction.trustedLabel,
 			toggleOnClass: toggleTooltip === true ? TrustedAction.previewTrustedCssClass : TrustedAction.trustedCssClass,
 			toggleOffLabel: TrustedAction.notTrustedLabel,
 			toggleOffClass: toggleTooltip === true ? TrustedAction.previewNotTrustedCssClass : TrustedAction.notTrustedCssClass,
-			maskedIconClass: TrustedAction.maskedIconClass,
+			maskedIconClass: maskedIconClass,
 			shouldToggleTooltip: toggleTooltip,
 			isOn: false
 		});
@@ -237,22 +236,20 @@ export class RunAllCellsAction extends Action {
 export class CollapseCellsAction extends ToggleableAction {
 	private static readonly collapseCells = localize('collapseAllCells', "Collapse Cells");
 	private static readonly expandCells = localize('expandAllCells', "Expand Cells");
-	private static readonly baseClass = 'codicon';
 	private static readonly previewCollapseCssClass = 'icon-collapse-cells';
 	private static readonly collapseCssClass = 'icon-hide-cells';
 	private static readonly previewExpandCssClass = 'icon-expand-cells';
 	private static readonly expandCssClass = 'icon-show-cells';
-	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(id: string, toggleTooltip: boolean,
 		@INotebookService private _notebookService: INotebookService) {
 		super(id, {
-			baseClass: CollapseCellsAction.baseClass,
+			baseClass: baseIconClass,
 			toggleOnLabel: CollapseCellsAction.expandCells,
 			toggleOnClass: toggleTooltip === true ? CollapseCellsAction.previewExpandCssClass : CollapseCellsAction.expandCssClass,
 			toggleOffLabel: CollapseCellsAction.collapseCells,
 			toggleOffClass: toggleTooltip === true ? CollapseCellsAction.previewCollapseCssClass : CollapseCellsAction.collapseCssClass,
-			maskedIconClass: CollapseCellsAction.maskedIconClass,
+			maskedIconClass: maskedIconClass,
 			shouldToggleTooltip: toggleTooltip,
 			isOn: false
 		});
@@ -280,23 +277,20 @@ export class CollapseCellsAction extends ToggleableAction {
 // Run Notebook with Parameters
 export class RunParametersAction extends TooltipFromLabelAction {
 	private static readonly label = localize('runParameters', "Run with Parameters");
-	private static readonly baseClass = 'codicon';
 	private static readonly iconClass = 'icon-run-with-parameters';
-	private static readonly maskedIconClass = 'masked-icon';
 
-	constructor(id: string, toggleTooltip: boolean,
-		@INotebookService private _notebookService: INotebookService) {
+	constructor(id: string, toggleTooltip: boolean) {
 		super(id, {
 			label: RunParametersAction.label,
-			baseClass: RunParametersAction.baseClass,
+			baseClass: baseIconClass,
 			iconClass: RunParametersAction.iconClass,
-			maskedIconClass: RunParametersAction.maskedIconClass,
+			maskedIconClass: maskedIconClass,
 			shouldToggleTooltip: toggleTooltip
 		});
 	}
 	// Open QuickPick dialog
 	public run(): Promise<void> {
-
+		const parametersInputBox = QuickInputBox;
 		return Promise.resolve();
 	}
 }

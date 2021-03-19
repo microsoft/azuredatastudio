@@ -389,7 +389,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', true);
 			this._trustedAction.enabled = false;
 
-			let runParametersAction = this.instantiationService.createInstance(RunParametersAction, 'notebook.runParmeters', false);
+			let runParametersAction = this.instantiationService.createInstance(RunParametersAction, 'notebook.runParameters', false);
 
 			let context = new CellContext(this.model, this.cellModel);
 			let moreActionsContainer = DOM.$('li.action-item');
