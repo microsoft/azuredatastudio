@@ -8,6 +8,7 @@ import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
 import * as azdataExt from 'azdata-ext';
 import * as utils from '../../../common/utils';
+import * as loc from '../../../localizedConstants';
 import { Deferred } from '../../../common/promise';
 import { createModelViewMock } from '@microsoft/azdata-test/out/mocks/modelView/modelViewMock';
 import { StubButton } from '@microsoft/azdata-test/out/stubs/modelView/stubButton';
@@ -55,14 +56,16 @@ describe('postgresOverviewPage', () => {
 
 		// Setup the PostgresModel
 		controllerModel = new FakeControllerModel();
-		const postgresResource: PGResourceInfo = { name: 'my-pg', resourceType: '' }
-		const registration: Registration = { instanceName: '', state: '', instanceType: ResourceType.postgresInstances }
+		const postgresResource: PGResourceInfo = { name: 'my-pg', resourceType: '' };
+		const registration: Registration = { instanceName: '', state: '', instanceType: ResourceType.postgresInstances };
 		const treeDataProvider = new AzureArcTreeDataProvider(TypeMoq.Mock.ofType<vscode.ExtensionContext>().object);
 		postgresModel = new PostgresModel(controllerModel, postgresResource, registration, treeDataProvider);
 
 		// Setup the PostgresOverviewPage
 		const { modelViewMock } = createModelViewMock();
 		postgresOverview = new PostgresOverviewPage(modelViewMock.object, controllerModel, postgresModel);
+		// Call the getter to initialize toolbar, but we don't need to use it for anything
+		// eslint-disable-next-line code-no-unused-expressions
 		postgresOverview['toolbarContainer'];
 	});
 
@@ -81,32 +84,26 @@ describe('postgresOverviewPage', () => {
 
 		it('deletes Postgres on success', async () => {
 			// Stub 'azdata arc postgres server delete' to return success
-			const postgresDelete = sinon.stub();
-			sinon.stub(azdataApi, 'arc').get(() => {
-				return { postgres: { server: { delete(name: string) { return postgresDelete(name); } } } };
-			});
+			const postgresDeleteStub = sinon.stub(azdataApi.arc.postgres.server, 'delete');
 
 			(postgresOverview['deleteButton'] as StubButton).click();
 			await informationMessageShown;
-			sinon.assert.calledOnceWithExactly(postgresDelete, postgresModel.info.name);
-			sinon.assert.calledOnceWithExactly(showInformationMessage, `Instance '${postgresModel.info.name}' deleted`);
+			sinon.assert.calledOnceWithExactly(postgresDeleteStub, postgresModel.info.name, sinon.match.any, sinon.match.any);
+			sinon.assert.calledOnceWithExactly(showInformationMessage, loc.instanceDeleted(postgresModel.info.name));
 			sinon.assert.notCalled(showErrorMessage);
 			sinon.assert.calledOnce(refreshTreeNode);
 		});
 
 		it('shows an error message on failure', async () => {
 			// Stub 'azdata arc postgres server delete' to throw an exception
-			const error = new Error("something bad happened");
-			const postgresDelete = sinon.stub().throws(error);
-			sinon.stub(azdataApi, 'arc').get(() => {
-				return { postgres: { server: { delete(name: string) { return postgresDelete(name); } } } };
-			});
+			const error = new Error('something bad happened');
+			const postgresDeleteStub = sinon.stub(azdataApi.arc.postgres.server, 'delete').throws(error);
 
 			(postgresOverview['deleteButton'] as StubButton).click();
 			await errorMessageShown;
-			sinon.assert.calledOnceWithExactly(postgresDelete, postgresModel.info.name);
+			sinon.assert.calledOnceWithExactly(postgresDeleteStub, postgresModel.info.name, sinon.match.any, sinon.match.any);
 			sinon.assert.notCalled(showInformationMessage);
-			sinon.assert.calledOnceWithExactly(showErrorMessage, `Failed to delete instance ${postgresModel.info.name}. ${error.message}`);
+			sinon.assert.calledOnceWithExactly(showErrorMessage, loc.instanceDeletionFailed(postgresModel.info.name, error.message));
 			sinon.assert.notCalled(refreshTreeNode);
 		});
 	});
