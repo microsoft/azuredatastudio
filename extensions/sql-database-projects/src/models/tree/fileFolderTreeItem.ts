@@ -88,12 +88,10 @@ export class ExternalStreamingJobFileNode extends FileNode {
 export function sortFileFolderNodes(a: (FolderNode | FileNode), b: (FolderNode | FileNode)): number {
 	if (a instanceof FolderNode && !(b instanceof FolderNode)) {
 		return -1;
-	}
-	else if (!(a instanceof FolderNode) && b instanceof FolderNode) {
+	} else if (!(a instanceof FolderNode) && b instanceof FolderNode) {
 		return 1;
-	}
-	else {
-		return a.uri.fsPath.localeCompare(b.uri.fsPath);
+	} else {
+		return a.projectUri.fsPath.localeCompare(b.projectUri.fsPath);
 	}
 }
 
@@ -106,13 +104,12 @@ function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootT
 
 	if (fileSystemUri.fsPath.startsWith(projBaseDir)) {
 		localUri = fileSystemUri.fsPath.substring(projBaseDir.length);
-	}
-	else if (isFile) {
+	} else if (isFile) {
 		// if file is outside the folder add add at top level in tree
 		// this is not true for folders otherwise the outside files will not be directly inside the top level
-		let parts = utils.getPlatformSafeFileEntryPath(fileSystemUri.fsPath).split('/');
+		const parts = utils.getPlatformSafeFileEntryPath(fileSystemUri.fsPath).split('/');
 		localUri = parts[parts.length - 1];
 	}
 
-	return vscode.Uri.file(path.join(projectNode.uri.path, localUri));
+	return vscode.Uri.file(path.join(projectNode.projectUri.fsPath, localUri));
 }
