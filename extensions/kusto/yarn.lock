@@ -103,8 +103,8 @@ concat-map@0.0.1:
   integrity sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=
 
 "dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#1.2.2":
-  version "1.1.1"
-  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/61caef386551de736e48db4673dc706b032884b8"
+  version "1.2.2"
+  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/3ffb03ba8b892cffe6ad363a2269c1f9439cf350"
   dependencies:
     vscode-languageclient "5.2.1"
 
