@@ -3917,6 +3917,11 @@ declare module 'azdata' {
 		}
 
 		/**
+		 * The width of a dialog, either from a predetermined size list or a specific size (such as px)
+		 */
+		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number | string;
+
+		/**
 		 * A message shown in a dialog. If the level is not set it defaults to error.
 		 */
 		export type DialogMessage = {
