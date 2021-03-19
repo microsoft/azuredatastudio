@@ -1,12 +1,29 @@
 - title: Welcome
   url: /readme
   not_numbered: true
-- title: Search
-  search: true
-- title: Postgres
-  url: /postgres/readme
-  not_numbered: true
-  expand_sections: true
   sections:
-  - title: TSG100 - The Azure Arc enabled PostgreSQL Hyperscale troubleshooter
-    url: postgres/tsg100-troubleshoot-postgres
+  - title: Install
+    url: /install/readme
+    not_numbered: true
+    sections:
+    - title: SOP036 - Install kubectl command line interface
+      url: install/sop036-install-kubectl
+  - title: Monitor - Kubernetes
+    url: /monitor-k8s/readme
+    not_numbered: true
+    sections:
+    - title: TSG010 - Get configuration contexts
+      url: monitor-k8s/tsg010-get-kubernetes-contexts
+  - title: Postgres
+    url: /postgres/readme
+    not_numbered: true
+    sections:
+    - title: TSG100 - The Azure Arc enabled PostgreSQL Hyperscale troubleshooter
+      url: postgres/tsg100-troubleshoot-postgres
+  - title: Repair
+    url: /repair/readme
+    not_numbered: true
+    sections:
+    - title: TSG056 - Kubectl fails with No connection could be made because the target
+        machine actively refused it
+      url: repair/tsg056-kubectl-no-connection-could-be-made

@@ -39,7 +39,7 @@ export class PostgresDashboard extends Dashboard {
 		// TODO Add dashboard once backend is able to be connected for per role server parameter edits.
 		// const coordinatorNodeParametersPage = new PostgresCoordinatorNodeParametersPage(modelView, this._postgresModel);
 		const workerNodeParametersPage = new PostgresWorkerNodeParametersPage(modelView, this._postgresModel);
-		const diagnoseAndSolveProblemsPage = new PostgresDiagnoseAndSolveProblemsPage(modelView, this._context, this._postgresModel);
+		const diagnoseAndSolveProblemsPage = new PostgresDiagnoseAndSolveProblemsPage(modelView, this._context, this._controllerModel, this._postgresModel);
 		const supportRequestPage = new PostgresSupportRequestPage(modelView, this._controllerModel, this._postgresModel);
 		const resourceHealthPage = new PostgresResourceHealthPage(modelView, this._postgresModel);
 
