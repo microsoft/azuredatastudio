@@ -147,20 +147,23 @@ export abstract class PostgresParametersPage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
-							const session = await this._postgresModel.controllerModel.acquireAzdataSession();
 							try {
 								this.parameterUpdates!.forEach((value, key) => {
 									engineSettings.push(`${key}="${value}"`);
 								});
-								await this.saveParameterEdits(engineSettings.toString(), session);
+								const session = await this._postgresModel.controllerModel.acquireAzdataSession();
+								try {
+									await this.saveParameterEdits(engineSettings.toString(), session);
+								} finally {
+									session.dispose();
+								}
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since
 								// the edit wasn't successfully applied
 								this.saveButton!.enabled = true;
 								throw err;
-							} finally {
-								session.dispose();
 							}
+
 							await this._postgresModel.refresh();
 						}
 					);
@@ -219,9 +222,13 @@ export abstract class PostgresParametersPage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
-							const session = await this._postgresModel.controllerModel.acquireAzdataSession();
 							try {
-								await this.resetAllParameters(session);
+								const session = await this._postgresModel.controllerModel.acquireAzdataSession();
+								try {
+									await this.resetAllParameters(session);
+								} finally {
+									session.dispose();
+								}
 							} catch (err) {
 								// If an error occurs while resetting the instance then re-enable the reset button since
 								// the edit wasn't successfully applied
@@ -231,8 +238,6 @@ export abstract class PostgresParametersPage extends DashboardPage {
 								}
 								this.resetAllButton!.enabled = true;
 								throw err;
-							} finally {
-								session.dispose();
 							}
 							await this._postgresModel.refresh();
 						}
