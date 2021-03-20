@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 declare module 'dataworkspace' {
+	import * as azdata from 'azdata';
 	import * as vscode from 'vscode';
 	export const enum extension {
 		name = 'Microsoft.data-workspace'
@@ -75,6 +76,11 @@ declare module 'dataworkspace' {
 		 * Gets the project actions to be placed on the dashboard toolbar
 		 */
 		readonly projectActions: (IProjectAction | IProjectActionGroup)[];
+
+		/**
+		 * Gets the project information to be placed in the dashboard container
+		 */
+		 readonly projectInfo: IProjectInfo[];
 	}
 
 	/**
@@ -145,5 +151,48 @@ declare module 'dataworkspace' {
 	 */
 	export interface IProjectActionGroup {
 		actions: IProjectAction[];
+	}
+
+	/**
+	 * Defines project information to be presented in the dashboard container
+	 */
+	export interface IProjectInfo {
+		/**
+		 * name of the table
+		 */
+		tableName: string;
+
+		/**
+		 * column header information
+		 */
+		columnInfo: IDashboardColumnInfo[];
+
+		/**
+		 * data that goes in the table
+		 */
+		columnData: (IDashboardColumnData | IDashboardColumnDataGroup)[][];
+	}
+
+	/**
+	 * Header information of a column in the table
+	 */
+	export interface IDashboardColumnInfo {
+		displayName: string;
+		width: number;
+		valueType: azdata.DeclarativeDataType;
+	}
+
+	/**
+	 * List of data to be presented on the table in the dashboard container
+	 */
+	export interface IDashboardColumnData {
+		value: any;
+	}
+
+	/**
+	 * List of data that should be grouped under one column
+	 */
+	export interface IDashboardColumnDataGroup {
+		values: IDashboardColumnData[];
 	}
 }

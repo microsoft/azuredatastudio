@@ -144,6 +144,16 @@ suite('WorkspaceService Tests', function (): void {
 		{
 			id: 'ta2',
 			run: async (): Promise<any> => { return Promise.resolve(); }
+		}],
+		[{
+			tableName: 'ti1',
+			columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+			columnData: [[{ value: 'd1' }]]
+		},
+		{
+			tableName: 'ti2',
+			columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+			columnData: [[{ value: 'd1' }]]
 		}]);
 		const provider2 = createProjectProvider([
 			{
@@ -173,6 +183,16 @@ suite('WorkspaceService Tests', function (): void {
 		{
 			id: 'Target Version',
 			run: async (): Promise<any> => { return Promise.resolve(); }
+		}],
+		[{
+			tableName: 'Deployments',
+			columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+			columnData: [[{ value: 'd1' }]]
+		},
+		{
+			tableName: 'Builds',
+			columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+			columnData: [[{ value: 'd1' }]]
 		}]);
 		sinon.stub(ProjectProviderRegistry, 'providers').value([provider1, provider2]);
 		const consoleErrorStub = sinon.stub(console, 'error');
@@ -226,6 +246,16 @@ suite('WorkspaceService Tests', function (): void {
 		{
 			id: 'Target Version',
 			run: async (): Promise<any> => { return Promise.resolve(); }
+		}],
+		[{
+			tableName: 'Deployments',
+			columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+			columnData: [[{ value: 'd1' }]]
+		},
+		{
+			tableName: 'Builds',
+			columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+			columnData: [[{ value: 'd1' }]]
 		}]));
 		let provider = await service.getProjectProvider(vscode.Uri.file('abc.sqlproj'));
 		should.notStrictEqual(provider, undefined, 'Provider should be returned for sqlproj');
@@ -245,6 +275,11 @@ suite('WorkspaceService Tests', function (): void {
 		[{
 			id: 'ta2',
 			run: async (): Promise<any> => { return Promise.resolve(); }
+		}],
+		[{
+			tableName: 'ti2',
+			columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+			columnData: [[{ value: 'd1' }]]
 		}]));
 		provider = await service.getProjectProvider(vscode.Uri.file('abc.csproj'));
 		should.notStrictEqual(provider, undefined, 'Provider should be returned for csproj');

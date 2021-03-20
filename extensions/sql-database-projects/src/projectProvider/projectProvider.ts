@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as dataworkspace from 'dataworkspace';
 import * as sqldbproj from 'sqldbproj';
 import * as vscode from 'vscode';
@@ -122,5 +123,31 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	async addToProject(projectFile: vscode.Uri, list: vscode.Uri[]): Promise<void> {
 		const project = await Project.openProject(projectFile.fsPath);
 		await project.addToProject(list);
+	}
+
+	/**
+	 * Gets the project information
+	 */
+	get projectInfo(): dataworkspace.IProjectInfo[] {
+		const deployInfo: dataworkspace.IProjectInfo = {
+			tableName: constants.Deployments,
+			columnInfo: [{ displayName: constants.ID, width: 75, valueType: azdata.DeclarativeDataType.string },
+			{ displayName: constants.Status, width: 180, valueType: azdata.DeclarativeDataType.component },
+			{ displayName: constants.Target, width: 180, valueType: azdata.DeclarativeDataType.string },
+			{ displayName: constants.Date, width: 180, valueType: azdata.DeclarativeDataType.string }],
+			columnData: this.projectController.DeployInfo
+		};
+
+		const buildInfo: dataworkspace.IProjectInfo = {
+			tableName: constants.Builds,
+			columnInfo: [{ displayName: constants.ID, width: 75, valueType: azdata.DeclarativeDataType.string },
+			{ displayName: constants.Status, width: 180, valueType: azdata.DeclarativeDataType.component },
+			{ displayName: constants.Target, width: 180, valueType: azdata.DeclarativeDataType.string },
+			{ displayName: constants.Time, width: 180, valueType: azdata.DeclarativeDataType.string },
+			{ displayName: constants.Date, width: 180, valueType: azdata.DeclarativeDataType.string }],
+			columnData: this.projectController.BuildInfo
+		};
+
+		return [deployInfo, buildInfo];
 	}
 }

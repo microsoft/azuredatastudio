@@ -35,6 +35,10 @@ export class IconPathHelper {
 	public static schemaCompare: IconPath;
 	public static targetPlatform: IconPath;
 
+	public static success: IconPath;
+	public static error: IconPath;
+	public static inProgress: IconPath;
+
 	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
 		IconPathHelper.extensionContext = extensionContext;
 
@@ -60,6 +64,10 @@ export class IconPathHelper {
 		IconPathHelper.publish = IconPathHelper.makeIcon('publish', true);
 		IconPathHelper.schemaCompare = IconPathHelper.makeIcon('schemaCompare', true);
 		IconPathHelper.targetPlatform = IconPathHelper.makeIcon('targetPlatform', true);
+
+		IconPathHelper.success = IconPathHelper.makeIcon('success', true);
+		IconPathHelper.error = IconPathHelper.makeIcon('error', true);
+		IconPathHelper.inProgress = IconPathHelper.makeIcon('inProgress', true);
 	}
 
 	private static makeIcon(name: string, sameIcon: boolean = false) {

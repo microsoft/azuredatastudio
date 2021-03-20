@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'mocha';
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as should from 'should';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
-import { IProjectProvider, IProjectType, IProjectAction } from 'dataworkspace';
+import { IProjectProvider, IProjectType, IProjectAction, IProjectInfo } from 'dataworkspace';
 
 export class MockTreeDataProvider implements vscode.TreeDataProvider<any>{
 	onDidChangeTreeData?: vscode.Event<any> | undefined;
@@ -19,7 +20,7 @@ export class MockTreeDataProvider implements vscode.TreeDataProvider<any>{
 	}
 }
 
-export function createProjectProvider(projectTypes: IProjectType[], projectActions: IProjectAction[]): IProjectProvider {
+export function createProjectProvider(projectTypes: IProjectType[], projectActions: IProjectAction[], projectInfo: IProjectInfo[]): IProjectProvider {
 	const treeDataProvider = new MockTreeDataProvider();
 	const projectProvider: IProjectProvider = {
 		supportedProjectTypes: projectTypes,
@@ -32,7 +33,8 @@ export function createProjectProvider(projectTypes: IProjectType[], projectActio
 		createProject: (name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri> => {
 			return Promise.resolve(location);
 		},
-		projectActions: projectActions
+		projectActions: projectActions,
+		projectInfo: projectInfo
 	};
 	return projectProvider;
 }
@@ -54,14 +56,24 @@ suite('ProjectProviderRegistry Tests', function (): void {
 				description: ''
 			}
 		],
-		[{
-			id: 'ta1',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		},
-		{
-			id: 'ta2',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		}]);
+			[{
+				id: 'ta1',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'ta2',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}],
+			[{
+				tableName: 'ti1',
+				columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columnData: [[{ value: 'd1' }]]
+			},
+			{
+				tableName: 'ti2',
+				columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columnData: [[{ value: 'd1' }]]
+			}]);
 		const provider2 = createProjectProvider([
 			{
 				id: 'sp1',
@@ -71,26 +83,36 @@ suite('ProjectProviderRegistry Tests', function (): void {
 				description: ''
 			}
 		],
-		[{
-			id: 'Add',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		},
-		{
-			id: 'Schema Compare',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		},
-		{
-			id: 'Build',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		},
-		{
-			id: 'Publish',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		},
-		{
-			id: 'Target Version',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		}]);
+			[{
+				id: 'Add',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Schema Compare',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Build',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Publish',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Target Version',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}],
+			[{
+				tableName: 'Deployments',
+				columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columnData: [[{ value: 'd1' }]]
+			},
+			{
+				tableName: 'Builds',
+				columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columnData: [[{ value: 'd1' }]]
+			}]);
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');
 		const disposable1 = ProjectProviderRegistry.registerProvider(provider1, 'test.testProvider');
 		let providerResult = ProjectProviderRegistry.getProviderByProjectExtension('testproj');
@@ -134,10 +156,15 @@ suite('ProjectProviderRegistry Tests', function (): void {
 				description: ''
 			}
 		],
-		[{
-			id: 'ta1',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		}]);
+			[{
+				id: 'ta1',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}],
+			[{
+				tableName: 'ti1',
+				columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columnData: [[{ value: 'd1' }]]
+			}]);
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');
 		ProjectProviderRegistry.registerProvider(provider, 'test.testProvider');
 		should.strictEqual(ProjectProviderRegistry.providers.length, 1, 'there should be only one project provider at this time');

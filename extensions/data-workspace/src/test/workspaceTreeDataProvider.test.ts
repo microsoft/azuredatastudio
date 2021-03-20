@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'mocha';
+import * as azdata from 'azdata';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
 import * as should from 'should';
@@ -110,6 +111,16 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 			{
 				id: 'Target Version',
 				run: async (): Promise<any> => { return Promise.resolve(); }
+			}],
+			projectInfo: [{
+				tableName: 'Deployments',
+				columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columnData: [[{ value: 'd1' }]]
+			},
+			{
+				tableName: 'Builds',
+				columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columnData: [[{ value: 'd1' }]]
 			}]
 		};
 		const getProjectProviderStub = sinon.stub(workspaceService, 'getProjectProvider');

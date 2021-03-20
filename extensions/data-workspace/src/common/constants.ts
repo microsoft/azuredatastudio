@@ -65,3 +65,8 @@ export const ProjectAlreadyOpened = (path: string): string => { return localize(
 // Workspace settings for saving new projects
 export const ProjectConfigurationKey = 'projects';
 export const ProjectSaveLocationKey = 'defaultProjectSaveLocation';
+
+export namespace cssStyles {
+	export const title = { 'font-size': '18px', 'font-weight': '600' };
+	export const tableHeader = { 'text-align': 'left', 'font-weight': '500', 'font-size': '13px', 'user-select': 'text' };
+}

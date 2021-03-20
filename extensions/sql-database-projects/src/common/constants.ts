@@ -36,6 +36,13 @@ export const buildAction = localize('buildAction', "Build");
 export const publishAction = localize('publishAction', "Publish");
 export const changeTargetPlatformAction = localize('changeTargetPlatformAction', "Change Target Platform");
 
+export const ID = localize('ID', "ID");
+export const Status = localize('Status', "Status");
+export const Time = localize('Time', "Time");
+export const Date = localize('Date', "Date");
+export const Builds = localize('Builds', "Builds");
+export const Deployments = localize('Deployments', "Deployments");
+
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';
 export const schemaCompareStartCommand = 'schemaCompare.start';

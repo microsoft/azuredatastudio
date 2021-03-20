@@ -24,13 +24,14 @@ import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
-import { BuildHelper } from '../tools/buildHelper';
+import { BuildHelper, BuildInfo, Status } from '../tools/buildHelper';
 import { PublishProfile, load } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { IconPathHelper } from '../common/iconHelper';
 
 /**
  * Controller for managing lifecycle of projects
@@ -38,12 +39,65 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 export class ProjectsController {
 	private netCoreTool: NetCoreTool;
 	private buildHelper: BuildHelper;
+	private buildInfo: BuildInfo[] = [];
+	private deployInfo: DeployInfo[] = [];
 
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
 	constructor() {
 		this.netCoreTool = new NetCoreTool();
 		this.buildHelper = new BuildHelper();
+	}
+
+	public get DeployInfo(): (dataworkspace.IDashboardColumnData | dataworkspace.IDashboardColumnDataGroup)[][] {
+		const infoRows: (dataworkspace.IDashboardColumnData | dataworkspace.IDashboardColumnDataGroup)[][] = [];
+		let count = 0;
+
+		for (let i = this.deployInfo.length - 1; i >= 0; i--) {
+			let icon;
+			if (this.deployInfo[i].status === Status.success) {
+				icon = IconPathHelper.success;
+			} else if (this.deployInfo[i].status === Status.failed) {
+				icon = IconPathHelper.error;
+			} else {
+				icon = IconPathHelper.inProgress;
+			}
+
+			let infoRow: (dataworkspace.IDashboardColumnData | dataworkspace.IDashboardColumnDataGroup)[] = [{ value: count.toString() },
+			{ values: [{ value: icon }, { value: this.deployInfo[i].status }] },
+			{ value: this.deployInfo[i].target },
+			{ value: this.deployInfo[i].deployDate }];
+			infoRows.push(infoRow);
+			count++;
+		}
+
+		return infoRows;
+	}
+
+	public get BuildInfo(): (dataworkspace.IDashboardColumnData | dataworkspace.IDashboardColumnDataGroup)[][] {
+		const infoRows: (dataworkspace.IDashboardColumnData | dataworkspace.IDashboardColumnDataGroup)[][] = [];
+		let count = 0;
+
+		for (let i = this.buildInfo.length - 1; i >= 0; i--) {
+			let icon;
+			if (this.buildInfo[i].status === Status.success) {
+				icon = IconPathHelper.success;
+			} else if (this.buildInfo[i].status === Status.failed) {
+				icon = IconPathHelper.error;
+			} else {
+				icon = IconPathHelper.inProgress;
+			}
+
+			let infoRow: (dataworkspace.IDashboardColumnData | dataworkspace.IDashboardColumnDataGroup)[] = [{ value: count.toString() },
+			{ values: [{ value: icon }, { value: this.buildInfo[i].status }] },
+			{ value: this.buildInfo[i].target },
+			{ value: this.buildInfo[i].timeToBuild },
+			{ value: this.buildInfo[i].buildDate }];
+			infoRows.push(infoRow);
+			count++;
+		}
+
+		return infoRows;
 	}
 
 	public refreshProjectsTree(workspaceTreeItem: dataworkspace.WorkspaceTreeItem): void {
@@ -109,6 +163,9 @@ export class ProjectsController {
 
 		const startTime = new Date();
 
+		let buildInfoNew = new BuildInfo(Status.inProgress, project.getProjectTargetVersion(), startTime.toLocaleDateString() + ' at ' + startTime.toLocaleTimeString());
+		this.buildInfo.push(buildInfoNew);
+
 		// Check mssql extension for project dlls (tracking issue #10273)
 		await this.buildHelper.createBuildDirFolder();
 
@@ -118,17 +175,26 @@ export class ProjectsController {
 			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath)
 		};
 
+		const buildInfoLength = this.buildInfo.length - 1;
+
 		try {
 			await this.netCoreTool.runDotnetCommand(options);
+			const timeToBuild = new Date().getTime() - startTime.getTime();
+			this.buildInfo[buildInfoLength].status = Status.success;
+			this.buildInfo[buildInfoLength].timeToBuild = utils.timeConversion(timeToBuild);
 
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.build)
-				.withAdditionalMeasurements({ duration: new Date().getMilliseconds() - startTime.getMilliseconds() })
+				.withAdditionalMeasurements({ duration: timeToBuild })
 				.send();
 
 			return project.dacpacOutputPath;
 		} catch (err) {
+			const timeToFailureBuild = new Date().getTime() - startTime.getTime();
+			this.buildInfo[buildInfoLength].status = Status.failed;
+			this.buildInfo[buildInfoLength].timeToBuild = utils.timeConversion(timeToFailureBuild);
+
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.build)
-				.withAdditionalMeasurements({ duration: new Date().getMilliseconds() - startTime.getMilliseconds() })
+				.withAdditionalMeasurements({ duration: timeToFailureBuild })
 				.send();
 
 			vscode.window.showErrorMessage(constants.projBuildFailed(utils.getErrorMessage(err)));
@@ -187,12 +253,18 @@ export class ProjectsController {
 
 		let result: mssql.DacFxResult;
 		telemetryProps.profileUsed = (settings.profileUsed ?? false).toString();
-		const actionStartTime = new Date().getMilliseconds();
+		const currentDate = new Date();
+		const actionStartTime = currentDate.getMilliseconds();
+
+		let deployInfoNew = new DeployInfo(Status.inProgress, project.getProjectTargetVersion(), currentDate.toLocaleDateString() + ' at ' + currentDate.toLocaleTimeString());
+		this.deployInfo.push(deployInfoNew);
+		const deployInfoLength = this.deployInfo.length - 1;
 
 		try {
 			if ((<IPublishSettings>settings).upgradeExisting) {
 				telemetryProps.publishAction = 'deploy';
 				result = await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdata.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
+				this.deployInfo[deployInfoLength].status = Status.success;
 			}
 			else {
 				telemetryProps.publishAction = 'generateScript';
@@ -206,6 +278,8 @@ export class ProjectsController {
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
 				.withAdditionalProperties(telemetryProps)
 				.send();
+
+			this.deployInfo[deployInfoLength].status = Status.failed;
 
 			throw err;
 		}
@@ -855,4 +929,16 @@ export interface NewProjectParams {
 	folderUri: vscode.Uri;
 	projectTypeId: string;
 	projectGuid?: string;
+}
+
+export class DeployInfo {
+	public status: Status;
+	public target: string;
+	public deployDate: string;
+
+	constructor(_status: Status, _target: string, _deployDate: string) {
+		this.status = _status;
+		this.target = _target;
+		this.deployDate = _deployDate;
+	}
 }
