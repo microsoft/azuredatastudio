@@ -8,7 +8,7 @@ import * as fs from 'fs';
 import { JupyterBookSection, IJupyterBookToc } from '../contracts/content';
 import * as loc from '../common/localizedConstants';
 import { isBookItemPinned, getNotebookType } from '../common/utils';
-import { getContentPath, getTocPath } from './bookVersionHandler';
+import { BookVersion, getContentPath, getTocPath } from './bookVersionHandler';
 
 export enum BookTreeItemType {
 	Book = 'Book',
@@ -33,7 +33,7 @@ export interface BookTreeItemFormat {
 	type: BookTreeItemType;
 	treeItemCollapsibleState: number;
 	isUntitled: boolean;
-	version?: string;
+	version?: BookVersion;
 	parent?: BookTreeItem;
 	children?: BookTreeItem[];
 }
