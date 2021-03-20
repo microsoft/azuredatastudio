@@ -121,7 +121,8 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		.monaco-workbench button:focus,
 		.monaco-workbench textarea:focus,
 		.monaco-workbench input[type="search"]:focus,
-		.monaco-workbench input[type="checkbox"]:focus {
+		.monaco-workbench input[type="radio"]:focus, /* {{SQL CARBON EDIT}} */
+		.monaco-workbench input[type="checkbox"]:focus{
 			outline-color: ${focusOutline};
 		}
 		`);
