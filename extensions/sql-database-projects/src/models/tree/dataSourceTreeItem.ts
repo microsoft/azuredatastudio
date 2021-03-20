@@ -19,7 +19,7 @@ export class DataSourcesTreeItem extends BaseProjectTreeItem {
 	private dataSources: DataSourceTreeItem[] = [];
 
 	constructor(project: ProjectRootTreeItem) {
-		super(vscode.Uri.file(path.join(project.uri.path, constants.dataSourcesNodeName)), project);
+		super(vscode.Uri.file(path.join(project.projectUri.path, constants.dataSourcesNodeName)), project);
 
 		this.construct();
 	}
@@ -35,7 +35,7 @@ export class DataSourcesTreeItem extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		const dataSources = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Collapsed);
+		const dataSources = new vscode.TreeItem(this.projectUri, vscode.TreeItemCollapsibleState.Collapsed);
 		dataSources.contextValue = constants.DatabaseProjectItemType.dataSourceRoot;
 		dataSources.iconPath = IconPathHelper.dataSourceGroup;
 
@@ -50,11 +50,11 @@ abstract class DataSourceTreeItem extends BaseProjectTreeItem { }
  */
 export class SqlConnectionDataSourceTreeItem extends DataSourceTreeItem {
 	constructor(private dataSource: SqlConnectionDataSource, dataSourcesNode: DataSourcesTreeItem) {
-		super(vscode.Uri.file(path.join(dataSourcesNode.uri.path, dataSource.name)), dataSourcesNode);
+		super(vscode.Uri.file(path.join(dataSourcesNode.projectUri.path, dataSource.name)), dataSourcesNode);
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		let item = new vscode.TreeItem(this.uri, vscode.TreeItemCollapsibleState.Collapsed);
+		let item = new vscode.TreeItem(this.projectUri, vscode.TreeItemCollapsibleState.Collapsed);
 		item.label = `${this.dataSource.name} (${this.dataSource.typeFriendlyName})`;
 		item.iconPath = IconPathHelper.dataSourceSql;
 

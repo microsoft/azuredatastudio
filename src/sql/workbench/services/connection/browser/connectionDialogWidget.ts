@@ -113,7 +113,7 @@ export class ConnectionDialogWidget extends Modal {
 	) {
 		super(
 			localize('connection', "Connection"),
-			TelemetryKeys.Connection,
+			TelemetryKeys.ModalDialogName.Connection,
 			telemetryService,
 			layoutService,
 			clipboardService,

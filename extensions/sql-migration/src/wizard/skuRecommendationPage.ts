@@ -12,7 +12,6 @@ import * as constants from '../constants/strings';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { IconPathHelper } from '../constants/iconPathHelper';
-
 export class SKURecommendationPage extends MigrationWizardPage {
 
 	private _igComponent: azdata.FormComponent<azdata.TextComponent> | undefined;
@@ -168,7 +167,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._chooseTargetComponent?.component.clearItems();
 		this._igComponent!.component.value = constants.ASSESSMENT_COMPLETED(this._serverName);
 		if (this.migrationStateModel.assessmentResults) {
-			// need to parse assessment results before this, multiple assessment results present for same DB
 			let dbIssueCount = 0;
 			let last = '';
 			this.migrationStateModel.assessmentResults.forEach(element => {
