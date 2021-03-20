@@ -63,7 +63,7 @@ describe('postgresOverviewPage', () => {
 
 		// Setup the PostgresOverviewPage
 		const { modelViewMock } = createModelViewMock();
-		postgresOverview = new PostgresOverviewPage(modelViewMock.object, controllerModel, postgresModel);
+		postgresOverview = new PostgresOverviewPage(modelViewMock.object, undefined!, controllerModel, postgresModel);
 		// Call the getter to initialize toolbar, but we don't need to use it for anything
 		// eslint-disable-next-line code-no-unused-expressions
 		postgresOverview['toolbarContainer'];

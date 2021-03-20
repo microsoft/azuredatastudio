@@ -47,6 +47,10 @@ class ModelViewPanelImpl implements azdata.window.ModelViewPanel {
 		}
 	}
 
+	public get handle(): number {
+		return this._handle;
+	}
+
 	public set handle(value: number) {
 		this._handle = value;
 	}
@@ -91,6 +95,10 @@ class ModelViewEditorImpl extends ModelViewPanelImpl implements azdata.workspace
 
 	public openEditor(position?: vscode.ViewColumn): Thenable<void> {
 		return this._proxy.$openEditor(this.handle, this._modelViewId, this._title, this._name, this._options, position);
+	}
+
+	public closeEditor(): Thenable<void> {
+		return this._proxy.$closeEditor(this.handle);
 	}
 
 	public get isDirty(): boolean {
@@ -566,6 +574,10 @@ class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
 
 	open(): Thenable<void> {
 		return this._editor.openEditor();
+	}
+
+	close(): Thenable<void> {
+		return this._editor.closeEditor();
 	}
 
 	createTab(tab: azdata.DashboardTab, view: azdata.ModelView): azdata.Tab {

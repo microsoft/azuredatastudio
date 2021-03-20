@@ -36,8 +36,8 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 	protected readonly _azdataApi: azdataExt.IExtension;
 
-	constructor(protected modelView: azdata.ModelView, protected _postgresModel: PostgresModel) {
-		super(modelView);
+	constructor(protected modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, protected _postgresModel: PostgresModel) {
+		super(modelView, dashboard);
 
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
