@@ -30,6 +30,7 @@ export class PostgresOverviewPage extends DashboardPage {
 	private properties!: azdata.PropertiesContainerComponent;
 	private kibanaLink!: azdata.HyperlinkComponent;
 	private grafanaLink!: azdata.HyperlinkComponent;
+	private deleteButton!: azdata.ButtonComponent;
 
 	private podStatusTable!: azdata.DeclarativeTableComponent;
 	private podStatusData: PodStatusModel[] = [];
@@ -241,14 +242,14 @@ export class PostgresOverviewPage extends DashboardPage {
 			}));
 
 		// Delete service
-		const deleteButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.deleteButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.deleteText,
 			iconPath: IconPathHelper.delete
 		}).component();
 
 		this.disposables.push(
-			deleteButton.onDidClick(async () => {
-				deleteButton.enabled = false;
+			this.deleteButton.onDidClick(async () => {
+				this.deleteButton.enabled = false;
 				try {
 					if (await promptForInstanceDeletion(this._postgresModel.info.name)) {
 						await vscode.window.withProgress(
@@ -273,7 +274,7 @@ export class PostgresOverviewPage extends DashboardPage {
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceDeletionFailed(this._postgresModel.info.name, error));
 				} finally {
-					deleteButton.enabled = true;
+					this.deleteButton.enabled = true;
 				}
 			}));
 
@@ -323,7 +324,7 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
 			{ component: resetPasswordButton },
-			{ component: deleteButton },
+			{ component: this.deleteButton },
 			{ component: refreshButton, toolbarSeparatorAfter: true },
 			{ component: openInAzurePortalButton }
 		]).component();
