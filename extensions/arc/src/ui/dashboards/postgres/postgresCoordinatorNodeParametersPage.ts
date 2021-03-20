@@ -35,7 +35,7 @@ export class PostgresCoordinatorNodeParametersPage extends PostgresParametersPag
 		/* TODO add correct azdata call for editing coordinator parameters
 			await this._azdataApi.azdata.arc.postgres.server.edit(
 				this._postgresModel.info.name,
-				{ engineSettings: engineSettings.toString() },
+				{ engineSettings: engineSettings },
 				this._postgresModel.engineVersion,
 				this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 				session);
