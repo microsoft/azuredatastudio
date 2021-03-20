@@ -257,7 +257,8 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 						try {
 							await this.dashboard.close();
 						} catch (err) {
-							console.log(`Error closing dashboard `, err);
+							// Failures closing the dashboard aren't something we need to show users
+							console.log('Error closing MIAA dashboard ', err);
 						}
 
 					}
