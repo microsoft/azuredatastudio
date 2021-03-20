@@ -129,6 +129,16 @@ export interface INotebookService {
 	 * @param isTrusted True if notebook is to be set to trusted, false otherwise.
 	 */
 	setTrusted(notebookUri: URI, isTrusted: boolean): Promise<boolean>;
+
+	/**
+	 * Event that gets fired when a new Sql query is started.
+	 */
+	onRunQueryStart: Event<void>;
+
+	/**
+	 * Fires the onRunQueryStart event. Called by SqlKernels.
+	 */
+	notifyQueryStarted(): void;
 }
 
 export interface INotebookProvider {

@@ -289,6 +289,12 @@ export class NotebookServiceStub implements INotebookService {
 	navigateTo(notebookUri: URI, sectionId: string): void {
 		throw new Error('Method not implemented.');
 	}
+	get onRunQueryStart(): vsEvent.Event<void> {
+		throw new Error('Method not implemented.');
+	}
+	notifyQueryStarted(): void {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export class ClientSessionStub implements IClientSession {
