@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType, StateChangeEvent } from '../models/stateMachine';
 import { Product } from '../models/product';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
 import * as constants from '../constants/strings';
@@ -13,31 +13,7 @@ import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { IconPathHelper } from '../constants/iconPathHelper';
 
-// import { SqlMigrationService } from '../../../../extensions/mssql/src/sqlMigration/sqlMigrationService';
-
 export class SKURecommendationPage extends MigrationWizardPage {
-
-	private supportedProducts: Product[] = [
-		{
-			type: 'AzureSQLMI',
-			name: constants.SKU_RECOMMENDATION_MI_CARD_TEXT,
-			icon: IconPathHelper.sqlMiLogo
-		},
-		{
-			type: 'AzureSQLVM',
-			name: constants.SKU_RECOMMENDATION_VM_CARD_TEXT,
-			icon: IconPathHelper.sqlVmLogo
-		}
-	];
-
-	// For future reference: DO NOT EXPOSE WIZARD DIRECTLY THROUGH HERE.
-	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
-		super(wizard, azdata.window.createWizardPage(constants.SKU_RECOMMENDATION_PAGE_TITLE), migrationStateModel);
-	}
-
-	protected async registerContent(view: azdata.ModelView) {
-		await this.initialState(view);
-	}
 
 	private _igComponent: azdata.FormComponent<azdata.TextComponent> | undefined;
 	private _detailsComponent: azdata.FormComponent<azdata.TextComponent> | undefined;
@@ -50,8 +26,24 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _rbg!: azdata.RadioCardGroupComponent;
 	private _dbCount!: number;
 	private _serverName!: string;
+	private _supportedProducts: Product[] = [
+		{
+			type: MigrationTargetType.SQLMI,
+			name: constants.SKU_RECOMMENDATION_MI_CARD_TEXT,
+			icon: IconPathHelper.sqlMiLogo
+		},
+		{
+			type: MigrationTargetType.SQLVM,
+			name: constants.SKU_RECOMMENDATION_VM_CARD_TEXT,
+			icon: IconPathHelper.sqlVmLogo
+		}
+	];
 
-	private async initialState(view: azdata.ModelView) {
+	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
+		super(wizard, azdata.window.createWizardPage(constants.SKU_RECOMMENDATION_PAGE_TITLE), migrationStateModel);
+	}
+
+	protected async registerContent(view: azdata.ModelView) {
 		this._view = view;
 		this._igComponent = this.createStatusComponent(view); // The first component giving basic information
 		this._detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
@@ -132,6 +124,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		await view.initializeModel(formContainer.component());
 	}
 
+
+
+	private async initialState(view: azdata.ModelView) {
+
+	}
+
 	private createStatusComponent(view: azdata.ModelView): azdata.FormComponent<azdata.TextComponent> {
 		const component = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: '',
@@ -192,7 +190,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private constructTargets(): void {
-		const products: Product[] = this.supportedProducts;
+		const products: Product[] = this._supportedProducts;
 
 		this._rbg = this._view!.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
 			cards: [],

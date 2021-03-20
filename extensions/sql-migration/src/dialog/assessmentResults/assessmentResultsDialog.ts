@@ -33,8 +33,7 @@ export class AssessmentResultsDialog {
 
 	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string, private skuRecommendationPage: SKURecommendationPage, migrationType: string) {
 		this._model = model;
-		let assessmentData = this.parseData(this._model);
-		this._tree = new SqlDatabaseTree(this._model, assessmentData, migrationType);
+		this._tree = new SqlDatabaseTree(this._model, this.model._assessmentResults, migrationType);
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
@@ -85,46 +84,6 @@ export class AssessmentResultsDialog {
 		}
 	}
 
-
-	private parseData(model: MigrationStateModel): Map<string, Issues[]> {
-		// if there are multiple issues for the same DB, need to consolidate
-		// map DB name -> Assessment result items (issues)
-		// map assessment result items to description, recommendation, more info & impacted objects
-
-		let dbMap = new Map<string, Issues[]>();
-
-		model.assessmentResults?.forEach((element) => {
-			let issues: Issues;
-			issues = {
-				description: element.description,
-				recommendation: element.message,
-				moreInfo: element.helpLink,
-				impactedObjects: element.impactedObjects,
-				rowNumber: 0
-			};
-			if (element.targetName.includes(':')) {
-				let spliceIndex = element.targetName.indexOf(':');
-				let dbName = element.targetName.slice(spliceIndex + 1);
-				let dbIssues = dbMap.get(element.targetName);
-				if (dbIssues) {
-					dbMap.set(dbName, dbIssues.concat([issues]));
-				} else {
-					dbMap.set(dbName, [issues]);
-				}
-			} else {
-				let dbIssues = dbMap.get(element.targetName);
-				if (dbIssues) {
-					dbMap.set(element.targetName, dbIssues.concat([issues]));
-				} else {
-					dbMap.set(element.targetName, [issues]);
-				}
-			}
-
-		});
-
-		return dbMap;
-	}
-
 	protected async execute() {
 		this.model._migrationDbs = this._tree.selectedDbs();
 		this.skuRecommendationPage.refreshDatabaseCount(this._model._migrationDbs.length);
@@ -135,7 +94,6 @@ export class AssessmentResultsDialog {
 	protected async cancel() {
 		this._isOpen = false;
 	}
-
 
 	public get isOpen(): boolean {
 		return this._isOpen;

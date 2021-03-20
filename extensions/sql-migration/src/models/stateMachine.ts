@@ -33,6 +33,11 @@ export enum State {
 	EXIT,
 }
 
+export enum MigrationTargetType {
+	SQLVM = 'sqlvm',
+	SQLMI = 'sqlmi'
+}
+
 export enum MigrationCutover {
 	ONLINE,
 	OFFLINE
@@ -107,9 +112,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _stateChangeEventEmitter = new vscode.EventEmitter<StateChangeEvent>();
 	private _currentState: State;
 	private _gatheringInformationError: string | undefined;
-	private _skuRecommendations: SKURecommendations | undefined;
-	private _assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined;
 
+	private _skuRecommendations: SKURecommendations | undefined;
+	public _assessmentResults!: ServerAssessement;
+	public _vmDbs!: string[];
+	public _miDbs!: string[];
+	public _targetType!: MigrationTargetType;
 	public refreshDatabaseBackupPage!: boolean;
 
 	constructor(
@@ -131,18 +139,42 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public set currentState(newState: State) {
 		const oldState = this.currentState;
-
 		this._currentState = newState;
-
 		this._stateChangeEventEmitter.fire({ oldState, newState: this.currentState });
 	}
 
-	public get assessmentResults(): mssql.SqlMigrationAssessmentResultItem[] | undefined {
-		return this._assessmentResults;
+	public async getServerAssessments(): Promise<ServerAssessement> {
+		const assessmentResults = await this.migrationService.getAssessments(
+			await azdata.connection.getUriForConnection(this.sourceConnectionId)
+		);
+		const serverDatabases = await azdata.connection.listDatabases(this.sourceConnectionId);
+		const serverLevelAssessments: mssql.SqlMigrationAssessmentResultItem[] = [];
+		const databaseLevelAssessments = serverDatabases.map(db => {
+			return {
+				name: db,
+				issues: <mssql.SqlMigrationAssessmentResultItem[]>[]
+			};
+		});
+
+		assessmentResults?.items.forEach((item) => {
+			const dbIndex = serverDatabases.indexOf(item.databaseName);
+			if (dbIndex === -1) {
+				serverLevelAssessments.push(item);
+			} else {
+				databaseLevelAssessments[dbIndex].issues.push(item);
+			}
+		});
+
+		const result = {
+			issues: serverLevelAssessments,
+			databaseAssessments: databaseLevelAssessments
+		};
+
+		return result;
 	}
 
-	public set assessmentResults(assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined) {
-		this._assessmentResults = assessmentResults;
+	public getDatabaseAssessments(databaseName: string): mssql.SqlMigrationAssessmentResultItem[] | undefined {
+		return this._assessmentResults.databaseAssessments.find(databaseAsssessment => databaseAsssessment.name === databaseName)?.issues;
 	}
 
 	public get gatheringInformationError(): string | undefined {
@@ -545,4 +577,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 		});
 	}
+}
+
+export interface ServerAssessement {
+	issues: mssql.SqlMigrationAssessmentResultItem[];
+	databaseAssessments: {
+		name: string;
+		issues: mssql.SqlMigrationAssessmentResultItem[];
+	}[];
 }

@@ -37,9 +37,8 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private _moreInfo!: azdata.TextComponent;
 
 	constructor(
-		private _model: MigrationStateModel,
-		private _assessmentData: Map<string, Issues[]>,
-		private _assessmentType: string) {
+		private _model: MigrationStateModel
+	) {
 		super();
 		if (this._assessmentType === 'vm') {
 			this._assessmentData.clear();

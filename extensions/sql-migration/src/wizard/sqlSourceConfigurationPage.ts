@@ -14,7 +14,7 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
-		super(wizard, azdata.window.createWizardPage(constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL, 'MigrationModePage'), migrationStateModel);
+		super(wizard, azdata.window.createWizardPage(constants.SOURCE_CONFIGURATION, 'MigrationModePage'), migrationStateModel);
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
