@@ -29,9 +29,16 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
+		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+			return true;
+		});
 	}
 	public async onPageLeave(): Promise<void> {
+		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+			return true;
+		});
 	}
+
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
 	}
 

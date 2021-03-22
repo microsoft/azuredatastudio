@@ -29,7 +29,7 @@ export class SqlDatabaseTree {
 
 	constructor(
 		private _model: MigrationStateModel,
-		private _targetTypes: string
+		private _targetType: MigrationTargetType
 	) {
 	}
 
@@ -494,7 +494,7 @@ export class SqlDatabaseTree {
 	private createPlatformComponent(view: azdata.ModelView): azdata.TextComponent {
 		const impact = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			title: 'Platform', // TODO localize
-			value: (this._targetTypes === MigrationTargetType.SQLVM) ? 'Azure SQL Virtual Machine' : 'Azure SQL Managed Instance',
+			value: (this._targetType === MigrationTargetType.SQLVM) ? 'Azure SQL Virtual Machine' : 'Azure SQL Managed Instance',
 			CSSStyles: {
 				'font-size': '18px',
 				'margin-block-start': '0px',

@@ -97,7 +97,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			flexFlow: 'column'
 		}).component();
 
-		await this.migrationStateModel.getServerAssessments();
+
 
 		this._view = view;
 		const formContainer = view.modelBuilder.formContainer().withFormItems(
@@ -126,19 +126,16 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private createStatusComponent(view: azdata.ModelView): azdata.TextComponent {
-		const component = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: '',
+		const component = view.modelBuilder.text().withProps({
 			CSSStyles: {
 				'font-size': '14px'
 			}
 		}).component();
-
 		return component;
 	}
 
 	private createDetailsComponent(view: azdata.ModelView): azdata.TextComponent {
 		const component = view.modelBuilder.text().component();
-
 		return component;
 	}
 
@@ -174,7 +171,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					},
 				},
 				{
-					textValue: '0 out of 0 databases can be migrated (0 selected)',
+					textValue: '',
 					textStyles: {
 						'font-size': '13px',
 						'line-height': '18px'
@@ -207,20 +204,20 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				if (value.description.linkDisplayValue === 'View/Change') {
 					await vmDialog.openDialog();
 				} else if (value.description.linkDisplayValue === 'Learn more') {
-					vscode.env.openExternal(vscode.Uri.parse('https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview'));
+					vscode.env.openExternal(vscode.Uri.parse('https://docs.microsoft.com/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview'));
 				}
 			} else if (value.cardId === MigrationTargetType.SQLMI) {
 				this._rbg.selectedCardId = MigrationTargetType.SQLMI;
 				if (value.description.linkDisplayValue === 'View/Change') {
 					await miDialog.openDialog();
 				} else if (value.description.linkDisplayValue === 'Learn more') {
-					vscode.env.openExternal(vscode.Uri.parse('https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/sql-managed-instance-paas-overview '));
+					vscode.env.openExternal(vscode.Uri.parse('https://docs.microsoft.com/azure/azure-sql/managed-instance/sql-managed-instance-paas-overview '));
 				}
 			}
 		});
 
 		this._rbg.onSelectionChanged((value) => {
-			this.toggleTargetTypes(value.cardId);
+			this.changeTargetType(value.cardId);
 		});
 
 		this._rbg.selectedCardId = MigrationTargetType.SQLMI;
@@ -234,12 +231,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		return component;
 	}
 
-	private toggleTargetTypes(targetType: string) {
-		if (targetType === MigrationTargetType.SQLMI) {
-			this._azureSubscriptionText.value = 'Select an Azure subscription and an Azure SQL Managed Instance for your target.';
+	private changeTargetType(newTargetType: string) {
+		if (newTargetType === MigrationTargetType.SQLMI) {
+			this._azureSubscriptionText.value = constants.SELECT_AZURE_MI;
 			this.migrationStateModel._migrationDbs = this.migrationStateModel._miDbs;
 		} else {
-			this._azureSubscriptionText.value = 'Select an Azure subscription and an Azure SQL Virtual Machine for your target.';
+			this._azureSubscriptionText.value = constants.SELECT_AZURE_VM;
 			this.migrationStateModel._migrationDbs = this.migrationStateModel._vmDbs;
 		}
 		this.migrationStateModel.refreshDatabaseBackupPage = true;
@@ -257,8 +254,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private createAzureSubscriptionText(view: azdata.ModelView): azdata.TextComponent {
-		const component = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: 'Select an Azure subscription and an Azure SQL Managed Instance for your target.', //TODO: Localize
+		const component = view.modelBuilder.text().withProps({
 			CSSStyles: {
 				'font-size': '13px',
 				'line-height': '18px'
@@ -302,10 +298,15 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 
 	public async onPageEnter(): Promise<void> {
-		this.eventListener = this.migrationStateModel.stateChangeEvent(async (e) => this.onStateChangeEvent(e));
-		this.populateSubscriptionDropdown();
-		this.constructDetails();
+		try {
+			this.migrationStateModel.getServerAssessments().then((result) => {
+				this.constructDetails();
+			});
+		} catch (e) {
+			console.log(e);
+		}
 
+		this.populateSubscriptionDropdown();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			const errors: string[] = [];
 			this.wizard.message = {

@@ -30,7 +30,7 @@ export class AssessmentResultsDialog {
 	private _tree: SqlDatabaseTree;
 
 
-	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string, private _skuRecommendationPage: SKURecommendationPage, private _targetType: string) {
+	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string, private _skuRecommendationPage: SKURecommendationPage, private _targetType: MigrationTargetType) {
 		this._model = model;
 		this._tree = new SqlDatabaseTree(this._model, this._targetType);
 	}

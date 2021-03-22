@@ -117,12 +117,7 @@ export function createHeadingTextComponent(view: azdata.ModelView, value: string
 }
 
 
-export function createLabelTextComponent(view: azdata.ModelView, value: string, styles?: { [key: string]: string; }): azdata.TextComponent {
-	if (!styles) {
-		styles = {
-			'width': '300px'
-		};
-	}
+export function createLabelTextComponent(view: azdata.ModelView, value: string, styles: { [key: string]: string; } = { 'width': '300px' }): azdata.TextComponent {
 	const component = createTextCompononent(view, value);
 	component.updateCssStyles(styles);
 	return component;
