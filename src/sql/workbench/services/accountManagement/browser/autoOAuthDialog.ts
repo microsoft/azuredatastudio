@@ -55,7 +55,7 @@ export class AutoOAuthDialog extends Modal {
 	) {
 		super(
 			'',
-			TelemetryKeys.AutoOAuth,
+			TelemetryKeys.ModalDialogName.AutoOAuth,
 			telemetryService,
 			layoutService,
 			clipboardService,

@@ -21,3 +21,22 @@ export function deepClone<T>(obj: T): T {
 	});
 	return result;
 }
+
+export function getSqlServerName(majorVersion: number): string | undefined {
+	switch (majorVersion) {
+		case 10:
+			return 'SQL Server 2008';
+		case 11:
+			return 'SQL Server 2012';
+		case 12:
+			return 'SQL Server 2014';
+		case 13:
+			return 'SQL Server 2016';
+		case 14:
+			return 'SQL Server 2017';
+		case 15:
+			return 'SQL Server 2019';
+		default:
+			return undefined;
+	}
+}

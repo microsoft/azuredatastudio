@@ -35,8 +35,8 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		instanceNamespace: '-',
 	};
 
-	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel) {
-		super(modelView);
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel) {
+		super(modelView, dashboard);
 
 		this._azurecoreApi = vscode.extensions.getExtension(azurecore.extension.name)?.exports;
 
