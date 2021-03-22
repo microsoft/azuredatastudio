@@ -49,13 +49,7 @@ export class OpenExistingDialog extends DialogBase {
 		try {
 			// the selected location should be an existing directory
 			if (this.targetTypeRadioCardGroup?.selectedCardId === constants.Project) {
-				if (this.localRadioButton?.checked) {
-					await this.validateFile(this.filePathTextBox!.value!, constants.Project.toLowerCase());
-				} else {
-					// validate clone location
-					// check if parent folder exists
-					await this.validateClonePath(<string>this.localClonePathTextBox!.value);
-				}
+				await this.validateFile(this.filePathTextBox!.value!, constants.Project.toLowerCase());
 
 				if (this.workspaceInputBox!.enabled) {
 					await this.validateNewWorkspace(false);
@@ -103,6 +97,10 @@ export class OpenExistingDialog extends DialogBase {
 					.send();
 
 				if (this.remoteGitRepoRadioButton!.checked) {
+					TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, TelemetryActions.GitClone)
+						.withAdditionalProperties({ selectedTarget: 'workspace' })
+						.send();
+
 					// after this executes, the git extension will show a popup asking if you want to enter the workspace
 					await vscode.commands.executeCommand('git.clone', (<azdata.InputBoxComponent>this.gitRepoTextBoxComponent?.component).value, this.localClonePathTextBox!.value);
 				} else {

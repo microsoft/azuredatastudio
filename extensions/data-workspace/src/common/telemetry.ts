@@ -52,5 +52,6 @@ export enum TelemetryActions {
 	NewProjectDialogLaunched = 'NewProjectDialogLaunched',
 	OpeningWorkspace = 'OpeningWorkspace',
 	OpenExistingDialogLaunched = 'OpenExistingDialogLaunched',
-	NewProjectDialogCompleted = 'NewProjectDialogCompleted'
+	NewProjectDialogCompleted = 'NewProjectDialogCompleted',
+	GitClone = 'GitClone'
 }

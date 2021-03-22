@@ -7,6 +7,7 @@ import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
+import * as os from 'os';
 import * as constants from '../../common/constants';
 import * as utils from '../../common/utils';
 import { WorkspaceService } from '../../services/workspaceService';
@@ -60,6 +61,27 @@ suite('Open Existing Dialog', function (): void {
 		should.equal(await dialog.validate(), true, `Validation should pass because workspace file exists, but failed with: ${dialog.dialogObject.message.text}`);
 	});
 
+	test('Should validate workspace git clone location', async function (): Promise<void> {
+		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();
+		const dialog = new OpenExistingDialog(workspaceServiceMock.object, mockExtensionContext.object);
+		await dialog.open();
+
+		dialog.targetTypeRadioCardGroup?.updateProperty( 'selectedCardId', constants.Workspace);
+		dialog.localRadioButton!.checked = false;
+		dialog.remoteGitRepoRadioButton!.checked = true;
+		dialog.localClonePathTextBox!.value = 'invalidLocation';
+		const folderExistStub = sinon.stub(utils, 'directoryExist').resolves(false);
+
+		const validateResult = await dialog.validate();
+		const msg = constants.CloneParentDirectoryNotExistError(dialog.localClonePathTextBox!.value);
+		should.equal(dialog.dialogObject.message.text, msg);
+		should.equal(validateResult, false, 'Validation should fail because clone directory does not exist, but passed');
+
+		// validation should pass if directory exists
+		dialog.localClonePathTextBox!.value = os.tmpdir();
+		folderExistStub.resolves(true);
+		should.equal(await dialog.validate(), true, `Validation should pass because clone directory exists, but failed with: ${dialog.dialogObject.message.text}`);
+	});
 
 	test('Should validate workspace in onComplete when opening project', async function (): Promise<void> {
 		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();
