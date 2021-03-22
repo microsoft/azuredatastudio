@@ -2960,6 +2960,9 @@ declare module 'azdata' {
 		'inherit' |
 		'';
 
+	/**
+	 * Set of CSS key-value pairs
+	 */
 	export type CssStyles = { [key: string]: string | number };
 
 	/**
