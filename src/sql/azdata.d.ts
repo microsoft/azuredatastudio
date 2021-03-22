@@ -2783,7 +2783,7 @@ declare module 'azdata' {
 		 * @param cssStyles The styles to update
 		 * @returns Thenable that completes once the update has been applied to the UI
 		 */
-		updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void>;
+		updateCssStyles(cssStyles: CssStyles): Thenable<void>;
 
 		/**
 		 * Event fired to notify that the component's validity has changed
@@ -2960,6 +2960,8 @@ declare module 'azdata' {
 		'inherit' |
 		'';
 
+	export type CssStyles = { [key: string]: string | number };
+
 	/**
 	 * The config for a FlexBox-based container. This supports easy
 	 * addition of content to a container with a flexible layout
@@ -3038,7 +3040,7 @@ declare module 'azdata' {
 		/**
 		 * Matches the CSS style key and its available values.
 		 */
-		CSSStyles?: { [key: string]: string };
+		CSSStyles?: CssStyles;
 	}
 
 	export interface FormItemLayout {
@@ -3086,7 +3088,7 @@ declare module 'azdata' {
 		/**
 		 * Matches the CSS style key and its available values.
 		 */
-		CSSStyles?: { [key: string]: string };
+		CSSStyles?: CssStyles;
 	}
 
 	export interface DivContainer extends Container<DivLayout, DivItemLayout>, DivContainerProperties {
@@ -3224,7 +3226,7 @@ declare module 'azdata' {
 		/**
 		 * Matches the CSS style key and its available values.
 		 */
-		CSSStyles?: { [key: string]: string };
+		CSSStyles?: CssStyles;
 	}
 
 	export type ThemedIconPath = { light: string | vscode.Uri; dark: string | vscode.Uri };
