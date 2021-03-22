@@ -407,39 +407,23 @@ export class BookTocManager implements IBookTocManager {
 			// modify the sourceBook toc and remove the section
 			const findSection: JupyterBookSection = { file: element.book.page.file, title: element.book.page.title };
 			await this.addSection(element, targetBook);
+			// remove section from book
 			await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
-			if (targetSection) {
-				// adding new section to the target book toc file
-				await this.updateTOC(targetBook.book.version, targetBook.tableOfContentsPath, targetSection, this.newSection);
-			}
-			else {
-				//since there's not a target section, we just append the section at the end of the file
-				if (this.targetBookContentPath !== this.sourceBookContentPath) {
-					this.tableofContents = targetBook.sections.map(section => convertTo(targetBook.version, section));
-				}
-				this.tableofContents.push(this.newSection);
-				await fs.writeFile(targetBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
-			}
+			// add section to book
+			await this.updateTOC(targetBook.book.version, targetBook.tableOfContentsPath, targetSection, this.newSection);
 		}
-		else if (element.contextValue === 'savedNotebook' || element.contextValue === 'savedBookNotebook') {
+		else if (element.contextValue === ('savedNotebook' || 'savedBookNotebook')) {
 			// the notebook is part of a book so we need to modify its toc as well
 			const findSection = { file: element.book.page.file, title: element.book.page.title };
 			await this.addNotebook(element, targetBook);
 			if (element.tableOfContentsPath) {
+				// remove notebook entry from book toc
 				await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
 			} else {
 				// close the standalone notebook, so it doesn't throw an error when we move the notebook to new location.
 				await vscode.commands.executeCommand('notebook.command.closeNotebook', element);
 			}
-			if (!targetSection) {
-				if (this.targetBookContentPath !== this.sourceBookContentPath) {
-					this.tableofContents = targetBook.sections.map(section => convertTo(targetBook.version, section));
-				}
-				this.tableofContents.push(this.newSection);
-				await fs.writeFile(targetBook.tableOfContentsPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
-			} else {
-				await this.updateTOC(targetBook.book.version, targetBook.tableOfContentsPath, targetSection, this.newSection);
-			}
+			await this.updateTOC(targetBook.book.version, targetBook.tableOfContentsPath, targetSection, this.newSection);
 		}
 	}
 
@@ -457,8 +441,10 @@ export class BookTocManager implements IBookTocManager {
 			if (book.version === BookVersion.v1) {
 				fileEntryInToc = convertTo(book.version, fileEntryInToc);
 			}
-			this.updateTOC(book.version, book.tableOfContentsPath, undefined, fileEntryInToc);
+			// book is already opened in notebooks view, so modifying the toc will add the new file automatically
+			await this.updateTOC(book.version, book.tableOfContentsPath, undefined, fileEntryInToc);
 		} else {
+			// add standalone file to the notebooks view
 			vscode.commands.executeCommand('bookTreeView.addFileToView', pathDetails.filePath);
 		}
 	}
@@ -471,7 +457,7 @@ export class BookTocManager implements IBookTocManager {
 
 	public async createNotebook(notebookPath: string, connectionProfile?: azdata.IConnectionProfile): Promise<azdata.nb.NotebookEditor> {
 		await fs.writeFile(notebookPath, '');
-		const notebookUri = vscode.Uri.parse(notebookPath);
+		const notebookUri = vscode.Uri.file(notebookPath);
 		const options: azdata.nb.NotebookShowOptions = connectionProfile ? {
 			viewColumn: undefined,
 			preserveFocus: undefined,

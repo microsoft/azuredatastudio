@@ -19,6 +19,6 @@ export class BookPathHandler {
 			pathDetails = path.parse(filePath);
 		}
 		this.fileName = pathDetails.name;
-		this.fileExtension = pathDetails.ext ? FileExtension.Notebook : FileExtension.Markdown;
+		this.fileExtension = pathDetails.ext === FileExtension.Notebook ? FileExtension.Notebook : FileExtension.Markdown;
 	}
 }

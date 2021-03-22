@@ -266,8 +266,8 @@
         }
       },
       {
-        "command": "notebook.command.addNotebook",
-        "title": "%title.addNotebook%",
+        "command": "notebook.command.createNewFile",
+        "title": "%title.addFile%",
         "category": "%books-preview-category%"
       },
       {
@@ -517,7 +517,7 @@
           "when": "view == bookTreeView"
         },
         {
-          "command": "notebook.command.addNotebook",
+          "command": "notebook.command.createNewFile",
           "when": "view == bookTreeView"
         }
       ],

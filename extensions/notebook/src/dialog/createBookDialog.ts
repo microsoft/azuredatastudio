@@ -9,7 +9,7 @@ import { pathExists, remove } from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IconPathHelper } from '../common/iconHelper';
 import { IBookTocManager } from '../book/bookTocManager';
-import { confirmReplace } from '../common/utils';
+import { confirmMessageDialog } from '../common/utils';
 import { IPrompter } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 
@@ -51,7 +51,7 @@ export class CreateBookDialog {
 	public async validatePath(folderPath: string): Promise<boolean> {
 		const destinationUri = path.join(folderPath, path.basename(this.bookNameInputBox.value));
 		if (await pathExists(destinationUri)) {
-			const doReplace = await confirmReplace(this.prompter, loc.confirmReplace);
+			const doReplace = await confirmMessageDialog(this.prompter, loc.confirmReplace);
 			if (doReplace) {
 				//remove folder if exists
 				await remove(destinationUri);
