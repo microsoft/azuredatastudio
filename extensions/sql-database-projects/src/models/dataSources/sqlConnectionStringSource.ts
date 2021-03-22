@@ -67,7 +67,8 @@ export class SqlConnectionDataSource extends DataSource {
 		// TODO: do we have a common construct for connection strings?
 		this.connectionString = connectionString;
 
-		for (const component of this.connectionString.split(';')) {
+		const components = this.connectionString.split(';').filter(c => c !== '');
+		for (const component of components) {
 			const split = component.split('=');
 
 			if (split.length !== 2) {

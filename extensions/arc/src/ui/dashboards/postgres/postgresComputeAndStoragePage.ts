@@ -47,8 +47,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
-	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
-		super(modelView);
+	constructor(protected modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _postgresModel: PostgresModel) {
+		super(modelView, dashboard);
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
 		this.initializeConfigurationBoxes();
@@ -191,6 +191,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 										memoryRequest: this.saveArgs.workerMemoryRequest,
 										memoryLimit: this.saveArgs.workerMemoryLimit
 									},
+									this._postgresModel.engineVersion,
 									this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 									session
 								);
@@ -203,6 +204,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 										memoryRequest: this.saveArgs.coordinatorMemoryRequest,
 										memoryLimit: this.saveArgs.coordinatorMemoryLimit
 										},
+										this._postgresModel.engineVersion,
 										this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 										session
 									);
