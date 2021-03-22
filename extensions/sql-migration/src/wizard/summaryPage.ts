@@ -46,7 +46,7 @@ export class SummaryPage extends MigrationWizardPage {
 				createHeadingTextComponent(this._view, constants.DATABASE_BACKUP_PAGE_TITLE),
 				this.createNetworkContainerRows(),
 				createHeadingTextComponent(this._view, constants.IR_PAGE_TITLE),
-				createInformationRow(this._view, constants.IR_PAGE_TITLE, this.migrationStateModel._migrationController?.name!),
+				createInformationRow(this._view, constants.IR_PAGE_TITLE, this.migrationStateModel._sqlMigrationService?.name!),
 				createInformationRow(this._view, constants.SUMMARY_IR_NODE, this.migrationStateModel._nodeNames.join(', ')),
 
 			]

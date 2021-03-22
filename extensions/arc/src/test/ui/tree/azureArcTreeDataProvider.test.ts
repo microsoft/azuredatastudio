@@ -102,8 +102,10 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 				return mockArcApi.object;
 			});
 			const fakeAzdataApi = new FakeAzdataApi();
-			fakeAzdataApi.postgresInstances = [{ name: 'pg1', state: '', workers: 0 }];
-			fakeAzdataApi.miaaInstances = [{ name: 'miaa1', state: '', replicas: '', serverEndpoint: '' }];
+			const pgInstances = [{ name: 'pg1', state: '', workers: 0 }];
+			const miaaInstances = [{ name: 'miaa1', state: '', replicas: '', serverEndpoint: '' }];
+			fakeAzdataApi.postgresInstances = pgInstances;
+			fakeAzdataApi.miaaInstances = miaaInstances;
 			mockArcApi.setup(x => x.azdata).returns(() => fakeAzdataApi);
 
 			sinon.stub(vscode.extensions, 'getExtension').returns(mockArcExtension.object);
@@ -112,8 +114,8 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			const controllerNode = treeDataProvider.getControllerNode(controllerModel);
 			const children = await treeDataProvider.getChildren(controllerNode);
-			should(children.filter(c => c.label === fakeAzdataApi.postgresInstances[0].name).length).equal(1, 'Should have a Postgres child');
-			should(children.filter(c => c.label === fakeAzdataApi.miaaInstances[0].name).length).equal(1, 'Should have a MIAA child');
+			should(children.filter(c => c.label === pgInstances[0].name).length).equal(1, 'Should have a Postgres child');
+			should(children.filter(c => c.label === miaaInstances[0].name).length).equal(1, 'Should have a MIAA child');
 			should(children.length).equal(2, 'Should have exactly 2 children');
 		});
 	});

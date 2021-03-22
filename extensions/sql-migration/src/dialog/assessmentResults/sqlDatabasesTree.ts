@@ -14,6 +14,7 @@ type DbIssues = {
 };
 export class SqlDatabaseTree extends AssessmentDialogComponent {
 
+	public static excludeDbs: Array<string> = ['master', 'tempdb', 'msdb', 'model'];
 	private _model!: MigrationStateModel;
 	private instanceTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
 	private databaseTable!: azdata.ComponentBuilder<azdata.DeclarativeTableComponent, azdata.DeclarativeTableProperties>;
@@ -174,7 +175,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				rowNumber = rowNumber + 1;
 			});
 
-			dbList.filter(db => db !== 'master' && db !== 'model' && db !== 'tempdb' && db !== 'msdb').forEach((value) => {
+			dbList.filter(db => !SqlDatabaseTree.excludeDbs.includes(db)).forEach((value) => {
 				this.databaseTable.component().dataValues?.push(
 					[
 						{
@@ -214,7 +215,12 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			if (rowInfo) {
 				this._assessmentResultsTable.component().dataValues = [];
 				this._dbName.value = rowInfo.name;
-				this._recommendation.value = `Warnings (${rowInfo.issues.length} issues found)`;
+				if (rowInfo.issues[0].description === 'No Issues') {
+					this._recommendation.value = `Warnings (0 issues found)`;
+				} else {
+					this._recommendation.value = `Warnings (${rowInfo.issues.length} issues found)`;
+				}
+
 				// Need some kind of refresh method for declarative tables
 				let dataValues: string[][] = [];
 				rowInfo.issues.forEach(async (issue) => {

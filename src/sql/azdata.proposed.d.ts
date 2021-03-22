@@ -8,44 +8,6 @@
 import * as vscode from 'vscode';
 
 declare module 'azdata' {
-	/**
-	 * Namespace for connection management
-	 */
-	export namespace connection {
-		/**
-		 * Supported connection event types
-		 */
-		export type ConnectionEventType =
-			| 'onConnect'
-			| 'onDisconnect'
-			| 'onConnectionChanged';
-
-		/**
-		 * Connection Event Lister
-		 */
-		export interface ConnectionEventListener {
-			/**
-			 * Connection event handler
-			 * @param type Connection event type
-			 * @param ownerUri Connection's owner uri
-			 * @param args Connection profile
-			 */
-			onConnectionEvent(type: ConnectionEventType, ownerUri: string, args: IConnectionProfile): void;
-		}
-
-		/**
-		 * Register a connection event listener
-		 * @param listener The connection event listener
-		 */
-		export function registerConnectionEventListener(listener: connection.ConnectionEventListener): vscode.Disposable;
-
-		/**
-		 * Get connection profile by its owner uri
-		 * @param ownerUri The owner uri of the connection
-		 * @returns Promise to return the connection profile matching the ownerUri
-		 */
-		export function getConnection(ownerUri: string): Thenable<ConnectionProfile>;
-	}
 
 	export namespace nb {
 		export interface NotebookDocument {
@@ -272,17 +234,6 @@ declare module 'azdata' {
 		title: string;
 	}
 
-	export interface HyperlinkComponent {
-		/**
-		 * An event called when the hyperlink is clicked
-		 */
-		onDidClick: vscode.Event<any>;
-	}
-
-	export interface HyperlinkComponentProperties {
-		showLinkIcon?: boolean;
-	}
-
 	export interface RadioButtonComponent {
 		/**
 		 * An event called when the value of radio button changes
@@ -342,16 +293,11 @@ declare module 'azdata' {
 		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent, RadioCardGroupComponentProperties>;
 		listView(): ComponentBuilder<ListViewComponent, ListViewComponentProperties>;
 		tabbedPanel(): TabbedPanelComponentBuilder;
-		separator(): ComponentBuilder<SeparatorComponent, SeparatorComponentProperties>;
-		propertiesContainer(): ComponentBuilder<PropertiesContainerComponent, PropertiesContainerComponentProperties>;
-		infoBox(): ComponentBuilder<InfoBoxComponent, InfoBoxComponentProperties>;
+		slider(): ComponentBuilder<SliderComponent, SliderComponentProperties>;
 	}
 
 	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
 		withProps(properties: TPropertyBag): ComponentBuilder<TComponent, TPropertyBag>;
-	}
-
-	export interface DropDownProperties extends LoadingComponentProperties {
 	}
 
 	export interface RadioCard {
@@ -417,12 +363,6 @@ declare module 'azdata' {
 		onDidClick: vscode.Event<ListViewClickEvent>;
 	}
 
-	export interface SeparatorComponent extends Component {
-	}
-	export interface SeparatorComponentProperties extends ComponentProperties {
-
-	}
-
 	export interface DeclarativeTableProperties {
 		/**
 		 * dataValues will only be used if data is an empty array
@@ -439,38 +379,6 @@ declare module 'azdata' {
 		value: string | number | boolean | Component;
 		ariaLabel?: string;
 		style?: CssStyles
-	}
-
-	export interface ComponentProperties {
-		ariaHidden?: boolean;
-	}
-
-	export interface ComponentWithIconProperties extends ComponentProperties {
-		/**
-		 * The path for the icon with optional dark-theme away alternative
-		 */
-		iconPath?: IconPath;
-		/**
-		 * The height of the icon
-		 */
-		iconHeight?: number | string;
-		/**
-		 * The width of the icon
-		 */
-		iconWidth?: number | string;
-		/**
-		 * The title for the icon. This title will show when hovered over
-		 */
-		title?: string;
-	}
-
-	export interface ComponentWithIcon extends ComponentWithIconProperties {
-	}
-
-	export interface ImageComponent extends ComponentWithIcon {
-	}
-
-	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIconProperties {
 	}
 
 	/**
@@ -575,74 +483,36 @@ declare module 'azdata' {
 		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties>;
 	}
 
-	export interface InputBoxProperties extends ComponentProperties {
-		validationErrorMessage?: string;
-		readOnly?: boolean;
+	export interface SliderComponentProperties extends ComponentProperties {
 		/**
-		* This title will show when hovered over
-		*/
-		title?: string;
+		 * The value selected on the slider. Default initial value is the minimum value.
+		 */
+		value?: number,
+		/**
+		 * The minimum value of the slider. Default value is 1.
+		 */
+		min?: number,
+		/**
+		 * The maximum value of the slider. Default value is 100.
+		 */
+		max?: number,
+		/**
+		 * The value between each "tick" of the slider. Default is 1.
+		 */
+		step?: number,
+		/**
+		 * Whether to show the tick marks on the slider. Default is false.
+		 */
+		showTicks?: boolean
+		/**
+		 * The width of the slider, not including the value box.
+		 */
+		width?: number | string;
 	}
 
-	export interface CheckBoxProperties {
-		required?: boolean;
-	}
-
-	/**
-	 * A property to be displayed in the PropertiesContainerComponent
-	 */
-	export interface PropertiesContainerItem {
-		/**
-		 * The name of the property to display
-		 */
-		displayName: string;
-		/**
-		 * The value of the property to display
-		 */
-		value: string;
-	}
-
-	/**
-	 * Component to display a list of property values.
-	 */
-	export interface PropertiesContainerComponent extends Component, PropertiesContainerComponentProperties {
-
-	}
-
-	/**
-	 * Properties for configuring a PropertiesContainerComponent
-	 */
-	export interface PropertiesContainerComponentProperties extends ComponentProperties {
-		/**
-		 * The properties to display
-		 */
-		propertyItems?: PropertiesContainerItem[];
-	}
-
-	/**
-	 * Component to display text with an icon representing the severity
-	 */
-	export interface InfoBoxComponent extends Component, InfoBoxComponentProperties {
-	}
-
-	export type InfoBoxStyle = 'information' | 'warning' | 'error' | 'success';
-
-	/**
-	 * Properties for configuring a InfoBoxComponent
-	 */
-	export interface InfoBoxComponentProperties extends ComponentProperties {
-		/**
-		 * The style of the InfoBox
-		 */
-		style: InfoBoxStyle;
-		/**
-		 * The display text of the InfoBox
-		 */
-		text: string;
-		/**
-		 * Controls whether the text should be announced by the screen reader. Default value is false.
-		 */
-		announceText?: boolean;
+	export interface SliderComponent extends Component, SliderComponentProperties {
+		onChanged: vscode.Event<number>;
+		onInput: vscode.Event<number>;
 	}
 
 	export namespace nb {
@@ -670,7 +540,7 @@ declare module 'azdata' {
 		export interface Dialog {
 			/**
 			 * Width of the dialog.
-			 * Default is 'narrrow'.
+			 * Default is 'narrow'.
 			 */
 			width?: DialogWidth;
 			/**
@@ -702,10 +572,6 @@ declare module 'azdata' {
 
 		export interface Wizard {
 			/**
-			 * The name used to identify the wizard in telemetry
-			 */
-			name?: string;
-			/**
 			 * Width of the wizard
 			 */
 			width?: DialogWidth;
@@ -718,10 +584,8 @@ declare module 'azdata' {
 			pageName?: string;
 		}
 
-		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number | string;
-
 		/**
-		 * These dialog styles affect how the dialog dispalys in the application.
+		 * These dialog styles affect how the dialog displays in the application.
 		 * normal: Positioned top and centered.
 		 * flyout (default): Existing panel appearance - positioned full screen height, opens from the right side of the application.
 		 * callout: Opens below or beside button clicked, contains footer section with buttons.
@@ -754,21 +618,6 @@ declare module 'azdata' {
 		 * @param dialogProperties Positional data prior to opening of dialog, default is undefined.
 		 */
 		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogProperties?: IDialogProperties): Dialog;
-
-		/**
-		 * Create a wizard with the given title and width
-		 * @param title The title of the wizard
-		 * @param name The name used to identify the wizard in telemetry
-		 * @param width The width of the wizard, default value is 'narrow'
-		 */
-		export function createWizard(title: string, name?: string, width?: DialogWidth): Wizard;
-
-		/**
-		 * Create a wizard page with the given title, for inclusion in a wizard
-		 * @param title The title of the page
-		 * @param pageName The optional page name parameter will be used for telemetry
-		 */
-		export function createWizardPage(title: string, pageName?: string): WizardPage;
 
 		export interface Button {
 			/**
@@ -933,13 +782,6 @@ declare module 'azdata' {
 		Informational = 'Informational'
 	}
 
-	export interface DiffEditorComponent {
-		/**
-		 * Title of editor
-		 */
-		title: string;
-	}
-
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location
@@ -1021,6 +863,11 @@ declare module 'azdata' {
 		 * The text to display on the column heading. 'value' property will be used, if not specified
 		 */
 		name?: string;
+
+		/**
+		 * whether the column is resizable. Default value is true.
+		 */
+		resizable?: boolean;
 	}
 
 	export interface IconColumnOptions {
@@ -1042,13 +889,6 @@ declare module 'azdata' {
 
 	export interface CheckboxColumn extends TableColumn {
 		action: ActionOnCellCheckboxCheck;
-	}
-
-	export enum AzureResource {
-		/**
-		 * Microsoft Graph
-		 */
-		MsGraph = 7
 	}
 
 	export interface ResultSetSummary {

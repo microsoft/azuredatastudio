@@ -31,7 +31,7 @@ export abstract class CalloutDialog<T> extends Modal {
 	) {
 		super(
 			title,
-			TelemetryKeys.CalloutDialog,
+			TelemetryKeys.ModalDialogName.CalloutDialog,
 			telemetryService,
 			layoutService,
 			clipboardService,
