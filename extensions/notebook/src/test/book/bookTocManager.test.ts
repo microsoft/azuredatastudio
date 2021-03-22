@@ -58,24 +58,24 @@ describe('BookTocManagerTests', function () {
 		});
 
 		beforeEach(async () => {
-			rootFolderPath = path.posix.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
-			bookFolderPath = path.posix.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
-			root2FolderPath = path.posix.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
+			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
+			bookFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
+			root2FolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 			notebooks = ['notebook1.ipynb', 'notebook2.ipynb', 'notebook3.ipynb', 'index.md'];
 
 			await fs.mkdir(rootFolderPath);
-			await fs.writeFile(path.posix.join(rootFolderPath, notebooks[0]), '');
-			await fs.writeFile(path.posix.join(rootFolderPath, notebooks[1]), '');
-			await fs.writeFile(path.posix.join(rootFolderPath, notebooks[2]), '');
-			await fs.writeFile(path.posix.join(rootFolderPath, notebooks[3]), '');
+			await fs.writeFile(path.join(rootFolderPath, notebooks[0]), '');
+			await fs.writeFile(path.join(rootFolderPath, notebooks[1]), '');
+			await fs.writeFile(path.join(rootFolderPath, notebooks[2]), '');
+			await fs.writeFile(path.join(rootFolderPath, notebooks[3]), '');
 
 			await fs.mkdir(root2FolderPath);
-			await fs.mkdir(path.posix.join(root2FolderPath, subfolder));
-			await fs.writeFile(path.posix.join(root2FolderPath, notebooks[0]), '');
-			await fs.writeFile(path.posix.join(root2FolderPath, subfolder, notebooks[1]), '');
-			await fs.writeFile(path.posix.join(root2FolderPath, subfolder, notebooks[2]), '');
-			await fs.writeFile(path.posix.join(root2FolderPath, subfolder, notebooks[3]), '');
-			await fs.writeFile(path.posix.join(root2FolderPath, notebooks[3]), '');
+			await fs.mkdir(path.join(root2FolderPath, subfolder));
+			await fs.writeFile(path.join(root2FolderPath, notebooks[0]), '');
+			await fs.writeFile(path.join(root2FolderPath, subfolder, notebooks[1]), '');
+			await fs.writeFile(path.join(root2FolderPath, subfolder, notebooks[2]), '');
+			await fs.writeFile(path.join(root2FolderPath, subfolder, notebooks[3]), '');
+			await fs.writeFile(path.join(root2FolderPath, notebooks[3]), '');
 		});
 
 		it('should create a table of contents with no sections if there are only notebooks in folder', async function (): Promise<void> {
@@ -105,7 +105,7 @@ describe('BookTocManagerTests', function () {
 		});
 
 		it('should ignore invalid file extensions', async () => {
-			await fs.writeFile(path.posix.join(rootFolderPath, 'test.txt'), '');
+			await fs.writeFile(path.join(rootFolderPath, 'test.txt'), '');
 			let bookTocManager: BookTocManager = new BookTocManager();
 			await bookTocManager.createBook(bookFolderPath, rootFolderPath);
 			let listFiles = await fs.promises.readdir(bookFolderPath);
@@ -124,9 +124,9 @@ describe('BookTocManagerTests', function () {
 		let sectionB: BookTreeItem;
 		let notebook: BookTreeItem;
 		let duplicatedNotebook: BookTreeItem;
-		let sourceBookFolderPath: string = path.posix.join(os.tmpdir(), uuid.v4(), 'sourceBook');
-		let targetBookFolderPath: string = path.posix.join(os.tmpdir(), uuid.v4(), 'targetBook');
-		let duplicatedNotebookPath: string = path.posix.join(os.tmpdir(), uuid.v4(), 'duplicatedNotebook');
+		let sourceBookFolderPath: string = path.join(os.tmpdir(), uuid.v4(), 'sourceBook');
+		let targetBookFolderPath: string = path.join(os.tmpdir(), uuid.v4(), 'targetBook');
+		let duplicatedNotebookPath: string = path.join(os.tmpdir(), uuid.v4(), 'duplicatedNotebook');
 		let runs = [
 			{
 				it: 'using the jupyter-book legacy version < 0.7.0',
@@ -464,8 +464,8 @@ describe('BookTocManagerTests', function () {
 					await fs.writeFile(run.sectionC.notebook6, '');
 					await fs.writeFile(run.notebook5.contentPath, '');
 					await fs.writeFile(duplicatedNotebook.book.contentPath, '');
-					await fs.writeFile(path.posix.join(run.targetBook.rootBookFolderPath, '_config.yml'), 'title: Target Book');
-					await fs.writeFile(path.posix.join(run.sourceBook.rootBookFolderPath, '_config.yml'), 'title: Source Book');
+					await fs.writeFile(path.join(run.targetBook.rootBookFolderPath, '_config.yml'), 'title: Target Book');
+					await fs.writeFile(path.join(run.sourceBook.rootBookFolderPath, '_config.yml'), 'title: Source Book');
 
 
 					if (run.version === 'v1') {
@@ -491,8 +491,8 @@ describe('BookTocManagerTests', function () {
 				it('Add section to book', async () => {
 					bookTocManager = new BookTocManager(targetBookModel, sourceBookModel);
 					await bookTocManager.updateBook(sectionA, targetBook, undefined);
-					const listFiles = await fs.promises.readdir(path.posix.join(run.targetBook.bookContentFolderPath, 'sectionA'));
-					const listSourceFiles = await fs.promises.readdir(path.posix.join(run.sourceBook.bookContentFolderPath));
+					const listFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionA'));
+					const listSourceFiles = await fs.promises.readdir(path.join(run.sourceBook.bookContentFolderPath));
 					should(JSON.stringify(listSourceFiles).includes('sectionA')).be.false('The source book files should not contain the section A files');
 					should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['notebook1.ipynb', 'notebook2.ipynb', 'readme.md']), 'The files of the section should be moved to the target book folder');
 				});
@@ -503,8 +503,8 @@ describe('BookTocManagerTests', function () {
 						'title': 'Notebook 6',
 						'file': path.posix.join(path.posix.sep, 'sectionC', 'notebook6')
 					});
-					const sectionCFiles = await fs.promises.readdir(path.posix.join(run.targetBook.bookContentFolderPath, 'sectionC'));
-					const sectionBFiles = await fs.promises.readdir(path.posix.join(run.targetBook.bookContentFolderPath, 'sectionB'));
+					const sectionCFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionC'));
+					const sectionBFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionB'));
 					should(JSON.stringify(sectionCFiles)).be.equal(JSON.stringify(['notebook6.ipynb', 'readme.md']), 'sectionB has been moved under target book content directory');
 					should(JSON.stringify(sectionBFiles)).be.equal(JSON.stringify(['notebook3.ipynb', 'notebook4.ipynb', 'readme.md']), ' Verify that the files on sectionB had been moved to the targetBook');
 				});
@@ -574,15 +574,15 @@ describe('BookTocManagerTests', function () {
 				it('Clean up folder with files didnt move', async () => {
 					bookTocManager = new BookTocManager(targetBookModel);
 					bookTocManager.movedFiles.set(notebook.book.contentPath, 'movedtest');
-					await fs.writeFile(path.posix.join(run.sourceBook.bookContentFolderPath, 'test.ipynb'), '');
+					await fs.writeFile(path.join(run.sourceBook.bookContentFolderPath, 'test.ipynb'), '');
 					await bookTocManager.cleanUp(path.dirname(notebook.book.contentPath));
 					const listFiles = await fs.promises.readdir(path.dirname(notebook.book.contentPath));
 					should(JSON.stringify(listFiles).includes('test.ipynb')).be.true('Notebook test.ipynb should not be removed');
 				});
 
 				it('Clean up folder when there is an empty folder within the modified directory', async () => {
-					await fs.promises.mkdir(path.posix.join(run.sourceBook.bookContentFolderPath, 'test'));
-					bookTocManager.modifiedDir.add(path.posix.join(run.sourceBook.bookContentFolderPath, 'test'));
+					await fs.promises.mkdir(path.join(run.sourceBook.bookContentFolderPath, 'test'));
+					bookTocManager.modifiedDir.add(path.join(run.sourceBook.bookContentFolderPath, 'test'));
 					bookTocManager.movedFiles.set(notebook.book.contentPath, 'movedtest');
 					await bookTocManager.cleanUp(path.dirname(notebook.book.contentPath));
 					const listFiles = await fs.promises.readdir(run.sourceBook.bookContentFolderPath);
