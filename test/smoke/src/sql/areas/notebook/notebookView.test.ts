@@ -19,7 +19,7 @@ export function setup() {
 		it('Simple query search works correctly', async function () {
 			const app = this.app as Application;
 			// Adding a regex expression to not depend on specific results of files
-			const regexExpr = /[0-9]+( results in )[0-9]+( files - )/;
+			const regexExpr = /[0-9]+( results in )[0-9]+( files)/;
 			await app.workbench.quickaccess.runCommand('Notebooks: Focus on Search Results View');
 			const results = await app.workbench.sqlNotebook.view.searchInNotebook('hello');
 			assert(results.textContent !== '' && results.textContent.match(regexExpr));
