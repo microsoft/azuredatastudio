@@ -321,7 +321,7 @@ class TestComponentBase implements azdata.Component {
 	updateProperty(key: string, value: any): Thenable<void> {
 		throw new Error('Method not implemented');
 	}
-	updateCssStyles(cssStyles: { [key: string]: string; }): Thenable<void> {
+	updateCssStyles(cssStyles: azdata.CssStyles): Thenable<void> {
 		throw new Error('Method not implemented');
 	}
 	onValidityChanged: vscode.Event<boolean> = undefined;

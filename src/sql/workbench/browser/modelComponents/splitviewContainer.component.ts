@@ -168,7 +168,7 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 		return item.config ? item.config.order : 0;
 	}
 
-	public getItemStyles(item: FlexItem): { [key: string]: string } {
+	public getItemStyles(item: FlexItem): CssStyles {
 		return item.config && item.config.CSSStyles ? item.config.CSSStyles : {};
 	}
 
