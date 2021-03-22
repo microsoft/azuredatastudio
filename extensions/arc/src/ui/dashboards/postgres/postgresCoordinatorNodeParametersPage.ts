@@ -11,8 +11,8 @@ import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresCoordinatorNodeParametersPage extends PostgresParametersPage {
 
-	constructor(protected modelView: azdata.ModelView, _postgresModel: PostgresModel) {
-		super(modelView, _postgresModel);
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, postgresModel: PostgresModel) {
+		super(modelView, dashboard, postgresModel);
 	}
 
 	protected get title(): string {
