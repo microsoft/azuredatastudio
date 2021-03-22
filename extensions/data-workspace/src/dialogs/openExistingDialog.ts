@@ -172,7 +172,6 @@ export class OpenExistingDialog extends DialogBase {
 			if (checked) {
 				this.formBuilder?.removeFormItem(<azdata.FormComponent>this.gitRepoTextBoxComponent);
 				this.formBuilder?.removeFormItem(<azdata.FormComponent>this.localClonePathComponent);
-
 				this.formBuilder?.insertFormItem(<azdata.FormComponent>this.filePathAndButtonComponent, 2);
 			}
 		}));
@@ -194,7 +193,6 @@ export class OpenExistingDialog extends DialogBase {
 		this.register(this.remoteGitRepoRadioButton.onDidChangeCheckedState(checked => {
 			if (checked) {
 				this.formBuilder?.removeFormItem(<azdata.FormComponent>this.filePathAndButtonComponent);
-
 				this.formBuilder?.insertFormItem(<azdata.FormComponent>this.gitRepoTextBoxComponent, 2);
 				this.formBuilder?.insertFormItem(<azdata.FormComponent>this.localClonePathComponent, 3);
 			}
@@ -280,6 +278,7 @@ export class OpenExistingDialog extends DialogBase {
 		this.register(this.targetTypeRadioCardGroup.onSelectionChanged(({ cardId }) => {
 			if (cardId === constants.Project) {
 				this.filePathTextBox!.placeHolder = constants.ProjectFilePlaceholder;
+				// hide these two radio buttons for now since git clone is just for workspaces
 				this.localRadioButton?.updateCssStyles({ 'display': 'none' });
 				this.remoteGitRepoRadioButton?.updateCssStyles({ 'display': 'none' });
 				this.formBuilder?.removeFormItem(<azdata.FormComponent>this.gitRepoTextBoxComponent);
@@ -298,7 +297,6 @@ export class OpenExistingDialog extends DialogBase {
 
 				if (this.remoteGitRepoRadioButton!.checked) {
 					this.formBuilder?.removeFormItem(<azdata.FormComponent>this.filePathAndButtonComponent);
-
 					this.formBuilder?.insertFormItem(<azdata.FormComponent>this.gitRepoTextBoxComponent, 2);
 					this.formBuilder?.insertFormItem(<azdata.FormComponent>this.localClonePathComponent, 3);
 				}
