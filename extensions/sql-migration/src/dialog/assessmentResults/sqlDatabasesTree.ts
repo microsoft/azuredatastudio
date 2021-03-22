@@ -129,10 +129,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				this.instanceTable.component().dataValues?.push(
 					[
 						{
-							value: false,
-							style: styleLeft
-						},
-						{
 							value: this._serverName,
 							style: styleLeft
 						},
@@ -147,7 +143,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 					name: this._serverName,
 					issues: this._assessmentData.get(this._serverName)!
 				};
-				this._serverMapIssue.set(rowNumber, dbIssues);
+				this._serverMapIssue.set(1, dbIssues);
 				this._assessmentData.delete(this._serverName);
 			}
 			this._assessmentData.forEach((value, key) => {
