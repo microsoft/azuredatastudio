@@ -9,9 +9,10 @@ import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { PostgresModel } from '../../../models/postgresModel';
+import { ControllerModel } from '../../../models/controllerModel';
 
 export class PostgresDiagnoseAndSolveProblemsPage extends DashboardPage {
-	constructor(protected modelView: azdata.ModelView, private _context: vscode.ExtensionContext, private _postgresModel: PostgresModel) {
+	constructor(protected modelView: azdata.ModelView, private _context: vscode.ExtensionContext, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(modelView);
 	}
 
@@ -50,9 +51,8 @@ export class PostgresDiagnoseAndSolveProblemsPage extends DashboardPage {
 
 		this.disposables.push(
 			troubleshootButton.onDidClick(() => {
-				process.env['POSTGRES_SERVER_NAMESPACE'] = this._postgresModel.config?.metadata.namespace;
+				process.env['POSTGRES_SERVER_NAMESPACE'] = this._controllerModel.controllerConfig?.metadata.namespace ?? '';
 				process.env['POSTGRES_SERVER_NAME'] = this._postgresModel.info.name;
-				process.env['POSTGRES_SERVER_VERSION'] = this._postgresModel.engineVersion;
 				vscode.commands.executeCommand('bookTreeView.openBook', this._context.asAbsolutePath('notebooks/arcDataServices'), true, 'postgres/tsg100-troubleshoot-postgres');
 			}));
 
