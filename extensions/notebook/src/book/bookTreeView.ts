@@ -16,11 +16,11 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { getPinnedNotebooks, confirmReplace, getNotebookType } from '../common/utils';
+import { getPinnedNotebooks, confirmMessageDialog, getNotebookType } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { CreateBookDialog } from '../dialog/createBookDialog';
-import { AddNotebookDialog } from '../dialog/addNotebookDialog';
+import { AddFileDialog } from '../dialog/addFileDialog';
 import { getContentPath } from './bookVersionHandler';
 import { TelemetryReporter, BookTelemetryView, NbTelemetryActions } from '../telemetry';
 
@@ -277,15 +277,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async addNotebookToBook(): Promise<void> {
+	async createNewFile(): Promise<void> {
 		const books: BookModel[] = this.books.filter(b => {
 			if (!b.isNotebook) {
 				return b;
 			}
 			return undefined;
 		});
-		const dialog = new AddNotebookDialog(this.bookTocManager, books);
-		dialog.createDialog();
+		const dialog = new AddFileDialog(this.bookTocManager, books);
+		await dialog.createDialog();
 	}
 
 	async removeNotebook(bookItem: BookTreeItem): Promise<void> {
@@ -491,7 +491,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(this.currentBook.bookPath)));
 				if (destinationUri) {
 					if (await fs.pathExists(destinationUri.fsPath)) {
-						let doReplace = await confirmReplace(this.prompter, loc.confirmReplace);
+						let doReplace = await confirmMessageDialog(this.prompter, loc.confirmReplace);
 						if (!doReplace) {
 							return undefined;
 						}

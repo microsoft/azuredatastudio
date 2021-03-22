@@ -13,6 +13,7 @@ import * as crypto from 'crypto';
 import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey, AUTHTYPE, INTEGRATED_AUTH, KNOX_ENDPOINT_PORT, KNOX_ENDPOINT_SERVER } from './constants';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import { BookTreeItemFormat, BookTreeItemType } from '../book/bookTreeItem';
+import * as loc from './localizedConstants';
 
 const localize = nls.loadMessageBundle();
 
@@ -488,10 +489,24 @@ export interface IBookNotebook {
 }
 
 //Confirmation message dialog
-export async function confirmReplace(prompter: IPrompter, msg: string): Promise<boolean> {
+export async function confirmMessageDialog(prompter: IPrompter, msg: string): Promise<boolean> {
 	return await prompter.promptSingle<boolean>(<IQuestion>{
 		type: QuestionTypes.confirm,
 		message: msg,
 		default: false
 	});
+}
+
+
+export async function selectFolder(): Promise<string | undefined> {
+	let uris = await vscode.window.showOpenDialog({
+		canSelectFiles: false,
+		canSelectMany: false,
+		canSelectFolders: true,
+		openLabel: loc.labelSelectFolder
+	});
+	if (uris?.length > 0) {
+		return uris[0].fsPath;
+	}
+	return undefined;
 }

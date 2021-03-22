@@ -98,9 +98,7 @@ export const msgSaveFolderError = localize('msgSaveFolderError', "Save location 
 export function msgCreateBookWarningMsg(file: string): string { return localize('msgCreateBookWarningMsg', "Error while trying to access: {0}", file); }
 
 // Add a notebook dialog constants
-export const notebookDescription = localize('notebookDescription', "Notebooks are documents that contain code, descriptions and visualizations.");
-export const newNotebook = localize('newNotebook', "New Notebook (Preview)");
-export const FileType = localize('FileType', "File Type");
-export const confirmReplaceFile = localize('confirmReplaceFile', "File already exists. Are you sure you want to delete and replace this file?");
-
+export const newFile = localize('newFile', "New File (Preview)");
+export const fileExtension = localize('fileExtension', "File Extension");
+export const confirmOverwrite = localize('confirmOverwrite', "Are you sure you want to overwrite this file?");
 

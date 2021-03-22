@@ -12,12 +12,13 @@ import * as vscode from 'vscode';
 import * as loc from '../common/localizedConstants';
 import { BookModel } from './bookModel';
 import * as azdata from 'azdata';
+import { BookPathHandler } from './bookPathHandler';
 
 export interface IBookTocManager {
 	updateBook(element: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
 	removeNotebook(element: BookTreeItem): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
-	addNewNotebook(notebookName: string, notebookPath: string, fileType: FileType, book?: BookModel): Promise<void>;
+	addNewFile(pathDetails: BookPathHandler, book?: BookModel): Promise<void>;
 	recovery(): Promise<void>
 }
 
@@ -26,12 +27,12 @@ export interface quickPickResults {
 	book?: BookTreeItem
 }
 
-export enum FileType {
+export enum FileExtension {
 	Markdown = '.md',
 	Notebook = '.ipynb'
 }
 
-const allowedFileExtensions: string[] = ['.md', '.ipynb'];
+const allowedFileExtensions: string[] = [FileExtension.Markdown, FileExtension.Notebook];
 
 export function hasSections(node: JupyterBookSection): boolean {
 	return node.sections !== undefined && node.sections.length > 0;
@@ -190,16 +191,22 @@ export class BookTocManager implements IBookTocManager {
 	 * Reads and modifies the table of contents file of the target book.
 	 * @param version the version of the target book
 	 * @param tocPath Path to the table of contents
-	 * @param findSection The section that will be modified.
+	 * @param findSection The section that will be modified. If findSection is undefined then the added section is added at the end of the toc file.
 	 * @param addSection The section that'll be added to the target section. If it's undefined then the target section (findSection) is removed from the table of contents.
 	*/
-	async updateTOC(version: BookVersion, tocPath: string, findSection: JupyterBookSection, addSection?: JupyterBookSection): Promise<void> {
+	async updateTOC(version: BookVersion, tocPath: string, findSection?: JupyterBookSection, addSection?: JupyterBookSection): Promise<void> {
 		const tocFile = await fs.readFile(tocPath, 'utf8');
 		this.tableofContents = yaml.safeLoad(tocFile);
 		if (!this.tocFiles.has(tocPath)) {
 			this.tocFiles.set(tocPath, tocFile);
 		}
-		const isModified = this.modifyToc(version, this.tableofContents, findSection, addSection);
+		let isModified = false;
+		if (findSection) {
+			isModified = this.modifyToc(version, this.tableofContents, findSection, addSection);
+		} else if (addSection) {
+			this.tableofContents.push(addSection);
+			isModified = true;
+		}
 		if (isModified) {
 			await fs.writeFile(tocPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
 		} else {
@@ -436,27 +443,24 @@ export class BookTocManager implements IBookTocManager {
 		}
 	}
 
-	public async addNewNotebook(notebookName: string, notebookPath: string, fileType: FileType, book?: BookModel): Promise<void> {
-		if (fileType === FileType.Notebook) {
-			await this.createNotebook(notebookPath.concat(fileType), undefined);
+	public async addNewFile(pathDetails: BookPathHandler, book?: BookModel): Promise<void> {
+		if (pathDetails.fileExtension === FileExtension.Notebook) {
+			await this.createNotebook(pathDetails.filePath, undefined);
 		} else {
-			await fs.writeFile(notebookPath.concat(fileType), '');
+			await fs.writeFile(pathDetails.filePath, '');
 		}
 		if (book) {
-			let toc = yaml.safeLoad((await fs.readFile(book.tableOfContentsPath, 'utf8')));
-			let notebookToc: JupyterBookSection = {
-				title: notebookName,
-				file: path.posix.join(path.posix.sep, notebookName)
+			let fileEntryInToc: JupyterBookSection = {
+				title: pathDetails.fileName,
+				file: pathDetails.fileInTocPath
 			};
 			if (book.version === BookVersion.v1) {
-				notebookToc = convertTo(book.version, notebookToc);
+				fileEntryInToc = convertTo(book.version, fileEntryInToc);
 			}
-			toc.push(notebookToc);
-			await fs.writeFile(book.tableOfContentsPath, yaml.safeDump(toc, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
+			this.updateTOC(book.version, book.tableOfContentsPath, undefined, fileEntryInToc);
 		} else {
-			vscode.commands.executeCommand('bookTreeView.openBook', notebookPath.concat(fileType), false, notebookPath.concat(fileType), true);
+			vscode.commands.executeCommand('bookTreeView.addFileToView', pathDetails.filePath);
 		}
-
 	}
 
 	public async removeNotebook(element: BookTreeItem): Promise<void> {
@@ -469,13 +473,13 @@ export class BookTocManager implements IBookTocManager {
 		await fs.writeFile(notebookPath, '');
 		const notebookUri = vscode.Uri.parse(notebookPath);
 		const options: azdata.nb.NotebookShowOptions = connectionProfile ? {
-			viewColumn: null,
-			preserveFocus: true,
-			preview: null,
-			providerId: null,
+			viewColumn: undefined,
+			preserveFocus: undefined,
+			preview: undefined,
+			providerId: undefined,
 			connectionProfile: connectionProfile,
-			defaultKernel: null
-		} : null;
+			defaultKernel: undefined
+		} : undefined;
 		return azdata.nb.showNotebookDocument(notebookUri, options);
 	}
 
