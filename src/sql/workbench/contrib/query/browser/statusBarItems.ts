@@ -276,7 +276,7 @@ export class QueryResultSelectionSummaryStatusBarContribution extends Disposable
 		);
 		this._register(editorService.onDidActiveEditorChange(() => { this.hide(); }, this));
 		this._register(queryModelService.onRunQueryStart(() => { this.hide(); }));
-		this._register(notebookService.onRunQueryStart(() => { this.hide(); }));
+		this._register(notebookService.onCellExecutionStart(() => { this.hide(); }));
 		this._register(queryModelService.onCellSelectionChanged((data: string[]) => {
 			this.onCellSelectionChanged(data);
 		}));

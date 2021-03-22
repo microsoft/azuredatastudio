@@ -131,14 +131,14 @@ export interface INotebookService {
 	setTrusted(notebookUri: URI, isTrusted: boolean): Promise<boolean>;
 
 	/**
-	 * Event that gets fired when a new Sql query is started.
+	 * Event that gets fired when a cell is executed.
 	 */
-	onRunQueryStart: Event<void>;
+	onCellExecutionStart: Event<void>;
 
 	/**
-	 * Fires the onRunQueryStart event. Called by SqlKernels.
+	 * Fires the onCellExecutionStart event.
 	 */
-	notifyQueryStarted(): void;
+	notifyCellExecutionStarted(): void;
 }
 
 export interface INotebookProvider {

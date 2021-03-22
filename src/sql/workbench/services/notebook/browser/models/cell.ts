@@ -531,6 +531,7 @@ export class CellModel extends Disposable implements ICellModel {
 						}, false);
 						this.setFuture(future as FutureInternal);
 						this.fireExecutionStateChanged();
+						this._notebookService.notifyCellExecutionStarted();
 						// For now, await future completion. Later we should just track and handle cancellation based on model notifications
 						let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any>await future.done;
 						if (result && result.content) {
@@ -551,6 +552,7 @@ export class CellModel extends Disposable implements ICellModel {
 								let commandExecuted = this._commandService?.executeCommand(result.commandId, result.args);
 								// This will ensure that the run button turns into a stop button
 								this.fireExecutionStateChanged();
+								this._notebookService.notifyCellExecutionStarted();
 								await commandExecuted;
 								// For save files, if we output a message after saving the file, the file becomes dirty again.
 								// Special casing this to avoid this particular issue.

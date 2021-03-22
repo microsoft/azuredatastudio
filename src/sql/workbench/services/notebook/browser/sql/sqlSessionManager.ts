@@ -20,7 +20,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { ILanguageMagic, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { ILanguageMagic } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { URI } from 'vs/base/common/uri';
 import { getUriPrefix, uriPrefixes } from 'sql/platform/connection/common/utils';
@@ -214,8 +214,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ILogService private readonly logService: ILogService,
-		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
-		@INotebookService private notebookService: INotebookService
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super();
 		this.initMagics();
@@ -375,9 +374,6 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	private addQueryEventListeners(queryRunner: QueryRunner): void {
-		this._register(queryRunner.onQueryStart(() => {
-			this.notebookService.notifyQueryStarted();
-		}));
 		this._register(queryRunner.onQueryEnd(() => {
 			this.queryComplete().catch(error => {
 				this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error);
