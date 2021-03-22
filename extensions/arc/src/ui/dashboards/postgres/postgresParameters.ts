@@ -15,6 +15,8 @@ import { debounce } from '../../../common/utils';
 
 export type ParametersModel = {
 	parameterName: string,
+	originalValue: string,
+	valueComponent: azdata.TextComponent | azdata.DropDownComponent | azdata.CheckBoxComponent,
 	valueContainer: azdata.FlexContainer,
 	description: string,
 	resetButton: azdata.ButtonComponent
@@ -32,6 +34,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 	private connectToServerButton?: azdata.ButtonComponent;
 
 	protected _parameters: ParametersModel[] = [];
+	protected changedComponentValues: string[] = [];
 	private parameterUpdates: Map<string, string> = new Map();
 
 	protected readonly _azdataApi: azdataExt.IExtension;
@@ -170,6 +173,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 
 					engineSettings = [];
+					this.changedComponentValues = [];
 					this.parameterUpdates!.clear();
 					this.discardButton!.enabled = false;
 					this.resetAllButton!.enabled = true;
@@ -191,7 +195,8 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			this.discardButton.onDidClick(async () => {
 				this.discardButton!.enabled = false;
 				try {
-					this.refreshParametersTable();
+					this.discardParametersTableChanges();
+					this.changedComponentValues = [];
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
@@ -237,6 +242,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 								session?.dispose();
 							}
 							await this._postgresModel.refresh();
+							this.changedComponentValues = [];
 						}
 
 					);
@@ -385,6 +391,8 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 	protected createParameterComponents(engineSetting: EngineSettingsModel): ParametersModel {
 
+		let valueComponent: azdata.Component;
+
 		// Container to hold input component and information bubble
 		const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 
@@ -401,10 +409,12 @@ export abstract class PostgresParametersPage extends DashboardPage {
 				value: engineSetting.value,
 				width: '150px'
 			}).component();
+			valueComponent = valueBox;
 			valueContainer.addItem(valueBox);
 
 			this.disposables.push(
 				valueBox.onValueChanged(() => {
+					this.changedComponentValues.push(engineSetting.parameterName!);
 					if (engineSetting.value !== String(valueBox.value)) {
 						this.parameterUpdates!.set(engineSetting.parameterName!, String(valueBox.value));
 						this.saveButton!.enabled = true;
@@ -420,6 +430,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 				label: loc.on,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
+			valueComponent = valueBox;
 			valueContainer.addItem(valueBox);
 
 			if (engineSetting.value === 'on') {
@@ -430,6 +441,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 			this.disposables.push(
 				valueBox.onChanged(() => {
+					this.changedComponentValues.push(engineSetting.parameterName!);
 					if (valueBox.checked && engineSetting.value === 'off') {
 						this.parameterUpdates!.set(engineSetting.parameterName!, loc.on);
 						this.saveButton!.enabled = true;
@@ -451,10 +463,12 @@ export abstract class PostgresParametersPage extends DashboardPage {
 				value: engineSetting.value,
 				width: '150px'
 			}).component();
+			valueComponent = valueBox;
 			valueContainer.addItem(valueBox);
 
 			this.disposables.push(
 				valueBox.onTextChanged(() => {
+					this.changedComponentValues.push(engineSetting.parameterName!);
 					if ((this.handleOnTextChanged(valueBox, engineSetting.value))) {
 						this.parameterUpdates!.set(engineSetting.parameterName!, `"${valueBox.value!}"`);
 					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
@@ -473,11 +487,12 @@ export abstract class PostgresParametersPage extends DashboardPage {
 				value: engineSetting.value,
 				width: '150px'
 			}).component();
-
+			valueComponent = valueBox;
 			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
 
 			this.disposables.push(
 				valueBox.onTextChanged(() => {
+					this.changedComponentValues.push(engineSetting.parameterName!);
 					if ((this.handleOnTextChanged(valueBox, engineSetting.value))) {
 						this.parameterUpdates!.set(engineSetting.parameterName!, valueBox.value!);
 					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
@@ -533,14 +548,33 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			})
 		);
 
-		let parameter: ParametersModel = {
+		return {
 			parameterName: engineSetting.parameterName!,
+			originalValue: engineSetting.value!,
+			valueComponent: valueComponent,
 			valueContainer: valueContainer,
 			description: engineSetting.description!,
 			resetButton: resetParameterButton
 		};
+	}
 
-		return parameter;
+	private discardParametersTableChanges(): void {
+		this.changedComponentValues.forEach(v => {
+			let instanceOfCheckBox = function (object: any): object is azdata.CheckBoxComponent {
+				return 'checked' in object;
+			};
+
+			let param = this._parameters.find(p => p.parameterName === v);
+			if (instanceOfCheckBox(param?.valueComponent)) {
+				if (param?.originalValue === 'on') {
+					param!.valueComponent!.checked! = true;
+				} else {
+					param!.valueComponent!.checked! = false;
+				}
+			} else {
+				param!.valueComponent!.value! = param!.originalValue;
+			}
+		});
 	}
 
 	protected abstract saveParameterEdits(engineSettings: string, session: azdataExt.AzdataSession): void;
