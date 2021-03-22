@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { SKURecommendation } from './product';
+import { MigrationTargetType } from './stateMachine';
 
 export interface Base {
 	uuid: string;
@@ -19,6 +19,15 @@ export interface BaseResponse<T> extends Base {
 
 export interface GatherInformationRequest extends BaseRequest {
 	connection: azdata.connection.Connection;
+}
+
+export interface Checks {
+
+}
+
+export interface SKURecommendation {
+	product: MigrationTargetType;
+	checks: Checks;
 }
 
 export interface SKURecommendations {

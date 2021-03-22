@@ -3,46 +3,39 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-import { SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
-import { MigrationStateModel } from '../../models/stateMachine';
-import { Issues } from './assessmentResultsDialog';
+import { SqlMigrationAssessmentResultItem, SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
+import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import { AssessmentDialogComponent } from './model/assessmentDialogComponent';
-
-type DbIssues = {
-	name: string,
-	issues: Issues[]
-};
 export class SqlDatabaseTree extends AssessmentDialogComponent {
-	private _model!: MigrationStateModel;
-	public static excludeDbs: Array<string> = ['master', 'tempdb', 'msdb', 'model'];
+
 	private _instanceTable!: azdata.DeclarativeTableComponent;
 	private _databaseTable!: azdata.DeclarativeTableComponent;
 	private _assessmentResultsTable!: azdata.DeclarativeTableComponent;
+
 	private _impactedObjectsTable!: azdata.DeclarativeTableComponent;
 
 	private _recommendation!: azdata.TextComponent;
 	private _dbName!: azdata.TextComponent;
 	private _recommendationText!: azdata.TextComponent;
 	private _descriptionText!: azdata.TextComponent;
-	private _issues!: Issues;
 	private _impactedObjects!: SqlMigrationImpactedObjectInfo[];
 	private _objectDetailsType!: azdata.TextComponent;
 	private _objectDetailsName!: azdata.TextComponent;
 	private _objectDetailsSample!: azdata.TextComponent;
-	private _moreInfo!: azdata.TextComponent;
-	private _assessmentType!: string;
+	private _moreInfo!: azdata.HyperlinkComponent;
 	private _assessmentTitle!: azdata.TextComponent;
 
+	private _activeIssues!: SqlMigrationAssessmentResultItem[];
+	private _selectedIssue!: SqlMigrationAssessmentResultItem;
+
 	constructor(
-		private _model: MigrationStateModel
+		private _model: MigrationStateModel,
+		private _targetTypes: string
 	) {
 		super();
-		if (this._assessmentType === 'vm') {
-			this._assessmentData.clear();
-		}
 	}
 
-	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
+	async createComponent(view: azdata.ModelView, dbs: string[]): Promise<azdata.Component> {
 		const component = view.modelBuilder.flexContainer().withLayout({
 			height: '100%',
 			flexFlow: 'column'
@@ -53,13 +46,12 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		}).component();
 
 		component.addItem(this.createSearchComponent(view), { flex: '0 0 auto' });
-		component.addItem(this.createInstanceComponent(view), { flex: '0 0 auto' });
-		component.addItem(await this.createDatabaseComponent(view), { flex: '1 1 auto' });
+		component.addItem(await this.createInstanceComponent(view), { flex: '0 0 auto' });
+		component.addItem(await this.createDatabaseComponent(view, dbs), { flex: '1 1 auto' });
 		return component;
 	}
 
-	private async createDatabaseComponent(view: azdata.ModelView): Promise<azdata.DivContainer> {
-		let mapRowIssue = new Map<number, DbIssues>();
+	private async createDatabaseComponent(view: azdata.ModelView, dbs: string[]): Promise<azdata.DivContainer> {
 		const styleLeft: azdata.CssStyles = {
 			'border': 'none',
 			'text-align': 'left',
@@ -114,101 +106,31 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 			}
 		).component();
 
-		let dbList = (await azdata.connection.listDatabases(this._model.sourceConnectionId)).filter(db => !SqlDatabaseTree.EXCLUDED_DB.includes(db));
-
-		if (dbList.length > 0) {
-			let rowNumber = 0;
-			this._assessmentData.forEach((value, key) => {
-				this._databaseTable.dataValues?.push(
-					[
-						{
-							value: false,
-							style: styleLeft
-						},
-						{
-							value: key,
-							style: styleLeft
-						},
-						{
-							value: value.length,
-							style: styleRight
-						}
-					]
-
-				);
-				let dbIssues = {
-					name: key,
-					issues: value
-				};
-				mapRowIssue.set(rowNumber, dbIssues);
-				dbList = dbList.filter(obj => obj !== key);
-
-				rowNumber = rowNumber + 1;
-			});
-
-			dbList.filter(db => !SqlDatabaseTree.excludeDbs.includes(db)).forEach((value) => {
-				this._databaseTable.dataValues?.push(
-					[
-						{
-							value: true,
-							style: styleLeft
-						},
-						{
-							value: value,
-							style: styleLeft
-						},
-						{
-							value: 0,
-							style: styleRight
-						}
-					]
-
-				);
-				let impactedObjects: SqlMigrationImpactedObjectInfo[] = [];
-				let issue: Issues[] = [{
-					description: 'No Issues',
-					recommendation: 'No Issues',
-					moreInfo: 'No Issues',
-					impactedObjects: impactedObjects,
-					rowNumber: rowNumber
-				}];
-				let noIssues = {
-					name: value,
-					issues: issue
-				};
-				mapRowIssue.set(rowNumber, noIssues);
-				rowNumber = rowNumber + 1;
-			});
-		}
-
-		this._databaseTable.onRowSelected(({ row }) => {
-			const rowInfo = mapRowIssue.get(row);
-			if (rowInfo) {
-				this._assessmentResultsTable.dataValues = [];
-				this._dbName.value = rowInfo.name;
-				if (rowInfo.issues[0].description === 'No Issues') {
-					this._recommendation.value = `Warnings (0 issues found)`;
-				} else {
-					this._recommendation.value = `Warnings (${rowInfo.issues.length} issues found)`;
-				}
-
-				// Need some kind of refresh method for declarative tables
-				let dataValues: string[][] = [];
-				rowInfo.issues.forEach(async (issue) => {
-					dataValues.push([
-						issue.description
-					]);
-
-				});
-
-				this._assessmentResultsTable.updateProperties({
-					data: dataValues
-				});
-
-			}
-
+		this._model._assessmentResults.databaseAssessments.forEach((db) => {
+			this._databaseTable.dataValues?.push(
+				[
+					{
+						value: dbs.length === 0 ? true : dbs.includes(db.name),
+						style: styleLeft
+					},
+					{
+						value: db.name,
+						style: styleLeft
+					},
+					{
+						value: db.issues.length,
+						style: styleRight
+					}
+				]
+			);
 		});
 
+		this._databaseTable.onRowSelected(({ row }) => {
+			this._databaseTable.focus();
+			this._activeIssues = this._model._assessmentResults.databaseAssessments[row].issues;
+			this._selectedIssue = this._model._assessmentResults.databaseAssessments[row].issues[0];
+			this.refreshResults();
+		});
 
 		const tableContainer = view.modelBuilder.divContainer().withItems([this._databaseTable]).withProps({
 			CSSStyles: {
@@ -236,7 +158,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		return searchContainer;
 	}
 
-	private createInstanceComponent(view: azdata.ModelView): azdata.DivContainer {
+	private async createInstanceComponent(view: azdata.ModelView): Promise<azdata.DivContainer> {
 		const styleLeft: azdata.CssStyles = {
 			'border': 'none',
 			'text-align': 'left'
@@ -271,11 +193,11 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				dataValues: [
 					[
 						{
-							value: 'SQL Server 1',
+							value: (await this._model.getSourceConnectionProfile()).serverName,
 							style: styleLeft
 						},
 						{
-							value: 2,
+							value: this._model._assessmentResults.issues.length,
 							style: styleRight
 						}
 					]
@@ -287,6 +209,12 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				'margin-left': '15px',
 			},
 		}).component();
+
+		this._instanceTable.onRowSelected((e) => {
+			this._activeIssues = this._model._assessmentResults.issues;
+			this._selectedIssue = this._model._assessmentResults.issues[0];
+			this.refreshResults();
+		});
 
 		return instanceContainer;
 	}
@@ -434,14 +362,9 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 
 
 		this._impactedObjectsTable.onRowSelected(({ row }) => {
-			if (this._dbName.value) {
-				this._impactedObjects = this._issues.impactedObjects;
-			}
 			this._objectDetailsType.value = `Type: ${this._impactedObjects[row].objectType!}`;
 			this._objectDetailsName.value = `Name: ${this._impactedObjects[row].name}`;
 			this._objectDetailsSample.value = this._impactedObjects[row].impactDetail;
-
-
 		});
 
 
@@ -530,12 +453,9 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 				'margin-block-end': '0px'
 			}
 		}).component();
-		this._moreInfo = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: '',
-			CSSStyles: {
-				'font-size': '12px',
-				'width': '250px'
-			}
+		this._moreInfo = view.modelBuilder.hyperlink().withProps({
+			label: '',
+			url: ''
 		}).component();
 
 
@@ -576,7 +496,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 	private createPlatformComponent(view: azdata.ModelView): azdata.TextComponent {
 		const impact = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			title: 'Platform', // TODO localize
-			value: 'Azure SQL Managed Instance',
+			value: (this._targetTypes === MigrationTargetType.SQLVM) ? 'Azure SQL Virtual Machine' : 'Azure SQL Managed Instance',
 			CSSStyles: {
 				'font-size': '18px',
 				'margin-block-start': '0px',
@@ -665,31 +585,27 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		).component();
 
 		this._assessmentResultsTable.onRowSelected(({ row }) => {
-			this._descriptionText.value = this._assessmentResultsTable.data![row][0];
-
-			if (this._dbName.value) {
-				this._issues = this._assessmentData.get(this._dbName.value)![row];
-				this._moreInfo.value = this._issues.moreInfo;
-				this._impactedObjects = this._issues.impactedObjects;
-				let data: { value: string; }[][] = [];
-				this._impactedObjects.forEach(async (impactedObject) => {
-					data.push([
-						{
-							value: impactedObject.objectType
-						},
-						{
-							value: impactedObject.name
-						}
-
-					]);
-				});
-
-				this._assessmentTitle.value = this._issues.description;
-
-				this._impactedObjectsTable.updateProperties({
-					dataValues: data
-				});
+			this._selectedIssue = this._activeIssues[row];
+			this._assessmentTitle.value = this._selectedIssue.checkId;
+			this._descriptionText.value = this._selectedIssue.description;
+			this._moreInfo.url = this._selectedIssue.helpLink;
+			this._moreInfo.label = this._selectedIssue.helpLink;
+			this._impactedObjects = this._selectedIssue.impactedObjects;
+			this._impactedObjectsTable.dataValues = this._selectedIssue.impactedObjects.map((object) => {
+				return [
+					{
+						value: object.objectType
+					},
+					{
+						value: object.name
+					}
+				];
+			});
+			if (this._impactedObjects.length > 0) {
+				this._objectDetailsName.value = this._impactedObjects[0].name;
+				this._objectDetailsType.value = this._impactedObjects[0].impactDetail;
 			}
+
 		});
 
 		return this._assessmentResultsTable;
@@ -705,4 +621,20 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		return result;
 	}
 
+	public selectDbs(dbNames: string[]): void {
+		this._databaseTable.dataValues?.forEach((arr) => {
+			arr[0].value = dbNames.includes(<string>arr[1].value);
+		});
+		this._databaseTable.dataValues = this._databaseTable.dataValues;
+	}
+
+	public refreshResults(): void {
+		this._assessmentResultsTable.dataValues = [
+			this._activeIssues.map((v) => {
+				return {
+					value: v.description
+				};
+			})
+		];
+	}
 }

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { MigrationStateModel } from '../../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import { SqlDatabaseTree } from './sqlDatabasesTree';
 import { SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
 import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
@@ -14,7 +14,6 @@ export type Issues = {
 	recommendation: string,
 	moreInfo: string,
 	impactedObjects: SqlMigrationImpactedObjectInfo[],
-	rowNumber: number
 };
 export class AssessmentResultsDialog {
 
@@ -31,9 +30,9 @@ export class AssessmentResultsDialog {
 	private _tree: SqlDatabaseTree;
 
 
-	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string, private skuRecommendationPage: SKURecommendationPage, migrationType: string) {
+	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string, private _skuRecommendationPage: SKURecommendationPage, private _targetType: string) {
 		this._model = model;
-		this._tree = new SqlDatabaseTree(this._model, this.model._assessmentResults, migrationType);
+		this._tree = new SqlDatabaseTree(this._model, this._targetType);
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
@@ -41,8 +40,8 @@ export class AssessmentResultsDialog {
 			dialog.registerContent(async (view) => {
 				try {
 					const resultComponent = await this._tree.createComponentResult(view);
-					const treeComponent = await this._tree.createComponent(view);
-
+					const treeComponent = await this._tree.createComponent(view, this._targetType === MigrationTargetType.SQLVM ? this.model._vmDbs : this._model._miDbs);
+					this.execute();
 					const flex = view.modelBuilder.flexContainer().withLayout({
 						flexFlow: 'row',
 						height: '100%',
@@ -78,6 +77,7 @@ export class AssessmentResultsDialog {
 			const dialogSetupPromises: Thenable<void>[] = [];
 
 			dialogSetupPromises.push(this.initializeDialog(this.dialog));
+
 			azdata.window.openDialog(this.dialog);
 
 			await Promise.all(dialogSetupPromises);
@@ -85,8 +85,12 @@ export class AssessmentResultsDialog {
 	}
 
 	protected async execute() {
-		this.model._migrationDbs = this._tree.selectedDbs();
-		this.skuRecommendationPage.refreshDatabaseCount(this._model._migrationDbs.length);
+		if (this._targetType === MigrationTargetType.SQLVM) {
+			this._model._vmDbs = this._tree.selectedDbs();
+		} else {
+			this._model._miDbs = this._tree.selectedDbs();
+		}
+		this._skuRecommendationPage.refreshCardText();
 		this.model.refreshDatabaseBackupPage = true;
 		this._isOpen = false;
 	}
