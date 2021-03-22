@@ -53,6 +53,8 @@ export const WorkspaceFileAlreadyExistsError = (file: string): string => { retur
 //Open Existing Dialog
 export const OpenExistingDialogTitle = localize('dataworkspace.openExistingDialogTitle', "Open existing");
 export const FileNotExistError = (fileType: string, filePath: string): string => { return localize('dataworkspace.fileNotExistError', "The selected {0} file '{1}' does not exist or is not a file.", fileType, filePath); };
+export const CloneDirectoryNotExist = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
+export const CloneParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.cloneParentDirectoryNotExistError', "The selected clone path '{0}' does not exist or is not a directory.", location); };
 export const Project = localize('dataworkspace.project', "Project");
 export const Workspace = localize('dataworkspace.workspace', "Workspace");
 export const LocationSelectorTitle = localize('dataworkspace.locationSelectorTitle', "Location");
@@ -63,8 +65,8 @@ export const Local = localize('dataworksapce.local', 'Local');
 export const RemoteGitRepo = localize('dataworkspace.remoteGitRepo', "Remote git repository");
 export const GitRepoUrlTitle = localize('dataworkspace.gitRepoUrlTitle', "Git repository URL");
 export const GitRepoUrlPlaceholder = localize('dataworkspace.gitRepoUrlPlaceholder', "Enter remote git repository URL");
-export const LocalClonePathTitle = localize('dataworkspace.localClonePathTitle', "Local project clone path");
-export const LocalClonePathPlaceholder = localize('dataworkspace.localClonePathPlaceholder', "Select location to clone project locally");
+export const LocalClonePathTitle = localize('dataworkspace.localClonePathTitle', "Local clone path");
+export const LocalClonePathPlaceholder = localize('dataworkspace.localClonePathPlaceholder', "Select location to clone repository locally");
 
 // Workspace settings for saving new projects
 export const ProjectConfigurationKey = 'projects';

@@ -9,7 +9,7 @@ import * as path from 'path';
 import { DialogBase } from './dialogBase';
 import * as constants from '../common/constants';
 import { IWorkspaceService } from '../common/interfaces';
-import { fileExist } from '../common/utils';
+import { directoryExist, fileExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
 import { calculateRelativity, TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { defaultProjectSaveLocation } from '../common/projectLocationHelper';
@@ -19,7 +19,11 @@ export class OpenExistingDialog extends DialogBase {
 	public filePathTextBox: azdata.InputBoxComponent | undefined;
 	public filePathAndButtonComponent: azdata.FormComponent | undefined;
 	public gitRepoTextBoxComponent: azdata.FormComponent | undefined;
-	public localProjectClonePathComponent: azdata.FormComponent | undefined;
+	public localClonePathComponent: azdata.FormComponent | undefined;
+	public localClonePathTextBox: azdata.InputBoxComponent | undefined;
+	public localRadioButton: azdata.RadioButtonComponent | undefined;
+	public remoteGitRepoRadioButton: azdata.RadioButtonComponent | undefined;
+	public locationRadioButtonFormComponent: azdata.FormComponent | undefined;
 	public formBuilder: azdata.FormBuilder | undefined;
 
 	private _targetTypes = [
@@ -45,13 +49,25 @@ export class OpenExistingDialog extends DialogBase {
 		try {
 			// the selected location should be an existing directory
 			if (this.targetTypeRadioCardGroup?.selectedCardId === constants.Project) {
-				await this.validateFile(this.filePathTextBox!.value!, constants.Project.toLowerCase());
+				if (this.localRadioButton?.checked) {
+					await this.validateFile(this.filePathTextBox!.value!, constants.Project.toLowerCase());
+				} else {
+					// validate clone location
+					// check if parent folder exists
+					await this.validateClonePath(<string>this.localClonePathTextBox!.value);
+				}
 
 				if (this.workspaceInputBox!.enabled) {
 					await this.validateNewWorkspace(false);
 				}
 			} else if (this.targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
-				await this.validateFile(this.filePathTextBox!.value!, constants.Workspace.toLowerCase());
+				if (this.localRadioButton?.checked) {
+					await this.validateFile(this.filePathTextBox!.value!, constants.Workspace.toLowerCase());
+				} else {
+					// validate clone location
+					// check if parent folder exists
+					await this.validateClonePath(<string>this.localClonePathTextBox!.value);
+				}
 			}
 
 			return true;
@@ -69,6 +85,15 @@ export class OpenExistingDialog extends DialogBase {
 		}
 	}
 
+	public async validateClonePath(location: string): Promise<void> {
+		// only need to check if parent directory exists
+		// if the same repo has been cloned before, the git clone will append the next number to the folder
+		const parentDirectoryExists = await directoryExist(location);
+		if (!parentDirectoryExists) {
+			throw new Error(constants.CloneParentDirectoryNotExistError(location));
+		}
+	}
+
 	async onComplete(): Promise<void> {
 		try {
 			if (this.targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
@@ -77,7 +102,12 @@ export class OpenExistingDialog extends DialogBase {
 					.withAdditionalProperties({ hasWorkspaceOpen: (vscode.workspace.workspaceFile !== undefined).toString() })
 					.send();
 
-				await this.workspaceService.enterWorkspace(vscode.Uri.file(this.filePathTextBox!.value!));
+				if (this.remoteGitRepoRadioButton!.checked) {
+					// after this executes, the git extension will show a popup asking if you want to enter the workspace
+					await vscode.commands.executeCommand('git.clone', (<azdata.InputBoxComponent>this.gitRepoTextBoxComponent?.component).value, this.localClonePathTextBox!.value);
+				} else {
+					await this.workspaceService.enterWorkspace(vscode.Uri.file(this.filePathTextBox!.value!));
+				}
 			} else {
 				// save datapoint now because it'll get set to new value during validateWorkspace()
 				const telemetryProps: any = { hasWorkspaceOpen: (vscode.workspace.workspaceFile !== undefined).toString() };
@@ -134,38 +164,41 @@ export class OpenExistingDialog extends DialogBase {
 			selectedCardId: constants.Project
 		}).component();
 
-		const localRadioButton = view.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
+		this.localRadioButton = view.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
 			name: 'location',
 			label: constants.Local,
 			checked: true
 		}).component();
 
-		this.register(localRadioButton.onDidChangeCheckedState(checked => {
+		this.register(this.localRadioButton.onDidChangeCheckedState(checked => {
 			if (checked) {
 				this.formBuilder?.removeFormItem(<azdata.FormComponent>this.gitRepoTextBoxComponent);
-				this.formBuilder?.removeFormItem(<azdata.FormComponent>this.localProjectClonePathComponent);
+				this.formBuilder?.removeFormItem(<azdata.FormComponent>this.localClonePathComponent);
 
 				this.formBuilder?.insertFormItem(<azdata.FormComponent>this.filePathAndButtonComponent, 2);
 			}
 		}));
 
-		const remoteGitRepoRadioButton = view.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
+		this.remoteGitRepoRadioButton = view.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
 			name: 'location',
 			label: constants.RemoteGitRepo
 		}).component();
 
-		const flexRadioButtonsModel = view.modelBuilder.flexContainer()
-			// .withLayout({ flexFlow: 'row' })
-			.withItems([localRadioButton, remoteGitRepoRadioButton], { flex: '0 0 auto', CSSStyles: { 'margin-right': '15px' } })
-			.withProperties({ ariaRole: 'radiogroup' })
-			.component();
+		this.locationRadioButtonFormComponent = {
+			title: constants.LocationSelectorTitle,
+			required: true,
+			component: view.modelBuilder.flexContainer()
+				.withItems([this.localRadioButton, this.remoteGitRepoRadioButton], { flex: '0 0 auto', CSSStyles: { 'margin-right': '15px' } })
+				.withProperties({ ariaRole: 'radiogroup' })
+				.component()
+		};
 
-		this.register(remoteGitRepoRadioButton.onDidChangeCheckedState(checked => {
+		this.register(this.remoteGitRepoRadioButton.onDidChangeCheckedState(checked => {
 			if (checked) {
 				this.formBuilder?.removeFormItem(<azdata.FormComponent>this.filePathAndButtonComponent);
 
 				this.formBuilder?.insertFormItem(<azdata.FormComponent>this.gitRepoTextBoxComponent, 2);
-				this.formBuilder?.insertFormItem(<azdata.FormComponent>this.localProjectClonePathComponent, 3);
+				this.formBuilder?.insertFormItem(<azdata.FormComponent>this.localClonePathComponent, 3);
 			}
 		}));
 
@@ -179,7 +212,7 @@ export class OpenExistingDialog extends DialogBase {
 			}).component()
 		};
 
-		const localClonePathTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.localClonePathTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.LocalClonePathTitle,
 			placeHolder: constants.LocalClonePathPlaceholder,
 			required: true,
@@ -205,12 +238,13 @@ export class OpenExistingDialog extends DialogBase {
 			}
 
 			const selectedFolder = folderUris[0].fsPath;
-			localClonePathTextBox.value = selectedFolder;
+			this.localClonePathTextBox!.value = selectedFolder;
 		}));
 
-		this.localProjectClonePathComponent = {
+		this.localClonePathComponent = {
 			title: constants.LocalClonePathTitle,
-			component: this.createHorizontalContainer(view, [localClonePathTextBox, localClonePathBrowseFolderButton])
+			component: this.createHorizontalContainer(view, [this.localClonePathTextBox, localClonePathBrowseFolderButton]),
+			required: true
 		};
 
 		this.filePathTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
@@ -229,7 +263,7 @@ export class OpenExistingDialog extends DialogBase {
 			ariaLabel: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			width: '18px',
-			height: '16px',
+			height: '16px'
 		}).component();
 		this.register(localProjectBrowseFolderButton.onDidClick(async () => {
 			if (this.targetTypeRadioCardGroup?.selectedCardId === constants.Project) {
@@ -239,19 +273,37 @@ export class OpenExistingDialog extends DialogBase {
 			}
 		}));
 
+		const flexContainer = this.createHorizontalContainer(view, [this.filePathTextBox, localProjectBrowseFolderButton]);
+		flexContainer.updateCssStyles({ 'margin-top': '-10px' });
 		this.filePathAndButtonComponent = {
-			component: this.createHorizontalContainer(view, [this.filePathTextBox, localProjectBrowseFolderButton])
+			component: flexContainer
 		};
 
 		this.register(this.targetTypeRadioCardGroup.onSelectionChanged(({ cardId }) => {
 			if (cardId === constants.Project) {
 				this.filePathTextBox!.placeHolder = constants.ProjectFilePlaceholder;
+				this.localRadioButton?.updateCssStyles({ 'display': 'none' });
+				this.remoteGitRepoRadioButton?.updateCssStyles({ 'display': 'none' });
+				this.formBuilder?.removeFormItem(<azdata.FormComponent>this.gitRepoTextBoxComponent);
+				this.formBuilder?.removeFormItem(<azdata.FormComponent>this.localClonePathComponent);
+
+				this.formBuilder?.addFormItem(this.filePathAndButtonComponent!);
 				this.formBuilder?.addFormItem(this.workspaceDescriptionFormComponent!);
 				this.formBuilder?.addFormItem(this.workspaceInputFormComponent!);
 			} else if (cardId === constants.Workspace) {
 				this.filePathTextBox!.placeHolder = constants.WorkspacePlaceholder;
+				this.localRadioButton?.updateCssStyles({ 'display': 'block' });
+				this.remoteGitRepoRadioButton?.updateCssStyles({ 'display': 'block' });
+
 				this.formBuilder?.removeFormItem(this.workspaceDescriptionFormComponent!);
 				this.formBuilder?.removeFormItem(this.workspaceInputFormComponent!);
+
+				if (this.remoteGitRepoRadioButton!.checked) {
+					this.formBuilder?.removeFormItem(<azdata.FormComponent>this.filePathAndButtonComponent);
+
+					this.formBuilder?.insertFormItem(<azdata.FormComponent>this.gitRepoTextBoxComponent, 2);
+					this.formBuilder?.insertFormItem(<azdata.FormComponent>this.localClonePathComponent, 3);
+				}
 			}
 
 			// clear selected file textbox
@@ -265,11 +317,8 @@ export class OpenExistingDialog extends DialogBase {
 				title: constants.TypeTitle,
 				required: true,
 				component: this.targetTypeRadioCardGroup,
-			}, {
-				title: constants.LocationSelectorTitle,
-				required: true,
-				component: flexRadioButtonsModel
 			},
+			this.locationRadioButtonFormComponent,
 			this.filePathAndButtonComponent,
 			this.workspaceDescriptionFormComponent!,
 			this.workspaceInputFormComponent!
