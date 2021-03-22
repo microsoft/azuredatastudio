@@ -51,9 +51,6 @@
 		"list.activeSelectionBackground": "#3062d6",
 		"list.hoverBackground": "#444444",
 		"pickerGroup.border": "#0078d7",
-		"activityBar.background": "#444444",
-		"sideBar.background": "#333333",
-		"sideBarTitle.foreground": "#bbbbbb",
 		"input.placeholderForeground": "#a6a6a6",
 		"editorGroupHeader.tabsBackground": "#444444",
 		"editor.background": "#212121",
@@ -72,7 +69,10 @@
 		"panel.border": "#515151",
 		"panelTitle.activeForeground": "#ffffff",
 		"panelTitle.inactiveForeground": "#888888",
-		"panelTitle.activeBorder": "#026dc8"
+		"panelTitle.activeBorder": "#026dc8",
+
+		"sideBarSectionHeader.background": "#0000",
+		"sideBarSectionHeader.border": "#ccc3"
 	},
 	"tokenColors": [
 		{

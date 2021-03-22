@@ -8,15 +8,17 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialogModel } from './migrationCutoverDialogModel';
 import * as loc from '../../constants/strings';
+import { getSqlServerName } from '../../api/utils';
 export class MigrationCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
 	private _model: MigrationCutoverDialogModel;
 
 	private _databaseTitleName!: azdata.TextComponent;
-	private _databaseCutoverButton!: azdata.ButtonComponent;
-	private _refresh!: azdata.ButtonComponent;
-	private _cancel!: azdata.ButtonComponent;
+	private _cutoverButton!: azdata.ButtonComponent;
+	private _refreshButton!: azdata.ButtonComponent;
+	private _cancelButton!: azdata.ButtonComponent;
+	private _refreshLoader!: azdata.LoadingComponent;
 
 	private _serverName!: azdata.TextComponent;
 	private _serverVersion!: azdata.TextComponent;
@@ -43,7 +45,7 @@ export class MigrationCutoverDialog {
 		let tab = azdata.window.createTab('');
 		tab.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
-			const sourceDetails = this.createInfoField(loc.SOURCE_VERSION, '');
+			const sourceDetails = this.createInfoField(loc.SOURCE_SERVER, '');
 			const sourceVersion = this.createInfoField(loc.SOURCE_VERSION, '');
 
 			this._serverName = sourceDetails.text;
@@ -183,30 +185,30 @@ export class MigrationCutoverDialog {
 				columns: [
 					{
 						value: loc.ACTIVE_BACKUP_FILES,
-						width: 150,
+						width: 280,
 						type: azdata.ColumnType.text
 					},
 					{
 						value: loc.TYPE,
-						width: 100,
+						width: 90,
 						type: azdata.ColumnType.text
 					},
 					{
 						value: loc.STATUS,
-						width: 100,
+						width: 60,
 						type: azdata.ColumnType.text
 					},
 					{
 						value: loc.BACKUP_START_TIME,
-						width: 150,
+						width: 130,
 						type: azdata.ColumnType.text
 					}, {
 						value: loc.FIRST_LSN,
-						width: 150,
+						width: 120,
 						type: azdata.ColumnType.text
 					}, {
 						value: loc.LAST_LSN,
-						width: 150,
+						width: 120,
 						type: azdata.ColumnType.text
 					}
 				],
@@ -235,11 +237,12 @@ export class MigrationCutoverDialog {
 				}
 			);
 			const form = formBuilder.withLayout({ width: '100%' }).component();
-			return view.initializeModel(form);
+			return view.initializeModel(form).then((value) => {
+				this.refreshStatus();
+			});
 		});
 		this._dialogObject.content = [tab];
 		azdata.window.openDialog(this._dialogObject);
-		this.refreshStatus();
 	}
 
 
@@ -262,7 +265,7 @@ export class MigrationCutoverDialog {
 			}
 		});
 
-		this._databaseCutoverButton = this._view.modelBuilder.button().withProps({
+		this._cutoverButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.cutover,
 			iconHeight: '14px',
 			iconWidth: '12px',
@@ -272,7 +275,7 @@ export class MigrationCutoverDialog {
 			enabled: false
 		}).component();
 
-		this._databaseCutoverButton.onDidClick(async (e) => {
+		this._cutoverButton.onDidClick(async (e) => {
 			if (this._startCutover) {
 				await this._model.startCutover();
 				this.refreshStatus();
@@ -284,14 +287,14 @@ export class MigrationCutoverDialog {
 			}
 		});
 
-		header.addItem(this._databaseCutoverButton, {
+		header.addItem(this._cutoverButton, {
 			flex: '0',
 			CSSStyles: {
 				'width': '100px'
 			}
 		});
 
-		this._cancel = this._view.modelBuilder.button().withProps({
+		this._cancelButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.discard,
 			iconHeight: '16px',
 			iconWidth: '16px',
@@ -300,11 +303,11 @@ export class MigrationCutoverDialog {
 			width: '130px'
 		}).component();
 
-		this._cancel.onDidClick((e) => {
+		this._cancelButton.onDidClick((e) => {
 			this.cancelMigration();
 		});
 
-		header.addItem(this._cancel, {
+		header.addItem(this._cancelButton, {
 			flex: '0',
 			CSSStyles: {
 				'width': '130px'
@@ -312,7 +315,7 @@ export class MigrationCutoverDialog {
 		});
 
 
-		this._refresh = this._view.modelBuilder.button().withProps({
+		this._refreshButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.refresh,
 			iconHeight: '16px',
 			iconWidth: '16px',
@@ -321,28 +324,39 @@ export class MigrationCutoverDialog {
 			width: '100px'
 		}).component();
 
-		this._refresh.onDidClick((e) => {
+		this._refreshButton.onDidClick((e) => {
 			this.refreshStatus();
 		});
 
-		header.addItem(this._refresh, {
+		header.addItem(this._refreshButton, {
 			flex: '0',
 			CSSStyles: {
 				'width': '100px'
 			}
 		});
 
+		this._refreshLoader = this._view.modelBuilder.loadingComponent().withProps({
+			loading: false,
+			height: '55px'
+		}).component();
+
+		header.addItem(this._refreshLoader, {
+			flex: '0'
+		});
 		return header;
 	}
 
 
 	private async refreshStatus(): Promise<void> {
 		try {
+			this._refreshLoader.loading = true;
+			this._cutoverButton.enabled = false;
+			this._cancelButton.enabled = false;
 			await this._model.fetchStatus();
 			const sqlServerInfo = await azdata.connection.getServerInfo(this._model._migration.sourceConnectionProfile.connectionId);
 			const sqlServerName = this._model._migration.sourceConnectionProfile.serverName;
-			const sqlServerVersion = sqlServerInfo.serverVersion;
-			const sqlServerEdition = sqlServerInfo.serverEdition;
+			const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
+			const sqlServerVersion = versionName ? versionName : sqlServerInfo.serverVersion;
 			const targetServerName = this._model._migration.targetManagedInstance.name;
 			let targetServerVersion;
 			if (this._model.migrationStatus.id.includes('managedInstances')) {
@@ -382,7 +396,7 @@ export class MigrationCutoverDialog {
 
 			this._serverName.value = sqlServerName;
 			this._serverVersion.value = `${sqlServerVersion}
-			${sqlServerEdition}`;
+			${sqlServerInfo.serverVersion}`;
 
 			this._targetServer.value = targetServerName;
 			this._targetVersion.value = targetServerVersion;
@@ -395,6 +409,9 @@ export class MigrationCutoverDialog {
 			this._lastAppliedBackupTakenOn.value = new Date(lastAppliedBackupFileTakenOn!).toLocaleString();
 
 			this._fileCount.value = loc.ACTIVE_BACKUP_FILES_ITEMS(tableData.length);
+
+			//Sorting files in descending order of backupStartTime
+			tableData.sort((file1, file2) => new Date(file1.backupStartTime) > new Date(file2.backupStartTime) ? - 1 : 1);
 
 			this.fileTable.data = tableData.map((row) => {
 				return [
@@ -411,14 +428,17 @@ export class MigrationCutoverDialog {
 			}
 
 			if (migrationStatusTextValue === 'InProgress') {
-				this._databaseCutoverButton.enabled = true;
+				const fileNotRestored = await tableData.some(file => file.status !== 'Restored');
+				this._cutoverButton.enabled = !fileNotRestored;
+				this._cancelButton.enabled = true;
 			} else {
-				this._databaseCutoverButton.enabled = false;
-				this._cancel.enabled = false;
+				this._cutoverButton.enabled = false;
+				this._cancelButton.enabled = false;
 			}
 		} catch (e) {
 			console.log(e);
 		}
+		this._refreshLoader.loading = false;
 	}
 
 	private createInfoField(label: string, value: string): {

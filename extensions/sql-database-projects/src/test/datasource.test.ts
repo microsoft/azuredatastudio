@@ -9,12 +9,12 @@ import * as testUtils from './testUtils';
 import * as sql from '../models/dataSources/sqlConnectionStringSource';
 import * as dataSources from '../models/dataSources/dataSources';
 
-describe.skip('Data Sources: DataSource operations', function (): void {
+describe('Data Sources: DataSource operations', function (): void {
 	before(async function () : Promise<void> {
 		await baselines.loadBaselines();
 	});
 
-	it('Should read DataSources from datasource.json', async function (): Promise<void> {
+	it.skip('Should read DataSources from datasource.json', async function (): Promise<void> {
 		const dataSourcePath = await testUtils.createTestDataSources(baselines.openDataSourcesBaseline);
 		const dataSourceList = await dataSources.load(dataSourcePath);
 
@@ -30,5 +30,11 @@ describe.skip('Data Sources: DataSource operations', function (): void {
 		should(dataSourceList[2].name).equal('AAD Interactive Data Source');
 		should((dataSourceList[2] as sql.SqlConnectionDataSource).integratedSecurity).equal(false);
 		should((dataSourceList[2] as sql.SqlConnectionDataSource).azureMFA).equal(true);
+	});
+
+	it ('Should be able to create sql data source from connection strings with and without ending semicolon', function (): void {
+		should.doesNotThrow(() => new sql.SqlConnectionDataSource('no ending semicolon', 'Data Source=(LOCAL);Initial Catalog=testdb;User id=sa;Password=PLACEHOLDER'));
+		should.doesNotThrow(() => new sql.SqlConnectionDataSource('ending in semicolon', 'Data Source=(LOCAL);Initial Catalog=testdb;User id=sa;Password=PLACEHOLDER;'));
+		should.throws(() => new sql.SqlConnectionDataSource('invalid extra equals sign', 'Data Source=(LOCAL);Initial Catalog=testdb=extra;User id=sa;Password=PLACEHOLDER'));
 	});
 });
