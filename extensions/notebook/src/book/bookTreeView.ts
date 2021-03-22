@@ -242,10 +242,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				this.currentBook = existingBook;
 			} else {
 				await this.createAndAddBookModel(bookPath, !!isNotebook);
-				this.currentBook = this.books.find(book => book.bookPath === bookPath);
 			}
 
 			if (showPreview) {
+				this.currentBook = this.books.find(book => book.bookPath === bookPath);
 				this._bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
 				await this.showPreviewFile(urlToOpen);
 			}
@@ -639,7 +639,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	getChildren(element?: BookTreeItem): Thenable<BookTreeItem[]> {
 		if (element) {
 			if (element.sections) {
-				return Promise.resolve(this.currentBook.getSections(element.tableOfContents, element.sections, element.root, element.book).then(sections => { return sections; }));
+				return Promise.resolve(this.currentBook.getSections(element).then(sections => { return sections; }));
 			} else {
 				return Promise.resolve([]);
 			}

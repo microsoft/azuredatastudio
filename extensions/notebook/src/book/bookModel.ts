@@ -226,7 +226,11 @@ export class BookModel {
 		});
 	}
 
-	public async getSections(tableOfContents: IJupyterBookToc, sections: JupyterBookSection[], root: string, book: BookTreeItemFormat, element?: BookTreeItem): Promise<BookTreeItem[]> {
+	public async getSections(element: BookTreeItem): Promise<BookTreeItem[]> {
+		let tableOfContents: IJupyterBookToc = element?.tableOfContents;
+		let sections: JupyterBookSection[] = element?.sections;
+		let root: string = element?.root;
+		let book: BookTreeItemFormat = element?.book;
 		let notebooks: BookTreeItem[] = [];
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url) {
