@@ -41,6 +41,7 @@ export const SUBSCRIPTION_SELECTION_AZURE_PRODUCT_TITLE = localize('sql.migratio
 export const ASSESSMENT_COMPLETED = (serverName: string): string => {
 	return localize('sql.migration.generic.congratulations', "We have completed the assessment of your SQL Server Instance '{0}'.", serverName);
 };
+export const ASSESSMENT_TILE = localize('sql.migration.assessment', "Assessment Dialog");
 
 // Accounts page
 export const ACCOUNTS_SELECTION_PAGE_TITLE = localize('sql.migration.wizard.account.title', "Azure Account");

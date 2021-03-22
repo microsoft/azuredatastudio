@@ -5,6 +5,22 @@
 import * as azdata from 'azdata';
 import { SqlMigrationAssessmentResultItem, SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
+
+const styleLeft: azdata.CssStyles = {
+	'border': 'none',
+	'text-align': 'left',
+	'white-space': 'nowrap',
+	'text-overflow': 'ellipsis',
+	'overflow': 'hidden'
+};
+const styleRight: azdata.CssStyles = {
+	'border': 'none',
+	'text-align': 'right',
+	'white-space': 'nowrap',
+	'text-overflow': 'ellipsis',
+	'overflow': 'hidden'
+};
+
 export class SqlDatabaseTree {
 
 	private _instanceTable!: azdata.DeclarativeTableComponent;
@@ -44,27 +60,12 @@ export class SqlDatabaseTree {
 		}).component();
 
 		component.addItem(this.createSearchComponent(view), { flex: '0 0 auto' });
-		component.addItem(await this.createInstanceComponent(view), { flex: '0 0 auto' });
-		component.addItem(await this.createDatabaseComponent(view, dbs), { flex: '1 1 auto' });
+		component.addItem(this.createInstanceComponent(view), { flex: '0 0 auto' });
+		component.addItem(this.createDatabaseComponent(view, dbs), { flex: '1 1 auto' });
 		return component;
 	}
 
-	private async createDatabaseComponent(view: azdata.ModelView, dbs: string[]): Promise<azdata.DivContainer> {
-		const styleLeft: azdata.CssStyles = {
-			'border': 'none',
-			'text-align': 'left',
-			'white-space': 'nowrap',
-			'text-overflow': 'ellipsis',
-			'overflow': 'hidden'
-		};
-		const styleRight: azdata.CssStyles = {
-			'border': 'none',
-			'text-align': 'right',
-			'white-space': 'nowrap',
-			'text-overflow': 'ellipsis',
-			'overflow': 'hidden'
-		};
-
+	private createDatabaseComponent(view: azdata.ModelView, dbs: string[]): azdata.DivContainer {
 		this._databaseTable = view.modelBuilder.declarativeTable().withProps(
 			{
 				selectEffect: true,
@@ -98,35 +99,14 @@ export class SqlDatabaseTree {
 						ariaLabel: 'Issue Count' // TODO localize
 
 					}
-				],
-				dataValues: [
 				]
 			}
 		).component();
 
-		this._model._assessmentResults.databaseAssessments.forEach((db) => {
-			this._databaseTable.dataValues?.push(
-				[
-					{
-						value: dbs.length === 0 ? true : dbs.includes(db.name),
-						style: styleLeft
-					},
-					{
-						value: db.name,
-						style: styleLeft
-					},
-					{
-						value: db.issues.length,
-						style: styleRight
-					}
-				]
-			);
-		});
-
 		this._databaseTable.onRowSelected(({ row }) => {
 			this._databaseTable.focus();
-			this._activeIssues = this._model._assessmentResults.databaseAssessments[row].issues;
-			this._selectedIssue = this._model._assessmentResults.databaseAssessments[row].issues[0];
+			this._activeIssues = this._model._assessmentResults?.databaseAssessments[row].issues;
+			this._selectedIssue = this._model._assessmentResults?.databaseAssessments[row].issues[0];
 			this.refreshResults();
 		});
 
@@ -156,17 +136,7 @@ export class SqlDatabaseTree {
 		return searchContainer;
 	}
 
-	private async createInstanceComponent(view: azdata.ModelView): Promise<azdata.DivContainer> {
-		const styleLeft: azdata.CssStyles = {
-			'border': 'none',
-			'text-align': 'left'
-		};
-
-		const styleRight: azdata.CssStyles = {
-			'border': 'none',
-			'text-align': 'right'
-		};
-
+	private createInstanceComponent(view: azdata.ModelView): azdata.DivContainer {
 		this._instanceTable = view.modelBuilder.declarativeTable().withProps(
 			{
 				selectEffect: true,
@@ -188,18 +158,7 @@ export class SqlDatabaseTree {
 						headerCssStyles: styleRight
 					}
 				],
-				dataValues: [
-					[
-						{
-							value: (await this._model.getSourceConnectionProfile()).serverName,
-							style: styleLeft
-						},
-						{
-							value: this._model._assessmentResults.issues.length,
-							style: styleRight
-						}
-					]
-				]
+
 			}).component();
 
 		const instanceContainer = view.modelBuilder.divContainer().withItems([this._instanceTable]).withProps({
@@ -209,8 +168,8 @@ export class SqlDatabaseTree {
 		}).component();
 
 		this._instanceTable.onRowSelected((e) => {
-			this._activeIssues = this._model._assessmentResults.issues;
-			this._selectedIssue = this._model._assessmentResults.issues[0];
+			this._activeIssues = this._model._assessmentResults?.issues;
+			this._selectedIssue = this._model._assessmentResults?.issues[0];
 			this.refreshResults();
 		});
 
@@ -451,10 +410,7 @@ export class SqlDatabaseTree {
 				'margin-block-end': '0px'
 			}
 		}).component();
-		this._moreInfo = view.modelBuilder.hyperlink().withProps({
-			label: '',
-			url: ''
-		}).component();
+		this._moreInfo = view.modelBuilder.hyperlink().component();
 
 
 		const container = view.modelBuilder.flexContainer().withItems([descriptionTitle, this._descriptionText, recommendationTitle, this._recommendationText, moreInfo, this._moreInfo]).withLayout({
@@ -619,13 +575,6 @@ export class SqlDatabaseTree {
 		return result;
 	}
 
-	public selectDbs(dbNames: string[]): void {
-		this._databaseTable.dataValues?.forEach((arr) => {
-			arr[0].value = dbNames.includes(<string>arr[1].value);
-		});
-		this._databaseTable.dataValues = this._databaseTable.dataValues;
-	}
-
 	public refreshResults(): void {
 		this._assessmentResultsTable.dataValues = [
 			this._activeIssues.map((v) => {
@@ -634,5 +583,80 @@ export class SqlDatabaseTree {
 				};
 			})
 		];
+	}
+
+	public async initialize(): Promise<void> {
+		let instanceTableValues: azdata.DeclarativeTableCellValue[][] = [];
+		let databaseTableValues: azdata.DeclarativeTableCellValue[][] = [];
+		const excludedDatabases = ['master', 'msdb', 'tempdb', 'model'];
+		const dbList = (await azdata.connection.listDatabases(this._model.sourceConnectionId)).filter(db => !excludedDatabases.includes(db));
+		const selectedDbs = (this._targetType === MigrationTargetType.SQLVM) ? this._model._vmDbs : this._model._miDbs;
+		const serverName = (await this._model.getSourceConnectionProfile()).serverName;
+
+		if (this._targetType === MigrationTargetType.SQLVM || !this._model._assessmentResults) {
+			instanceTableValues = [
+				[
+					{
+						value: serverName,
+						style: styleLeft
+					},
+					{
+						value: '0',
+						style: styleRight
+					}
+				]
+			];
+			dbList.forEach((db) => {
+				databaseTableValues.push(
+					[
+						{
+							value: selectedDbs.includes(db),
+							style: styleLeft
+						},
+						{
+							value: db,
+							style: styleLeft
+						},
+						{
+							value: '0',
+							style: styleRight
+						}
+					]
+				);
+			});
+		} else {
+			instanceTableValues = [
+				[
+					{
+						value: serverName,
+						style: styleLeft
+					},
+					{
+						value: this._model._assessmentResults.issues.length,
+						style: styleRight
+					}
+				]
+			];
+			this._model._assessmentResults.databaseAssessments.forEach((db) => {
+				databaseTableValues.push(
+					[
+						{
+							value: selectedDbs.includes(db.name),
+							style: styleLeft
+						},
+						{
+							value: db.name,
+							style: styleLeft
+						},
+						{
+							value: db.issues.length,
+							style: styleRight
+						}
+					]
+				);
+			});
+		}
+		this._instanceTable.dataValues = instanceTableValues;
+		this._databaseTable.dataValues = databaseTableValues;
 	}
 }

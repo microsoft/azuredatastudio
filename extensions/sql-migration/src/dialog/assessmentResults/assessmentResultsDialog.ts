@@ -41,7 +41,6 @@ export class AssessmentResultsDialog {
 				try {
 					const resultComponent = await this._tree.createComponentResult(view);
 					const treeComponent = await this._tree.createComponent(view, this._targetType === MigrationTargetType.SQLVM ? this.model._vmDbs : this._model._miDbs);
-					this.execute();
 					const flex = view.modelBuilder.flexContainer().withLayout({
 						flexFlow: 'row',
 						height: '100%',
@@ -81,6 +80,8 @@ export class AssessmentResultsDialog {
 			azdata.window.openDialog(this.dialog);
 
 			await Promise.all(dialogSetupPromises);
+
+			await this._tree.initialize();
 		}
 	}
 

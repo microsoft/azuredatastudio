@@ -355,17 +355,11 @@ export class MigrationCutoverDialog {
 			this._cancelButton.enabled = false;
 			await this._model.fetchStatus();
 			const errors = [];
-			if (this._model.migrationStatus.properties.migrationFailureError?.message) {
-				errors.push(this._model.migrationStatus.properties.migrationFailureError?.message);
-			}
-			if (this._model.migrationStatus.properties.migrationStatusDetails?.fileUploadBlockingErrors) {
-				this._model.migrationStatus.properties.migrationStatusDetails.fileUploadBlockingErrors.forEach(error => errors.push(error));
-			}
-			if (this._model.migrationStatus.properties.migrationStatusDetails?.restoreBlockingReason) {
-				errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.restoreBlockingReason);
-			}
+			errors.push(this._model.migrationStatus.properties.migrationFailureError?.message);
+			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
+			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.restoreBlockingReason);
 			this._dialogObject.message = {
-				text: errors.join(EOL)
+				text: errors.filter(e => e !== undefined).join(EOL)
 			};
 			const sqlServerInfo = await azdata.connection.getServerInfo(this._model._migration.sourceConnectionProfile.connectionId);
 			const sqlServerName = this._model._migration.sourceConnectionProfile.serverName;

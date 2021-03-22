@@ -20,7 +20,7 @@ export class MigrationCutoverDialogModel {
 			this._migration.subscription,
 			this._migration.migrationContext
 		));
-		// Printing migration status for private preview so that users can report their errors.
+		// Logging status to help debugging.
 		console.log(this.migrationStatus);
 	}
 

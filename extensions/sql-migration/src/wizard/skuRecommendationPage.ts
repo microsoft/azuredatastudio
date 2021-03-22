@@ -195,8 +195,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				descriptions
 			});
 		});
-		let miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog', this, MigrationTargetType.SQLMI);
-		let vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog', this, MigrationTargetType.SQLVM);
+		let miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE, this, MigrationTargetType.SQLMI);
+		let vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE, this, MigrationTargetType.SQLVM);
 
 		this._rbg.onLinkClick(async (value) => {
 			if (value.cardId === MigrationTargetType.SQLVM) {
@@ -389,6 +389,15 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			});
 		} else {
 
+			const miCardText = `${this.migrationStateModel._miDbs.length} selected`;
+			this._rbg.cards[0].descriptions[1].textValue = miCardText;
+
+			const vmCardText = `${this.migrationStateModel._vmDbs.length} selected`;
+			this._rbg.cards[1].descriptions[1].textValue = vmCardText;
+
+			this._rbg.updateProperties({
+				cards: this._rbg.cards
+			});
 		}
 
 	}
