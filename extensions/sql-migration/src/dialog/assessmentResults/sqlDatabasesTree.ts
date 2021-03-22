@@ -297,9 +297,7 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 						headerCssStyles: styleRight
 					}
 				],
-				dataValues: [
-					[]
-				]
+				dataValues: []
 			});
 
 		this.instanceTable.component().onRowSelected(({ row }) => {
