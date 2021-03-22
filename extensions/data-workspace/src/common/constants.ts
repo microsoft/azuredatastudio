@@ -23,6 +23,8 @@ export const DoNotShowAgain = localize('dataworkspace.doNotShowAgain', "Do not s
 export const fileDoesNotExist = (name: string): string => { return localize('fileDoesNotExist', "File '{0}' doesn't exist", name); };
 export const projectNameNull = localize('projectNameNull', "Project name is null");
 export const ProjectsFailedToLoad = localize('dataworkspace.projectsFailedToLoad', "Some projects failed to load. Please open console for more information");
+export const fileDoesNotExist = (name: string): string => { return localize('fileDoesNotExist', "File '{0}' doesn't exist", name); };
+export const projectNameNull = localize('projectNameNull', "Project name is null");
 
 // config settings
 export const projectsConfigurationKey = 'projects';
