@@ -5,8 +5,7 @@
 import * as azdata from 'azdata';
 import { SqlMigrationAssessmentResultItem, SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
-import { AssessmentDialogComponent } from './model/assessmentDialogComponent';
-export class SqlDatabaseTree extends AssessmentDialogComponent {
+export class SqlDatabaseTree {
 
 	private _instanceTable!: azdata.DeclarativeTableComponent;
 	private _databaseTable!: azdata.DeclarativeTableComponent;
@@ -32,7 +31,6 @@ export class SqlDatabaseTree extends AssessmentDialogComponent {
 		private _model: MigrationStateModel,
 		private _targetTypes: string
 	) {
-		super();
 	}
 
 	async createComponent(view: azdata.ModelView, dbs: string[]): Promise<azdata.Component> {
