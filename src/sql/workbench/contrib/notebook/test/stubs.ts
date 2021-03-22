@@ -289,7 +289,7 @@ export class NotebookServiceStub implements INotebookService {
 	navigateTo(notebookUri: URI, sectionId: string): void {
 		throw new Error('Method not implemented.');
 	}
-	get onCellExecutionStart(): vsEvent.Event<void> {
+	get onCodeCellExecutionStart(): vsEvent.Event<void> {
 		throw new Error('Method not implemented.');
 	}
 	notifyCellExecutionStarted(): void {

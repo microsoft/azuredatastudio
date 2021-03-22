@@ -108,7 +108,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _isRegistrationComplete = false;
 	private _trustedCacheQueue: URI[] = [];
 	private _unTrustedCacheQueue: URI[] = [];
-	private _onCellExecutionStart: Emitter<void> = new Emitter<void>();
+	private _onCodeCellExecutionStart: Emitter<void> = new Emitter<void>();
 
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
@@ -641,11 +641,11 @@ export class NotebookService extends Disposable implements INotebookService {
 		return isTrusted;
 	}
 
-	get onCellExecutionStart(): Event<void> {
-		return this._onCellExecutionStart.event;
+	get onCodeCellExecutionStart(): Event<void> {
+		return this._onCodeCellExecutionStart.event;
 	}
 
 	notifyCellExecutionStarted(): void {
-		this._onCellExecutionStart.fire();
+		this._onCodeCellExecutionStart.fire();
 	}
 }

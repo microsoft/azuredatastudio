@@ -133,10 +133,10 @@ export interface INotebookService {
 	/**
 	 * Event that gets fired when a cell is executed.
 	 */
-	onCellExecutionStart: Event<void>;
+	onCodeCellExecutionStart: Event<void>;
 
 	/**
-	 * Fires the onCellExecutionStart event.
+	 * Fires the onCodeCellExecutionStart event.
 	 */
 	notifyCellExecutionStarted(): void;
 }
