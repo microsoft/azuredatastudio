@@ -37,7 +37,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private columnDef!: FilterableColumn<T>;
 	private buttonStyles?: IButtonStyles;
 	private disposableStore = new DisposableStore();
-	private _enabled: boolean = true;
+	public enabled: boolean = true;
 
 	constructor() {
 	}
@@ -281,14 +281,6 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	public style(styles: IButtonStyles): void {
 		this.buttonStyles = styles;
 		this.applyStyles();
-	}
-
-	public get enabled(): boolean {
-		return this._enabled;
-	}
-
-	public set enabled(value: boolean) {
-		this._enabled = value;
 	}
 
 	private applyStyles() {

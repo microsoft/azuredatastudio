@@ -15,6 +15,10 @@ export interface HybridDataProviderOptions {
 	inMemoryDataCountThreshold?: number;
 }
 
+/**
+ * Used to abstract the underlying data provider, based on the options, if we are allowing in-memory data processing and the threshold is not reached the
+ * a TableDataView will be used to provide in memory data source, otherwise it will be using the async data provider.
+ */
 export class HybridDataProvider<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
 	private _asyncDataProvider: AsyncDataProvider<T>;
 	private _tableDataProvider: TableDataView<T>;
@@ -47,6 +51,8 @@ export class HybridDataProvider<T extends Slick.SlickData> implements IDisposabl
 		this._disposableStore.add(this._tableDataProvider.onSortComplete((args) => {
 			this._onSortComplete.fire(args);
 		}));
+		this._disposableStore.add(this._asyncDataProvider);
+		this._disposableStore.add(this._tableDataProvider);
 	}
 
 	public get isDataInMemory(): boolean {
@@ -77,8 +83,6 @@ export class HybridDataProvider<T extends Slick.SlickData> implements IDisposabl
 
 	public dispose(): void {
 		this._disposableStore.dispose();
-		this._asyncDataProvider.dispose();
-		this._tableDataProvider.dispose();
 	}
 
 	public getLength(): number {

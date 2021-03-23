@@ -76,11 +76,11 @@ export class GridTableState extends Disposable {
 		this._onMaximizedChange.fire(val);
 	}
 
-	public get columnFilters(): GridColumnFilter[] {
+	public get columnFilters(): GridColumnFilter[] | undefined {
 		return this._columnFilters;
 	}
 
-	public set columnFilters(value: GridColumnFilter[]) {
+	public set columnFilters(value: GridColumnFilter[] | undefined) {
 		this._columnFilters = value;
 	}
 
