@@ -65,6 +65,9 @@
         <Item ItemId=";(...) tip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[List of name value pairs containing Spark configuration values. Encoded as JSON dictionary. Example: '{"name":"value", "name2":"value2"}'.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Lista de pares nombre-valor que contienen valores de configuración de Spark, codificados como diccionario JSON. Ejemplo: "{'nombre':'valor', 'nombre2':'valor2'}".]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -74,6 +77,9 @@
         <Item ItemId=";(...) ip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Amount of CPU cores to allocate to the driver.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Cantidad de núcleos de CPU que se asignarán al controlador.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -83,6 +89,9 @@
         <Item ItemId=";(...) tip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Amount of memory to allocate to the driver. Specify units as part of value. Example 512M or 2G.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Cantidad de memoria que se asignará al controlador. Especifique unidades como parte del valor, por ejemplo, 512 M o 2 G.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -92,6 +101,9 @@
         <Item ItemId=";(...) ltip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Amount of CPU cores to allocate to the executor.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Cantidad de núcleos de CPU que se asignarán al ejecutor.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -101,6 +113,9 @@
         <Item ItemId=";(...) ltip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Number of instances of the executor to run.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Número de instancias del ejecutor para ejecutar.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -110,6 +125,9 @@
         <Item ItemId=";(...) oltip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Amount of memory to allocate to the executor. Specify units as part of value. Example 512M or 2G.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Cantidad de memoria que se asignará al ejecutor. Especifique unidades como parte del valor, por ejemplo, 512 M o 2 G.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -177,7 +195,7 @@
           <Str Cat="Text">
             <Val><![CDATA[Enter a name ...]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Introduzca un nombre...]]></Val>
+              <Val><![CDATA[Escriba un nombre...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -330,7 +348,7 @@
           <Str Cat="Text">
             <Val><![CDATA[livyBatchId is invalid. ]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[livyBatchId no es válido. ]]></Val>
+              <Val><![CDATA[El elemento livyBatchId no es válido. ]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -378,7 +396,7 @@
           <Str Cat="Text">
             <Val><![CDATA[submissionArgs is invalid. ]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[submissionArgs no es válido. ]]></Val>
+              <Val><![CDATA[El elemento submissionArgs no es válido. ]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -564,24 +582,36 @@
       <Item ItemId=";extensions/mssql/dist/features.mssql.canceledLinkedAzureAccountSelection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio debe ponerse en contacto con Azure Key Vault para acceder a la clave maestra de una columna para Always Encrypted, pero no se ha seleccionado ninguna cuenta de Azure vinculada. Vuelva a intentar realizar la consulta y, cuando se le solicite, seleccione una cuenta de Azure vinculada.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/features.mssql.chooseLinkedAzureAccount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please select a linked Azure account:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Seleccione una cuenta de Azure vinculada:]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/features.mssql.insufficientlyPrivelagedAzureAccount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La cuenta de Azure configurada para {0} no tiene suficientes permisos para que Azure Key Vault tenga acceso a una clave maestra de columna para Always Encrypted.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/features.mssql.missingLinkedAzureAccount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio debe ponerse en contacto con Azure Key Vault para acceder a la clave maestra de una columna para Always Encrypted, pero no hay ninguna cuenta de Azure vinculada disponible. Agregue una cuenta de Azure vinculada y vuelva a intentar realizar la consulta.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -777,6 +807,9 @@
       <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.defaultUserAndGroups" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Default User and Groups]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Usuario y grupos predeterminados]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -829,7 +862,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Group]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Agrupar]]></Val>
+            <Val><![CDATA[Grupo]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -927,8 +960,8 @@
       <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.stickyHeader" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Sticky Bit]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Temporal]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Sticky Bit]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Sticky]]></Val>
@@ -948,6 +981,9 @@
       <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.userOrGroupIcon" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User or Group Icon]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Icono de usuario o grupo]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -963,6 +999,9 @@
       <Item ItemId=";extensions/mssql/dist/localizedConstants.sparkConnectionRequired" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please connect to the Spark cluster before View {0} History.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Conéctese al clúster de Spark para poder ver el historial de {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1006,7 +1045,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Submitting job {0} ... ]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Enviando trabajo "{0}"... ]]></Val>
+            <Val><![CDATA[Se está enviando el trabajo "{0}"... ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1078,7 +1117,7 @@
         <Str Cat="Text">
           <Val><![CDATA[YarnUI Url: {0} ]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Url de YarnUI: {0} ]]></Val>
+            <Val><![CDATA[URL de YarnUI: {0} ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1095,18 +1134,27 @@
       <Item ItemId=";extensions/mssql/dist/main.mssql.errorConvertingToNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred converting the SQL document to a Notebook. Error : {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Error al convertir el documento de SQL a Notebook; {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/main.mssql.errorConvertingToSQL" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred converting the Notebook document to SQL. Error : {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Error al convertir el documento de Notebook a SQL; {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/main.noController" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find the controller endpoint for this instance]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se encuentra el punto de conexión del controlador para esta instancia.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1437,6 +1485,9 @@
       <Item ItemId=";extensions/mssql/dist/objectExplorerNodeProvider/objectExplorerNodeProvider.promptUsername" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please provide the username to connect to HDFS:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Proporcione el nombre de usuario para conectarse a HDFS:]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1551,36 +1602,54 @@
       <Item ItemId=";extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab.sparkJobSubmission.configValues" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Configuration Values]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Valores de configuración]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab.sparkJobSubmission.driverCores" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Driver Cores]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Núcleos del controlador]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab.sparkJobSubmission.driverMemory" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Driver Memory]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Memoria de controlador]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab.sparkJobSubmission.executorCores" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Executor Cores]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Núcleos del ejecutor]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab.sparkJobSubmission.executorCount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Executor Count]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Recuento de ejecutores]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab.sparkJobSubmission.executorMemory" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Executor Memory]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Memoria del ejecutor]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1588,7 +1657,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Queue Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nombre de cola]]></Val>
+            <Val><![CDATA[Nombre de la cola]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1596,6 +1665,9 @@
       <Item ItemId=";extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab.sparkJobSubmission.queueNameTooltip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name of the Spark queue to execute the session in.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nombre de la cola de Spark en la que se va a ejecutar la sesión.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1612,7 +1684,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Job Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nombre de tarea]]></Val>
+            <Val><![CDATA[Nombre del trabajo]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1656,24 +1728,36 @@
       <Item ItemId=";extensions/mssql/dist/sqlClusterLookUp.bdcConnectError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error: {0}. ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Error: {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/sqlClusterLookUp.promptBDCPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please provide the password to connect to the BDC Controller]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Proporcione la contraseña para conectarse al controlador de BDC.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/sqlClusterLookUp.promptBDCUsername" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0}Please provide the username to connect to the BDC Controller:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0}Especifique el nombre de usuario para conectarse al controlador de BDC:]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/sqlClusterLookUp.usernameAndPasswordRequired" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Username and password are required]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Es necesario especificar el nombre de usuario y la contraseña.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1716,6 +1800,9 @@
       <Item ItemId=";extensions/mssql/dist/sqlToolsServer.entryExtractedChannelMsg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Extracted {0} ({1}/{2})]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Elementos extraídos: {0} ({1} de {2})]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2073,8 +2160,8 @@
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.columnEncryptionSetting.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enables or disables Always Encrypted for the connection]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Valor de cifrado de columnas predeterminado para todos los comandos de la conexión]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Habilita o deshabilita Always Encrypted para la conexión.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Default column encryption setting for all the commands on the connection]]></Val>
@@ -2224,7 +2311,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Azure Attestation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Attestation]]></Val>
+            <Val><![CDATA[Atestación de Azure]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2241,24 +2328,36 @@
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.enclaveAttestationProtocol.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Especifica un protocolo para la atestación de un enclave de servidor empleado con Always Encrypted con enclaves seguros.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.enclaveAttestationProtocol.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Attestation Protocol]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Protocolo de atestación]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.enclaveAttestationUrl.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with secure enclaves]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Especifica un punto de conexión para la atestación de un enclave de servidor empleado con Always Encrypted con enclaves seguros.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.enclaveAttestationUrl.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enclave Attestation URL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Dirección URL de atestación del enclave]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2517,8 +2616,8 @@
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.typeSystemVersion.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Indicates which server type system the provider will expose through the DataReader]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Indica qué sistema de tipo de servidor expondrá el proveedor a través de DataReader]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Indica qué sistema de tipo de servidor el proveedor expondrá por medio de DataReader.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Indicates which server type system then provider will expose through the DataReader]]></Val>
@@ -2592,12 +2691,18 @@
       <Item ItemId=";extensions/mssql/package.mssql.exportNotebookToSql" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Export Notebook as SQL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Exportar cuaderno como SQL]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.exportSqlAsNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Export SQL as Notebook]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Exportar SQL como cuaderno]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2739,6 +2844,9 @@
       <Item ItemId=";extensions/mssql/package.mssql.query.alwaysEncryptedParameterization" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable Parameterization for Always Encrypted]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Habilitar parametrización de Always Encrypted]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2853,6 +2961,9 @@
       <Item ItemId=";extensions/mssql/package.mssql.query.maxXmlCharsToStore" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Number of XML characters to store after running a query]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Número de caracteres XML que se almacenarán después de ejecutar una consulta.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3210,6 +3321,9 @@
       <Item ItemId=";extensions/mssql/package.title.openClusterDashboard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cluster]D;]A;Dashboard]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Panel del]D;]A;clúster]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
