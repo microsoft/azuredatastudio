@@ -17,7 +17,7 @@ export type ParametersModel = {
 	parameterName: string,
 	originalValue: string,
 	valueComponent: azdata.TextComponent | azdata.DropDownComponent | azdata.CheckBoxComponent,
-	valueContainer: azdata.FlexContainer,
+	information?: azdata.ButtonComponent,
 	description: string,
 	resetButton: azdata.ButtonComponent
 };
@@ -34,7 +34,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 	private connectToServerButton?: azdata.ButtonComponent;
 
 	protected _parameters: ParametersModel[] = [];
-	protected changedComponentValues: string[] = [];
+	private changedComponentValues: string[] = [];
 	private parameterUpdates: Map<string, string> = new Map();
 
 	protected readonly _azdataApi: azdataExt.IExtension;
@@ -197,10 +197,10 @@ export abstract class PostgresParametersPage extends DashboardPage {
 				this.discardButton!.enabled = false;
 				try {
 					this.discardParametersTableChanges();
-					this.changedComponentValues = [];
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
+					this.changedComponentValues = [];
 					this.saveButton!.enabled = false;
 					this.parameterUpdates!.clear();
 				}
@@ -374,10 +374,11 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		this._parametersTable.setFilter(filteredRowIndexes);
 	}
 
-	private handleOnTextChanged(component: azdata.InputBoxComponent, currentValue: string | undefined): boolean {
+	private handleOnTextChanged(component: azdata.InputBoxComponent, name: string, currentValue: string | undefined): boolean {
 		if (!component.valid) {
 			// If invalid value return false and enable discard button
 			this.discardButton!.enabled = true;
+			this.collectChangedComponents(name);
 			return false;
 		} else if (component.value === currentValue) {
 			return false;
@@ -387,132 +388,12 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			return true */
 			this.saveButton!.enabled = true;
 			this.discardButton!.enabled = true;
+			this.collectChangedComponents(name);
 			return true;
 		}
 	}
 
 	protected createParameterComponents(engineSetting: EngineSettingsModel): ParametersModel {
-
-		let valueComponent: azdata.Component;
-
-		// Container to hold input component and information bubble
-		const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-
-		if (engineSetting.type === 'enum') {
-			// If type is enum, component should be drop down menu
-			let options = engineSetting.options?.slice(1, -1).split(',');
-			let values: string[] = [];
-			options!.forEach(option => {
-				values.push(option.slice(option.indexOf('"') + 1, -1));
-			});
-
-			let valueBox = this.modelView.modelBuilder.dropDown().withProps({
-				values: values,
-				value: engineSetting.value,
-				width: '150px'
-			}).component();
-			valueComponent = valueBox;
-			valueContainer.addItem(valueBox);
-
-			this.disposables.push(
-				valueBox.onValueChanged(() => {
-					this.changedComponentValues.push(engineSetting.parameterName!);
-					if (engineSetting.value !== String(valueBox.value)) {
-						this.parameterUpdates!.set(engineSetting.parameterName!, String(valueBox.value));
-						this.saveButton!.enabled = true;
-						this.discardButton!.enabled = true;
-					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
-						this.parameterUpdates!.delete(engineSetting.parameterName!);
-					}
-				})
-			);
-		} else if (engineSetting.type === 'bool') {
-			// If type is bool, component should be checkbox to turn on or off
-			let valueBox = this.modelView.modelBuilder.checkBox().withProps({
-				label: loc.on,
-				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
-			}).component();
-			valueComponent = valueBox;
-			valueContainer.addItem(valueBox);
-
-			if (engineSetting.value === 'on') {
-				valueBox.checked = true;
-			} else {
-				valueBox.checked = false;
-			}
-
-			this.disposables.push(
-				valueBox.onChanged(() => {
-					this.changedComponentValues.push(engineSetting.parameterName!);
-					if (valueBox.checked && engineSetting.value === 'off') {
-						this.parameterUpdates!.set(engineSetting.parameterName!, loc.on);
-						this.saveButton!.enabled = true;
-						this.discardButton!.enabled = true;
-					} else if (!valueBox.checked && engineSetting.value === 'on') {
-						this.parameterUpdates!.set(engineSetting.parameterName!, loc.off);
-						this.saveButton!.enabled = true;
-						this.discardButton!.enabled = true;
-					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
-						this.parameterUpdates!.delete(engineSetting.parameterName!);
-					}
-				})
-			);
-		} else if (engineSetting.type === 'string') {
-			// If type is string, component should be text inputbox
-			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
-				required: true,
-				readOnly: false,
-				value: engineSetting.value,
-				width: '150px'
-			}).component();
-			valueComponent = valueBox;
-			valueContainer.addItem(valueBox);
-
-			this.disposables.push(
-				valueBox.onTextChanged(() => {
-					this.changedComponentValues.push(engineSetting.parameterName!);
-					if ((this.handleOnTextChanged(valueBox, engineSetting.value))) {
-						this.parameterUpdates!.set(engineSetting.parameterName!, `"${valueBox.value!}"`);
-					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
-						this.parameterUpdates!.delete(engineSetting.parameterName!);
-					}
-				})
-			);
-		} else {
-			// If type is real or interger, component should be inputbox set to inputType of number. Max and min values also set.
-			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
-				required: true,
-				readOnly: false,
-				min: parseInt(engineSetting.min!),
-				max: parseInt(engineSetting.max!),
-				inputType: 'number',
-				value: engineSetting.value,
-				width: '150px'
-			}).component();
-			valueComponent = valueBox;
-			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
-
-			this.disposables.push(
-				valueBox.onTextChanged(() => {
-					this.changedComponentValues.push(engineSetting.parameterName!);
-					if ((this.handleOnTextChanged(valueBox, engineSetting.value))) {
-						this.parameterUpdates!.set(engineSetting.parameterName!, valueBox.value!);
-					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
-						this.parameterUpdates!.delete(engineSetting.parameterName!);
-					}
-				})
-			);
-
-			// Information bubble title to show allowed values
-			let information = this.modelView.modelBuilder.button().withProps({
-				iconPath: IconPathHelper.information,
-				width: '15px',
-				height: '15px',
-				enabled: false,
-				title: loc.rangeSetting(engineSetting.min!, engineSetting.max!)
-			}).component();
-			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
-		}
 
 		// Can reset individual parameter
 		const resetParameterButton = this.modelView.modelBuilder.button().withProps({
@@ -550,14 +431,139 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			})
 		);
 
+		let valueComponent: azdata.Component;
+		if (engineSetting.type === 'enum') {
+			// If type is enum, component should be drop down menu
+			let options = engineSetting.options?.slice(1, -1).split(',');
+			let values: string[] = [];
+			options!.forEach(option => {
+				values.push(option.slice(option.indexOf('"') + 1, -1));
+			});
+
+			let valueBox = this.modelView.modelBuilder.dropDown().withProps({
+				values: values,
+				value: engineSetting.value,
+				width: '150px'
+			}).component();
+			valueComponent = valueBox;
+
+			this.disposables.push(
+				valueBox.onValueChanged(() => {
+					if (engineSetting.value !== String(valueBox.value)) {
+						this.parameterUpdates!.set(engineSetting.parameterName!, String(valueBox.value));
+						this.collectChangedComponents(engineSetting.parameterName!);
+						this.saveButton!.enabled = true;
+						this.discardButton!.enabled = true;
+					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
+						this.parameterUpdates!.delete(engineSetting.parameterName!);
+					}
+				})
+			);
+		} else if (engineSetting.type === 'bool') {
+			// If type is bool, component should be checkbox to turn on or off
+			let valueBox = this.modelView.modelBuilder.checkBox().withProps({
+				label: loc.on,
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+			}).component();
+			valueComponent = valueBox;
+
+			if (engineSetting.value === 'on') {
+				valueBox.checked = true;
+			} else {
+				valueBox.checked = false;
+			}
+
+			this.disposables.push(
+				valueBox.onChanged(() => {
+					if (valueBox.checked && engineSetting.value === 'off') {
+						this.parameterUpdates!.set(engineSetting.parameterName!, loc.on);
+						this.collectChangedComponents(engineSetting.parameterName!);
+						this.saveButton!.enabled = true;
+						this.discardButton!.enabled = true;
+					} else if (!valueBox.checked && engineSetting.value === 'on') {
+						this.parameterUpdates!.set(engineSetting.parameterName!, loc.off);
+						this.collectChangedComponents(engineSetting.parameterName!);
+						this.saveButton!.enabled = true;
+						this.discardButton!.enabled = true;
+					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
+						this.parameterUpdates!.delete(engineSetting.parameterName!);
+					}
+				})
+			);
+		} else if (engineSetting.type === 'string') {
+			// If type is string, component should be text inputbox
+			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
+				required: true,
+				readOnly: false,
+				value: engineSetting.value,
+				width: '150px'
+			}).component();
+			valueComponent = valueBox;
+
+			this.disposables.push(
+				valueBox.onTextChanged(() => {
+					if ((this.handleOnTextChanged(valueBox, engineSetting.parameterName!, engineSetting.value))) {
+						this.parameterUpdates!.set(engineSetting.parameterName!, `"${valueBox.value!}"`);
+					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
+						this.parameterUpdates!.delete(engineSetting.parameterName!);
+					}
+				})
+			);
+		} else {
+			// If type is real or interger, component should be inputbox set to inputType of number. Max and min values also set.
+			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
+				required: true,
+				readOnly: false,
+				min: parseInt(engineSetting.min!),
+				max: parseInt(engineSetting.max!),
+				inputType: 'number',
+				value: engineSetting.value,
+				width: '150px'
+			}).component();
+			valueComponent = valueBox;
+
+			this.disposables.push(
+				valueBox.onTextChanged(() => {
+					if ((this.handleOnTextChanged(valueBox, engineSetting.parameterName!, engineSetting.value))) {
+						this.parameterUpdates!.set(engineSetting.parameterName!, valueBox.value!);
+					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
+						this.parameterUpdates!.delete(engineSetting.parameterName!);
+					}
+				})
+			);
+
+			// Information bubble title to show allowed values
+			let information = this.modelView.modelBuilder.button().withProps({
+				iconPath: IconPathHelper.information,
+				width: '15px',
+				height: '15px',
+				enabled: false,
+				title: loc.rangeSetting(engineSetting.min!, engineSetting.max!)
+			}).component();
+
+			return {
+				parameterName: engineSetting.parameterName!,
+				originalValue: engineSetting.value!,
+				valueComponent: valueComponent,
+				information: information,
+				description: engineSetting.description!,
+				resetButton: resetParameterButton
+			};
+		}
+
 		return {
 			parameterName: engineSetting.parameterName!,
 			originalValue: engineSetting.value!,
 			valueComponent: valueComponent,
-			valueContainer: valueContainer,
 			description: engineSetting.description!,
 			resetButton: resetParameterButton
 		};
+	}
+
+	private collectChangedComponents(name: string): void {
+		if (!this.changedComponentValues.includes(name)) {
+			this.changedComponentValues.push(name);
+		}
 	}
 
 	private discardParametersTableChanges(): void {

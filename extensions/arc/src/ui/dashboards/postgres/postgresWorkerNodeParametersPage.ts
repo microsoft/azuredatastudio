@@ -64,6 +64,17 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 
 	protected refreshParametersTable(): void {
 		this._parameters = this._postgresModel.workerNodesEngineSettings.map(engineSetting => this.createParameterComponents(engineSetting));
-		this._parametersTable.data = this._parameters.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
+
+		this._parametersTable.data = this._parameters.map(p => {
+			if (p.information) {
+				// Container to hold input component and information bubble
+				const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
+				valueContainer.addItem(p.valueComponent, { CSSStyles: { 'margin-right': '0px' } });
+				valueContainer.addItem(p.information, { CSSStyles: { 'margin-left': '5px' } });
+				return [p.parameterName, valueContainer, p.description, p.resetButton];
+			} else {
+				return [p.parameterName, p.valueComponent, p.description, p.resetButton];
+			}
+		});
 	}
 }
