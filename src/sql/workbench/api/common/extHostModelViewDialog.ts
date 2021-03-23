@@ -23,7 +23,7 @@ const PREVIOUS_LABEL = nls.localize('dialogPreviousLabel', "Previous");
 
 class ModelViewPanelImpl implements azdata.window.ModelViewPanel {
 	private _modelView: azdata.ModelView;
-	private _handle: number;
+	public handle: number;
 	protected _modelViewId: string;
 	protected _valid: boolean = true;
 	protected _onValidityChanged: vscode.Event<boolean>;
@@ -38,17 +38,13 @@ class ModelViewPanelImpl implements azdata.window.ModelViewPanel {
 
 	public registerContent(handler: (view: azdata.ModelView) => Thenable<void>): void {
 		if (!this._modelViewId) {
-			let viewId = this._viewType + this._handle;
+			let viewId = this._viewType + this.handle;
 			this.setModelViewId(viewId);
 			this._extHostModelView.$registerProvider(viewId, modelView => {
 				this._modelView = modelView;
 				handler(modelView);
 			}, this._extension);
 		}
-	}
-
-	public set handle(value: number) {
-		this._handle = value;
 	}
 
 	public setModelViewId(value: string) {
@@ -91,6 +87,10 @@ class ModelViewEditorImpl extends ModelViewPanelImpl implements azdata.workspace
 
 	public openEditor(position?: vscode.ViewColumn): Thenable<void> {
 		return this._proxy.$openEditor(this.handle, this._modelViewId, this._title, this._name, this._options, position);
+	}
+
+	public closeEditor(): Thenable<void> {
+		return this._proxy.$closeEditor(this.handle);
 	}
 
 	public get isDirty(): boolean {
@@ -566,6 +566,10 @@ class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
 
 	open(): Thenable<void> {
 		return this._editor.openEditor();
+	}
+
+	close(): Thenable<void> {
+		return this._editor.closeEditor();
 	}
 
 	createTab(tab: azdata.DashboardTab, view: azdata.ModelView): azdata.Tab {

@@ -84,8 +84,8 @@ export function httpRequestError(code: number, message: string): string { return
 export function msgDownloadLocation(downloadLocation: string): string { return localize('msgDownloadLocation', "Downloading to {0}", downloadLocation); }
 
 // Create Book dialog constants
-export const newGroup = localize('newGroup', "New Group");
-export const groupDescription = localize('groupDescription', "Groups are used to organize Notebooks.");
+export const newGroup = localize('newGroup', "New Book");
+export const groupDescription = localize('groupDescription', "Books are used to organize Notebooks.");
 export const locationBrowser = localize('locationBrowser', "Browse locations...");
 export const selectContentFolder = localize('selectContentFolder', "Select content folder");
 export const browse = localize('browse', "Browse");

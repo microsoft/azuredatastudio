@@ -4,43 +4,57 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as path from 'path';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
-import { Product, ProductLookupTable } from '../models/product';
+import { MigrationStateModel, MigrationTargetType, StateChangeEvent } from '../models/stateMachine';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
 import * as constants from '../constants/strings';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
+import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 
-// import { SqlMigrationService } from '../../../../extensions/mssql/src/sqlMigration/sqlMigrationService';
+export interface Product {
+	type: MigrationTargetType;
+	name: string,
+	icon: IconPath;
+}
 
 export class SKURecommendationPage extends MigrationWizardPage {
-	// For future reference: DO NOT EXPOSE WIZARD DIRECTLY THROUGH HERE.
+
+	private _view!: azdata.ModelView;
+	private _igComponent!: azdata.TextComponent;
+	private _detailsComponent!: azdata.TextComponent;
+	private _chooseTargetComponent!: azdata.DivContainer;
+	private _azureSubscriptionText!: azdata.TextComponent;
+	private _managedInstanceSubscriptionDropdown!: azdata.DropDownComponent;
+	private _resourceDropdownLabel!: azdata.TextComponent;
+	private _resourceDropdown!: azdata.DropDownComponent;
+	private _rbg!: azdata.RadioCardGroupComponent;
+	private eventListener!: vscode.Disposable;
+
+	private _supportedProducts: Product[] = [
+		{
+			type: MigrationTargetType.SQLMI,
+			name: constants.SKU_RECOMMENDATION_MI_CARD_TEXT,
+			icon: IconPathHelper.sqlMiLogo
+		},
+		{
+			type: MigrationTargetType.SQLVM,
+			name: constants.SKU_RECOMMENDATION_VM_CARD_TEXT,
+			icon: IconPathHelper.sqlVmLogo
+		}
+	];
+
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.SKU_RECOMMENDATION_PAGE_TITLE), migrationStateModel);
 	}
 
 	protected async registerContent(view: azdata.ModelView) {
-		await this.initialState(view);
-	}
-
-	private _igComponent: azdata.FormComponent<azdata.TextComponent> | undefined;
-	private _detailsComponent: azdata.FormComponent<azdata.TextComponent> | undefined;
-	private _chooseTargetComponent: azdata.FormComponent<azdata.DivContainer> | undefined;
-	private _azureSubscriptionText: azdata.FormComponent<azdata.TextComponent> | undefined;
-	private _managedInstanceSubscriptionDropdown!: azdata.DropDownComponent;
-	private _resourceDropdownLabel!: azdata.TextComponent;
-	private _resourceDropdown!: azdata.DropDownComponent;
-	private _view: azdata.ModelView | undefined;
-	private _rbg!: azdata.RadioCardGroupComponent;
-
-	private async initialState(view: azdata.ModelView) {
 		this._view = view;
 		this._igComponent = this.createStatusComponent(view); // The first component giving basic information
 		this._detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
 		this._chooseTargetComponent = this.createChooseTargetComponent(view);
 		this._azureSubscriptionText = this.createAzureSubscriptionText(view);
+
 
 		const managedInstanceSubscriptionDropdownLabel = view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION
@@ -50,7 +64,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (e.selected) {
 				this.migrationStateModel._targetSubscription = this.migrationStateModel.getSubscription(e.index);
 				this.migrationStateModel._targetServerInstance = undefined!;
-				this.migrationStateModel._migrationController = undefined!;
+				this.migrationStateModel._sqlMigrationService = undefined!;
 				this.populateResourceInstanceDropdown();
 			}
 		});
@@ -63,13 +77,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (e.selected &&
 				e.selected !== constants.NO_MANAGED_INSTANCE_FOUND &&
 				e.selected !== constants.NO_VIRTUAL_MACHINE_FOUND) {
-				this.migrationStateModel._migrationControllers = undefined!;
-				if (this._rbg.selectedCardId === 'AzureSQLVM') {
+				this.migrationStateModel._sqlMigrationServices = undefined!;
+				if (this._rbg.selectedCardId === MigrationTargetType.SQLVM) {
 					this.migrationStateModel._targetServerInstance = this.migrationStateModel.getVirtualMachine(e.index);
 				} else {
 					this.migrationStateModel._targetServerInstance = this.migrationStateModel.getManagedInstance(e.index);
 				}
-
 			}
 		});
 
@@ -84,79 +97,51 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			flexFlow: 'column'
 		}).component();
 
-		let connectionUri: string = await azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId);
-		this.migrationStateModel.migrationService.getAssessments(connectionUri).then(results => {
-			if (results) {
-				this.migrationStateModel.assessmentResults = results.items;
-			}
-		});
+
 
 		this._view = view;
 		const formContainer = view.modelBuilder.formContainer().withFormItems(
 			[
-				this._igComponent,
-				this._detailsComponent,
-				this._chooseTargetComponent,
-				this._azureSubscriptionText,
+				{
+					title: '',
+					component: this._igComponent
+				},
+				{
+					title: '',
+					component: this._detailsComponent
+				},
+				{
+					title: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
+					component: this._chooseTargetComponent
+				},
+				{
+					component: this._azureSubscriptionText
+				},
 				{
 					component: targetContainer
-				},
+				}
 			]
 		);
-
 		await view.initializeModel(formContainer.component());
 	}
 
-	private createStatusComponent(view: azdata.ModelView): azdata.FormComponent<azdata.TextComponent> {
-		const component = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: '',
+	private createStatusComponent(view: azdata.ModelView): azdata.TextComponent {
+		const component = view.modelBuilder.text().withProps({
 			CSSStyles: {
-				'font-size': '18px'
+				'font-size': '14px'
 			}
-		});
-
-		return {
-			title: '',
-			component: component.component(),
-		};
+		}).component();
+		return component;
 	}
 
-	private createDetailsComponent(view: azdata.ModelView): azdata.FormComponent<azdata.TextComponent> {
-		const component = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: '',
-		});
-
-		return {
-			title: '',
-			component: component.component(),
-		};
+	private createDetailsComponent(view: azdata.ModelView): azdata.TextComponent {
+		const component = view.modelBuilder.text().component();
+		return component;
 	}
 
-	private createChooseTargetComponent(view: azdata.ModelView) {
-		const component = view.modelBuilder.divContainer();
+	private createChooseTargetComponent(view: azdata.ModelView): azdata.DivContainer {
 
-		return {
-			title: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
-			component: component.component()
-		};
-	}
-
-	private constructDetails(): void {
-		this._chooseTargetComponent?.component.clearItems();
-
-		if (this.migrationStateModel.assessmentResults) {
-
-		}
-		this._igComponent!.component.value = constants.CONGRATULATIONS;
-		// either: SKU_RECOMMENDATION_ALL_SUCCESSFUL or SKU_RECOMMENDATION_SOME_SUCCESSFUL or SKU_RECOMMENDATION_NONE_SUCCESSFUL
-		this._detailsComponent!.component.value = constants.SKU_RECOMMENDATION_SOME_SUCCESSFUL(1, 1);
-		this.constructTargets();
-	}
-
-	private constructTargets(): void {
-		const products: Product[] = Object.values(ProductLookupTable);
-
-		this._rbg = this._view!.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
+		this._rbg = this._view!.modelBuilder.radioCardGroup().withProps({
 			cards: [],
 			cardWidth: '600px',
 			cardHeight: '40px',
@@ -165,9 +150,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			iconWidth: '30px'
 		}).component();
 
-		products.forEach((product) => {
-			const imagePath = path.resolve(this.migrationStateModel.getExtensionPath(), 'images', product.icon ?? 'ads.svg');
-			const dbCount = this.migrationStateModel._migrationDbs.length;
+		this._supportedProducts.forEach((product) => {
 			const descriptions: azdata.RadioCardDescription[] = [
 				{
 					textValue: product.name,
@@ -188,7 +171,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					},
 				},
 				{
-					textValue: `${dbCount} databases will be migrated`,
+					textValue: '0 selected',
 					textStyles: {
 						'font-size': '13px',
 						'line-height': '18px'
@@ -208,41 +191,77 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 			this._rbg.cards.push({
 				id: product.type,
-				icon: imagePath,
+				icon: product.icon,
 				descriptions
 			});
 		});
+		let miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE, this, MigrationTargetType.SQLMI);
+		let vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE, this, MigrationTargetType.SQLVM);
 
 		this._rbg.onLinkClick(async (value) => {
-
-			//check which card is being selected, and open correct dialog based on link
-			console.log(value);
-			let dialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, 'Assessment Dialog', this);
-			await dialog.openDialog();
+			if (value.cardId === MigrationTargetType.SQLVM) {
+				this._rbg.selectedCardId = MigrationTargetType.SQLVM;
+				if (value.description.linkDisplayValue === 'View/Change') {
+					await vmDialog.openDialog();
+				} else if (value.description.linkDisplayValue === 'Learn more') {
+					vscode.env.openExternal(vscode.Uri.parse('https://docs.microsoft.com/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview'));
+				}
+			} else if (value.cardId === MigrationTargetType.SQLMI) {
+				this._rbg.selectedCardId = MigrationTargetType.SQLMI;
+				if (value.description.linkDisplayValue === 'View/Change') {
+					await miDialog.openDialog();
+				} else if (value.description.linkDisplayValue === 'Learn more') {
+					vscode.env.openExternal(vscode.Uri.parse('https://docs.microsoft.com/azure/azure-sql/managed-instance/sql-managed-instance-paas-overview '));
+				}
+			}
 		});
 
 		this._rbg.onSelectionChanged((value) => {
-			this.populateResourceInstanceDropdown();
+			this.changeTargetType(value.cardId);
 		});
 
-		this._rbg.selectedCardId = 'AzureSQLMI';
+		this._rbg.selectedCardId = MigrationTargetType.SQLMI;
 
-		this._chooseTargetComponent?.component.addItem(this._rbg);
+
+		const component = view.modelBuilder.divContainer().withItems(
+			[
+				this._rbg
+			]
+		).component();
+		return component;
 	}
 
-	private createAzureSubscriptionText(view: azdata.ModelView): azdata.FormComponent<azdata.TextComponent> {
-		const component = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: 'Select an Azure subscription and an Azure SQL Managed Instance for your target.', //TODO: Localize
+	private changeTargetType(newTargetType: string) {
+		if (newTargetType === MigrationTargetType.SQLMI) {
+			this._azureSubscriptionText.value = constants.SELECT_AZURE_MI;
+			this.migrationStateModel._migrationDbs = this.migrationStateModel._miDbs;
+		} else {
+			this._azureSubscriptionText.value = constants.SELECT_AZURE_VM;
+			this.migrationStateModel._migrationDbs = this.migrationStateModel._vmDbs;
+		}
+		this.migrationStateModel.refreshDatabaseBackupPage = true;
+		this.populateResourceInstanceDropdown();
+	}
+
+	private async constructDetails(): Promise<void> {
+		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+		this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
+		await this.migrationStateModel.getServerAssessments();
+		if (this.migrationStateModel._assessmentResults) {
+			this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults.databaseAssessments.length);
+		}
+		this.refreshCardText();
+	}
+
+	private createAzureSubscriptionText(view: azdata.ModelView): azdata.TextComponent {
+		const component = view.modelBuilder.text().withProps({
 			CSSStyles: {
 				'font-size': '13px',
 				'line-height': '18px'
 			}
-		});
+		}).component();
 
-		return {
-			title: '',
-			component: component.component(),
-		};
+		return component;
 	}
 
 	private async populateSubscriptionDropdown(): Promise<void> {
@@ -262,7 +281,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private async populateResourceInstanceDropdown(): Promise<void> {
 		this._resourceDropdown.loading = true;
 		try {
-			if (this._rbg.selectedCardId === 'AzureSQLVM') {
+			if (this._rbg.selectedCardId === MigrationTargetType.SQLVM) {
 				this._resourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
 				this._resourceDropdown.values = await this.migrationStateModel.getSqlVirtualMachineValues(this.migrationStateModel._targetSubscription);
 
@@ -277,12 +296,17 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 	}
 
-	private eventListener: vscode.Disposable | undefined;
-	public async onPageEnter(): Promise<void> {
-		this.eventListener = this.migrationStateModel.stateChangeEvent(async (e) => this.onStateChangeEvent(e));
-		this.populateSubscriptionDropdown();
-		this.constructDetails();
 
+	public async onPageEnter(): Promise<void> {
+		try {
+			this.migrationStateModel.getServerAssessments().then((result) => {
+				this.constructDetails();
+			});
+		} catch (e) {
+			console.log(e);
+		}
+
+		this.populateSubscriptionDropdown();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			const errors: string[] = [];
 			this.wizard.message = {
@@ -300,8 +324,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
 			}
 			const resourceDropdownValue = (<azdata.CategoryValue>this._resourceDropdown.value).displayName;
-			if (resourceDropdownValue === constants.NO_MANAGED_INSTANCE_FOUND || resourceDropdownValue === constants.NO_VIRTUAL_MACHINE_FOUND) {
-				errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
+			if (resourceDropdownValue === constants.NO_MANAGED_INSTANCE_FOUND) {
+				errors.push(constants.NO_MANAGED_INSTANCE_FOUND);
+			}
+			else if (resourceDropdownValue === constants.NO_VIRTUAL_MACHINE_FOUND) {
+				errors.push(constants.NO_VIRTUAL_MACHINE_FOUND);
 			}
 
 			if (errors.length > 0) {
@@ -327,23 +354,53 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
-		switch (e.newState) {
-
-		}
 	}
 
-	public refreshDatabaseCount(count: number): void {
+	public refreshDatabaseCount(selectedDbs: string[]): void {
+		this.migrationStateModel._migrationDbs = selectedDbs;
+		this.refreshCardText();
+	}
+
+	public refreshCardText(): void {
 		this.wizard.message = {
 			text: '',
 			level: azdata.window.MessageLevel.Error
 		};
-		const textValue: string = `${count} databases will be migrated`;
-		this._rbg.cards[0].descriptions[1].textValue = textValue;
-		this._rbg.cards[1].descriptions[1].textValue = textValue;
 
-		this._rbg.updateProperties({
-			cards: this._rbg.cards
-		});
+		if (this._rbg.selectedCardId === MigrationTargetType.SQLMI) {
+			this.migrationStateModel._migrationDbs = this.migrationStateModel._miDbs;
+		} else {
+			this.migrationStateModel._migrationDbs = this.migrationStateModel._vmDbs;
+		}
+
+
+		if (this.migrationStateModel._assessmentResults) {
+			const dbCount = this.migrationStateModel._assessmentResults.databaseAssessments.length;
+
+			const dbWithIssuesCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter(db => db.issues.length > 0).length;
+			const miCardText = `${dbWithIssuesCount} out of ${dbCount} databases can be migrated (${this.migrationStateModel._miDbs.length} selected)`;
+			this._rbg.cards[0].descriptions[1].textValue = miCardText;
+
+			const vmCardText = `${dbCount} out of ${dbCount} databases can be migrated (${this.migrationStateModel._vmDbs.length} selected)`;
+			this._rbg.cards[1].descriptions[1].textValue = vmCardText;
+
+			this._rbg.updateProperties({
+				cards: this._rbg.cards
+			});
+		} else {
+
+			const miCardText = `${this.migrationStateModel._miDbs.length} selected`;
+			this._rbg.cards[0].descriptions[1].textValue = miCardText;
+
+			const vmCardText = `${this.migrationStateModel._vmDbs.length} selected`;
+			this._rbg.cards[1].descriptions[1].textValue = vmCardText;
+
+			this._rbg.updateProperties({
+				cards: this._rbg.cards
+			});
+		}
+
 	}
-
 }
+
+

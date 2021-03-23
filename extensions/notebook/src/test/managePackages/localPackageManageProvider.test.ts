@@ -14,7 +14,7 @@ import { IPyPiClient, PyPiClient } from '../../jupyter/pypiClient';
 
 interface TestContext {
 	serverInstallation: IJupyterServerInstallation;
-	piPyClient: IPyPiClient;
+	pyPiClient: IPyPiClient;
 }
 
 describe('Manage Package Providers', () => {
@@ -29,7 +29,7 @@ describe('Manage Package Providers', () => {
 	it('Pip should return valid package target', async function (): Promise<void> {
 		let testContext = createContext();
 		let serverInstallation = createJupyterServerInstallation(testContext);
-		let client = createPipyClient(testContext);
+		let client = createPypiClient(testContext);
 		let provider = new LocalPipPackageManageProvider(serverInstallation.object, client.object);
 		should.deepEqual(provider.packageTarget, { location: constants.localhostName, packageType: constants.PythonPkgType.Pip });
 	});
@@ -46,7 +46,7 @@ describe('Manage Package Providers', () => {
 			return Promise.resolve(packages);
 		};
 		let serverInstallation = createJupyterServerInstallation(testContext);
-		let client = createPipyClient(testContext);
+		let client = createPypiClient(testContext);
 		let provider = new LocalPipPackageManageProvider(serverInstallation.object, client.object);
 
 		should.deepEqual(await provider.listPackages(), packages);
@@ -79,7 +79,7 @@ describe('Manage Package Providers', () => {
 		];
 		let testContext = createContext();
 		let serverInstallation = createJupyterServerInstallation(testContext);
-		let client = createPipyClient(testContext);
+		let client = createPypiClient(testContext);
 		let provider = new LocalPipPackageManageProvider(serverInstallation.object, client.object);
 
 		await provider.installPackages(packages, true);
@@ -110,7 +110,7 @@ describe('Manage Package Providers', () => {
 		];
 		let testContext = createContext();
 		let serverInstallation = createJupyterServerInstallation(testContext);
-		let client = createPipyClient(testContext);
+		let client = createPypiClient(testContext);
 		let provider = new LocalPipPackageManageProvider(serverInstallation.object, client.object);
 
 		await provider.uninstallPackages(packages);
@@ -143,7 +143,7 @@ describe('Manage Package Providers', () => {
 	it('Pip canUseProvider should return true', async function (): Promise<void> {
 		let testContext = createContext();
 		let serverInstallation = createJupyterServerInstallation(testContext);
-		let client = createPipyClient(testContext);
+		let client = createPypiClient(testContext);
 		let provider = new LocalPipPackageManageProvider(serverInstallation.object, client.object);
 
 		should.equal(await provider.canUseProvider(), true);
@@ -151,11 +151,11 @@ describe('Manage Package Providers', () => {
 
 	it('Pip getPackageOverview should return package info successfully', async function (): Promise<void> {
 		let testContext = createContext();
-		testContext.piPyClient.fetchPypiPackage = (packageName) => {
+		testContext.pyPiClient.fetchPypiPackage = (packageName) => {
 			return Promise.resolve(`{"info":{"summary":"package summary"}, "releases":{"0.0.1":[{"comment_text":""}], "0.0.2":[{"comment_text":""}]}}`);
 		};
 		let serverInstallation = createJupyterServerInstallation(testContext);
-		let client = createPipyClient(testContext);
+		let client = createPypiClient(testContext);
 		let provider = new LocalPipPackageManageProvider(serverInstallation.object, client.object);
 
 		await should(provider.getPackageOverview('name')).resolvedWith({
@@ -215,9 +215,10 @@ describe('Manage Package Providers', () => {
 				getCondaExePath: () => { return ''; },
 				pythonExecutable:  '',
 				pythonInstallationPath: '',
-				usingConda: false
+				usingConda: false,
+				installedPythonVersion: '',
 			},
-			piPyClient: {
+			pyPiClient: {
 				fetchPypiPackage: (packageName) => { return Promise.resolve(); }
 			}
 		};
@@ -236,10 +237,10 @@ describe('Manage Package Providers', () => {
 		return mockInstance;
 	}
 
-	function createPipyClient(testContext: TestContext): TypeMoq.IMock<IPyPiClient> {
+	function createPypiClient(testContext: TestContext): TypeMoq.IMock<IPyPiClient> {
 		let mockInstance = TypeMoq.Mock.ofType(PyPiClient);
 		mockInstance.setup(x => x.fetchPypiPackage(TypeMoq.It.isAny())).returns((packageName) =>
-			testContext.piPyClient.fetchPypiPackage(packageName));
+			testContext.pyPiClient.fetchPypiPackage(packageName));
 		return mockInstance;
 	}
 });

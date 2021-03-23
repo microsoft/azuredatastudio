@@ -153,7 +153,7 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 	public getItemOrder(item: DivItem): number {
 		return item.config ? item.config.order : 0;
 	}
-	public getItemStyles(item: DivItem): { [key: string]: string } {
+	public getItemStyles(item: DivItem): azdata.CssStyles {
 		return item.config && item.config.CSSStyles ? item.config.CSSStyles : {};
 	}
 

@@ -22,7 +22,7 @@ export class ControllerDashboard extends Dashboard {
 	}
 
 	protected async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {
-		const overviewPage = new ControllerDashboardOverviewPage(modelView, this._controllerModel);
+		const overviewPage = new ControllerDashboardOverviewPage(modelView, this.dashboard, this._controllerModel);
 		return [
 			overviewPage.tab
 		];
