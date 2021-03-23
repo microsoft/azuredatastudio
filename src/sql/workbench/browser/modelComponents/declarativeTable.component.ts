@@ -245,9 +245,6 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	private static ACCEPTABLE_VALUES = new Set<string>(['number', 'string', 'boolean']);
 	public setProperties(properties: azdata.DeclarativeTableProperties): void {
-		if (properties.dataValues || properties.data) {
-			this._selectedRow = -1;
-		}
 		const basicData: any[][] = properties.data ?? [];
 		const complexData: azdata.DeclarativeTableCellValue[][] = properties.dataValues ?? [];
 		let finalData: azdata.DeclarativeTableCellValue[][];
@@ -284,6 +281,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		if (isDataPropertyChanged) {
 			this.clearContainer();
 			this._data = finalData;
+			this._selectedRow = -1;
 		}
 		super.setProperties(properties);
 	}
