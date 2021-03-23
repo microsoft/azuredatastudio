@@ -27,7 +27,7 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimemodel';
 import { GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
 import { GridTableBase } from 'sql/workbench/contrib/query/browser/gridPanel';
-import { getErrorMessage } from 'vs/base/common/errors';
+import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { ISerializationService, SerializeDataParams } from 'sql/platform/serialization/common/serializationService';
 import { SaveResultAction, IGridActionContext } from 'sql/workbench/contrib/query/browser/actions';
 import { SaveFormat, ResultSerializer, SaveResultsResponse } from 'sql/workbench/services/query/common/resultSerializer';
@@ -72,7 +72,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	@Input() set bundleOptions(value: MimeModel.IOptions) {
 		this._bundleOptions = value;
 		if (this._initialized) {
-			this.renderGrid();
+			this.renderGrid().catch(onUnexpectedError);
 		}
 	}
 
@@ -85,7 +85,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	@Input() set cellModel(value: ICellModel) {
 		this._cellModel = value;
 		if (this._initialized) {
-			this.renderGrid();
+			this.renderGrid().catch(onUnexpectedError);
 		}
 	}
 
