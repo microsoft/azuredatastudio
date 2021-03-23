@@ -29,9 +29,10 @@ export const SKU_RECOMMENDATION_SOME_SUCCESSFUL = (migratableCount: number, data
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose a target Azure SQL");
 
 export const SKU_RECOMMENDATION_NONE_SUCCESSFUL = localize('sql.migration.sku.none', "Based on the results of our source configuration scans, none of your databases can be migrated to Azure SQL.");
-export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure Managed Instance (Microsoft managed)");
-export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "Azure SQL Virtual Machine (Customer managed)'");
-
+export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure Managed Instance (PaaS)");
+export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "Azure SQL Virtual Machine (IaaS)");
+export const SELECT_AZURE_MI = localize('sql.migration.select.azure.mi', "Select an Azure subscription and an Azure SQL Managed Instance for your target.");
+export const SELECT_AZURE_VM = localize('sql.migration.select.azure.vm', "Select an Azure subscription and an Azure SQL Virtual Machine for your target.");
 export const SUBSCRIPTION_SELECTION_PAGE_TITLE = localize('sql.migration.wizard.subscription.title', "Azure Subscription Selection");
 export const SUBSCRIPTION_SELECTION_AZURE_ACCOUNT_TITLE = localize('sql.migration.wizard.subscription.azure.account.title', "Azure Account");
 export const SUBSCRIPTION_SELECTION_AZURE_SUBSCRIPTION_TITLE = localize('sql.migration.wizard.subscription.azure.subscription.title', "Azure Subscription");
@@ -40,6 +41,7 @@ export const SUBSCRIPTION_SELECTION_AZURE_PRODUCT_TITLE = localize('sql.migratio
 export const ASSESSMENT_COMPLETED = (serverName: string): string => {
 	return localize('sql.migration.generic.congratulations', "We have completed the assessment of your SQL Server Instance '{0}'.", serverName);
 };
+export const ASSESSMENT_TILE = localize('sql.migration.assessment', "Assessment Dialog");
 
 // Accounts page
 export const ACCOUNTS_SELECTION_PAGE_TITLE = localize('sql.migration.wizard.account.title', "Azure Account");
@@ -264,3 +266,11 @@ export const TARGET_AZURE_SQL_INSTANCE_NAME = localize('sql.migration.target.azu
 export const CUTOVER_TYPE = localize('sql.migration.cutover.type', "Cutover type");
 export const START_TIME = localize('sql.migration.start.time', "Start Time");
 export const FINISH_TIME = localize('sql.migration.finish.time', "Finish Time");
+
+//Source Credentials page.
+export const SOURCE_CONFIGURATION = localize('sql.migration.source.configuration', "Source Configuration");
+export const SOURCE_CREDENTIALS = localize('sql.migration.source.credentials', "Source Credentials");
+export function ENTER_YOUR_SQL_CREDS(sqlServerName: string) {
+	return localize('sql.migration.enter.your.sql.creds', "Enter the credentials for source SQL server instance ‘{0}’", sqlServerName);
+}
+export const USERNAME = localize('sql.migration.username', "Username");

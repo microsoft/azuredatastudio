@@ -20,6 +20,8 @@ export class MigrationCutoverDialogModel {
 			this._migration.subscription,
 			this._migration.migrationContext
 		));
+		// Logging status to help debugging.
+		console.log(this.migrationStatus);
 	}
 
 	public async startCutover(): Promise<DatabaseMigration | undefined> {

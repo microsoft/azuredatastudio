@@ -16,6 +16,16 @@ export class GridPanelState {
 	}
 }
 
+export interface GridColumnFilter {
+	field: string;
+	filterValues: string[];
+}
+
+export interface GridSortState {
+	field: string;
+	sortAsc: boolean;
+}
+
 export class GridTableState extends Disposable {
 
 	private _maximized?: boolean;
@@ -27,6 +37,9 @@ export class GridTableState extends Disposable {
 	public onCanBeMaximizedChange: Event<boolean> = this._onCanBeMaximizedChange.event;
 
 	private _canBeMaximized?: boolean;
+
+	private _columnFilters: GridColumnFilter[] | undefined;
+	private _sortState: GridSortState | undefined;
 
 	/* The top row of the current scroll */
 	public scrollPositionY = 0;
@@ -61,5 +74,21 @@ export class GridTableState extends Disposable {
 		}
 		this._maximized = val;
 		this._onMaximizedChange.fire(val);
+	}
+
+	public get columnFilters(): GridColumnFilter[] | undefined {
+		return this._columnFilters;
+	}
+
+	public set columnFilters(value: GridColumnFilter[] | undefined) {
+		this._columnFilters = value;
+	}
+
+	public get sortState(): GridSortState | undefined {
+		return this._sortState;
+	}
+
+	public set sortState(value: GridSortState | undefined) {
+		this._sortState = value;
 	}
 }
