@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
+
 export interface IRowNumberColumnOptions {
 	numberOfRows: number;
 	cssClass?: string;
@@ -45,7 +47,7 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 		}
 	}
 
-	public getColumnDefinition(): Slick.Column<T> {
+	public getColumnDefinition(): FilterableColumn<T> {
 		// that smallest we can make it is 22 due to padding and margins in the cells
 		return {
 			id: 'rowNumber',
@@ -56,6 +58,7 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 			cssClass: this.options.cssClass,
 			focusable: false,
 			selectable: false,
+			filterable: false,
 			formatter: r => this.formatter(r)
 		};
 	}
