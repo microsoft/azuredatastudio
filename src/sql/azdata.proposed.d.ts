@@ -315,8 +315,6 @@ declare module 'azdata' {
 		linkCodiconStyles?: CssStyles;
 	}
 
-	export type CssStyles = { [key: string]: string | number };
-
 	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
 		cards: RadioCard[];
 		cardWidth: string;
@@ -525,6 +523,7 @@ declare module 'azdata' {
 		export interface ModelViewDashboard {
 			registerTabs(handler: (view: ModelView) => Thenable<(DashboardTab | DashboardTabGroup)[]>): void;
 			open(): Thenable<void>;
+			close(): Thenable<void>;
 			updateTabs(tabs: (DashboardTab | DashboardTabGroup)[]): void;
 			selectTab(id: string): void;
 		}
@@ -584,8 +583,6 @@ declare module 'azdata' {
 			pageName?: string;
 		}
 
-		export type DialogWidth = 'narrow' | 'medium' | 'wide' | number | string;
-
 		/**
 		 * These dialog styles affect how the dialog displays in the application.
 		 * normal: Positioned top and centered.
@@ -620,7 +617,6 @@ declare module 'azdata' {
 		 * @param dialogProperties Positional data prior to opening of dialog, default is undefined.
 		 */
 		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogProperties?: IDialogProperties): Dialog;
-
 
 		export interface Button {
 			/**

@@ -36,8 +36,8 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 	protected readonly _azdataApi: azdataExt.IExtension;
 
-	constructor(protected modelView: azdata.ModelView, protected _postgresModel: PostgresModel) {
-		super(modelView);
+	constructor(protected modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, protected _postgresModel: PostgresModel) {
+		super(modelView, dashboard);
 
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
@@ -153,7 +153,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 								});
 								const session = await this._postgresModel.controllerModel.acquireAzdataSession();
 								try {
-									this.saveParameterEdits(engineSettings.toString(), session);
+									await this.saveParameterEdits(engineSettings.toString(), session);
 								} finally {
 									session.dispose();
 								}
@@ -163,6 +163,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 								this.saveButton!.enabled = true;
 								throw err;
 							}
+
 							await this._postgresModel.refresh();
 						}
 					);
@@ -221,9 +222,13 @@ export abstract class PostgresParametersPage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
-							const session = await this._postgresModel.controllerModel.acquireAzdataSession();
 							try {
-								this.resetAllParameters(session);
+								const session = await this._postgresModel.controllerModel.acquireAzdataSession();
+								try {
+									await this.resetAllParameters(session);
+								} finally {
+									session.dispose();
+								}
 							} catch (err) {
 								// If an error occurs while resetting the instance then re-enable the reset button since
 								// the edit wasn't successfully applied
@@ -233,12 +238,9 @@ export abstract class PostgresParametersPage extends DashboardPage {
 								}
 								this.resetAllButton!.enabled = true;
 								throw err;
-							} finally {
-								session?.dispose();
 							}
 							await this._postgresModel.refresh();
 						}
-
 					);
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
@@ -518,7 +520,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 						async (_progress, _token): Promise<void> => {
 							const session = await this._postgresModel.controllerModel.acquireAzdataSession();
 							try {
-								this.resetParameter(engineSetting.parameterName!, session);
+								await this.resetParameter(engineSetting.parameterName!, session);
 							} finally {
 								session.dispose();
 							}
@@ -543,11 +545,11 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		return parameter;
 	}
 
-	protected abstract saveParameterEdits(engineSettings: string, session: azdataExt.AzdataSession): void;
+	protected abstract saveParameterEdits(engineSettings: string, session: azdataExt.AzdataSession): Promise<void>;
 
-	protected abstract resetAllParameters(session: azdataExt.AzdataSession): void;
+	protected abstract resetAllParameters(session: azdataExt.AzdataSession): Promise<void>;
 
-	protected abstract resetParameter(parameterName: string, session: azdataExt.AzdataSession): void;
+	protected abstract resetParameter(parameterName: string, session: azdataExt.AzdataSession): Promise<void>;
 
 	protected abstract refreshParametersTable(): void;
 

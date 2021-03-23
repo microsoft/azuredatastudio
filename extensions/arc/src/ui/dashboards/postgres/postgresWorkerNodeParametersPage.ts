@@ -12,8 +12,8 @@ import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 
-	constructor(protected modelView: azdata.ModelView, _postgresModel: PostgresModel) {
-		super(modelView, _postgresModel);
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, postgresModel: PostgresModel) {
+		super(modelView, dashboard, postgresModel);
 	}
 
 	protected get title(): string {
@@ -41,7 +41,6 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 			{ engineSettings: engineSettings },
 			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 			session);
-
 	}
 
 	protected async resetAllParameters(session: azdataExt.AzdataSession): Promise<void> {
@@ -50,7 +49,6 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 			{ engineSettings: `''`, replaceEngineSettings: true },
 			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 			session);
-
 	}
 
 	protected async resetParameter(parameterName: string, session: azdataExt.AzdataSession): Promise<void> {
@@ -59,7 +57,6 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 			{ engineSettings: parameterName + '=' },
 			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 			session);
-
 	}
 
 	protected refreshParametersTable(): void {

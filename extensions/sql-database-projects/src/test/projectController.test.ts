@@ -268,8 +268,8 @@ describe('ProjectsController', function (): void {
 				// Confirm result
 				should(proj.files.some(x => x.relativePath === 'UpperFolder')).equal(false, 'UpperFolder should not be part of proj file any more');
 				should(await exists(scriptEntry.fsUri.fsPath)).equal(false, 'script is supposed to be deleted from disk');
-				should(await exists(lowerFolder.uri.fsPath)).equal(false, 'LowerFolder is supposed to be deleted from disk');
-				should(await exists(upperFolder.uri.fsPath)).equal(false, 'UpperFolder is supposed to be deleted from disk');
+				should(await exists(lowerFolder.projectUri.fsPath)).equal(false, 'LowerFolder is supposed to be deleted from disk');
+				should(await exists(upperFolder.projectUri.fsPath)).equal(false, 'UpperFolder is supposed to be deleted from disk');
 			});
 
 			it('Should reload correctly after changing sqlproj file', async function (): Promise<void> {

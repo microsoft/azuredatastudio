@@ -12,8 +12,8 @@ import { PostgresModel } from '../../../models/postgresModel';
 import { ControllerModel } from '../../../models/controllerModel';
 
 export class PostgresDiagnoseAndSolveProblemsPage extends DashboardPage {
-	constructor(protected modelView: azdata.ModelView, private _context: vscode.ExtensionContext, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
-		super(modelView);
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _context: vscode.ExtensionContext, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
+		super(modelView, dashboard);
 	}
 
 	protected get title(): string {
