@@ -36,7 +36,7 @@ export interface IView {
 	readonly element: HTMLElement;
 	readonly minimumSize: number;
 	readonly maximumSize: number;
-	onDidInsert?(): void;
+	onDidInsert?(): Promise<void>;
 	onDidRemove?(): void;
 }
 
@@ -276,10 +276,10 @@ export class ScrollableView extends Disposable {
 		this.updateItemInDOM(item, index, false);
 
 		item.onDidRemoveDisposable?.dispose();
-		item.onDidInsertDisposable = DOM.scheduleAtNextAnimationFrame(() => {
+		item.onDidInsertDisposable = DOM.scheduleAtNextAnimationFrame(async () => {
 			// we don't trust the items to be performant so don't interrupt our operations
 			if (item.view.onDidInsert) {
-				item.view.onDidInsert();
+				await item.view.onDidInsert();
 			}
 			item.view.layout(item.size, this.width);
 		});

@@ -43,6 +43,7 @@ import { URI } from 'vs/base/common/uri';
 import { assign } from 'vs/base/common/objects';
 import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
 import { equals } from 'vs/base/common/arrays';
+import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 @Component({
 	selector: GridOutputComponent.SELECTOR,
 	template: `<div #output class="notebook-cellTable"></div>`
@@ -96,7 +97,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		this._cellOutput = value;
 	}
 
-	ngOnInit() {
+	async ngOnInit() {
 		if (this.cellModel) {
 			let outputId: QueryResultId = this.cellModel.getOutputId(this._cellOutput);
 			if (outputId) {
@@ -109,10 +110,10 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 				}
 			}));
 		}
-		this.renderGrid();
+		await this.renderGrid();
 	}
 
-	renderGrid(): void {
+	async renderGrid(): Promise<void> {
 		if (!this._bundleOptions || !this._cellModel || !this.mimeType) {
 			return;
 		}
@@ -124,7 +125,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			let outputElement = <HTMLElement>this.output.nativeElement;
 			outputElement.appendChild(this._table.element);
 			this._register(attachTableStyler(this._table, this.themeService));
-			this._table.onDidInsert();
+			await this._table.onDidInsert();
 			this.layout();
 			this._initialized = true;
 		}
@@ -200,9 +201,13 @@ class DataResourceTable extends GridTableBase<any> {
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IQueryModelService queryModelService: IQueryModelService
+		@IQueryModelService queryModelService: IQueryModelService,
+		@IThemeService themeService: IThemeService
 	) {
-		super(state, createResultSet(source), { actionOrientation: ActionsOrientation.HORIZONTAL }, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService);
+		super(state, createResultSet(source), {
+			actionOrientation: ActionsOrientation.HORIZONTAL,
+			inMemoryDataProcessing: true
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel);
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 
@@ -352,13 +357,13 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		return Promise.resolve(resultSubset);
 	}
 
-	async copyResults(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
-		return this.copyResultsAsync(selection, includeHeaders);
+	async copyResults(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
+		return this.copyResultsAsync(selection, includeHeaders, tableView);
 	}
 
-	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
+	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
 		try {
-			let results = await getResultsString(this, selection, includeHeaders);
+			let results = await getResultsString(this, selection, includeHeaders, tableView);
 			this._clipboardService.writeText(results);
 		} catch (error) {
 			this._notificationService.error(localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
