@@ -17,7 +17,8 @@ const enum SettingIds {
 	sql = 'sql',
 	ossrdbms = 'ossrdbms',
 	vault = 'vault',
-	ado = 'ado'
+	ado = 'ado',
+	ala = 'ala'
 }
 
 const publicAzureSettings: ProviderSettings = {
@@ -68,6 +69,11 @@ const publicAzureSettings: ProviderSettings = {
 				endpoint: '499b84ac-1321-427f-aa17-267ca6975798',
 				azureResourceId: AzureResource.AzureDevOps,
 			},
+			azureLogAnalyticsResource: {
+				id: SettingIds.ala,
+				endpoint: 'https://api.loganalytics.io',
+				azureResourceId: AzureResource.AzureLogAnalytics,
+			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
@@ -116,6 +122,11 @@ const usGovAzureSettings: ProviderSettings = {
 				id: SettingIds.vault,
 				endpoint: 'https://vault.usgovcloudapi.net',
 				azureResourceId: AzureResource.AzureKeyVault
+			},
+			azureLogAnalyticsResource: {
+				id: SettingIds.ala,
+				endpoint: 'https://api.loganalytics.io',
+				azureResourceId: AzureResource.AzureLogAnalytics,
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [

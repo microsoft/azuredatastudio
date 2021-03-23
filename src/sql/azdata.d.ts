@@ -2292,7 +2292,11 @@ declare module 'azdata' {
 		/**
 		 * Microsoft Graph
 		 */
-		MsGraph = 7
+		MsGraph = 7,
+		/**
+		 * Azure Log Analytics
+		 */
+		AzureLogAnalytics = 8
 	}
 
 	export interface DidChangeAccountsParams {
