@@ -274,3 +274,27 @@ export function ENTER_YOUR_SQL_CREDS(sqlServerName: string) {
 	return localize('sql.migration.enter.your.sql.creds', "Enter the credentials for source SQL server instance ‘{0}’", sqlServerName);
 }
 export const USERNAME = localize('sql.migration.username', "Username");
+
+
+
+//Assessment Dialog
+export const DATABASES = localize('sql.migration.databases', "Databases");
+export const ISSUES = localize('sql.migration.issues', "Issues");
+export const SEARCH = localize('sql.migration.search', "Search");
+export const INSTANCE = localize('sql.migration.instance', "Instance");
+export const WARNINGS = localize('sql.migration.warnings', "Warnings");
+export const IMPACTED_OBJECTS = localize('sql.migration.impacted.objects', "Impacted Objects");
+export const OBJECT_DETAILS = localize('sql.migration.object.details', "Object details");
+export const TYPES_LABEL = localize('sql.migration.type.label', "Type:");
+export const NAMES_LABEL = localize('sql.migration.name.label', "Names:");
+export const DESCRIPTION = localize('sql.migration.description', "Description");
+export const RECOMMENDATION = localize('sql.migration.recommendation', "Recommendation");
+export const MORE_INFO = localize('sql.migration.more.info', "More Info");
+export const TARGET_PLATFORM = localize('sql.migration.target.platform', "Target Platform");
+export const WARNINGS_DETAILS = localize('sql.migration.warnings.details', "Warnings Details");
+export function IMPACT_OBJECT_TYPE(objectType: string): string {
+	return localize('sql.migration.impact.object.type', "Type: {0}", objectType);
+}
+export function IMPACT_OBJECT_NAME(objectName: string): string {
+	return localize('sql.migration.impact.object.name', "Name: {0}", objectName);
+}
