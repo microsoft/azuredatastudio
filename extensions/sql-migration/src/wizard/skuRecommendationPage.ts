@@ -78,7 +78,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				e.selected !== constants.NO_MANAGED_INSTANCE_FOUND &&
 				e.selected !== constants.NO_VIRTUAL_MACHINE_FOUND) {
 				this.migrationStateModel._sqlMigrationServices = undefined!;
-				if (this._rbg.selectedCardId === 'AzureSQLVM') {
+				if (this._rbg.selectedCardId === MigrationTargetType.SQLVM) {
 					this.migrationStateModel._targetServerInstance = this.migrationStateModel.getVirtualMachine(e.index);
 				} else {
 					this.migrationStateModel._targetServerInstance = this.migrationStateModel.getManagedInstance(e.index);
@@ -171,7 +171,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					},
 				},
 				{
-					textValue: '',
+					textValue: '0 selected',
 					textStyles: {
 						'font-size': '13px',
 						'line-height': '18px'

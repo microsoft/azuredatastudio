@@ -42,6 +42,7 @@ export class SqlDatabaseTree {
 
 	private _activeIssues!: SqlMigrationAssessmentResultItem[];
 	private _selectedIssue!: SqlMigrationAssessmentResultItem;
+	private _selectedObject!: SqlMigrationImpactedObjectInfo;
 
 	constructor(
 		private _model: MigrationStateModel,
@@ -69,7 +70,7 @@ export class SqlDatabaseTree {
 		this._databaseTable = view.modelBuilder.declarativeTable().withProps(
 			{
 				selectEffect: true,
-				width: '350px',
+				width: 200,
 				CSSStyles: {
 					'table-layout': 'fixed'
 				},
@@ -77,7 +78,7 @@ export class SqlDatabaseTree {
 					{
 						displayName: '',
 						valueType: azdata.DeclarativeDataType.boolean,
-						width: '10%',
+						width: 20,
 						isReadOnly: false,
 						showCheckAll: true,
 						headerCssStyles: styleLeft,
@@ -86,18 +87,16 @@ export class SqlDatabaseTree {
 					{
 						displayName: 'Databases', // TODO localize
 						valueType: azdata.DeclarativeDataType.string,
-						width: '75%',
+						width: 100,
 						isReadOnly: true,
 						headerCssStyles: styleLeft
 					},
 					{
 						displayName: 'Issues', // Incidents
 						valueType: azdata.DeclarativeDataType.string,
-						width: '15%',
+						width: 30,
 						isReadOnly: true,
 						headerCssStyles: styleRight,
-						ariaLabel: 'Issue Count' // TODO localize
-
 					}
 				]
 			}
@@ -107,13 +106,17 @@ export class SqlDatabaseTree {
 			this._databaseTable.focus();
 			this._activeIssues = this._model._assessmentResults?.databaseAssessments[row].issues;
 			this._selectedIssue = this._model._assessmentResults?.databaseAssessments[row].issues[0];
+			this._dbName.value = <string>this._databaseTable.dataValues![row][1].value;
 			this.refreshResults();
 		});
 
 		const tableContainer = view.modelBuilder.divContainer().withItems([this._databaseTable]).withProps({
 			CSSStyles: {
+				'width': '200px',
 				'margin-left': '15px',
-			},
+				'margin-right': '5px',
+				'margin-bottom': '10px'
+			}
 		}).component();
 		return tableContainer;
 	}
@@ -121,16 +124,15 @@ export class SqlDatabaseTree {
 	private createSearchComponent(view: azdata.ModelView): azdata.DivContainer {
 		let resourceSearchBox = view.modelBuilder.inputBox().withProperties({
 			placeHolder: 'Search',
-			ariaLabel: 'searchbar'
 		}).component();
 
 		const searchContainer = view.modelBuilder.divContainer().withItems([resourceSearchBox]).withProps({
 			CSSStyles: {
 				'width': '200px',
 				'margin-left': '15px',
-				'margin-right': '5px'
-
-			},
+				'margin-right': '5px',
+				'margin-bottom': '10px'
+			}
 		}).component();
 
 		return searchContainer;
@@ -140,12 +142,12 @@ export class SqlDatabaseTree {
 		this._instanceTable = view.modelBuilder.declarativeTable().withProps(
 			{
 				selectEffect: true,
-				width: '100%',
+				width: 200,
 				columns: [
 					{
 						displayName: 'Instance',
 						valueType: azdata.DeclarativeDataType.string,
-						width: 5,
+						width: 150,
 						isReadOnly: true,
 						headerCssStyles: styleLeft,
 						ariaLabel: 'Database Migration Check' // TODO localize
@@ -153,7 +155,7 @@ export class SqlDatabaseTree {
 					{
 						displayName: 'Warnings', // TODO localize
 						valueType: azdata.DeclarativeDataType.string,
-						width: 1,
+						width: 50,
 						isReadOnly: true,
 						headerCssStyles: styleRight
 					}
@@ -163,13 +165,17 @@ export class SqlDatabaseTree {
 
 		const instanceContainer = view.modelBuilder.divContainer().withItems([this._instanceTable]).withProps({
 			CSSStyles: {
+				'width': '200px',
 				'margin-left': '15px',
-			},
+				'margin-right': '5px',
+				'margin-bottom': '10px'
+			}
 		}).component();
 
 		this._instanceTable.onRowSelected((e) => {
 			this._activeIssues = this._model._assessmentResults?.issues;
 			this._selectedIssue = this._model._assessmentResults?.issues[0];
+			this._dbName.value = <string>this._instanceTable.dataValues![0][0].value;
 			this.refreshResults();
 		});
 
@@ -319,9 +325,8 @@ export class SqlDatabaseTree {
 
 
 		this._impactedObjectsTable.onRowSelected(({ row }) => {
-			this._objectDetailsType.value = `Type: ${this._impactedObjects[row].objectType!}`;
-			this._objectDetailsName.value = `Name: ${this._impactedObjects[row].name}`;
-			this._objectDetailsSample.value = this._impactedObjects[row].impactDetail;
+			this._selectedObject = this._impactedObjects[row];
+			this.refreshImpactedObject();
 		});
 
 
@@ -425,7 +430,8 @@ export class SqlDatabaseTree {
 		this._assessmentTitle = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: '',
 			CSSStyles: {
-				'font-size': '14px',
+				'font-size': '15px',
+				'line-size': '19px',
 				'padding-bottom': '15px',
 				'border-bottom': 'solid 1px'
 			}
@@ -438,7 +444,8 @@ export class SqlDatabaseTree {
 		const title = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: 'Target Platform',
 			CSSStyles: {
-				'font-size': '14px',
+				'font-size': '13px',
+				'line-size': '19px',
 				'margin-block-start': '0px',
 				'margin-block-end': '2px'
 			}
@@ -540,26 +547,7 @@ export class SqlDatabaseTree {
 
 		this._assessmentResultsTable.onRowSelected(({ row }) => {
 			this._selectedIssue = this._activeIssues[row];
-			this._assessmentTitle.value = this._selectedIssue.checkId;
-			this._descriptionText.value = this._selectedIssue.description;
-			this._moreInfo.url = this._selectedIssue.helpLink;
-			this._moreInfo.label = this._selectedIssue.helpLink;
-			this._impactedObjects = this._selectedIssue.impactedObjects;
-			this._impactedObjectsTable.dataValues = this._selectedIssue.impactedObjects.map((object) => {
-				return [
-					{
-						value: object.objectType
-					},
-					{
-						value: object.name
-					}
-				];
-			});
-			if (this._impactedObjects.length > 0) {
-				this._objectDetailsName.value = this._impactedObjects[0].name;
-				this._objectDetailsType.value = this._impactedObjects[0].impactDetail;
-			}
-
+			this.refreshAssessmentDetails();
 		});
 
 		return this._assessmentResultsTable;
@@ -576,13 +564,63 @@ export class SqlDatabaseTree {
 	}
 
 	public refreshResults(): void {
-		this._assessmentResultsTable.dataValues = [
-			this._activeIssues.map((v) => {
-				return {
-					value: v.description
-				};
-			})
-		];
+		const assessmentResults: azdata.DeclarativeTableCellValue[][] = [];
+		this._activeIssues.forEach((v) => {
+			assessmentResults.push(
+				[
+					{
+						value: v.checkId
+					}
+				]
+			);
+		});
+		this._assessmentResultsTable.dataValues = assessmentResults;
+		this._selectedIssue = this._activeIssues[0];
+		this.refreshAssessmentDetails();
+	}
+
+	public refreshAssessmentDetails(): void {
+		if (this._selectedIssue) {
+			this._assessmentTitle.value = this._selectedIssue.checkId;
+			this._descriptionText.value = this._selectedIssue.description;
+			this._moreInfo.url = this._selectedIssue.helpLink;
+			this._moreInfo.label = this._selectedIssue.helpLink;
+			this._impactedObjects = this._selectedIssue.impactedObjects;
+			this._recommendationText.value = this._selectedIssue.message; // Expose correct property for recommendation.
+			this._impactedObjectsTable.dataValues = this._selectedIssue.impactedObjects.map((object) => {
+				return [
+					{
+						value: object.objectType
+					},
+					{
+						value: object.name
+					}
+				];
+			});
+			this._selectedObject = this._selectedIssue.impactedObjects[0];
+		}
+		else {
+			this._assessmentTitle.value = '';
+			this._descriptionText.value = '';
+			this._moreInfo.url = '';
+			this._moreInfo.label = '';
+			this._recommendationText.value = '';
+			this._impactedObjectsTable.dataValues = [];
+		}
+		this.refreshImpactedObject();
+	}
+
+	public refreshImpactedObject(): void {
+		if (this._selectedObject) {
+			this._objectDetailsType.value = `Type: ${this._selectedObject.objectType!}`;
+			this._objectDetailsName.value = `Name: ${this._selectedObject.name}`;
+			this._objectDetailsSample.value = this._selectedObject.impactDetail;
+		} else {
+			this._objectDetailsType.value = ``;
+			this._objectDetailsName.value = ``;
+			this._objectDetailsSample.value = '';
+		}
+
 	}
 
 	public async initialize(): Promise<void> {
@@ -656,6 +694,10 @@ export class SqlDatabaseTree {
 				);
 			});
 		}
+		this._dbName.value = serverName;
+		this._activeIssues = this._model._assessmentResults.issues;
+		this._selectedIssue = this._model._assessmentResults?.issues[0];
+		this.refreshResults();
 		this._instanceTable.dataValues = instanceTableValues;
 		this._databaseTable.dataValues = databaseTableValues;
 	}
