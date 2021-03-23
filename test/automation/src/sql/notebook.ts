@@ -217,4 +217,10 @@ export class NotebookView {
 		const textArea = `${NotebookView.inputBox} textarea`;
 		await this.code.waitForTypeInEditor(textArea, text);
 	}
+
+	async saveProvidedBook(): Promise<void> {
+		const providedBookView = '.tree-explorer-viewlet-tree-view';
+		const saveButton = `${providedBookView} action-item button select[title="Save Book"]`;
+		return this.code.waitAndClick(saveButton);
+	}
 }

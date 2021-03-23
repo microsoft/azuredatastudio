@@ -24,5 +24,12 @@ export function setup() {
 			const results = await app.workbench.sqlNotebook.view.searchInNotebook('hello');
 			assert(results.textContent !== '' && results.textContent.match(regexExpr));
 		});
+
+		it('Add SQL Server Guide to Notebook View', async function () {
+			const app = this.app as Application;
+			// Add sql server guide to Provided Books View
+			await app.workbench.quickaccess.runCommand('Jupyter Books: SQL Server 2019 Guide');
+			await app.workbench.sqlNotebook.view.saveProvidedBook();
+		});
 	});
 }
