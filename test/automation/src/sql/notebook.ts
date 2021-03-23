@@ -18,7 +18,7 @@ export class Notebook {
 
 	constructor(private code: Code, private quickAccess: QuickAccess, private quickInput: QuickInput, private editors: Editors) {
 		this.toolbar = new NotebookToolbar(code);
-		this.view = new NotebookView(code);
+		this.view = new NotebookView(code, quickAccess);
 	}
 
 	async openFile(fileName: string): Promise<void> {
@@ -201,14 +201,18 @@ export class NotebookView {
 	private static readonly inputBox = '.notebookExplorer-viewlet .search-widget .input-box';
 	private static actualResult = '.search-view .result-messages';
 
-	constructor(private code: Code) { }
+	constructor(private code: Code, private quickAccess: QuickAccess) { }
+
+	async focus(): Promise<void> {
+		return this.quickAccess.runCommand('Notebooks: Focus on Search Results View');
+	}
 
 	async searchInNotebook(expr: string): Promise<IElement> {
 		await this.waitForSetSearchValue(expr);
 		await this.code.dispatchKeybinding('enter');
 		let selector = `${NotebookView.actualResult} `;
 		if (expr) {
-			selector += '.message span';
+			selector += '.message';
 		}
 		return await this.code.waitForElement(selector, undefined);
 	}
