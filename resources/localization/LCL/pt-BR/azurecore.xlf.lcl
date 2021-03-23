@@ -1018,7 +1018,7 @@
         <Str Cat="Text">
           <Val><![CDATA[SQL managed instance]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Instância gerenciada do SQL]]></Val>
+            <Val><![CDATA[Instância gerenciada de SQL]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
