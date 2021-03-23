@@ -525,9 +525,11 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			};
 			this.table.rerenderGrid();
 		}));
-		this.filterPlugin = new HeaderFilter();
-		attachButtonStyler(this.filterPlugin, this.themeService);
-		this.table.registerPlugin(this.filterPlugin);
+		if (this.configurationService.getValue<boolean>('workbench')['enablePreviewFeatures']) {
+			this.filterPlugin = new HeaderFilter();
+			attachButtonStyler(this.filterPlugin, this.themeService);
+			this.table.registerPlugin(this.filterPlugin);
+		}
 		if (this.styles) {
 			this.table.style(this.styles);
 		}
@@ -684,7 +686,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	public updateResult(resultSet: ResultSetSummary) {
 		this._resultSet = resultSet;
 		if (this.table && this.visible) {
-			if (this.options.inMemoryDataProcessing && this.options.inMemoryDataCountThreshold < resultSet.rowCount) {
+			if (this.configurationService.getValue<boolean>('workbench')['enablePreviewFeatures'] && this.options.inMemoryDataProcessing && this.options.inMemoryDataCountThreshold < resultSet.rowCount) {
 				this.filterPlugin.enabled = false;
 			}
 			this.dataProvider.length = resultSet.rowCount;
