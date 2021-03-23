@@ -187,9 +187,9 @@ CommandsRegistry.registerCommand({
 					if (!jupyterServerRestarted) {
 						let jupyterNotebookManager: INotebookManager = model.notebookManagers.find(x => x.providerId === 'jupyter');
 						// Shutdown all current Jupyter sessions before stopping the server
-						await jupyterNotebookManager.sessionManager.shutdownAll().then(() =>
-							// Jupyter session manager needs to be disposed so that a new one is created with the new server info
-							jupyterNotebookManager.sessionManager.dispose());
+						await jupyterNotebookManager.sessionManager.shutdownAll();
+						// Jupyter session manager needs to be disposed so that a new one is created with the new server info
+						jupyterNotebookManager.sessionManager.dispose();
 						await jupyterNotebookManager.serverManager.stopServer();
 						let spec: nb.IKernelSpec = model.defaultKernel;
 						await jupyterNotebookManager.serverManager.startServer(spec);
