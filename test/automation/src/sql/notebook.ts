@@ -219,8 +219,9 @@ export class NotebookView {
 	}
 
 	async saveProvidedBook(): Promise<void> {
-		const providedBookView = '.tree-explorer-viewlet-tree-view';
-		const saveButton = `${providedBookView} action-item button select[title="Save Book"]`;
-		return this.code.waitAndClick(saveButton);
+		const providedBookView = '.split-view-view .tree-explorer-viewlet-tree-view';
+		const saveButton = `${providedBookView} .monaco-list .list_id_5 .monaco-icon-label-container .action-item .action-label .icon .menu-item-action-item-icon-5`;
+		await this.code.waitAndClick(saveButton);
+		await this.code.dispatchKeybinding('enter');
 	}
 }

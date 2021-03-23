@@ -28,8 +28,9 @@ export function setup() {
 		it('Add SQL Server Guide to Notebook View', async function () {
 			const app = this.app as Application;
 			// Add sql server guide to Provided Books View
-			await app.workbench.quickaccess.runCommand('Jupyter Books: SQL Server 2019 Guide');
+			await app.workbench.quickaccess.runCommand('Jupyter Books: Azure SQL Hybrid Cloud Toolkit');
 			await app.workbench.sqlNotebook.view.saveProvidedBook();
+			//const results = await app.workbench.sqlNotebook.view.searchInNotebook('log');
 		});
 	});
 }
