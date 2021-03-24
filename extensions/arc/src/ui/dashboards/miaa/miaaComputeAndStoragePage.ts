@@ -217,7 +217,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.memoryLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 2,
-			validationErrorMessage: loc.memoryLimitValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
@@ -235,7 +234,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.memoryRequestBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 2,
-			validationErrorMessage: loc.memoryRequestValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
@@ -320,7 +318,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
-		this.coresRequestBox!.validationErrorMessage = loc.validationMin(this.coresRequestBox!.min!);
 		this.coresRequestBox!.placeHolder = currentCPUSize;
 		this.coresRequestBox!.value = '';
 		this.saveArgs.coresRequest = undefined;
@@ -331,7 +328,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
-		this.coresLimitBox!.validationErrorMessage = loc.validationMin(this.coresLimitBox!.min!);
 		this.coresLimitBox!.placeHolder = currentCPUSize;
 		this.coresLimitBox!.value = '';
 		this.saveArgs.coresLimit = undefined;
