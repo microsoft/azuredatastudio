@@ -381,6 +381,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			this.collectChangedComponents(name);
 			return false;
 		} else if (component.value === currentValue) {
+			this.removeFromChangedComponents(name);
 			return false;
 		} else {
 			/* If a valid value has been entered into the input box, enable save and discard buttons
@@ -423,7 +424,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 							await this._postgresModel.refresh();
 						}
 					);
-
+					this.removeFromChangedComponents(engineSetting.parameterName!);
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
@@ -456,6 +457,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 						this.discardButton!.enabled = true;
 					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
 						this.parameterUpdates!.delete(engineSetting.parameterName!);
+						this.removeFromChangedComponents(engineSetting.parameterName!);
 					}
 				})
 			);
@@ -487,6 +489,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 						this.discardButton!.enabled = true;
 					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
 						this.parameterUpdates!.delete(engineSetting.parameterName!);
+						this.removeFromChangedComponents(engineSetting.parameterName!);
 					}
 				})
 			);
@@ -563,6 +566,13 @@ export abstract class PostgresParametersPage extends DashboardPage {
 	private collectChangedComponents(name: string): void {
 		if (!this.changedComponentValues.includes(name)) {
 			this.changedComponentValues.push(name);
+		}
+	}
+
+	private removeFromChangedComponents(name: string): void {
+		if (this.changedComponentValues.includes(name)) {
+			let index = this.changedComponentValues.indexOf(name);
+			this.changedComponentValues.splice(index, 1);
 		}
 	}
 
