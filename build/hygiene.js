@@ -30,7 +30,7 @@ const all = [
 	'test/**/*',
 	'!test/**/out/**',
 	'!**/node_modules/**',
-	'!build/actions/**/*.js', // {{ SQL CARBON EDIT }}
+	'!build/actions/**/*.js', // {{SQL CARBON EDIT}}
 	'!build/**/*' // {{SQL CARBON EDIT}}
 ];
 module.exports.all = all;
