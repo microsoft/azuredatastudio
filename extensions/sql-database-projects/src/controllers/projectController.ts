@@ -24,7 +24,7 @@ import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
-import { BuildHelper, BuildInfo, Status } from '../tools/buildHelper';
+import { BuildHelper } from '../tools/buildHelper';
 import { PublishProfile, load } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
@@ -32,6 +32,7 @@ import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTree
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IconPathHelper } from '../common/iconHelper';
+import { BuildInfo, DeployInfo, Status } from '../models/dashboardData/dashboardData';
 
 const tableLength = 10;
 
@@ -51,8 +52,8 @@ export class ProjectsController {
 		this.buildHelper = new BuildHelper();
 	}
 
-	public get DeployInfo(): (dataworkspace.IDashboardColumnData | dataworkspace.IDashboardColumnDataGroup)[][] {
-		const infoRows: (dataworkspace.IDashboardColumnData | dataworkspace.IDashboardColumnDataGroup)[][] = [];
+	public get dashboardDeployData(): (dataworkspace.IDashboardTableData | dataworkspace.IDashboardTableDataGroup)[][] {
+		const infoRows: (dataworkspace.IDashboardTableData | dataworkspace.IDashboardTableDataGroup)[][] = [];
 		let count = 0;
 
 		for (let i = this.deployInfo.length - 1; i >= 0; i--) {
@@ -65,7 +66,7 @@ export class ProjectsController {
 				icon = IconPathHelper.inProgress;
 			}
 
-			let infoRow: (dataworkspace.IDashboardColumnData | dataworkspace.IDashboardColumnDataGroup)[] = [{ value: count.toString() },
+			let infoRow: (dataworkspace.IDashboardTableData | dataworkspace.IDashboardTableDataGroup)[] = [{ value: count.toString() },
 			{ values: [{ value: icon }, { value: this.deployInfo[i].status }] },
 			{ value: this.deployInfo[i].target },
 			{ value: this.deployInfo[i].timeToBuild },
@@ -77,8 +78,8 @@ export class ProjectsController {
 		return infoRows;
 	}
 
-	public get BuildInfo(): (dataworkspace.IDashboardColumnData | dataworkspace.IDashboardColumnDataGroup)[][] {
-		const infoRows: (dataworkspace.IDashboardColumnData | dataworkspace.IDashboardColumnDataGroup)[][] = [];
+	public get dashboardBuildData(): (dataworkspace.IDashboardTableData | dataworkspace.IDashboardTableDataGroup)[][] {
+		const infoRows: (dataworkspace.IDashboardTableData | dataworkspace.IDashboardTableDataGroup)[][] = [];
 		let count = 0;
 
 		for (let i = this.buildInfo.length - 1; i >= 0; i--) {
@@ -91,7 +92,7 @@ export class ProjectsController {
 				icon = IconPathHelper.inProgress;
 			}
 
-			let infoRow: (dataworkspace.IDashboardColumnData | dataworkspace.IDashboardColumnDataGroup)[] = [{ value: count.toString() },
+			let infoRow: (dataworkspace.IDashboardTableData | dataworkspace.IDashboardTableDataGroup)[] = [{ value: count.toString() },
 			{ values: [{ value: icon }, { value: this.buildInfo[i].status }] },
 			{ value: this.buildInfo[i].target },
 			{ value: this.buildInfo[i].timeToBuild },
@@ -165,11 +166,12 @@ export class ProjectsController {
 		const project: Project = this.getProjectFromContext(context);
 
 		const startTime = new Date();
+		const currentBuildTimeInfo = startTime.toLocaleDateString() + ' at ' + startTime.toLocaleTimeString();
 
-		let buildInfoNew = new BuildInfo(Status.inProgress, project.getProjectTargetVersion(), startTime.toLocaleDateString() + ' at ' + startTime.toLocaleTimeString());
+		let buildInfoNew = new BuildInfo(Status.inProgress, project.getProjectTargetVersion(), currentBuildTimeInfo);
 		this.buildInfo.push(buildInfoNew);
-		const buildInfoLength = this.buildInfo.length - 1;
-		if (buildInfoLength === tableLength) {
+
+		if (this.buildInfo.length - 1 === tableLength) {
 			this.buildInfo.shift();		// Remove the first element to maintain the length
 		}
 
@@ -185,8 +187,10 @@ export class ProjectsController {
 		try {
 			await this.netCoreTool.runDotnetCommand(options);
 			const timeToBuild = new Date().getTime() - startTime.getTime();
-			this.buildInfo[buildInfoLength].status = Status.success;
-			this.buildInfo[buildInfoLength].timeToBuild = utils.timeConversion(timeToBuild);
+
+			const currentBuildIndex = this.buildInfo.findIndex(b => b.buildDate === currentBuildTimeInfo);
+			this.buildInfo[currentBuildIndex].status = Status.success;
+			this.buildInfo[currentBuildIndex].timeToBuild = utils.timeConversion(timeToBuild);
 
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.build)
 				.withAdditionalMeasurements({ duration: timeToBuild })
@@ -195,8 +199,10 @@ export class ProjectsController {
 			return project.dacpacOutputPath;
 		} catch (err) {
 			const timeToFailureBuild = new Date().getTime() - startTime.getTime();
-			this.buildInfo[buildInfoLength].status = Status.failed;
-			this.buildInfo[buildInfoLength].timeToBuild = utils.timeConversion(timeToFailureBuild);
+
+			const currentBuildIndex = this.buildInfo.findIndex(b => b.buildDate === currentBuildTimeInfo);
+			this.buildInfo[currentBuildIndex].status = Status.failed;
+			this.buildInfo[currentBuildIndex].timeToBuild = utils.timeConversion(timeToFailureBuild);
 
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.build)
 				.withAdditionalMeasurements({ duration: timeToFailureBuild })
@@ -260,11 +266,12 @@ export class ProjectsController {
 		telemetryProps.profileUsed = (settings.profileUsed ?? false).toString();
 		const currentDate = new Date();
 		const actionStartTime = currentDate.getMilliseconds();
+		const currentDeployTimeInfo = currentDate.toLocaleDateString() + ' at ' + currentDate.toLocaleTimeString();
 
-		let deployInfoNew = new DeployInfo(Status.inProgress, project.getProjectTargetVersion(), currentDate.toLocaleDateString() + ' at ' + currentDate.toLocaleTimeString());
+		let deployInfoNew = new DeployInfo(Status.inProgress, project.getProjectTargetVersion(), currentDeployTimeInfo);
 		this.deployInfo.push(deployInfoNew);
-		const deployInfoLength = this.deployInfo.length - 1;
-		if (deployInfoLength === tableLength) {
+
+		if (this.deployInfo.length - 1 === tableLength) {
 			this.deployInfo.shift();	// Remove the first element to maintain the length
 		}
 
@@ -287,8 +294,9 @@ export class ProjectsController {
 				.withAdditionalProperties(telemetryProps)
 				.send();
 
-			this.deployInfo[deployInfoLength].status = Status.failed;
-			this.deployInfo[deployInfoLength].timeToBuild = utils.timeConversion(timeToFailureDeploy);
+			const currentDeployIndex = this.deployInfo.findIndex(d => d.deployDate === currentDeployTimeInfo);
+			this.deployInfo[currentDeployIndex].status = Status.failed;
+			this.deployInfo[currentDeployIndex].timeToBuild = utils.timeConversion(timeToFailureDeploy);
 
 			throw err;
 		}
@@ -298,8 +306,9 @@ export class ProjectsController {
 		telemetryProps.actionDuration = timeToDeploy.toString();
 		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
 
-		this.deployInfo[deployInfoLength].status = Status.success;
-		this.deployInfo[deployInfoLength].timeToBuild = utils.timeConversion(timeToDeploy);
+		const currentDeployIndex = this.deployInfo.findIndex(d => d.deployDate === currentDeployTimeInfo);
+		this.deployInfo[currentDeployIndex].status = Status.success;
+		this.deployInfo[currentDeployIndex].timeToBuild = utils.timeConversion(timeToDeploy);
 
 		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
 			.withAdditionalProperties(telemetryProps)
@@ -942,18 +951,4 @@ export interface NewProjectParams {
 	folderUri: vscode.Uri;
 	projectTypeId: string;
 	projectGuid?: string;
-}
-
-export class DeployInfo {
-	public status: Status;
-	public target: string;
-	public timeToBuild: string;
-	public deployDate: string;
-
-	constructor(_status: Status, _target: string, _deployDate: string) {
-		this.status = _status;
-		this.target = _target;
-		this.timeToBuild = '';
-		this.deployDate = _deployDate;
-	}
 }

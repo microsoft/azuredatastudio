@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as path from 'path';
-import { IDashboardColumnData, IDashboardColumnInfo, IProjectAction, IProjectActionGroup, IProjectInfo, IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
+import { IDashboardTableData, IDashboardColumnInfo, IProjectAction, IProjectActionGroup, IProjectInfo, IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import { IWorkspaceService } from '../common/interfaces';
 import { fileExist } from '../common/utils';
 
@@ -157,11 +157,11 @@ export class ProjectDashboard {
 			});
 
 			const data: azdata.DeclarativeTableCellValue[][] = [];
-			info.columnData.forEach(values => {
+			info.tableData.forEach(values => {
 				const columnValue: azdata.DeclarativeTableCellValue[] = [];
 				values.forEach(val => {
 
-					if (this.isIDashboardColumnData(val)) {
+					if (this.isIDashboardTableData(val)) {
 						let v;
 						const type = typeof val.value;
 						if (type === 'string' || type === 'boolean' || type === 'number') {
@@ -172,7 +172,7 @@ export class ProjectDashboard {
 						columnValue.push({ value: v });
 					} else {
 						let columnDataGroup = this.modelView!.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
-						val.values.forEach((values: IDashboardColumnData) => {
+						val.values.forEach((values: IDashboardTableData) => {
 							let v = this.createComponent(values);
 
 							columnDataGroup.addItem(v, { CSSStyles: { 'margin-right': '10px' } });
@@ -192,13 +192,17 @@ export class ProjectDashboard {
 		return rootContainer;
 	}
 
-	private isIDashboardColumnData(obj: any): obj is IDashboardColumnData {
+	/**
+	 * Returns true if the passed parameter is an object of IDashboardTableData
+	 */
+	private isIDashboardTableData(obj: any): obj is IDashboardTableData {
 		return obj.value !== undefined;
 	}
 
-	private createComponent(columnData: IDashboardColumnData): azdata.Component {
+	private createComponent(columnData: IDashboardTableData): azdata.Component {
 		let component;
-		if (typeof columnData.value === 'string') {
+		const type = typeof columnData.value;
+		if (type === 'string' || type === 'boolean' || type === 'number') {
 			component = this.modelView!.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 				value: columnData.value, CSSStyles: { 'margin-block-start': 'auto', 'block-size': 'auto', 'margin-block-end': '0px' }
 			})

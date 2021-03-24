@@ -67,12 +67,12 @@ suite('ProjectProviderRegistry Tests', function (): void {
 			[{
 				tableName: 'ti1',
 				columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
-				columnData: [[{ value: 'd1' }]]
+				tableData: [[{ value: 'd1' }]]
 			},
 			{
 				tableName: 'ti2',
 				columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
-				columnData: [[{ value: 'd1' }]]
+				tableData: [[{ value: 'd1' }]]
 			}]);
 		const provider2 = createProjectProvider([
 			{
@@ -106,12 +106,12 @@ suite('ProjectProviderRegistry Tests', function (): void {
 			[{
 				tableName: 'Deployments',
 				columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
-				columnData: [[{ value: 'd1' }]]
+				tableData: [[{ value: 'd1' }]]
 			},
 			{
 				tableName: 'Builds',
 				columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
-				columnData: [[{ value: 'd1' }]]
+				tableData: [[{ value: 'd1' }]]
 			}]);
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');
 		const disposable1 = ProjectProviderRegistry.registerProvider(provider1, 'test.testProvider');
@@ -163,7 +163,7 @@ suite('ProjectProviderRegistry Tests', function (): void {
 			[{
 				tableName: 'ti1',
 				columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
-				columnData: [[{ value: 'd1' }]]
+				tableData: [[{ value: 'd1' }]]
 			}]);
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');
 		ProjectProviderRegistry.registerProvider(provider, 'test.testProvider');

@@ -115,12 +115,12 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 			projectInfo: [{
 				tableName: 'Deployments',
 				columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
-				columnData: [[{ value: 'd1' }]]
+				tableData: [[{ value: 'd1' }]]
 			},
 			{
 				tableName: 'Builds',
 				columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
-				columnData: [[{ value: 'd1' }]]
+				tableData: [[{ value: 'd1' }]]
 			}]
 		};
 		const getProjectProviderStub = sinon.stub(workspaceService, 'getProjectProvider');

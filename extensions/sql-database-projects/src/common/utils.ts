@@ -296,24 +296,24 @@ export function timeConversion(duration: number) {
 	const msInHour = 1000 * 60 * 60;
 	const hours = Math.trunc(duration / msInHour);
 	if (hours > 0) {
-		portions.push(hours + 'hr');
+		portions.push(`${hours} hr`);
 		duration = duration - (hours * msInHour);
 	}
 
 	const msInMinute = 1000 * 60;
 	const minutes = Math.trunc(duration / msInMinute);
 	if (minutes > 0) {
-		portions.push(minutes + 'min');
+		portions.push(`${minutes} min`);
 		duration = duration - (minutes * msInMinute);
 	}
 
 	const seconds = Math.trunc(duration / 1000);
 	if (seconds > 0) {
-		portions.push(seconds + 'sec');
+		portions.push(`${seconds} sec`);
 	}
 
 	if (hours === 0 && minutes === 0 && seconds === 0) {
-		portions.push(duration + 'ms');
+		portions.push(`${duration} msec`);
 	}
 
 	return portions.join(', ');

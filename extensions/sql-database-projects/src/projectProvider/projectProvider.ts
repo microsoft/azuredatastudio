@@ -126,7 +126,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	}
 
 	/**
-	 * Gets the project information
+	 * Gets the project information to be displayed in the project dashboard
 	 */
 	get projectInfo(): dataworkspace.IProjectInfo[] {
 		const deployInfo: dataworkspace.IProjectInfo = {
@@ -136,7 +136,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 			{ displayName: constants.Target, width: 180, valueType: azdata.DeclarativeDataType.string },
 			{ displayName: constants.Time, width: 180, valueType: azdata.DeclarativeDataType.string },
 			{ displayName: constants.Date, width: 180, valueType: azdata.DeclarativeDataType.string }],
-			columnData: this.projectController.DeployInfo
+			tableData: this.projectController.dashboardDeployData
 		};
 
 		const buildInfo: dataworkspace.IProjectInfo = {
@@ -146,7 +146,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 			{ displayName: constants.Target, width: 180, valueType: azdata.DeclarativeDataType.string },
 			{ displayName: constants.Time, width: 180, valueType: azdata.DeclarativeDataType.string },
 			{ displayName: constants.Date, width: 180, valueType: azdata.DeclarativeDataType.string }],
-			columnData: this.projectController.BuildInfo
+			tableData: this.projectController.dashboardBuildData
 		};
 
 		return [deployInfo, buildInfo];

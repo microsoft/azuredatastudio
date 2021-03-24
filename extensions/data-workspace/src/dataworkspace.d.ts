@@ -170,7 +170,7 @@ declare module 'dataworkspace' {
 		/**
 		 * data that goes in the table
 		 */
-		columnData: (IDashboardColumnData | IDashboardColumnDataGroup)[][];
+		tableData: (IDashboardTableData | IDashboardTableDataGroup)[][];
 	}
 
 	/**
@@ -185,14 +185,14 @@ declare module 'dataworkspace' {
 	/**
 	 * List of data to be presented on the table in the dashboard container
 	 */
-	export interface IDashboardColumnData {
+	export interface IDashboardTableData {
 		value: any;
 	}
 
 	/**
 	 * List of data that should be grouped under one column
 	 */
-	export interface IDashboardColumnDataGroup {
-		values: IDashboardColumnData[];
+	export interface IDashboardTableDataGroup {
+		values: IDashboardTableData[];
 	}
 }
