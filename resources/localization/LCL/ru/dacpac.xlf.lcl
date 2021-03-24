@@ -37,7 +37,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Deploy]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Развертывание]]></Val>
+            <Val><![CDATA[Развернуть]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -181,7 +181,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Source Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[База данных-источник]]></Val>
+            <Val><![CDATA[База данных — источник]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -289,7 +289,7 @@
         <Str Cat="Text">
           <Val><![CDATA[default]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[По умолчанию]]></Val>
+            <Val><![CDATA[по умолчанию]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -351,6 +351,9 @@
       <Item ItemId=";dacfx.operationErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} operation failed '{1}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Сбой операции {0} "{1}"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
