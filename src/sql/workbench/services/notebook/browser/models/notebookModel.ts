@@ -288,6 +288,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._selectedKernelDisplayName;
 	}
 
+	public set selectedKernelDisplayName(kernel: string) {
+		this._selectedKernelDisplayName = kernel;
+	}
+
 	public set trustedMode(isTrusted: boolean) {
 		this._trustedMode = isTrusted;
 
@@ -951,6 +955,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private async updateKernelInfoOnKernelChange(kernel: nb.IKernel, kernelAlias?: string) {
 		await this.updateKernelInfo(kernel);
+		this.kernelAliases.forEach(kernel => {
+			if (this._defaultLanguageInfo?.name === kernel.toLowerCase()) {
+				kernelAlias = kernel;
+			}
+		});
 		if (kernel.info) {
 			this.updateLanguageInfo(kernel.info.language_info);
 		}
