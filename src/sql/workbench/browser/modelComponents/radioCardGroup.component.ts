@@ -2,20 +2,21 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
+import 'vs/css!./media/card';
+import 'vs/css!./media/verticalCard';
 import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import * as azdata from 'azdata';
+import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
-
-import 'vs/css!./media/card';
-import 'vs/css!./media/verticalCard';
-
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { deepClone } from 'vs/base/common/objects';
 import { ILogService } from 'vs/platform/log/common/log';
+import { focusBorder, textLinkForeground } from 'vs/platform/theme/common/colorRegistry';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./radioCardGroup.component.html'))
@@ -233,3 +234,17 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 		});
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const linkForeground = theme.getColor(textLinkForeground);
+	const focusOutline = theme.getColor(focusBorder);
+	if (focusOutline && linkForeground) {
+		collector.addRule(`
+		.card-group .link-value {
+			color: ${linkForeground};
+		}
+		.card-group .link-value:focus {
+			outline-color: ${focusOutline};
+		}`);
+	}
+});
