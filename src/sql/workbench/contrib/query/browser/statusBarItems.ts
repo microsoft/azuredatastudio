@@ -5,6 +5,7 @@
 
 import { parseNumAsTimeString } from 'sql/platform/connection/common/utils';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { IntervalTimer } from 'vs/base/common/async';
@@ -259,8 +260,9 @@ export class QueryResultSelectionSummaryStatusBarContribution extends Disposable
 
 	constructor(
 		@IStatusbarService private readonly statusbarService: IStatusbarService,
-		@IEditorService private editorService: IEditorService,
-		@IQueryModelService queryModelService: IQueryModelService
+		@IEditorService editorService: IEditorService,
+		@IQueryModelService queryModelService: IQueryModelService,
+		@INotebookService notebookService: INotebookService
 	) {
 		super();
 		this.statusItem = this._register(
@@ -274,6 +276,7 @@ export class QueryResultSelectionSummaryStatusBarContribution extends Disposable
 		);
 		this._register(editorService.onDidActiveEditorChange(() => { this.hide(); }, this));
 		this._register(queryModelService.onRunQueryStart(() => { this.hide(); }));
+		this._register(notebookService.onCodeCellExecutionStart(() => { this.hide(); }));
 		this._register(queryModelService.onCellSelectionChanged((data: string[]) => {
 			this.onCellSelectionChanged(data);
 		}));
@@ -289,7 +292,7 @@ export class QueryResultSelectionSummaryStatusBarContribution extends Disposable
 
 	private onCellSelectionChanged(data: string[]): void {
 		const numericValues = data?.filter(value => !Number.isNaN(Number(value))).map(value => Number(value));
-		if (numericValues?.length < 2 || !(this.editorService.activeEditor instanceof QueryEditorInput)) {
+		if (numericValues?.length < 2) {
 			this.hide();
 			return;
 		}

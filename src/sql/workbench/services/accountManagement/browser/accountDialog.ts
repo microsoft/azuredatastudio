@@ -84,6 +84,9 @@ class AccountPanel extends ViewPane {
 		this.tenantList = new List<Tenant>('TenantList', container, new TenantListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(TenantListRenderer)]);
 		this._register(attachListStyler(this.accountList, this.themeService));
 		this._register(attachListStyler(this.tenantList, this.themeService));
+
+		// Temporary workaround for https://github.com/microsoft/azuredatastudio/issues/14808 so that we can close an accessibility issue.
+		this.tenantList.getHTMLElement().tabIndex = -1;
 	}
 
 	protected layoutBody(size: number): void {
@@ -301,9 +304,9 @@ export class AccountDialog extends Modal {
 		this._noaccountViewContainer!.hidden = true;
 		if (Iterable.consume(this._providerViewsMap.values()).length > 0) {
 			const firstView = this._providerViewsMap.values().next().value;
-			if (firstView instanceof AccountPanel) {
-				firstView.setSelection([0]);
-				firstView.focus();
+			if (firstView && firstView.view instanceof AccountPanel) {
+				firstView.view.setSelection([0]);
+				firstView.view.focus();
 			}
 		}
 	}

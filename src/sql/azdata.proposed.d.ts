@@ -315,8 +315,6 @@ declare module 'azdata' {
 		linkCodiconStyles?: CssStyles;
 	}
 
-	export type CssStyles = { [key: string]: string | number };
-
 	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
 		cards: RadioCard[];
 		cardWidth: string;
@@ -525,6 +523,7 @@ declare module 'azdata' {
 		export interface ModelViewDashboard {
 			registerTabs(handler: (view: ModelView) => Thenable<(DashboardTab | DashboardTabGroup)[]>): void;
 			open(): Thenable<void>;
+			close(): Thenable<void>;
 			updateTabs(tabs: (DashboardTab | DashboardTabGroup)[]): void;
 			selectTab(id: string): void;
 		}

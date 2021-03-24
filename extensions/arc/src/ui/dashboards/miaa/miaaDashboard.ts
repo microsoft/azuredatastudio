@@ -26,9 +26,9 @@ export class MiaaDashboard extends Dashboard {
 	}
 
 	protected async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {
-		const overviewPage = new MiaaDashboardOverviewPage(modelView, this._controllerModel, this._miaaModel);
-		const connectionStringsPage = new MiaaConnectionStringsPage(modelView, this._miaaModel);
-		const computeAndStoragePage = new MiaaComputeAndStoragePage(modelView, this._miaaModel);
+		const overviewPage = new MiaaDashboardOverviewPage(modelView, this.dashboard, this._controllerModel, this._miaaModel);
+		const connectionStringsPage = new MiaaConnectionStringsPage(modelView, this.dashboard, this._miaaModel);
+		const computeAndStoragePage = new MiaaComputeAndStoragePage(modelView, this.dashboard, this._miaaModel);
 		return [
 			overviewPage.tab,
 			{

@@ -26,8 +26,14 @@ export class MigrationModePage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
+		this.wizard.registerNavigationValidator((e) => {
+			return true;
+		});
 	}
 	public async onPageLeave(): Promise<void> {
+		this.wizard.registerNavigationValidator((e) => {
+			return true;
+		});
 	}
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
 	}

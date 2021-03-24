@@ -19,6 +19,7 @@ import * as azdata from 'azdata';
 import { assign } from 'vs/base/common/objects';
 import { TelemetryView, TelemetryAction } from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelViewDialog)
 export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape {
@@ -30,6 +31,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	private readonly _wizardPageHandles = new Map<WizardPage, number>();
 	private readonly _wizards = new Map<number, Wizard>();
 	private readonly _editorInputModels = new Map<number, ModelViewInputModel>();
+	private readonly _editors = new Map<number, { pane: IEditorPane, input: IEditorInput }>();
 	private _dialogService: CustomDialogService;
 
 	constructor(
@@ -58,12 +60,31 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			this._telemetryService.createActionEvent(TelemetryView.Shell, TelemetryAction.ModelViewDashboardOpened)
 				.withAdditionalProperties({ name: name })
 				.send();
-			this._editorService.openEditor(input, editorOptions, position as any).then((editor) => {
+			this._editorService.openEditor(input, editorOptions, position as any).then((editorPane) => {
 				this._editorInputModels.set(handle, model);
+				this._editors.set(handle, { pane: editorPane, input: editorPane.input });
+				const disposable = this._editorService.onDidCloseEditor(e => {
+					if (e.editor === input) {
+						this._editors.delete(handle);
+						disposable.dispose();
+					}
+				});
 				resolve();
 			}, error => {
 				reject(error);
 			});
+		});
+	}
+
+	public $closeEditor(handle: number): Thenable<void> {
+		return new Promise<void>((resolve, reject) => {
+			const editor = this._editors.get(handle);
+			if (editor) {
+				editor.pane.group.closeEditor(editor.input).then(() => {
+					resolve();
+				}).catch(e => reject(e));
+			}
+			reject(new Error(`Could not find editor with handle ${handle}`));
 		});
 	}
 
