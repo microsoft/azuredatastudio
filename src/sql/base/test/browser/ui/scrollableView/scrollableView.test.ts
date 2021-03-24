@@ -33,7 +33,7 @@ class TestView extends Disposable implements IView {
 
 	private readonly _onDidInsertEmitter = this._register(new Emitter<void>());
 	public readonly onDidInsertEvent = this._onDidInsertEmitter.event;
-	onDidInsert?(): void {
+	async onDidInsert?(): Promise<void> {
 		this._onDidInsertEmitter.fire();
 	}
 

@@ -38,6 +38,11 @@ export enum MigrationTargetType {
 	SQLMI = 'sqlmi'
 }
 
+export enum MigrationSourceAuthenticationType {
+	Integrated = 'WindowsAuthentication',
+	Sql = 'SqlAuthentication'
+}
+
 export enum MigrationCutover {
 	ONLINE,
 	OFFLINE
@@ -88,7 +93,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _accountTenants!: azurecore.Tenant[];
 
 	public _connecionProfile!: azdata.connection.ConnectionProfile;
-	public _authenticationType!: string;
+	public _authenticationType!: MigrationSourceAuthenticationType;
 	public _sqlServerUsername!: string;
 	public _sqlServerPassword!: string;
 

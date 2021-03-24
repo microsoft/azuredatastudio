@@ -275,8 +275,6 @@ export function ENTER_YOUR_SQL_CREDS(sqlServerName: string) {
 }
 export const USERNAME = localize('sql.migration.username', "Username");
 
-
-
 //Assessment Dialog
 export const DATABASES = localize('sql.migration.databases', "Databases");
 export const ISSUES = localize('sql.migration.issues', "Issues");
@@ -298,3 +296,6 @@ export function IMPACT_OBJECT_TYPE(objectType: string): string {
 export function IMPACT_OBJECT_NAME(objectName: string): string {
 	return localize('sql.migration.impact.object.name', "Name: {0}", objectName);
 }
+export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type', "Authentication Type");
+export const SQL_LOGIN = localize('sql.migration.sql.login', "SQL Login");
+export const WINDOWS_AUTHENTICATION = localize('sql.migration.windows.auth', "Windows Authentication");
