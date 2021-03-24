@@ -323,6 +323,10 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	}
 
 	public onKey(e: KeyboardEvent, row: number) {
+		// Ignore the bubble up events
+		if (e.target !== e.currentTarget) {
+			return;
+		}
 		const event = new StandardKeyboardEvent(e);
 		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 			this.onRowSelected(row);
