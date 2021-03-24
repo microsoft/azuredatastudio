@@ -45,10 +45,6 @@ export class AssessmentResultsDialog {
 						flexFlow: 'row',
 						height: '100%',
 						width: '100%'
-					}).withProps({
-						CSSStyles: {
-							'margin-top': '10px'
-						}
 					}).component();
 					flex.addItem(treeComponent, { flex: '0 0 auto' });
 					flex.addItem(resultComponent, { flex: '1 1 auto' });

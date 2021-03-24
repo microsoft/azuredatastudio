@@ -79,9 +79,9 @@ export class SqlDatabaseTree {
 			},
 		}).component();
 
-		component.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
-		component.addItem(this.createInstanceComponent(), { flex: '0 0 auto' });
-		component.addItem(this.createDatabaseComponent(view, dbs), { flex: '1 1 auto' });
+		component.addItem(this.createSearchComponent(view), { flex: '0 0 auto' });
+		component.addItem(this.createInstanceComponent(view), { flex: '0 0 auto' });
+		component.addItem(this.createDatabaseComponent(view, dbs), { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'auto' } });
 		return component;
 	}
 
@@ -89,7 +89,7 @@ export class SqlDatabaseTree {
 
 		this._databaseTable = view.modelBuilder.declarativeTable().withProps(
 			{
-				selectEffect: true,
+				enableRowSelection: true,
 				width: 200,
 				CSSStyles: {
 					'table-layout': 'fixed'
@@ -157,7 +157,7 @@ export class SqlDatabaseTree {
 	private createInstanceComponent(): azdata.DivContainer {
 		this._instanceTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
-				selectEffect: true,
+				enableRowSelection: true,
 				width: 200,
 				columns: [
 					{
@@ -205,11 +205,12 @@ export class SqlDatabaseTree {
 		}).withProps({
 			CSSStyles: {
 				'margin': '32px 0px 0px 18px',
+				'overflow-y': 'hidden'
 			}
 		}).component();
 
 		container.addItem(topContainer, { flex: '0 0 auto' });
-		container.addItem(bottomContainer, { flex: '1 1 auto' });
+		container.addItem(bottomContainer, { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'hidden' } });
 
 		return container;
 	}
@@ -259,8 +260,8 @@ export class SqlDatabaseTree {
 			}
 		}).component();
 
-		container.addItem(impactedObjects, { flex: '0 0 auto', CSSStyles: { 'border-right': 'solid 1px' } });
-		container.addItem(rightContainer, { flex: '1 1 auto' });
+		container.addItem(impactedObjects, { flex: '0 0 auto', CSSStyles: { 'border-right': 'solid 1px', 'overflow-y': 'auto' } });
+		container.addItem(rightContainer, { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'auto' } });
 		return container;
 	}
 
@@ -317,7 +318,7 @@ export class SqlDatabaseTree {
 
 		this._impactedObjectsTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
-				selectEffect: true,
+				enableRowSelection: true,
 				width: '100%',
 				columns: [
 					{
@@ -563,7 +564,7 @@ export class SqlDatabaseTree {
 
 		this._assessmentResultsTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
-				selectEffect: true,
+				enableRowSelection: true,
 				width: '200px',
 				CSSStyles: {
 					'table-layout': 'fixed'
