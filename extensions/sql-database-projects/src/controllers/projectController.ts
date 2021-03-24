@@ -33,6 +33,8 @@ import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDat
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IconPathHelper } from '../common/iconHelper';
 
+const tableLength = 10;
+
 /**
  * Controller for managing lifecycle of projects
  */
@@ -66,6 +68,7 @@ export class ProjectsController {
 			let infoRow: (dataworkspace.IDashboardColumnData | dataworkspace.IDashboardColumnDataGroup)[] = [{ value: count.toString() },
 			{ values: [{ value: icon }, { value: this.deployInfo[i].status }] },
 			{ value: this.deployInfo[i].target },
+			{ value: this.deployInfo[i].timeToBuild },
 			{ value: this.deployInfo[i].deployDate }];
 			infoRows.push(infoRow);
 			count++;
@@ -165,6 +168,10 @@ export class ProjectsController {
 
 		let buildInfoNew = new BuildInfo(Status.inProgress, project.getProjectTargetVersion(), startTime.toLocaleDateString() + ' at ' + startTime.toLocaleTimeString());
 		this.buildInfo.push(buildInfoNew);
+		const buildInfoLength = this.buildInfo.length - 1;
+		if (buildInfoLength === tableLength) {
+			this.buildInfo.shift();		// Remove the first element to maintain the length
+		}
 
 		// Check mssql extension for project dlls (tracking issue #10273)
 		await this.buildHelper.createBuildDirFolder();
@@ -174,8 +181,6 @@ export class ProjectsController {
 			workingDirectory: project.projectFolderPath,
 			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath)
 		};
-
-		const buildInfoLength = this.buildInfo.length - 1;
 
 		try {
 			await this.netCoreTool.runDotnetCommand(options);
@@ -259,12 +264,14 @@ export class ProjectsController {
 		let deployInfoNew = new DeployInfo(Status.inProgress, project.getProjectTargetVersion(), currentDate.toLocaleDateString() + ' at ' + currentDate.toLocaleTimeString());
 		this.deployInfo.push(deployInfoNew);
 		const deployInfoLength = this.deployInfo.length - 1;
+		if (deployInfoLength === tableLength) {
+			this.deployInfo.shift();	// Remove the first element to maintain the length
+		}
 
 		try {
 			if ((<IPublishSettings>settings).upgradeExisting) {
 				telemetryProps.publishAction = 'deploy';
 				result = await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdata.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
-				this.deployInfo[deployInfoLength].status = Status.success;
 			}
 			else {
 				telemetryProps.publishAction = 'generateScript';
@@ -272,7 +279,8 @@ export class ProjectsController {
 			}
 		} catch (err) {
 			const actionEndTime = new Date().getMilliseconds();
-			telemetryProps.actionDuration = (actionEndTime - actionStartTime).toString();
+			const timeToFailureDeploy = actionEndTime - actionStartTime;
+			telemetryProps.actionDuration = timeToFailureDeploy.toString();
 			telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
 
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
@@ -280,13 +288,18 @@ export class ProjectsController {
 				.send();
 
 			this.deployInfo[deployInfoLength].status = Status.failed;
+			this.deployInfo[deployInfoLength].timeToBuild = utils.timeConversion(timeToFailureDeploy);
 
 			throw err;
 		}
 
 		const actionEndTime = new Date().getMilliseconds();
-		telemetryProps.actionDuration = (actionEndTime - actionStartTime).toString();
+		const timeToDeploy = actionEndTime - actionStartTime;
+		telemetryProps.actionDuration = timeToDeploy.toString();
 		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
+
+		this.deployInfo[deployInfoLength].status = Status.success;
+		this.deployInfo[deployInfoLength].timeToBuild = utils.timeConversion(timeToDeploy);
 
 		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
 			.withAdditionalProperties(telemetryProps)
@@ -934,11 +947,13 @@ export interface NewProjectParams {
 export class DeployInfo {
 	public status: Status;
 	public target: string;
+	public timeToBuild: string;
 	public deployDate: string;
 
 	constructor(_status: Status, _target: string, _deployDate: string) {
 		this.status = _status;
 		this.target = _target;
+		this.timeToBuild = '';
 		this.deployDate = _deployDate;
 	}
 }

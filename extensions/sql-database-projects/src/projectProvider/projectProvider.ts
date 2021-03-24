@@ -134,6 +134,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 			columnInfo: [{ displayName: constants.ID, width: 75, valueType: azdata.DeclarativeDataType.string },
 			{ displayName: constants.Status, width: 180, valueType: azdata.DeclarativeDataType.component },
 			{ displayName: constants.Target, width: 180, valueType: azdata.DeclarativeDataType.string },
+			{ displayName: constants.Time, width: 180, valueType: azdata.DeclarativeDataType.string },
 			{ displayName: constants.Date, width: 180, valueType: azdata.DeclarativeDataType.string }],
 			columnData: this.projectController.DeployInfo
 		};
