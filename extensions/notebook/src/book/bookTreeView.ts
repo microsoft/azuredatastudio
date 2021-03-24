@@ -426,7 +426,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			await this.getChildren(this.currentBook.rootNode);
 			// number of levels to expand
 			let depthOfNotebookInBook: number = path.relative(notebookPath, this.currentBook.bookPath)?.split(path.sep)?.length ?? 0;
-			if (this.currentBook.bookItems.length > 0 && depthOfNotebookInBook > 1) {
+			if (this.currentBook.bookItems.length > 0 && depthOfNotebookInBook > 0) {
 				while (depthOfNotebookInBook > 0) {
 					// check if the notebook is available in already expanded levels.
 					bookItem = this.currentBook.bookItems.find(b => b.tooltip === notebookPath);
