@@ -245,6 +245,10 @@ declare module 'azdata-ext' {
 		code?: number
 	}
 
+	export interface EndpointOrNamespace {
+		endpoint?: string,
+		namespace?: string
+	}
 	export interface IAzdataApi {
 		arc: {
 			dc: {
@@ -303,7 +307,7 @@ declare module 'azdata-ext' {
 			}
 		},
 		getPath(): Promise<string>,
-		login(endpoint: string, username: string, password: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<void>>,
+		login(endpointOrNamespace: EndpointOrNamespace, username: string, password: string, additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<void>>,
 		/**
 		 * The semVersion corresponding to this installation of azdata. version() method should have been run
 		 * before fetching this value to ensure that correct value is returned. This is almost always correct unless

@@ -220,7 +220,7 @@ describe('azdata', function () {
 			const endpoint = 'myEndpoint';
 			const username = 'myUsername';
 			const password = 'myPassword';
-			await azdataTool.login(endpoint, username, password);
+			await azdataTool.login({ endpoint: endpoint }, username, password);
 			verifyExecuteCommandCalledWithArgs(['login', endpoint, username]);
 		});
 

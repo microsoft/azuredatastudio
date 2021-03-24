@@ -51,7 +51,7 @@ describe('KubeUtils', function (): void {
 				contexts[1].name.should.equal('kubernetes-admin@kubernetes', `test: ${testName} failed`);
 				contexts[1].isCurrentContext.should.be.false(`test: ${testName} failed`);
 			};
-			verifyContexts(await getKubeConfigClusterContexts(configFile), 'getKubeConfigClusterContexts');
+			verifyContexts(getKubeConfigClusterContexts(configFile), 'getKubeConfigClusterContexts');
 		});
 		it('throws error when unable to load config file', async () => {
 			const error = new Error('unknown error accessing file');
