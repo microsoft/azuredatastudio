@@ -9,6 +9,7 @@ import * as azdata from 'azdata';
 import { convertSize } from 'sql/base/browser/dom';
 import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
+import { EventHelper } from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { equals as arrayEquals } from 'vs/base/common/arrays';
@@ -325,8 +326,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		const event = new StandardKeyboardEvent(e);
 		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 			this.onRowSelected(row);
-			e.preventDefault();
-			e.stopPropagation();
+			EventHelper.stop(e, true);
 		}
 	}
 
