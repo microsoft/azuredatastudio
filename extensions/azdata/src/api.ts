@@ -161,9 +161,9 @@ export function getAzdataApi(localAzdataDiscovered: Promise<IAzdataTool | undefi
 			throwIfNoAzdata(azdataToolService.localAzdata);
 			return azdataToolService.localAzdata.getPath();
 		},
-		login: async (endpoint: string, username: string, password: string, additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
+		login: async (endpoint: string, username: string, password: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
 			throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
-			return azdataToolService.localAzdata.login(endpoint, username, password, additionalEnvVars);
+			return azdataToolService.localAzdata.login(endpoint, username, password, additionalEnvVars, azdataContext);
 		},
 		getSemVersion: async () => {
 			await localAzdataDiscovered;
