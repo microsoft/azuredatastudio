@@ -216,7 +216,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 								throw err;
 							} finally {
 								session?.dispose();
-							} try {
+							}
+							try {
 								await this._postgresModel.refresh();
 							} catch (error) {
 								vscode.window.showErrorMessage(loc.refreshFailed(error));
