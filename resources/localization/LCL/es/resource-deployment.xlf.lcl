@@ -269,6 +269,9 @@
         <Item ItemId=";(...) ror" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[No servers found in current subscription.]D;]A;Select a different subscription containing at least one server]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[No se ha encontrado ningún servidor en la suscripción actual.]D;]A;Seleccione otra suscripción que contenga al menos un servidor.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -279,7 +282,7 @@
           <Str Cat="Text">
             <Val><![CDATA[No servers found]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[No se han encontrado servidores]]></Val>
+              <Val><![CDATA[No se encuentra ningún servidor.]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -623,6 +626,9 @@
         <Item ItemId=";(...) asswordLengthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Password must be between 12 and 123 characters long.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[La contraseña debe tener una longitud de entre 12 y 123 caracteres.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -710,6 +716,9 @@
         <Item ItemId=";(...) rror" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Public IP name must be between 1 and 80 characters long]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[El nombre de la IP pública debe tener una longitud de entre 1 y 80 caracteres.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -896,6 +905,9 @@
         <Item ItemId=";(...) ffixError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Virtual machine name Can't start with underscore. Can't end with period or hyphen]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[El nombre de la máquina virtual no puede empezar por un guion bajo, ni tampoco terminar con un punto o un guion.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -905,6 +917,9 @@
         <Item ItemId=";(...) harError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Virtual machine name cannot contain special characters \/""[]5D;:|<>+=;,?*@&, .]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[El nombre de la máquina virtual no puede contener los caracteres especiales \/""[]5D;:|<>+=;,?*@&,.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1229,6 +1244,9 @@
         <Item ItemId=";(...) cription" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[The cluster name must consist only of alphanumeric lowercase characters or '-' and must start and end with an alphanumeric character.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[El nombre del clúster debe estar formado únicamente por caracteres alfanuméricos en minúscula o "-", y debe comenzar y terminar con un carácter alfanumérico.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1406,6 +1424,9 @@
         <Item ItemId=";(...) on" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[If not provided, the domain DNS name will be used as the default value.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Si no se indica, se usará el nombre DNS del dominio como valor predeterminado.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -2448,6 +2469,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.kubeConfigClusterPicker.clusterContextNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No cluster context information found]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se ha encontrado información de contexto del clúster.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2490,24 +2514,36 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.optionsSource.notDefined" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Options Source defined for id: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se ha definido ningún origen de opciones para el id. {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.optionsTypeNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When FieldInfo.options is an object it must have 'optionsType' property]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Si FieldInfo.options es un objeto, debe tener la propiedad "optionsType".]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.optionsTypeRadioOrDropdown" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When optionsType is not {0} then it must be {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Si optionsType no es {0}, debe ser {1}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceDeployment.BackgroundExecutionFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The task "{0}" has failed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Error de la tarea "{0}".]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2568,6 +2604,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceDeployment.TaskFailedWithNoOutputNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The task "{0}" failed and no output Notebook was generated.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Error de la tarea "{0}"; no se ha generado ningún cuaderno de salida.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2991,6 +3030,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.TappingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[tapping into the brew repository for azdata-cli …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Se está accediendo al repositorio de brew para azdata-cli...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3057,6 +3099,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.TappingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[tapping into the brew repository for azdata-cli …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Se está accediendo al repositorio de brew para azdata-cli...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3090,8 +3135,8 @@
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/dockerTool.resourceDeployment.DockerDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Packages and runs applications in isolated containers]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Proporciona la capacidad de empaquetar y ejecutar una aplicación en contenedores aislados]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Empaqueta y ejecuta aplicaciones en contenedores aislados.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Provides the ability to package and run an application in isolated containers]]></Val>
@@ -3342,6 +3387,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/toolBase.toolBase.InstallFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installation commands completed but version of tool '{0}' could not be detected so our installation attempt has failed. Detection Error: {1}{2}Cleaning up previous installations would help.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Los comandos de la instalación se han completado, pero no se ha podido detectar la versión de la herramienta "{0}", por lo que el intento ha sido erróneo. Error de detección: {1}{2}La limpieza de las instalaciones anteriores podría resultar útil.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4644,6 +4692,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/deploymentInputDialog.notebookType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebook type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Tipo de cuaderno]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4659,12 +4710,18 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/modelViewUtils.azure.accounts.accountNotFoundError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The selected account '{0}' is no longer available. Click sign in to add it again or select a different account.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La cuenta seleccionada ("{0}") ya no está disponible. Haga clic en el botón de inicio de sesión para volver a agregarla o seleccione otra cuenta.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/modelViewUtils.azure.accounts.accountStaleError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Please click the sign in button and refresh the account or select a different account.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[El token de acceso para la cuenta seleccionada ("{0}") ya no es válido. Haga clic en el botón pertinente para iniciar sesión y actualice la cuenta, o seleccione otra.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4707,6 +4764,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/modelViewUtils.fileChecker.NotFile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Path: {0} is not a file, please select a valid kube config file.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[En relación con la ruta de acceso, {0} no es un archivo. Seleccione un archivo kubeconfig válido.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4821,6 +4881,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.FailedToolsInstallation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Some tools were still not discovered. Please make sure that they are installed, running and discoverable]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Hay algunas herramientas que no se han detectado. Asegúrese de que estén instaladas, se estén ejecutando y se puedan detectar.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4890,6 +4953,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.VersionInformationDebugHint" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You will need to restart Azure Data Studio if the tools are installed manually to pick up the change. You may find additional details in 'Deployments' and 'Azure Data CLI' output channels]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Si las herramientas se instalan manualmente, tendrá que reiniciar Azure Data Studio para aplicar el cambio. Puede encontrar detalles adicionales en los canales de salida "Implementaciones" y "CLI de datos Azure".]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5194,7 +5260,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Publisher]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Publicador]]></Val>
+            <Val><![CDATA[Editor]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
