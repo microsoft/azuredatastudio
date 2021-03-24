@@ -65,6 +65,9 @@
         <Item ItemId=";(...) tip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[List of name value pairs containing Spark configuration values. Encoded as JSON dictionary. Example: '{"name":"value", "name2":"value2"}'.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[包含 Spark 配置值的名称值对列表。编码为 JSON 字典。示例: "{"name":"value", "name2":"value2"}"。]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -74,6 +77,9 @@
         <Item ItemId=";(...) ip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Amount of CPU cores to allocate to the driver.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[要分配给驱动程序的 CPU 核心数。]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -83,6 +89,9 @@
         <Item ItemId=";(...) tip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Amount of memory to allocate to the driver. Specify units as part of value. Example 512M or 2G.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[要分配给驱动程序的内存量。指定单位作为值的一部分。示例: 512M 或 2G。]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -92,6 +101,9 @@
         <Item ItemId=";(...) ltip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Amount of CPU cores to allocate to the executor.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[要分配给执行程序的 CPU 核心数。]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -101,6 +113,9 @@
         <Item ItemId=";(...) ltip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Number of instances of the executor to run.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[要运行的执行程序实例数。]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -110,6 +125,9 @@
         <Item ItemId=";(...) oltip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Amount of memory to allocate to the executor. Specify units as part of value. Example 512M or 2G.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[要分配给执行程序的内存量。指定单位作为值的一部分。示例: 512M 或 2G。]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -564,24 +582,36 @@
       <Item ItemId=";extensions/mssql/dist/features.mssql.canceledLinkedAzureAccountSelection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio 需要连接 Azure Key Vault 才能访问 Always Encrypted 的列主密钥，但未选择任何链接的 Azure 帐户。请重试查询，并在出现提示时选择链接的 Azure 帐户。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/features.mssql.chooseLinkedAzureAccount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please select a linked Azure account:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[请选择链接的 Azure 帐户:]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/features.mssql.insufficientlyPrivelagedAzureAccount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[为 {0} 配置的 Azure 帐户没有足够的权限让 Azure Key Vault 访问 Always Encrypted 的列主密钥。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/features.mssql.missingLinkedAzureAccount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio 需要连接 Azure Key Vault 才能访问 Always Encrypted 的列主密钥，但没有可用的链接 Azure 帐户。请添加链接的 Azure 帐户，然后重试查询。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -777,6 +807,9 @@
       <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.defaultUserAndGroups" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Default User and Groups]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[默认用户和组]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -927,8 +960,8 @@
       <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.stickyHeader" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Sticky Bit]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[粘性]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[粘滞位]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Sticky]]></Val>
@@ -948,6 +981,9 @@
       <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.userOrGroupIcon" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User or Group Icon]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[用户或组图标]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -963,6 +999,9 @@
       <Item ItemId=";extensions/mssql/dist/localizedConstants.sparkConnectionRequired" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please connect to the Spark cluster before View {0} History.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[请先连接到 Spark 群集，然后才能查看 {0} 历史记录。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1095,18 +1134,27 @@
       <Item ItemId=";extensions/mssql/dist/main.mssql.errorConvertingToNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred converting the SQL document to a Notebook. Error : {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[将 SQL 文档转换为笔记本时出错。错误: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/main.mssql.errorConvertingToSQL" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred converting the Notebook document to SQL. Error : {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[将笔记本文档转换为 SQL 时出错。错误: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/main.noController" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find the controller endpoint for this instance]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[找不到此实例的控制器终结点]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1437,6 +1485,9 @@
       <Item ItemId=";extensions/mssql/dist/objectExplorerNodeProvider/objectExplorerNodeProvider.promptUsername" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please provide the username to connect to HDFS:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[请提供用户名以连接到 HDFS:]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1551,36 +1602,54 @@
       <Item ItemId=";extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab.sparkJobSubmission.configValues" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Configuration Values]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[配置值]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab.sparkJobSubmission.driverCores" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Driver Cores]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[驱动程序核心数]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab.sparkJobSubmission.driverMemory" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Driver Memory]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[驱动程序内存]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab.sparkJobSubmission.executorCores" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Executor Cores]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[执行程序核心数]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab.sparkJobSubmission.executorCount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Executor Count]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[执行程序计数]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab.sparkJobSubmission.executorMemory" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Executor Memory]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[执行程序内存]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1596,6 +1665,9 @@
       <Item ItemId=";extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab.sparkJobSubmission.queueNameTooltip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name of the Spark queue to execute the session in.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[要在其中执行会话的 Spark 队列的名称。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1656,24 +1728,36 @@
       <Item ItemId=";extensions/mssql/dist/sqlClusterLookUp.bdcConnectError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error: {0}. ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[错误: {0}。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/sqlClusterLookUp.promptBDCPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please provide the password to connect to the BDC Controller]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[请提供密码以连接到 BDC 控制器]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/sqlClusterLookUp.promptBDCUsername" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0}Please provide the username to connect to the BDC Controller:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0}请提供用户名以连接到 BDC 控制器:]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/dist/sqlClusterLookUp.usernameAndPasswordRequired" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Username and password are required]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[用户名和密码是必填项]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1716,6 +1800,9 @@
       <Item ItemId=";extensions/mssql/dist/sqlToolsServer.entryExtractedChannelMsg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Extracted {0} ({1}/{2})]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已提取 {0} ({1}/{2})]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2073,8 +2160,8 @@
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.columnEncryptionSetting.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enables or disables Always Encrypted for the connection]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[针对连接的所有命令的默认列加密设置]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[启用或禁用连接的 Always Encrypted 功能]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Default column encryption setting for all the commands on the connection]]></Val>
@@ -2233,7 +2320,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Host Guardian Service]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[主机监护服务]]></Val>
+            <Val><![CDATA[主机保护者服务]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2241,24 +2328,36 @@
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.enclaveAttestationProtocol.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[指定用于证明与具有安全 enclave 的 Always Encrypted 结合使用的服务器端 enclave 的协议]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.enclaveAttestationProtocol.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Attestation Protocol]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[证明协议]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.enclaveAttestationUrl.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with secure enclaves]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[指定用于证明与具有安全 enclave 的 Always Encrypted 结合使用的服务器端 enclave 的终结点]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.enclaveAttestationUrl.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enclave Attestation URL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Enclave 证明 URL]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2517,7 +2616,7 @@
       <Item ItemId=";extensions/mssql/package.mssql.connectionOptions.typeSystemVersion.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Indicates which server type system the provider will expose through the DataReader]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[指示提供程序将通过 DataReader 公开的服务器类型系统]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -2592,12 +2691,18 @@
       <Item ItemId=";extensions/mssql/package.mssql.exportNotebookToSql" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Export Notebook as SQL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[将笔记本导出为 SQL]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/mssql/package.mssql.exportSqlAsNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Export SQL as Notebook]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[将 SQL 导出为笔记本]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2739,6 +2844,9 @@
       <Item ItemId=";extensions/mssql/package.mssql.query.alwaysEncryptedParameterization" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable Parameterization for Always Encrypted]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[启用 Always Encrypted 参数化]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2853,6 +2961,9 @@
       <Item ItemId=";extensions/mssql/package.mssql.query.maxXmlCharsToStore" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Number of XML characters to store after running a query]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[运行查询后要存储的 XML 字符数]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3210,6 +3321,9 @@
       <Item ItemId=";extensions/mssql/package.title.openClusterDashboard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cluster]D;]A;Dashboard]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[群集]D;]A;仪表板]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
