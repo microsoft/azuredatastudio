@@ -19,7 +19,7 @@ export class DiffNotebookInput extends SideBySideEditorInput {
 	) {
 		let originalInput = instantiationService.createInstance(FileNotebookInput, diffInput.primary.getName(), diffInput.primary.resource, diffInput.originalInput as FileEditorInput);
 		let modifiedInput = instantiationService.createInstance(FileNotebookInput, diffInput.secondary.getName(), diffInput.secondary.resource, diffInput.modifiedInput as FileEditorInput);
-		super(title, diffInput?.getTitle(), originalInput, modifiedInput);
+		super(title, diffInput?.getTitle(), modifiedInput, originalInput);
 		this.setupScrollListeners(originalInput, modifiedInput);
 	}
 
