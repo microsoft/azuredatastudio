@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 
-import { Action, IAction, Separator } from 'vs/base/common/actions';
+import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
@@ -28,10 +28,6 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { URI } from 'vs/base/common/uri';
-import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 const msgLoading = localize('loading', "Loading kernels...");
@@ -44,7 +40,6 @@ const msgSelectConnection = localize('selectConnection', "Select Connection");
 const msgLocalHost = localize('localhost', "localhost");
 
 export const noKernel: string = localize('noKernel', "No Kernel");
-const moreActionsLabel = localize('moreActionsLabel', "More");
 const baseIconClass = 'codicon';
 const maskedIconClass = 'masked-icon';
 
@@ -302,78 +297,6 @@ export class RunParametersAction extends TooltipFromLabelAction {
 		return Promise.resolve();
 	}
 }
-
-export class ToggleMoreActions extends Action {
-
-	private static readonly ID = 'toggleMore';
-	private static readonly LABEL = moreActionsLabel;
-	private static readonly ICON = 'masked-icon more';
-
-	constructor(
-		private readonly _actions: Array<IAction>,
-		private readonly _context: URI,
-		@IContextMenuService private readonly _contextMenuService: IContextMenuService
-	) {
-		super(ToggleMoreActions.ID, ToggleMoreActions.LABEL, ToggleMoreActions.ICON);
-	}
-
-	run(context: StandardKeyboardEvent): Promise<boolean> {
-		this._contextMenuService.showContextMenu({
-			getAnchor: () => context.target,
-			getActions: () => this._actions,
-			getActionsContext: () => this._context
-		});
-		return Promise.resolve(true);
-	}
-}
-
-export class NotebookToggleMoreActions {
-	private _actions: (Action)[] = [];
-	private _moreActions: ActionBar;
-	private _moreActionsElement: HTMLElement;
-	constructor(
-		@IInstantiationService private instantiationService: IInstantiationService
-	) {
-		this._actions.push(
-			instantiationService.createInstance(RunParametersAction, localize('notebook.runParameters', "Run with parameters"), true),
-			instantiationService.createInstance(TrustedAction, localize('notebook.Trusted', 'Trust Notebook'), true));
-	}
-
-	public onInit(elementRef: HTMLElement, context: URI) {
-		this._moreActionsElement = elementRef;
-		this._moreActionsElement.setAttribute('aria-haspopup', 'menu');
-		if (this._moreActionsElement.childNodes.length > 0) {
-			this._moreActionsElement.removeChild(this._moreActionsElement.childNodes[0]);
-		}
-		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL, ariaLabel: moreActionsLabel });
-		this._moreActions.context = { target: this._moreActionsElement };
-		let validActions = this._actions.filter(a => a instanceof Separator);
-		removeDuplicatedAndStartingSeparators(validActions);
-		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreActions, validActions, context), { icon: true, label: false });
-	}
-}
-
-export function removeDuplicatedAndStartingSeparators(actions: (Action)[]): void {
-	let indexesToRemove: number[] = [];
-	for (let i = 0; i < actions.length; i++) {
-		// Handle multiple separators in a row
-		if (i > 0 && actions[i] instanceof Separator && actions[i - 1] instanceof Separator) {
-			indexesToRemove.push(i);
-		}
-	}
-	if (indexesToRemove.length > 0) {
-		for (let i = indexesToRemove.length - 1; i >= 0; i--) {
-			actions.splice(indexesToRemove[i], 1);
-		}
-	}
-	if (actions[0] instanceof Separator) {
-		actions.splice(0, 1);
-	}
-	if (actions[actions.length - 1] instanceof Separator) {
-		actions.splice(actions.length - 1, 1);
-	}
-}
-
 
 const showAllKernelsConfigName = 'notebook.showAllKernels';
 const workbenchPreviewConfigName = 'workbench.enablePreviewFeatures';

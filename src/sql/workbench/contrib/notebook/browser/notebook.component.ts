@@ -28,7 +28,7 @@ import { INotebookService, INotebookParams, INotebookEditor, INotebookSection, I
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { Deferred } from 'sql/base/common/promise';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction, RunParametersAction, NotebookToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction, RunParametersAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
@@ -81,7 +81,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private navigationResult: nb.NavigationResult;
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
-	public _notebookToggleMoreActions: NotebookToggleMoreActions;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -112,7 +111,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		}));
-		this._notebookToggleMoreActions = this.instantiationService.createInstance(NotebookToggleMoreActions);
 	}
 
 	ngOnInit() {
@@ -395,10 +393,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this._actionBar.context = this._notebookParams.notebookUri;
 			taskbar.classList.add('in-preview');
 
-			let moreActionsContainer = DOM.$('li.action-item');
-			this._notebookToggleMoreActions = this.instantiationService.createInstance(NotebookToggleMoreActions);
-			this._notebookToggleMoreActions.onInit(moreActionsContainer, this._notebookParams.notebookUri);
-
 			let buttonDropdownContainer = DOM.$('li.action-item');
 			buttonDropdownContainer.setAttribute('role', 'presentation');
 			let dropdownMenuActionViewItem = new DropdownMenuActionViewItem(
@@ -426,7 +420,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ action: clearResultsButton },
 				{ action: this._trustedAction },
 				{ action: runParametersAction },
-				{ element: moreActionsContainer },
 			]);
 		} else {
 			let kernelContainer = document.createElement('div');
@@ -461,10 +454,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 			this._actionBar.context = this._notebookParams.notebookUri;
 
-			let moreActionsContainer = DOM.$('li.action-item');
-			this._notebookToggleMoreActions = this.instantiationService.createInstance(NotebookToggleMoreActions);
-			this._notebookToggleMoreActions.onInit(moreActionsContainer, this._actionBar.context);
-
 			this._actionBar.setContent([
 				{ action: addCodeCellButton },
 				{ action: addTextCellButton },
@@ -475,7 +464,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ action: clearResultsButton },
 				{ action: collapseCellsAction },
 				{ action: runParametersAction },
-				{ element: moreActionsContainer }
 			]);
 		}
 	}
