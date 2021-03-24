@@ -10,9 +10,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
-import { EncodingMode, IFileEditorInput } from 'vs/workbench/common/editor';
 
-export class FileNotebookInput extends NotebookInput implements IFileEditorInput {
+export class FileNotebookInput extends NotebookInput {
 	public static ID: string = 'workbench.editorinputs.fileNotebookInput';
 
 	constructor(
@@ -26,38 +25,6 @@ export class FileNotebookInput extends NotebookInput implements IFileEditorInput
 	) {
 		super(title, resource, textInput, textModelService, instantiationService, notebookService, extensionService);
 	}
-	setPreferredResource(preferredResource: URI): void {
-		this.textInput.setPreferredResource(preferredResource);
-	}
-	setPreferredName(name: string): void {
-		this.textInput.setPreferredName(name);
-	}
-	setPreferredDescription(description: string): void {
-		this.textInput.setPreferredDescription(description);
-	}
-	setPreferredEncoding(encoding: string): void {
-		this.textInput.setPreferredEncoding(encoding);
-	}
-	setForceOpenAsBinary(): void {
-		// Unsupported
-		return;
-	}
-	getPreferredName(): string | undefined {
-		return this.textInput.getPreferredName();
-	}
-	getPreferredDescription(): string {
-		return this.textInput.getPreferredDescription();
-	}
-	isResolved(): boolean {
-		return this.textInput.isResolved();
-	}
-	getEncoding(): string {
-		return this.textInput.getEncoding();
-	}
-	setEncoding(encoding: string, mode: EncodingMode): void {
-		this.textInput.setEncoding(encoding, mode);
-	}
-	preferredResource: URI;
 
 	public get textInput(): FileEditorInput {
 		return super.textInput as FileEditorInput;

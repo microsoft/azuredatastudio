@@ -30,7 +30,7 @@ import { EditorsObserver } from 'vs/workbench/browser/parts/editor/editorsObserv
 import { IEditorViewState } from 'vs/editor/common/editorCommon';
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { isThenable, timeout } from 'vs/base/common/async';
+import { timeout } from 'vs/base/common/async';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { indexOfPath } from 'vs/base/common/extpath';
 import { DEFAULT_CUSTOM_EDITOR, updateViewTypeSchema, editorAssociationsConfigurationNode } from 'vs/workbench/services/editor/common/editorOpenWith';
@@ -39,7 +39,6 @@ import { IWorkingCopyService } from 'vs/workbench/services/workingCopy/common/wo
 import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentity';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { Extensions, ILanguageAssociationRegistry } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 
 type CachedEditorInput = ResourceEditorInput | IFileEditorInput | UntitledTextEditorInput;
 type OpenInEditorGroup = IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE;
@@ -970,19 +969,6 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 
 		// Otherwise create and add to cache
 		input = factoryFn();
-
-		if (input?.preferredResource?.path?.endsWith('ipynb')) {
-			const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(Extensions.LanguageAssociations);
-			const inputCreator = languageAssociationRegistry.getAssociationForLanguage('ipynb');
-			if (inputCreator) {
-				const newInput = inputCreator.convertInput(input);
-				if (newInput) {
-					if (newInput && !isThenable(newInput)) {
-						return newInput as unknown as IFileEditorInput;
-					}
-				}
-			}
-		}
 
 		this.editorInputCache.set(resource, input);
 		Event.once(input.onDispose)(() => this.editorInputCache.delete(resource));

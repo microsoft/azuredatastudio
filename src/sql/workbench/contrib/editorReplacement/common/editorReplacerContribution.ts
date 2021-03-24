@@ -18,6 +18,7 @@ import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensio
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { isThenable } from 'vs/base/common/async';
 import { withNullAsUndefined } from 'vs/base/common/types';
+import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -41,7 +42,7 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 		// 	return undefined;
 		// }
 
-		if (!(editor instanceof FileEditorInput) && !(editor instanceof UntitledTextEditorInput)) {
+		if (!(editor instanceof FileEditorInput) && !(editor instanceof UntitledTextEditorInput) && !(editor instanceof DiffEditorInput)) {
 			return undefined;
 		}
 
@@ -56,14 +57,16 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 			language = withNullAsUndefined(this.modeService.getModeIdByFilepathOrFirstLine(editor.resource));
 		}
 
-		if (!language) {
+		if (!language && !(editor instanceof DiffEditorInput)) {
 			// just use the extension
 			language = path.extname(editor.resource.toString()).slice(1); // remove the .
+		} else if (!language && editor instanceof DiffEditorInput) {
+			language = path.extname(editor.modifiedInput.resource.toString()).slice(1);
 		}
 
 		if (!language) {
 			const defaultInputCreator = languageAssociationRegistry.defaultAssociation;
-			if (defaultInputCreator) {
+			if (defaultInputCreator && !(editor instanceof DiffEditorInput)) {
 				editor.setMode(defaultInputCreator[0]);
 				const newInput = defaultInputCreator[1].convertInput(editor);
 				if (newInput) {

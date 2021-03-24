@@ -109,10 +109,6 @@ export class NotebookEditorModel extends EditorModel {
 		return this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
 	}
 
-	isReadonly(): boolean {
-		return this.textEditorModel.isReadonly();
-	}
-
 	public setDirty(dirty: boolean): void {
 		if (this._dirty === dirty) {
 			return;
@@ -485,7 +481,7 @@ export abstract class NotebookInput extends EditorInput {
 	}
 
 	updateModel(): void {
-		this._model?.updateModel();
+		this._model.updateModel();
 	}
 
 	public matches(otherInput: any): boolean {

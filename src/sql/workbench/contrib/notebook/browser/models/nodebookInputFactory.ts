@@ -13,6 +13,8 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { ILanguageAssociation } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
+import { DiffNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/diffNotebookInput';
 
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorInputExtensions.EditorInputFactories);
 
@@ -21,11 +23,13 @@ export class NotebookEditorInputAssociation implements ILanguageAssociation {
 
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService) { }
 
-	convertInput(activeEditor: IEditorInput): NotebookInput {
+	convertInput(activeEditor: IEditorInput): NotebookInput | DiffNotebookInput {
 		if (activeEditor instanceof FileEditorInput) {
 			return this.instantiationService.createInstance(FileNotebookInput, activeEditor.getName(), activeEditor.resource, activeEditor);
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
 			return this.instantiationService.createInstance(UntitledNotebookInput, activeEditor.getName(), activeEditor.resource, activeEditor);
+		} else if (activeEditor instanceof DiffEditorInput) {
+			return this.instantiationService.createInstance(DiffNotebookInput, activeEditor.getName(), activeEditor.resource, activeEditor);
 		} else {
 			return undefined;
 		}
