@@ -530,6 +530,7 @@ export interface ICellModel {
 	sendChangeToNotebook(change: NotebookChangeType): void;
 	cellSourceChanged: boolean;
 	readonly savedConnectionName: string | undefined;
+	readonly attachments: nb.ICellAttachment;
 	readonly currentMode: CellEditModes;
 }
 

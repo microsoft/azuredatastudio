@@ -49,6 +49,7 @@ import { ToggleTabFocusModeAction } from 'vs/editor/contrib/toggleTabFocusMode/t
 import 'vs/css!./media/notebook.contribution';
 import { isMacintosh } from 'vs/base/common/platform';
 import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
+import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(FileNotebookInput.ID, FileNoteBookEditorInputFactory);
@@ -259,7 +260,7 @@ registerComponentType({
  * A mime renderer component for images.
  */
 registerComponentType({
-	mimeTypes: ['image/bmp', 'image/png', 'image/jpeg', 'image/gif'],
+	mimeTypes: ImageMimeTypes,
 	rank: 90,
 	safe: true,
 	ctor: MimeRendererComponent,
