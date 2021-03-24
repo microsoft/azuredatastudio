@@ -32,7 +32,7 @@ describe('ConnectControllerDialog', function (): void {
 	it('validate returns false if controller refresh fails', async function (): Promise<void> {
 		sinon.stub(ControllerModel.prototype, 'refresh').returns(Promise.reject('Controller refresh failed'));
 		const connectControllerDialog = new ConnectToControllerDialog(undefined!);
-		const info = { id: uuid(), url: 'https://127.0.0.1:30080', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', name: 'my-arc', namespace: 'arc-ns', username: 'sa', rememberPassword: true, resources: [] };
+		const info: ControllerInfo = { id: uuid(), endpoint: 'https://127.0.0.1:30080', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', name: 'my-arc', namespace: 'arc-ns', username: 'sa', rememberPassword: true, resources: [] };
 		connectControllerDialog.showDialog(info, 'pwd');
 		await connectControllerDialog.isInitialized;
 		const validateResult = await connectControllerDialog.validate();

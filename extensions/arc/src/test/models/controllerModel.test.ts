@@ -53,7 +53,7 @@ describe('ControllerModel', function (): void {
 
 		beforeEach(function (): void {
 			sinon.stub(ConnectToControllerDialog.prototype, 'showDialog');
-			sinon.stub(kubeUtils, 'getKubeConfigClusterContexts').resolves([{ name: 'currentCluster', isCurrentContext: true }]);
+			sinon.stub(kubeUtils, 'getKubeConfigClusterContexts').returns([{ name: 'currentCluster', isCurrentContext: true }]);
 			sinon.stub(vscode.window, 'showErrorMessage').resolves(<any>loc.yes);
 		});
 

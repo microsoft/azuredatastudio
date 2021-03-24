@@ -96,7 +96,8 @@ describe('api', function (): void {
 		async function assertApiCalls(api: azdataExt.IExtension, assertCallback: (promise: Promise<any>, message: string) => Promise<void>): Promise<void> {
 			await assertCallback(api.azdata.getPath(), 'getPath');
 			await assertCallback(api.azdata.getSemVersion(), 'getSemVersion');
-			await assertCallback(api.azdata.login({ endpoint: '' }, '', ''), 'login');
+			await assertCallback(api.azdata.login({ endpoint: 'https://127.0.0.1' }, '', ''), 'login');
+			await assertCallback(api.azdata.login({ namespace: 'namespace' }, '', ''), 'login');
 			await assertCallback(api.azdata.version(), 'version');
 
 			await assertCallback(api.azdata.arc.dc.create('', '', '', '', '', ''), 'arc dc create');

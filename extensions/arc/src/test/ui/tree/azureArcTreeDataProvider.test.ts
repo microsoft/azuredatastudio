@@ -88,7 +88,7 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			should(children.length).equal(1, 'Controller node should be added correctly');
 			should((<ControllerTreeNode>children[0]).model.info).deepEqual(originalInfo);
-			const newInfo = { id: originalInfo.id, url: '1.1.1.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', name: 'new-name', namespace: 'new-namespace', username: 'admin', rememberPassword: false, resources: [] };
+			const newInfo: ControllerInfo = { id: originalInfo.id, endpoint: '1.1.1.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', name: 'new-name', namespace: 'new-namespace', username: 'admin', rememberPassword: false, resources: [] };
 			const controllerModel2 = new ControllerModel(treeDataProvider, newInfo);
 			await treeDataProvider.addOrUpdateController(controllerModel2, '');
 			should(children.length).equal(1, 'Shouldn\'t add duplicate controller node');
@@ -123,7 +123,7 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 			mockArcApi.setup(x => x.azdata).returns(() => fakeAzdataApi);
 
 			sinon.stub(vscode.extensions, 'getExtension').returns(mockArcExtension.object);
-			sinon.stub(kubeUtils, 'getKubeConfigClusterContexts').resolves([{ name: 'currentCluster', isCurrentContext: true }]);
+			sinon.stub(kubeUtils, 'getKubeConfigClusterContexts').returns([{ name: 'currentCluster', isCurrentContext: true }]);
 			const controllerModel = new ControllerModel(treeDataProvider, getDefaultControllerInfo(), 'mypassword');
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			const controllerNode = treeDataProvider.getControllerNode(controllerModel);
