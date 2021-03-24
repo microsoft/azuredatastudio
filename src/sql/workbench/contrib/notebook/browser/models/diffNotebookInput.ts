@@ -11,8 +11,6 @@ import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models
 
 export class DiffNotebookInput extends SideBySideEditorInput {
 	public static ID: string = 'workbench.editorinputs.DiffNotebookInput';
-	private _originalInput: FileNotebookInput;
-	private _modifiedInput: FileNotebookInput;
 
 	constructor(
 		title: string,
@@ -22,29 +20,26 @@ export class DiffNotebookInput extends SideBySideEditorInput {
 		let originalInput = instantiationService.createInstance(FileNotebookInput, diffInput.primary.getName(), diffInput.primary.resource, diffInput.originalInput as FileEditorInput);
 		let modifiedInput = instantiationService.createInstance(FileNotebookInput, diffInput.secondary.getName(), diffInput.secondary.resource, diffInput.modifiedInput as FileEditorInput);
 		super(title, diffInput?.getTitle(), originalInput, modifiedInput);
-		this._originalInput = originalInput;
-		this._modifiedInput = modifiedInput;
-		this.setupListerners();
+		this.setupScrollListerners(originalInput, modifiedInput);
 	}
 
 	public getTypeId(): string {
 		return DiffNotebookInput.ID;
 	}
 
-	private setupListerners(): void {
-		Promise.all([this._originalInput.resolve(),
-		this._modifiedInput.resolve()]).then(() => {
-
-			this._originalInput.container.parentElement.parentElement.addEventListener('scroll', (e) => {
-				if (this._modifiedInput?.container) {
-					this._modifiedInput.container.parentElement.parentElement.scroll({ top: this._originalInput.container.parentElement.parentElement.scrollTop });
+	private setupScrollListerners(originalInput: FileNotebookInput, modifiedInput: FileNotebookInput): void {
+		Promise.all([originalInput.containerSet,
+		modifiedInput.containerSet]).then(() => {
+			originalInput.container.parentElement.parentElement.addEventListener('scroll', (e) => {
+				if (modifiedInput?.container) {
+					modifiedInput.container.parentElement.parentElement.scroll({ top: originalInput.container.parentElement.parentElement.scrollTop });
 				}
 			});
-			// this._originalInput.container.firstElementChild[0].onscroll = (e) => {
-			// 	if (this._modifiedInput?.container?.firstElementChild[0]) {
-			// 		this._modifiedInput.container.firstElementChild[0].scroll({ top: this._originalInput.container.firstElementChild[0].scrollTop });
-			// 	}
-			// };
+			modifiedInput.container.parentElement.parentElement.addEventListener('scroll', (e) => {
+				if (originalInput?.container) {
+					originalInput.container.parentElement.parentElement.scroll({ top: modifiedInput.container.parentElement.parentElement.scrollTop });
+				}
+			});
 		});
 	}
 }
