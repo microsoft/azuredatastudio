@@ -37,8 +37,7 @@ declare module 'arc' {
 		id: string,
 		kubeConfigFilePath: string,
 		kubeClusterContext: string
-		endpoint: string | undefined,
-		namespace: string,
+		url: string,
 		name: string,
 		username: string,
 		rememberPassword: boolean,

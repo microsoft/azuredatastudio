@@ -66,4 +66,3 @@ export const promptForEula = (privacyStatementUrl: string, eulaUrl: string) => l
 export const promptForEulaLog = (privacyStatementUrl: string, eulaUrl: string) => promptLog(promptForEula(privacyStatementUrl, eulaUrl));
 export const userResponseToEulaPrompt = (response: string | undefined) => localize('azdata.promptForEulaResponse', "User response to EULA prompt: {0}", response);
 export const eulaAcceptedStateOnStartup = (eulaAccepted: boolean) => localize('azdata.eulaAcceptedStateOnStartup', "'EULA Accepted' state on startup: {0}", eulaAccepted);
-export const endpointOrNamespaceRequired = localize('azdata.endpointOrNamespaceRequired', "Either an endpoint or a namespace must be specified");
