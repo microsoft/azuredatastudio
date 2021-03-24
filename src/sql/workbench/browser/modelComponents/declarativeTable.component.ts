@@ -284,9 +284,13 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		if (isDataPropertyChanged) {
 			this.clearContainer();
 			this._data = finalData;
-			this._selectedRow = -1;
 		}
 		super.setProperties(properties);
+	}
+
+	public clearContainer(): void {
+		super.clearContainer();
+		this._selectedRow = -1;
 	}
 
 	public get data(): azdata.DeclarativeTableCellValue[][] {
