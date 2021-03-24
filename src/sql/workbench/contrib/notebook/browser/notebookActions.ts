@@ -26,13 +26,13 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { CellActionBase, CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
+import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { URI } from 'vs/base/common/uri';
 import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { QuickInputBox } from 'vs/base/parts/quickinput/browser/quickInputBox';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -279,7 +279,9 @@ export class RunParametersAction extends TooltipFromLabelAction {
 	private static readonly label = localize('runParameters', "Run with Parameters");
 	private static readonly iconClass = 'icon-run-with-parameters';
 
-	constructor(id: string, toggleTooltip: boolean) {
+	constructor(id: string, toggleTooltip: boolean,
+		@IQuickInputService private readonly quickInputService: IQuickInputService,
+	) {
 		super(id, {
 			label: RunParametersAction.label,
 			baseClass: baseIconClass,
@@ -289,8 +291,14 @@ export class RunParametersAction extends TooltipFromLabelAction {
 		});
 	}
 	// Open QuickPick dialog
-	public run(): Promise<void> {
-		const parametersInputBox = QuickInputBox;
+	public async run(): Promise<void> {
+		let defaultParams = this.quickInputService.createQuickPick();
+		defaultParams.items = [];
+		defaultParams.show();
+		defaultParams.placeholder = 'Test';
+		if (defaultParams) {
+			return Promise.resolve();
+		}
 		return Promise.resolve();
 	}
 }
@@ -345,7 +353,7 @@ export class NotebookToggleMoreActions {
 	}
 }
 
-export function removeDuplicatedAndStartingSeparators(actions: (Action | CellActionBase)[]): void {
+export function removeDuplicatedAndStartingSeparators(actions: (Action)[]): void {
 	let indexesToRemove: number[] = [];
 	for (let i = 0; i < actions.length; i++) {
 		// Handle multiple separators in a row

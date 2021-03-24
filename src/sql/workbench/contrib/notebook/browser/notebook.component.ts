@@ -397,7 +397,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 			let moreActionsContainer = DOM.$('li.action-item');
 			this._notebookToggleMoreActions = this.instantiationService.createInstance(NotebookToggleMoreActions);
-			this._notebookToggleMoreActions.onInit(moreActionsContainer, this._actionBar.context);
+			this._notebookToggleMoreActions.onInit(moreActionsContainer, this._notebookParams.notebookUri);
 
 			let buttonDropdownContainer = DOM.$('li.action-item');
 			buttonDropdownContainer.setAttribute('role', 'presentation');
