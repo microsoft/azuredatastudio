@@ -78,7 +78,7 @@ describe('postgresOverviewPage', () => {
 
 		beforeEach(() => {
 			sinon.stub(utils, 'promptForInstanceDeletion').returns(Promise.resolve(true));
-			sinon.stub(controllerModel, 'acquireAzdataSession').returns(Promise.resolve(vscode.Disposable.from()));
+			sinon.stub(controllerModel, 'login').returns(Promise.resolve());
 			refreshTreeNode = sinon.stub(controllerModel, 'refreshTreeNode');
 		});
 

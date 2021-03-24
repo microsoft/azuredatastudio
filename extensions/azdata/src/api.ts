@@ -55,47 +55,47 @@ export function getAzdataApi(localAzdataDiscovered: Promise<IAzdataTool | undefi
 					profileName?: string,
 					storageClass?: string,
 					additionalEnvVars?: azdataExt.AdditionalEnvVars,
-					session?: azdataExt.AzdataSession) => {
+					azdataContext?: string) => {
 					await localAzdataDiscovered;
 					throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
-					return azdataToolService.localAzdata.arc.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass, additionalEnvVars, session);
+					return azdataToolService.localAzdata.arc.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass, additionalEnvVars, azdataContext);
 				},
 				endpoint: {
-					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession) => {
+					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
 						await localAzdataDiscovered;
 						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata.arc.dc.endpoint.list(additionalEnvVars, session);
+						return azdataToolService.localAzdata.arc.dc.endpoint.list(additionalEnvVars, azdataContext);
 					}
 				},
 				config: {
-					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession) => {
+					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
 						await localAzdataDiscovered;
 						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata.arc.dc.config.list(additionalEnvVars, session);
+						return azdataToolService.localAzdata.arc.dc.config.list(additionalEnvVars, azdataContext);
 					},
-					show: async (additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession) => {
+					show: async (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
 						await localAzdataDiscovered;
 						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata.arc.dc.config.show(additionalEnvVars, session);
+						return azdataToolService.localAzdata.arc.dc.config.show(additionalEnvVars, azdataContext);
 					}
 				}
 			},
 			postgres: {
 				server: {
-					delete: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession) => {
+					delete: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
 						await localAzdataDiscovered;
 						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata.arc.postgres.server.delete(name, additionalEnvVars, session);
+						return azdataToolService.localAzdata.arc.postgres.server.delete(name, additionalEnvVars, azdataContext);
 					},
-					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession) => {
+					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
 						await localAzdataDiscovered;
 						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata.arc.postgres.server.list(additionalEnvVars, session);
+						return azdataToolService.localAzdata.arc.postgres.server.list(additionalEnvVars, azdataContext);
 					},
-					show: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession) => {
+					show: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
 						await localAzdataDiscovered;
 						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata.arc.postgres.server.show(name, additionalEnvVars, session);
+						return azdataToolService.localAzdata.arc.postgres.server.show(name, additionalEnvVars, azdataContext);
 					},
 					edit: async (
 						name: string,
@@ -113,29 +113,29 @@ export function getAzdataApi(localAzdataDiscovered: Promise<IAzdataTool | undefi
 							workers?: number;
 						},
 						additionalEnvVars?: azdataExt.AdditionalEnvVars,
-						session?: azdataExt.AzdataSession) => {
+						azdataContext?: string) => {
 						await localAzdataDiscovered;
 						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata.arc.postgres.server.edit(name, args, additionalEnvVars, session);
+						return azdataToolService.localAzdata.arc.postgres.server.edit(name, args, additionalEnvVars, azdataContext);
 					}
 				}
 			},
 			sql: {
 				mi: {
-					delete: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession) => {
+					delete: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
 						await localAzdataDiscovered;
 						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata.arc.sql.mi.delete(name, additionalEnvVars, session);
+						return azdataToolService.localAzdata.arc.sql.mi.delete(name, additionalEnvVars, azdataContext);
 					},
-					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession) => {
+					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
 						await localAzdataDiscovered;
 						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata.arc.sql.mi.list(additionalEnvVars, session);
+						return azdataToolService.localAzdata.arc.sql.mi.list(additionalEnvVars, azdataContext);
 					},
-					show: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession) => {
+					show: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
 						await localAzdataDiscovered;
 						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata.arc.sql.mi.show(name, additionalEnvVars, session);
+						return azdataToolService.localAzdata.arc.sql.mi.show(name, additionalEnvVars, azdataContext);
 					},
 					edit: async (
 						name: string,
@@ -147,11 +147,11 @@ export function getAzdataApi(localAzdataDiscovered: Promise<IAzdataTool | undefi
 							noWait?: boolean;
 						},
 						additionalEnvVars?: azdataExt.AdditionalEnvVars,
-						session?: azdataExt.AzdataSession
+						azdataContext?: string
 					) => {
 						await localAzdataDiscovered;
 						throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata.arc.sql.mi.edit(name, args, additionalEnvVars, session);
+						return azdataToolService.localAzdata.arc.sql.mi.edit(name, args, additionalEnvVars, azdataContext);
 					}
 				}
 			}
@@ -164,10 +164,6 @@ export function getAzdataApi(localAzdataDiscovered: Promise<IAzdataTool | undefi
 		login: async (endpoint: string, username: string, password: string, additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
 			throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
 			return azdataToolService.localAzdata.login(endpoint, username, password, additionalEnvVars);
-		},
-		acquireSession: async (endpoint: string, username: string, password: string, additionEnvVars?: azdataExt.AdditionalEnvVars) => {
-			throwIfNoAzdataOrEulaNotAccepted(azdataToolService.localAzdata, isEulaAccepted(memento));
-			return azdataToolService.localAzdata?.acquireSession(endpoint, username, password, additionEnvVars);
 		},
 		getSemVersion: async () => {
 			await localAzdataDiscovered;

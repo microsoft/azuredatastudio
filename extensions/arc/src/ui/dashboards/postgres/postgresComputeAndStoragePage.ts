@@ -179,9 +179,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
-							let session: azdataExt.AzdataSession | undefined = undefined;
 							try {
-								session = await this._postgresModel.controllerModel.acquireAzdataSession();
 								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name,
 									{
@@ -191,9 +189,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 										memoryRequest: this.saveArgs.workerMemoryRequest,
 										memoryLimit: this.saveArgs.workerMemoryLimit
 									},
-									this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-									session
-								);
+									this._postgresModel.controllerModel.azdataAdditionalEnvVars);
 								/* TODO add second edit call for coordinator configuration
 									await this._azdataApi.azdata.arc.postgres.server.edit(
 										this._postgresModel.info.name,
@@ -212,8 +208,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 								// the edit wasn't successfully applied
 								this.saveButton!.enabled = true;
 								throw err;
-							} finally {
-								session?.dispose();
 							}
 							await this._postgresModel.refresh();
 						}

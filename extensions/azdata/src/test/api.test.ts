@@ -97,14 +97,6 @@ describe('api', function (): void {
 			await assertCallback(api.azdata.getPath(), 'getPath');
 			await assertCallback(api.azdata.getSemVersion(), 'getSemVersion');
 			await assertCallback(api.azdata.login('', '', ''), 'login');
-			await assertCallback((async () => {
-				let session: azdataExt.AzdataSession | undefined;
-				try {
-					session = await api.azdata.acquireSession('', '', '');
-				} finally {
-					session?.dispose();
-				}
-			})(), 'acquireSession');
 			await assertCallback(api.azdata.version(), 'version');
 
 			await assertCallback(api.azdata.arc.dc.create('', '', '', '', '', ''), 'arc dc create');

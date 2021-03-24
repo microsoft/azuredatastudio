@@ -44,7 +44,7 @@ export class ControllerTreeNode extends TreeNode {
 		} catch (err) {
 			vscode.window.showErrorMessage(loc.errorConnectingToController(err));
 			try {
-				await this.model.refresh(false, true);
+				await this.model.refresh(false);
 				this.updateChildren(this.model.registrations);
 			} catch (err) {
 				if (!(err instanceof UserCancelledError)) {
