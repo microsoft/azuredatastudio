@@ -57,11 +57,9 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 			language = withNullAsUndefined(this.modeService.getModeIdByFilepathOrFirstLine(editor.resource));
 		}
 
-		if (!language && !(editor instanceof DiffEditorInput)) {
-			// just use the extension
-			language = path.extname(editor.resource.toString()).slice(1); // remove the .
-		} else if (!language && editor instanceof DiffEditorInput) {
-			language = path.extname(editor.modifiedInput.resource.toString()).slice(1);
+		if (!language) {
+			// Attempt to use extension or extension of modified inpuut (if in diff editor)
+			language = editor instanceof DiffEditorInput ? path.extname(editor.modifiedInput.resource.toString()).slice(1) : path.extname(editor.resource.toString()).slice(1);
 		}
 
 		if (!language) {

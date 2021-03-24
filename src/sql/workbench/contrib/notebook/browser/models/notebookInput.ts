@@ -222,7 +222,7 @@ export abstract class NotebookInput extends EditorInput {
 	private _notebookEditorOpenedTimestamp: number;
 	private _modelResolveInProgress: boolean = false;
 	private _modelResolved: Deferred<void> = new Deferred<void>();
-	private _containerSet: Deferred<void> = new Deferred<void>();
+	private _containerResolved: Deferred<void> = new Deferred<void>();
 
 	private _notebookFindModel: NotebookFindModel;
 
@@ -453,15 +453,15 @@ export abstract class NotebookInput extends EditorInput {
 	set container(container: HTMLElement) {
 		this._disposeContainer();
 		this._parentContainer = container;
-		this._containerSet.resolve();
+		this._containerResolved.resolve();
 	}
 
 	get container(): HTMLElement {
 		return this._parentContainer;
 	}
 
-	get containerSet(): Promise<void> {
-		return this._containerSet.promise;
+	get containerResolved(): Promise<void> {
+		return this._containerResolved.promise;
 	}
 
 	/**

@@ -15,13 +15,14 @@ import { ILanguageAssociation } from 'sql/workbench/services/languageAssociation
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { DiffNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/diffNotebookInput';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorInputExtensions.EditorInputFactories);
 
 export class NotebookEditorInputAssociation implements ILanguageAssociation {
 	static readonly languages = ['notebook', 'ipynb'];
 
-	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService) { }
+	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService, @IConfigurationService private readonly configurationService: IConfigurationService) { }
 
 	convertInput(activeEditor: IEditorInput): NotebookInput | DiffNotebookInput {
 		if (activeEditor instanceof FileEditorInput) {
@@ -29,10 +30,13 @@ export class NotebookEditorInputAssociation implements ILanguageAssociation {
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
 			return this.instantiationService.createInstance(UntitledNotebookInput, activeEditor.getName(), activeEditor.resource, activeEditor);
 		} else if (activeEditor instanceof DiffEditorInput) {
-			return this.instantiationService.createInstance(DiffNotebookInput, activeEditor.getName(), activeEditor);
-		} else {
-			return undefined;
+			// Only show rendered notebook in diff editor if setting is true (otherwise, defaults back to text diff)
+			// Note: intentionally not listening to config changes here, given that inputs won't be converted dynamically if the setting is changed
+			if (this.configurationService.getValue('notebook.showRenderedNotebookInDiffEditor') === true) {
+				return this.instantiationService.createInstance(DiffNotebookInput, activeEditor.getName(), activeEditor);
+			}
 		}
+		return undefined;
 	}
 
 	createBase(activeEditor: NotebookInput): IEditorInput {

@@ -20,22 +20,26 @@ export class DiffNotebookInput extends SideBySideEditorInput {
 		let originalInput = instantiationService.createInstance(FileNotebookInput, diffInput.primary.getName(), diffInput.primary.resource, diffInput.originalInput as FileEditorInput);
 		let modifiedInput = instantiationService.createInstance(FileNotebookInput, diffInput.secondary.getName(), diffInput.secondary.resource, diffInput.modifiedInput as FileEditorInput);
 		super(title, diffInput?.getTitle(), originalInput, modifiedInput);
-		this.setupScrollListerners(originalInput, modifiedInput);
+		this.setupScrollListeners(originalInput, modifiedInput);
 	}
 
 	public getTypeId(): string {
 		return DiffNotebookInput.ID;
 	}
 
-	private setupScrollListerners(originalInput: FileNotebookInput, modifiedInput: FileNotebookInput): void {
-		Promise.all([originalInput.containerSet,
-		modifiedInput.containerSet]).then(() => {
-			originalInput.container.parentElement.parentElement.addEventListener('scroll', (e) => {
+	/**
+	 * Setup scroll listeners so that both the original and modified editors scroll together
+	 * @param originalInput original notebook input
+	 * @param modifiedInput modified notebook input
+	 */
+	private setupScrollListeners(originalInput: FileNotebookInput, modifiedInput: FileNotebookInput): void {
+		Promise.all([originalInput.containerResolved, modifiedInput.containerResolved]).then(() => {
+			originalInput.container.parentElement.parentElement.addEventListener('scroll', () => {
 				if (modifiedInput?.container) {
 					modifiedInput.container.parentElement.parentElement.scroll({ top: originalInput.container.parentElement.parentElement.scrollTop });
 				}
 			});
-			modifiedInput.container.parentElement.parentElement.addEventListener('scroll', (e) => {
+			modifiedInput.container.parentElement.parentElement.addEventListener('scroll', () => {
 				if (originalInput?.container) {
 					originalInput.container.parentElement.parentElement.scroll({ top: modifiedInput.container.parentElement.parentElement.scrollTop });
 				}

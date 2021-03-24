@@ -252,7 +252,12 @@ configurationRegistry.registerConfiguration({
 			'default': 1.5,
 			'minimum': 1,
 			'description': localize('notebook.markdownPreviewLineHeight', "Controls the line height used in the notebook markdown preview. This number is relative to the font size.")
-		}
+		},
+		'notebook.showRenderedNotebookInDiffEditor': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('notebook.showRenderedNotebookinDiffEditor', "(Preview) Show rendered notebook in diff editor.")
+		},
 	}
 });
 
