@@ -10672,7 +10672,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Learn]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Aprender]]></Val>
+            <Val><![CDATA[Learn]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
