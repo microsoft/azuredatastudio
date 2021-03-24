@@ -62,6 +62,9 @@ export class SqlDatabaseTree {
 	private _selectedIssue!: SqlMigrationAssessmentResultItem;
 	private _selectedObject!: SqlMigrationImpactedObjectInfo;
 
+	private _serverName!: string;
+	private _dbNames!: string[];
+
 	constructor(
 		private _model: MigrationStateModel,
 		private _targetType: MigrationTargetType
@@ -79,15 +82,15 @@ export class SqlDatabaseTree {
 			},
 		}).component();
 
-		component.addItem(this.createSearchComponent(view), { flex: '0 0 auto' });
-		component.addItem(this.createInstanceComponent(view), { flex: '0 0 auto' });
-		component.addItem(this.createDatabaseComponent(view, dbs), { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'auto' } });
+		component.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
+		component.addItem(this.createInstanceComponent(), { flex: '0 0 auto' });
+		component.addItem(this.createDatabaseComponent(dbs), { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'auto' } });
 		return component;
 	}
 
-	private createDatabaseComponent(view: azdata.ModelView, dbs: string[]): azdata.DivContainer {
+	private createDatabaseComponent(dbs: string[]): azdata.DivContainer {
 
-		this._databaseTable = view.modelBuilder.declarativeTable().withProps(
+		this._databaseTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
 				enableRowSelection: true,
 				width: 200,
@@ -125,11 +128,11 @@ export class SqlDatabaseTree {
 			this._databaseTable.focus();
 			this._activeIssues = this._model._assessmentResults?.databaseAssessments[row].issues;
 			this._selectedIssue = this._model._assessmentResults?.databaseAssessments[row].issues[0];
-			this._dbName.value = <string>this._databaseTable.dataValues![row][1].value;
+			this._dbName.value = this._dbNames[row];
 			this.refreshResults();
 		});
 
-		const tableContainer = view.modelBuilder.divContainer().withItems([this._databaseTable]).withProps({
+		const tableContainer = this._view.modelBuilder.divContainer().withItems([this._databaseTable]).withProps({
 			CSSStyles: {
 				'width': '200px',
 				'margin': '0px 8px 0px 34px'
@@ -187,7 +190,7 @@ export class SqlDatabaseTree {
 		this._instanceTable.onRowSelected((e) => {
 			this._activeIssues = this._model._assessmentResults?.issues;
 			this._selectedIssue = this._model._assessmentResults?.issues[0];
-			this._dbName.value = <string>this._instanceTable.dataValues![0][0].value;
+			this._dbName.value = this._serverName;
 			this.refreshResults();
 		});
 
@@ -664,15 +667,15 @@ export class SqlDatabaseTree {
 		let instanceTableValues: azdata.DeclarativeTableCellValue[][] = [];
 		let databaseTableValues: azdata.DeclarativeTableCellValue[][] = [];
 		const excludedDatabases = ['master', 'msdb', 'tempdb', 'model'];
-		const dbList = (await azdata.connection.listDatabases(this._model.sourceConnectionId)).filter(db => !excludedDatabases.includes(db));
+		this._dbNames = (await azdata.connection.listDatabases(this._model.sourceConnectionId)).filter(db => !excludedDatabases.includes(db));
 		const selectedDbs = (this._targetType === MigrationTargetType.SQLVM) ? this._model._vmDbs : this._model._miDbs;
-		const serverName = (await this._model.getSourceConnectionProfile()).serverName;
+		this._serverName = (await this._model.getSourceConnectionProfile()).serverName;
 
 		if (this._targetType === MigrationTargetType.SQLVM || !this._model._assessmentResults) {
 			instanceTableValues = [
 				[
 					{
-						value: this.createIconTextCell(IconPathHelper.sqlServerLogo, serverName),
+						value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
 						style: styleLeft
 					},
 					{
@@ -681,7 +684,7 @@ export class SqlDatabaseTree {
 					}
 				]
 			];
-			dbList.forEach((db) => {
+			this._dbNames.forEach((db) => {
 				databaseTableValues.push(
 					[
 						{
@@ -703,7 +706,7 @@ export class SqlDatabaseTree {
 			instanceTableValues = [
 				[
 					{
-						value: this.createIconTextCell(IconPathHelper.sqlServerLogo, serverName),
+						value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
 						style: styleLeft
 					},
 					{
@@ -731,7 +734,7 @@ export class SqlDatabaseTree {
 				);
 			});
 		}
-		this._dbName.value = serverName;
+		this._dbName.value = this._serverName;
 		this._instanceTable.dataValues = instanceTableValues;
 		this._databaseTable.dataValues = databaseTableValues;
 		if (this._targetType === MigrationTargetType.SQLMI) {
