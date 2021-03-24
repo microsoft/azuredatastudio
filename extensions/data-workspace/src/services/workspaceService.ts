@@ -13,6 +13,7 @@ import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
 import { TelemetryReporter, TelemetryViews, calculateRelativity, TelemetryActions } from '../common/telemetry';
+import { isCurrentWorkspaceUntitled } from '../common/utils';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
@@ -51,9 +52,15 @@ export class WorkspaceService implements IWorkspaceService {
 		// save temp project
 		await this._context.globalState.update(TempProject, [projectFileFsPath]);
 
-		// create a new workspace
+		// create workspace
 		const projectFolder = vscode.Uri.file(path.dirname(projectFileFsPath));
-		await azdata.workspace.createWorkspace(projectFolder, workspaceFile);
+
+		if (isCurrentWorkspaceUntitled()) {
+			vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders!.length, null, { uri: projectFolder });
+			await azdata.workspace.saveAndEnterWorkspace(workspaceFile!);
+		} else {
+			await azdata.workspace.createAndEnterWorkspace(projectFolder, workspaceFile);
+		}
 	}
 
 	get isProjectProviderAvailable(): boolean {
@@ -67,10 +74,10 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	/**
-	 * Verify that a workspace is open or that if one isn't, it's ok to create a workspace
+	 * Verify that a workspace is open or that if one isn't, it's ok to create a workspace and restart the extension host
 	 */
 	async validateWorkspace(): Promise<boolean> {
-		if (!vscode.workspace.workspaceFile) {
+		if (!vscode.workspace.workspaceFile || isCurrentWorkspaceUntitled()) {
 			const result = await vscode.window.showWarningMessage(constants.CreateWorkspaceConfirmation, constants.OkButtonText, constants.CancelButtonText);
 			if (result === constants.OkButtonText) {
 				return true;
@@ -102,7 +109,7 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 
 		// a workspace needs to be open to add projects
-		if (!vscode.workspace.workspaceFile) {
+		if (!vscode.workspace.workspaceFile || isCurrentWorkspaceUntitled()) {
 			await this.CreateNewWorkspaceForProject(projectFiles[0].fsPath, workspaceFilePath);
 
 			// this won't get hit since the extension host will get restarted, but helps with testing

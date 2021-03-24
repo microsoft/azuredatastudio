@@ -244,6 +244,13 @@ export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
 	return extension.exports;
 }
 
+/**
+ * if the current workspace is untitled, the returned URI of vscode.workspace.workspaceFile will use the `untitled` scheme
+ */
+export function isCurrentWorkspaceUntitled(): boolean {
+	return !!vscode.workspace.workspaceFile && vscode.workspace.workspaceFile.scheme.toLowerCase() === 'untitled';
+}
+
 /*
  * Returns the default deployment options from DacFx
  */
