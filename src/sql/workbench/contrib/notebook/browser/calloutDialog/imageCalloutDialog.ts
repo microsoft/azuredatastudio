@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/imageCalloutDialog';
 import * as DOM from 'vs/base/browser/dom';
-import * as strings from 'vs/base/common/strings';
 import * as styler from 'vs/platform/theme/common/styler';
 import { URI } from 'vs/base/common/uri';
 import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
@@ -27,10 +26,11 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+import { escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 
 export interface IImageCalloutDialogOptions {
 	insertTitle?: string,
-	insertMarkup?: string,
+	insertEscapedMarkdown?: string,
 	imagePath?: string,
 	embedImage?: boolean
 }
@@ -186,7 +186,7 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 	public insert(): void {
 		this.hide();
 		this._selectionComplete.resolve({
-			insertMarkup: `<img src="${strings.escape(this._imageUrlInputBox.value)}">`,
+			insertEscapedMarkdown: `![](${escapeUrl(this._imageUrlInputBox.value)})`,
 			imagePath: this._imageUrlInputBox.value,
 			embedImage: this._imageEmbedCheckbox.checked
 		});
@@ -196,7 +196,7 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 	public cancel(): void {
 		super.cancel();
 		this._selectionComplete.resolve({
-			insertMarkup: '',
+			insertEscapedMarkdown: '',
 			imagePath: undefined,
 			embedImage: undefined
 		});
