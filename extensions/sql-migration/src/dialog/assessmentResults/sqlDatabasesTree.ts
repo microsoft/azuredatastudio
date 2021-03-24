@@ -69,7 +69,7 @@ export class SqlDatabaseTree {
 	private createDatabaseComponent(view: azdata.ModelView, dbs: string[]): azdata.DivContainer {
 		this._databaseTable = view.modelBuilder.declarativeTable().withProps(
 			{
-				selectEffect: true,
+				enableRowSelection: true,
 				width: 200,
 				CSSStyles: {
 					'table-layout': 'fixed'
@@ -141,7 +141,7 @@ export class SqlDatabaseTree {
 	private createInstanceComponent(view: azdata.ModelView): azdata.DivContainer {
 		this._instanceTable = view.modelBuilder.declarativeTable().withProps(
 			{
-				selectEffect: true,
+				enableRowSelection: true,
 				width: 200,
 				columns: [
 					{
@@ -291,7 +291,7 @@ export class SqlDatabaseTree {
 
 		this._impactedObjectsTable = view.modelBuilder.declarativeTable().withProps(
 			{
-				selectEffect: true,
+				enableRowSelection: true,
 				width: '100%',
 				columns: [
 					{
@@ -516,7 +516,7 @@ export class SqlDatabaseTree {
 
 		this._assessmentResultsTable = view.modelBuilder.declarativeTable().withProps(
 			{
-				selectEffect: true,
+				enableRowSelection: true,
 				width: '200px',
 				CSSStyles: {
 					'table-layout': 'fixed'
