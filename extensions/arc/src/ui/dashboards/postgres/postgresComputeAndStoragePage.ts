@@ -529,7 +529,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	/**
 	 * A function that determines if an input box's value should be considered or not.
-	 * Tiggers the save and discard buttons to become enabled depnding on the value change.
+	 * Triggers the save and discard buttons to become enabled depending on the value change.
 	 *
 	 * If new value is the same as value found in config, do not consider this new value for editing.
 	 * If new value is invalid, do not consider this new value for editing and enable discard button.

@@ -16,7 +16,7 @@ export type PodHealthModel = {
 	lastUpdate: string
 };
 
-export enum PodCondtionType {
+export enum PodConditionType {
 	initialized = 'Initialized',
 	ready = 'Ready',
 	containersReady = 'ContainersReady',
@@ -137,7 +137,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 				loading: !this._postgresModel.configLastUpdated
 			}).component();
 
-		this.refreshPodCondtions();
+		this.refreshPodConditions();
 
 		content.addItem(this.podConditionsLoading, { CSSStyles: cssStyles.text });
 
@@ -195,31 +195,31 @@ export class PostgresResourceHealthPage extends DashboardPage {
 				} else {
 					imageComponent.iconPath = IconPathHelper.success;
 
-					if (c.type === PodCondtionType.initialized) {
+					if (c.type === PodConditionType.initialized) {
 						message = loc.podInitialized;
-					} else if (c.type === PodCondtionType.ready) {
+					} else if (c.type === PodConditionType.ready) {
 						message = loc.podReady;
-					} else if (c.type === PodCondtionType.containersReady) {
+					} else if (c.type === PodConditionType.containersReady) {
 						message = loc.containerReady;
-					} else if (c.type === PodCondtionType.podScheduled) {
+					} else if (c.type === PodConditionType.podScheduled) {
 						message = loc.podScheduled;
 					} else {
 						message = c.message ?? c.reason ?? '';
 					}
 				}
 
-				const condtionContainer = this.modelView.modelBuilder.flexContainer().withProps({
+				const conditionContainer = this.modelView.modelBuilder.flexContainer().withProps({
 					CSSStyles: { 'alignItems': 'center', 'height': '15px' }
 				}).component();
-				condtionContainer.addItem(imageComponent, { CSSStyles: { 'margin-right': '0px' } });
-				condtionContainer.addItem(this.modelView.modelBuilder.text().withProps({
+				conditionContainer.addItem(imageComponent, { CSSStyles: { 'margin-right': '0px' } });
+				conditionContainer.addItem(this.modelView.modelBuilder.text().withProps({
 					value: message,
 				}).component());
 
 				indexes.push(this.podsData.length);
 				this.podsData.push({
 					condition: c.type,
-					details: condtionContainer,
+					details: conditionContainer,
 					lastUpdate: c.lastTransitionTime
 				});
 			});
@@ -317,7 +317,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		}
 	}
 
-	private refreshPodCondtions(): void {
+	private refreshPodConditions(): void {
 		if (this._postgresModel.config) {
 			this.podConditionsTableIndexes = new Map();
 			this.podsData = [];
@@ -330,6 +330,6 @@ export class PostgresResourceHealthPage extends DashboardPage {
 	private handleConfigUpdated() {
 		this.podSummaryContainer.clearItems();
 		this.refreshPodSummarySection();
-		this.refreshPodCondtions();
+		this.refreshPodConditions();
 	}
 }
