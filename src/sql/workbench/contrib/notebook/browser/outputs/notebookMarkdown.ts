@@ -264,7 +264,7 @@ export class NotebookMarkdownRenderer {
 * In a cell, the above attachment would be referenced in markdown like this:
 * ![altText](attachment:test.png)
 */
-function findAttachmentIfExists(href: string, cellAttachments: nb.ICellAttachment): string {
+function findAttachmentIfExists(href: string, cellAttachments: nb.ICellAttachments): string {
 	if (href.startsWith('attachment:') && cellAttachments) {
 		const imageName = href.replace('attachment:', '');
 		const imageDefinition = cellAttachments[imageName];
