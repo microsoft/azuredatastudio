@@ -8,7 +8,6 @@ import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { KeyValueContainer, KeyValue, InputKeyValue, MultilineInputKeyValue } from '../../components/keyValueContainer';
 import { DashboardPage } from '../../components/dashboardPage';
-import { ControllerModel } from '../../../models/controllerModel';
 import { MiaaModel } from '../../../models/miaaModel';
 import { parseIpAndPort } from '../../../common/utils';
 
@@ -17,9 +16,9 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 	private _keyValueContainer!: KeyValueContainer;
 	private _connectionStringsMessage!: azdata.TextComponent;
 
-	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
-		super(modelView);
-		this.disposables.push(this._controllerModel.onRegistrationsUpdated(_ =>
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _miaaModel: MiaaModel) {
+		super(modelView, dashboard);
+		this.disposables.push(this._miaaModel.onConfigUpdated(_ =>
 			this.eventuallyRunOnInitialized(() => this.updateConnectionStrings())));
 	}
 

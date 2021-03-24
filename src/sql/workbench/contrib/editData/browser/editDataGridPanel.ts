@@ -981,7 +981,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			|| (changes['blurredColumns'] && !equals(changes['blurredColumns'].currentValue, changes['blurredColumns'].previousValue))
 			|| (changes['columnsLoading'] && !equals(changes['columnsLoading'].currentValue, changes['columnsLoading'].previousValue))) {
 			this.setCallbackOnDataRowsChanged();
-			this.table.rerenderGrid(0, this.dataSet.dataRows.getLength());
+			this.table.rerenderGrid();
 			hasGridStructureChanges = true;
 		}
 

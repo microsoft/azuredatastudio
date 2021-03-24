@@ -307,7 +307,7 @@ export class ProfilerColumnEditorDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(nls.localize('profilerColumnDialog.profiler', "Profiler"), TelemetryKeys.Profiler, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
+		super(nls.localize('profilerColumnDialog.profiler', "Profiler"), TelemetryKeys.ModalDialogName.Profiler, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
 	}
 
 	public render(): void {

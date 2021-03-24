@@ -78,7 +78,7 @@ export class FirewallRuleDialog extends Modal {
 	) {
 		super(
 			localize('createNewFirewallRule', "Create new firewall rule"),
-			TelemetryKeys.FireWallRule,
+			TelemetryKeys.ModalDialogName.FireWallRule,
 			telemetryService,
 			layoutService,
 			clipboardService,

@@ -4,20 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/declarativeTable';
-
-import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnDestroy, AfterViewInit
-} from '@angular/core';
-
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy } from '@angular/core';
 import * as azdata from 'azdata';
-
+import { convertSize } from 'sql/base/browser/dom';
+import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { equals as arrayEquals } from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
-import { convertSize } from 'sql/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
+import * as colorRegistry from 'vs/platform/theme/common/colorRegistry';
+import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
 
 export enum DeclarativeDataType {
 	string = 'string',
@@ -39,13 +36,19 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	private _filteredRowIndexes: number[] | undefined = undefined;
 	private columns: azdata.DeclarativeTableColumn[] = [];
 	private _selectedRow: number;
+	private _colorTheme: IColorTheme;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(ILogService) logService: ILogService
+		@Inject(ILogService) logService: ILogService,
+		@Inject(IThemeService) themeService: IThemeService
 	) {
 		super(changeRef, el, logService);
+		this._colorTheme = themeService.getColorTheme();
+		this._register(themeService.onDidColorThemeChange((colorTheme) => {
+			this._colorTheme = colorTheme;
+		}));
 	}
 
 	ngAfterViewInit(): void {
@@ -278,6 +281,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		if (isDataPropertyChanged) {
 			this.clearContainer();
 			this._data = finalData;
+			this._selectedRow = -1;
 		}
 		super.setProperties(properties);
 	}
@@ -336,5 +340,12 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 			'height': this.getHeight()
 		});
 
+	}
+
+	public getRowStyle(rowIndex: number): azdata.CssStyles {
+		return this.isRowSelected(rowIndex) ? {
+			'background-color': this._colorTheme.getColor(colorRegistry.listActiveSelectionBackground).toString(),
+			'color': this._colorTheme.getColor(colorRegistry.listActiveSelectionForeground).toString()
+		} : {};
 	}
 }

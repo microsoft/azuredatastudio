@@ -102,9 +102,9 @@ concat-map@0.0.1:
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=
 
-"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#1.1.0":
-  version "1.1.0"
-  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/61a6e4dd4662a225259b6ba8a7eca215fab0cfdc"
+"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#1.2.2":
+  version "1.2.2"
+  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/3ffb03ba8b892cffe6ad363a2269c1f9439cf350"
   dependencies:
     vscode-languageclient "5.2.1"
 

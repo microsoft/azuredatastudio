@@ -17,7 +17,6 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { CopyInsightDialogSelectionAction } from 'sql/workbench/services/insights/browser/insightDialogActions';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
@@ -50,6 +49,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInsightsConfigDetails } from 'sql/platform/extensions/common/extensions';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -195,7 +195,7 @@ export class InsightsDialogView extends Modal {
 		@ICapabilitiesService private readonly _capabilitiesService: ICapabilitiesService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
+		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.ModalDialogName.Insights, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
 		this._model.onDataChange(e => this.build());
 	}
 

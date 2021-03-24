@@ -43,6 +43,7 @@
 	"title.openJupyterBook": "Open Book",
 	"title.closeJupyterBook": "Close Book",
 	"title.closeJupyterNotebook": "Close Notebook",
+	"title.removeJupyterNotebook": "Remove Notebook",
 	"title.revealInBooksViewlet": "Reveal in Books",
 	"title.createJupyterBook": "Create Book (Preview)",
 	"title.openNotebookFolder": "Open Notebooks in Folder",

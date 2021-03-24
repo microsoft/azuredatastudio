@@ -7,6 +7,10 @@ import * as vscode from 'vscode';
 import * as rd from 'resource-deployment';
 import * as loc from '../localizedConstants';
 
+interface ValueProviderContribution {
+	id: string;
+}
+
 class ValueProviderService {
 	private _valueProviderStore = new Map<string, rd.IValueProvider>();
 	registerValueProvider(provider: rd.IValueProvider): vscode.Disposable {
@@ -23,10 +27,21 @@ class ValueProviderService {
 		this._valueProviderStore.delete(providerId);
 	}
 
-	getValueProvider(providerId: string): rd.IValueProvider {
-		const valueProvider = this._valueProviderStore.get(providerId);
+	async getValueProvider(providerId: string): Promise<rd.IValueProvider> {
+		let valueProvider = this._valueProviderStore.get(providerId);
 		if (valueProvider === undefined) {
-			throw new Error(loc.noValueProviderDefined(providerId));
+			// We don't have the provider registered yet so try to find and activate the extension that contributes it
+			const ext = vscode.extensions.all.find(extension => {
+				return !!(extension.packageJSON.contributes?.resourceDeploymentValueProviders as ValueProviderContribution[])?.find(valueProvider => valueProvider.id === providerId);
+			});
+			if (ext) {
+				await ext.activate();
+			}
+			valueProvider = this._valueProviderStore.get(providerId);
+			// Still don't have it registered - is the extension not properly registering it?
+			if (valueProvider === undefined) {
+				throw new Error(loc.noValueProviderDefined(providerId));
+			}
 		}
 		return valueProvider;
 	}

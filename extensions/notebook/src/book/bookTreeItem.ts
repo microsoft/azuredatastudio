@@ -7,14 +7,21 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { JupyterBookSection, IJupyterBookToc } from '../contracts/content';
 import * as loc from '../common/localizedConstants';
-import { isBookItemPinned } from '../common/utils';
-import { getContentPath, getTocPath } from './bookVersionHandler';
+import { isBookItemPinned, getNotebookType } from '../common/utils';
+import { BookVersion, getContentPath, getTocPath } from './bookVersionHandler';
 
 export enum BookTreeItemType {
 	Book = 'Book',
 	Notebook = 'Notebook',
 	Markdown = 'Markdown',
-	ExternalLink = 'ExternalLink'
+	ExternalLink = 'ExternalLink',
+	providedBook = 'providedBook',
+	savedBook = 'savedBook',
+	unsavedNotebook = 'unsavedNotebook',
+	savedNotebook = 'savedNotebook',
+	pinnedNotebook = 'pinnedNotebook',
+	section = 'section',
+	savedBookNotebook = 'savedBookNotebook'
 }
 
 export interface BookTreeItemFormat {
@@ -26,7 +33,7 @@ export interface BookTreeItemFormat {
 	type: BookTreeItemType;
 	treeItemCollapsibleState: number;
 	isUntitled: boolean;
-	version?: string;
+	version?: BookVersion;
 }
 
 export class BookTreeItem extends vscode.TreeItem {
@@ -47,24 +54,24 @@ export class BookTreeItem extends vscode.TreeItem {
 			this._sections = book.page;
 			this.version = book.version;
 			if (book.isUntitled) {
-				this.contextValue = 'providedBook';
+				this.contextValue = BookTreeItemType.providedBook;
 			} else {
-				this.contextValue = 'savedBook';
+				this.contextValue = BookTreeItemType.savedBook;
 			}
 		} else {
 			if (book.page && book.page.sections && book.page.sections.length > 0) {
-				this.contextValue = 'section';
+				this.contextValue = BookTreeItemType.section;
 			} else if (book.type === BookTreeItemType.Notebook && !book.tableOfContents.sections) {
 				if (book.isUntitled) {
-					this.contextValue = 'unsavedNotebook';
+					this.contextValue = BookTreeItemType.unsavedNotebook;
 				} else {
-					this.contextValue = isBookItemPinned(book.contentPath) ? 'pinnedNotebook' : 'savedNotebook';
+					this.contextValue = isBookItemPinned(book.contentPath) ? BookTreeItemType.pinnedNotebook : getNotebookType(book);
 				}
 			} else if (book.type === BookTreeItemType.ExternalLink) {
 				this.contextValue = BookTreeItemType.ExternalLink;
 
 			} else {
-				this.contextValue = book.type === BookTreeItemType.Notebook ? (isBookItemPinned(book.contentPath) ? 'pinnedNotebook' : 'savedNotebook') : 'section';
+				this.contextValue = book.type === BookTreeItemType.Notebook ? (isBookItemPinned(book.contentPath) ? BookTreeItemType.pinnedNotebook : getNotebookType(book)) : BookTreeItemType.section;
 			}
 			this.setPageVariables();
 			this.setCommand();
@@ -77,7 +84,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		}
 		else {
 			// if it's a section, book or a notebook's book then we set the table of contents path.
-			if (this.book.type === BookTreeItemType.Book || this.contextValue === 'section' || (book.tableOfContents.sections && book.type === BookTreeItemType.Notebook)) {
+			if (this.book.type === BookTreeItemType.Book || this.contextValue === BookTreeItemType.section || (book.tableOfContents.sections && book.type === BookTreeItemType.Notebook)) {
 				this._tableOfContentsPath = getTocPath(this.book.version, this.book.root);
 			}
 			this._rootContentPath = getContentPath(this.book.version, this.book.root, '');
@@ -93,7 +100,7 @@ export class BookTreeItem extends vscode.TreeItem {
 				vscode.TreeItemCollapsibleState.Collapsed :
 				vscode.TreeItemCollapsibleState.None;
 		this._sections = this.book.page.sections || this.book.page.subsections;
-		this._uri = this.book.page.file ? this.book.page.file : this.book.page.url;
+		this._uri = this.book.page.file ? this.book.page.file?.replace(/\\/g, '/') : this.book.page.url?.replace(/\\/g, '/');
 
 		if (this.book.tableOfContents.sections) {
 			let index = (this.book.tableOfContents.sections.indexOf(this.book.page));

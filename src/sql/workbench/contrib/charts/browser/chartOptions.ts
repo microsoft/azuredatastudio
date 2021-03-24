@@ -148,6 +148,7 @@ export const ChartOptions: IChartOptions = {
 		}
 	],
 	[ChartType.Line]: [
+		dataDirectionOption,
 		dataTypeInput,
 		columnsAsLabelsInput,
 		labelFirstColumnInput,
