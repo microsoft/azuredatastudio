@@ -55,6 +55,8 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 	protected abstract get description(): string;
 
+	protected abstract get engineSettings(): EngineSettingsModel[];
+
 	protected get container(): azdata.Component {
 		const root = this.modelView.modelBuilder.divContainer().component();
 		const content = this.modelView.modelBuilder.divContainer().component();
@@ -166,8 +168,11 @@ export abstract class PostgresParametersPage extends DashboardPage {
 								this.saveButton!.enabled = true;
 								throw err;
 							}
-
-							await this._postgresModel.refresh();
+							try {
+								await this._postgresModel.refresh();
+							} catch (error) {
+								vscode.window.showErrorMessage(loc.refreshFailed(error));
+							}
 						}
 					);
 
@@ -244,8 +249,12 @@ export abstract class PostgresParametersPage extends DashboardPage {
 								this.resetAllButton!.enabled = true;
 								throw err;
 							}
-							await this._postgresModel.refresh();
 							this.changedComponentValues = [];
+							try {
+								await this._postgresModel.refresh();
+							} catch (error) {
+								vscode.window.showErrorMessage(loc.refreshFailed(error));
+							}
 						}
 					);
 
@@ -421,7 +430,11 @@ export abstract class PostgresParametersPage extends DashboardPage {
 							} finally {
 								session.dispose();
 							}
-							await this._postgresModel.refresh();
+							try {
+								await this._postgresModel.refresh();
+							} catch (error) {
+								vscode.window.showErrorMessage(loc.refreshFailed(error));
+							}
 						}
 					);
 					this.removeFromChangedComponents(engineSetting.parameterName!);
@@ -595,15 +608,23 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		});
 	}
 
-	protected abstract saveParameterEdits(engineSettings: string, session: azdataExt.AzdataSession): Promise<void>;
+	private refreshParametersTable(): void {
+		this._parameters = this.engineSettings.map(parameter => this.createParameterComponents(parameter));
 
-	protected abstract resetAllParameters(session: azdataExt.AzdataSession): Promise<void>;
+		this._parametersTable.data = this._parameters.map(p => {
+			if (p.information) {
+				// Container to hold input component and information bubble
+				const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
+				valueContainer.addItem(p.valueComponent, { CSSStyles: { 'margin-right': '0px' } });
+				valueContainer.addItem(p.information, { CSSStyles: { 'margin-left': '5px' } });
+				return [p.parameterName, valueContainer, p.description, p.resetButton];
+			} else {
+				return [p.parameterName, p.valueComponent, p.description, p.resetButton];
+			}
+		});
+	}
 
-	protected abstract resetParameter(parameterName: string, session: azdataExt.AzdataSession): Promise<void>;
-
-	protected abstract refreshParametersTable(): void;
-
-	protected async handleServiceUpdated(): Promise<void> {
+	private async handleServiceUpdated(): Promise<void> {
 		if (this._postgresModel.configLastUpdated && !this._postgresModel.engineSettingsLastUpdated) {
 			this.connectToServerButton!.enabled = true;
 			this.parametersTableLoading!.loading = false;
@@ -613,4 +634,10 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			this.saveButton!.enabled = false;
 		}
 	}
+
+	protected abstract saveParameterEdits(engineSettings: string, session: azdataExt.AzdataSession): Promise<void>;
+
+	protected abstract resetAllParameters(session: azdataExt.AzdataSession): Promise<void>;
+
+	protected abstract resetParameter(parameterName: string, session: azdataExt.AzdataSession): Promise<void>;
 }
