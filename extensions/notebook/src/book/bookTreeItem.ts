@@ -71,7 +71,7 @@ export class BookTreeItem extends vscode.TreeItem {
 				this.contextValue = BookTreeItemType.ExternalLink;
 
 			} else {
-				this.contextValue = book.type === BookTreeItemType.Notebook ? (isBookItemPinned(book.contentPath) ? BookTreeItemType.pinnedNotebook : getNotebookType(book)) : BookTreeItemType.section;
+				this.contextValue = book.type === BookTreeItemType.Notebook ? (isBookItemPinned(book.contentPath) ? BookTreeItemType.pinnedNotebook : getNotebookType(book)) : BookTreeItemType.Markdown;
 			}
 			this.setPageVariables();
 			this.setCommand();

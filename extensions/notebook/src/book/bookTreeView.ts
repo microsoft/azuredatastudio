@@ -18,7 +18,7 @@ import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
 import { getPinnedNotebooks, confirmMessageDialog, getNotebookType } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
-import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
+import { BookTocManager, FileExtension, IBookTocManager, quickPickResults } from './bookTocManager';
 import { CreateBookDialog } from '../dialog/createBookDialog';
 import { AddFileDialog } from '../dialog/addFileDialog';
 import { getContentPath } from './bookVersionHandler';
@@ -277,14 +277,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async createNewFile(): Promise<void> {
-		const books: BookModel[] = this.books.filter(b => {
-			if (!b.isNotebook) {
-				return b;
-			}
-			return undefined;
-		});
-		const dialog = new AddFileDialog(this.bookTocManager, books);
+	async createNewFile(bookItem: BookTreeItem, extension: FileExtension): Promise<void> {
+		const dialog = new AddFileDialog(this.bookTocManager, bookItem, extension);
 		await dialog.createDialog();
 	}
 

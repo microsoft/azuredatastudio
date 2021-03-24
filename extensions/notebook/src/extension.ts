@@ -19,6 +19,7 @@ import { RemoteBookDialogModel } from './dialog/remoteBookDialogModel';
 import { IconPathHelper } from './common/iconHelper';
 import { ExtensionContextHelper } from './common/extensionContextHelper';
 import { BookTreeItem } from './book/bookTreeItem';
+import { FileExtension } from './book/bookTocManager';
 
 const localize = nls.loadMessageBundle();
 
@@ -49,7 +50,8 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.closeBook', (book: BookTreeItem) => bookTreeViewProvider.closeBook(book)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.closeNotebook', (notebook: BookTreeItem) => bookTreeViewProvider.closeBook(notebook)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.removeNotebook', (book: BookTreeItem) => bookTreeViewProvider.removeNotebook(book)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createNewFile', () => bookTreeViewProvider.createNewFile()));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addNotebook', (book: BookTreeItem) => bookTreeViewProvider.createNewFile(book, FileExtension.Notebook)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addMarkdown', (book: BookTreeItem) => bookTreeViewProvider.createNewFile(book, FileExtension.Markdown)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createBook', () => bookTreeViewProvider.createBook()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openNotebookFolder', (folderPath?: string, urlToOpen?: string, showPreview?: boolean) => bookTreeViewProvider.openNotebookFolder(folderPath, urlToOpen, showPreview)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.pinNotebook', async (book: BookTreeItem) => {

@@ -18,7 +18,7 @@ export interface IBookTocManager {
 	updateBook(element: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
 	removeNotebook(element: BookTreeItem): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
-	addNewFile(pathDetails: BookPathHandler, book?: BookModel): Promise<void>;
+	addNewFile(pathDetails: BookPathHandler, bookItem: BookTreeItem): Promise<void>;
 	recovery(): Promise<void>
 }
 
@@ -427,26 +427,27 @@ export class BookTocManager implements IBookTocManager {
 		}
 	}
 
-	public async addNewFile(pathDetails: BookPathHandler, book?: BookModel): Promise<void> {
+	public async addNewFile(pathDetails: BookPathHandler, bookItem: BookTreeItem): Promise<void> {
+		let findSection: JupyterBookSection | undefined = undefined;
 		if (pathDetails.fileExtension === FileExtension.Notebook) {
-			await this.createNotebook(pathDetails.filePath, undefined);
+			await this.createNotebook(pathDetails.filePath);
 		} else {
 			await fs.writeFile(pathDetails.filePath, '');
 		}
-		if (book) {
-			let fileEntryInToc: JupyterBookSection = {
-				title: pathDetails.fileName,
-				file: pathDetails.fileInTocPath
-			};
-			if (book.version === BookVersion.v1) {
-				fileEntryInToc = convertTo(book.version, fileEntryInToc);
-			}
-			// book is already opened in notebooks view, so modifying the toc will add the new file automatically
-			await this.updateTOC(book.version, book.tableOfContentsPath, undefined, fileEntryInToc);
-		} else {
-			// add standalone file to the notebooks view
-			vscode.commands.executeCommand('bookTreeView.addFileToView', pathDetails.filePath);
+		if (bookItem.contextValue === 'section') {
+			findSection = { file: bookItem.book.page.file, title: bookItem.book.page.title };
 		}
+
+		let fileEntryInToc: JupyterBookSection = {
+			title: pathDetails.titleInTocEntry,
+			file: pathDetails.fileInTocEntry
+		};
+		if (bookItem.book.version === BookVersion.v1) {
+			fileEntryInToc = convertTo(BookVersion.v1, fileEntryInToc);
+		}
+		// book is already opened in notebooks view, so modifying the toc will add the new file automatically
+		await this.updateTOC(bookItem.book.version, bookItem.tableOfContentsPath, findSection, fileEntryInToc);
+
 	}
 
 	public async removeNotebook(element: BookTreeItem): Promise<void> {
@@ -455,18 +456,10 @@ export class BookTocManager implements IBookTocManager {
 	}
 
 
-	public async createNotebook(notebookPath: string, connectionProfile?: azdata.IConnectionProfile): Promise<azdata.nb.NotebookEditor> {
+	public async createNotebook(notebookPath: string): Promise<azdata.nb.NotebookEditor> {
 		await fs.writeFile(notebookPath, '');
 		const notebookUri = vscode.Uri.file(notebookPath);
-		const options: azdata.nb.NotebookShowOptions = connectionProfile ? {
-			viewColumn: undefined,
-			preserveFocus: undefined,
-			preview: undefined,
-			providerId: undefined,
-			connectionProfile: connectionProfile,
-			defaultKernel: undefined
-		} : undefined;
-		return azdata.nb.showNotebookDocument(notebookUri, options);
+		return azdata.nb.showNotebookDocument(notebookUri, undefined);
 	}
 
 	public get modifiedDir(): Set<string> {

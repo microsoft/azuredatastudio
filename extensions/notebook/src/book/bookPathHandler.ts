@@ -7,18 +7,14 @@ import * as path from 'path';
 import { FileExtension } from './bookTocManager';
 
 export class BookPathHandler {
-	public fileInTocPath: string;
-	public fileName: string;
+	public fileInTocEntry: string;
+	public titleInTocEntry: string;
 	public fileExtension: FileExtension;
-	constructor(public filePath: string, public bookRoot?: string) {
-		let pathDetails: path.ParsedPath;
-		if (bookRoot) {
-			pathDetails = path.parse(path.relative(bookRoot, filePath));
-			this.fileInTocPath = path.posix.join(path.posix.sep, pathDetails.name);
-		} else {
-			pathDetails = path.parse(filePath);
-		}
-		this.fileName = pathDetails.name;
+	constructor(public filePath: string, public bookRoot: string, title?: string) {
+		const relativePath = path.relative(bookRoot, filePath);
+		const pathDetails = path.parse(relativePath);
+		this.fileInTocEntry = relativePath.replace(pathDetails.ext, '');
+		this.titleInTocEntry = title ? title : pathDetails.name;
 		this.fileExtension = pathDetails.ext === FileExtension.Notebook ? FileExtension.Notebook : FileExtension.Markdown;
 	}
 }

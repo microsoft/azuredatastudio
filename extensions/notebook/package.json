@@ -236,12 +236,20 @@
         "title": "%title.closeJupyterBook%"
       },
       {
+        "command": "notebook.command.addNotebook",
+        "title": "%title.addNotebook%"
+      },
+      {
+        "command": "notebook.command.addMarkdown",
+        "title": "%title.addMarkdown%"
+      },
+      {
         "command": "notebook.command.closeNotebook",
-        "title": "%title.closeJupyterNotebook%"
+        "title": "%title.closeNotebook%"
       },
       {
         "command": "notebook.command.removeNotebook",
-        "title": "%title.removeJupyterNotebook%"
+        "title": "%title.removeNotebook%"
       },
       {
         "command": "notebook.command.moveTo",
@@ -264,11 +272,6 @@
           "dark": "resources/dark/open_notebook_inverse.svg",
           "light": "resources/light/open_notebook.svg"
         }
-      },
-      {
-        "command": "notebook.command.createNewFile",
-        "title": "%title.addFile%",
-        "category": "%books-preview-category%"
       },
       {
         "command": "notebook.command.pinNotebook",
@@ -395,6 +398,14 @@
           "when": "false"
         },
         {
+          "command": "notebook.command.addNotebook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.addMarkdown",
+          "when": "false"
+        },
+        {
           "command": "notebook.command.closeNotebook",
           "when": "false"
         },
@@ -483,12 +494,22 @@
           "when": "view == bookTreeView && viewItem == savedBookNotebook"
         },
         {
+          "command": "notebook.command.addNotebook",
+          "when": "view == bookTreeView && viewItem == section || view == bookTreeView && viewItem == savedBook",
+          "group": "newFile@1"
+        },
+        {
+          "command": "notebook.command.addMarkdown",
+          "when": "view == bookTreeView && viewItem == section || view == bookTreeView && viewItem == savedBook",
+          "group": "newFile@1"
+        },
+        {
           "command": "notebook.command.moveTo",
-          "when": "view == bookTreeView && viewItem == savedNotebook || view == bookTreeView && viewItem == savedBookNotebook || view == bookTreeView && viewItem == section"
+          "when": "view == bookTreeView && viewItem == savedNotebook || view == bookTreeView && viewItem == savedBookNotebook || view == bookTreeView && viewItem == section || view == bookTreeView && viewItem == Markdown"
         },
         {
           "command": "notebook.command.pinNotebook",
-          "when": "view == bookTreeView && viewItem  == savedNotebook || view == bookTreeView && viewItem == savedBookNotebook",
+          "when": "view == bookTreeView && viewItem  == savedNotebook || view == bookTreeView && viewItem == savedBookNotebook || view == bookTreeView && viewItem == Markdown",
           "group": "inline"
         },
         {
@@ -514,10 +535,6 @@
         },
         {
           "command": "notebook.command.openRemoteBook",
-          "when": "view == bookTreeView"
-        },
-        {
-          "command": "notebook.command.createNewFile",
           "when": "view == bookTreeView"
         }
       ],
