@@ -1563,12 +1563,12 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		return this._proxy.$setProperties(this._handle, this._id, this.getPropertiesForMainThread());
 	}
 
-	public get selectEffect(): boolean | undefined {
-		return this.properties['selectEffect'];
+	public get enableRowSelection(): boolean | undefined {
+		return this.properties['enableRowSelection'];
 	}
 
-	public set selectEffect(v: boolean | undefined) {
-		this.setProperty('selectEffect', v);
+	public set enableRowSelection(v: boolean | undefined) {
+		this.setProperty('enableRowSelection', v);
 	}
 
 	public setFilter(rowIndexes: number[]): void {
