@@ -217,20 +217,13 @@ export class PostgresOverviewPage extends DashboardPage {
 				try {
 					const password = await promptAndConfirmPassword(input => !input ? loc.enterANonEmptyPassword : '');
 					if (password) {
-						const session = await this._postgresModel.controllerModel.acquireAzdataSession();
-						try {
-							await this._azdataApi.azdata.arc.postgres.server.edit(
-								this._postgresModel.info.name,
-								{
-									adminPassword: true,
-									noWait: true
-								},
-								Object.assign({ 'AZDATA_PASSWORD': password }, this._controllerModel.azdataAdditionalEnvVars),
-								session
-							);
-						} finally {
-							session.dispose();
-						}
+						await this._azdataApi.azdata.arc.postgres.server.edit(
+							this._postgresModel.info.name,
+							{
+								adminPassword: true,
+								noWait: true
+							},
+							Object.assign({ 'AZDATA_PASSWORD': password }, this._controllerModel.azdataAdditionalEnvVars));
 						vscode.window.showInformationMessage(loc.passwordReset);
 					}
 				} catch (error) {
@@ -258,13 +251,7 @@ export class PostgresOverviewPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token) => {
-								const session = await this._postgresModel.controllerModel.acquireAzdataSession();
-								try {
-									return await this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name, this._controllerModel.azdataAdditionalEnvVars, session);
-								} finally {
-									session.dispose();
-								}
-
+								return await this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name, this._controllerModel.azdataAdditionalEnvVars);
 							}
 						);
 						await this._controllerModel.refreshTreeNode();

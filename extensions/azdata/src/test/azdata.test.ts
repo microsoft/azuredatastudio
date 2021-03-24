@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdataExt from 'azdata-ext';
 import * as should from 'should';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
@@ -17,7 +16,6 @@ import * as fs from 'fs';
 import { AzdataReleaseInfo } from '../azdataReleaseInfo';
 import * as TypeMoq from 'typemoq';
 import { eulaAccepted } from '../constants';
-import { sleep } from './testUtils';
 
 const oldAzdataMock = new azdata.AzdataTool('/path/to/azdata', '0.0.0');
 const currentAzdataMock = new azdata.AzdataTool('/path/to/azdata', '9999.999.999');
@@ -224,116 +222,6 @@ describe('azdata', function () {
 			const password = 'myPassword';
 			await azdataTool.login(endpoint, username, password);
 			verifyExecuteCommandCalledWithArgs(['login', endpoint, username]);
-		});
-
-		describe('acquireSession', function (): void {
-			it('calls login', async function (): Promise<void> {
-				const endpoint = 'myEndpoint';
-				const username = 'myUsername';
-				const password = 'myPassword';
-				const session = await azdataTool.acquireSession(endpoint, username, password);
-				session.dispose();
-				verifyExecuteCommandCalledWithArgs(['login', endpoint, username]);
-			});
-
-			it('command executed under current session completes', async function (): Promise<void> {
-				const session = await azdataTool.acquireSession('', '', '');
-				try {
-					await azdataTool.arc.dc.config.show(undefined, session);
-				} finally {
-					session.dispose();
-				}
-				verifyExecuteCommandCalledWithArgs(['login'], 0);
-				verifyExecuteCommandCalledWithArgs(['arc', 'dc', 'config', 'show'], 1);
-			});
-			it('multiple commands executed under current session completes', async function (): Promise<void> {
-				const session = await azdataTool.acquireSession('', '', '');
-				try {
-					// Kick off multiple commands at the same time and then ensure that they both complete
-					await Promise.all([
-						azdataTool.arc.dc.config.show(undefined, session),
-						azdataTool.arc.sql.mi.list(undefined, session)
-					]);
-				} finally {
-					session.dispose();
-				}
-				verifyExecuteCommandCalledWithArgs(['login'], 0);
-				verifyExecuteCommandCalledWithArgs(['arc', 'dc', 'config', 'show'], 1);
-				verifyExecuteCommandCalledWithArgs(['arc', 'sql', 'mi', 'list'], 2);
-			});
-			it('command executed without session context is queued up until session is closed', async function (): Promise<void> {
-				const session = await azdataTool.acquireSession('', '', '');
-				let nonSessionCommand: Promise<any> | undefined = undefined;
-				try {
-					// Start one command in the current session
-					await azdataTool.arc.dc.config.show(undefined, session);
-					// Verify that the command isn't executed until after the session is disposed
-					let isFulfilled = false;
-					nonSessionCommand = azdataTool.arc.sql.mi.list().then(() => isFulfilled = true);
-					await sleep(2000);
-					should(isFulfilled).equal(false, 'The command should not be completed yet');
-				} finally {
-					session.dispose();
-				}
-				await nonSessionCommand;
-				verifyExecuteCommandCalledWithArgs(['login'], 0);
-				verifyExecuteCommandCalledWithArgs(['arc', 'dc', 'config', 'show'], 1);
-				verifyExecuteCommandCalledWithArgs(['arc', 'sql', 'mi', 'list'], 2);
-			});
-			it('multiple commands executed without session context are queued up until session is closed', async function (): Promise<void> {
-				const session = await azdataTool.acquireSession('', '', '');
-				let nonSessionCommand1: Promise<any> | undefined = undefined;
-				let nonSessionCommand2: Promise<any> | undefined = undefined;
-				try {
-					// Start one command in the current session
-					await azdataTool.arc.dc.config.show(undefined, session);
-					// Verify that neither command is completed until the session is closed
-					let isFulfilled = false;
-					nonSessionCommand1 = azdataTool.arc.sql.mi.list().then(() => isFulfilled = true);
-					nonSessionCommand2 = azdataTool.arc.postgres.server.list().then(() => isFulfilled = true);
-					await sleep(2000);
-					should(isFulfilled).equal(false, 'The commands should not be completed yet');
-				} finally {
-					session.dispose();
-				}
-				await Promise.all([nonSessionCommand1, nonSessionCommand2]);
-				verifyExecuteCommandCalledWithArgs(['login'], 0);
-				verifyExecuteCommandCalledWithArgs(['arc', 'dc', 'config', 'show'], 1);
-				verifyExecuteCommandCalledWithArgs(['arc', 'sql', 'mi', 'list'], 2);
-				verifyExecuteCommandCalledWithArgs(['arc', 'postgres', 'server', 'list'], 3);
-			});
-			it('attempting to acquire a second session while a first is still active queues the second session', async function (): Promise<void> {
-				const firstSession = await azdataTool.acquireSession('', '', '');
-				let sessionPromise: Promise<azdataExt.AzdataSession> | undefined = undefined;
-				let secondSessionCommand: Promise<any> | undefined = undefined;
-				try {
-					try {
-						// Start one command in the current session
-						await azdataTool.arc.dc.config.show(undefined, firstSession);
-						// Verify that none of the commands for the second session are completed before the first is disposed
-						let isFulfilled = false;
-						sessionPromise = azdataTool.acquireSession('', '', '');
-						sessionPromise.then(session => {
-							isFulfilled = true;
-							secondSessionCommand = azdataTool.arc.sql.mi.list(undefined, session).then(() => isFulfilled = true);
-						});
-						await sleep(2000);
-						should(isFulfilled).equal(false, 'The commands should not be completed yet');
-					} finally {
-						firstSession.dispose();
-					}
-				} finally {
-					(await sessionPromise)?.dispose();
-				}
-				should(secondSessionCommand).not.equal(undefined, 'The second command should have been queued already');
-				await secondSessionCommand!;
-
-
-				verifyExecuteCommandCalledWithArgs(['login'], 0);
-				verifyExecuteCommandCalledWithArgs(['arc', 'dc', 'config', 'show'], 1);
-				verifyExecuteCommandCalledWithArgs(['login'], 2);
-				verifyExecuteCommandCalledWithArgs(['arc', 'sql', 'mi', 'list'], 3);
-			});
 		});
 
 		it('version', async function (): Promise<void> {
