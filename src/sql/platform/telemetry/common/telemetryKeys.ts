@@ -83,7 +83,7 @@ export enum NbTelemetryAction {
 	AddCell = 'AddCell',
 	ChangeKernel = 'ChangeKernel',
 	NewNotebookFromConnections = 'NewNotebookWithConnectionProfile',
-	SearchInNotebooksViewlet = 'SearchTriggeredInNotebookViewlet',
-	SearchComplete = 'SearchInNotebookViewletComplete'
+	SearchStarted = 'SearchStarted',
+	SearchCompleted = 'SearchCompleted'
 }
 

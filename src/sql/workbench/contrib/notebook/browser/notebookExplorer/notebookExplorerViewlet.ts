@@ -8,7 +8,7 @@ import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IAction } from 'vs/base/common/actions';
 import { $, toggleClass, Dimension, IFocusTracker, getTotalHeight, prepend } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IInstantiationService, optional } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
@@ -127,7 +127,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IFileService private readonly fileService: IFileService,
-		@optional(IAdsTelemetryService) private _telemetryService?: IAdsTelemetryService
+		@IAdsTelemetryService private _telemetryService?: IAdsTelemetryService
 	) {
 		super(VIEWLET_ID, { mergeViewWithContainerWhenSingleView: true }, instantiationService, configurationService, layoutService, contextMenuService, telemetryService, extensionService, themeService, storageService, contextService, viewDescriptorService);
 		this.inputBoxFocused = Constants.InputBoxFocusedKey.bindTo(this.contextKeyService);
@@ -258,10 +258,10 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			onQueryValidationError(err);
 			return;
 		}
-		this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.SearchInNotebooksViewlet)
+		this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.SearchStarted)
 			.withAdditionalProperties({ triggered_on_type: triggeredOnType })
 			.send();
-		let start = new Date().getTime();
+
 		this.validateQuery(query).then(() => {
 			if (this.views.length > 1) {
 				let filesToIncludeFiltered: string = '';
@@ -320,10 +320,6 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 				this.searchWidget.focus(false, true); // focus back to input field
 			}
 		}, onQueryValidationError);
-		let end = new Date().getTime();
-		this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.SearchComplete)
-			.withAdditionalProperties({ time_taken: end - start })
-			.send();
 	}
 
 	updateViewletsState(): void {

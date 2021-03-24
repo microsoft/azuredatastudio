@@ -43,6 +43,8 @@ import { searchClearIcon, searchCollapseAllIcon, searchExpandAllIcon, searchStop
 import { Action, IAction } from 'vs/base/common/actions';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { Memento } from 'vs/workbench/common/memento';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 const $ = dom.$;
 
@@ -82,6 +84,7 @@ export class NotebookSearchView extends SearchView {
 		@IOpenerService openerService: IOpenerService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@ICommandService readonly commandService: ICommandService,
+		@IAdsTelemetryService private _telemetryService?: IAdsTelemetryService,
 	) {
 
 		super(options, fileService, editorService, progressService, notificationService, dialogService, contextViewService, instantiationService, viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService, replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService, menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService);
@@ -239,6 +242,7 @@ export class NotebookSearchView extends SearchView {
 	}
 
 	public startSearch(query: ITextQuery, excludePatternText: string, includePatternText: string, triggeredOnType: boolean, searchWidget: NotebookSearchWidget): Thenable<void> {
+		let start = new Date().getTime();
 		let progressComplete: () => void;
 		this.progressService.withProgress({ location: this.getProgressLocation(), delay: triggeredOnType ? 300 : 0 }, _progress => {
 			return new Promise<void>(resolve => progressComplete = resolve);
@@ -253,7 +257,11 @@ export class NotebookSearchView extends SearchView {
 		}, 2000);
 
 		const onComplete = async (completed?: ISearchComplete) => {
-			clearTimeout(slowTimer);
+			let end = new Date().getTime();
+			this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.SearchCompleted)
+				.withAdditionalProperties({ timeTakenMs: end - start, resultsReturned: completed.results.length })
+				.send(); clearTimeout(slowTimer);
+
 			this.state = SearchUIState.Idle;
 
 			// Complete up to 100% as needed

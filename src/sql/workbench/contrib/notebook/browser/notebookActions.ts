@@ -30,7 +30,6 @@ import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/co
 import { URI } from 'vs/base/common/uri';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { optional } from 'vs/platform/instantiation/common/instantiation';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -50,7 +49,7 @@ export class AddCellAction extends Action {
 	constructor(
 		id: string, label: string, cssClass: string,
 		@INotebookService private _notebookService: INotebookService,
-		@optional(IAdsTelemetryService) private _telemetryService?: IAdsTelemetryService,
+		@IAdsTelemetryService private _telemetryService?: IAdsTelemetryService,
 	) {
 		super(id, label, cssClass);
 	}
@@ -221,13 +220,13 @@ export class RunAllCellsAction extends Action {
 		id: string, label: string, cssClass: string,
 		@INotificationService private notificationService: INotificationService,
 		@INotebookService private _notebookService: INotebookService,
-		@optional(IAdsTelemetryService) private _telemetryService?: IAdsTelemetryService,
+		@IAdsTelemetryService private _telemetryService?: IAdsTelemetryService,
 	) {
 		super(id, label, cssClass);
 	}
 	public async run(context: URI): Promise<boolean> {
 		try {
-			this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunAll).send();
+			this._telemetryService?.sendActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunAll);
 			const editor = this._notebookService.findNotebookEditor(context);
 			await editor.runAllCells();
 			return true;
@@ -289,7 +288,7 @@ const kernelDropdownElementId = 'kernel-dropdown';
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	private _showAllKernels: boolean = false;
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService, @optional(IAdsTelemetryService) private _telemetryService?: IAdsTelemetryService,
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService, @IAdsTelemetryService private _telemetryService?: IAdsTelemetryService,
 	) {
 		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel, id: kernelDropdownElementId } as ISelectBoxOptionsWithLabel);
 
@@ -563,7 +562,7 @@ export class NewNotebookAction extends Action {
 		label: string,
 		@ICommandService private commandService: ICommandService,
 		@IObjectExplorerService private objectExplorerService: IObjectExplorerService,
-		@optional(IAdsTelemetryService) private _telemetryService?: IAdsTelemetryService,
+		@IAdsTelemetryService private _telemetryService?: IAdsTelemetryService,
 	) {
 		super(id, label);
 		this.class = 'notebook-action new-notebook';

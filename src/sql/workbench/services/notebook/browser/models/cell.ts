@@ -88,10 +88,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
+		@IAdsTelemetryService private _telemetryService?: IAdsTelemetryService,
 		@optional(INotebookService) private _notebookService?: INotebookService,
 		@optional(ICommandService) private _commandService?: ICommandService,
 		@optional(IConfigurationService) private _configurationService?: IConfigurationService,
-		@optional(IAdsTelemetryService) private _telemetryService?: IAdsTelemetryService,
 	) {
 		super();
 		this.id = `${modelId++}`;

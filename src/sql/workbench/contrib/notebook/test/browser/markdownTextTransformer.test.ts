@@ -71,7 +71,7 @@ suite('MarkdownTextTransformer', () => {
 		);
 		mockNotebookService = TypeMoq.Mock.ofInstance(notebookService);
 
-		cellModel = new CellModel(undefined, undefined, mockNotebookService.object);
+		cellModel = new CellModel(undefined, undefined, undefined, mockNotebookService.object);
 		notebookEditor = new NotebookEditorStub({ cellGuid: cellModel.cellGuid, instantiationService: instantiationService });
 		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel, notebookEditor);
 		mockNotebookService.setup(s => s.findNotebookEditor(TypeMoq.It.isAny())).returns(() => notebookEditor);
