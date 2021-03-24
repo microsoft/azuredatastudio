@@ -29,7 +29,7 @@ export class NotebookEditorInputAssociation implements ILanguageAssociation {
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
 			return this.instantiationService.createInstance(UntitledNotebookInput, activeEditor.getName(), activeEditor.resource, activeEditor);
 		} else if (activeEditor instanceof DiffEditorInput) {
-			return this.instantiationService.createInstance(DiffNotebookInput, activeEditor.getName(), activeEditor.resource, activeEditor);
+			return this.instantiationService.createInstance(DiffNotebookInput, activeEditor.getName(), activeEditor);
 		} else {
 			return undefined;
 		}

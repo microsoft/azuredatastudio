@@ -969,7 +969,6 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 
 		// Otherwise create and add to cache
 		input = factoryFn();
-
 		this.editorInputCache.set(resource, input);
 		Event.once(input.onDispose)(() => this.editorInputCache.delete(resource));
 

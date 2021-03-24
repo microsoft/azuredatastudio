@@ -201,8 +201,8 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 			let container = DOM.$<HTMLElement>('.notebookEditor');
 			container.style.height = '100%';
 			this._notebookContainer = DOM.append(parentElement, container);
-			this.findSplitView(parentElement);
 			input.container = this._notebookContainer;
+			this.findSplitView(parentElement);
 			return Promise.resolve(this.bootstrapAngular(input));
 		} else {
 			this._notebookContainer = DOM.append(parentElement, input.container);
