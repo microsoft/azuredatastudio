@@ -374,8 +374,10 @@
     "xmldom": "^0.3.0"
   },
   "devDependencies": {
+    "@types/mocha": "^5.2.5",
     "@types/sinon": "^9.0.4",
     "@types/xmldom": "^0.1.29",
+    "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
