@@ -159,15 +159,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			const updateBook = this.books.find(book => book.bookPath === pickedBook.detail).bookItems[0];
 			if (updateBook) {
 				let bookSections = updateBook.sections;
-				while (bookSections?.length > 0) {
+				while (bookSections) {
 					bookOptions = [{ label: loc.labelAddToLevel, detail: pickedSection ? pickedSection.detail : '' }];
 					bookSections.forEach(section => {
 						if (section.sections) {
 							bookOptions.push({ label: section.title ? section.title : section.file, detail: section.file });
 						}
 					});
-					bookSections = [];
-					if (bookOptions.length > 1) {
+					bookSections = undefined;
+					if (bookOptions.length >= 1) {
 						pickedSection = await vscode.window.showQuickPick(bookOptions, {
 							canPickMany: false,
 							placeHolder: loc.labelBookSection
@@ -186,16 +186,16 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					}
 				}
 			}
-			return { quickPickSection: pickedSection, book: updateBook };
+			return pickedSection ? { quickPickSection: pickedSection, book: updateBook } : undefined;
 		}
 		return undefined;
 	}
 
 	async editBook(movingElement: BookTreeItem): Promise<void> {
 		const selectionResults = await this.getSelectionQuickPick(movingElement);
-		const pickedSection = selectionResults.quickPickSection;
-		const updateBook = selectionResults.book;
-		if (pickedSection && updateBook) {
+		if (selectionResults) {
+			const pickedSection = selectionResults.quickPickSection;
+			const updateBook = selectionResults.book;
 			const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
 			if (movingElement.tableOfContents.sections) {
 				if (movingElement.contextValue === 'savedNotebook') {
