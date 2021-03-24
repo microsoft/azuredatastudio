@@ -103,6 +103,8 @@ export class TaskHistoryView extends ViewPane {
 		const filter = new DefaultFilter();
 		const accessibilityProvider = new DefaultAccessibilityProvider();
 
+		treeContainer.classList.add('task-history');
+
 		return new Tree(treeContainer, {
 			dataSource, renderer, controller, dnd, filter, accessibilityProvider
 		}, {
