@@ -203,6 +203,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 				try {
 					this.discardParametersTableChanges();
 				} catch (error) {
+					this.discardButton!.enabled = true;
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
 					this.changedComponentValues = [];
