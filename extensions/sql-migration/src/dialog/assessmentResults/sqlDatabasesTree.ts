@@ -104,14 +104,14 @@ export class SqlDatabaseTree {
 						headerCssStyles: headerLeft,
 					},
 					{
-						displayName: constants.DATABASES, // TODO localize
+						displayName: constants.DATABASES,
 						valueType: azdata.DeclarativeDataType.component,
 						width: 100,
 						isReadOnly: true,
 						headerCssStyles: headerLeft
 					},
 					{
-						displayName: constants.ISSUES, // Incidents
+						displayName: constants.ISSUES,
 						valueType: azdata.DeclarativeDataType.string,
 						width: 30,
 						isReadOnly: true,
@@ -168,7 +168,7 @@ export class SqlDatabaseTree {
 						headerCssStyles: headerLeft
 					},
 					{
-						displayName: constants.WARNINGS, // TODO localize
+						displayName: constants.WARNINGS,
 						valueType: azdata.DeclarativeDataType.string,
 						width: 50,
 						isReadOnly: true,
@@ -321,7 +321,7 @@ export class SqlDatabaseTree {
 				width: '100%',
 				columns: [
 					{
-						displayName: constants.TYPE, // TODO localize
+						displayName: constants.TYPE,
 						valueType: azdata.DeclarativeDataType.string,
 						width: '120px',
 						isReadOnly: true,
@@ -329,7 +329,7 @@ export class SqlDatabaseTree {
 						rowCssStyles: rowStyle
 					},
 					{
-						displayName: constants.NAME, // TODO localize
+						displayName: constants.NAME,
 						valueType: azdata.DeclarativeDataType.string,
 						width: '130px',
 						isReadOnly: true,
@@ -570,7 +570,7 @@ export class SqlDatabaseTree {
 				},
 				columns: [
 					{
-						displayName: '', // TODO localize
+						displayName: '',
 						valueType: azdata.DeclarativeDataType.string,
 						width: '100%',
 						isReadOnly: true,
@@ -622,7 +622,7 @@ export class SqlDatabaseTree {
 			this._moreInfo.url = this._selectedIssue.helpLink;
 			this._moreInfo.label = this._selectedIssue.helpLink;
 			this._impactedObjects = this._selectedIssue.impactedObjects;
-			this._recommendationText.value = this._selectedIssue.message; // Expose correct property for recommendation.
+			this._recommendationText.value = this._selectedIssue.message; //TODO: Expose correct property for recommendation.
 			this._impactedObjectsTable.dataValues = this._selectedIssue.impactedObjects.map((object) => {
 				return [
 					{
