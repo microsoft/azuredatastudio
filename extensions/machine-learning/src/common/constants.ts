@@ -282,6 +282,9 @@ export const mlsInstallOdbcDocTitle = localize('mlsInstallObdcDocTitle', "Instal
 export const mlsInstallOdbcDocDesc = localize('mlsInstallOdbcDocDesc', "This document explains how to install the Microsoft ODBC Driver for SQL Server.");
 export const onnxOnEdgeOdbcDocTitle = localize('onnxOnEdgeOdbcDocTitle', "Machine learning and AI with ONNX in SQL Database Edge Preview");
 export const onnxOnEdgeOdbcDocDesc = localize('onnxOnEdgeOdbcDocDesc', "Get started with machine learning in Azure SQL Database Edge");
+export const calloutTitleCreateNewTable = localize('callout.titleCreateNewTable', "Create new table");
+export const calloutInputEnterTableName = localize('callout.inputEnterTableName', "Enter table name");
+export const calloutButtonCreate = localize('callout.buttonCreate', "Create");
 
 export function getDataCount(dataCount: number): string { return localize('ml.dataCount', "Showing {0} model(s)", dataCount); }
 

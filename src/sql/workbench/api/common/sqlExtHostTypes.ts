@@ -310,7 +310,7 @@ export type DialogWidth = 'narrow' | 'medium' | 'wide' | number | string;
 
 export type DialogStyle = 'normal' | 'flyout' | 'callout';
 
-export type DialogPosition = 'left' | 'below';
+export type DialogPosition = 'left' | 'right' | 'below' | 'above';
 
 export interface IDialogProperties {
 	xPos: number,

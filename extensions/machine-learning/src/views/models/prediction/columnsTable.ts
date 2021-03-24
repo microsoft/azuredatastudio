@@ -404,8 +404,8 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 		/**
 		 * Here a specific value is assigned to dialogWidth. This meets design guidelines.
 		 */
-		const dialog = azdata.window.createModelViewDialog(dialogHeading, dialogName, 288, 'callout', 'left', true, false, dialogProperties);
-		const warningTab: azdata.window.DialogTab = azdata.window.createTab('warning');
+		const dialog = this._apiWrapper.createModelViewDialog(dialogHeading, dialogName, 288, 'callout', 'left', true, false, dialogProperties);
+		const warningTab: azdata.window.DialogTab = this._apiWrapper.createTab('warning');
 		warningTab.registerContent(async view => {
 			const warningContentContainer = view.modelBuilder.divContainer().withProperties({}).component();
 			const messageTextComponent = view.modelBuilder.text().withProperties({
@@ -434,7 +434,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 		// set tab as content
 		dialog.content = [warningTab];
 
-		azdata.window.openDialog(dialog);
+		this._apiWrapper.openDialog(dialog);
 	}
 
 	/**

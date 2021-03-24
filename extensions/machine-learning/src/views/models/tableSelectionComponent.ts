@@ -9,6 +9,7 @@ import { ModelViewBase } from './modelViewBase';
 import { ApiWrapper } from '../../common/apiWrapper';
 import { IDataComponent } from '../interfaces';
 import { DatabaseTable } from '../../prediction/interfaces';
+import * as constants from '../../common/constants';
 
 export interface ITableSelectionSettings {
 	editable: boolean,
@@ -40,6 +41,8 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	private _existingTableButton: azdata.RadioButtonComponent | undefined;
 	private _newTableButton: azdata.RadioButtonComponent | undefined;
 	private _newTableName: azdata.InputBoxComponent | undefined;
+	private _newTableLink: azdata.HyperlinkComponent | undefined;
+	private _newTableInputField: azdata.InputBoxComponent | undefined;
 	private _existingTablesSelected: boolean = true;
 
 	public readonly onSelectedChanged: vscode.Event<void> = this._onSelectedChanged.event;
@@ -97,6 +100,14 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 			}
 		}).component();
 
+		this._newTableLink = modelBuilder.hyperlink().withProperties({
+			label: 'Create new table'
+		}).component();
+
+		this._newTableLink.onDidClick(async () => {
+			await this.openNewTableCalloutDialog();
+		});
+
 		this._existingTableButton.onDidClick(async () => {
 			this._existingTablesSelected = true;
 			this.refreshTableComponent();
@@ -144,6 +155,9 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 				component: this._tables
 			}, { info: this._settings.tableInfo });
 		}
+		tableForm.addFormItem({
+			component: this._newTableLink
+		});
 
 		this._dbTableComponent = modelBuilder.flexContainer().withItems([
 			databaseForm,
@@ -322,5 +336,45 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 			tableName: selectedItem?.tableName,
 			schema: selectedItem?.schema
 		};
+	}
+
+	public openNewTableCalloutDialog(): void {
+		// This will appear at any wizard step where the table fields are shown.
+		//
+		// This is view which includes icon at bottom of page:
+		// extensions/machine-learning/src/views/models/manageModels/modelImportLocationPage.ts
+
+		let dialogName: string = 'new-table-name';
+		let dialogProperties: azdata.window.IDialogProperties = {
+			xPos: 0,
+			yPos: 0,
+			width: 0,
+			height: 0
+		};
+
+		/**
+		 * Here a specific value is assigned to dialogWidth. This meets design guidelines.
+		 */
+
+		// Changing renderHeader / renderFooter does NOTHING. Why?
+		const dialog = this._apiWrapper.createModelViewDialog(constants.calloutTitleCreateNewTable, dialogName, 288, 'callout', 'right', true, true, dialogProperties);
+
+		const createNewTableTab: azdata.window.DialogTab = this._apiWrapper.createTab('createNewTable');
+		createNewTableTab.registerContent(async view => {
+			const newTableContentContainer = view.modelBuilder.divContainer().component();
+			this._newTableInputField = view.modelBuilder.inputBox().withProperties({
+				placeHolder: constants.calloutInputEnterTableName
+			}).component();
+			newTableContentContainer.addItem(this._newTableInputField);
+			view.initializeModel(newTableContentContainer);
+		});
+		dialog.okButton.label = constants.calloutButtonCreate;
+		dialog.cancelButton.label = constants.extLangCancelButtonText;
+
+		dialog.okButton.onClick(async () => await this._newTableInputField?.value?.toString() ?? '');
+
+		dialog.content = [createNewTableTab];
+
+		this._apiWrapper.openDialog(dialog);
 	}
 }

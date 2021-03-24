@@ -591,7 +591,7 @@ declare module 'azdata' {
 		 */
 		export type DialogStyle = 'normal' | 'flyout' | 'callout';
 
-		export type DialogPosition = 'left' | 'below';
+		export type DialogPosition = 'left' | 'right' | 'below' | 'above';
 
 		/**
 		 * These are positional data prior to opening of dialog.
