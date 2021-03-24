@@ -179,11 +179,12 @@ describe('BooksTreeViewTests', function () {
 				sinon.restore();
 			});
 
-			it('getChildren should return all book nodes when element is undefined', async function (): Promise<void> {
+			it('getChildren should return only root node when element is undefined', async function (): Promise<void> {
 				const children = await bookTreeViewProvider.getChildren();
 				should(children).be.Array();
 				should(children.length).equal(1);
 				book = children[0];
+				should(book).equal(bookTreeViewProvider.currentBook.rootNode);
 				should(book.title).equal(expectedBook.title);
 			});
 
@@ -210,13 +211,13 @@ describe('BooksTreeViewTests', function () {
 			});
 
 			it('should set notebooks trusted to true on trustBook', async () => {
-				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
+				let notebook1Path = notebook1.tooltip;
 				let bookTrustManager: BookTrustManager = new BookTrustManager(bookTreeViewProvider.books);
-				let isTrusted = bookTrustManager.isNotebookTrustedByDefault(vscode.Uri.file(notebook1Path).fsPath);
+				let isTrusted = bookTrustManager.isNotebookTrustedByDefault(notebook1Path);
 				should(isTrusted).equal(false, 'Notebook should not be trusted by default');
 
-				bookTreeViewProvider.trustBook(bookTreeViewProvider.currentBook.bookItems[0]);
-				isTrusted = bookTrustManager.isNotebookTrustedByDefault(vscode.Uri.file(notebook1Path).fsPath);
+				bookTreeViewProvider.trustBook(notebook1);
+				isTrusted = bookTrustManager.isNotebookTrustedByDefault(notebook1Path);
 				should(isTrusted).equal(true, 'Failed to set trust on trustBook');
 
 			});
