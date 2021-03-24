@@ -32,7 +32,7 @@ import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTree
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IconPathHelper } from '../common/iconHelper';
-import { BuildInfo, DeployInfo, Status } from '../models/dashboardData/dashboardData';
+import { DashboardData, Status } from '../models/dashboardData/dashboardData';
 
 const tableLength = 10;
 
@@ -42,8 +42,8 @@ const tableLength = 10;
 export class ProjectsController {
 	private netCoreTool: NetCoreTool;
 	private buildHelper: BuildHelper;
-	private buildInfo: BuildInfo[] = [];
-	private deployInfo: DeployInfo[] = [];
+	private buildInfo: DashboardData[] = [];
+	private deployInfo: DashboardData[] = [];
 
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
@@ -69,8 +69,8 @@ export class ProjectsController {
 			let infoRow: (dataworkspace.IDashboardTableData | dataworkspace.IDashboardTableDataGroup)[] = [{ value: count.toString() },
 			{ values: [{ value: icon }, { value: this.deployInfo[i].status }] },
 			{ value: this.deployInfo[i].target },
-			{ value: this.deployInfo[i].timeToBuild },
-			{ value: this.deployInfo[i].deployDate }];
+			{ value: this.deployInfo[i].timeToCompleteAction },
+			{ value: this.deployInfo[i].startDate }];
 			infoRows.push(infoRow);
 			count++;
 		}
@@ -95,8 +95,8 @@ export class ProjectsController {
 			let infoRow: (dataworkspace.IDashboardTableData | dataworkspace.IDashboardTableDataGroup)[] = [{ value: count.toString() },
 			{ values: [{ value: icon }, { value: this.buildInfo[i].status }] },
 			{ value: this.buildInfo[i].target },
-			{ value: this.buildInfo[i].timeToBuild },
-			{ value: this.buildInfo[i].buildDate }];
+			{ value: this.buildInfo[i].timeToCompleteAction },
+			{ value: this.buildInfo[i].startDate }];
 			infoRows.push(infoRow);
 			count++;
 		}
@@ -168,7 +168,7 @@ export class ProjectsController {
 		const startTime = new Date();
 		const currentBuildTimeInfo = startTime.toLocaleDateString() + ' at ' + startTime.toLocaleTimeString();
 
-		let buildInfoNew = new BuildInfo(Status.inProgress, project.getProjectTargetVersion(), currentBuildTimeInfo);
+		let buildInfoNew = new DashboardData(Status.inProgress, project.getProjectTargetVersion(), currentBuildTimeInfo);
 		this.buildInfo.push(buildInfoNew);
 
 		if (this.buildInfo.length - 1 === tableLength) {
@@ -188,9 +188,9 @@ export class ProjectsController {
 			await this.netCoreTool.runDotnetCommand(options);
 			const timeToBuild = new Date().getTime() - startTime.getTime();
 
-			const currentBuildIndex = this.buildInfo.findIndex(b => b.buildDate === currentBuildTimeInfo);
+			const currentBuildIndex = this.buildInfo.findIndex(b => b.startDate === currentBuildTimeInfo);
 			this.buildInfo[currentBuildIndex].status = Status.success;
-			this.buildInfo[currentBuildIndex].timeToBuild = utils.timeConversion(timeToBuild);
+			this.buildInfo[currentBuildIndex].timeToCompleteAction = utils.timeConversion(timeToBuild);
 
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.build)
 				.withAdditionalMeasurements({ duration: timeToBuild })
@@ -200,9 +200,9 @@ export class ProjectsController {
 		} catch (err) {
 			const timeToFailureBuild = new Date().getTime() - startTime.getTime();
 
-			const currentBuildIndex = this.buildInfo.findIndex(b => b.buildDate === currentBuildTimeInfo);
+			const currentBuildIndex = this.buildInfo.findIndex(b => b.startDate === currentBuildTimeInfo);
 			this.buildInfo[currentBuildIndex].status = Status.failed;
-			this.buildInfo[currentBuildIndex].timeToBuild = utils.timeConversion(timeToFailureBuild);
+			this.buildInfo[currentBuildIndex].timeToCompleteAction = utils.timeConversion(timeToFailureBuild);
 
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.build)
 				.withAdditionalMeasurements({ duration: timeToFailureBuild })
@@ -268,7 +268,7 @@ export class ProjectsController {
 		const actionStartTime = currentDate.getMilliseconds();
 		const currentDeployTimeInfo = currentDate.toLocaleDateString() + ' at ' + currentDate.toLocaleTimeString();
 
-		let deployInfoNew = new DeployInfo(Status.inProgress, project.getProjectTargetVersion(), currentDeployTimeInfo);
+		let deployInfoNew = new DashboardData(Status.inProgress, project.getProjectTargetVersion(), currentDeployTimeInfo);
 		this.deployInfo.push(deployInfoNew);
 
 		if (this.deployInfo.length - 1 === tableLength) {
@@ -294,9 +294,9 @@ export class ProjectsController {
 				.withAdditionalProperties(telemetryProps)
 				.send();
 
-			const currentDeployIndex = this.deployInfo.findIndex(d => d.deployDate === currentDeployTimeInfo);
+			const currentDeployIndex = this.deployInfo.findIndex(d => d.startDate === currentDeployTimeInfo);
 			this.deployInfo[currentDeployIndex].status = Status.failed;
-			this.deployInfo[currentDeployIndex].timeToBuild = utils.timeConversion(timeToFailureDeploy);
+			this.deployInfo[currentDeployIndex].timeToCompleteAction = utils.timeConversion(timeToFailureDeploy);
 
 			throw err;
 		}
@@ -306,9 +306,9 @@ export class ProjectsController {
 		telemetryProps.actionDuration = timeToDeploy.toString();
 		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
 
-		const currentDeployIndex = this.deployInfo.findIndex(d => d.deployDate === currentDeployTimeInfo);
+		const currentDeployIndex = this.deployInfo.findIndex(d => d.startDate === currentDeployTimeInfo);
 		this.deployInfo[currentDeployIndex].status = Status.success;
-		this.deployInfo[currentDeployIndex].timeToBuild = utils.timeConversion(timeToDeploy);
+		this.deployInfo[currentDeployIndex].timeToCompleteAction = utils.timeConversion(timeToDeploy);
 
 		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
 			.withAdditionalProperties(telemetryProps)

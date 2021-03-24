@@ -3,17 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export class BuildInfo {
+export class DashboardData {
 	public status: Status;
 	public target: string;
-	public timeToBuild: string;
-	public buildDate: string;
+	public timeToCompleteAction: string;
+	public startDate: string;
 
-	constructor(_status: Status, _target: string, _buildDate: string) {
+	constructor(_status: Status, _target: string, _startDate: string) {
 		this.status = _status;
 		this.target = _target;
-		this.timeToBuild = '';
-		this.buildDate = _buildDate;
+		this.timeToCompleteAction = '';
+		this.startDate = _startDate;
 	}
 }
 
@@ -21,18 +21,4 @@ export enum Status {
 	success = 'Success',
 	failed = 'Failed',
 	inProgress = 'In progress'
-}
-
-export class DeployInfo {
-	public status: Status;
-	public target: string;
-	public timeToBuild: string;
-	public deployDate: string;
-
-	constructor(_status: Status, _target: string, _deployDate: string) {
-		this.status = _status;
-		this.target = _target;
-		this.timeToBuild = '';
-		this.deployDate = _deployDate;
-	}
 }
