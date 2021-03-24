@@ -21,6 +21,8 @@ describe('NewProjectTool: New project tool tests', function (): void {
 	beforeEach(async function () {
 		previousSetting = await vscode.workspace.getConfiguration(projectConfigurationKey)[projectSaveLocationKey];
 		testFolderPath = await generateTestFolderPath();
+		// set the default project folder path to the test folder
+		await vscode.workspace.getConfiguration(projectConfigurationKey).update(projectSaveLocationKey, testFolderPath, true);
 
 		const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
 		dataWorkspaceMock.setup(x => x.defaultProjectSaveLocation).returns(() => vscode.Uri.file(testFolderPath));
@@ -28,18 +30,17 @@ describe('NewProjectTool: New project tool tests', function (): void {
 	});
 
 	afterEach(async function () {
+		// reset the default project folder path to the previous setting
 		await vscode.workspace.getConfiguration(projectConfigurationKey).update(projectSaveLocationKey, previousSetting, true);
 		sinon.restore();
 	});
 
 	it('Should generate correct default project names', async function (): Promise<void> {
-		await vscode.workspace.getConfiguration(projectConfigurationKey).update(projectSaveLocationKey, testFolderPath, true);
 		should(newProjectTool.defaultProjectNameNewProj()).equal('DatabaseProject1');
 		should(newProjectTool.defaultProjectNameFromDb('master')).equal('DatabaseProjectmaster');
 	});
 
 	it('Should auto-increment default project names for new projects', async function (): Promise<void> {
-		await vscode.workspace.getConfiguration(projectConfigurationKey).update(projectSaveLocationKey, testFolderPath, true);
 		should(newProjectTool.defaultProjectNameNewProj()).equal('DatabaseProject1');
 
 		await createTestFile('', 'DatabaseProject1', testFolderPath);
@@ -49,14 +50,19 @@ describe('NewProjectTool: New project tool tests', function (): void {
 		should(newProjectTool.defaultProjectNameNewProj()).equal('DatabaseProject3');
 	});
 
-	it('Should auto-increment default project names for import projects', async function (): Promise<void> {
-		await vscode.workspace.getConfiguration(projectConfigurationKey).update(projectSaveLocationKey, testFolderPath, true);
-		should(newProjectTool.defaultProjectNameFromDb("master")).equal('DatabaseProjectmaster');
+	it('Should auto-increment default project names for create project for database', async function (): Promise<void> {
+		should(newProjectTool.defaultProjectNameFromDb('master')).equal('DatabaseProjectmaster');
 
 		await createTestFile('', 'DatabaseProjectmaster', testFolderPath);
-		should(newProjectTool.defaultProjectNameFromDb("master")).equal('DatabaseProjectmaster2');
+		should(newProjectTool.defaultProjectNameFromDb('master')).equal('DatabaseProjectmaster2');
 
 		await createTestFile('', 'DatabaseProjectmaster2', testFolderPath);
-		should(newProjectTool.defaultProjectNameFromDb("master")).equal('DatabaseProjectmaster3');
+		should(newProjectTool.defaultProjectNameFromDb('master')).equal('DatabaseProjectmaster3');
+	});
+
+	it('Should not return a project name if undefined is passed in ', async function (): Promise<void> {
+		should(newProjectTool.defaultProjectNameFromDb(undefined)).equal('');
+		should(newProjectTool.defaultProjectNameFromDb('')).equal('');
+		should(newProjectTool.defaultProjectNameFromDb('test')).equal('DatabaseProjecttest');
 	});
 });
