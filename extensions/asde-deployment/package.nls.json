@@ -25,7 +25,8 @@
 	"edge-remote-target-field": "Name or IP address",
 	"edge-remote-username-field": "Username",
 	"edge-remote-password-field": "Password",
-	"sql-edge-azure-display-name": "New Azure IoT Hub and VM",
+	"sql-edge-azure-display-name": "New Azure IoT Hub and VM (password authentication)",
+	"sql-edge-azure-sshkey-display-name": "New Azure IoT Hub and VM (ssh public key authentication)",
 	"sql-edge-azure-title": "Deploy Azure SQL Edge to a new Azure VM via IoT hub",
 	"azure_subscription_id": "Subscription id",
 	"azure_resource_group": "Resource group",
@@ -48,5 +49,6 @@
 	"sql-edge-azure-multi-device-display-name": "Multiple devices of an Azure IoT Hub",
 	"sql-edge-azure-multi-device-title": "Deploy Azure SQL Edge to multiple Azure IoT devices",
 	"device-target-condition": "Target condition",
-	"device-target-condition-learn-more": "Learn more about target condition"
+	"device-target-condition-learn-more": "Learn more about target condition",
+	"vm_ssh_public_key": "SSH public key"
 }

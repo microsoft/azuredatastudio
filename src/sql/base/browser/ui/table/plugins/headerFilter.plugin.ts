@@ -10,28 +10,20 @@ import { escape } from 'sql/base/common/strings';
 import { addDisposableListener } from 'vs/base/browser/dom';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { withNullAsUndefined } from 'vs/base/common/types';
+import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 
-export interface IExtendedColumn<T> extends Slick.Column<T> {
-	filterValues?: Array<string>;
-}
-
+export type HeaderFilterCommands = 'sort-asc' | 'sort-desc';
 export interface CommandEventArgs<T extends Slick.SlickData> {
 	grid: Slick.Grid<T>,
 	column: Slick.Column<T>,
-	command: string
-}
-
-export type CellValueGetter = (data: any) => string;
-
-function GetCellValue(data: any): string {
-	return data?.toString();
+	command: HeaderFilterCommands
 }
 
 const ShowFilterText: string = localize('headerFilter.showFilter', "Show Filter");
 
 export class HeaderFilter<T extends Slick.SlickData> {
 
-	public onFilterApplied = new Slick.Event<{ grid: Slick.Grid<T>, column: IExtendedColumn<T> }>();
+	public onFilterApplied = new Slick.Event<{ grid: Slick.Grid<T>, column: FilterableColumn<T> }>();
 	public onCommand = new Slick.Event<CommandEventArgs<T>>();
 
 	private grid!: Slick.Grid<T>;
@@ -42,12 +34,12 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private clearButton?: Button;
 	private cancelButton?: Button;
 	private workingFilters!: Array<string>;
-	private columnDef!: IExtendedColumn<T>;
+	private columnDef!: FilterableColumn<T>;
 	private buttonStyles?: IButtonStyles;
-
 	private disposableStore = new DisposableStore();
+	public enabled: boolean = true;
 
-	constructor(private cellValueExtrator: CellValueGetter = GetCellValue) {
+	constructor() {
 	}
 
 	public init(grid: Slick.Grid<T>): void {
@@ -92,7 +84,10 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	}
 
 	private handleHeaderCellRendered(e: Event, args: Slick.OnHeaderCellRenderedEventArgs<T>) {
-		const column = args.column;
+		if (!this.enabled) {
+			return;
+		}
+		const column = args.column as FilterableColumn<T>;
 		if (column.id === '_detail_selector') {
 			return;
 		}
@@ -107,11 +102,12 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		const $el = jQuery(`<button aria-label="${ShowFilterText}" title="${ShowFilterText}"></button>`)
 			.addClass('slick-header-menubutton')
 			.data('column', column);
+		this.setButtonImage($el, column.filterValues?.length > 0);
 
-		$el.click((e: JQuery.Event) => {
+		$el.click(async (e: JQuery.Event) => {
 			e.stopPropagation();
 			e.preventDefault();
-			this.showFilter($el[0]);
+			await this.showFilter($el[0]);
 		});
 		$el.appendTo(args.node);
 	}
@@ -122,11 +118,11 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.remove();
 	}
 
-	private addMenuItem(menu: JQuery<HTMLElement>, columnDef: Slick.Column<T>, title: string, command: string) {
+	private addMenuItem(menu: JQuery<HTMLElement>, columnDef: Slick.Column<T>, title: string, command: HeaderFilterCommands) {
 		const $item = jQuery('<div class="slick-header-menuitem">')
 			.data('command', command)
 			.data('column', columnDef)
-			.bind('click', (e) => this.handleMenuItemClick(e, command, columnDef))
+			.bind('click', async (e) => await this.handleMenuItemClick(e, command, columnDef))
 			.appendTo(menu);
 
 		const $icon = jQuery('<div class="slick-header-menuicon">')
@@ -154,7 +150,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.appendTo(menu);
 	}
 
-	private updateFilterInputs(menu: JQuery<HTMLElement>, columnDef: IExtendedColumn<T>, filterItems: Array<string>) {
+	private updateFilterInputs(menu: JQuery<HTMLElement>, columnDef: FilterableColumn<T>, filterItems: Array<string>) {
 		let filterOptions = '<label><input type="checkbox" value="-1" />(Select All)</label>';
 		columnDef.filterValues = columnDef.filterValues || [];
 
@@ -176,7 +172,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		});
 	}
 
-	private showFilter(element: HTMLElement) {
+	private async showFilter(element: HTMLElement) {
 		const target = withNullAsUndefined(element);
 		const $menuButton = jQuery(target);
 		this.columnDef = $menuButton.data('column');
@@ -188,13 +184,23 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 		let filterItems: Array<string>;
 
-		if (this.workingFilters.length === 0) {
-			// Filter based all available values
-			filterItems = this.getFilterValues(this.grid.getData() as Slick.DataProvider<T>, this.columnDef);
-		}
-		else {
-			// Filter based on current dataView subset
-			filterItems = this.getAllFilterValues((this.grid.getData() as Slick.DataProvider<T>).getItems(), this.columnDef);
+		const provider = this.grid.getData() as IDisposableDataProvider<T>;
+
+		if (provider.getColumnValues) {
+			if (this.workingFilters.length === 0) {
+				filterItems = await provider.getColumnValues(this.columnDef);
+			} else {
+				filterItems = await provider.getFilteredColumnValues(this.columnDef);
+			}
+		} else {
+			if (this.workingFilters.length === 0) {
+				// Filter based all available values
+				filterItems = this.getFilterValues(this.grid.getData() as Slick.DataProvider<T>, this.columnDef);
+			}
+			else {
+				// Filter based on current dataView subset
+				filterItems = this.getAllFilterValues((this.grid.getData() as Slick.DataProvider<T>).getItems(), this.columnDef);
+			}
 		}
 
 		if (!this.$menu) {
@@ -203,8 +209,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 		this.$menu.empty();
 
-		this.addMenuItem(this.$menu, this.columnDef, 'Sort Ascending', 'sort-asc');
-		this.addMenuItem(this.$menu, this.columnDef, 'Sort Descending', 'sort-desc');
+		this.addMenuItem(this.$menu, this.columnDef, localize('table.sortAscending', "Sort Ascending"), 'sort-asc');
+		this.addMenuItem(this.$menu, this.columnDef, localize('table.sortDescending', "Sort Descending"), 'sort-desc');
 		this.addMenuInput(this.$menu, this.columnDef);
 
 		let filterOptions = '<label><input type="checkbox" value="-1" />(Select All)</label>';
@@ -345,7 +351,14 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 	private handleApply(e: JQuery.Event<HTMLElement, null>, columnDef: Slick.Column<T>) {
 		this.hideMenu();
+		const provider = this.grid.getData() as IDisposableDataProvider<T>;
 
+		if (provider.filter) {
+			provider.filter(this.grid.getColumns());
+			this.grid.invalidateAllRows();
+			this.grid.updateRowCount();
+			this.grid.render();
+		}
 		this.onFilterApplied.notify({ grid: this.grid, column: columnDef }, e, self);
 		e.preventDefault();
 		e.stopPropagation();
@@ -356,7 +369,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		dataView.getItems().forEach(items => {
 			const value = items[column.field!];
 			const valueArr = value instanceof Array ? value : [value];
-			valueArr.forEach(v => seen.add(this.cellValueExtrator(v)));
+			valueArr.forEach(v => seen.add(v));
 		});
 
 		return Array.from(seen);
@@ -398,9 +411,21 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		return Array.from(seen).sort((v) => { return v; });
 	}
 
-	private handleMenuItemClick(e: JQuery.Event<HTMLElement, null>, command: string, columnDef: Slick.Column<T>) {
+	private async handleMenuItemClick(e: JQuery.Event<HTMLElement, null>, command: HeaderFilterCommands, columnDef: Slick.Column<T>) {
 		this.hideMenu();
+		const provider = this.grid.getData() as IDisposableDataProvider<T>;
 
+		if (provider.sort && (command === 'sort-asc' || command === 'sort-desc')) {
+			await provider.sort({
+				grid: this.grid,
+				multiColumnSort: false,
+				sortCol: this.columnDef,
+				sortAsc: command === 'sort-asc'
+			});
+			this.grid.invalidateAllRows();
+			this.grid.updateRowCount();
+			this.grid.render();
+		}
 		this.onCommand.notify({
 			grid: this.grid,
 			column: columnDef,

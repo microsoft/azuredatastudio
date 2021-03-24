@@ -1,4 +1,4 @@
-<table role="grid" #container *ngIf="columns" class="declarative-table" [attr.aria-label]="ariaLabel" [ngStyle]="CSSStyles">
+<table role="grid" #container *ngIf="columns" class="declarative-table" [attr.aria-label]="ariaLabel" [ngStyle]="CSSStyles" (focusin)="onFocusIn()" (focusout)="onFocusOut()">
 	<thead role="rowgroup">
 		<tr role="row">
 			<ng-container *ngFor="let column of columns; let c = index;">
@@ -16,7 +16,7 @@
 	<tbody role="rowgroup">
 		<ng-container *ngIf="data.length > 0">
 			<ng-container *ngFor="let row of data;let r = index;">
-				<tr [style.display]="isFiltered(r) ? 'none' : ''" class="declarative-table-row" [class.selected]="isRowSelected(r)" role="row">
+				<tr [style.display]="isFiltered(r) ? 'none' : ''" class="declarative-table-row" [ngStyle]="getRowStyle(r)" role="row" [attr.tabindex]="enableRowSelection ? 0 : null" (click)="onRowSelected(r)" (keydown)="onKey($event,r)">
 					<ng-container *ngFor="let cellData of row;let c = index;trackBy:trackByFnCols">
 						<td class="declarative-table-cell" [style.width]="getColumnWidth(c)"
 							[attr.aria-label]="getAriaLabel(r, c)"
@@ -36,7 +36,7 @@
 							</editable-select-box>
 							<input-box *ngIf="isInputBox(c)" [value]="cellData.value"
 								(onDidChange)="onInputBoxChanged($event,r,c)"></input-box>
-							<span *ngIf="isLabel(c)" (click)="onCellClick(r)">
+							<span *ngIf="isLabel(c)">
 								{{cellData.value}}
 							</span>
 							<model-component-wrapper *ngIf="isComponent(c) && getItemDescriptor(cellData.value)"

@@ -245,6 +245,33 @@ describe('ProjectsController', function (): void {
 				should(await exists(noneEntry.fsUri.fsPath)).equal(true, 'none entry pre-deployment script is supposed to still exist on disk');
 			});
 
+			it('Should delete folders with excluded items', async function (): Promise<void> {
+				let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
+				const setupResult = await setupDeleteExcludeTest(proj);
+
+				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1];
+				const upperFolder = projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!;
+				const lowerFolder = upperFolder.children.find(x => x.friendlyName === 'LowerFolder')!;
+
+				const projController = new ProjectsController();
+
+				// Exclude files under LowerFolder
+				await projController.exclude(createWorkspaceTreeItem(<FileNode>lowerFolder.children.find(x => x.friendlyName === 'someScript.sql')!));
+				await projController.exclude(createWorkspaceTreeItem(<FileNode>lowerFolder.children.find(x => x.friendlyName === 'someOtherScript.sql')!));
+
+				// Delete UpperFolder
+				await projController.delete(createWorkspaceTreeItem(<FolderNode>projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!));
+
+				// Reload edited sqlproj from disk
+				proj = await Project.openProject(proj.projectFilePath);
+
+				// Confirm result
+				should(proj.files.some(x => x.relativePath === 'UpperFolder')).equal(false, 'UpperFolder should not be part of proj file any more');
+				should(await exists(scriptEntry.fsUri.fsPath)).equal(false, 'script is supposed to be deleted from disk');
+				should(await exists(lowerFolder.projectUri.fsPath)).equal(false, 'LowerFolder is supposed to be deleted from disk');
+				should(await exists(upperFolder.projectUri.fsPath)).equal(false, 'UpperFolder is supposed to be deleted from disk');
+			});
+
 			it('Should reload correctly after changing sqlproj file', async function (): Promise<void> {
 				// create project
 				const folderPath = await testUtils.generateTestFolderPath();
