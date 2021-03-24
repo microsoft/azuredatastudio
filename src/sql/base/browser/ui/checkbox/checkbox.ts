@@ -9,6 +9,7 @@ import { Color } from 'vs/base/common/color';
 import { Event, Emitter } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Widget } from 'vs/base/browser/ui/widget';
+import { EventHelper } from 'vs/base/browser/dom';
 
 export interface ICheckboxOptions {
 	label: string;
@@ -46,12 +47,12 @@ export class Checkbox extends Widget {
 		});
 
 		this.onkeydown(this._el, e => {
-			if (e.equals(KeyCode.Enter)) {
+			if (e.equals(KeyCode.Enter) || e.equals(KeyCode.Space)) {
 				this.checked = !this.checked;
 				// Manually fire the event since we stop the event propagation which means
 				// the onchange event won't fire.
 				this._onChange.fire(this.checked);
-				e.stopPropagation();
+				EventHelper.stop(e, true);
 			}
 		});
 
