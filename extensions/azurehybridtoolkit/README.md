@@ -1,6 +1,6 @@
 # Azure SQL Hybrid Cloud Toolkit *(preview)*
 
-Adds a Jupyter Book that has several utilities for Azure SQL Hybrid Cloud.
+Adds a Jupyter Book that has several utilities for Azure SQL Hybrid Cloud. After installing the extension, open the Command Palette from the View menu typing a portion of the name of this toolkit. The Notebook should show in the Provided Notebooks panel of the ADS Notebooks Explorer.
 
 ## Code of Conduct
 
