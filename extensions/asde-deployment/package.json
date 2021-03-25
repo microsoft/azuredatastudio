@@ -2,7 +2,7 @@
   "name": "asde-deployment",
   "displayName": "%extension-displayName%",
   "description": "%extension-description%",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -10,7 +10,7 @@
   "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
   "engines": {
     "vscode": "*",
-    "azdata": "*"
+    "azdata": ">=1.25.0"
   },
   "repository": {
     "type": "git",
