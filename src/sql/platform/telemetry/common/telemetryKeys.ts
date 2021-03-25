@@ -6,6 +6,7 @@
 // Telemetry Event Names
 
 export const DatabaseConnected = 'DatabaseConnected';
+export const DatabaseConnectionError = 'DatabaseConnectionError';
 export const DatabaseDisconnected = 'DatabaseDisconnected';
 export const DeleteConnection = 'DeleteConnection';
 export const AddServerGroup = 'AddServerGroup';
