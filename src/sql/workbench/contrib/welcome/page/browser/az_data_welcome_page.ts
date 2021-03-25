@@ -126,6 +126,14 @@ export default () => `
 						<p>
 							${escape(localize('welcomePage.documentationBody', "Visit the documentation center for quickstarts, how-to guides, and references for PowerShell, APIs, etc."))}
 						</p>
+						<div class="link-header">
+							<a class="link ads-welcome-page-link" href="https://aka.ms/AzureSQLSurvey">
+								${escape(localize('welcomePage.productFeedback', "Product Feedback"))}<span class="icon-link themed-icon-alt"></span>
+							</a>
+						</div>
+						<p>
+							${escape(localize('welcomePage.productFeedbackBody', "Shape the future of the Azure SQL products you're using by completing the feedback survey!"))}
+						</p>
 						<div class="videos-container row">
 							<h2>${escape(localize('welcomePage.videos', "Videos"))}</h2>
 							<div class="flex flex-container-video">
