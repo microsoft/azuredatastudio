@@ -19,6 +19,8 @@ import { MockExtensionContext } from '../common/stubs';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { NavigationProviders } from '../../common/constants';
 import * as loc from '../../common/localizedConstants';
+import { BookVersion } from '../../book/bookVersionHandler';
+import * as yaml from 'js-yaml';
 
 
 export function equalTOC(actualToc: IJupyterBookSectionV2[], expectedToc: IJupyterBookSectionV2[]): boolean {
@@ -125,7 +127,7 @@ describe('BookTocManagerTests', function () {
 		let runs = [
 			{
 				it: 'using the jupyter-book legacy version < 0.7.0',
-				version: 'v1',
+				version: BookVersion.v1,
 				sourceBook: {
 					'rootBookFolderPath': sourceBookFolderPath,
 					'bookContentFolderPath': path.join(sourceBookFolderPath, 'content'),
@@ -215,7 +217,7 @@ describe('BookTocManagerTests', function () {
 				}
 			}, {
 				it: 'using the jupyter-book legacy version >= 0.7.0',
-				version: 'v2',
+				version: BookVersion.v2,
 				sourceBook: {
 					'rootBookFolderPath': sourceBookFolderPath,
 					'bookContentFolderPath': sourceBookFolderPath,
@@ -509,6 +511,31 @@ describe('BookTocManagerTests', function () {
 					await bookTocManager.updateBook(notebook, targetBook);
 					const listFiles = await fs.promises.readdir(run.targetBook.bookContentFolderPath);
 					should(JSON.stringify(listFiles).includes('notebook5.ipynb')).be.true('Notebook 5 should be under the target book content folder');
+				});
+
+				it('Remove notebook from book', async () => {
+					let toc: JupyterBookSection[] = yaml.safeLoad((await fs.promises.readFile(notebook.tableOfContentsPath)).toString());
+					let notebookInToc = toc.some(section => {
+						if (section.title === 'Notebook 5' && section.file === path.join(path.sep, 'notebook5')) {
+							return true;
+						}
+						return false;
+					});
+					should(notebookInToc).be.true('Verify the notebook is in toc before removing');
+
+					bookTocManager = new BookTocManager();
+					await bookTocManager.removeNotebook(notebook);
+
+					const listFiles = await fs.promises.readdir(run.sourceBook.bookContentFolderPath);
+					toc = yaml.safeLoad((await fs.promises.readFile(notebook.tableOfContentsPath)).toString());
+					notebookInToc = toc.some(section => {
+						if (section.title === 'Notebook 5' && section.file === path.join(path.sep, 'notebook5')) {
+							return true;
+						}
+						return false;
+					});
+					should(JSON.stringify(listFiles).includes('notebook5.ipynb')).be.true('Notebook 5 should be still under the content folder');
+					should(notebookInToc).be.false('The notebook has been removed from toc');
 				});
 
 				it('Add duplicated notebook to book', async () => {
