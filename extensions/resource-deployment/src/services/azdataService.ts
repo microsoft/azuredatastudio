@@ -61,7 +61,7 @@ export class AzdataService implements IAzdataService {
 		const env: NodeJS.ProcessEnv = {};
 		// azdata requires this environment variables to be set
 		env['ACCEPT_EULA'] = 'yes';
-		await this.platformService.runCommand(`azdata bdc config init --source ${profileName} --target ${profileName} --force`, { workingDirectory: this.platformService.storagePath(), additionalEnvironmentVariables: env });
+		await this.platformService.runCommand(`azdata bdc config init --source ${profileName} --path ${profileName} --force`, { workingDirectory: this.platformService.storagePath(), additionalEnvironmentVariables: env });
 		const configObjects = await Promise.all([
 			this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'bdc.json')),
 			this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'control.json'))
