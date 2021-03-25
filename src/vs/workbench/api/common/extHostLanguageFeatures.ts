@@ -457,7 +457,7 @@ class CodeActionAdapter {
 			return undefined; // code actions only!
 		}
 		if (!this._provider.resolveCodeAction) {
-			return undefined; // this should not happen... {{ SQL CARBON EDIT }}
+			return undefined; // this should not happen... {{SQL CARBON EDIT}}
 		}
 		const resolvedItem = (await this._provider.resolveCodeAction(item, token)) ?? item;
 		return resolvedItem?.edit
