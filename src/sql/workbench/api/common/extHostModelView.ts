@@ -1440,8 +1440,8 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		return emitter && emitter.event;
 	}
 
-	public appendData(v: any[][]): void {
-		this.doAction(ModelViewAction.AppendData, v);
+	public appendData(v: any[][]): Thenable<void> {
+		return this.doAction(ModelViewAction.AppendData, v);
 	}
 }
 
