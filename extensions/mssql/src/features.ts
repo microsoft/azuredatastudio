@@ -76,7 +76,7 @@ export class AccountFeature implements StaticFeature {
 			window.showErrorMessage(unauthorizedMessage);
 			return undefined;
 		}
-		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant, azdata.AzureResource.AzureKeyVault);
+		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.AzureKeyVault);
 
 		if (!securityToken?.token) {
 			window.showErrorMessage(unauthorizedMessage);
