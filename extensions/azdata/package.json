@@ -107,7 +107,12 @@
           "when": "azdata.found"
         }
       ]
-    }
+    },
+    "resourceDeploymentOptionsSources": [
+      {
+        "id": "arc.controller.config.profiles"
+      }
+    ]
   },
   "dependencies": {
     "request": "^2.88.2",

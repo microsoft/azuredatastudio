@@ -1016,6 +1016,11 @@
           "when": "mi-type=arc-mi"
         }
       }
+    ],
+    "resourceDeploymentOptionsSources": [
+      {
+        "id": "arc.controllers"
+      }
     ]
   },
   "dependencies": {
