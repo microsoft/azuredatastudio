@@ -52,16 +52,6 @@
         "container": {
           "grid-container": [
             {
-              "name": "Tasks",
-              "row": 0,
-              "col": 0,
-              "widget": {
-                "tasks-widget": [
-                  "sqlmigration.start"
-                ]
-              }
-            },
-            {
               "name": "",
               "row": 0,
               "col": 0,
