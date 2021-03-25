@@ -216,6 +216,9 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 		let el = parentElement;
 		let count = 0;
 		while (el?.className !== 'split-view-view visible' && count < 10) {
+			if (!el.parentElement) {
+				return;
+			}
 			el = el.parentElement;
 			count++;
 		}
