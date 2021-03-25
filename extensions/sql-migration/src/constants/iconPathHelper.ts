@@ -12,6 +12,7 @@ export interface IconPath {
 
 export class IconPathHelper {
 	public static copy: IconPath;
+	public static discard: IconPath;
 	public static refresh: IconPath;
 	public static cutover: IconPath;
 	public static sqlMigrationLogo: IconPath;
@@ -26,6 +27,10 @@ export class IconPathHelper {
 		IconPathHelper.copy = {
 			light: context.asAbsolutePath('images/copy.svg'),
 			dark: context.asAbsolutePath('images/copy.svg')
+		};
+		IconPathHelper.discard = {
+			light: context.asAbsolutePath('images/discard.svg'),
+			dark: context.asAbsolutePath('images/discard.svg')
 		};
 		IconPathHelper.refresh = {
 			light: context.asAbsolutePath('images/refresh.svg'),
