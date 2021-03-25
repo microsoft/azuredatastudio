@@ -29,9 +29,28 @@ export interface OptionValuesFilter {
 }
 
 export interface IResourceTypeService {
+	/**
+	 * Loads the resource types contributed by all extensions, this should only be called on startup or when
+	 * changes to the installed extensions are made.
+	 */
 	loadResourceTypes(): void;
+	/**
+	 * Gets the set of contributed resource types
+	 * @param filterByPlatform Whether to filter to just types valid for the current platform
+	 */
 	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
+	/**
+	 * Validates that the given resource type matches the schema we expect
+	 * @param resourceType The resource type to validate
+	 * @param positionInfo A string to use to identify the resource type (in case it doesn't have a name or other expected properties)
+	 */
 	validateResourceType(resourceType: ResourceType, positionInfo: string): string[];
+	/**
+	 * Starts a deployment for the given resource type
+	 * @param resourceType The resource type to start the deployment for
+	 * @param optionValuesFilter The resource type options to filter the list of selectable options to
+	 * @param initialVariableValues The set of initial key/value pairs to assign to the variables for the deployment
+	 */
 	startDeployment(resourceType: ResourceType, optionValuesFilter?: OptionValuesFilter, initialVariableValues?: InitialVariableValues): void;
 }
 
