@@ -63,7 +63,7 @@ export interface NetworkShare {
 export interface DatabaseBackupModel {
 	migrationCutover: MigrationCutover;
 	networkContainerType: NetworkContainerType;
-	networkShareLocations: string[];
+	networkShareLocation: string;
 	windowsUser: string;
 	password: string;
 	subscription: azureResource.AzureResourceSubscription;
@@ -353,7 +353,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		try {
 			this._targetSqlVirtualMachines = await getAvailableSqlVMs(this._azureAccount, subscription);
 			virtualMachineValues = this._targetSqlVirtualMachines.filter((virtualMachine) => {
-				return virtualMachine.properties.sqlImageOffer.toLowerCase().includes('-ws'); //filtering out all non windows sql vms.
+				if (virtualMachine.properties.sqlImageOffer) {
+					return virtualMachine.properties.sqlImageOffer.toLowerCase().includes('-ws'); //filtering out all non windows sql vms.
+				}
+				return true; // Returning all VMs that don't have this property as we don't want to skip
 			}).map((virtualMachine) => {
 				return {
 					name: virtualMachine.id,
@@ -568,7 +571,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			requestBody.properties.sourceDatabaseName = db;
 			try {
-				requestBody.properties.backupConfiguration.sourceLocation.fileShare!.path = this._databaseBackup.networkShareLocations[index];
+				requestBody.properties.backupConfiguration.sourceLocation.fileShare!.path = this._databaseBackup.networkShareLocation;
 				const response = await startDatabaseMigration(
 					this._azureAccount,
 					this._targetSubscription,

@@ -108,7 +108,7 @@ export function TARGET_FILE_SHARE(dbName: string): string {
 export function TARGET_BLOB_CONTAINER(dbName: string): string {
 	return localize('sql.migration.blob.container', "Select the container that contains the backup files for ‘{0}’", dbName);
 }
-export const ENTER_NETWORK_SHARE_INFORMATION = localize('sql.migration.enter.network.share.information', "Enter network share path information for selected databases");
+export const ENTER_NETWORK_SHARE_INFORMATION = localize('sql.migration.enter.network.share.information', "Enter target names for selected databases");
 export const ENTER_BLOB_CONTAINER_INFORMATION = localize('sql.migration.blob.container.information', "Enter the target name and select the blob container location for selected databases");
 export const ENTER_FILE_SHARE_INFORMATION = localize('sql.migration.enter.file.share.information', "Enter the target name and select the file share location of selected databases");
 
