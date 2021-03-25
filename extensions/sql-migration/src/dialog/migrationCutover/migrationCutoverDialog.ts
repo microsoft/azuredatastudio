@@ -10,6 +10,8 @@ import { MigrationCutoverDialogModel } from './migrationCutoverDialogModel';
 import * as loc from '../../constants/strings';
 import { getSqlServerName } from '../../api/utils';
 import { EOL } from 'os';
+import * as vscode from 'vscode';
+
 export class MigrationCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
@@ -20,6 +22,7 @@ export class MigrationCutoverDialog {
 	private _refreshButton!: azdata.ButtonComponent;
 	private _cancelButton!: azdata.ButtonComponent;
 	private _refreshLoader!: azdata.LoadingComponent;
+	private _copyDatabaseMigrationDetails!: azdata.ButtonComponent;
 
 	private _serverName!: azdata.TextComponent;
 	private _serverVersion!: azdata.TextComponent;
@@ -336,6 +339,27 @@ export class MigrationCutoverDialog {
 			}
 		});
 
+		this._copyDatabaseMigrationDetails = this._view.modelBuilder.button().withProps({
+			iconPath: IconPathHelper.copy,
+			iconHeight: '16px',
+			iconWidth: '16px',
+			label: 'Copy Migration Details',
+			height: '55px',
+			width: '100px'
+		}).component();
+
+		this._copyDatabaseMigrationDetails.onDidClick(async (e) => {
+			await this.refreshStatus();
+			vscode.env.clipboard.writeText(JSON.stringify(this._model.migrationStatus, null, 2));
+		});
+
+		header.addItem(this._copyDatabaseMigrationDetails, {
+			flex: '0',
+			CSSStyles: {
+				'width': '100px'
+			}
+		});
+
 		this._refreshLoader = this._view.modelBuilder.loadingComponent().withProps({
 			loading: false,
 			height: '55px'
@@ -344,6 +368,7 @@ export class MigrationCutoverDialog {
 		header.addItem(this._refreshLoader, {
 			flex: '0'
 		});
+
 		return header;
 	}
 

@@ -358,7 +358,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				if (virtualMachine.properties.sqlImageOffer) {
 					return virtualMachine.properties.sqlImageOffer.toLowerCase().includes('-ws'); //filtering out all non windows sql vms.
 				}
-				return true; // Returning all VMs that don't have this property as we don't want to skip
+				return true; // Returning all VMs that don't have this property as we don't want to accidentally skip valid vms.
 			}).map((virtualMachine) => {
 				return {
 					name: virtualMachine.id,

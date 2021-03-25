@@ -595,9 +595,9 @@ export class SqlDatabaseTree {
 
 	public selectedDbs(): string[] {
 		let result: string[] = [];
-		this._databaseTable.dataValues?.forEach((arr) => {
+		this._databaseTable.dataValues?.forEach((arr, index) => {
 			if (arr[0].value === true) {
-				result.push(arr[1].value.toString());
+				result.push(this._dbNames[index]);
 			}
 		});
 		return result;
