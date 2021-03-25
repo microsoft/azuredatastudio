@@ -118,6 +118,9 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			 */
 			if (value.selected) {
 				this.migrationStateModel._azureAccount.properties.tenants = [this.migrationStateModel.getTenant(value.index)];
+				this.migrationStateModel._subscriptions = undefined!;
+				this.migrationStateModel._targetSubscription = undefined!;
+				this.migrationStateModel._databaseBackup.subscription = undefined!;
 			}
 		});
 
