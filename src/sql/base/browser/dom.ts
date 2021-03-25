@@ -44,3 +44,23 @@ export function convertSizeToNumber(size: number | string | undefined): number {
 	}
 	return +size;
 }
+
+const tabbableElementsQuerySelector = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]';
+
+/**
+ * Get the focusable elements inside a HTML element
+ * @param container The container element inside which we should look for the focusable elements
+ * @returns The focusable elements
+ */
+export function getFocusableElements(container: HTMLElement): HTMLElement[] {
+	const elements = [];
+	container.querySelectorAll(tabbableElementsQuerySelector).forEach((element: HTMLElement) => {
+		const style = window.getComputedStyle(element);
+		// We should only return the elements that are visible. There are many ways to hide an element, for example setting the
+		// visibility attribute to hidden/collapse, setting the display property to none, or if one of its ancestors is invisible.
+		if (element.offsetWidth > 0 && element.offsetHeight > 0 && style.visibility === 'visible') {
+			elements.push(element);
+		}
+	});
+	return elements;
+}
