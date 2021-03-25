@@ -71,6 +71,8 @@ interface ICachedViewContainer {
 	views?: { when?: string; }[];
 }
 
+export const settingsViewBarIcon = registerIcon('settings-view-bar-icon', Codicon.settingsGear, localize('settingsViewBarIcon', "Settings icon in the view bar.")); // {{SQL CARBON EDIT}} exporting to use it in getting started tour
+
 export class ActivitybarPart extends Part implements IActivityBarService {
 
 	declare readonly _serviceBrand: undefined;
@@ -80,7 +82,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 	private static readonly ACTION_HEIGHT = 48;
 	private static readonly ACCOUNTS_ACTION_INDEX = 0;
 
-	private static readonly GEAR_ICON = registerIcon('settings-view-bar-icon', Codicon.settingsGear, localize('settingsViewBarIcon', "Settings icon in the view bar."));
+	private static readonly GEAR_ICON = settingsViewBarIcon; // registerIcon('settings-view-bar-icon', Codicon.settingsGear, localize('settingsViewBarIcon', "Settings icon in the view bar.")); // {{SQL CARBON EDIT}} exporting to use it in getting started tour
 	private static readonly ACCOUNTS_ICON = registerIcon('accounts-view-bar-icon', Codicon.account, localize('accountsViewBarIcon', "Accounts icon in the view bar."));
 
 	//#region IView

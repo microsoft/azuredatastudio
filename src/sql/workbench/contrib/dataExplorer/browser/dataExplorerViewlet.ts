@@ -132,6 +132,8 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 }
 
+export const dataExplorerIconId = 'dataExplorer';
+
 export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
 	title: localize('dataexplorer.name', "Connections"),

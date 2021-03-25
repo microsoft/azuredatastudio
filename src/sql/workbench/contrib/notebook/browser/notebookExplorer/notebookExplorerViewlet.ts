@@ -423,11 +423,13 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 }
 
+export const notebookIconId = 'book';
+
 export const NOTEBOOK_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
 	title: localize('notebookExplorer.name', "Notebooks"),
 	ctorDescriptor: new SyncDescriptor(NotebookExplorerViewPaneContainer),
-	icon: { id: 'book' },
+	icon: { id: notebookIconId },
 	order: 6,
 	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Sidebar);
