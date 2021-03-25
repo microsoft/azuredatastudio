@@ -517,7 +517,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Password is required]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Se requiere contraseña]]></Val>
+            <Val><![CDATA[Se necesita la contraseña.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1266,6 +1266,9 @@
       <Item ItemId=";extensions/big-data-cluster/package.bdc.view.welcome.connect" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No SQL Big Data Cluster controllers registered. [Learn More]5D;(https://docs.microsoft.com/sql/big-data-cluster/big-data-cluster-overview)]D;]A;[Connect Controller]5D;(command:bigDataClusters.command.connectController)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se ha registrado ningún controlador del clúster de macrodatos de SQL. [Más información]5D;(https://docs.microsoft.com/sql/big-data-cluster/big-data-cluster-overview)]D;]A;[Conexión de un controlador]5D;(command:bigDataClusters.command.connectController)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

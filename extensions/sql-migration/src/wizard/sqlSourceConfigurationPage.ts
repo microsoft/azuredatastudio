@@ -6,12 +6,14 @@
 import * as azdata from 'azdata';
 import * as os from 'os';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
+import { MigrationSourceAuthenticationType, MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { createLabelTextComponent, createHeadingTextComponent } from './wizardController';
 
 export class SqlSourceConfigurationPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
+	private _usernameInput!: azdata.InputBoxComponent;
+	private _password!: azdata.InputBoxComponent;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.SOURCE_CONFIGURATION, 'MigrationModePage'), migrationStateModel);
@@ -50,11 +52,15 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 		switch (connectionProfile.authenticationType) {
 			case 'SqlLogin':
 				username = connectionProfile.userName;
-				this.migrationStateModel._authenticationType = 'SqlAuthentication';
+				this.migrationStateModel._authenticationType = MigrationSourceAuthenticationType.Sql;
 				break;
 			case 'Integrated':
-				username = os.userInfo().username;
-				this.migrationStateModel._authenticationType = 'WindowsAuthentication';
+				if (process.env.USERDOMAIN && process.env.USERNAME) {
+					username = process.env.USERDOMAIN + '\\' + process.env.USERNAME;
+				} else {
+					username = os.userInfo().username;
+				}
+				this.migrationStateModel._authenticationType = MigrationSourceAuthenticationType.Integrated;
 				break;
 			default:
 				username = '';
@@ -70,15 +76,25 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 			}
 		);
 
+		const authenticationTypeLable = this._view.modelBuilder.text().withProps({
+			value: constants.AUTHENTICATION_TYPE
+		}).component();
+
+		const authenticationTypeInput = this._view.modelBuilder.inputBox().withProps({
+			value: this.migrationStateModel._authenticationType === MigrationSourceAuthenticationType.Sql ? 'SQL Login' : 'Windows Authentication',
+			enabled: false
+		}).component();
+
 		const usernameLable = this._view.modelBuilder.text().withProps({
 			value: constants.USERNAME,
 			requiredIndicator: true
 		}).component();
-		const usernameInput = this._view.modelBuilder.inputBox().withProps({
+		this._usernameInput = this._view.modelBuilder.inputBox().withProps({
 			value: username,
-			required: true
+			required: true,
+			enabled: false
 		}).component();
-		usernameInput.onTextChanged(value => {
+		this._usernameInput.onTextChanged(value => {
 			this.migrationStateModel._sqlServerUsername = value;
 		});
 
@@ -86,12 +102,12 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 			value: constants.DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_LABEL,
 			requiredIndicator: true
 		}).component();
-		const passwordInput = this._view.modelBuilder.inputBox().withProps({
+		this._password = this._view.modelBuilder.inputBox().withProps({
 			value: (await azdata.connection.getCredentials(this.migrationStateModel.sourceConnectionId)).password,
 			required: true,
 			inputType: 'password'
 		}).component();
-		passwordInput.onTextChanged(value => {
+		this._password.onTextChanged(value => {
 			this.migrationStateModel._sqlServerPassword = value;
 		});
 
@@ -99,10 +115,12 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 			[
 				sourceCredText,
 				enterYourCredText,
+				authenticationTypeLable,
+				authenticationTypeInput,
 				usernameLable,
-				usernameInput,
+				this._usernameInput,
 				passwordLabel,
-				passwordInput
+				this._password
 			]
 		).withLayout({
 			flexFlow: 'column'

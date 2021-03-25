@@ -438,6 +438,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 						this._installCompletion.resolve();
 						this._installInProgress = false;
+						await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions');
 					})
 					.catch(err => {
 						let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));

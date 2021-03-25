@@ -30,6 +30,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _resourceDropdown!: azdata.DropDownComponent;
 	private _rbg!: azdata.RadioCardGroupComponent;
 	private eventListener!: vscode.Disposable;
+	private _rbgLoader!: azdata.LoadingComponent;
 
 	private _supportedProducts: Product[] = [
 		{
@@ -222,10 +223,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._rbg.selectedCardId = MigrationTargetType.SQLMI;
 
+		this._rbgLoader = this._view.modelBuilder.loadingComponent().withItem(
+			this._rbg
+		).component();
 
 		const component = view.modelBuilder.divContainer().withItems(
 			[
-				this._rbg
+				this._rbgLoader
 			]
 		).component();
 		return component;
@@ -246,9 +250,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private async constructDetails(): Promise<void> {
 		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 		this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
-		await this.migrationStateModel.getServerAssessments();
-		if (this.migrationStateModel._assessmentResults) {
+		try {
+			await this.migrationStateModel.getServerAssessments();
 			this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults.databaseAssessments.length);
+		} catch (e) {
+			console.log(e);
 		}
 		this.refreshCardText();
 	}
@@ -298,14 +304,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 
 	public async onPageEnter(): Promise<void> {
-		try {
-			this.migrationStateModel.getServerAssessments().then((result) => {
-				this.constructDetails();
-			});
-		} catch (e) {
-			console.log(e);
-		}
-
+		this.constructDetails();
 		this.populateSubscriptionDropdown();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			const errors: string[] = [];
@@ -362,6 +361,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	public refreshCardText(): void {
+		this._rbgLoader.loading = true;
 		this.wizard.message = {
 			text: '',
 			level: azdata.window.MessageLevel.Error
@@ -399,7 +399,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				cards: this._rbg.cards
 			});
 		}
-
+		this._rbgLoader.loading = false;
 	}
 }
 
