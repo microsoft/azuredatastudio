@@ -29,7 +29,8 @@
       {
         "command": "sqlmigration.start",
         "title": "SQL Migration Start",
-        "category": "SQL Migration"
+        "category": "SQL Migration",
+        "icon": "./images/migration.svg"
       },
       {
         "command": "sqlmigration.openNotebooks",
@@ -50,6 +51,16 @@
         "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
         "container": {
           "grid-container": [
+            {
+              "name": "",
+              "row": 0,
+              "col": 0,
+              "widget": {
+                "tasks-widget": [
+                  "sqlmigration.start"
+                ]
+              }
+            },
             {
               "name": "",
               "row": 0,
