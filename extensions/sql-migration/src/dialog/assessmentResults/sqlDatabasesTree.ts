@@ -166,14 +166,14 @@ export class SqlDatabaseTree {
 					{
 						displayName: constants.INSTANCE,
 						valueType: azdata.DeclarativeDataType.component,
-						width: 150,
+						width: 130,
 						isReadOnly: true,
 						headerCssStyles: headerLeft
 					},
 					{
 						displayName: constants.WARNINGS,
 						valueType: azdata.DeclarativeDataType.string,
-						width: 50,
+						width: 30,
 						isReadOnly: true,
 						headerCssStyles: headerRight
 					}
@@ -747,6 +747,7 @@ export class SqlDatabaseTree {
 		}).component();
 		const textComponent = this._view.modelBuilder.text().withProps({
 			value: text,
+			title: text,
 			CSSStyles: {
 				'margin': '0px',
 				'width': '110px'
