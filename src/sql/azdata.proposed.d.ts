@@ -51,6 +51,16 @@ declare module 'azdata' {
 		export type ICellAttachments = { [key: string]: ICellAttachment };
 		export type ICellAttachment = { [key: string]: string };
 
+		export interface SessionManager {
+			/**
+			 * Shutdown all sessions.
+			 */
+			shutdownAll(): Thenable<void>;
+			/**
+			 * Disposes the session manager.
+			 */
+			dispose(): void;
+		}
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
@@ -368,9 +378,9 @@ declare module 'azdata' {
 		dataValues?: DeclarativeTableCellValue[][];
 
 		/**
-		 * Should the table react to user selections
+		 * Gets a boolean value determines whether the row selection is enabled. Default value is false.
 		 */
-		selectEffect?: boolean; // Defaults to false
+		enableRowSelection?: boolean;
 	}
 
 	export interface DeclarativeTableCellValue {
