@@ -28,17 +28,14 @@
     "commands": [
       {
         "command": "sqlmigration.start",
-        "title": "Start SQL Migration",
-        "category": "SQL Migration",
-        "icon": {
-          "light": "./images/migration.svg",
-          "dark": "./images/migration.svg"
-        }
+        "title": "%start-migration-command%",
+        "category": "%migration-command-category%",
+        "icon": "./images/migration.svg"
       },
       {
         "command": "sqlmigration.openNotebooks",
         "title": "%migration-notebook-command-title%",
-        "category": "SQL Migration"
+        "category": "%migration-command-category%"
       }
     ],
     "dashboard.tabs": [
@@ -56,6 +53,16 @@
           "grid-container": [
             {
               "name": "Tasks",
+              "row": 0,
+              "col": 0,
+              "widget": {
+                "tasks-widget": [
+                  "sqlmigration.start"
+                ]
+              }
+            },
+            {
+              "name": "",
               "row": 0,
               "col": 0,
               "widget": {

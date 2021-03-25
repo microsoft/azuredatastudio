@@ -65,6 +65,9 @@
         <Item ItemId=";(...) tip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[List of name value pairs containing Spark configuration values. Encoded as JSON dictionary. Example: '{"name":"value", "name2":"value2"}'.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Список пар "имя — значение", содержащий значения параметров конфигурации Spark. Закодирован как словарь JSON. Пример: '{"имя":"значение", "имя2":"значение2"}'.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -74,6 +77,9 @@
         <Item ItemId=";(...) ip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Amount of CPU cores to allocate to the driver.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Число ядер ЦП, выделяемых драйверу.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -83,6 +89,9 @@
         <Item ItemId=";(...) tip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Amount of memory to allocate to the driver. Specify units as part of value. Example 512M or 2G.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Объем памяти, выделяемый драйверу. Укажите единицы как часть значения. Например, 512M или 2G.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -92,6 +101,9 @@
         <Item ItemId=";(...) ltip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Amount of CPU cores to allocate to the executor.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Число ядер ЦП, выделяемых исполнителю.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -101,6 +113,9 @@
         <Item ItemId=";(...) ltip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Number of instances of the executor to run.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Число экземпляров исполнителя для запуска.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -110,6 +125,9 @@
         <Item ItemId=";(...) oltip" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Amount of memory to allocate to the executor. Specify units as part of value. Example 512M or 2G.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Объем памяти, выделяемый исполнителю. Укажите единицы как часть значения. Например, 512M или 2G.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -144,7 +162,7 @@
           <Str Cat="Text">
             <Val><![CDATA[GENERAL]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Общее]]></Val>
+              <Val><![CDATA[ОБЩИЕ]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -330,7 +348,7 @@
           <Str Cat="Text">
             <Val><![CDATA[livyBatchId is invalid. ]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Недопустимый livyBatchId.]]></Val>
+              <Val><![CDATA[Идентификатор livyBatchId является недопустимым. ]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -378,7 +396,7 @@
           <Str Cat="Text">
             <Val><![CDATA[submissionArgs is invalid. ]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Недопустимый submissionArgs.]]></Val>
+              <Val><![CDATA[Аргументы submissionArgs являются недопустимыми. ]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
