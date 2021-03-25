@@ -20,6 +20,9 @@
         <Item ItemId=";(...) formation" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[adding the azure-cli repository information …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[добавление в репозиторий сведений для azure-cli…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -29,6 +32,9 @@
         <Item ItemId=";(...) si" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[deleting previously downloaded azurecli.msi if one exists …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[удаление ранее скачанного файла azurecli.msi, если он существует…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -38,6 +44,9 @@
         <Item ItemId=";(...) ngKey" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[downloading and installing the signing key for azure-cli …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[скачивание и установка ключа подписывания для azure-cli…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -47,6 +56,9 @@
         <Item ItemId=";(...) ureCli" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[downloading azurecli.msi and installing azure-cli …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[скачивание azurecli.msi и установка azure-cli…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -56,6 +68,9 @@
         <Item ItemId=";(...) ormation" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[adding the azdata repository information …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[добавление в репозиторий сведений для azdata…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -65,6 +80,9 @@
         <Item ItemId=";(...) ingKey" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[downloading and installing the signing key for azdata …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[скачивание и установка ключа подписывания для azdata…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -74,6 +92,9 @@
         <Item ItemId=";(...) zdata" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[downloading Azdata.msi and installing azdata-cli …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[скачивание Azdata.msi и установка azdata-cli…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -83,6 +104,9 @@
         <Item ItemId=";(...) Information" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[adding the azdata repository information …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[добавление в репозиторий сведений для azdata…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -92,6 +116,9 @@
         <Item ItemId=";(...) .msi" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[deleting previously downloaded Azdata.msi if one exists …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[удаление ранее скачанного файла Azdata.msi, если он существует…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -101,6 +128,9 @@
         <Item ItemId=";(...) Log" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[displaying the installation log …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[отображение журнала установки…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -110,6 +140,9 @@
         <Item ItemId=";(...) igningKey" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[downloading and installing the signing key for azdata …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[скачивание и установка ключа подписывания для azdata…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -119,6 +152,9 @@
         <Item ItemId=";(...) ngAzdata" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[downloading Azdata.msi and installing azdata-cli …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[скачивание Azdata.msi и установка azdata-cli…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -128,6 +164,9 @@
         <Item ItemId=";(...) Information" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[adding the kubectl repository information …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[добавление в репозиторий сведений для kubectl…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -137,12 +176,18 @@
         <Item ItemId=";(...) dKubectl" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[deleting previously downloaded kubectl if one exists …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[удаление ранее скачанного файла kubectl, если он существует…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) dKubectl.exe" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[deleting previously downloaded kubectl.exe if one exists …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[удаление ранее скачанного файла kubectl.exe, если он существует…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -152,6 +197,9 @@
         <Item ItemId=";(...) gningKey" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[downloading and installing the signing key for kubectl …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[скачивание и установка ключа подписывания для kubectl…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -161,6 +209,9 @@
         <Item ItemId=";(...) gKubectl" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[downloading and installing the latest kubectl.exe …]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[скачивание и установка последней версии файла kubectl.exe…]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -170,6 +221,9 @@
         <Item ItemId=";(...) hPaths" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Search Paths for tool '{0}': {1}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Пути поиска для инструмента "{0}": {1}]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -191,6 +245,9 @@
         <Item ItemId=";(...) Title" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Azure account settings]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Параметры учетной записи Azure]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -212,6 +269,9 @@
         <Item ItemId=";(...) ror" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[No servers found in current subscription.]D;]A;Select a different subscription containing at least one server]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Серверы в текущей подписке не найдены.]D;]A;Выберите другую подписку, содержащую хотя бы один сервер]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -221,6 +281,9 @@
         <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[No servers found]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Серверы не найдены]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -230,6 +293,9 @@
         <Item ItemId=";(...) nError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Sign in to an Azure account first]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Сначала войдите в учетную запись Azure]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -239,18 +305,27 @@
         <Item ItemId=";(...) tionLengthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Collation name must be between 1 and 100 characters long.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Длина имени параметров сортировки должна составлять от 1 до 100 символов.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) tionOnlyNumericNameError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Collation name cannot contain only numbers.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Имя параметров сортировки не может содержать только цифры.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) tionSpecialCharError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Collation name cannot contain special characters \/""[]5D;:|<>+=;,?*@&, .]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Имя параметров сортировки не может содержать специальные символы \/""[]5D;:|<>+=;,?*@&,.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -260,24 +335,36 @@
         <Item ItemId=";(...) allLengthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Firewall name must be between 1 and 100 characters long.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Длина имени брандмауэра должна составлять от 1 до 100 символов.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) allOnlyNumericNameError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Firewall name cannot contain only numbers.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Имя брандмауэра не может содержать только цифры.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) allSpecialCharError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Firewall name cannot contain special characters \/""[]5D;:|<>+=;,?*@&, .]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Имя брандмауэра не может содержать специальные символы \/""[]5D;:|<>+=;,?*@&,.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) allUpperCaseError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Upper case letters are not allowed for firewall name]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[В имени брандмауэра не могут использоваться только прописные буквы]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -287,6 +374,9 @@
         <Item ItemId=";(...) InvalidError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Max Ip address is invalid]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Максимальный IP-адрес является недопустимым]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -296,6 +386,9 @@
         <Item ItemId=";(...) InvalidError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Min Ip address is invalid]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Минимальный IP-адрес является недопустимым]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -305,6 +398,9 @@
         <Item ItemId=";(...) xistsError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Database name must be unique in the current server.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Имя базы данных должно быть уникальным на текущем сервере.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -314,6 +410,9 @@
         <Item ItemId=";(...) engthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Database name must be between 1 and 100 characters long.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Длина имени базы данных должна составлять от 1 до 100 символов.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -323,6 +422,9 @@
         <Item ItemId=";(...) nlyNumericNameError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Database name cannot contain only numbers.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Имя базы данных не может содержать только цифры.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -332,6 +434,9 @@
         <Item ItemId=";(...) pecialCharError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Database name cannot contain special characters \/""[]5D;:|<>+=;,?*@&, .]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Имя базы данных не может содержать специальные символы \/""[]5D;:|<>+=;,?*@&,.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -353,6 +458,9 @@
         <Item ItemId=";(...) lNetwork" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[New virtual network]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Новая виртуальная сеть]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -362,6 +470,9 @@
         <Item ItemId=";(...) iption" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Configure network settings]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Настройка параметров сети]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -371,6 +482,9 @@
         <Item ItemId=";(...) ngPublicIp" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[New public ip]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Новый общедоступный IP-адрес]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -416,6 +530,9 @@
         <Item ItemId=";(...) ownLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[SQL connectivity]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Подключение SQL]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -425,6 +542,9 @@
         <Item ItemId=";(...) onLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Enable SQL authentication]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Включить проверку подлинности SQL]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -434,6 +554,9 @@
         <Item ItemId=";(...) le" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[SQL Servers settings]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Параметры SQL Server]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -443,6 +566,9 @@
         <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Virtual Network]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Виртуальная сеть]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -464,6 +590,9 @@
         <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Administrator account password]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Пароль учетной записи администратора]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -473,6 +602,9 @@
         <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Administrator account username]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Имя пользователя учетной записи администратора]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -482,6 +614,9 @@
         <Item ItemId=";(...) bel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Image Version]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Версия образа]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -491,6 +626,9 @@
         <Item ItemId=";(...) asswordLengthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Password must be between 12 and 123 characters long.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Пароль должен содержать от 12 до 123 символов.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -509,6 +647,9 @@
         <Item ItemId=";(...) ror" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Create a new new public Ip]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Создать общедоступный IP-адрес]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -518,6 +659,9 @@
         <Item ItemId=";(...) aceholder" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Enter name for new public IP]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Введите имя нового общедоступного IP-адреса]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -527,12 +671,18 @@
         <Item ItemId=";(...) tError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Create a new sub network]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Создать подсеть]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) tPlaceholder" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Enter name for new subnet]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Введите имя новой подсети]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -554,6 +704,9 @@
         <Item ItemId=";(...) laceholder" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Enter name for new virtual network]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Введите имя новой виртуальной сети]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -563,6 +716,9 @@
         <Item ItemId=";(...) rror" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Public IP name must be between 1 and 80 characters long]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Длина имени общедоступного IP-адреса должна составлять от 1 до 80 символов]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -572,6 +728,9 @@
         <Item ItemId=";(...) meLengthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Subnet name must be between 1 and 80 characters long]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Длина имени подсети должна составлять от 1 до 80 символов]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -581,6 +740,9 @@
         <Item ItemId=";(...) LengthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Virtual Network name must be between 2 and 64 characters long]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Длина имени виртуальной сети должна составлять от 2 до 64 символов.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -614,6 +776,9 @@
         <Item ItemId=";(...) ConnectivityDropdownOption" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Public (Internet)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Общедоступный (Интернет)]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -635,6 +800,9 @@
         <Item ItemId=";(...) rnameLengthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Username must be between 2 and 128 characters long.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Длина имени пользователя должна составлять от 2 до 128 символов.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -665,6 +833,9 @@
         <Item ItemId=";(...) gthError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Username must be between 1 and 20 characters long.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Длина имени пользователя должна составлять от 1 до 20 символов.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -686,6 +857,9 @@
         <Item ItemId=";(...) cialCharError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Username cannot contain special characters \/""[]5D;:|<>+=;,?*@& .]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Имя пользователя не может содержать специальные символы \/""[]5D;:|<>+=;,?*@&.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -695,6 +869,9 @@
         <Item ItemId=";(...) fixError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Username cannot end with period]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Имя пользователя не может заканчиваться точкой]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -728,6 +905,9 @@
         <Item ItemId=";(...) ffixError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Virtual machine name Can't start with underscore. Can't end with period or hyphen]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Имя виртуальной машины не может начинаться с символа подчеркивания и не может заканчиваться точкой или дефисом]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -737,6 +917,9 @@
         <Item ItemId=";(...) harError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Virtual machine name cannot contain special characters \/""[]5D;:|<>+=;,?*@&, .]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Имя виртуальной машины не может содержать специальные символы \/""[]5D;:|<>+=;,?*@&,.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -746,6 +929,9 @@
         <Item ItemId=";(...) ror" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Virtual machine name must be between 1 and 15 characters long.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Длина имени виртуальной машины должна составлять от 1 до 15 символов.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -755,6 +941,9 @@
         <Item ItemId=";(...) eError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Select a valid virtual machine size.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Выберите допустимый размер виртуальной машины.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -776,6 +965,9 @@
         <Item ItemId=";(...) ft" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Deploy SQL Server 2019 Big Data Cluster on an existing OpenShift cluster]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Развернуть кластер больших данных SQL Server 2019 в существующем кластере OpenShift]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -902,6 +1094,9 @@
         <Item ItemId=";(...) escription" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[A unique prefix for AD accounts SQL Server Big Data Cluster will generate. If not provided, the subdomain name will be used as the default value. If a subdomain is not provided, the cluster name will be used as the default value.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Уникальный префикс для учетных записей AD, которые будет создавать кластер больших данных SQL Server. Если не указан, то в качестве значения по умолчанию будет использоваться имя поддомена. Если поддомен не указан, то в качестве значения по умолчанию будет использоваться имя кластера.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1049,6 +1244,9 @@
         <Item ItemId=";(...) cription" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[The cluster name must consist only of alphanumeric lowercase characters or '-' and must start and end with an alphanumeric character.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Имя кластера может включать только строчные буквы, цифры и символы "-". Оно должно начинаться и заканчиваться буквой или цифрой.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1226,6 +1424,9 @@
         <Item ItemId=";(...) on" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[If not provided, the domain DNS name will be used as the default value.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Если не указано, то в качестве значения по умолчанию будет использоваться имя DNS домена.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1235,6 +1436,9 @@
         <Item ItemId=";(...) iption" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[A unique DNS subdomain to use for this SQL Server Big Data Cluster. If not provided, the cluster name will be used as the default value.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Уникальный поддомен DNS, который будет использоваться для этого кластера больших данных SQL Server. Если не указан, то в качестве значения по умолчанию будет использоваться имя кластера.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1304,6 +1508,9 @@
         <Item ItemId=";(...) ype" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Data]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Данные]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1313,6 +1520,9 @@
         <Item ItemId=";(...) Title" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Features]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Функции]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1334,12 +1544,18 @@
         <Item ItemId=";(...) les" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Loading profiles]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Загрузка профилей]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) lesCompleted" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Loading profiles completed]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Загрузка профилей завершена]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1373,6 +1589,9 @@
         <Item ItemId=";(...) GroupLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Deployment configuration profile]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Профиль конфигурации развертывания]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1382,6 +1601,9 @@
         <Item ItemId=";(...) TableTitle" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Service scale settings (Instances)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Параметры масштабирования службы (экземпляры)]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1391,6 +1613,9 @@
         <Item ItemId=";(...) Title" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Service storage settings (GB per Instance)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Параметры хранилища службы (ГБ на экземпляр)]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1400,6 +1625,9 @@
         <Item ItemId=";(...) escription" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Select the target configuration profile]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Выберите целевой профиль конфигурации]]></Val>
+            </Tgt>
             <Prev Cat="Text">
               <Val><![CDATA[Select the target configuration template]]></Val>
             </Prev>
@@ -1412,6 +1640,9 @@
         <Item ItemId=";(...) itle" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Deployment configuration profile]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Профиль конфигурации развертывания]]></Val>
+            </Tgt>
             <Prev Cat="Text">
               <Val><![CDATA[Deployment configuration template]]></Val>
             </Prev>
@@ -1721,12 +1952,18 @@
         <Item ItemId=";(...) StorageClaimSize" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Controller's data storage claim size]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Размер требования для хранилища данных контроллера]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) StorageClass" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Controller's data storage class]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Класс хранилища данных контроллера]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1736,12 +1973,18 @@
         <Item ItemId=";(...) StorageClaimSize" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Controller's logs storage claim size]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Размер требования для хранилища журналов контроллера]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) StorageClass" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Controller's logs storage class]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Класс хранилища журналов контроллера]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1751,12 +1994,18 @@
         <Item ItemId=";(...) orageClaimSize" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Data pool's data storage claim size]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Размер требования для хранилища данных пула данных]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) orageClass" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Data pool's data storage class]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Класс хранилища данных пула данных]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1766,12 +2015,18 @@
         <Item ItemId=";(...) orageClaimSize" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Data pool's logs storage claim size]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Размер требования для хранилища журналов пула данных]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) orageClass" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Data pool's logs storage class]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Класс хранилища журналов пула данных]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1793,24 +2048,36 @@
         <Item ItemId=";(...) rDataStorageClaimSize" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[SQL Server master's data storage claim size]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Размер требования для хранилища данных основного экземпляра SQL Server]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) rDataStorageClass" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[SQL Server master's data storage class]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Класс хранилища данных основного экземпляра SQL Server]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) rLogsStorageClaimSize" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[SQL Server master's logs storage claim size]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Размер требования для хранилища журналов основного экземпляра SQL Server]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) rLogsStorageClass" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[SQL Server master's logs storage class]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Класс хранилища журналов основного экземпляра SQL Server]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1832,12 +2099,18 @@
         <Item ItemId=";(...) aStorageClaimSize" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Storage pool's data storage claim size]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Размер требования для хранилища данных в пуле хранилища]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) aStorageClass" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Storage pool's data storage class]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Класс хранилища данных в пуле хранилища]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1847,12 +2120,18 @@
         <Item ItemId=";(...) sStorageClaimSize" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Storage pool's logs storage claim size]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Размер требования для хранилища журналов в пуле хранилища]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) sStorageClass" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Storage pool's logs storage class]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Класс хранилища журналов в пуле хранилища]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1991,6 +2270,9 @@
         <Item ItemId=";(...) eTitle" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Review your configuration]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Проверьте конфигурацию]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -2007,18 +2289,27 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.azdataEulaDeclined" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deployment cannot continue. Azure Data CLI license terms were declined.You can either Accept EULA to continue or Cancel this operation]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Продолжение развертывания невозможно. Условия лицензии Azure Data CLI были отклонены. Вы можете принять условия лицензионного соглашения или отменить эту операцию, нажав кнопку "Отмена"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.azdataEulaNotAccepted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deployment cannot continue. Azure Data CLI license terms have not yet been accepted. Please accept the EULA to enable the features that requires Azure Data CLI.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Продолжение развертывания невозможно. Условия лицензии Azure Data CLI еще не приняты. Примите условия лицензионного соглашения, чтобы включить функции, требующие использования Azure Data CLI.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.azure.account" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Account]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Учетная запись Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2043,12 +2334,18 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.azure.account.subscription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Subscription (selected subset)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Подписка (выбранное подмножество)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.azure.account.subscriptionDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Change the currently selected subscriptions through the 'Select Subscriptions' action on an account listed in the 'Azure' tree view of the 'Connections' viewlet]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Измените текущие выбранные подписки с помощью действия "Выбрать подписки" в учетной записи, указанной в представлении дерева Azure во вьюлете "Подключения"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2092,7 +2389,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Sign in…]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Войти...]]></Val>
+            <Val><![CDATA[Войти…]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2127,12 +2424,18 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.deploymentDialog.InstallingTool" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Required tool '{0}' [ {1} ]5D; is being installed now.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Обязательное средство "{0}" [{1}]5D; сейчас устанавливается.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.deploymentDialog.RecheckEulaButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Accept EULA & Select]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Принять лицензионное соглашение и выбрать]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2148,18 +2451,27 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.getIsPassword.unknownVariableName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Attempt to get isPassword for unknown variable:{0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Попытка получить пароль (isPassword) для неизвестной переменной: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.getVariableValue.unknownVariableName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Attempt to get variable value for unknown variable:{0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Попытка получить значение переменной для неизвестной переменной: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.kubeConfigClusterPicker.clusterContextNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No cluster context information found]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Сведения о контексте кластера не найдены]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2175,42 +2487,63 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.optionsNotDefined" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[FieldInfo.options was not defined for field type: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Объект FieldInfo.options не определен для типа поля: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.optionsNotObjectOrArray" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[FieldInfo.options must be an object if it is not an array]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[FieldInfo.options должен быть объектом, если он не является массивом]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.optionsSource.alreadyDefined" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Options Source with id:{0} is already defined]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Источник параметров с идентификатором {0} уже определен]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.optionsSource.notDefined" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Options Source defined for id: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Источник параметров для идентификатора {0} не определен]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.optionsTypeNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When FieldInfo.options is an object it must have 'optionsType' property]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Если FieldInfo.options является объектом, он должен иметь свойство optionsType]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.optionsTypeRadioOrDropdown" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When optionsType is not {0} then it must be {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Если optionsType не равен {0}, он должен быть равен {1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceDeployment.BackgroundExecutionFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The task "{0}" has failed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удалось выполнить задачу "{0}".]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2226,6 +2559,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceDeployment.FailedToOpenNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred opening the output notebook. {1}{2}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Произошла ошибка при открытии выходной записной книжки. {1}{2}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2250,6 +2586,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceDeployment.RequiredVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Required Version]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Требуемая версия]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2265,6 +2604,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceDeployment.TaskFailedWithNoOutputNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The task "{0}" failed and no output Notebook was generated.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удалось выполнить задачу "{0}", и выходная записная книжка не была создана.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2290,7 +2632,7 @@
         <Str Cat="Text">
           <Val><![CDATA[View error detail]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Просмотр сведений об ошибке]]></Val>
+            <Val><![CDATA[Просмотреть сведения об ошибке]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2298,6 +2640,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceDeployment.discoverPathOrAdditionalInformation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Discovered Path or Additional Information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Обнаруженный путь или дополнительные сведения]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2313,6 +2658,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceTypePickerDialog.resourceSearchPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Filter resources...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Фильтровать ресурсы…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2320,7 +2668,7 @@
         <Str Cat="Text">
           <Val><![CDATA[SQL Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL Server]]></Val>
+            <Val><![CDATA[SQL Server]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2338,7 +2686,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Cloud]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Облако]]></Val>
+            <Val><![CDATA[Облачные]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2347,7 +2695,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Hybrid]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Гибридный]]></Val>
+            <Val><![CDATA[Гибридные]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2365,7 +2713,7 @@
         <Str Cat="Text">
           <Val><![CDATA[On-premises]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Локально]]></Val>
+            <Val><![CDATA[Локальные]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2392,7 +2740,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Run]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Запуск]]></Val>
+            <Val><![CDATA[Выполнить]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2418,12 +2766,18 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.valueProvider.alreadyDefined" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Value Provider with id:{0} is already defined]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Поставщик значения с идентификатором {0} уже определен]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.valueProvider.notDefined" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Value Provider defined for id: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Для идентификатора {0} не определен поставщик значения]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2457,36 +2811,54 @@
       <Item ItemId=";extensions/resource-deployment/dist/services/platformService.platformService.RunCommand.ErroredOut" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[	>>> {0}   … errored out: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[	>>> {0}   … выдал ошибку: {1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/platformService.platformService.RunCommand.IgnoringError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[	>>> Ignoring error in execution and continuing tool deployment]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[	>>> Пропуск ошибки при выполнении и продолжение развертывания средства]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/platformService.platformService.RunCommand.stderr" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[    stderr: ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[    stderr: ]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/platformService.platformService.RunCommand.stdout" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[    stdout: ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[    stdout: ]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/platformService.platformService.RunStreamedCommand.ExitedWithCode" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[    >>> {0}    … exited with code: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[    >>> {0}    … завершил работу с кодом: {1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/platformService.platformService.RunStreamedCommand.ExitedWithSignal" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[    >>> {0}   … exited with signal: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[    >>> {0}   … завершил работу с сигналом: {1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2511,8 +2883,8 @@
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AzCLIDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Manages Azure resources]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Программа командной строки для управления ресурсами Azure]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Управляет ресурсами Azure]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[A command-line tool for managing Azure resources]]></Val>
@@ -2532,104 +2904,152 @@
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.AptGetPackages" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[getting packages needed for azure-cli installation …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[получение пакетов, необходимых для установки azure-cli…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.AptGetUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[updating repository information before installing azure-cli …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[обновление сведений в репозитории перед установкой azure-cli…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.AptGetUpdateAgain" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[updating repository information again for azure-cli …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[повторное обновление сведений в репозитории для azure-cli…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.DisplayingInstallationLog" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[displaying the installation log …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[отображение журнала установки…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.InstallingAzureCli" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[installing azure-cli …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[установка azure-cli…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.ScriptedInstall" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[download and invoking script to install azure-cli …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[скачивание и вызов скрипта для установки azure-cli…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azCliTool.resourceDeployment.AziCli.UpdatingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[updating your brew repository for azure-cli installation …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[обновление репозитория brew для установки azure-cli…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.deployCluster.GetToolVersionError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error retrieving version information.{0}Invalid output received, get version command output: '{1}' ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка при получении сведений о версии.{0}Получены недопустимые выходные данные, выходные данные команды get version: "{1}" ]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.deployCluster.GetToolVersionErrorInformation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error retrieving version information. See output channel '{0}' for more details]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка при получении сведений о версии. Дополнительные сведения см. в канале вывода "{0}"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.AptGetPackages" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[getting packages needed for azdata installation …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[получение пакетов, необходимых для установки azdata…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.AptGetUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[updating repository information …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[обновление сведений в репозитории…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.DeletingPreviousAzdata.msi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[deleting previously downloaded Azdata.msi if one exists …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[удаление ранее скачанного файла Azdata.msi, если он существует…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.DisplayingInstallationLog" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[displaying the installation log …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[отображение журнала установки…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.InstallingAzdata" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[installing azdata …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[установка azdata…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.TappingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[tapping into the brew repository for azdata-cli …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[получение доступа к репозиторию brew для azdata-cli…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.UpdatingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[updating the brew repository for azdata-cli installation …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[обновление репозитория brew для установки azdata-cli…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.AzdataDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data command line interface]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Программа командной строки, написанная на Python, которая позволяет администраторам кластера осуществлять начальную загрузку кластера больших данных и управление им с помощью REST API]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Интерфейс командной строки Azure Data]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[A command-line utility written in Python that enables cluster administrators to bootstrap and manage the Big Data Cluster via REST APIs]]></Val>
@@ -2641,7 +3061,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Azure Data CLI]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Data CLI]]></Val>
+            <Val><![CDATA[Azure Data CLI]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[azdata]]></Val>
@@ -2652,36 +3072,54 @@
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.AptGetPackages" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[getting packages needed for azdata installation …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[получение пакетов, необходимых для установки azdata…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.AptGetUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[updating repository information …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[обновление сведений в репозитории…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.InstallingAzdata" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[installing azdata …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[установка azdata…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.TappingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[tapping into the brew repository for azdata-cli …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[получение доступа к репозиторию brew для azdata-cli…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.UpdatingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[updating the brew repository for azdata-cli installation …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[обновление репозитория brew для установки azdata-cli…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.AzdataDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data command line interface]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Интерфейс командной строки Azure Data]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2689,7 +3127,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Azure Data CLI]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Data CLI]]></Val>
+            <Val><![CDATA[Azure Data CLI]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2697,8 +3135,8 @@
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/dockerTool.resourceDeployment.DockerDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Packages and runs applications in isolated containers]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Позволяет упаковать и запустить приложение в изолированных контейнерах]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Упаковывает и запускает приложения в изолированных контейнерах]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Provides the ability to package and run an application in isolated containers]]></Val>
@@ -2718,8 +3156,8 @@
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.KubeCtlDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Runs commands against Kubernetes clusters]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Программа командной строки, позволяющее выполнять команды для кластеров Kubernetes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Запускает команды для кластеров Kubernetes]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[A command-line tool allows you to run commands against Kubernetes clusters]]></Val>
@@ -2739,74 +3177,107 @@
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.AptGetPackages" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[getting packages needed for kubectl installation …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[получение пакетов, необходимых для установки kubectl…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.AptGetUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[updating repository information …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[обновление сведений в репозитории…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.BackupCurrentBinary" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[backing up any existing kubectl in the install location …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[архивация имеющихся версий kubectl в расположении установки…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.CleaningUpOldBackups" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[cleaning up any previously backed up version in the install location if they exist …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[очистка всех ранее архивированных версий в расположении установки, если они существуют…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.DownloadingKubectl" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[downloading the latest kubectl release …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[выполняется скачивание последнего выпуска kubectl…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.InstallingKubeCtl" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[installing kubectl …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[установка kubectl…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.InstallingKubectl" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[installing kubectl …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[установка kubectl…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.MakingExecutable" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[making kubectl executable …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[установка атрибутов исполняемого файла для kubectl…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.MoveToSystemPath" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[moving kubectl into the install location in the PATH …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[перемещение kubectl в расположение установки, указанное в переменной PATH…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.Kubectl.UpdatingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[updating your brew repository for kubectl installation …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[обновление репозитория brew для установки kubectl…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/kubeCtlTool.resourceDeployment.invalidKubectlVersionOutput" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unable to parse the kubectl version command output: "{0}"]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удалось проанализировать выходные данные команды kubectl version: "{0}"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/toolBase.deployCluster.GetToolVersionError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error retrieving version information.{0}Invalid output received, get version command output: '{1}' ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Ошибка при извлечении информации о версии.{0}Ошибка: {1}{0}StdOut: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка при получении сведений о версии.{0}Получены недопустимые выходные данные, выходные данные команды get version: "{1}" ]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error retrieving version information.{0}Error: {1}{0}stdout: {2} ]]></Val>
@@ -2817,18 +3288,27 @@
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/toolBase.deployCluster.GetToolVersionErrorInformation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error retrieving version information. See output channel '{0}' for more details]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка при получении сведений о версии. Дополнительные сведения см. в канале вывода "{0}"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/toolBase.deploymentDialog.ToolInformationalMessage.Brew" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[•	brew is needed for deployment of the tools and needs to be pre-installed before necessary tools can be deployed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[•	средство brew необходимо для развертывания инструментов и должно быть установлено перед развертыванием необходимых инструментов]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/toolBase.deploymentDialog.ToolInformationalMessage.Curl" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[•	curl is needed for installation and needs to be pre-installed before necessary tools can be deployed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[•	средство tcurl необходимо для установки и должно быть установлено перед развертыванием необходимых инструментов]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2845,7 +3325,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ошибка]]></Val>
+            <Val><![CDATA[Сбой]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2854,7 +3334,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Installed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Установлен]]></Val>
+            <Val><![CDATA[Установлено]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2863,7 +3343,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Installing…]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Установка...]]></Val>
+            <Val><![CDATA[Установка…]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2880,54 +3360,81 @@
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/toolBase.toolBase.InstallError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error installing tool '{0}' [ {1} ]5D;.{2}Error: {3}{2}See output channel '{4}' for more details]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка при установке средства "{0}" [{1}]5D;.{2}Ошибка: {3}{2}Дополнительные сведения см. в канале вывода "{4}"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/toolBase.toolBase.InstallErrorInformation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error installing tool. See output channel '{0}' for more details]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка при установке инструмента. Дополнительные сведения см. в канале вывода "{0}"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/toolBase.toolBase.InstallFailInformation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to detect version post installation. See output channel '{0}' for more details]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удалось определить версию после установки. Дополнительные сведения см. в канале вывода "{0}"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/toolBase.toolBase.InstallFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installation commands completed but version of tool '{0}' could not be detected so our installation attempt has failed. Detection Error: {1}{2}Cleaning up previous installations would help.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Команды установки завершены, но не удалось обнаружить версию средства "{0}", поэтому попытка установки завершилась сбоем. Ошибка обнаружения: {1}{2}Чтобы устранить эту проблему, удалите предыдущие установленные версии.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/toolBase.toolBase.ManualUninstallCommand" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[ A possibly way to uninstall is using this command:{0}   >{1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ Для удаления можно выполнить следующую команду:{0}   >{1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/toolBase.toolBase.SeeOutputChannel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0}See output channel '{1}' for more details]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0}Дополнительные сведения см. в канале вывода "{1}"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/toolBase.toolBase.getPip3InstallationLocation.LocationNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[   Could not find 'Location' in the output:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[   Не удалось найти расположение (Location) в выходных данных:]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/toolBase.toolBase.getPip3InstallationLocation.Output" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[   output:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[   выходные данные:]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/toolBase.toolBase.installCore.CannotInstallTool" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot install tool:{0}::{1} as installation commands are unknown for your OS distribution, Please install {0} manually before proceeding]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удается установить инструмент {0}::{1}, так как команды установки являются неизвестными для вашего дистрибутива ОС. Установите {0} вручную, чтобы продолжить]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2943,18 +3450,27 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.AzureSettingsPageTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Database - Azure account settings]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[База данных SQL Azure — параметры учетной записи Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.CollationNameLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database collation]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Параметры сортировки базы данных]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.CollationNameSummaryLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Collation for database]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Параметры сортировки для базы данных]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2979,18 +3495,27 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.EndIpAddressLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Max IP address in firewall IP range]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Максимальный IP-адрес в диапазоне IP-адресов брандмауэра]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.EndIpAddressShortLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Max IP address]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Максимальный IP-адрес]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.FirewallRuleDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create a firewall rule for your local client IP in order to connect to your database through Azure Data Studio after creation is completed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Создайте правило брандмауэра для локального клиентского IP-адреса, чтобы подключиться к базе данных с помощью Azure Data Studio после завершения создания.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3006,12 +3531,18 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.FirewallToggleLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create a firewall rule]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Создание правила брандмауэра]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.IpAddressInfoLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter IP addresses in IPv4 format.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Введите IP-адреса в формате IPv4.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3027,6 +3558,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.NewSQLDBTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy Azure SQL DB]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Развертывание Базы данных SQL Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3043,7 +3577,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Script to Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Сценарий для Notebook]]></Val>
+            <Val><![CDATA[Скрипт в записную книжку]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3051,18 +3585,27 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.StartIpAddressLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Min IP address in firewall IP range]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Минимальный IP-адрес в диапазоне IP-адресов брандмауэра]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployAzureSQLDBWizard/constants.deployAzureSQLDB.StartIpAddressShortLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Min IP address]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Минимальный IP-адрес]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.AzureAccountDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Account]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Учетная запись Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3114,6 +3657,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.NewSQLVMTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy Azure SQL VM]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Развертывание ВМ SQL Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3139,7 +3685,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Script to Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Сценарий для Notebook]]></Val>
+            <Val><![CDATA[Скрипт в записную книжку]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3183,6 +3729,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmRDPAllowCheckboxLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable Remote Desktop (RDP) inbound port (3389)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Включить входящий порт (3389) для удаленного рабочего стола (RDP)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3198,6 +3747,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployAzureSQLVM.VmSkuDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Image SKU]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Номер SKU образа]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3213,12 +3765,18 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployAzureSQLVMWizard/constants.deployeAzureSQLVM.VmSizeLearnMoreLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Click here to learn more about pricing and supported VM sizes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Щелкните здесь, чтобы просмотреть подробные сведения о ценах и поддерживаемых размерах виртуальных машин]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployClusterWizard/deployClusterWizardModel.deployCluster.ExistingARO" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy SQL Server 2019 Big Data Cluster on an existing Azure Red Hat OpenShift cluster]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Развернуть кластер больших данных SQL Server 2019 в существующем кластере Azure Red Hat OpenShift]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3244,7 +3802,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Script to Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Сценарий для Notebook]]></Val>
+            <Val><![CDATA[Скрипт в записную книжку]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3496,7 +4054,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Feature]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Компонент]]></Val>
+            <Val><![CDATA[Функция]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4215,6 +4773,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/modelViewUtils.getClusterContexts.errorFetchingClusters" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error ocurred while loading or parsing the config file:{0}, error is:{1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[При загрузке или анализе файла конфигурации {0} произошла ошибка: {1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4239,6 +4800,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/modelViewUtils.resourceDeployment.errorFetchingStorageClasses" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unexpected error fetching available kubectl storage classes : {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Непредвиденная ошибка при получении доступных классов хранилища kubectl: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4264,7 +4828,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Successfully downloaded: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Скачано: {0}]]></Val>
+            <Val><![CDATA[Скачивание выполнено: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4273,7 +4837,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Downloading from: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Идет скачивание из: {0}]]></Val>
+            <Val><![CDATA[Выполняется скачивание из: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4291,7 +4855,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Successfully launched: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Запущено: {0}]]></Val>
+            <Val><![CDATA[Запуск выполнен: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4308,30 +4872,45 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.FailedEulaValidation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[To proceed, you must accept the terms of the End User License Agreement(EULA)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Чтобы продолжить, необходимо принять условия лицензионного соглашения (EULA)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.FailedToolsInstallation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Some tools were still not discovered. Please make sure that they are installed, running and discoverable]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Некоторые инструменты еще не обнаружены. Убедитесь, что они установлены, запущены и могут быть обнаружены]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.InstallToolsHintMany" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Tools: {0} are not installed, you can click the "{1}" button to install them.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Инструменты {0} не установлены; вы можете нажать кнопку "{1}" для их установки.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.InstallToolsHintOne" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Tool: {0} is not installed, you can click the "{1}" button to install it.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Инструмент {0} не установлен; вы можете нажать кнопку "{1}" для его установки.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.InstalledTools" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[All required tools are installed now.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Теперь все необходимые инструменты установлены.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4347,84 +4926,126 @@
       <Item ItemId=";extensions/resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.PendingInstallation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Following tools: {0} were still not discovered. Please make sure that they are installed, running and discoverable]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Следующие инструменты еще не обнаружены: {0}. Убедитесь, что они установлены, запущены и могут быть обнаружены]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.ToolDoesNotMeetVersionRequirement" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA['{0}' [ {1} ]5D; does not meet the minimum version requirement, please uninstall it and restart Azure Data Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Инструмент "{0}" [{1}]5D; не соответствует минимальным требованиям к версии, удалите его и перезапустите Azure Data Studio.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.ToolInformation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA['{0}' was not discovered and automated installation is not currently supported. Install '{0}' manually or ensure it is started and discoverable. Once done please restart Azure Data Studio. See [{1}]5D; .]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Инструмент "{0}" не был обнаружен, и автоматическая установка сейчас не поддерживается. Установите инструмент "{0}" вручную или убедитесь, что он запущен и доступен для обнаружения. Сделав это, перезапустите Azure Data Studio. См. раздел [{1}]5D;.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.VersionInformationDebugHint" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You will need to restart Azure Data Studio if the tools are installed manually to pick up the change. You may find additional details in 'Deployments' and 'Azure Data CLI' output channels]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Если средства были установлены вручную, то для применения изменений необходимо перезапустить Azure Data Studio. Дополнительные сведения см. в выходных каналах "Развертывания" и "Azure Data CLI"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.loadingRequiredTools" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Loading required tools information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Загрузка сведений о необходимых инструментах]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/toolsAndEulaSettingsPage.deploymentDialog.loadingRequiredToolsCompleted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Loading required tools information completed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Загрузка сведений о необходимых инструментах завершена]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/toolsAndEulaSettingsPage.notebookWizard.toolsAndEulaPageTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deployment pre-requisites]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Предварительные требования к развертыванию]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/toolsAndEulaSettingsPage.resourceDeployment.AgreementTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Accept terms of use]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Принятие условий использования]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/package.azdata-install-location-description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Location of the azdata package used for the install command]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Расположение пакета azdata, используемого для команды установки]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/package.azure-sql-mi-agreement" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[I accept {0} and {1}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Я принимаю {0} и {1}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/package.azure-sql-mi-agreement-eula" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL MI License Terms]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Условия лицензии Управляемого экземпляра SQL Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/package.azure-sql-mi-display-description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create a SQL Managed Instance in either Azure or a customer-managed environment]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Создайте Управляемый экземпляр SQL в Azure или в управляемой пользователем среде]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/package.azure-sql-mi-display-name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL managed instance]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Управляемый экземпляр SQL Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/package.azure-sql-mi-help-text" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Managed Instance provides full SQL Server access and feature compatibility for migrating SQL Servers to Azure, or developing new applications. {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Управляемый экземпляр SQL Azure предоставляет полный доступ к SQL Server и совместимость функций для миграции серверов SQL Server в Azure или для разработки новых приложений. {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4476,12 +5097,18 @@
       <Item ItemId=";extensions/resource-deployment/package.azure-sqldb-agreement-sqldb-eula" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL DB License Terms]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Условия лицензии Базы данных SQL Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/package.azure-sqldb-description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create a SQL database, database server, or elastic pool in Azure.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Создайте базу данных, сервер базы данных или эластичный пул в Azure.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4489,7 +5116,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[База данных SQL Azure]]></Val>
+            <Val><![CDATA[База данных SQL Azure]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4506,6 +5133,9 @@
       <Item ItemId=";extensions/resource-deployment/package.azure-sqldb-portal-ok-button-text" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create in Azure portal]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Создать на портале Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4530,42 +5160,63 @@
       <Item ItemId=";extensions/resource-deployment/package.azure-sqlvm-agreement-sqlvm-eula" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL VM License Terms]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Условия лицензии виртуальной машины SQL Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/package.azure-sqlvm-azure-account-page-label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Информация об Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/package.azure-sqlvm-azure-location-label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure locations]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Расположения Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/package.azure-sqlvm-deploy-dialog-action-text" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Script to notebook]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Скрипт в записную книжку]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/package.azure-sqlvm-deploy-dialog-title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy Azure SQL virtual machine]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Развертывание виртуальной машины SQL Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/package.azure-sqlvm-description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create SQL virtual machines on Azure. Best for migrations and applications requiring OS-level access.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Создание виртуальных машин SQL в Azure. Лучше всего подходит для миграций и приложений, требующих доступа на уровне ОС.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/resource-deployment/package.azure-sqlvm-display-name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server on Azure Virtual Machine]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server на виртуальной машине Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4582,7 +5233,7 @@
         <Str Cat="Text">
           <Val><![CDATA[VM image SKU]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Номер SKU образа виртуальной машины.]]></Val>
+            <Val><![CDATA[Номер SKU образа виртуальной машины]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4635,6 +5286,9 @@
       <Item ItemId=";extensions/resource-deployment/package.azure-sqlvm-storage-sku-label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Storage account SKU type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Тип SKU учетной записи хранения]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4659,6 +5313,9 @@
       <Item ItemId=";extensions/resource-deployment/package.azure-sqlvm-vm-information-page-label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[VM information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Информация о виртуальной машине]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4866,6 +5523,9 @@
       <Item ItemId=";extensions/resource-deployment/package.bdc-deployment-target-existing-aro" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Existing Azure Red Hat OpenShift cluster]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Существующий кластер Azure Red Hat OpenShift]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4881,6 +5541,9 @@
       <Item ItemId=";extensions/resource-deployment/package.bdc-deployment-target-existing-openshift" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Existing OpenShift cluster]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Существующий кластер OpenShift]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4932,8 +5595,8 @@
       <Item ItemId=";extensions/resource-deployment/package.deploy-resource-command-name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Deployment…]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Развернуть SQL Server…]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Новое развертывание…]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Deploy SQL Server…]]></Val>
@@ -4971,8 +5634,8 @@
       <Item ItemId=";extensions/resource-deployment/package.docker-sql-2017-title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy SQL Server 2017 container images]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Развернуть образы контейнера SQL Server 2017 с помощью Docker]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Развертывание образов контейнеров SQL Server 2017]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Deploy SQL Server 2017 container images with docker]]></Val>
@@ -4983,8 +5646,8 @@
       <Item ItemId=";extensions/resource-deployment/package.docker-sql-2019-title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy SQL Server 2019 container images]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Развернуть образы контейнера SQL Server 2019 с помощью Docker]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Развертывание образов контейнеров SQL Server 2019]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Deploy SQL Server 2019 container images with docker]]></Val>
