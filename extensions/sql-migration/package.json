@@ -60,7 +60,7 @@
               "col": 0,
               "widget": {
                 "tasks-widget": [
-                  "sqlmigration.start",
+                  "sqlmigration.start"
                 ]
               }
             },
