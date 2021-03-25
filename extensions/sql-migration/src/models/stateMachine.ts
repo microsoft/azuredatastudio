@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import { azureResource } from 'azureResource';
+import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getMigrationControllers, getSubscriptions, SqlMigrationController, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer } from '../api/azure';
@@ -79,6 +80,7 @@ export interface StateChangeEvent {
 export class MigrationStateModel implements Model, vscode.Disposable {
 	public _azureAccounts!: azdata.Account[];
 	public _azureAccount!: azdata.Account;
+	public _accountTenants!: azurecore.Tenant[];
 
 	public _subscriptions!: azureResource.AzureResourceSubscription[];
 
@@ -195,6 +197,19 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public getAccount(index: number): azdata.Account {
 		return this._azureAccounts[index];
+	}
+
+	public getTenantValues(): azdata.CategoryValue[] {
+		return this._accountTenants.map(tenant => {
+			return {
+				displayName: tenant.displayName,
+				name: tenant.id
+			};
+		});
+	}
+
+	public getTenant(index: number): azurecore.Tenant {
+		return this._accountTenants[index];
 	}
 
 	public async getSubscriptionsDropdownValues(): Promise<azdata.CategoryValue[]> {
