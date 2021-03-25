@@ -6,7 +6,7 @@
 import 'vs/css!./media/connectionDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { Modal } from 'sql/workbench/browser/modal/modal';
+import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import { IConnectionManagementService, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { TreeCreationUtils } from 'sql/workbench/services/objectExplorer/browser/treeCreationUtils';
@@ -360,13 +360,13 @@ export class ConnectionDialogWidget extends Modal {
 		const wasConnecting = this._connecting;
 		this._onCancel.fire();
 		if (!this._databaseDropdownExpanded && !wasConnecting) {
-			this.close();
+			this.close('cancel');
 		}
 	}
 
-	public close() {
+	public close(hideReason: HideReason = 'close') {
 		this.resetConnection();
-		this.hide();
+		this.hide(hideReason);
 	}
 
 	private createRecentConnectionList(): void {

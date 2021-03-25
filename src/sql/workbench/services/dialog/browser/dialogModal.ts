@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/dialogModal';
-import { Modal, IModalOptions } from 'sql/workbench/browser/modal/modal';
+import { Modal, IModalOptions, HideReason } from 'sql/workbench/browser/modal/modal';
 import { Dialog, DialogButton } from 'sql/workbench/services/dialog/common/dialogTypes';
 import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 
@@ -138,7 +138,7 @@ export class DialogModal extends Modal {
 			if (await this._dialog.validateClose()) {
 				this._onDone.fire();
 				this.dispose();
-				this.hide('close');
+				this.hide('ok');
 			}
 			clearTimeout(buttonSpinnerHandler);
 			this._doneButton.element.classList.remove('validating');
@@ -146,10 +146,14 @@ export class DialogModal extends Modal {
 		}
 	}
 
-	public cancel(): void {
+	public close(): void {
+		this.cancel('close');
+	}
+
+	public cancel(hideReason: HideReason = 'cancel'): void {
 		this._onCancel.fire();
 		this.dispose();
-		this.hide('cancel');
+		this.hide(hideReason);
 	}
 
 	/**

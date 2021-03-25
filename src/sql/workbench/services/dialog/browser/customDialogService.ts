@@ -44,7 +44,7 @@ export class CustomDialogService {
 	}
 
 	public closeWizard(wizard: Wizard): void {
-		this._wizardModals.get(wizard)?.cancel();
+		this._wizardModals.get(wizard)?.close();
 	}
 
 	public getWizardModal(wizard: Wizard): WizardModal | undefined {

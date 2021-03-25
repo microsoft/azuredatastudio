@@ -144,7 +144,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 	}
 
 	public insert(): void {
-		this.hide();
+		this.hide('ok');
 		let escapedLabel = escapeLabel(this._linkTextInputBox.value);
 		let escapedUrl = escapeUrl(this._linkUrlInputBox.value);
 

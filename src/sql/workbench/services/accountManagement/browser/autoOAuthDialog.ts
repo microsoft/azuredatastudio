@@ -142,7 +142,7 @@ export class AutoOAuthDialog extends Modal {
 		this._copyAndOpenButton!.enabled = true;
 		this._onCloseEvent.fire();
 		this.spinner = false;
-		this.hide();
+		this.hide('close');
 	}
 
 	public open(title: string, message: string, userCode: string, uri: string) {

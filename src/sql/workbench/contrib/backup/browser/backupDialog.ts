@@ -82,7 +82,7 @@ export class BackupDialog extends Modal {
 	 * Clean up the module and DOM element and close the dialog
 	 */
 	public close() {
-		this.hide();
+		this.hide('close');
 	}
 
 	public dispose(): void {

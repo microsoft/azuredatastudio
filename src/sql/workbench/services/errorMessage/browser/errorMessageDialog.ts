@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/errorMessageDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { Modal } from 'sql/workbench/browser/modal/modal';
+import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 import Severity from 'vs/base/common/severity';
@@ -137,11 +137,11 @@ export class ErrorMessageDialog extends Modal {
 
 	public ok(): void {
 		this._onOk.fire();
-		this.close();
+		this.close('ok');
 	}
 
-	public close() {
-		this.hide();
+	public close(hideReason: HideReason = 'close') {
+		this.hide(hideReason);
 	}
 
 	public open(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]) {

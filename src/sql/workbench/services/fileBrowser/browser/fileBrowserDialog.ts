@@ -8,7 +8,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { InputBox, OnLoseFocusParams } from 'sql/base/browser/ui/inputBox/inputBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
-import { Modal } from 'sql/workbench/browser/modal/modal';
+import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { FileBrowserTreeView } from 'sql/workbench/services/fileBrowser/browser/fileBrowserTreeView';
@@ -185,7 +185,7 @@ export class FileBrowserDialog extends Modal {
 
 	private ok() {
 		this._onOk.fire(this._selectedFilePath);
-		this.close();
+		this.close('ok');
 	}
 
 	private handleOnValidate(succeeded: boolean, errorMessage: string) {
@@ -197,12 +197,12 @@ export class FileBrowserDialog extends Modal {
 		}
 	}
 
-	private close(): void {
+	private close(hideReason: HideReason = 'close'): void {
 		if (this._fileBrowserTreeView) {
 			this._fileBrowserTreeView.dispose();
 		}
 		this._onOk.dispose();
-		this.hide();
+		this.hide(hideReason);
 		this._viewModel.closeFileBrowser().catch(err => onUnexpectedError(err));
 	}
 
