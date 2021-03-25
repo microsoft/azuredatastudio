@@ -42,6 +42,13 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	private _colorTheme: IColorTheme;
 	private _hasFocus: boolean;
 
+	/**
+	 * The flag is set to true when the table gains focus. When a row is selected and the flag is true the row selected event will
+	 * fire regardless whether the row is already selected.
+	 *
+	 */
+	private _rowSelectionFocusFlag: boolean = false;
+
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
@@ -309,8 +316,9 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		if (!this.enableRowSelection) {
 			return;
 		}
-		if (!this.isRowSelected(row)) {
+		if (this._rowSelectionFocusFlag || !this.isRowSelected(row)) {
 			this._selectedRow = row;
+			this._rowSelectionFocusFlag = false;
 			this._changeRef.detectChanges();
 
 			this.fireEvent({
@@ -323,6 +331,10 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	}
 
 	public onKey(e: KeyboardEvent, row: number) {
+		// Ignore the bubble up events
+		if (e.target !== e.currentTarget) {
+			return;
+		}
 		const event = new StandardKeyboardEvent(e);
 		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 			this.onRowSelected(row);
@@ -370,6 +382,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	onFocusIn() {
 		this._hasFocus = true;
+		this._rowSelectionFocusFlag = true;
 		this._changeRef.detectChanges();
 	}
 

@@ -88,6 +88,9 @@ export class NotebookModelStub implements INotebookModel {
 	getStandardKernelFromName(name: string): IStandardKernelWithProvider {
 		throw new Error('Method not implemented.');
 	}
+	restartSession(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
 	changeKernel(displayName: string): void {
 		throw new Error('Method not implemented.');
 	}
