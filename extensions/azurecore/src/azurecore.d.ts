@@ -18,6 +18,175 @@ declare module 'azurecore' {
 	}
 
 	/**
+	 * Override of the Account type to enforce properties that are AzureAccountProperties
+	 */
+	export interface AzureAccount extends azdata.Account {
+		/**
+		 * AzureAccountProperties specifically used for Azure accounts
+		 */
+		properties: AzureAccountProperties;
+	}
+
+	/**
+	 * Properties specific to an Azure account
+	 */
+	export interface AzureAccountProperties {
+		/**
+		 * Auth type of azure used to authenticate this account.
+		 */
+		azureAuthType?: AzureAuthType
+
+		providerSettings: AzureAccountProviderMetadata;
+		/**
+		 * Whether or not the account is a Microsoft account
+		 */
+		isMsAccount: boolean;
+
+		/**
+		 * A list of tenants (aka directories) that the account belongs to
+		 */
+		tenants: Tenant[];
+
+	}
+
+	export const enum AzureAuthType {
+		AuthCodeGrant = 0,
+		DeviceCode = 1
+	}
+
+	/**
+	 * Extension of account provider metadata to override settings type for Azure account providers
+	 */
+	export interface AzureAccountProviderMetadata extends azdata.AccountProviderMetadata {
+		/**
+		 * Azure specific account provider settings.
+		 */
+		settings: Settings;
+	}
+
+	/**
+	 * Represents settings for an AAD account provider
+	 */
+	interface Settings {
+		/**
+		 * Host of the authority
+		 */
+		host?: string;
+
+		/**
+		 * Identifier of the client application
+		 */
+		clientId?: string;
+
+		/**
+		 * Information that describes the Microsoft resource management resource
+		 */
+		microsoftResource?: Resource
+
+		/**
+		 * Information that describes the AAD graph resource
+		 */
+		graphResource?: Resource;
+
+		/**
+		 * Information that describes the MS graph resource
+		 */
+		msGraphResource?: Resource;
+
+		/**
+		 * Information that describes the Azure resource management resource
+		 */
+		armResource?: Resource;
+
+		/**
+		 * Information that describes the SQL Azure resource
+		 */
+		sqlResource?: Resource;
+
+		/**
+		 * Information that describes the OSS RDBMS resource
+		 */
+		ossRdbmsResource?: Resource;
+
+		/**
+		 * Information that describes the Azure Key Vault resource
+		 */
+		azureKeyVaultResource?: Resource;
+
+		/**
+		 * Information that describes the Azure Dev Ops resource
+		 */
+		azureDevOpsResource?: Resource;
+
+		/**
+		 * A list of tenant IDs to authenticate against. If defined, then these IDs will be used
+		 * instead of querying the tenants endpoint of the armResource
+		 */
+		adTenants?: string[];
+
+		// AuthorizationCodeGrantFlowSettings //////////////////////////////////
+
+		/**
+		 * An optional site ID that brands the interactive aspect of sign in
+		 */
+		siteId?: string;
+
+		/**
+		 * Redirect URI that is used to signify the end of the interactive aspect of sign it
+		 */
+		redirectUri?: string;
+
+		scopes?: string[]
+
+		portalEndpoint?: string
+	}
+
+	/**
+	 * Represents a resource exposed by an Azure Active Directory
+	 */
+	export interface Resource {
+		/**
+		 * Identifier of the resource
+		 */
+		id: string;
+
+		/**
+		 * Endpoint url used to access the resource
+		 */
+		endpoint: string;
+
+		/**
+		 * Resource ID for azdata
+		 */
+		azureResourceId?: azdata.AzureResource
+	}
+
+	/**
+	 * Represents a tenant (an Azure Active Directory instance) to which a user has access
+	 */
+	export interface Tenant {
+		/**
+		 * Globally unique identifier of the tenant
+		 */
+		id: string;
+
+		/**
+		 * Display name of the tenant
+		 */
+		displayName: string;
+
+		/**
+		 * Identifier of the user in the tenant
+		 */
+		userId?: string;
+
+		/**
+		 * The category the user has set their tenant to (e.g. Home Tenant)
+		 */
+		tenantCategory?: string;
+	}
+
+	/**
 	 * Enumeration of the Azure datacenter regions. See https://docs.microsoft.com/dotnet/api/microsoft.azure.management.resourcemanager.fluent.core.region
 	 */
 	export const enum AzureRegion {

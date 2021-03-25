@@ -12,6 +12,7 @@ import * as azdata from 'azdata';
 import * as Utils from './utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { DataItemCache } from './util/dataCache';
+import * as azurecore from 'azurecore';
 
 const localize = nls.loadMessageBundle();
 
@@ -48,7 +49,7 @@ export class AccountFeature implements StaticFeature {
 
 	protected async getToken(request: contracts.RequestSecurityTokenParams): Promise<contracts.RequestSecurityTokenResponse | undefined> {
 		const accountList = await azdata.accounts.getAllAccounts();
-		let account: azdata.Account;
+		let account: azurecore.AzureAccount;
 
 		if (accountList.length < 1) {
 			// TODO: Prompt user to add account
@@ -70,7 +71,7 @@ export class AccountFeature implements StaticFeature {
 			account = accountList[0];
 		}
 
-		const tenant = account.properties.tenants.find((t: { [key: string]: string }) => request.authority.includes(t.id));
+		const tenant = account.properties.tenants.find(tenant => request.authority.includes(tenant.id));
 		const unauthorizedMessage = localize('mssql.insufficientlyPrivelagedAzureAccount', "The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.", account.key.accountId);
 		if (!tenant) {
 			window.showErrorMessage(unauthorizedMessage);
