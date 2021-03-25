@@ -741,6 +741,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
+	public async restartSession(): Promise<void> {
+		if (this._activeClientSession) {
+			// Old active client sessions have already been shutdown by RESTART_JUPYTER_NOTEBOOK_SESSIONS command
+			this._activeClientSession = undefined;
+			await this.startSession(this.notebookManager, this._selectedKernelDisplayName, true);
+		}
+	}
+
 	// When changing kernel, update the active session
 	private updateActiveClientSession(clientSession: IClientSession) {
 		this._activeClientSession = clientSession;
@@ -1114,7 +1122,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	private async shutdownActiveSession() {
+	private async shutdownActiveSession(): Promise<void> {
 		if (this._activeClientSession) {
 			try {
 				await this._activeClientSession.ready;

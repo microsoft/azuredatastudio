@@ -42,6 +42,13 @@ export class SessionManager implements nb.SessionManager {
 	shutdown(id: string): Thenable<void> {
 		return Promise.resolve();
 	}
+
+	shutdownAll(): Thenable<void> {
+		return Promise.resolve();
+	}
+
+	dispose(): void {
+	}
 }
 
 export class EmptySession implements nb.ISession {
