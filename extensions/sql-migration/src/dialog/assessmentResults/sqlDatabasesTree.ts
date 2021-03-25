@@ -615,8 +615,6 @@ export class SqlDatabaseTree {
 			);
 		});
 		this._assessmentResultsTable.dataValues = assessmentResults;
-		this._selectedIssue = this._activeIssues[0];
-		this.refreshAssessmentDetails();
 	}
 
 	public refreshAssessmentDetails(): void {
@@ -734,14 +732,8 @@ export class SqlDatabaseTree {
 				);
 			});
 		}
-		this._dbName.value = this._serverName;
 		this._instanceTable.dataValues = instanceTableValues;
 		this._databaseTable.dataValues = databaseTableValues;
-		if (this._targetType === MigrationTargetType.SQLMI) {
-			this._activeIssues = this._model._assessmentResults.issues;
-			this._selectedIssue = this._model._assessmentResults?.issues[0];
-			this.refreshResults();
-		}
 	}
 
 	private createIconTextCell(icon: IconPath, text: string): azdata.FlexContainer {
@@ -756,7 +748,8 @@ export class SqlDatabaseTree {
 		const textComponent = this._view.modelBuilder.text().withProps({
 			value: text,
 			CSSStyles: {
-				'margin': '0px'
+				'margin': '0px',
+				'width': '110px'
 			}
 		}).component();
 
