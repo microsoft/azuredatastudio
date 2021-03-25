@@ -173,11 +173,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		});
 
 		assessmentResults?.items.forEach((item) => {
-			const dbIndex = serverDatabases.indexOf(item.databaseName);
-			if (dbIndex === -1) {
-				serverLevelAssessments.push(item);
-			} else {
-				databaseLevelAssessments[dbIndex].issues.push(item);
+			if (item.appliesToMigrationTargetPlatform === 'AzureSqlManagedInstance') {
+				const dbIndex = serverDatabases.indexOf(item.databaseName);
+				if (dbIndex === -1) {
+					serverLevelAssessments.push(item);
+				} else {
+					databaseLevelAssessments[dbIndex].issues.push(item);
+				}
 			}
 		});
 

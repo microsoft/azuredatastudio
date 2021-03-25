@@ -377,7 +377,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		if (this.migrationStateModel._assessmentResults) {
 			const dbCount = this.migrationStateModel._assessmentResults.databaseAssessments.length;
 
-			const dbWithIssuesCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter(db => db.issues.length > 0).length;
+			const dbWithIssuesCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter(db => db.issues.length === 0).length;
 			const miCardText = `${dbWithIssuesCount} out of ${dbCount} databases can be migrated (${this.migrationStateModel._miDbs.length} selected)`;
 			this._rbg.cards[0].descriptions[1].textValue = miCardText;
 
