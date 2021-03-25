@@ -291,12 +291,8 @@
 	display: none;
 }
 
-.ads-homepage #tool-tip-container-wide .ads-welcome-page-link{
-	display: flex;
-	align-items: center;
-}
-
-.ads-homepage #tool-tip-container-narrow .ads-welcome-page-link{
+.ads-homepage #tool-tip-container-wide .ads-welcome-page-link,
+.ads-homepage #tool-tip-container-narrow .ads-welcome-page-link {
 	display: flex;
 	align-items: center;
 }
@@ -885,18 +881,24 @@
 	border-top: 1px solid;
 }
 
-.ads-homepage .ads-homepage-section .history .list, .ads-homepage .ads-homepage-section .pinned .list {
+.ads-homepage .ads-homepage-section .history .list,
+.ads-homepage .ads-homepage-section .pinned .list {
+	min-height: 170px; /* 5 (max # of items displayed in list) x list item height */
 	list-style-type: none;
 	padding: 0;
 	margin-top: 0
 }
 
-.ads-homepage .ads-homepage-section .history .list-header, .ads-homepage .ads-homepage-section .pinned .list-header {
+.ads-homepage .ads-homepage-section .history .list-header,
+.ads-homepage .ads-homepage-section .pinned .list-header {
 	padding: 0 0 2px 11px
 }
 
 
-.ads-homepage .ads-homepage-section .history .list li:not(.moreRecent), .ads-homepage .ads-homepage-section .history .list-header-container, .ads-homepage .ads-homepage-section .pinned .list li:not(.moreRecent), .ads-homepage .ads-homepage-section .pinned .list-header-container {
+.ads-homepage .ads-homepage-section .history .list li:not(.moreRecent),
+.ads-homepage .ads-homepage-section .history .list-header-container,
+.ads-homepage .ads-homepage-section .pinned .list li:not(.moreRecent),
+.ads-homepage .ads-homepage-section .pinned .list-header-container {
 	height: 33px;
 	list-style: none;
 	border-bottom: 1px solid;
