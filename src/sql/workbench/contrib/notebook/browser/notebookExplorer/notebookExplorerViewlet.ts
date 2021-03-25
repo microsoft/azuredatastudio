@@ -258,8 +258,8 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			onQueryValidationError(err);
 			return;
 		}
-		this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.SearchStarted)
-			.withAdditionalProperties({ triggered_on_type: triggeredOnType })
+		this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.SearchStarted)
+			.withAdditionalProperties({ triggeredOnType: triggeredOnType })
 			.send();
 
 		this.validateQuery(query).then(() => {
