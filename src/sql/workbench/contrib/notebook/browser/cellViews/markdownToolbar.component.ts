@@ -220,11 +220,12 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		DOM.EventHelper.stop(event, true);
 		let triggerElement = event.target as HTMLElement;
 		let needsTransform = true;
-		let calloutResult: ILinkCalloutDialogOptions;
+		let linkCalloutResult: ILinkCalloutDialogOptions;
+
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
-			calloutResult = await this.createCallout(type, triggerElement);
+			linkCalloutResult = await this.createCallout(type, triggerElement);
 			// If no URL is present, no-op
-			if (!calloutResult.insertUnescapedLinkUrl) {
+			if (!linkCalloutResult.insertUnescapedLinkUrl) {
 				return;
 			}
 			// If cell edit mode isn't WYSIWYG, use result from callout. No need for further transformation.
@@ -234,15 +235,18 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
 				// Callout is responsible for returning escaped strings
-				document.execCommand('insertHTML', false, `<a href="${calloutResult?.insertUnescapedLinkUrl}">${calloutResult?.insertUnescapedLinkLabel}</a>`);
+				document.execCommand('insertHTML', false, `<a href="${linkCalloutResult?.insertUnescapedLinkUrl}">${linkCalloutResult?.insertUnescapedLinkLabel}</a>`);
 				return;
 			}
 		}
+
 		const transformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
 		if (needsTransform) {
 			await transformer.transformText(type);
 		} else if (!needsTransform) {
-			await insertFormattedMarkdown(calloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
+			if (type === MarkdownButtonType.LINK_PREVIEW) {
+				await insertFormattedMarkdown(linkCalloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
+			}
 		}
 	}
 
@@ -283,7 +287,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
 			const defaultLabel = this.getCurrentSelectionText();
-			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogProperties, dialogPosition, defaultLabel);
+			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogPosition, dialogProperties, defaultLabel);
 			this._linkCallout.render();
 			calloutOptions = await this._linkCallout.open();
 		}

@@ -8,7 +8,8 @@
 }
 .modal.callout-dialog .modal-dialog {
 	border-radius: 2px;
-	box-shadow: 0px 3px 8px rgba(var(--foreground));
+	border-width: 1px;
+	border-style: solid;
 	max-height: 300px;
 	position: absolute;
 }
@@ -28,60 +29,37 @@
 }
 
 .callout-arrow:before {
-	border-width: 1px;
 	border-style: solid;
-	border-color:
-		transparent
-		transparent
-		var(--bodybackground)
-		var(--bodybackground);
-	box-shadow: -3px 3px 3px 0 rgba(var(--foreground));
+	border-width: 1px;
 	content: '';
 	display: block;
-	height: 0;
+	height: 10px;
 	position: absolute;
-	width: 0;
+	width: 10px;
 }
 .callout-arrow.from-below:before {
-	border-width: 0.5em;
-	left: 2em;
-	top: -0.2em;
+	left: 24px;
+	top: -6px;
 	transform: rotate(135deg);
 }
 .callout-arrow.from-above:before {
-	border-width: 0.5em;
-	left: 2em;
-	bottom: -0.2em;
+	bottom: -6px;
+	left: 24px;
 	transform: rotate(-45deg);
 }
 .callout-arrow.from-left:before {
-	background-color: var(--bodybackground);
 	height: 26px;
-	right: -13px;
+	right: -14px;
 	top: 26px;
 	transform: rotate(-135deg);
 	width: 26px;
 }
 
 .hc-black .callout-arrow:before {
-	background-color: var(--bodybackground);
-	border-color:
-		transparent
-		transparent
-		var(--border)
-		var(--border);
-	border-width: 0.1em;
 	box-shadow: none;
-	height: 0.8em;
-	width: 0.8em;
-}
-.hc-black .callout-arrow.from-below:before {
-	top: -0.4em;
 }
 .hc-black .callout-arrow.from-left:before {
-	height: 2em;
-	right: -1.2em;
-	width: 2em;
+	box-shadow: none;
 }
 
 .modal.callout-dialog .modal-header {

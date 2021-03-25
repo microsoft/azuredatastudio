@@ -21,14 +21,10 @@
 .modal:not(.flyout-dialog):not(.callout-dialog) .modal-dialog {
 	margin: auto;
 	width: 640px;
-	height: 480px;
+	max-height: 480px;
 }
 
 .modal .modal-header {
-	padding: 15px;
-}
-
-.modal .modal-footer {
 	padding: 15px;
 }
 
@@ -129,8 +125,8 @@
 }
 
 .modal .modal-footer {
-	border-top: 1px solid #E1E1E1;
 	display: flex;
+	padding: 15px;
 }
 
 .modal .modal-footer .left-footer {

@@ -6,12 +6,12 @@
 import 'vs/css!./media/imageCalloutDialog';
 import * as DOM from 'vs/base/browser/dom';
 import * as styler from 'vs/platform/theme/common/styler';
-import { URI } from 'vs/base/common/uri';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
-import { CalloutDialog } from 'sql/workbench/browser/modal/calloutDialog';
+import { URI } from 'vs/base/common/uri';
+import { Modal, IDialogProperties } from 'sql/workbench/browser/modal/modal';
 import { IFileDialogService, IOpenDialogOptions } from 'vs/platform/dialogs/common/dialogs';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IDialogProperties } from 'sql/workbench/browser/modal/modal';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -25,7 +25,7 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { DialogPosition, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { attachModalDialogStyler } from 'sql/workbench/common/styler';
+import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 import { escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 
 export interface IImageCalloutDialogOptions {
@@ -35,7 +35,9 @@ export interface IImageCalloutDialogOptions {
 	embedImage?: boolean
 }
 
-export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions> {
+const DEFAULT_DIALOG_WIDTH: DialogWidth = 452;
+
+export class ImageCalloutDialog extends Modal {
 	private _selectionComplete: Deferred<IImageCalloutDialogOptions> = new Deferred<IImageCalloutDialogOptions>();
 	private _imageLocationLabel: HTMLElement;
 	private _imageLocalRadioButton: RadioButton;
@@ -49,9 +51,8 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 
 	constructor(
 		title: string,
-		width: DialogWidth,
-		dialogProperties: IDialogProperties,
 		dialogPosition: DialogPosition,
+		dialogProperties: IDialogProperties,
 		@IPathService private readonly _pathService: IPathService,
 		@IFileDialogService private readonly _fileDialogService: IFileDialogService,
 		@IContextViewService private readonly _contextViewService: IContextViewService,
@@ -65,17 +66,24 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 	) {
 		super(
 			title,
-			width,
-			dialogProperties,
-			dialogPosition,
-			themeService,
-			layoutService,
+			TelemetryKeys.CalloutDialog,
 			telemetryService,
-			contextKeyService,
+			layoutService,
 			clipboardService,
+			themeService,
 			logService,
-			textResourcePropertiesService
+			textResourcePropertiesService,
+			contextKeyService,
+			{
+				dialogStyle: 'callout',
+				dialogPosition: dialogPosition,
+				dialogProperties: dialogProperties,
+				width: DEFAULT_DIALOG_WIDTH
+			}
 		);
+	}
+
+	protected layout(height?: number): void {
 	}
 
 	/**
@@ -88,7 +96,8 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 
 	public render(): void {
 		super.render();
-		attachModalDialogStyler(this, this._themeService);
+		attachCalloutDialogStyler(this, this._themeService);
+
 		this.addFooterButton(constants.insertButtonText, () => this.insert());
 		this.addFooterButton(constants.cancelButtonText, () => this.cancel(), undefined, true);
 		this.registerListeners();
@@ -196,7 +205,7 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 	}
 
 	public cancel(): void {
-		super.cancel();
+		this.hide('cancel');
 		this._selectionComplete.resolve({
 			insertEscapedMarkdown: '',
 			imagePath: undefined,
@@ -225,5 +234,4 @@ export class ImageCalloutDialog extends CalloutDialog<IImageCalloutDialogOptions
 			return undefined;
 		}
 	}
-
 }
