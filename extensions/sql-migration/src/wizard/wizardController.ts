@@ -31,7 +31,7 @@ export class WizardController {
 	}
 
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {
-		const wizard = azdata.window.createWizard(loc.WIZARD_TITLE, 'wide');
+		const wizard = azdata.window.createWizard(loc.WIZARD_TITLE, 'MigrationWizard', 'wide');
 		wizard.generateScriptButton.enabled = false;
 		wizard.generateScriptButton.hidden = true;
 		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
