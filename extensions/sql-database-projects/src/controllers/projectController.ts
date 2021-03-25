@@ -721,6 +721,7 @@ export class ProjectsController {
 		const itemObjectName = await vscode.window.showInputBox({
 			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
 			value: `${suggestedName}${counter}`,
+			ignoreFocusOut: true,
 		});
 
 		return itemObjectName;
