@@ -9,7 +9,7 @@ import * as styler from 'vs/platform/theme/common/styler';
 import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
 import { CalloutDialog } from 'sql/workbench/browser/modal/calloutDialog';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IDialogProperties } from 'sql/workbench/browser/modal/modal';
+import { DialogPosition, IDialogProperties } from 'sql/workbench/browser/modal/modal';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -43,6 +43,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 	constructor(
 		title: string,
 		dialogProperties: IDialogProperties,
+		dialogPosition: DialogPosition,
 		private readonly _defaultLabel: string = '',
 		@IContextViewService private readonly _contextViewService: IContextViewService,
 		@IThemeService themeService: IThemeService,
@@ -57,6 +58,7 @@ export class LinkCalloutDialog extends CalloutDialog<ILinkCalloutDialogOptions> 
 			title,
 			DEFAULT_DIALOG_WIDTH,
 			dialogProperties,
+			dialogPosition,
 			themeService,
 			layoutService,
 			telemetryService,

@@ -26,7 +26,7 @@ suite('Link Callout Dialog', function (): void {
 	});
 
 	test('Should return empty markdown on cancel', async function (): Promise<void> {
-		let linkCalloutDialog = new LinkCalloutDialog('Title', undefined, 'defaultLabel',
+		let linkCalloutDialog = new LinkCalloutDialog('Title', undefined, 'below', 'defaultLabel',
 			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
 		linkCalloutDialog.render();
 
@@ -47,7 +47,7 @@ suite('Link Callout Dialog', function (): void {
 	test('Should return expected values on insert', async function (): Promise<void> {
 		const defaultLabel = 'defaultLabel';
 		const sampleUrl = 'https://www.aka.ms/azuredatastudio';
-		let linkCalloutDialog = new LinkCalloutDialog('Title', undefined, defaultLabel,
+		let linkCalloutDialog = new LinkCalloutDialog('Title', undefined, 'below', defaultLabel,
 			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
 		linkCalloutDialog.render();
 
@@ -70,7 +70,7 @@ suite('Link Callout Dialog', function (): void {
 	test('Should return expected values on insert when escape necessary', async function (): Promise<void> {
 		const defaultLabel = 'default[]Label';
 		const sampleUrl = 'https://www.aka.ms/azuredatastudio()';
-		let linkCalloutDialog = new LinkCalloutDialog('Title', undefined, defaultLabel,
+		let linkCalloutDialog = new LinkCalloutDialog('Title', undefined, 'below', defaultLabel,
 			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
 		linkCalloutDialog.render();
 
