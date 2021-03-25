@@ -28,14 +28,14 @@
     "commands": [
       {
         "command": "sqlmigration.start",
-        "title": "SQL Migration Start",
-        "category": "SQL Migration",
+        "title": "%start-migration-command%",
+        "category": "%migration-command-category%",
         "icon": "./images/migration.svg"
       },
       {
         "command": "sqlmigration.openNotebooks",
         "title": "%migration-notebook-command-title%",
-        "category": "SQL Migration"
+        "category": "%migration-command-category%"
       }
     ],
     "dashboard.tabs": [
