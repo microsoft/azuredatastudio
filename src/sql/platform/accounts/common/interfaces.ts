@@ -52,7 +52,8 @@ export enum AzureResource {
 	ResourceManagement = 0,
 	Sql = 1,
 	OssRdbms = 2,
-	AzureKeyVault = 3
+	AzureKeyVault = 3,
+	AzureLogAnalytics = 8
 }
 
 export interface IAccountStore {
