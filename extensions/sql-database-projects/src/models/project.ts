@@ -460,8 +460,6 @@ export class Project {
 	 * @param databaseName name of the database
 	 */
 	public async addDatabaseReference(settings: IDacpacReferenceSettings): Promise<void> {
-		// update dacpacFileLocation to project relative path instead of fsPath
-		settings.dacpacFileLocation = Uri.file(utils.trimUri(Uri.file(this.projectFilePath), settings.dacpacFileLocation));
 		const databaseReferenceEntry = new DacpacReferenceProjectEntry(settings);
 
 		// check if reference to this database already exists
@@ -1024,7 +1022,7 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 	}
 
 	public pathForSqlProj(): string {
-		// need to remove the leading slash from path for build to work on Windows
+		// need to remove the leading slash from path for build to work
 		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
 	}
 }
