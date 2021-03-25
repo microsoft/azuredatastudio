@@ -26,6 +26,27 @@ export async function getSubscriptions(account: azdata.Account): Promise<Subscri
 	return subscriptions.subscriptions;
 }
 
+export interface Location {
+	displayName: string,
+	name: string,
+	regionalDisplayName: string,
+}
+
+export async function getLocations(account: azdata.Account, subscription: Subscription): Promise<Location[]> {
+	const api = await getAzureCoreAPI();
+	const path = `/subscriptions/${subscription.id}/locations?api-version=2020-01-01`;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.toString());
+	}
+	sortResourceArrayByName(response.response.data.value);
+	const supportedLocations = ['eastus2', 'eastus2euap'];
+	const filteredLocations = (<Location[]>response.response.data.value).filter(loc => {
+		return supportedLocations.includes(loc.name);
+	});
+	return filteredLocations;
+}
+
 export type AzureProduct = azureResource.AzureGraphResource;
 
 export async function getResourceGroups(account: azdata.Account, subscription: Subscription): Promise<azureResource.AzureResourceResourceGroup[]> {
@@ -65,9 +86,9 @@ export type SqlVMServer = {
 	tenantId: string,
 	subscriptionId: string
 };
-export async function getAvailableSqlVMs(account: azdata.Account, subscription: Subscription): Promise<SqlVMServer[]> {
+export async function getAvailableSqlVMs(account: azdata.Account, subscription: Subscription, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<SqlVMServer[]> {
 	const api = await getAzureCoreAPI();
-	const path = `/subscriptions/${subscription.id}/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines?api-version=2017-03-01-preview`;
+	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroup.name}/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines?api-version=2017-03-01-preview`;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());

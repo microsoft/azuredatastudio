@@ -8,7 +8,7 @@ import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
-import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer } from '../api/azure';
+import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, Location, getResourceGroups } from '../api/azure';
 import { SKURecommendations } from './externalContract';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
@@ -100,6 +100,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _subscriptions!: azureResource.AzureResourceSubscription[];
 
 	public _targetSubscription!: azureResource.AzureResourceSubscription;
+	public _locations!: Location[];
+	public _location!: Location;
+	public _resourceGroups!: azureResource.AzureResourceResourceGroup[];
+	public _resourceGroup!: azureResource.AzureResourceResourceGroup;
 	public _targetManagedInstances!: SqlManagedInstance[];
 	public _targetSqlVirtualMachines!: SqlVMServer[];
 	public _targetServerInstance!: SqlManagedInstance;
@@ -315,10 +319,88 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._subscriptions[index];
 	}
 
-	public async getManagedInstanceValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+	public async getAzureLocationDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+		let locationValues: azdata.CategoryValue[] = [];
+		try {
+			this._locations = await getLocations(this._azureAccount, subscription);
+			this._locations.forEach((loc) => {
+				locationValues.push({
+					name: loc.name,
+					displayName: loc.displayName
+				});
+			});
+
+			if (locationValues.length === 0) {
+				locationValues = [
+					{
+						displayName: constants.INVALID_LOCATION_ERROR,
+						name: ''
+					}
+				];
+			}
+		} catch (e) {
+			console.log(e);
+			locationValues = [
+				{
+					displayName: constants.INVALID_LOCATION_ERROR,
+					name: ''
+				}
+			];
+		}
+
+		return locationValues;
+	}
+
+	public getLocation(index: number): Location {
+		return this._locations[index];
+	}
+
+	public async getAzureResourceGroupDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+		let resourceGroupValues: azdata.CategoryValue[] = [];
+		try {
+			this._resourceGroups = await getResourceGroups(this._azureAccount, subscription);
+			this._resourceGroups.forEach((rg) => {
+				resourceGroupValues.push({
+					name: rg.id,
+					displayName: rg.name
+				});
+			});
+
+			if (resourceGroupValues.length === 0) {
+				resourceGroupValues = [
+					{
+						displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+						name: ''
+					}
+				];
+			}
+		} catch (e) {
+			console.log(e);
+			resourceGroupValues = [
+				{
+					displayName: constants.RESOURCE_GROUP_NOT_FOUND,
+					name: ''
+				}
+			];
+		}
+
+		return resourceGroupValues;
+	}
+
+	public getAzureResourceGroup(index: number): azureResource.AzureResourceResourceGroup {
+		return this._resourceGroups[index];
+	}
+
+
+	public async getManagedInstanceValues(subscription: azureResource.AzureResourceSubscription, location: Location, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
 		let managedInstanceValues: azdata.CategoryValue[] = [];
 		try {
-			this._targetManagedInstances = await getAvailableManagedInstanceProducts(this._azureAccount, subscription);
+			this._targetManagedInstances = (await getAvailableManagedInstanceProducts(this._azureAccount, subscription)).filter((mi) => {
+				if (mi.location === location.name && mi.resourceGroup?.toLocaleLowerCase() === resourceGroup.name.toLowerCase()) {
+					return true;
+				}
+				return false;
+			});
 			this._targetManagedInstances.forEach((managedInstance) => {
 				managedInstanceValues.push({
 					name: managedInstance.id,
@@ -350,16 +432,19 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._targetManagedInstances[index];
 	}
 
-	public async getSqlVirtualMachineValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
+	public async getSqlVirtualMachineValues(subscription: azureResource.AzureResourceSubscription, location: Location, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
 		let virtualMachineValues: azdata.CategoryValue[] = [];
 		try {
-			this._targetSqlVirtualMachines = await getAvailableSqlVMs(this._azureAccount, subscription);
-			virtualMachineValues = this._targetSqlVirtualMachines.filter((virtualMachine) => {
-				if (virtualMachine.properties.sqlImageOffer) {
-					return virtualMachine.properties.sqlImageOffer.toLowerCase().includes('-ws'); //filtering out all non windows sql vms.
+			this._targetSqlVirtualMachines = (await getAvailableSqlVMs(this._azureAccount, subscription, resourceGroup)).filter((virtualMachine) => {
+				if (virtualMachine.location === location.name) {
+					if (virtualMachine.properties.sqlImageOffer) {
+						return virtualMachine.properties.sqlImageOffer.toLowerCase().includes('-ws'); //filtering out all non windows sql vms.
+					}
+					return true; // Returning all VMs that don't have this property as we don't want to accidentally skip valid vms.
 				}
-				return true; // Returning all VMs that don't have this property as we don't want to accidentally skip valid vms.
-			}).map((virtualMachine) => {
+				return false;
+			});
+			virtualMachineValues = this._targetSqlVirtualMachines.map((virtualMachine) => {
 				return {
 					name: virtualMachine.id,
 					displayName: `${virtualMachine.name}`
@@ -393,7 +478,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async getStorageAccountValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
 		let storageAccountValues: azdata.CategoryValue[] = [];
 		try {
-			this._storageAccounts = await getAvailableStorageAccounts(this._azureAccount, subscription);
+			this._storageAccounts = (await getAvailableStorageAccounts(this._azureAccount, subscription)).filter(sa => sa.location === this._targetServerInstance.location);
 			this._storageAccounts.forEach((storageAccount) => {
 				storageAccountValues.push({
 					name: storageAccount.id,
