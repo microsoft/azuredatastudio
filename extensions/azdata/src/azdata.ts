@@ -181,9 +181,16 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 		}
 	};
 
-	public async login(endpoint: string, username: string, password: string, additionalEnvVars: azdataExt.AdditionalEnvVars = {}, azdataContext?: string): Promise<azdataExt.AzdataOutput<void>> {
-		// Logins need to be done outside the session aware logic so call impl directly
-		return this.executeCommand<void>(['login', '-e', endpoint, '-u', username], Object.assign({}, additionalEnvVars, { 'AZDATA_PASSWORD': password }), azdataContext);
+	public async login(endpointOrNamespace: azdataExt.EndpointOrNamespace, username: string, password: string, additionalEnvVars: azdataExt.AdditionalEnvVars = {}, azdataContext?: string): Promise<azdataExt.AzdataOutput<void>> {
+		const args = ['login', '-u', username];
+		if (endpointOrNamespace.endpoint) {
+			args.push('-e', endpointOrNamespace.endpoint);
+		} else if (endpointOrNamespace.namespace) {
+			args.push('--namespace', endpointOrNamespace.namespace);
+		} else {
+			throw new Error(loc.endpointOrNamespaceRequired);
+		}
+		return this.executeCommand<void>(args, Object.assign({}, additionalEnvVars, { 'AZDATA_PASSWORD': password }), azdataContext);
 	}
 
 	/**

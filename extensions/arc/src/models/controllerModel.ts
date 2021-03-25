@@ -46,6 +46,20 @@ export class ControllerModel {
 		return this._info;
 	}
 
+	/**
+	 * Gets the controller context to use when executing azdata commands. This is in one of two forms :
+	 *
+	 * If no URL is specified for this controller then just the namespace is used (e.g. test-namespace)
+	 * If a URL is specified then a 3-part name is used, combining the namespace, username and URL separated by
+	 * / (e.g. test-namespace/admin/https://10.91.86.13:30080)
+	 */
+	public get controllerContext(): string {
+		if (this._info.endpoint) {
+			return `${this._info.namespace}/${this._info.username}/${this._info.endpoint}`;
+		}
+		return this._info.namespace;
+	}
+
 	public set info(value: ControllerInfo) {
 		this._info = value;
 		this._onInfoUpdated.fire(this._info);
@@ -66,7 +80,7 @@ export class ControllerModel {
 	public async login(promptReconnect: boolean = false): Promise<void> {
 		let promptForValidClusterContext: boolean = false;
 		try {
-			const contexts = await getKubeConfigClusterContexts(this.info.kubeConfigFilePath);
+			const contexts = getKubeConfigClusterContexts(this.info.kubeConfigFilePath);
 			getCurrentClusterContext(contexts, this.info.kubeClusterContext, true); // this throws if this.info.kubeClusterContext is not found in 'contexts'
 		} catch (error) {
 			const response = await vscode.window.showErrorMessage(loc.clusterContextConfigNoLongerValid(this.info.kubeConfigFilePath, this.info.kubeClusterContext, error), loc.yes, loc.no);
@@ -100,7 +114,7 @@ export class ControllerModel {
 				}
 			}
 		}
-		await this._azdataApi.azdata.login(this.info.url, this.info.username, this._password, this.azdataAdditionalEnvVars);
+		await this._azdataApi.azdata.login({ endpoint: this.info.endpoint, namespace: this.info.namespace }, this.info.username, this._password, this.azdataAdditionalEnvVars);
 	}
 
 	/**
@@ -115,9 +129,11 @@ export class ControllerModel {
 		}
 	}
 	public async refresh(showErrors: boolean = true): Promise<void> {
+		// First need to log in to ensure that we're able to authenticate with the controller
+		await this.login(false);
 		const newRegistrations: Registration[] = [];
 		await Promise.all([
-			this._azdataApi.azdata.arc.dc.config.show(this.azdataAdditionalEnvVars).then(result => {
+			this._azdataApi.azdata.arc.dc.config.show(this.azdataAdditionalEnvVars, this.controllerContext).then(result => {
 				this._controllerConfig = result.result;
 				this.configLastUpdated = new Date();
 				this._onConfigUpdated.fire(this._controllerConfig);
@@ -131,7 +147,7 @@ export class ControllerModel {
 				this._onConfigUpdated.fire(this._controllerConfig);
 				throw err;
 			}),
-			this._azdataApi.azdata.arc.dc.endpoint.list(this.azdataAdditionalEnvVars).then(result => {
+			this._azdataApi.azdata.arc.dc.endpoint.list(this.azdataAdditionalEnvVars, this.controllerContext).then(result => {
 				this._endpoints = result.result;
 				this.endpointsLastUpdated = new Date();
 				this._onEndpointsUpdated.fire(this._endpoints);
@@ -146,7 +162,7 @@ export class ControllerModel {
 				throw err;
 			}),
 			Promise.all([
-				this._azdataApi.azdata.arc.postgres.server.list(this.azdataAdditionalEnvVars).then(result => {
+				this._azdataApi.azdata.arc.postgres.server.list(this.azdataAdditionalEnvVars, this.controllerContext).then(result => {
 					newRegistrations.push(...result.result.map(r => {
 						return {
 							instanceName: r.name,
@@ -155,7 +171,7 @@ export class ControllerModel {
 						};
 					}));
 				}),
-				this._azdataApi.azdata.arc.sql.mi.list(this.azdataAdditionalEnvVars).then(result => {
+				this._azdataApi.azdata.arc.sql.mi.list(this.azdataAdditionalEnvVars, this.controllerContext).then(result => {
 					newRegistrations.push(...result.result.map(r => {
 						return {
 							instanceName: r.name,
@@ -198,6 +214,6 @@ export class ControllerModel {
 	 * property to for use a display label for this controller
 	 */
 	public get label(): string {
-		return `${this.info.name} (${this.info.url})`;
+		return `${this.info.name} (${this.controllerContext})`;
 	}
 }

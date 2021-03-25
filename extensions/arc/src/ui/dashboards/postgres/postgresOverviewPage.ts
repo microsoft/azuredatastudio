@@ -251,7 +251,7 @@ export class PostgresOverviewPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token) => {
-								return await this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name, this._controllerModel.azdataAdditionalEnvVars);
+								return await this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name, this._controllerModel.azdataAdditionalEnvVars, this._controllerModel.controllerContext);
 							}
 						);
 						await this._controllerModel.refreshTreeNode();

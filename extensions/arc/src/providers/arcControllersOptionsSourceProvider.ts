@@ -30,7 +30,7 @@ export class ArcControllersOptionsSourceProvider implements rd.IOptionsSourcePro
 		const controller = (await getRegisteredDataControllers(this._treeProvider)).find(ci => ci.label === controllerLabel);
 		throwUnless(controller !== undefined, loc.noControllerInfoFound(controllerLabel));
 		switch (variableName) {
-			case 'endpoint': return controller.info.url;
+			case 'endpoint': return controller.info.endpoint || '';
 			case 'username': return controller.info.username;
 			case 'kubeConfig': return controller.info.kubeConfigFilePath;
 			case 'clusterContext': return controller.info.kubeClusterContext;

@@ -38,21 +38,24 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
 			{ engineSettings: engineSettings },
-			this._postgresModel.controllerModel.azdataAdditionalEnvVars);
+			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+			this._postgresModel.controllerModel.controllerContext);
 	}
 
 	protected async resetAllParameters(): Promise<void> {
 		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
 			{ engineSettings: `''`, replaceEngineSettings: true },
-			this._postgresModel.controllerModel.azdataAdditionalEnvVars);
+			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+			this._postgresModel.controllerModel.controllerContext);
 	}
 
 	protected async resetParameter(parameterName: string): Promise<void> {
 		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
 			{ engineSettings: parameterName + '=' },
-			this._postgresModel.controllerModel.azdataAdditionalEnvVars);
+			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+			this._postgresModel.controllerModel.controllerContext);
 	}
 
 	protected refreshParametersTable(): void {
