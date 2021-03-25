@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IAdsTelemetryService, ITelemetryInfo, ITelemetryEvent, ITelemetryConnectionInfo, ITelemetryEventMeasures, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+import * as azdata from 'azdata';
+import { IAdsTelemetryService, ITelemetryInfo, ITelemetryEvent, ITelemetryEventMeasures, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { assign } from 'vs/base/common/objects';
@@ -43,13 +44,23 @@ class TelemetryEventImpl implements ITelemetryEvent {
 		return this;
 	}
 
-	public withConnectionInfo(connectionInfo: ITelemetryConnectionInfo): ITelemetryEvent {
+	public withConnectionInfo(connectionInfo?: azdata.IConnectionProfile): ITelemetryEvent {
 		assign(this._properties,
 			{
-				authenticationType: connectionInfo.authenticationType,
-				providerName: connectionInfo.providerName,
-				serverType: connectionInfo.serverType,
-				engineType: connectionInfo.engineType
+				authenticationType: connectionInfo?.authenticationType,
+				providerName: connectionInfo?.providerName
+			});
+		return this;
+	}
+
+	public withServerInfo(serverInfo?: azdata.ServerInfo): ITelemetryEvent {
+		assign(this._properties,
+			{
+				connectionType: serverInfo?.isCloud !== undefined ? (serverInfo.isCloud ? 'Azure' : 'Standalone') : '',
+				serverVersion: serverInfo?.serverVersion ?? '',
+				serverEdition: serverInfo?.serverEdition ?? '',
+				serverEngineEdition: serverInfo?.engineEditionId ?? '',
+				isBigDataCluster: serverInfo?.options?.isBigDataCluster ?? false,
 			});
 		return this;
 	}
@@ -64,7 +75,9 @@ class NullTelemetryEventImpl implements ITelemetryEvent {
 
 	public withAdditionalMeasurements(additionalMeasurements: ITelemetryEventMeasures): ITelemetryEvent { return this; }
 
-	public withConnectionInfo(connectionInfo: ITelemetryConnectionInfo): ITelemetryEvent { return this; }
+	public withConnectionInfo(connectionInfo: azdata.IConnectionProfile): ITelemetryEvent { return this; }
+
+	public withServerInfo(serverInfo: azdata.ServerInfo): ITelemetryEvent { return this; }
 }
 
 export class AdsTelemetryService implements IAdsTelemetryService {
