@@ -14,6 +14,7 @@ import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, JupyterBookSection } from '../contracts/content';
 import { convertFrom, getContentPath, BookVersion } from './bookVersionHandler';
 import { debounce } from '../common/utils';
+import { Deferred } from '../common/promise';
 const fsPromises = fileServices.promises;
 const content = 'content';
 
@@ -26,6 +27,8 @@ export class BookModel {
 	private _bookVersion: BookVersion;
 	private _rootPath: string;
 	private _errorMessage: string;
+	private _activePromise: Deferred<void> | undefined = undefined;
+	private _queuedPromises: Deferred<void>[] = [];
 
 	constructor(
 		public readonly bookPath: string,
@@ -56,14 +59,31 @@ export class BookModel {
 	}
 
 	public async initializeContents(): Promise<void> {
-		this._bookItems = [];
-		this._allNotebooks = new Map<string, BookTreeItem>();
-		if (this.isNotebook) {
-			this.readNotebook();
-		} else {
-			await this.readBookStructure();
-			await this.loadTableOfContentFiles();
-			await this.readBooks();
+		const deferred = new Deferred<void>();
+		if (!this._activePromise && this._queuedPromises.length === 0) {
+			this._activePromise = deferred;
+		}
+		else {
+			// If there's an active promise, then we need to add the new promise to the queue.
+			this._queuedPromises.push(deferred);
+			await deferred.promise;
+		}
+		try {
+			this._bookItems = [];
+			this._allNotebooks = new Map<string, BookTreeItem>();
+			if (this.isNotebook) {
+				this.readNotebook();
+			} else {
+				await this.readBookStructure();
+				await this.loadTableOfContentFiles();
+				await this.readBooks();
+			}
+		}
+		finally {
+			// Resolve next promise in queue
+			const queuedPromise = this._queuedPromises.shift();
+			queuedPromise?.resolve();
+			this._activePromise = queuedPromise;
 		}
 	}
 
