@@ -49,7 +49,6 @@ export class FakeAzdataApi implements azdataExt.IAzdataApi {
 							replaceEngineSettings?: boolean,
 							workers?: number
 						},
-						_engineVersion?: string,
 						_additionalEnvVars?: azdataExt.AdditionalEnvVars
 					): Promise<azdataExt.AzdataOutput<void>> { throw new Error('Method not implemented.'); }
 				}

@@ -224,7 +224,6 @@ export class PostgresOverviewPage extends DashboardPage {
 									adminPassword: true,
 									noWait: true
 								},
-								this._postgresModel.engineVersion,
 								Object.assign({ 'AZDATA_PASSWORD': password }, this._controllerModel.azdataAdditionalEnvVars),
 								session
 							);
