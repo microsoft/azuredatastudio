@@ -256,11 +256,11 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		return modal.showPage(pageIndex);
 	}
 
-	public $openWizard(handle: number): Thenable<void> {
+	public $openWizard(handle: number, source?: string): Thenable<void> {
 		let wizard = this.getWizard(handle);
 		const options = assign({}, DefaultWizardOptions);
 		options.width = wizard.width;
-		this._dialogService.showWizard(wizard, options);
+		this._dialogService.showWizard(wizard, options, source);
 		return Promise.resolve();
 	}
 

@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper } from '../../../constants';
 import { PostgresParametersPage } from './postgresParameters';
-import { PostgresModel } from '../../../models/postgresModel';
+import { PostgresModel, EngineSettingsModel } from '../../../models/postgresModel';
 
 export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 
@@ -34,6 +34,11 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 		return loc.nodeParametersDescription;
 	}
 
+
+	protected get engineSettings(): EngineSettingsModel[] {
+		return this._postgresModel.workerNodesEngineSettings;
+	}
+
 	protected async saveParameterEdits(engineSettings: string): Promise<void> {
 		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
@@ -56,10 +61,5 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 			{ engineSettings: parameterName + '=' },
 			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 			this._postgresModel.controllerModel.controllerContext);
-	}
-
-	protected refreshParametersTable(): void {
-		this._parameters = this._postgresModel.workerNodesEngineSettings.map(engineSetting => this.createParameterComponents(engineSetting));
-		this._parametersTable.data = this._parameters.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
 	}
 }

@@ -15,7 +15,9 @@ import { debounce } from '../../../common/utils';
 
 export type ParametersModel = {
 	parameterName: string,
-	valueContainer: azdata.FlexContainer,
+	originalValue: string,
+	valueComponent: azdata.TextComponent | azdata.DropDownComponent | azdata.CheckBoxComponent,
+	information?: azdata.ButtonComponent,
 	description: string,
 	resetButton: azdata.ButtonComponent
 };
@@ -23,8 +25,8 @@ export type ParametersModel = {
 export abstract class PostgresParametersPage extends DashboardPage {
 	private searchBox!: azdata.InputBoxComponent;
 	protected _parametersTable!: azdata.DeclarativeTableComponent;
-	private parameterContainer?: azdata.DivContainer;
-	private parametersTableLoading!: azdata.LoadingComponent;
+	private parameterContainer!: azdata.DivContainer;
+	private parametersTableLoading?: azdata.LoadingComponent;
 
 	private discardButton!: azdata.ButtonComponent;
 	private saveButton!: azdata.ButtonComponent;
@@ -32,6 +34,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 	private connectToServerButton?: azdata.ButtonComponent;
 
 	protected _parameters: ParametersModel[] = [];
+	private changedComponentValues: Set<string> = new Set();
 	private parameterUpdates: Map<string, string> = new Map();
 
 	protected readonly _azdataApi: azdataExt.IExtension;
@@ -41,7 +44,6 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
-		this.initializeConnectButton();
 		this.initializeSearchBox();
 
 		this.disposables.push(
@@ -51,6 +53,8 @@ export abstract class PostgresParametersPage extends DashboardPage {
 	}
 
 	protected abstract get description(): string;
+
+	protected abstract get engineSettings(): EngineSettingsModel[];
 
 	protected get container(): azdata.Component {
 		const root = this.modelView.modelBuilder.divContainer().component();
@@ -115,11 +119,8 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			data: []
 		}).component();
 
-		this.parametersTableLoading = this.modelView.modelBuilder.loadingComponent().component();
-
 		this.parameterContainer = this.modelView.modelBuilder.divContainer().component();
 		this.selectComponent();
-
 		content.addItem(this.parameterContainer);
 
 		this.initialized = true;
@@ -138,7 +139,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		let engineSettings: string[] = [];
 		this.disposables.push(
 			this.saveButton.onDidClick(async () => {
-				this.saveButton!.enabled = false;
+				this.saveButton.enabled = false;
 				try {
 					await vscode.window.withProgress(
 						{
@@ -148,27 +149,31 @@ export abstract class PostgresParametersPage extends DashboardPage {
 						},
 						async (_progress, _token): Promise<void> => {
 							try {
-								this.parameterUpdates!.forEach((value, key) => {
+								this.parameterUpdates.forEach((value, key) => {
 									engineSettings.push(`${key}="${value}"`);
 								});
 								await this.saveParameterEdits(engineSettings.toString());
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since
 								// the edit wasn't successfully applied
-								this.saveButton!.enabled = true;
+								this.saveButton.enabled = true;
 								throw err;
 							}
-
-							await this._postgresModel.refresh();
+							try {
+								await this._postgresModel.refresh();
+							} catch (error) {
+								vscode.window.showErrorMessage(loc.refreshFailed(error));
+							}
 						}
 					);
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 
 					engineSettings = [];
-					this.parameterUpdates!.clear();
-					this.discardButton!.enabled = false;
-					this.resetAllButton!.enabled = true;
+					this.changedComponentValues.clear();
+					this.parameterUpdates.clear();
+					this.discardButton.enabled = false;
+					this.resetAllButton.enabled = true;
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
@@ -185,14 +190,16 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 		this.disposables.push(
 			this.discardButton.onDidClick(async () => {
-				this.discardButton!.enabled = false;
+				this.discardButton.enabled = false;
 				try {
-					this.refreshParametersTable();
+					this.discardParametersTableChanges();
 				} catch (error) {
+					this.discardButton!.enabled = true;
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
-					this.saveButton!.enabled = false;
-					this.parameterUpdates!.clear();
+					this.changedComponentValues.clear();
+					this.saveButton.enabled = false;
+					this.parameterUpdates.clear();
 				}
 			})
 		);
@@ -206,9 +213,9 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 		this.disposables.push(
 			this.resetAllButton.onDidClick(async () => {
-				this.resetAllButton!.enabled = false;
-				this.discardButton!.enabled = false;
-				this.saveButton!.enabled = false;
+				this.resetAllButton.enabled = false;
+				this.discardButton.enabled = false;
+				this.saveButton.enabled = false;
 				try {
 					await vscode.window.withProgress(
 						{
@@ -223,18 +230,23 @@ export abstract class PostgresParametersPage extends DashboardPage {
 								// If an error occurs while resetting the instance then re-enable the reset button since
 								// the edit wasn't successfully applied
 								if (this.parameterUpdates.size > 0) {
-									this.discardButton!.enabled = true;
-									this.saveButton!.enabled = true;
+									this.discardButton.enabled = true;
+									this.saveButton.enabled = true;
 								}
-								this.resetAllButton!.enabled = true;
+								this.resetAllButton.enabled = true;
 								throw err;
 							}
-							await this._postgresModel.refresh();
+							this.changedComponentValues.clear();
+							try {
+								await this._postgresModel.refresh();
+							} catch (error) {
+								vscode.window.showErrorMessage(loc.refreshFailed(error));
+							}
 						}
 					);
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
-					this.parameterUpdates!.clear();
+					this.parameterUpdates.clear();
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.resetFailed(error));
@@ -257,7 +269,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			this.connectToServerButton!.onDidClick(async () => {
+			this.connectToServerButton.onDidClick(async () => {
 				this.connectToServerButton!.enabled = false;
 				if (!vscode.extensions.getExtension(loc.postgresExtension)) {
 					const response = await vscode.window.showErrorMessage(loc.missingExtension('PostgreSQL'), loc.yes, loc.no);
@@ -287,26 +299,28 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 				this.parametersTableLoading!.loading = true;
 				await this.callGetEngineSettings().finally(() => this.parametersTableLoading!.loading = false);
-				this.searchBox!.enabled = true;
-				this.resetAllButton!.enabled = true;
-				this.parameterContainer!.clearItems();
-				this.parameterContainer!.addItem(this._parametersTable);
+				this.searchBox.enabled = true;
+				this.resetAllButton.enabled = true;
+				this.parameterContainer.clearItems();
+				this.parameterContainer.addItem(this._parametersTable);
 			})
 		);
 	}
 
 	private selectComponent(): void {
 		if (!this._postgresModel.engineSettingsLastUpdated) {
-			this.parameterContainer!.addItem(this.modelView.modelBuilder.text().withProps({
+			this.parameterContainer.addItem(this.modelView.modelBuilder.text().withProps({
 				value: loc.connectToPostgresDescription,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component());
-			this.parameterContainer!.addItem(this.connectToServerButton!, { CSSStyles: { 'max-width': '125px' } });
-			this.parameterContainer!.addItem(this.parametersTableLoading!);
+			this.initializeConnectButton();
+			this.parameterContainer.addItem(this.connectToServerButton!, { CSSStyles: { 'max-width': '125px' } });
+			this.parametersTableLoading = this.modelView.modelBuilder.loadingComponent().component();
+			this.parameterContainer.addItem(this.parametersTableLoading);
 		} else {
-			this.searchBox!.enabled = true;
-			this.resetAllButton!.enabled = true;
-			this.parameterContainer!.addItem(this._parametersTable!);
+			this.searchBox.enabled = true;
+			this.resetAllButton.enabled = true;
+			this.parameterContainer.addItem(this._parametersTable!);
 			this.refreshParametersTable();
 		}
 	}
@@ -341,10 +355,10 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 	@debounce(500)
 	private onSearchFilter(): void {
-		if (!this.searchBox!.value) {
+		if (!this.searchBox.value) {
 			this._parametersTable.setFilter(undefined);
 		} else {
-			this.filterParameters(this.searchBox!.value);
+			this.filterParameters(this.searchBox.value);
 		}
 	}
 
@@ -358,136 +372,27 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		this._parametersTable.setFilter(filteredRowIndexes);
 	}
 
-	private handleOnTextChanged(component: azdata.InputBoxComponent, currentValue: string | undefined): boolean {
+	private handleOnTextChanged(component: azdata.InputBoxComponent, name: string, currentValue: string | undefined): boolean {
 		if (!component.valid) {
 			// If invalid value return false and enable discard button
-			this.discardButton!.enabled = true;
+			this.discardButton.enabled = true;
+			this.collectChangedComponents(name);
 			return false;
 		} else if (component.value === currentValue) {
+			this.removeFromChangedComponents(name);
 			return false;
 		} else {
 			/* If a valid value has been entered into the input box, enable save and discard buttons
 			so that user could choose to either edit instance or clear all inputs
 			return true */
-			this.saveButton!.enabled = true;
-			this.discardButton!.enabled = true;
+			this.saveButton.enabled = true;
+			this.discardButton.enabled = true;
+			this.collectChangedComponents(name);
 			return true;
 		}
 	}
 
 	protected createParameterComponents(engineSetting: EngineSettingsModel): ParametersModel {
-
-		// Container to hold input component and information bubble
-		const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-
-		if (engineSetting.type === 'enum') {
-			// If type is enum, component should be drop down menu
-			let options = engineSetting.options?.slice(1, -1).split(',');
-			let values: string[] = [];
-			options!.forEach(option => {
-				values.push(option.slice(option.indexOf('"') + 1, -1));
-			});
-
-			let valueBox = this.modelView.modelBuilder.dropDown().withProps({
-				values: values,
-				value: engineSetting.value,
-				width: '150px'
-			}).component();
-			valueContainer.addItem(valueBox);
-
-			this.disposables.push(
-				valueBox.onValueChanged(() => {
-					if (engineSetting.value !== String(valueBox.value)) {
-						this.parameterUpdates!.set(engineSetting.parameterName!, String(valueBox.value));
-						this.saveButton!.enabled = true;
-						this.discardButton!.enabled = true;
-					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
-						this.parameterUpdates!.delete(engineSetting.parameterName!);
-					}
-				})
-			);
-		} else if (engineSetting.type === 'bool') {
-			// If type is bool, component should be checkbox to turn on or off
-			let valueBox = this.modelView.modelBuilder.checkBox().withProps({
-				label: loc.on,
-				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
-			}).component();
-			valueContainer.addItem(valueBox);
-
-			if (engineSetting.value === 'on') {
-				valueBox.checked = true;
-			} else {
-				valueBox.checked = false;
-			}
-
-			this.disposables.push(
-				valueBox.onChanged(() => {
-					if (valueBox.checked && engineSetting.value === 'off') {
-						this.parameterUpdates!.set(engineSetting.parameterName!, loc.on);
-						this.saveButton!.enabled = true;
-						this.discardButton!.enabled = true;
-					} else if (!valueBox.checked && engineSetting.value === 'on') {
-						this.parameterUpdates!.set(engineSetting.parameterName!, loc.off);
-						this.saveButton!.enabled = true;
-						this.discardButton!.enabled = true;
-					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
-						this.parameterUpdates!.delete(engineSetting.parameterName!);
-					}
-				})
-			);
-		} else if (engineSetting.type === 'string') {
-			// If type is string, component should be text inputbox
-			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
-				required: true,
-				readOnly: false,
-				value: engineSetting.value,
-				width: '150px'
-			}).component();
-			valueContainer.addItem(valueBox);
-
-			this.disposables.push(
-				valueBox.onTextChanged(() => {
-					if ((this.handleOnTextChanged(valueBox, engineSetting.value))) {
-						this.parameterUpdates!.set(engineSetting.parameterName!, `"${valueBox.value!}"`);
-					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
-						this.parameterUpdates!.delete(engineSetting.parameterName!);
-					}
-				})
-			);
-		} else {
-			// If type is real or interger, component should be inputbox set to inputType of number. Max and min values also set.
-			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
-				required: true,
-				readOnly: false,
-				min: parseInt(engineSetting.min!),
-				max: parseInt(engineSetting.max!),
-				inputType: 'number',
-				value: engineSetting.value,
-				width: '150px'
-			}).component();
-
-			valueContainer.addItem(valueBox, { CSSStyles: { 'margin-right': '0px' } });
-
-			this.disposables.push(
-				valueBox.onTextChanged(() => {
-					if ((this.handleOnTextChanged(valueBox, engineSetting.value))) {
-						this.parameterUpdates!.set(engineSetting.parameterName!, valueBox.value!);
-					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
-						this.parameterUpdates!.delete(engineSetting.parameterName!);
-					}
-				})
-			);
-
-			// Information bubble title to show allowed values
-			let information = this.modelView.modelBuilder.button().withProps({
-				iconPath: IconPathHelper.information,
-				width: '15px',
-				height: '15px',
-				enabled: false,
-				title: loc.rangeSetting(engineSetting.min!, engineSetting.max!)
-			}).component();
-			valueContainer.addItem(information, { CSSStyles: { 'margin-left': '5px' } });
-		}
 
 		// Can reset individual parameter
 		const resetParameterButton = this.modelView.modelBuilder.button().withProps({
@@ -509,10 +414,14 @@ export abstract class PostgresParametersPage extends DashboardPage {
 						},
 						async (_progress, _token): Promise<void> => {
 							await this.resetParameter(engineSetting.parameterName!);
-							await this._postgresModel.refresh();
+							try {
+								await this._postgresModel.refresh();
+							} catch (error) {
+								vscode.window.showErrorMessage(loc.refreshFailed(error));
+							}
 						}
 					);
-
+					this.removeFromChangedComponents(engineSetting.parameterName!);
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
@@ -520,14 +429,193 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			})
 		);
 
-		let parameter: ParametersModel = {
+		let valueComponent: azdata.Component;
+		if (engineSetting.type === 'enum') {
+			// If type is enum, component should be drop down menu
+			let options = engineSetting.options?.slice(1, -1).split(',');
+			let values: string[] = [];
+			options!.forEach(option => {
+				values.push(option.slice(option.indexOf('"') + 1, -1));
+			});
+
+			let valueBox = this.modelView.modelBuilder.dropDown().withProps({
+				values: values,
+				value: engineSetting.value,
+				width: '150px'
+			}).component();
+			valueComponent = valueBox;
+
+			this.disposables.push(
+				valueBox.onValueChanged(() => {
+					if (engineSetting.value !== String(valueBox.value)) {
+						this.parameterUpdates.set(engineSetting.parameterName!, String(valueBox.value));
+						this.collectChangedComponents(engineSetting.parameterName!);
+						this.saveButton.enabled = true;
+						this.discardButton.enabled = true;
+					} else if (this.parameterUpdates.has(engineSetting.parameterName!)) {
+						this.parameterUpdates.delete(engineSetting.parameterName!);
+						this.removeFromChangedComponents(engineSetting.parameterName!);
+					}
+				})
+			);
+		} else if (engineSetting.type === 'bool') {
+			// If type is bool, component should be checkbox to turn on or off
+			let valueBox = this.modelView.modelBuilder.checkBox().withProps({
+				label: loc.on,
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+			}).component();
+			valueComponent = valueBox;
+
+			if (engineSetting.value === 'on') {
+				valueBox.checked = true;
+			} else {
+				valueBox.checked = false;
+			}
+
+			this.disposables.push(
+				valueBox.onChanged(() => {
+					if (valueBox.checked && engineSetting.value === 'off') {
+						this.parameterUpdates.set(engineSetting.parameterName!, loc.on);
+						this.collectChangedComponents(engineSetting.parameterName!);
+						this.saveButton.enabled = true;
+						this.discardButton.enabled = true;
+					} else if (!valueBox.checked && engineSetting.value === 'on') {
+						this.parameterUpdates.set(engineSetting.parameterName!, loc.off);
+						this.collectChangedComponents(engineSetting.parameterName!);
+						this.saveButton.enabled = true;
+						this.discardButton.enabled = true;
+					} else if (this.parameterUpdates.has(engineSetting.parameterName!)) {
+						this.parameterUpdates.delete(engineSetting.parameterName!);
+						this.removeFromChangedComponents(engineSetting.parameterName!);
+					}
+				})
+			);
+		} else if (engineSetting.type === 'string') {
+			// If type is string, component should be text inputbox
+			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
+				required: true,
+				readOnly: false,
+				value: engineSetting.value,
+				width: '150px'
+			}).component();
+			valueComponent = valueBox;
+
+			this.disposables.push(
+				valueBox.onTextChanged(() => {
+					if ((this.handleOnTextChanged(valueBox, engineSetting.parameterName!, engineSetting.value))) {
+						this.parameterUpdates.set(engineSetting.parameterName!, `"${valueBox.value!}"`);
+					} else if (this.parameterUpdates.has(engineSetting.parameterName!)) {
+						this.parameterUpdates.delete(engineSetting.parameterName!);
+					}
+				})
+			);
+		} else {
+			// If type is real or interger, component should be inputbox set to inputType of number. Max and min values also set.
+			let valueBox = this.modelView.modelBuilder.inputBox().withProps({
+				required: true,
+				readOnly: false,
+				min: parseInt(engineSetting.min!),
+				max: parseInt(engineSetting.max!),
+				inputType: 'number',
+				value: engineSetting.value,
+				width: '150px'
+			}).component();
+			valueComponent = valueBox;
+
+			this.disposables.push(
+				valueBox.onTextChanged(() => {
+					if ((this.handleOnTextChanged(valueBox, engineSetting.parameterName!, engineSetting.value))) {
+						this.parameterUpdates.set(engineSetting.parameterName!, valueBox.value!);
+					} else if (this.parameterUpdates.has(engineSetting.parameterName!)) {
+						this.parameterUpdates.delete(engineSetting.parameterName!);
+					}
+				})
+			);
+
+			// Information bubble title to show allowed values
+			let information = this.modelView.modelBuilder.button().withProps({
+				iconPath: IconPathHelper.information,
+				width: '15px',
+				height: '15px',
+				enabled: false,
+				title: loc.rangeSetting(engineSetting.min!, engineSetting.max!)
+			}).component();
+
+			return {
+				parameterName: engineSetting.parameterName!,
+				originalValue: engineSetting.value!,
+				valueComponent: valueComponent,
+				information: information,
+				description: engineSetting.description!,
+				resetButton: resetParameterButton
+			};
+		}
+
+		return {
 			parameterName: engineSetting.parameterName!,
-			valueContainer: valueContainer,
+			originalValue: engineSetting.value!,
+			valueComponent: valueComponent,
 			description: engineSetting.description!,
 			resetButton: resetParameterButton
 		};
+	}
 
-		return parameter;
+	private collectChangedComponents(name: string): void {
+		if (!this.changedComponentValues.has(name)) {
+			this.changedComponentValues.add(name);
+		}
+	}
+
+	private removeFromChangedComponents(name: string): void {
+		if (this.changedComponentValues.has(name)) {
+			this.changedComponentValues.delete(name);
+		}
+	}
+
+	private discardParametersTableChanges(): void {
+		let instanceOfCheckBox = function (object: any): object is azdata.CheckBoxComponent {
+			return 'checked' in object;
+		};
+
+		this.changedComponentValues.forEach(v => {
+			let param = this._parameters.find(p => p.parameterName === v);
+			if (instanceOfCheckBox(param!.valueComponent)) {
+				if (param!.originalValue === 'on') {
+					param!.valueComponent.checked = true;
+				} else {
+					param!.valueComponent.checked = false;
+				}
+			} else {
+				param!.valueComponent.value = param!.originalValue;
+			}
+		});
+	}
+
+	private refreshParametersTable(): void {
+		this._parameters = this.engineSettings.map(parameter => this.createParameterComponents(parameter));
+
+		this._parametersTable.data = this._parameters.map(p => {
+			if (p.information) {
+				// Container to hold input component and information bubble
+				const valueContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
+				valueContainer.addItem(p.valueComponent, { CSSStyles: { 'margin-right': '0px' } });
+				valueContainer.addItem(p.information, { CSSStyles: { 'margin-left': '5px' } });
+				return [p.parameterName, valueContainer, p.description, p.resetButton];
+			} else {
+				return [p.parameterName, p.valueComponent, p.description, p.resetButton];
+			}
+		});
+	}
+
+	private async handleServiceUpdated(): Promise<void> {
+		if (this._postgresModel.configLastUpdated && !this._postgresModel.engineSettingsLastUpdated) {
+			this.connectToServerButton!.enabled = true;
+			this.parametersTableLoading!.loading = false;
+		} else if (this._postgresModel.engineSettingsLastUpdated) {
+			await this.callGetEngineSettings();
+			this.discardButton.enabled = false;
+			this.saveButton.enabled = false;
+		}
 	}
 
 	protected abstract saveParameterEdits(engineSettings: string): Promise<void>;
@@ -535,17 +623,4 @@ export abstract class PostgresParametersPage extends DashboardPage {
 	protected abstract resetAllParameters(): Promise<void>;
 
 	protected abstract resetParameter(parameterName: string): Promise<void>;
-
-	protected abstract refreshParametersTable(): void;
-
-	protected async handleServiceUpdated(): Promise<void> {
-		if (this._postgresModel.configLastUpdated && !this._postgresModel.engineSettingsLastUpdated) {
-			this.connectToServerButton!.enabled = true;
-			this.parametersTableLoading!.loading = false;
-		} else if (this._postgresModel.engineSettingsLastUpdated) {
-			await this.callGetEngineSettings();
-			this.discardButton!.enabled = false;
-			this.saveButton!.enabled = false;
-		}
-	}
 }
