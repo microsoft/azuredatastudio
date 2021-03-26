@@ -362,6 +362,11 @@ export interface INotebookModel {
 	getMetaValue(key: string): any;
 
 	/**
+	 * Restart current active session if it exists
+	 */
+	restartSession(): Promise<void>;
+
+	/**
 	 * Change the current kernel from the Kernel dropdown
 	 * @param displayName kernel name (as displayed in Kernel dropdown)
 	 */
@@ -387,7 +392,6 @@ export interface INotebookModel {
 	 */
 	moveCell(cellModel: ICellModel, direction: MoveDirection): void;
 
-
 	/**
 	 * Deletes a cell
 	 */
@@ -402,7 +406,6 @@ export interface INotebookModel {
 	 * Notifies the notebook of a change in the cell
 	 */
 	onCellChange(cell: ICellModel, change: NotebookChangeType): void;
-
 
 	/**
 	 * Push edit operations, basically editing the model. This is the preferred way of

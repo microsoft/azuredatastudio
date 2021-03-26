@@ -26,6 +26,20 @@ export async function getSubscriptions(account: azdata.Account): Promise<Subscri
 	return subscriptions.subscriptions;
 }
 
+export async function getLocations(account: azdata.Account, subscription: Subscription): Promise<azureResource.AzureLocation[]> {
+	const api = await getAzureCoreAPI();
+	const response = await api.getLocations(account, subscription, true);
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.toString());
+	}
+	sortResourceArrayByName(response.locations);
+	const supportedLocations = ['eastus2', 'eastus2euap'];
+	const filteredLocations = response.locations.filter(loc => {
+		return supportedLocations.includes(loc.name);
+	});
+	return filteredLocations;
+}
+
 export type AzureProduct = azureResource.AzureGraphResource;
 
 export async function getResourceGroups(account: azdata.Account, subscription: Subscription): Promise<azureResource.AzureResourceResourceGroup[]> {
@@ -50,10 +64,24 @@ export async function getAvailableSqlServers(account: azdata.Account, subscripti
 	return result.resources;
 }
 
-export type SqlVMServer = AzureProduct;
-export async function getAvailableSqlVMs(account: azdata.Account, subscription: Subscription): Promise<SqlVMServer[]> {
+export type SqlVMServer = {
+	properties: {
+		virtualMachineResourceId: string,
+		provisioningState: string,
+		sqlImageOffer: string,
+		sqlManagement: string,
+		sqlImageSku: string
+	},
+	location: string,
+	id: string,
+	name: string,
+	type: string,
+	tenantId: string,
+	subscriptionId: string
+};
+export async function getAvailableSqlVMs(account: azdata.Account, subscription: Subscription, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<SqlVMServer[]> {
 	const api = await getAzureCoreAPI();
-	const path = `/subscriptions/${subscription.id}/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines?api-version=2017-03-01-preview`;
+	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroup.name}/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines?api-version=2017-03-01-preview`;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
@@ -331,6 +359,7 @@ export interface StartDatabaseMigrationRequest {
 			},
 		},
 		sourceSqlConnection: {
+			authentication: string,
 			dataSource: string,
 			username: string,
 			password: string

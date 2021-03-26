@@ -6,6 +6,7 @@
 import * as types from 'vs/base/common/types';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { ResultSetSubset } from 'sql/workbench/services/query/common/query';
+import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 
 export interface IGridDataProvider {
 
@@ -19,11 +20,10 @@ export interface IGridDataProvider {
 	/**
 	 * Sends a copy request to copy data to the clipboard
 	 * @param selection The selection range to copy
-	 * @param batchId The batch id of the result to copy from
-	 * @param resultId The result id of the result to copy from
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
+	 * @param tableView [Optional]: The data view associated with the table component
 	 */
-	copyResults(selection: Slick.Range[], includeHeaders?: boolean): Promise<void>;
+	copyResults(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void>;
 
 	/**
 	 * Gets the EOL terminator to use for this data type.
@@ -42,7 +42,7 @@ export interface IGridDataProvider {
 
 }
 
-export async function getResultsString(provider: IGridDataProvider, selection: Slick.Range[], includeHeaders?: boolean): Promise<string> {
+export async function getResultsString(provider: IGridDataProvider, selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<string> {
 	let headers: Map<number, string> = new Map(); // Maps a column index -> header
 	let rows: Map<number, Map<number, string>> = new Map(); // Maps row index -> column index -> actual row value
 	const eol = provider.getEolString();
@@ -52,8 +52,14 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 		return async (): Promise<void> => {
 			let startCol = range.fromCell;
 			let startRow = range.fromRow;
-
-			const result = await provider.getRowData(range.fromRow, range.toRow - range.fromRow + 1);
+			let result;
+			if (tableView && tableView.isDataInMemory) {
+				// If the data is sorted/filtered in memory, we need to get the data that is currently being displayed
+				const tableData = await tableView.getRangeAsync(range.fromRow, range.toRow - range.fromRow + 1);
+				result = tableData.map(item => Object.keys(item).map(key => item[key]));
+			} else {
+				result = (await provider.getRowData(range.fromRow, range.toRow - range.fromRow + 1)).rows;
+			}
 			// If there was a previous selection separate it with a line break. Currently
 			// when there are multiple selections they are never on the same line
 			let columnHeaders = provider.getColumnHeaders(range);
@@ -65,8 +71,8 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 				}
 			}
 			// Iterate over the rows to paste into the copy string
-			for (let rowIndex: number = 0; rowIndex < result.rows.length; rowIndex++) {
-				let row = result.rows[rowIndex];
+			for (let rowIndex: number = 0; rowIndex < result.length; rowIndex++) {
+				let row = result[rowIndex];
 				let cellObjects = row.slice(range.fromCell, (range.toCell + 1));
 				// Remove newlines if requested
 				let cells = provider.shouldRemoveNewLines()

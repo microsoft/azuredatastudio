@@ -110,15 +110,10 @@ export class CopyResultAction extends Action {
 		super(id, label);
 	}
 
-	public run(context: IGridActionContext): Promise<boolean> {
-		if (this.accountForNumberColumn) {
-			context.gridDataProvider.copyResults(
-				mapForNumberColumn(context.selection),
-				this.copyHeader);
-		} else {
-			context.gridDataProvider.copyResults(context.selection, this.copyHeader);
-		}
-		return Promise.resolve(true);
+	public async run(context: IGridActionContext): Promise<boolean> {
+		const selection = this.accountForNumberColumn ? mapForNumberColumn(context.selection) : context.selection;
+		context.gridDataProvider.copyResults(selection, this.copyHeader, context.table.getData());
+		return true;
 	}
 }
 

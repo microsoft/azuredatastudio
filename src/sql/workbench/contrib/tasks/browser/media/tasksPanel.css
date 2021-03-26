@@ -7,22 +7,27 @@
 	padding: 10px 22px 0 22px;
 }
 
+.task-history .monaco-tree > .monaco-scrollable-element > .monaco-tree-wrapper {
+	overflow-x: auto !important;
+}
+
+.task-history .monaco-tree .monaco-tree-rows > .monaco-tree-row {
+	width: fit-content;
+}
+
 .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group {
 	line-height: 22px;
 	display: flex;
+	width: fit-content;
 }
 
 /* task label and description */
 .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .label {
-	text-overflow: ellipsis;
-	overflow: hidden;
 	font-weight: bold;
 }
 
 /* style for server name | database name */
 .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .description {
-	text-overflow: ellipsis;
-	overflow: hidden;
 	padding-left: 12px
 }
 

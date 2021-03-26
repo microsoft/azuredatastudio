@@ -5,6 +5,7 @@
 
 import { setup as setupQueryEditorTests, setupWeb as setupQueryEditorWebTests } from './areas/queryEditor/queryEditor.test';
 import { setup as setupNotebookTests } from './areas/notebook/notebook.test';
+import { setup as setupNotebookViewTests } from './areas/notebook/notebookView.test';
 import { ApplicationOptions } from '../../../automation';
 import * as yazl from 'yauzl';
 import * as fs from 'fs';
@@ -19,6 +20,7 @@ export function main(isWeb: boolean = false): void {
 		setupQueryEditorTests();
 	}
 	setupNotebookTests();
+	setupNotebookViewTests();
 }
 
 /* eslint-disable no-sync */

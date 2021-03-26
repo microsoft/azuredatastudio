@@ -147,6 +147,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 				: azureResourceUtils.getSubscriptions(appContext, account, ignoreErrors);
 		},
 		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<azurecore.GetResourceGroupsResult> { return azureResourceUtils.getResourceGroups(appContext, account, subscription, ignoreErrors); },
+		getLocations(account?: azdata.Account,
+			subscription?: azureResource.AzureResourceSubscription,
+			ignoreErrors?: boolean): Promise<azurecore.GetLocationsResult> {
+			return azureResourceUtils.getLocations(appContext, account, subscription, ignoreErrors);
+		},
 		provideResources(): azureResource.IAzureResourceProvider[] {
 			const arcFeaturedEnabled = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('enableArcFeatures');
 			const providers: azureResource.IAzureResourceProvider[] = [
