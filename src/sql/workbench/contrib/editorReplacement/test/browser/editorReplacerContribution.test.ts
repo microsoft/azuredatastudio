@@ -142,7 +142,7 @@ suite('Editor Replacer Contribution', () => {
 		const input2 = instantiationService.createInstance(FileEditorInput, URI.file('/test/file2.ipynb'), undefined, undefined, undefined, undefined, undefined);
 		const diffInput = instantiationService.createInstance(DiffEditorInput, undefined, undefined, input, input2, undefined);
 		const response = editorService.fireOpenEditor(diffInput, undefined, undefined as IEditorGroup, OpenEditorContext.NEW_EDITOR);
-		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this
+		const newinput = await response.override; // our test service returns this so we are fine to cast this
 		assert(newinput instanceof DiffNotebookInput);
 		contrib.dispose();
 	});
@@ -156,7 +156,7 @@ suite('Editor Replacer Contribution', () => {
 		const input2 = instantiationService.createInstance(FileEditorInput, URI.file('/test/file2.sql'), undefined, undefined, undefined, undefined, undefined);
 		const diffInput = instantiationService.createInstance(DiffEditorInput, undefined, undefined, input, input2, undefined);
 		const response = editorService.fireOpenEditor(diffInput, undefined, undefined as IEditorGroup, OpenEditorContext.NEW_EDITOR);
-		const newinput = <any>(await response.override) as EditorInput; // our test service returns this so we are fine to cast this
+		const newinput = await response.override;
 		assert(newinput instanceof DiffEditorInput);
 		contrib.dispose();
 	});

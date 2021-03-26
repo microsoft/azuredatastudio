@@ -19,7 +19,7 @@ export class DiffNotebookInput extends SideBySideEditorInput {
 	) {
 		let originalInput = instantiationService.createInstance(FileNotebookInput, diffInput.primary.getName(), diffInput.primary.resource, diffInput.originalInput as FileEditorInput);
 		let modifiedInput = instantiationService.createInstance(FileNotebookInput, diffInput.secondary.getName(), diffInput.secondary.resource, diffInput.modifiedInput as FileEditorInput);
-		super(title, diffInput?.getTitle(), modifiedInput, originalInput);
+		super(title, diffInput.getTitle(), modifiedInput, originalInput);
 		this.setupScrollListeners(originalInput, modifiedInput);
 	}
 
@@ -35,12 +35,12 @@ export class DiffNotebookInput extends SideBySideEditorInput {
 	private setupScrollListeners(originalInput: FileNotebookInput, modifiedInput: FileNotebookInput): void {
 		Promise.all([originalInput.containerResolved, modifiedInput.containerResolved]).then(() => {
 			originalInput.container.parentElement.parentElement.addEventListener('scroll', () => {
-				if (modifiedInput?.container) {
+				if (modifiedInput.container) {
 					modifiedInput.container.parentElement.parentElement.scroll({ top: originalInput.container.parentElement.parentElement.scrollTop });
 				}
 			});
 			modifiedInput.container.parentElement.parentElement.addEventListener('scroll', () => {
-				if (originalInput?.container) {
+				if (originalInput.container) {
 					originalInput.container.parentElement.parentElement.scroll({ top: modifiedInput.container.parentElement.parentElement.scrollTop });
 				}
 			});
