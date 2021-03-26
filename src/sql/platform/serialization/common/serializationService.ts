@@ -118,7 +118,7 @@ export class SerializationService implements ISerializationService {
 			let provider = this.providers[0].provider;
 			let index = 0;
 			let startRequestParams = this.createStartRequest(serializationRequest, index);
-			index = index + startRequestParams.rows.length;
+			index = index + startRequestParams.rows.length - 1;
 
 			let startResult = await provider.startSerialization(startRequestParams);
 
