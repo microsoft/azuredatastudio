@@ -33,7 +33,7 @@ export class TempTargetSelectionPage extends MigrationWizardPage {
 			if (e.selected) {
 				this.migrationStateModel._targetSubscription = this.migrationStateModel.getSubscription(e.index);
 				this.migrationStateModel._targetServerInstance = undefined!;
-				this.migrationStateModel._migrationController = undefined!;
+				this.migrationStateModel._sqlMigrationService = undefined!;
 				this.populateManagedInstanceDropdown();
 			}
 		});
@@ -48,7 +48,7 @@ export class TempTargetSelectionPage extends MigrationWizardPage {
 			}).component();
 		this._managedInstanceDropdown.onValueChanged((e) => {
 			if (e.selected) {
-				this.migrationStateModel._migrationControllers = undefined!;
+				this.migrationStateModel._sqlMigrationServices = undefined!;
 				this.migrationStateModel._targetServerInstance = this.migrationStateModel.getManagedInstance(e.index);
 			}
 		});
