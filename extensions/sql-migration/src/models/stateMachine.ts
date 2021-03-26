@@ -34,8 +34,9 @@ export enum State {
 }
 
 export enum MigrationTargetType {
-	SQLVM = 'sqlvm',
-	SQLMI = 'sqlmi'
+	SQLVM = 'AzureSqlVirtualMachine',
+	SQLMI = 'AzureSqlManagedInstance',
+	SQLDB = 'AzureSqlDatabase'
 }
 
 export enum MigrationSourceAuthenticationType {
@@ -177,7 +178,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		});
 
 		assessmentResults?.items.forEach((item) => {
-			if (item.appliesToMigrationTargetPlatform === 'AzureSqlManagedInstance') {
+			if (item.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) {
 				const dbIndex = serverDatabases.indexOf(item.databaseName);
 				if (dbIndex === -1) {
 					serverLevelAssessments.push(item);
