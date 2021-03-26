@@ -229,7 +229,7 @@
 						"path": "./translations/extensions/make.i18n.json"
 					},
 					{
-						"id": "vscode.markdown-basics",
+						"id": "vscode.markdown",
 						"path": "./translations/extensions/markdown-basics.i18n.json"
 					},
 					{
@@ -377,7 +377,7 @@
 						"path": "./translations/extensions/theme-red.i18n.json"
 					},
 					{
-						"id": "vscode.theme-seti",
+						"id": "vscode.vscode-theme-seti",
 						"path": "./translations/extensions/theme-seti.i18n.json"
 					},
 					{
