@@ -54,6 +54,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
+
 @Component({
 	selector: NOTEBOOK_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./notebook.component.html'))
@@ -68,7 +69,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	@ViewChildren(CellToolbarComponent) private cellToolbar: QueryList<CellToolbarComponent>;
 
 	@Input() _model: NotebookModel;
-	@Input() cellModel: ICellModel;
 
 	protected _actionBar: Taskbar;
 	protected isLoading: boolean;

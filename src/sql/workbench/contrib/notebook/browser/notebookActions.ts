@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-// eslint-disable-next-line code-import-patterns
-import * as path from 'path';
+import * as path from 'vs/base/common/path';
 
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
@@ -31,12 +30,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { URI } from 'vs/base/common/uri';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-// eslint-disable-next-line code-import-patterns
-import { ShowNotebook } from 'sql/workbench/api/utils';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -286,11 +279,7 @@ export class RunParametersAction extends TooltipFromLabelAction {
 		context: URI,
 		@IQuickInputService private quickInputService: IQuickInputService,
 		@INotebookService private _notebookService: INotebookService,
-		@IUntitledTextEditorService private _untitledEditorService: IUntitledTextEditorService,
-		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IEditorService private _editorService: IEditorService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
+		@INotificationService private notificationService: INotificationService,
 	) {
 		super(id, {
 			label: RunParametersAction.label,
@@ -310,49 +299,48 @@ export class RunParametersAction extends TooltipFromLabelAction {
 		let newParams: string = '';
 		let addParam: string;
 		let index = 0;
-		// test parameters
-		defaultParameters.set('x', '10');
-		defaultParameters.set('y', '20');
 
-		// Store new parameter values to map
-		for (let key of defaultParameters.keys()) {
-			let newParameterValue = await this.quickInputService.input({ prompt: key, placeHolder: defaultParameters.get(key) });
-			pick.set(key, newParameterValue);
-		}
-		if (pick.size > 0) {
-			// Format the new parameters to be append to URI
-			for (let key of pick.keys()) {
-				// The value of the key is not undefined
-				if (pick.get(key)) {
-					addParam = key + '=' + pick.get(key);
-					if (index === 0) {
-						newParams = newParams.concat(newParams, addParam);
-						index = index + 1;
-					} else {
-						// Parameters after the first will use the '&' denote another parameter value to be added
-						newParams = newParams + '&' + addParam;
+		// Store new parameter values to map based off defaultParameters
+		if (defaultParameters.size === 0) {
+			// If there is no parameter cell indicate to user to create one
+			this.notificationService.warn('Unable to Run with Parameters as there is no parameter cell. Create a paramter cell first. Learn more here: https://docs.microsoft.com/en-us/sql/azure-data-studio/notebooks/notebooks-parameterization?view=sql-server-ver15');
+		} else {
+			for (let key of defaultParameters.keys()) {
+				let newParameterValue = await this.quickInputService.input({ prompt: key, placeHolder: defaultParameters.get(key) });
+				pick.set(key, newParameterValue);
+			}
+			if (pick.size > 0) {
+				// Format the new parameters to be append to URI
+				for (let key of pick.keys()) {
+					// The value of the key is not undefined
+					if (pick.get(key)) {
+						addParam = key + '=' + pick.get(key);
+						if (index === 0) {
+							newParams = newParams.concat(newParams, addParam);
+							index = index + 1;
+						} else {
+							// Parameters after the first will use the '&' denote another parameter value to be added
+							newParams = newParams + '&' + addParam;
+						}
 					}
 				}
-			}
-			let filePath = context.path;
-			filePath = filePath + '?' + newParams;
+				let filePath = context.path;
+				filePath = filePath + '?' + newParams;
 
-			return this.openParameterizedNotebook(context, filePath);
+				return this.openParameterizedNotebook(context, filePath);
+			}
 		}
 	}
 
 
 	public async openParameterizedNotebook(uri: URI, filePath: string): Promise<void> {
-		// let contents = this.textFileService.read(uri);
 		const editor = this._notebookService.findNotebookEditor(uri);
 		let modelContents = editor.model.toJSON();
 		let parameterizedURI = URI.parse(filePath);
 		let basename = path.basename(parameterizedURI.fsPath);
 		let untitledUri = parameterizedURI.with({ authority: '', scheme: 'untitled', path: basename });
 		// Call Extensibility API for ShowNotebook
-		let showNotebook = new ShowNotebook(this._untitledEditorService, this._instantiationService,
-			this._editorService, this._capabilitiesService, this._editorGroupService);
-		showNotebook.showNotebookDocument(untitledUri, {
+		this._notebookService.showNotebookDocument(untitledUri, {
 			initialContent: modelContents,
 			preserveFocus: true
 		});

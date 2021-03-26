@@ -83,6 +83,16 @@
 	padding-left: 18px;
 	width: 16px;
 }
+
+.notebookEditor
+	.in-preview
+	.actions-container
+	.action-item
+	.codicon.icon-run-with-parameters:before {
+	padding-left: 20px;
+	width: 18px;
+}
+
 .notebookEditor .in-preview .actions-container .action-item:last-child {
 	margin-right: 14px;
 }
