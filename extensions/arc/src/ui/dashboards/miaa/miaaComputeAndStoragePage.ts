@@ -140,8 +140,11 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 							} finally {
 								session?.dispose();
 							}
-
-							await this._miaaModel.refresh();
+							try {
+								await this._miaaModel.refresh();
+							} catch (error) {
+								vscode.window.showErrorMessage(loc.refreshFailed(error));
+							}
 						}
 					);
 
