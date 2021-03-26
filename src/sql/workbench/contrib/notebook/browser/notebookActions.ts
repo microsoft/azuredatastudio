@@ -49,7 +49,7 @@ export class AddCellAction extends Action {
 	constructor(
 		id: string, label: string, cssClass: string,
 		@INotebookService private _notebookService: INotebookService,
-		@IAdsTelemetryService private _telemetryService?: IAdsTelemetryService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 		super(id, label, cssClass);
 	}
@@ -71,7 +71,7 @@ export class AddCellAction extends Action {
 			const index = editor.cells?.findIndex(cell => cell.active) ?? 0;
 			editor.addCell(this.cellType, index);
 		}
-		this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.AddCell)
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.AddCell)
 			.withAdditionalProperties({ cell_type: this.cellType })
 			.send();
 	}
@@ -220,13 +220,13 @@ export class RunAllCellsAction extends Action {
 		id: string, label: string, cssClass: string,
 		@INotificationService private notificationService: INotificationService,
 		@INotebookService private _notebookService: INotebookService,
-		@IAdsTelemetryService private _telemetryService?: IAdsTelemetryService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 		super(id, label, cssClass);
 	}
 	public async run(context: URI): Promise<boolean> {
 		try {
-			this._telemetryService?.sendActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunAll);
+			this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunAll);
 			const editor = this._notebookService.findNotebookEditor(context);
 			await editor.runAllCells();
 			return true;
@@ -288,7 +288,7 @@ const kernelDropdownElementId = 'kernel-dropdown';
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	private _showAllKernels: boolean = false;
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService, @IAdsTelemetryService private _telemetryService?: IAdsTelemetryService,
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService, @IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel, id: kernelDropdownElementId } as ISelectBoxOptionsWithLabel);
 
@@ -355,7 +355,7 @@ export class KernelsDropdown extends SelectBox {
 	}
 
 	public doChangeKernel(displayName: string): void {
-		this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.ChangeKernel)
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.ChangeKernel)
 			.withAdditionalProperties({ kernel: displayName })
 			.send();
 		this.setOptions([msgChanging], 0);
@@ -562,14 +562,15 @@ export class NewNotebookAction extends Action {
 		label: string,
 		@ICommandService private commandService: ICommandService,
 		@IObjectExplorerService private objectExplorerService: IObjectExplorerService,
-		@IAdsTelemetryService private _telemetryService?: IAdsTelemetryService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 		super(id, label);
 		this.class = 'notebook-action new-notebook';
 	}
 
 	async run(context?: azdata.ObjectExplorerContext): Promise<void> {
-		this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.NewNotebookFromConnections)
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.NewNotebookFromConnections)
+			.withConnectionInfo(context?.connectionProfile)
 			.send();
 		let connProfile: azdata.IConnectionProfile;
 		if (context && context.nodeInfo) {
