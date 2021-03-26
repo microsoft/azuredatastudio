@@ -161,6 +161,9 @@ class ExtHostNotebookStub implements ExtHostNotebookShape {
 	$shutdownSession(managerHandle: number, sessionId: string): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
+	$shutdownAll(managerHandle: number): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
 	$changeKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<INotebookKernelDetails> {
 		throw new Error('Method not implemented.');
 	}
@@ -189,6 +192,9 @@ class ExtHostNotebookStub implements ExtHostNotebookShape {
 		throw new Error('Method not implemented.');
 	}
 	$disposeFuture(futureId: number): void {
+		throw new Error('Method not implemented.');
+	}
+	$dispose(): void {
 		throw new Error('Method not implemented.');
 	}
 }
