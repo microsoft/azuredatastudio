@@ -8,7 +8,7 @@ import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
-import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, Location, getResourceGroups } from '../api/azure';
+import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups } from '../api/azure';
 import { SKURecommendations } from './externalContract';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
@@ -101,8 +101,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _subscriptions!: azureResource.AzureResourceSubscription[];
 
 	public _targetSubscription!: azureResource.AzureResourceSubscription;
-	public _locations!: Location[];
-	public _location!: Location;
+	public _locations!: azureResource.AzureLocation[];
+	public _location!: azureResource.AzureLocation;
 	public _resourceGroups!: azureResource.AzureResourceResourceGroup[];
 	public _resourceGroup!: azureResource.AzureResourceResourceGroup;
 	public _targetManagedInstances!: SqlManagedInstance[];
@@ -352,7 +352,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return locationValues;
 	}
 
-	public getLocation(index: number): Location {
+	public getLocation(index: number): azureResource.AzureLocation {
 		return this._locations[index];
 	}
 
@@ -393,7 +393,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 
-	public async getManagedInstanceValues(subscription: azureResource.AzureResourceSubscription, location: Location, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
+	public async getManagedInstanceValues(subscription: azureResource.AzureResourceSubscription, location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
 		let managedInstanceValues: azdata.CategoryValue[] = [];
 		try {
 			this._targetManagedInstances = (await getAvailableManagedInstanceProducts(this._azureAccount, subscription)).filter((mi) => {
@@ -433,7 +433,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._targetManagedInstances[index];
 	}
 
-	public async getSqlVirtualMachineValues(subscription: azureResource.AzureResourceSubscription, location: Location, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
+	public async getSqlVirtualMachineValues(subscription: azureResource.AzureResourceSubscription, location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
 		let virtualMachineValues: azdata.CategoryValue[] = [];
 		try {
 			this._targetSqlVirtualMachines = (await getAvailableSqlVMs(this._azureAccount, subscription, resourceGroup)).filter((virtualMachine) => {

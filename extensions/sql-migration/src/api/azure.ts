@@ -26,22 +26,15 @@ export async function getSubscriptions(account: azdata.Account): Promise<Subscri
 	return subscriptions.subscriptions;
 }
 
-export interface Location {
-	displayName: string,
-	name: string,
-	regionalDisplayName: string,
-}
-
-export async function getLocations(account: azdata.Account, subscription: Subscription): Promise<Location[]> {
+export async function getLocations(account: azdata.Account, subscription: Subscription): Promise<azureResource.AzureLocation[]> {
 	const api = await getAzureCoreAPI();
-	const path = `/subscriptions/${subscription.id}/locations?api-version=2020-01-01`;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
+	const response = await api.getLocations(account, subscription, true);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
-	sortResourceArrayByName(response.response.data.value);
+	sortResourceArrayByName(response.locations);
 	const supportedLocations = ['eastus2', 'eastus2euap'];
-	const filteredLocations = (<Location[]>response.response.data.value).filter(loc => {
+	const filteredLocations = response.locations.filter(loc => {
 		return supportedLocations.includes(loc.name);
 	});
 	return filteredLocations;
