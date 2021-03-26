@@ -62,7 +62,7 @@ export class SqlDatabaseTree {
 
 		component.addItem(this.createSearchComponent(view), { flex: '0 0 auto' });
 		component.addItem(this.createInstanceComponent(view), { flex: '0 0 auto' });
-		component.addItem(this.createDatabaseComponent(view, dbs), { flex: '1 1 auto' });
+		component.addItem(this.createDatabaseComponent(view, dbs), { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'auto' } });
 		return component;
 	}
 
@@ -193,12 +193,13 @@ export class SqlDatabaseTree {
 		}).withProps({
 			CSSStyles: {
 				'margin-left': '10px',
-				'margin-right': '15px'
+				'margin-right': '15px',
+				'overflow-y': 'hidden'
 			}
 		}).component();
 
 		container.addItem(topContainer, { flex: '0 0 auto' });
-		container.addItem(bottomContainer, { flex: '1 1 auto' });
+		container.addItem(bottomContainer, { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'hidden' } });
 
 		return container;
 	}
@@ -231,8 +232,8 @@ export class SqlDatabaseTree {
 			}
 		}).component();
 
-		container.addItem(impactedObjects, { flex: '0 0 auto', CSSStyles: { 'border-right': 'solid 1px' } });
-		container.addItem(rightContainer, { flex: '1 1 auto' });
+		container.addItem(impactedObjects, { flex: '0 0 auto', CSSStyles: { 'border-right': 'solid 1px', 'overflow-y': 'auto' } });
+		container.addItem(rightContainer, { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'auto' } });
 		return container;
 	}
 
