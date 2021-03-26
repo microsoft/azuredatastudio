@@ -315,8 +315,6 @@ declare module 'azdata' {
 		linkCodiconStyles?: CssStyles;
 	}
 
-	export type CssStyles = { [key: string]: string | number };
-
 	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
 		cards: RadioCard[];
 		cardWidth: string;
