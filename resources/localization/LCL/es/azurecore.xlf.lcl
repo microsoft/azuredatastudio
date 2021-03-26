@@ -198,6 +198,9 @@
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.accessTokenEmpty" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No access token returned from Microsoft OAuth]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se ha devuelto ningún token de acceso desde Microsoft OAuth.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -258,12 +261,18 @@
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.noBaseToken" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Something failed with the authentication, or your tokens have been deleted from the system. Please try adding your account to Azure Data Studio again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ha habido algún error problema con la autenticación, o bien los tokens se han eliminado del sistema. Pruebe a volver a agregar la cuenta de Azure Data Studio.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.noUniqueIdentifier" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The user had no unique identifier within AAD]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[El usuario no tenía ningún identificador único en AAD.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -306,6 +315,9 @@
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.consentDialog.body" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[El inquilino "{0} ({1})" requiere que vuelva a autenticarse para acceder a {2} recursos. Presione Abrir para iniciar el proceso de autenticación.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -348,6 +360,9 @@
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuthCodeGrant.azure.serverCouldNotStart" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server could not start. This could be a permissions error or an incompatibility on your system. You can try enabling device code authentication from settings.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se puede iniciar el servidor. Puede tratarse de un error de permisos o una incompatibilidad en el sistema. Puede intentar habilitar la autenticación del dispositivo mediante código en la configuración.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -408,12 +423,18 @@
       <Item ItemId=";extensions/azurecore/dist/account-provider/azureAccountProvider.azure.NoAuthMethod.Available" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Azure auth method available. You must enable the auth methods in ADS configuration.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No hay ningún método de autenticación de Azure disponible. Debe habilitar los métodos de autenticación en la configuración de ADS.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/azureAccountProvider.azure.NoAuthMethod.Selected" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Azure auth method selected. You must select what method of authentication you want to use.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se ha seleccionado ningún método de autenticación de Azure. Debe seleccionar el método de autenticación que quiera usar.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -492,24 +513,36 @@
       <Item ItemId=";extensions/azurecore/dist/azureResource/commands.azure.accountNotSelectedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You must select an Azure account for this feature to work.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Debe seleccionar una cuenta de Azure para que esta característica funcione.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/commands.azure.cloudTerminalPreview" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You must enable preview features in order to use Azure Cloud Shell.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Debe habilitar las características en versión preliminar para usar Azure Cloud Shell.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/commands.azure.mustPickTenant" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You must select a tenant for this feature to work.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Debe seleccionar un inquilino para que esta característica funcione.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/commands.azure.noAccountError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You are not currently signed into any Azure accounts, Please sign in and then try again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Actualmente no tiene la sesión iniciada en ninguna cuenta de Azure. Inicie sesión y vuelva a intentarlo.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -597,6 +630,9 @@
       <Item ItemId=";extensions/azurecore/dist/azureResource/services/terminalService.azure.coudTerminal.neverUsed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[If you have not launched Azure Cloud Shell from this account before, please visit https://shell.azure.com/ to get started. Once you are set up, you can use AzureCloud Shell directly in Azure Data Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Si no ha iniciado Azure Cloud Shell en esta cuenta antes, visite https://shell.azure.com/ para empezar. Una vez realizada la configuración, podrá usar Azure Cloud Shell directamente en Azure Data Studio.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -621,6 +657,9 @@
       <Item ItemId=";extensions/azurecore/dist/azureResource/services/terminalService.azure.shellTypeRequired" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You must pick a shell type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Debe elegir un tipo de shell.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1428,6 +1467,9 @@
       <Item ItemId=";extensions/azurecore/package.azure.tenant.config.filter.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Lista de id. de inquilino para ignorar al realizar una consultar relativa a recursos de Azure. Cada elemento es un id. de inquilino.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1515,6 +1557,9 @@
       <Item ItemId=";extensions/azurecore/package.config.enableUsNatCloudDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Should US National Azure cloud integration be enabled]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Indica si se debe habilitar la integración de la nube de Azure nacional de EE. UU.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1530,6 +1575,9 @@
       <Item ItemId=";extensions/azurecore/package.config.piiLogging" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Should Personally Identifiable Information (PII) be logged in the console view locally]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Indica si se debe registrar la información de identificación personal (PII) en la vista de la consola de forma local.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
