@@ -220,7 +220,7 @@ export class BookModel {
 	public set bookItems(bookItems: BookTreeItem[]) {
 		bookItems.forEach(b => {
 			// only add unique notebooks
-			if (this._bookItems.indexOf(b) === -1) {
+			if (!this._bookItems.includes(b)) {
 				this._bookItems.push(b);
 			}
 		});
