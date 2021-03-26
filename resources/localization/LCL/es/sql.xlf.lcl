@@ -422,12 +422,18 @@
         <Item ItemId=";(...) .tabGroup.id" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Unique identifier for this tab group.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Identificador único para este grupo de pestañas.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) .tabGroup.title" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Title of the tab group.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Título del grupo de pestañas.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -494,6 +500,9 @@
         <Item ItemId=";(...) Error" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[No title specified for tab group.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[No se ha especificado ningún título para el grupo de pestañas.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -503,6 +512,9 @@
         <Item ItemId=";(...) d.tab.icon" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[(Optional) Icon which is used to represent this tab in the UI. Either a file path or a themeable configuration]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[(Opcional) Icono que se utiliza para representar esta pestaña en la interfaz de usuario; puede ser una ruta de acceso al archivo o una configuración con temas.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -659,6 +671,9 @@
         <Item ItemId=";(...) tedMessage" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Loading {0} completed]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Carga de {0} completada]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -869,6 +884,9 @@
         <Item ItemId=";(...) ted" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Loading properties completed]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[La carga de las propiedades se ha completado.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -932,6 +950,9 @@
         <Item ItemId=";(...) ew.resource.id" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Identifier of the resource.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Identificador del recurso.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -947,6 +968,9 @@
         <Item ItemId=";(...) ewResources" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Contributes resource to the resource view]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Aporta recursos a la vista de recursos.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -966,7 +990,7 @@
           <Str Cat="Text">
             <Val><![CDATA[Error adding account]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Error al agregar cuenta]]></Val>
+              <Val><![CDATA[Error al agregar la cuenta]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -985,7 +1009,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Loading]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cargando]]></Val>
+            <Val><![CDATA[Carga en curso]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1102,7 +1126,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Loading]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cargando]]></Val>
+            <Val><![CDATA[Carga en curso]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1320,36 +1344,54 @@
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.calloutDialogBodyBackground" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Callout dialog body background.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fondo del cuerpo del cuadro de diálogo de llamada.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.calloutDialogExteriorBorder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Callout dialog exterior borders to provide contrast against notebook UI.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Bordes exteriores del cuadro de diálogo de llamada que se usan para proporcionar contraste con la interfaz de usuario del cuaderno.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.calloutDialogForeground" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Callout dialog foreground.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Primer plano del cuadro de diálogo de llamada.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.calloutDialogHeaderFooterBackground" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Callout dialog header and footer background.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fondo del encabezado y pie del cuadro de diálogo de llamada.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.calloutDialogInteriorBorder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Callout dialog interior borders used for separating elements.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Bordes interiores del cuadro de diálogo de llamada que se usan para separar elementos.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.calloutDialogShadowColor" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Callout dialog box shadow color.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Color de sombra del cuadro de diálogo de llamada.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1392,48 +1434,72 @@
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.infoBox.errorBackground" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[InfoBox: The background color when the notification type is error.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cuadro de información: color de fondo cuando la notificación es sobre algún error.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.infoBox.infomationBackground" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[InfoBox: The background color when the notification type is information.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cuadro de información: color de fondo cuando la notificación es informativa.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.infoBox.successBackground" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[InfoBox: The background color when the notification type is success.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cuadro de información: color de fondo cuando la notificación es sobre algo correcto.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.infoBox.warningBackground" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[InfoBox: The background color when the notification type is warning.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cuadro de información: color de fondo cuando la notificación es sobre alguna advertencia.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.infoButton.background" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Info button background color.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Color de fondo del botón de información.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.infoButton.border" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Info button border color.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Color de borde del botón de información.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.infoButton.foreground" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Info button foreground color.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Color de primer plano del botón de información.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.infoButton.hoverBackground" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Info button hover background color.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Color de fondo al mantener el puntero en el botón de información.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1500,12 +1566,18 @@
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.notebook.notebookCellTagBackground" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Tag background color.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Color de fondo de las etiquetas.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.notebook.notebookCellTagForeground" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Tag foreground color.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Color de primer plano de las etiquetas.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1689,6 +1761,9 @@
       <Item ItemId=";src/sql/platform/theme/common/colors.tableCellOutline" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Color of the outline of a cell.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Color del contorno de una celda.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1776,6 +1851,9 @@
       <Item ItemId=";src/sql/workbench/api/common/extHostModelViewDialog.dashboardNotInitialized" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Tabs are not initialized]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Las pestañas no se han inicializado.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1899,6 +1977,9 @@
       <Item ItemId=";src/sql/workbench/browser/actions.clearSavedAccounts" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Clear all saved accounts]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Borrar todas las cuentas guardadas]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1906,7 +1987,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Learn More]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Obtener más información]]></Val>
+            <Val><![CDATA[Más información]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2031,12 +2112,18 @@
       <Item ItemId=";src/sql/workbench/browser/editor/resourceViewer/resourceViewerInput.resourceViewer.showActions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Show Actions]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Mostrar acciones]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/browser/editor/resourceViewer/resourceViewerInput.resourceViewerInput.resourceViewer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Resource Viewer]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Visor de recursos]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2169,6 +2256,9 @@
       <Item ItemId=";src/sql/workbench/browser/modelComponents/declarativeTable.component.checkAllColumnLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[check all checkboxes in column: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Marque todas las casillas de la columna: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2185,7 +2275,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Loading]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cargando]]></Val>
+            <Val><![CDATA[Carga en curso]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2445,24 +2535,36 @@
       <Item ItemId=";src/sql/workbench/contrib/assessment/browser/asmtActions.asmtaction.database.getitems" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[View applicable rules for {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ver reglas aplicables para {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/assessment/browser/asmtActions.asmtaction.database.invokeitems" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invoke Assessment for {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Invocar evaluación para {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/assessment/browser/asmtActions.asmtaction.exportasscript" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Export As Script]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Exportar como script]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/assessment/browser/asmtActions.asmtaction.generatehtmlreport" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create HTML Report]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Crear informe en HTML]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2487,24 +2589,36 @@
       <Item ItemId=";src/sql/workbench/contrib/assessment/browser/asmtActions.asmtaction.openReport" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Report has been saved. Do you want to open it?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[El informe se ha guardado. ¿Quiere abrirlo?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/assessment/browser/asmtActions.asmtaction.server.getitems" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[View applicable rules]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ver reglas aplicables]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/assessment/browser/asmtActions.asmtaction.server.invokeitems" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invoke Assessment]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Invocar evaluación]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/assessment/browser/asmtActions.asmtaction.showsamples" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[View all rules and learn more on GitHub]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ver todas las reglas y obtener más información en GitHub]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2517,12 +2631,18 @@
       <Item ItemId=";src/sql/workbench/contrib/assessment/browser/asmtResultsView.component.asmt.TargetDatabaseComplient" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database {0} is totally compliant with the best practices. Good job!]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La base de datos {0} es totalmente conforme con los procedimientos recomendados. ¡Buen trabajo!]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/assessment/browser/asmtResultsView.component.asmt.TargetInstanceComplient" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Instance {0} is totally compliant with the best practices. Good job!]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La instancia de {0} es totalmente conforme con los procedimientos recomendados. ¡Buen trabajo!]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2556,6 +2676,9 @@
       <Item ItemId=";src/sql/workbench/contrib/assessment/common/strings.asmt.apiversion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[API Version:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Versión de API:]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2599,7 +2722,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Instance Name:]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nombre de instancia:]]></Val>
+            <Val><![CDATA[Nombre de la instancia:]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2608,7 +2731,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Learn More]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Obtener más información]]></Val>
+            <Val><![CDATA[Más información]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2616,24 +2739,36 @@
       <Item ItemId=";src/sql/workbench/contrib/assessment/common/strings.asmt.osversion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[OS Version:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Versión del sistema operativo:]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/assessment/common/strings.asmt.rulesetversion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Default Ruleset Version:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Versión predeterminada del conjunto de reglas:]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/assessment/common/strings.asmt.section.api.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[API information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Información de API]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/assessment/common/strings.asmt.section.instance.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server Instance Details]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Detalles de la instancia de SQL Server]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2685,24 +2820,36 @@
       <Item ItemId=";src/sql/workbench/contrib/assessment/common/strings.asmt.sqlReport.resultForDatabase" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Results for database]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Resultados de la base de datos]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/assessment/common/strings.asmt.sqlReport.resultForInstance" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Results for server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Resultados del servidor]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/assessment/common/strings.asmt.sqlReport.severityMsg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0}: {1} item(s)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0}: {1} elemento(s)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/assessment/common/strings.asmt.sqlReportTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Assessment Report]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Informe de SQL Assessment]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3483,12 +3630,18 @@
       <Item ItemId=";src/sql/workbench/contrib/charts/browser/chartView.charting.failedToGetRows" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to get rows for the dataset to chart.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se pudieron obtener las filas para el conjunto de datos en el gráfico.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/charts/browser/chartView.charting.unsupportedType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Chart type '{0}' is not supported.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se admite el tipo de gráfico "{0}".]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3684,20 +3837,26 @@
       <Item ItemId=";src/sql/workbench/contrib/configuration/common/configurationUpgrader.workbench.configuration.upgradeUser" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} was replaced with {1} in your user settings.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} se ha reemplazado por {1} en la configuración de usuario.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/configuration/common/configurationUpgrader.workbench.configuration.upgradeWorkspace" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} was replaced with {1} in your workspace settings.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} se ha reemplazado por {1} en la configuración del área de trabajo.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/connection/browser/connection.contribution.sql.defaultEngineDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Motor SQL predeterminado para usar. Esto impulsa el proveedor de idioma predeterminado en archivos .sql y el predeterminado para usar al crear una nueva conexión. La opción válida es actualmente MSSQL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Motor de SQL predeterminado para usar. Esto indica el proveedor de lenguaje predeterminado en los archivos .sql y los valores por defecto que se usarán al crear una nueva conexión.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection. Valid option is currently MSSQL]]></Val>
@@ -3774,6 +3933,9 @@
       <Item ItemId=";src/sql/workbench/contrib/connection/common/connectionTreeProviderExentionPoint.connectionTreeProvider.schema.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User visible name for the tree provider]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nombre de usuario visible para el proveedor de árbol]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3807,8 +3969,8 @@
       <Item ItemId=";src/sql/workbench/contrib/dashboard/browser/core/actions.collapseWidget" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Collapse Widget]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Contraer]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Contraer widget]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Collapse]]></Val>
@@ -3846,8 +4008,8 @@
       <Item ItemId=";src/sql/workbench/contrib/dashboard/browser/core/actions.expandWidget" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Expand Widget]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Expandir]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Expandir widget]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Expand]]></Val>
@@ -3867,8 +4029,8 @@
       <Item ItemId=";src/sql/workbench/contrib/dashboard/browser/core/actions.toggleMore" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Show Actions]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Alternar más]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Mostrar acciones]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Toggle More]]></Val>
@@ -3933,6 +4095,9 @@
       <Item ItemId=";src/sql/workbench/contrib/dashboard/browser/core/dashboardTab.contribution.azdata.extension.contributes.tabGroups" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Contributes a single or multiple tab groups for users to add to their dashboard.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aporta uno o varios grupos de pestañas que los usuarios pueden agregar a su panel.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3957,6 +4122,9 @@
       <Item ItemId=";src/sql/workbench/contrib/dashboard/browser/core/dashboardTab.contribution.databasesTabDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[databases tab]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[pestaña de bases de datos]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4327,7 +4495,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Search]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Buscar]]></Val>
+            <Val><![CDATA[Búsqueda]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4420,7 +4588,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Search]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Buscar]]></Val>
+            <Val><![CDATA[Búsqueda]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4455,12 +4623,18 @@
       <Item ItemId=";src/sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTable.dashboard.explorer.actions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Show Actions]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Mostrar acciones]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTable.explorerSearchMatchResultMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Filtered search list to {0} items]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La lista de la búsqueda se ha filtrado en {0} elementos.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4476,6 +4650,9 @@
       <Item ItemId=";src/sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTable.explorerSearchSingleMatchResultMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Filtered search list to 1 item]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La lista de la búsqueda se ha filtrado en un elemento.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4491,32 +4668,44 @@
       <Item ItemId=";src/sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerWidget.component.loadingDatabases" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[loading databases]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Carga de las bases de datos en curso]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerWidget.component.loadingDatabasesCompleted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[loading databases completed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La carga de las bases de datos se ha completado.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerWidget.component.loadingObjects" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[loading objects]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cargando de los objetos en curso]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerWidget.component.loadingObjectsCompleted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[loading objects completed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La carga de los objetos se ha completado.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerWidget.component.seachObjects" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Search by name of type (t:, v:, f:, or sp:)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Búsqueda por nombre de tipo (a:, t:, v:, f: o sp:)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Buscar por nombre de tipo (t:, v:, f: o sp:)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Search by name of type (a:, t:, v:, f:, or sp:)]]></Val>
@@ -4564,7 +4753,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Loading {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cargando {0}]]></Val>
+            <Val><![CDATA[Carga de {0} en curso]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4716,6 +4905,9 @@
       <Item ItemId=";src/sql/workbench/contrib/dashboard/browser/widgets/properties/propertiesWidget.component.loadingProperties" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Loading properties]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Carga de las propiedades en curso]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4920,6 +5112,9 @@
       <Item ItemId=";src/sql/workbench/contrib/editData/browser/editData.contribution.showEditDataSqlPaneOnStartup" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Show Edit Data SQL pane on startup]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Mostrar panel de edición de datos de SQL al iniciar]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5142,6 +5337,9 @@
       <Item ItemId=";src/sql/workbench/contrib/extensions/browser/extensionsActions.openExtensionAuthoringDocs" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Author an Extension...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Crear una extensión...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5157,12 +5355,18 @@
       <Item ItemId=";src/sql/workbench/contrib/extensions/browser/scenarioRecommendations.ExtensionsRecommended" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data Studio has extension recommendations.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio cuenta con extensiones recomendadas.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/extensions/browser/scenarioRecommendations.VisualizerExtensionsRecommended" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data Studio has extension recommendations for data visualization.]D;]A;Once installed, you can select the Visualizer icon to visualize your query results.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio cuenta con extensiones recomendadas para la visualización de datos.]D;]A;Una vez instaladas, podrá seleccionar el icono Visualizador para ver los resultados de las consultas.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5179,7 +5383,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Don't Show Again]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[No mostrar de nuevo]]></Val>
+            <Val><![CDATA[No volver a mostrar]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5202,6 +5406,9 @@
       <Item ItemId=";src/sql/workbench/contrib/extensions/browser/staticRecommendations.defaultRecommendations" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This extension is recommended by Azure Data Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio recomienda esta extensión.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5398,7 +5605,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Delete Proxy]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Eliminar Proxy]]></Val>
+            <Val><![CDATA[Eliminar proxy]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5506,7 +5713,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Edit Proxy]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Editar Proxy]]></Val>
+            <Val><![CDATA[Editar proxy]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5650,7 +5857,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Success]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Completado correctamente]]></Val>
+            <Val><![CDATA[Correcto]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5695,7 +5902,7 @@
         <Str Cat="Text">
           <Val><![CDATA[New Notebook Job]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nuevo trabajo de Notebook]]></Val>
+            <Val><![CDATA[Nuevo trabajo de cuaderno]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5704,7 +5911,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Open Latest Run]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Abrir la última ejecución]]></Val>
+            <Val><![CDATA[Abrir última ejecución]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5713,7 +5920,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Open Template Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Abrir Notebook de plantilla]]></Val>
+            <Val><![CDATA[Abrir cuaderno de plantilla]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6126,6 +6333,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/calloutDialog/common/constants.imageCallout.embedImageLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Attach image to notebook]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Adjuntar imagen al cuaderno]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6147,6 +6357,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/calloutDialog/common/constants.imageCallout.locationLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Image location]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ubicación de la imagen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6162,6 +6375,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/calloutDialog/common/constants.imageCallout.pathPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter image path]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Escriba la ruta de acceso de la imagen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6169,7 +6385,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Remote]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Acceso remoto]]></Val>
+            <Val><![CDATA[Remoto]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6186,6 +6402,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/calloutDialog/common/constants.imageCallout.urlPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter image URL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Escriba la dirección URL de la imagen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6201,6 +6420,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/calloutDialog/common/constants.linkCallout.linkAddressPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Link to an existing file or web page]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vincular a un archivo o página web existente]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6225,6 +6447,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellToolbarActions.RemoveParameterCell" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remove parameter cell]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Quitar celda de parámetro]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6249,12 +6474,18 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellToolbarActions.codeAbove" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Insert Code Above]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Insertar código arriba]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellToolbarActions.codeBelow" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Insert Code Below]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Insertar código abajo]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6270,6 +6501,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellToolbarActions.convertCell" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Convert Cell]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Convertir celda]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6294,18 +6528,27 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellToolbarActions.makeParameterCell" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Make parameter cell]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Crear celda de parámetro]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellToolbarActions.markdownAbove" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Insert Text Above]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Insertar texto arriba]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellToolbarActions.markdownBelow" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Insert Text Below]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Insertar texto abajo]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6321,18 +6564,27 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellToolbarActions.runAllAbove" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Run Cells Above]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ejecutar celdas de arriba]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellToolbarActions.runAllBelow" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Run Cells Below]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ejecutar celdas de abajo]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component.buttonAdd" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add cell]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Agregar celda]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6366,6 +6618,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component.codeCellsPreview" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add cell]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Agregar celda]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6390,12 +6645,18 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component.optionTextCell" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Text cell]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Celda de texto]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component.textPreview" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Text cell]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Celda de texto]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6447,12 +6708,18 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/collapse.component.collapseCellContents" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Collapse code cell contents]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Contraer contenido de la celda de código]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/collapse.component.expandCellContents" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Expand code cell contents]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Expandir contenido de la celda de código]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6531,6 +6798,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component.buttonPreview" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Markdown preview toggle - off]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Alternancia de la vista previa de Markdown: desactivada]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6547,7 +6817,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Insert image]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Insertar imagen]]></Val>
+            <Val><![CDATA[Inserción de una imagen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6556,7 +6826,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Insert link]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Insertar vínculo]]></Val>
+            <Val><![CDATA[Inserción de un vínculo]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6565,7 +6835,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Heading]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Título]]></Val>
+            <Val><![CDATA[Encabezado]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6573,6 +6843,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component.markdownViewButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Markdown View]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vista de Markdown]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6580,7 +6853,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Heading 1]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Título 1]]></Val>
+            <Val><![CDATA[Encabezado 1]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6589,7 +6862,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Heading 2]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Título 2]]></Val>
+            <Val><![CDATA[Encabezado 2]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6598,7 +6871,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Heading 3]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Título 3]]></Val>
+            <Val><![CDATA[Encabezado 3]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6615,6 +6888,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component.richTextViewButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Rich Text View]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vista de texto enriquecido]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6622,7 +6898,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Split View]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Vista en dos paneles]]></Val>
+            <Val><![CDATA[Vista En dos paneles]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6720,14 +6996,17 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/textCell.component.addContent" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[<i>Add content here...</i>]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[<i>Agregue contenido aquí...</i>]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/textCell.component.doubleClickEdit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[<i>Double-click to edit</i>]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Haga doble clic para editar]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[<i>Haga doble clic para editar.</i>]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Double-click to edit]]></Val>
@@ -6864,6 +7143,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.component.codeCellsPreview" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add cell]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Agregar celda]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -6942,6 +7224,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.component.textPreview" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Text cell]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Celda de texto]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7020,36 +7305,54 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.allowADSCommands" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Allow notebooks to run Azure Data Studio commands.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Permita a los cuadernos ejecutar comandos de Azure Data Studio.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.enableDoubleClickEdit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable double click to edit for text cells in notebooks]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Habilitar doble clic para editar las celdas de texto en los cuadernos]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.markdownPreviewLineHeight" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls the line height used in the notebook markdown preview. This number is relative to the font size.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controla la altura de línea utilizada en la vista previa de Markdown del cuaderno. Este número es relativo al tamaño de la fuente.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.saveConnectionName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[(Preview) Save connection name in notebook metadata.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(Versión preliminar) Guarde el nombre de la conexión en los metadatos del cuaderno.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.setRichTextViewByDefault" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Set Rich Text View mode by default for text cells]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Establecer modo de vista texto enriquecido de forma predeterminada para las celdas de texto]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.showAllKernels" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[(Preview) show all kernels for the current notebook provider.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(Versión preliminar) Consulte todos los kernel del proveedor del cuaderno actual.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7075,7 +7378,7 @@
         <Str Cat="Text">
           <Val><![CDATA[View]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Vista]]></Val>
+            <Val><![CDATA[Ver]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7281,6 +7584,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.searchConfigurationTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Search Notebooks]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Búsqueda de cuadernos]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7386,14 +7692,17 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.workbench.action.setWorkspaceAndOpen" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Set Workspace And Open]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Establecer área de trabajo y abrir]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookActions.AttachTo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Attach to ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Adjuntar a: ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Adjuntar a ]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Attach To: ]]></Val>
@@ -7404,8 +7713,8 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookActions.Kernel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Kernel ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Kernel: ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Kernel ]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Kernel: ]]></Val>
@@ -7516,7 +7825,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Find Next String]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Buscar la cadena siguiente]]></Val>
+            <Val><![CDATA[Buscar cadena siguiente]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7525,7 +7834,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Find Previous String]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Buscar la cadena anterior]]></Val>
+            <Val><![CDATA[Buscar cadena anterior]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7561,7 +7870,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Notebooks]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Notebooks]]></Val>
+            <Val><![CDATA[Cuadernos]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7587,6 +7896,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet.showNotebookExplorer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Show Notebooks]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Mostrar cuadernos]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7639,7 +7951,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Cancel Search]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cancelar búsqueda]]></Val>
+            <Val><![CDATA[Cancele la búsqueda.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7683,6 +7995,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearch.openNotebookFolder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Notebooks]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Abrir cuaderno]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7699,7 +8014,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Search again]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Buscar de nuevo]]></Val>
+            <Val><![CDATA[Vuelva a realizar la búsqueda.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7716,6 +8031,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearch.searchInProgress" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Search in progress... - ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Búsqueda en curso... ]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7764,12 +8082,18 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component.notebook.showChart" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Show chart]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Mostrar gráfico]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component.notebook.showTable" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Show table]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Mostrar tabla]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7839,6 +8163,9 @@
       <Item ItemId=";src/sql/workbench/contrib/objectExplorer/common/serverGroup.contribution.serverTree.useAsyncServerTree" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(Versión preliminar) Use el nuevo árbol de servidores asincrónicos para la vista Servidores y el cuadro de diálogo Conexión, con compatibilidad con nuevas características como el filtrado de nodos dinámicos.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7891,7 +8218,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Query Editor]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Editor de consultas]]></Val>
+            <Val><![CDATA[Editor de Power Query]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7944,6 +8271,9 @@
       <Item ItemId=";src/sql/workbench/contrib/profiler/browser/profilerActions.profiler.clearDataPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to clear the data?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[¿Está seguro de que quiere borrar los datos?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7959,6 +8289,9 @@
       <Item ItemId=";src/sql/workbench/contrib/profiler/browser/profilerActions.profiler.clearFilterPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to clear the filters?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[¿Está seguro de que quiere borrar los filtros?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8448,8 +8781,8 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/flavorStatus.pickSqlProvider" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Language Provider]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Seleccione proveedor de lenguaje de SQL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Seleccionar proveedor de lenguaje]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Select SQL Language Provider]]></Val>
@@ -8487,6 +8820,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/keyboardQueryActions.ToggleFocusBetweenQueryEditorAndResultsAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Toggle Focus Between Query And Results]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Alternar enfoque entre consulta y resultados]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8502,6 +8838,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/keyboardQueryActions.copyQueryWithResultsKeyboardAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Copy Query With Results]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Copiar consulta con resultados]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8553,6 +8892,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/keyboardQueryActions.queryActions.queryResultsCopySuccess" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Successfully copied query and results.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La consulta y los resultados se han copiado correctamente.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8631,6 +8973,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/messagePanel.messagePanel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Message Panel]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Panel de mensajes]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8682,18 +9027,27 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.copyIncludeHeaders" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Configuration options for copying results from the Results View]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Opciones de configuración para copiar los resultados de la vista de resultados.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.copyRemoveNewLine" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Configuration options for copying multi-line results from the Results View]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Opciones de configuración para copiar los resultados de varias líneas de la vista de resultados.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.optimizedTable" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[(Experimental) Use a optimized table in the results out. Some functionality might be missing and in the works.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(Experimental) Use una tabla optimizada en los resultados. Es posible que falten algunas funciones porque todavía estén en desarrollo.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8706,6 +9060,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.saveAsCsv.encoding" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File encoding used when saving results as CSV]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Codificación de archivo empleada al guardar los resultados como CSV]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8718,18 +9075,27 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.saveAsCsv.lineSeperator" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Character(s) used for seperating rows when saving results as CSV]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Caracteres que se usan para separar las filas al guardar los resultados como CSV.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.saveAsCsv.textIdentifier" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Character used for enclosing text fields when saving results as CSV]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Carácter que se usa para delimitar los campos de texto al guardar los resultados como CSV.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.saveAsXml.encoding" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File encoding used when saving results as XML]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Codificación de archivo empleada al guardar los resultados como XML]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8797,7 +9163,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Query Editor]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Editor de consultas]]></Val>
+            <Val><![CDATA[Editor de Power Query]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -8922,6 +9288,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/queryActions.queryEditor.exportSqlAsNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Export as Notebook]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Exportación como cuaderno]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8991,6 +9360,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/statusBarItems.status.query.selection-summary" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Selection Summary]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Resumen de la selección]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9006,6 +9378,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/statusBarItems.status.query.summaryText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Average: {0}  Count: {1}  Sum: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Promedio: {0}; recuento: {1}; suma: {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9408,6 +9783,9 @@
       <Item ItemId=";src/sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution.resourceViewer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Resource Viewer]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Visor de recursos]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9423,18 +9801,27 @@
       <Item ItemId=";src/sql/workbench/contrib/resourceViewer/browser/resourceViewerTable.resourceViewerTable.commandError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error executing command '{0}' : {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Error al ejecutar el comando "{0}": {1}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/resourceViewer/browser/resourceViewerTable.resourceViewerTable.openError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error opening link : {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Error al abrir el vínculo: {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/resourceViewer/browser/resourceViewerView.resourceViewer.ariaLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Resource Viewer Tree]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Árbol del visor de recursos]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9621,6 +10008,9 @@
       <Item ItemId=";src/sql/workbench/contrib/scripting/browser/scriptingActions.refreshError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred refreshing node '{0}': {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Error al actualizar el nodo "{0}"; {1}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9853,7 +10243,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Yes (recommended)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Sí (recomendado)]]></Val>
+            <Val><![CDATA[Sí (opción recomendada)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -9861,36 +10251,54 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page.welcomePage.createConnection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create a connection]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Crear una conexión]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page.welcomePage.createConnectionBody" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connect to a database instance through the connection dialog.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Conéctese a una instancia de una base de datos por medio del cuadro de diálogo de conexión.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page.welcomePage.createNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create a notebook]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Crear un cuaderno]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page.welcomePage.createNotebookBody" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Build a new notebook using a native notebook editor.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cree un nuevo cuaderno con un editor de cuadernos nativo.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page.welcomePage.deployServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy a server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Implementar un servidor]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page.welcomePage.deployServerBody" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create a new instance of a relational data service on the platform of your choice.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cree una nueva instancia de un servicio de datos relacionales en la plataforma de su elección.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9936,6 +10344,9 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page.welcomePage.gettingStartedBody" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Discover the capabilities offered by Azure Data Studio and learn how to make the most of them.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Descubra las funcionalidades que ofrece Azure Data Studio y aprenda a sacarles el máximo partido.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9999,6 +10410,9 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page.welcomePage.previewBody" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This feature page is in preview. Preview features introduce new functionalities that are on track to becoming a permanent part the product. They are stable, but need additional accessibility improvements. We welcome your early feedback while they are under development.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Esta página de características está en versión preliminar. Las características en versión preliminar presentan nuevas funcionalidades que están en proceso de convertirse en parte permanente del producto. Son estables, pero necesitan mejoras de accesibilidad adicionales. Agradeceremos sus comentarios iniciales mientras están en desarrollo.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10014,12 +10428,18 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page.welcomePage.runQuery" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Run a query]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ejecutar una consulta]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page.welcomePage.runQueryBody" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Interact with data through a query editor.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Interactúe con los datos por medio de un editor de consultas.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10027,7 +10447,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Show All]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Mostrar todas]]></Val>
+            <Val><![CDATA[Mostrar todo]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -10053,18 +10473,27 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page.welcomePage.videoDescriptionIntroduction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Introduction to Azure Data Studio Notebooks | Data Exposed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Introducción a los cuadernos de Azure Data Studio | Datos expuestos]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page.welcomePage.videoDescriptionOverview" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Overview of Azure Data Studio]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Información general de Azure Data Studio]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/gettingStartedTour.GuidedTour.addExtensions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Extend the functionality of Azure Data Studio by installing extensions developed by us/Microsoft as well as the third-party community (you!).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Amplíe la funcionalidad de Azure Data Studio mediante la instalación de extensiones desarrolladas por nosotros y Microsoft, así como por la comunidad de terceros (es decir, ¡usted!).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10080,6 +10509,9 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/gettingStartedTour.GuidedTour.discoverWelcomePage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Discover top features, recently opened files, and recommended extensions on the Welcome page. For more information on how to get started in Azure Data Studio, check out our videos and documentation.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Descubra las principales características, los archivos abiertos recientemente y las extensiones recomendadas en la página de bienvenida. Para obtener más información sobre cómo empezar a trabajar con Azure Data Studio, consulte los vídeos y la documentación.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10122,18 +10554,27 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/gettingStartedTour.GuidedTour.gettingStartedNotebooks" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Get started creating your own notebook or collection of notebooks in a single place.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Empiece a crear su propio cuaderno o colección de cuadernos en un solo lugar.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/gettingStartedTour.GuidedTour.makeConnections" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connect, query, and manage your connections from SQL Server, Azure, and more.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Conéctese a SQL Server y Azure, realice consultas, administre las conexiones y mucho más.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/gettingStartedTour.GuidedTour.makeConnesetSettings" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Customize Azure Data Studio based on your preferences. You can configure Settings like autosave and tab size, personalize your Keyboard Shortcuts, and switch to a Color Theme of your liking.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Personalice Azure Data Studio según sus preferencias. Puede configurar opciones como el autoguardado y el tamaño de las pestañas, personalizar los métodos abreviados de teclado y cambiar a un tema de color de su gusto.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10150,7 +10591,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Notebooks]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Notebooks]]></Val>
+            <Val><![CDATA[Cuadernos]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -10204,7 +10645,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Welcome Page]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Página principal]]></Val>
+            <Val><![CDATA[Página de bienvenida]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -10212,6 +10653,9 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/gettingStartedTour.guidedTour" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User Welcome Tour]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Paseo de bienvenida para el usuario]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10227,6 +10671,9 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/gettingStartedTour.hideGuidedTour" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Hide Welcome Tour]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ocultar paseo de presentación]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10240,7 +10687,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Welcome!]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[¡Bienvenido!]]></Val>
+            <Val><![CDATA[¡Le damos la bienvenida!]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -10248,6 +10695,9 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.closeTourBar" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Close quick tour bar]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cerrar barra del paseo introductorio]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10273,7 +10723,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Welcome]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Bienvenido]]></Val>
+            <Val><![CDATA[Bienvenida]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -10282,7 +10732,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Welcome]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Bienvenido]]></Val>
+            <Val><![CDATA[Bienvenida]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -10299,18 +10749,27 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.welcomePage.PostgreSQLDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connect, query, and manage Postgres databases with Azure Data Studio]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Conéctese a bases de datos Postgre, adminístrelas y realice consultas en ellas con Azure Data Studio.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.welcomePage.adminPack" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Admin Pack]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Paquete de administración de SQL]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.welcomePage.adminPackDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Admin Pack for SQL Server is a collection of popular database administration extensions to help you manage SQL Server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[El paquete de administración para SQL Server es una colección de populares extensiones de administración de bases de datos para ayudarle a administrar SQL Server.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10326,6 +10785,9 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.welcomePage.dataVirtualization" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data Virtualization]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Virtualización de datos]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10338,6 +10800,9 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.welcomePage.deployServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy a server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Implementar un servidor]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10381,7 +10846,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Install {0} keymap]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Instalar mapa de teclas de {0}]]></Val>
+            <Val><![CDATA[Instalar asignación de teclas de {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -10426,7 +10891,7 @@
         <Str Cat="Text">
           <Val><![CDATA[New]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Creación]]></Val>
+            <Val><![CDATA[Nuevo]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -10470,12 +10935,18 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.welcomePage.openFile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open file…]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Abrir archivo...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.welcomePage.openFolder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open folder…]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Abrir carpeta...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10506,6 +10977,9 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.welcomePage.showAdminPack" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Admin Pack]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Paquete de administración de SQL]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10630,7 +11104,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Getting started]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Inicio]]></Val>
+            <Val><![CDATA[Introducción]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -10675,7 +11149,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Learn]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Más información]]></Val>
+            <Val><![CDATA[Información]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -10701,6 +11175,9 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page.welcomePage.newDeployment" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Deployment…]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nueva implementación...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10882,7 +11359,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Error adding account]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Error al agregar cuenta]]></Val>
+            <Val><![CDATA[Error al agregar la cuenta]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -10908,6 +11385,9 @@
       <Item ItemId=";src/sql/workbench/services/accountManagement/browser/accountManagementService.loggingIn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Adding account...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Adición de cuenta en curso...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10932,6 +11412,9 @@
       <Item ItemId=";src/sql/workbench/services/accountManagement/browser/accountPickerImpl.azureTenant" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure tenant]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Inquilino de Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -11010,6 +11493,9 @@
       <Item ItemId=";src/sql/workbench/services/assessment/common/assessmentService.asmt.providerIdNotValidError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connection is required in order to interact with Assessment Service]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Para interactuar con el servicio de evaluación, se necesita una conexión.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -11142,12 +11628,18 @@
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionBrowseTab.connectionBrowserTree" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connection Browser Tree]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Árbol del explorador de conexiones]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionBrowseTab.connectionDialog.ApplyingFilter" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Applying filter]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aplicación de filtro en curso]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -11163,6 +11655,9 @@
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionBrowseTab.connectionDialog.FilterInputTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Filter connections]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Filtrado de conexiones]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -11178,18 +11673,27 @@
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionBrowseTab.connectionDialog.FilterRemoved" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Filter removed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Filtro quitado]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionBrowseTab.connectionDialog.RemovingFilter" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Removing filter]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Eliminación del filtro en curso]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionBrowseTab.connectionDialog.browser" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Browse (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Examinar (versión preliminar)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -11260,7 +11764,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Connecting]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Conectando]]></Val>
+            <Val><![CDATA[Conexión en curso]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -11548,7 +12052,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Connected to]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Conectado a]]></Val>
+            <Val><![CDATA[Se ha conectado a]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -11889,6 +12393,9 @@
       <Item ItemId=";src/sql/workbench/services/insights/browser/insightsDialogView.insightsDetailView.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Insight Details]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Detalles de la conclusión]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -11941,7 +12448,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Executing]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ejecutando]]></Val>
+            <Val><![CDATA[En ejecución]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -12031,7 +12538,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Succeeded]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Se realizó correctamente]]></Val>
+            <Val><![CDATA[Correcto]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -12049,7 +12556,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Waiting for Thread]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Esperando subproceso]]></Val>
+            <Val><![CDATA[A la espera de un subproceso]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -12093,6 +12600,9 @@
       <Item ItemId=";src/sql/workbench/services/notebook/browser/models/cell.commandSuccessful" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Command executed successfully]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Comando ejecutado correctamente]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -12234,6 +12744,9 @@
       <Item ItemId=";src/sql/workbench/services/notebook/browser/models/notebookModel.injectedParametersMsg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[# Injected-Parameters]D;]A;]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[N.º de parámetros insertados]D;]A;]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -12448,7 +12961,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Loading...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cargando...]]></Val>
+            <Val><![CDATA[Carga en curso...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -12601,7 +13114,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Loading...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cargando...]]></Val>
+            <Val><![CDATA[Carga en curso...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -12736,7 +13249,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Is Not Null]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[No es null]]></Val>
+            <Val><![CDATA[No es NULL]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -12745,7 +13258,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Is Null]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Es null]]></Val>
+            <Val><![CDATA[Es NULL]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -12844,7 +13357,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Commit row failed: ]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Error en confirmación de fila: ]]></Val>
+            <Val><![CDATA[Error al confirmar una fila: ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -12933,6 +13446,9 @@
       <Item ItemId=";src/sql/workbench/services/query/common/queryRunner.query.message.startQuery" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Started executing batch {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Se ha iniciado la ejecución del proceso por lotes ({0}).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -12957,6 +13473,9 @@
       <Item ItemId=";src/sql/workbench/services/query/common/resultSerializer.msgSaveSucceeded" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Successfully saved results to {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Los resultados se han guardado correctamente en {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -13018,7 +13537,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Choose Results File]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Seleccionar archivo de resultados]]></Val>
+            <Val><![CDATA[Selección del archivo de resultados]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13027,7 +13546,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Saving file...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Guardando el archivo...]]></Val>
+            <Val><![CDATA[Se está guardando el archivo...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13063,7 +13582,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Firewall rule]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Regla de Firewall]]></Val>
+            <Val><![CDATA[Regla de firewall]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13108,7 +13627,7 @@
         <Str Cat="Text">
           <Val><![CDATA[From]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Desde]]></Val>
+            <Val><![CDATA[De]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13117,7 +13636,7 @@
         <Str Cat="Text">
           <Val><![CDATA[To]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Hasta]]></Val>
+            <Val><![CDATA[A]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13126,7 +13645,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Firewall rule error]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Error de regla de firewall]]></Val>
+            <Val><![CDATA[Error de la regla de firewall]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13135,7 +13654,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Restore database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Restaurar base de datos]]></Val>
+            <Val><![CDATA[Restauración de una base de datos]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13207,7 +13726,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Logical file Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nombre lógico de archivo]]></Val>
+            <Val><![CDATA[Nombre lógico del archivo]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13243,7 +13762,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Original File Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nombre de archivo original]]></Val>
+            <Val><![CDATA[Nombre del archivo original]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13279,7 +13798,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Backup file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Archivo de respaldo]]></Val>
+            <Val><![CDATA[Archivo de copia de seguridad]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13315,7 +13834,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Restore database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Restaurar base de datos]]></Val>
+            <Val><![CDATA[Restauración de una base de datos]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13333,7 +13852,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Restore from]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Restaurar desde]]></Val>
+            <Val><![CDATA[Restaurar de]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13360,7 +13879,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Restore to]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Restaurar a]]></Val>
+            <Val><![CDATA[Restaurar en]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13369,7 +13888,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Server connections]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Conexiones de servidor]]></Val>
+            <Val><![CDATA[Conexiones del servidor]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13396,7 +13915,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Target database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Base de datos destino]]></Val>
+            <Val><![CDATA[Base de datos de destino]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13450,7 +13969,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Group color]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Color de grupo]]></Val>
+            <Val><![CDATA[Color del grupo]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
