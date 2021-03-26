@@ -296,9 +296,8 @@ export class RunParametersAction extends TooltipFromLabelAction {
 	 * with injected parameters value from the QuickInput
 	*/
 	public async run(context: URI): Promise<void> {
-		// Get Parameters via Notebook Model
 		const editor = this._notebookService.findNotebookEditor(context);
-		// Set Default Parameters to the mapped string
+		// Set defaultParameters to the parameter values in parameter cell
 		let defaultParameters = new Map<string, string>();
 		editor.cells.forEach(cell => {
 			if (cell.isParameter) {
@@ -309,10 +308,10 @@ export class RunParametersAction extends TooltipFromLabelAction {
 			}
 		});
 
-		// New Parameters to be set to injected parameters cell
-		let pick = new Map<string, string>();
-		let newParams: string = '';
-		let addParam: string;
+		// Store new parameters values the user inputs
+		let inputParameters = new Map<string, string>();
+		let parametersQuery: string = '';
+		let addParameter: string;
 		let index = 0;
 		// Store new parameter values to map based off defaultParameters
 		if (defaultParameters.size === 0) {
@@ -324,25 +323,25 @@ export class RunParametersAction extends TooltipFromLabelAction {
 		} else {
 			for (let key of defaultParameters.keys()) {
 				let newParameterValue = await this.quickInputService.input({ prompt: key, placeHolder: defaultParameters.get(key) });
-				pick.set(key, newParameterValue);
+				inputParameters.set(key, newParameterValue);
 			}
-			if (pick.size > 0) {
+			if (inputParameters.size > 0) {
 				// Format the new parameters to be append to URI
-				for (let key of pick.keys()) {
-					// The value of the key is not undefined
-					if (pick.get(key)) {
-						addParam = key + '=' + pick.get(key);
+				for (let key of inputParameters.keys()) {
+					// Will only add parameters that user updates
+					if (inputParameters.get(key)) {
+						addParameter = key + '=' + inputParameters.get(key);
 						if (index === 0) {
-							newParams = newParams.concat(newParams, addParam);
+							parametersQuery = parametersQuery.concat(parametersQuery, addParameter);
 							index = index + 1;
 						} else {
-							// Parameters after the first will use the '&' denote another parameter value to be added
-							newParams = newParams + '&' + addParam;
+							// Subsequent parameters will use the '&' denote another parameter value to be injected
+							parametersQuery = parametersQuery + '&' + addParameter;
 						}
 					}
 				}
 				let filePath = context.path;
-				filePath = filePath + '?' + newParams;
+				filePath = filePath + '?' + parametersQuery;
 
 				return this.openParameterizedNotebook(context, filePath);
 			}
