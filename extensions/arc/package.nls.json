@@ -84,6 +84,8 @@
 	"arc.sql.invalid.instance.name": "Instance name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 13 characters or fewer in length.",
 	"arc.storage-class.dc.label": "Storage Class",
 	"arc.sql.storage-class.dc.description": "The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.",
+	"arc.sql.replicas.label": "Replicas",
+	"arc.sql.replicas.description": "The number of replicas to be deployed for high availability purpose",
 	"arc.storage-class.data.label": "Storage Class (Data)",
 	"arc.sql.storage-class.data.description": "The storage class to be used for data (.mdf)",
 	"arc.postgres.storage-class.data.description": "The storage class to be used for data persistent volumes",
