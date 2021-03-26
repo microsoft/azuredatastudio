@@ -37,8 +37,8 @@ export class PostgresOverviewPage extends DashboardPage {
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
-	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
-		super(modelView);
+	constructor(protected modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
+		super(modelView, dashboard);
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
 		this.disposables.push(
@@ -270,6 +270,13 @@ export class PostgresOverviewPage extends DashboardPage {
 						);
 						await this._controllerModel.refreshTreeNode();
 						vscode.window.showInformationMessage(loc.instanceDeleted(this._postgresModel.info.name));
+						try {
+							await this.dashboard.close();
+						} catch (err) {
+							// Failures closing the dashboard aren't something we need to show users
+							console.log('Error closing Arc Postgres dashboard ', err);
+						}
+
 					}
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceDeletionFailed(this._postgresModel.info.name, error));

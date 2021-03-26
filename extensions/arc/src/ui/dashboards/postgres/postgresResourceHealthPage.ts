@@ -36,8 +36,8 @@ export class PostgresResourceHealthPage extends DashboardPage {
 	private coordinatorData: PodHealthModel[] = [];
 	private podsData: PodHealthModel[] = [];
 
-	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
-		super(modelView);
+	constructor(protected modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _postgresModel: PostgresModel) {
+		super(modelView, dashboard);
 
 		this.disposables.push(
 			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleConfigUpdated())));
