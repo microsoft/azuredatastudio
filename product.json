@@ -36,7 +36,7 @@
 	"gettingStartedUrl": "https://go.microsoft.com/fwlink/?linkid=862039",
 	"releaseNotesUrl": "https://go.microsoft.com/fwlink/?linkid=875578",
 	"documentationUrl": "https://go.microsoft.com/fwlink/?linkid=862277",
-	"vscodeVersion": "1.51.0",
+	"vscodeVersion": "1.53.0",
 	"commit": "9ca6200018fc206d67a47229f991901a8a453781",
 	"date": "2017-12-15T12:00:00.000Z",
 	"recommendedExtensions": [
@@ -76,6 +76,7 @@
 		"ms-vscode.github-richnav"
 	],
 	"extensionsGallery": {
+			"version": "0.0.76",
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
 	},
 	"builtInExtensions": [

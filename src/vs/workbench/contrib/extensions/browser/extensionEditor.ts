@@ -31,7 +31,7 @@ import {
 	UpdateAction, ReloadAction, MaliciousStatusLabelAction, EnableDropDownAction, DisableDropDownAction, StatusLabelAction, SetFileIconThemeAction, SetColorThemeAction,
 	RemoteInstallAction, ExtensionToolTipAction, SystemDisabledWarningAction, LocalInstallAction, ToggleSyncExtensionAction, SetProductIconThemeAction,
 	ActionWithDropDownAction, InstallDropdownAction, InstallingLabelAction, UninstallAction, ExtensionActionWithDropdownActionViewItem, ExtensionDropDownAction,
-	InstallAnotherVersionAction, ExtensionEditorManageExtensionAction
+	InstallAnotherVersionAction, ExtensionEditorManageExtensionAction, WebInstallAction
 } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { DomScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
@@ -66,22 +66,14 @@ import { generateTokensCSSForColorMap } from 'vs/editor/common/modes/supports/to
 import { editorBackground } from 'vs/platform/theme/common/colorRegistry';
 import { registerAction2, Action2 } from 'vs/platform/actions/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { insane } from 'vs/base/common/insane/insane';
 
 function removeEmbeddedSVGs(documentContent: string): string {
-	const newDocument = new DOMParser().parseFromString(documentContent, 'text/html');
-
-	// remove all inline svgs
-	const allSVGs = newDocument.documentElement.querySelectorAll('svg');
-	if (allSVGs) {
-		for (let i = 0; i < allSVGs.length; i++) {
-			const svg = allSVGs[i];
-			if (svg.parentNode) {
-				svg.parentNode.removeChild(allSVGs[i]);
-			}
+	return insane(documentContent, {
+		filter(token: { tag: string, attrs: { readonly [key: string]: string } }): boolean {
+			return token.tag !== 'svg';
 		}
-	}
-
-	return newDocument.documentElement.outerHTML;
+	});
 }
 
 class NavBar extends Disposable {
@@ -170,6 +162,11 @@ interface IExtensionEditorTemplate {
 	header: HTMLElement;
 }
 
+const enum WebviewIndex {
+	Readme,
+	Changelog
+}
+
 export class ExtensionEditor extends EditorPane {
 
 	static readonly ID: string = 'workbench.editor.extension';
@@ -179,6 +176,12 @@ export class ExtensionEditor extends EditorPane {
 	private extensionReadme: Cache<string> | null;
 	private extensionChangelog: Cache<string> | null;
 	private extensionManifest: Cache<IExtensionManifest | null> | null;
+
+	// Some action bar items use a webview whose vertical scroll position we track in this map
+	private initialScrollProgress: Map<WebviewIndex, number> = new Map();
+
+	// Spot when an ExtensionEditor instance gets reused for a different extension, in which case the vertical scroll positions must be zeroed
+	private currentIdentifier: string = '';
 
 	private layoutParticipants: ILayoutParticipant[] = [];
 	private readonly contentDisposables = this._register(new DisposableStore());
@@ -338,6 +341,11 @@ export class ExtensionEditor extends EditorPane {
 		this.editorLoadComplete = false;
 		const extension = input.extension;
 
+		if (this.currentIdentifier !== extension.identifier.id) {
+			this.initialScrollProgress.clear();
+			this.currentIdentifier = extension.identifier.id;
+		}
+
 		this.transientDisposables.clear();
 
 		this.extensionReadme = new Cache(() => createCancelablePromise(token => extension.getReadme(token)));
@@ -444,6 +452,7 @@ export class ExtensionEditor extends EditorPane {
 			this.instantiationService.createInstance(DisableDropDownAction),
 			this.instantiationService.createInstance(RemoteInstallAction, false),
 			this.instantiationService.createInstance(LocalInstallAction),
+			this.instantiationService.createInstance(WebInstallAction),
 			combinedInstallAction,
 			this.instantiationService.createInstance(InstallingLabelAction),
 			this.instantiationService.createInstance(ActionWithDropDownAction, 'extensions.uninstall', UninstallAction.UninstallLabel, [
@@ -584,7 +593,7 @@ export class ExtensionEditor extends EditorPane {
 		return Promise.resolve(null);
 	}
 
-	private async openMarkdown(cacheResult: CacheResult<string>, noContentCopy: string, template: IExtensionEditorTemplate, token: CancellationToken): Promise<IActiveElement | null> {
+	private async openMarkdown(cacheResult: CacheResult<string>, noContentCopy: string, template: IExtensionEditorTemplate, webviewIndex: WebviewIndex, token: CancellationToken): Promise<IActiveElement | null> {
 		try {
 			const body = await this.renderMarkdown(cacheResult, template);
 			if (token.isCancellationRequested) {
@@ -593,15 +602,22 @@ export class ExtensionEditor extends EditorPane {
 
 			const webview = this.contentDisposables.add(this.webviewService.createWebviewOverlay('extensionEditor', {
 				enableFindWidget: true,
+				tryRestoreScrollPosition: true,
 			}, {}, undefined));
+
+			webview.initialScrollProgress = this.initialScrollProgress.get(webviewIndex) || 0;
 
 			webview.claim(this, this.scopedContextKeyService);
 			setParentFlowTo(webview.container, template.content);
 			webview.layoutWebviewOverElement(template.content);
 
 			webview.html = body;
+			webview.claim(this, undefined);
 
 			this.contentDisposables.add(webview.onDidFocus(() => this.fireOnDidFocus()));
+
+			this.contentDisposables.add(webview.onDidScroll(() => this.initialScrollProgress.set(webviewIndex, webview.initialScrollProgress)));
+
 			const removeLayoutParticipant = arrays.insert(this.layoutParticipants, {
 				layout: () => {
 					webview.layoutWebviewOverElement(template.content);
@@ -643,8 +659,8 @@ export class ExtensionEditor extends EditorPane {
 	private async renderMarkdown(cacheResult: CacheResult<string>, template: IExtensionEditorTemplate) {
 		const contents = await this.loadContents(() => cacheResult, template);
 		const content = await renderMarkdownDocument(contents, this.extensionService, this.modeService);
-		const documentContent = await this.renderBody(content);
-		return removeEmbeddedSVGs(documentContent);
+		const sanitizedContent = removeEmbeddedSVGs(content);
+		return await this.renderBody(sanitizedContent);
 	}
 
 	private async renderBody(body: string): Promise<string> {
@@ -730,9 +746,16 @@ export class ExtensionEditor extends EditorPane {
 					}
 
 					code {
+						font-family: "SF Mono", Monaco, Menlo, Consolas, "Ubuntu Mono", "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace;
+						font-size: 14px;
+						line-height: 19px;
+					}
+
+					pre code {
 						font-family: var(--vscode-editor-font-family);
 						font-weight: var(--vscode-editor-font-weight);
 						font-size: var(--vscode-editor-font-size);
+						line-height: 1.5;
 					}
 
 					code > div {
@@ -844,7 +867,7 @@ export class ExtensionEditor extends EditorPane {
 		if (manifest && manifest.extensionPack && manifest.extensionPack.length) {
 			return this.openExtensionPackReadme(manifest, template, token);
 		}
-		return this.openMarkdown(this.extensionReadme!.get(), localize('noReadme', "No README available."), template, token);
+		return this.openMarkdown(this.extensionReadme!.get(), localize('noReadme', "No README available."), template, WebviewIndex.Readme, token);
 	}
 
 	private async openExtensionPackReadme(manifest: IExtensionManifest, template: IExtensionEditorTemplate, token: CancellationToken): Promise<IActiveElement | null> {
@@ -876,14 +899,14 @@ export class ExtensionEditor extends EditorPane {
 
 		await Promise.all([
 			this.renderExtensionPack(manifest, extensionPackContent, token),
-			this.openMarkdown(this.extensionReadme!.get(), localize('noReadme', "No README available."), { ...template, ...{ content: readmeContent } }, token),
+			this.openMarkdown(this.extensionReadme!.get(), localize('noReadme', "No README available."), { ...template, ...{ content: readmeContent } }, WebviewIndex.Readme, token),
 		]);
 
 		return { focus: () => extensionPackContent.focus() };
 	}
 
 	private openChangelog(template: IExtensionEditorTemplate, token: CancellationToken): Promise<IActiveElement | null> {
-		return this.openMarkdown(this.extensionChangelog!.get(), localize('noChangelog', "No Changelog available."), template, token);
+		return this.openMarkdown(this.extensionChangelog!.get(), localize('noChangelog', "No Changelog available."), template, WebviewIndex.Changelog, token);
 	}
 
 	private openContributions(template: IExtensionEditorTemplate, token: CancellationToken): Promise<IActiveElement | null> {

@@ -311,7 +311,7 @@ export class ServerGroupDialog extends Modal {
 		if (!validate) {
 			renderedDialog.groupNameInputBox.focus();
 		}
-		return validate;
+		return <any>validate;
 	}
 
 	// initialize the view based on the current state of the view model

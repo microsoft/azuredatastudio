@@ -6,7 +6,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 	ROOT=$(dirname $(dirname $(realpath "$0")))
 else
 	ROOT=$(dirname $(dirname $(readlink -f $0)))
-	LINUX_NO_SANDBOX="--no-sandbox" # Electron 6 introduces a chrome-sandbox that requires root to run. This can fail. Disable sandbox via --no-sandbox.
+	# Electron 6 introduces a chrome-sandbox that requires root to run. This can fail. Disable sandbox via --no-sandbox.
+	LINUX_EXTRA_ARGS="--no-sandbox"
 fi
 
 VSCODEUSERDATADIR=`mktemp -d 2>/dev/null`
@@ -33,12 +34,26 @@ else
 	export ELECTRON_ENABLE_STACK_DUMPING=1
 	export ELECTRON_ENABLE_LOGGING=1
 
+	# Production builds are run on docker containers where size of /dev/shm partition < 64MB which causes OOM failure
+	# for chromium compositor that uses the partition for shared memory
+	if [ "$LINUX_EXTRA_ARGS" ]
+	then
+		LINUX_EXTRA_ARGS="$LINUX_EXTRA_ARGS  --disable-dev-shm-usage --use-gl=swiftshader"
+	fi
+
 	echo "Storing crash reports into '$VSCODECRASHDIR'."
 	echo "Running integration tests with '$INTEGRATION_TEST_ELECTRON_PATH' as build."
 fi
 
+if [ -z "$INTEGRATION_TEST_APP_NAME" ]; then
+	after_suite() { true; }
+else
+	after_suite() { killall $INTEGRATION_TEST_APP_NAME || true; }
+fi
+
 # Integration tests in AMD
 ./scripts/test.sh --runGlob **/*.integrationTest.js "$@"
+after_suite
 
 # Tests in the extension host
 # "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX $ROOT/extensions/vscode-api-tests/testWorkspace --enable-proposed-api=vscode.vscode-api-tests --extensionDevelopmentPath=$ROOT/extensions/vscode-api-tests --extensionTestsPath=$ROOT/extensions/vscode-api-tests/out/singlefolder-tests --disable-telemetry --crash-reporter-directory=$VSCODECRASHDIR --no-cached-data --disable-updates --disable-extensions --user-data-dir=$VSCODEUSERDATADIR

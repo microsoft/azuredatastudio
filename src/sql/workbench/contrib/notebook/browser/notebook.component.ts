@@ -261,7 +261,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					let errorWithAction = createErrorWithActions(toErrorMessage(error), {
 						actions: [
 							new Action('workbench.files.action.createMissingFile', localize('createFile', "Create File"), undefined, true, () => {
-								return this.textFileService.create(this.notebookParams.notebookUri).then(() => this.editorService.openEditor({
+								let operations = new Array(1);
+								operations[0] = {
+									resource: this.notebookParams.notebookUri,
+									value: undefined,
+									options: undefined
+								};
+								return this.textFileService.create(operations).then(() => this.editorService.openEditor({
 									resource: this.notebookParams.notebookUri,
 									options: {
 										pinned: true // new file gets pinned by default

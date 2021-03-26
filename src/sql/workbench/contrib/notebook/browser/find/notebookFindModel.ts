@@ -71,7 +71,8 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 		this._decorations = Object.create(null);
 
-		this._buffer = createTextBuffer('', NotebookFindModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
+		const { textBuffer, } = createTextBuffer('', NotebookFindModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
+		this._buffer = textBuffer;
 		this._versionId = 1;
 		this.id = '$model' + MODEL_ID;
 	}
@@ -287,7 +288,8 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	 */
 	private _validateRangeRelaxedNoAllocations(range: IRange): NotebookRange {
 		if (range instanceof NotebookRange) {
-			this._buffer = createTextBuffer(range.cell.source instanceof Array ? range.cell.source.join('\n') : range.cell.source, NotebookFindModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
+			const { textBuffer, } = createTextBuffer(range.cell.source instanceof Array ? range.cell.source.join('\n') : range.cell.source, NotebookFindModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
+			this._buffer = textBuffer;
 		}
 
 		const linesCount = this._buffer.getLineCount();

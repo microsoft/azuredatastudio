@@ -68,7 +68,7 @@ function registerResourceViewerContainer() {
 	const resourceViewerIcon = registerCodicon('reosurce-view', Codicon.database);
 	const viewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 		id: RESOURCE_VIEWER_VIEW_CONTAINER_ID,
-		name: localize('resourceViewer', "Resource Viewer"),
+		title: localize('resourceViewer', "Resource Viewer"),
 		ctorDescriptor: new SyncDescriptor(ResourceViewerViewlet),
 		icon: resourceViewerIcon,
 		alwaysUseContainerInfo: true

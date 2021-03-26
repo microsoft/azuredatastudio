@@ -27,7 +27,7 @@ import { dispose, MutableDisposable } from 'vs/base/common/lifecycle';
 import { Severity, INotificationService } from 'vs/platform/notification/common/notification';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { RunOnceWorker } from 'vs/base/common/async';
+import { Promises, RunOnceWorker } from 'vs/base/common/async';
 import { EventType as TouchEventType, GestureEvent } from 'vs/base/browser/touch';
 import { TitleControl } from 'vs/workbench/browser/parts/editor/titleControl';
 import { IEditorGroupsAccessor, IEditorGroupView, getActiveTextEditorOptions, IEditorOpeningEvent, EditorServiceImpl, IEditorGroupTitleDimensions } from 'vs/workbench/browser/parts/editor/editor';
@@ -322,8 +322,8 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 	private createContainerContextMenu(): void {
 		const menu = this._register(this.menuService.createMenu(MenuId.EmptyEditorGroupContext, this.contextKeyService));
 
-		this._register(addDisposableListener(this.element, EventType.CONTEXT_MENU, event => this.onShowContainerContextMenu(menu, event)));
-		this._register(addDisposableListener(this.element, TouchEventType.Contextmenu, event => this.onShowContainerContextMenu(menu)));
+		this._register(addDisposableListener(this.element, EventType.CONTEXT_MENU, e => this.onShowContainerContextMenu(menu, e)));
+		this._register(addDisposableListener(this.element, TouchEventType.Contextmenu, () => this.onShowContainerContextMenu(menu)));
 	}
 
 	private onShowContainerContextMenu(menu: IMenu, e?: MouseEvent): void {
@@ -1110,7 +1110,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 
 		// Open the other ones inactive
 		const startingIndex = this.getIndexOfEditor(editor) + 1;
-		await Promise.all(editors.map(async ({ editor, options }, index) => {
+		await Promises.settled(editors.map(async ({ editor, options }, index) => {
 			const adjustedEditorOptions = options || new EditorOptions();
 			adjustedEditorOptions.inactive = true;
 			adjustedEditorOptions.pinned = true;
@@ -1347,10 +1347,12 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 			this.mapEditorToPendingConfirmation.set(editor, handleDirtyClosingPromise);
 		}
 
-		const veto = await handleDirtyClosingPromise;
-
-		// Make sure to remove from our map of cached pending confirmations
-		this.mapEditorToPendingConfirmation.delete(editor);
+		let veto: boolean;
+		try {
+			veto = await handleDirtyClosingPromise;
+		} finally {
+			this.mapEditorToPendingConfirmation.delete(editor);
+		}
 
 		// Return for the first veto we got
 		if (veto) {
@@ -1704,13 +1706,15 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 	layout(width: number, height: number): void {
 		this.dimension = new Dimension(width, height);
 
-		// Ensure editor container gets height as CSS depending on the preferred height of the title control
-		const titleHeight = this.titleDimensions.height;
-		const editorHeight = Math.max(0, height - titleHeight);
-		this.editorContainer.style.height = `${editorHeight}px`;
+		// Layout the title area first to receive the size it occupies
+		const titleAreaSize = this.titleAreaControl.layout({
+			container: this.dimension,
+			available: new Dimension(width, height - this.editorControl.minimumHeight)
+		});
 
-		// Forward to controls
-		this.titleAreaControl.layout(new Dimension(width, titleHeight));
+		// Pass the container width and remaining height to the editor layout
+		const editorHeight = Math.max(0, height - titleAreaSize.height);
+		this.editorContainer.style.height = `${editorHeight}px`;
 		this.editorControl.layout(new Dimension(width, editorHeight));
 	}
 
@@ -1769,7 +1773,7 @@ export interface EditorReplacement {
 	readonly options?: EditorOptions;
 }
 
-registerThemingParticipant((theme, collector, environment) => {
+registerThemingParticipant((theme, collector) => {
 
 	// Letterpress
 	const letterpress = `./media/letterpress${theme.type === 'dark' ? '-dark' : theme.type === 'hc' ? '-hc' : ''}.svg`;
