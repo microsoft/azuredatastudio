@@ -79,7 +79,6 @@
 	padding-left: 18px;
 	width: 16px;
 }
-
 .notebookEditor .in-preview .actions-container .action-item:last-child {
 	margin-right: 14px;
 }
@@ -167,7 +166,6 @@
 .notebookEditor :not(.in-preview) .codicon.icon-clear-results {
 	background-image: url("./media/light/clear_results.svg");
 }
-
 
 .vs-dark .notebookEditor :not(.in-preview) .codicon.icon-clear-results,
 .hc-black .notebookEditor :not(.in-preview) .codicon.icon-clear-results {

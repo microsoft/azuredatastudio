@@ -129,6 +129,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.notebookService.removeNotebookEditor(this);
 		}
 	}
+
 	public get model(): NotebookModel | null {
 		return this._model;
 	}
@@ -457,7 +458,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ action: this._trustedAction },
 				{ action: this._runAllCellsAction },
 				{ action: clearResultsButton },
-				{ action: collapseCellsAction },
+				{ action: collapseCellsAction }
 			]);
 		}
 	}
