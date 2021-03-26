@@ -168,7 +168,7 @@ export class AccountDialog extends Modal {
 	) {
 		super(
 			localize('linkedAccounts', "Linked accounts"),
-			TelemetryKeys.Accounts,
+			TelemetryKeys.ModalDialogName.Accounts,
 			telemetryService,
 			layoutService,
 			clipboardService,
