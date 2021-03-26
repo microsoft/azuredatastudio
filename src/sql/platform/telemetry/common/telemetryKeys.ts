@@ -74,8 +74,7 @@ export enum TelemetryAction {
 	RunQueryStatement = 'RunQueryStatement',
 	RunQueryString = 'RunQueryString',
 	StopAgentJob = 'StopAgentJob',
-	WizardPagesNavigation = 'WizardPagesNavigation',
-	WizardOpen = 'WizardOpen'
+	WizardPagesNavigation = 'WizardPagesNavigation'
 }
 
 export enum NbTelemetryAction {
