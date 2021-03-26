@@ -25,8 +25,8 @@ export type ParametersModel = {
 export abstract class PostgresParametersPage extends DashboardPage {
 	private searchBox!: azdata.InputBoxComponent;
 	protected _parametersTable!: azdata.DeclarativeTableComponent;
-	private parameterContainer?: azdata.DivContainer;
-	private parametersTableLoading!: azdata.LoadingComponent;
+	private parameterContainer!: azdata.DivContainer;
+	private parametersTableLoading?: azdata.LoadingComponent;
 
 	private discardButton!: azdata.ButtonComponent;
 	private saveButton!: azdata.ButtonComponent;
@@ -34,7 +34,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 	private connectToServerButton?: azdata.ButtonComponent;
 
 	protected _parameters: ParametersModel[] = [];
-	private changedComponentValues: string[] = [];
+	private changedComponentValues: Set<string> = new Set();
 	private parameterUpdates: Map<string, string> = new Map();
 
 	protected readonly _azdataApi: azdataExt.IExtension;
@@ -44,7 +44,6 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
-		this.initializeConnectButton();
 		this.initializeSearchBox();
 
 		this.disposables.push(
@@ -120,11 +119,8 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			data: []
 		}).component();
 
-		this.parametersTableLoading = this.modelView.modelBuilder.loadingComponent().component();
-
 		this.parameterContainer = this.modelView.modelBuilder.divContainer().component();
 		this.selectComponent();
-
 		content.addItem(this.parameterContainer);
 
 		this.initialized = true;
@@ -143,7 +139,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		let engineSettings: string[] = [];
 		this.disposables.push(
 			this.saveButton.onDidClick(async () => {
-				this.saveButton!.enabled = false;
+				this.saveButton.enabled = false;
 				try {
 					await vscode.window.withProgress(
 						{
@@ -153,7 +149,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 						},
 						async (_progress, _token): Promise<void> => {
 							try {
-								this.parameterUpdates!.forEach((value, key) => {
+								this.parameterUpdates.forEach((value, key) => {
 									engineSettings.push(`${key}="${value}"`);
 								});
 								const session = await this._postgresModel.controllerModel.acquireAzdataSession();
@@ -165,7 +161,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since
 								// the edit wasn't successfully applied
-								this.saveButton!.enabled = true;
+								this.saveButton.enabled = true;
 								throw err;
 							}
 							try {
@@ -179,10 +175,10 @@ export abstract class PostgresParametersPage extends DashboardPage {
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 
 					engineSettings = [];
-					this.changedComponentValues = [];
-					this.parameterUpdates!.clear();
-					this.discardButton!.enabled = false;
-					this.resetAllButton!.enabled = true;
+					this.changedComponentValues.clear();
+					this.parameterUpdates.clear();
+					this.discardButton.enabled = false;
+					this.resetAllButton.enabled = true;
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
@@ -199,16 +195,16 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 		this.disposables.push(
 			this.discardButton.onDidClick(async () => {
-				this.discardButton!.enabled = false;
+				this.discardButton.enabled = false;
 				try {
 					this.discardParametersTableChanges();
 				} catch (error) {
 					this.discardButton!.enabled = true;
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
-					this.changedComponentValues = [];
-					this.saveButton!.enabled = false;
-					this.parameterUpdates!.clear();
+					this.changedComponentValues.clear();
+					this.saveButton.enabled = false;
+					this.parameterUpdates.clear();
 				}
 			})
 		);
@@ -222,9 +218,9 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 		this.disposables.push(
 			this.resetAllButton.onDidClick(async () => {
-				this.resetAllButton!.enabled = false;
-				this.discardButton!.enabled = false;
-				this.saveButton!.enabled = false;
+				this.resetAllButton.enabled = false;
+				this.discardButton.enabled = false;
+				this.saveButton.enabled = false;
 				try {
 					await vscode.window.withProgress(
 						{
@@ -244,13 +240,13 @@ export abstract class PostgresParametersPage extends DashboardPage {
 								// If an error occurs while resetting the instance then re-enable the reset button since
 								// the edit wasn't successfully applied
 								if (this.parameterUpdates.size > 0) {
-									this.discardButton!.enabled = true;
-									this.saveButton!.enabled = true;
+									this.discardButton.enabled = true;
+									this.saveButton.enabled = true;
 								}
-								this.resetAllButton!.enabled = true;
+								this.resetAllButton.enabled = true;
 								throw err;
 							}
-							this.changedComponentValues = [];
+							this.changedComponentValues.clear();
 							try {
 								await this._postgresModel.refresh();
 							} catch (error) {
@@ -260,7 +256,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 					);
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
-					this.parameterUpdates!.clear();
+					this.parameterUpdates.clear();
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.resetFailed(error));
@@ -283,7 +279,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		}).component();
 
 		this.disposables.push(
-			this.connectToServerButton!.onDidClick(async () => {
+			this.connectToServerButton.onDidClick(async () => {
 				this.connectToServerButton!.enabled = false;
 				if (!vscode.extensions.getExtension(loc.postgresExtension)) {
 					const response = await vscode.window.showErrorMessage(loc.missingExtension('PostgreSQL'), loc.yes, loc.no);
@@ -313,26 +309,28 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 				this.parametersTableLoading!.loading = true;
 				await this.callGetEngineSettings().finally(() => this.parametersTableLoading!.loading = false);
-				this.searchBox!.enabled = true;
-				this.resetAllButton!.enabled = true;
-				this.parameterContainer!.clearItems();
-				this.parameterContainer!.addItem(this._parametersTable);
+				this.searchBox.enabled = true;
+				this.resetAllButton.enabled = true;
+				this.parameterContainer.clearItems();
+				this.parameterContainer.addItem(this._parametersTable);
 			})
 		);
 	}
 
 	private selectComponent(): void {
 		if (!this._postgresModel.engineSettingsLastUpdated) {
-			this.parameterContainer!.addItem(this.modelView.modelBuilder.text().withProps({
+			this.parameterContainer.addItem(this.modelView.modelBuilder.text().withProps({
 				value: loc.connectToPostgresDescription,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component());
-			this.parameterContainer!.addItem(this.connectToServerButton!, { CSSStyles: { 'max-width': '125px' } });
-			this.parameterContainer!.addItem(this.parametersTableLoading!);
+			this.initializeConnectButton();
+			this.parameterContainer.addItem(this.connectToServerButton!, { CSSStyles: { 'max-width': '125px' } });
+			this.parametersTableLoading = this.modelView.modelBuilder.loadingComponent().component();
+			this.parameterContainer.addItem(this.parametersTableLoading);
 		} else {
-			this.searchBox!.enabled = true;
-			this.resetAllButton!.enabled = true;
-			this.parameterContainer!.addItem(this._parametersTable!);
+			this.searchBox.enabled = true;
+			this.resetAllButton.enabled = true;
+			this.parameterContainer.addItem(this._parametersTable!);
 			this.refreshParametersTable();
 		}
 	}
@@ -367,10 +365,10 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 	@debounce(500)
 	private onSearchFilter(): void {
-		if (!this.searchBox!.value) {
+		if (!this.searchBox.value) {
 			this._parametersTable.setFilter(undefined);
 		} else {
-			this.filterParameters(this.searchBox!.value);
+			this.filterParameters(this.searchBox.value);
 		}
 	}
 
@@ -387,7 +385,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 	private handleOnTextChanged(component: azdata.InputBoxComponent, name: string, currentValue: string | undefined): boolean {
 		if (!component.valid) {
 			// If invalid value return false and enable discard button
-			this.discardButton!.enabled = true;
+			this.discardButton.enabled = true;
 			this.collectChangedComponents(name);
 			return false;
 		} else if (component.value === currentValue) {
@@ -397,8 +395,8 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			/* If a valid value has been entered into the input box, enable save and discard buttons
 			so that user could choose to either edit instance or clear all inputs
 			return true */
-			this.saveButton!.enabled = true;
-			this.discardButton!.enabled = true;
+			this.saveButton.enabled = true;
+			this.discardButton.enabled = true;
 			this.collectChangedComponents(name);
 			return true;
 		}
@@ -465,12 +463,12 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			this.disposables.push(
 				valueBox.onValueChanged(() => {
 					if (engineSetting.value !== String(valueBox.value)) {
-						this.parameterUpdates!.set(engineSetting.parameterName!, String(valueBox.value));
+						this.parameterUpdates.set(engineSetting.parameterName!, String(valueBox.value));
 						this.collectChangedComponents(engineSetting.parameterName!);
-						this.saveButton!.enabled = true;
-						this.discardButton!.enabled = true;
-					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
-						this.parameterUpdates!.delete(engineSetting.parameterName!);
+						this.saveButton.enabled = true;
+						this.discardButton.enabled = true;
+					} else if (this.parameterUpdates.has(engineSetting.parameterName!)) {
+						this.parameterUpdates.delete(engineSetting.parameterName!);
 						this.removeFromChangedComponents(engineSetting.parameterName!);
 					}
 				})
@@ -492,17 +490,17 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			this.disposables.push(
 				valueBox.onChanged(() => {
 					if (valueBox.checked && engineSetting.value === 'off') {
-						this.parameterUpdates!.set(engineSetting.parameterName!, loc.on);
+						this.parameterUpdates.set(engineSetting.parameterName!, loc.on);
 						this.collectChangedComponents(engineSetting.parameterName!);
-						this.saveButton!.enabled = true;
-						this.discardButton!.enabled = true;
+						this.saveButton.enabled = true;
+						this.discardButton.enabled = true;
 					} else if (!valueBox.checked && engineSetting.value === 'on') {
-						this.parameterUpdates!.set(engineSetting.parameterName!, loc.off);
+						this.parameterUpdates.set(engineSetting.parameterName!, loc.off);
 						this.collectChangedComponents(engineSetting.parameterName!);
-						this.saveButton!.enabled = true;
-						this.discardButton!.enabled = true;
-					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
-						this.parameterUpdates!.delete(engineSetting.parameterName!);
+						this.saveButton.enabled = true;
+						this.discardButton.enabled = true;
+					} else if (this.parameterUpdates.has(engineSetting.parameterName!)) {
+						this.parameterUpdates.delete(engineSetting.parameterName!);
 						this.removeFromChangedComponents(engineSetting.parameterName!);
 					}
 				})
@@ -520,9 +518,9 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			this.disposables.push(
 				valueBox.onTextChanged(() => {
 					if ((this.handleOnTextChanged(valueBox, engineSetting.parameterName!, engineSetting.value))) {
-						this.parameterUpdates!.set(engineSetting.parameterName!, `"${valueBox.value!}"`);
-					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
-						this.parameterUpdates!.delete(engineSetting.parameterName!);
+						this.parameterUpdates.set(engineSetting.parameterName!, `"${valueBox.value!}"`);
+					} else if (this.parameterUpdates.has(engineSetting.parameterName!)) {
+						this.parameterUpdates.delete(engineSetting.parameterName!);
 					}
 				})
 			);
@@ -542,9 +540,9 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			this.disposables.push(
 				valueBox.onTextChanged(() => {
 					if ((this.handleOnTextChanged(valueBox, engineSetting.parameterName!, engineSetting.value))) {
-						this.parameterUpdates!.set(engineSetting.parameterName!, valueBox.value!);
-					} else if (this.parameterUpdates!.has(engineSetting.parameterName!)) {
-						this.parameterUpdates!.delete(engineSetting.parameterName!);
+						this.parameterUpdates.set(engineSetting.parameterName!, valueBox.value!);
+					} else if (this.parameterUpdates.has(engineSetting.parameterName!)) {
+						this.parameterUpdates.delete(engineSetting.parameterName!);
 					}
 				})
 			);
@@ -578,33 +576,32 @@ export abstract class PostgresParametersPage extends DashboardPage {
 	}
 
 	private collectChangedComponents(name: string): void {
-		if (!this.changedComponentValues.includes(name)) {
-			this.changedComponentValues.push(name);
+		if (!this.changedComponentValues.has(name)) {
+			this.changedComponentValues.add(name);
 		}
 	}
 
 	private removeFromChangedComponents(name: string): void {
-		if (this.changedComponentValues.includes(name)) {
-			let index = this.changedComponentValues.indexOf(name);
-			this.changedComponentValues.splice(index, 1);
+		if (this.changedComponentValues.has(name)) {
+			this.changedComponentValues.delete(name);
 		}
 	}
 
 	private discardParametersTableChanges(): void {
-		this.changedComponentValues.forEach(v => {
-			let instanceOfCheckBox = function (object: any): object is azdata.CheckBoxComponent {
-				return 'checked' in object;
-			};
+		let instanceOfCheckBox = function (object: any): object is azdata.CheckBoxComponent {
+			return 'checked' in object;
+		};
 
+		this.changedComponentValues.forEach(v => {
 			let param = this._parameters.find(p => p.parameterName === v);
-			if (instanceOfCheckBox(param?.valueComponent)) {
-				if (param?.originalValue === 'on') {
-					param!.valueComponent!.checked! = true;
+			if (instanceOfCheckBox(param!.valueComponent)) {
+				if (param!.originalValue === 'on') {
+					param!.valueComponent.checked = true;
 				} else {
-					param!.valueComponent!.checked! = false;
+					param!.valueComponent.checked = false;
 				}
 			} else {
-				param!.valueComponent!.value! = param!.originalValue;
+				param!.valueComponent.value = param!.originalValue;
 			}
 		});
 	}
@@ -631,8 +628,8 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			this.parametersTableLoading!.loading = false;
 		} else if (this._postgresModel.engineSettingsLastUpdated) {
 			await this.callGetEngineSettings();
-			this.discardButton!.enabled = false;
-			this.saveButton!.enabled = false;
+			this.discardButton.enabled = false;
+			this.saveButton.enabled = false;
 		}
 	}
 
