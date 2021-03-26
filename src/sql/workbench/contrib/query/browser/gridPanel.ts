@@ -5,11 +5,11 @@
 
 import 'vs/css!./media/gridPanel';
 
-import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
+import { ITableStyles, ITableMouseEvent, FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
-import { ResultSetSummary, IColumn } from 'sql/workbench/services/query/common/query';
-import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
+import { ResultSetSummary, IColumn, ICellValue } from 'sql/workbench/services/query/common/query';
+import { VirtualizedCollection } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
@@ -49,6 +49,9 @@ import { ScrollableView, IView } from 'sql/base/browser/ui/scrollableView/scroll
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
+import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -322,6 +325,8 @@ export interface IDataSet {
 
 export interface IGridTableOptions {
 	actionOrientation: ActionsOrientation;
+	inMemoryDataProcessing: boolean;
+	inMemoryDataCountThreshold?: number;
 }
 
 export abstract class GridTableBase<T> extends Disposable implements IView {
@@ -331,7 +336,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private selectionModel = new CellSelectionModel<T>();
 	private styles: ITableStyles;
 	private currentHeight: number;
-	private dataProvider: AsyncDataProvider<T>;
+	private dataProvider: HybridDataProvider<T>;
+	private filterPlugin: HeaderFilter<T>;
 
 	private columns: Slick.Column<T>[];
 
@@ -369,13 +375,17 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	constructor(
 		state: GridTableState,
 		protected _resultSet: ResultSetSummary,
-		private readonly options: IGridTableOptions = { actionOrientation: ActionsOrientation.VERTICAL },
+		private readonly options: IGridTableOptions = {
+			inMemoryDataProcessing: false,
+			actionOrientation: ActionsOrientation.VERTICAL
+		},
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IInstantiationService protected readonly instantiationService: IInstantiationService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IUntitledTextEditorService private readonly untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IQueryModelService private readonly queryModelService: IQueryModelService
+		@IQueryModelService private readonly queryModelService: IQueryModelService,
+		@IThemeService private readonly themeService: IThemeService
 	) {
 		super();
 		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
@@ -405,7 +415,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		return this._resultSet;
 	}
 
-	public onDidInsert() {
+	public async onDidInsert() {
 		if (!this.table) {
 			this.build();
 		}
@@ -421,7 +431,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		});
 		this.dataProvider.dataRows = collection;
 		this.table.updateRowCount();
-		this.setupState();
+		await this.setupState();
 	}
 
 	public onDidRemove() {
@@ -476,7 +486,15 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			forceFitColumns: false,
 			defaultColumnWidth: 120
 		};
-		this.dataProvider = new AsyncDataProvider(collection);
+		this.dataProvider = new HybridDataProvider(collection,
+			(offset, count) => { return this.loadData(offset, count); },
+			undefined,
+			undefined,
+			(data: ICellValue) => { return data?.displayValue; },
+			{
+				inMemoryDataProcessing: this.options.inMemoryDataProcessing,
+				inMemoryDataCountThreshold: this.options.inMemoryDataCountThreshold
+			});
 		this.table = this._register(new Table(this.tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);
@@ -485,11 +503,33 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
+		this._register(this.dataProvider.onFilterStateChange(() => { this.layout(); }));
 		this._register(this.table.onContextMenu(this.contextMenu, this));
 		this._register(this.table.onClick(this.onTableClick, this));
 		//This listener is used for correcting auto-scroling when clicking on the header for reszing.
 		this._register(this.table.onHeaderClick(this.onHeaderClick, this));
-
+		this._register(this.dataProvider.onFilterStateChange(() => {
+			const columns = this.table.columns as FilterableColumn<T>[];
+			this.state.columnFilters = columns.filter((column) => column.filterValues?.length > 0).map(column => {
+				return {
+					filterValues: column.filterValues,
+					field: column.field
+				};
+			});
+			this.table.rerenderGrid();
+		}));
+		this._register(this.dataProvider.onSortComplete((args: Slick.OnSortEventArgs<T>) => {
+			this.state.sortState = {
+				field: args.sortCol.field,
+				sortAsc: args.sortAsc
+			};
+			this.table.rerenderGrid();
+		}));
+		if (this.configurationService.getValue<boolean>('workbench')['enablePreviewFeatures']) {
+			this.filterPlugin = new HeaderFilter();
+			attachButtonStyler(this.filterPlugin, this.themeService);
+			this.table.registerPlugin(this.filterPlugin);
+		}
 		if (this.styles) {
 			this.table.style(this.styles);
 		}
@@ -558,7 +598,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}
 	}
 
-	private setupState() {
+	private async setupState() {
 		// change actionbar on maximize change
 		this._register(this.state.onMaximizedChange(this.rebuildActionBar, this));
 
@@ -577,6 +617,25 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 		if (savedSelection) {
 			this.selectionModel.setSelectedRanges(savedSelection);
+		}
+
+		if (this.state.sortState) {
+			await this.dataProvider.sort({
+				multiColumnSort: false,
+				grid: this.table.grid,
+				sortAsc: this.state.sortState.sortAsc,
+				sortCol: this.columns.find((column) => column.field === this.state.sortState.field)
+			});
+		}
+
+		if (this.state.columnFilters) {
+			this.columns.forEach(column => {
+				const idx = this.state.columnFilters.findIndex(filter => filter.field === column.field);
+				if (idx !== -1) {
+					(<FilterableColumn<T>>column).filterValues = this.state.columnFilters[idx].filterValues;
+				}
+			});
+			await this.dataProvider.filter(this.columns);
 		}
 	}
 
@@ -627,6 +686,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	public updateResult(resultSet: ResultSetSummary) {
 		this._resultSet = resultSet;
 		if (this.table && this.visible) {
+			if (this.configurationService.getValue<boolean>('workbench')['enablePreviewFeatures'] && this.options.inMemoryDataProcessing && this.options.inMemoryDataCountThreshold < resultSet.rowCount) {
+				this.filterPlugin.enabled = false;
+			}
 			this.dataProvider.length = resultSet.rowCount;
 			this.table.updateRowCount();
 		}
@@ -787,9 +849,14 @@ class GridTable<T> extends GridTableBase<T> {
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IQueryModelService queryModelService: IQueryModelService
+		@IQueryModelService queryModelService: IQueryModelService,
+		@IThemeService themeService: IThemeService
 	) {
-		super(state, resultSet, undefined, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService);
+		super(state, resultSet, {
+			actionOrientation: ActionsOrientation.VERTICAL,
+			inMemoryDataProcessing: true,
+			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 	}
 
