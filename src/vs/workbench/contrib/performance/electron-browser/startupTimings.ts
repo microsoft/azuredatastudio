@@ -15,7 +15,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IUpdateService } from 'vs/platform/update/common/update';
 import { INativeHostService } from 'vs/platform/native/electron-sandbox/native';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import * as files from 'vs/workbench/common/files';
+import * as files from 'vs/workbench/contrib/files/common/files';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { didUseCachedData } from 'vs/workbench/services/timer/electron-sandbox/timerService';

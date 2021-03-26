@@ -57,8 +57,6 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
 
-
-
 export interface NotebookProviderProperties {
 	provider: string;
 	fileExtensions: string[];

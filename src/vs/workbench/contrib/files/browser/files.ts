@@ -5,7 +5,7 @@
 
 import { URI } from 'vs/base/common/uri';
 import { IListService } from 'vs/platform/list/browser/listService';
-import { OpenEditor, SortOrder } from 'vs/workbench/common/files';
+import { OpenEditor, SortOrder } from 'vs/workbench/contrib/files/common/files';
 import { EditorResourceAccessor, SideBySideEditor, IEditorIdentifier } from 'vs/workbench/common/editor';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
