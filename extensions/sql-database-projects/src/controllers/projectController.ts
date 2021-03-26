@@ -374,7 +374,7 @@ export class ProjectsController {
 			await project.exclude(fileEntry);
 		} else {
 			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
-			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, node.uri.path));
+			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, node.projectUri.path));
 		}
 
 		this.refreshProjectsTree(context);
@@ -428,7 +428,7 @@ export class ProjectsController {
 				.withAdditionalProperties({ objectType: node.constructor.name })
 				.send();
 
-			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.uri.path));
+			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.projectUri.path));
 		}
 	}
 
@@ -441,7 +441,7 @@ export class ProjectsController {
 			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts);
 			return allFileEntries.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)));
 		}
-		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
+		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.projectUri, context.projectUri)));
 	}
 
 	private getDatabaseReference(project: Project, context: BaseProjectTreeItem): IDatabaseReferenceProjectEntry | undefined {
@@ -696,7 +696,7 @@ export class ProjectsController {
 		if (context.root instanceof ProjectRootTreeItem) {
 			return (<ProjectRootTreeItem>context.root).project;
 		} else {
-			throw new Error(constants.unexpectedProjectContext(context.uri.path));
+			throw new Error(constants.unexpectedProjectContext(context.projectUri.path));
 		}
 	}
 
@@ -728,7 +728,7 @@ export class ProjectsController {
 	}
 
 	private getRelativePath(treeNode: BaseProjectTreeItem): string {
-		return treeNode instanceof FolderNode ? utils.trimUri(treeNode.root.uri, treeNode.uri) : '';
+		return treeNode instanceof FolderNode ? utils.trimUri(treeNode.root.projectUri, treeNode.projectUri) : '';
 	}
 
 	/**
