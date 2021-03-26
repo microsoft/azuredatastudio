@@ -118,7 +118,11 @@ export class SerializationService implements ISerializationService {
 			let provider = this.providers[0].provider;
 			let index = 0;
 			let startRequestParams = this.createStartRequest(serializationRequest, index);
-			index = index + startRequestParams.rows.length - 1;
+			index = index + startRequestParams.rows.length;
+			// Adjust row index based on whether or not header row is included
+			if (serializationRequest.includeHeaders) {
+				index--;
+			}
 
 			let startResult = await provider.startSerialization(startRequestParams);
 
