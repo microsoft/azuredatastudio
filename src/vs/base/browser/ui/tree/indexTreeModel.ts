@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ICollapseStateChangeEvent, ITreeElement, ITreeFilter, ITreeFilterDataResult, ITreeModel, ITreeNode, TreeVisibility, ITreeModelSpliceEvent, TreeError } from 'vs/base/browser/ui/tree/tree';
-import { tail2 } from 'vs/base/common/arrays';
+import { arrayInsert, tail2 } from 'vs/base/common/arrays';
 import { Emitter, Event, EventBufferer } from 'vs/base/common/event';
 import { Iterable } from 'vs/base/common/iterator';
 import { ISpliceable } from 'vs/base/common/sequence';
@@ -12,7 +12,7 @@ import { ISpliceable } from 'vs/base/common/sequence';
 // Exported for tests
 export interface IIndexTreeNode<T, TFilterData = void> extends ITreeNode<T, TFilterData> {
 	readonly parent: IIndexTreeNode<T, TFilterData> | undefined;
-	readonly children: IIndexTreeNode<T, TFilterData>[];
+	children: IIndexTreeNode<T, TFilterData>[];
 	visibleChildrenCount: number;
 	visibleChildIndex: number;
 	collapsible: boolean;
@@ -149,7 +149,8 @@ export class IndexTreeModel<T extends Exclude<any, undefined>, TFilterData = voi
 			}
 		}
 
-		const deletedNodes = parentNode.children.splice(lastIndex, deleteCount, ...nodesToInsert);
+		const deletedNodes = parentNode.children.splice(lastIndex, deleteCount);
+		parentNode.children = arrayInsert(parentNode.children, lastIndex, nodesToInsert);
 
 		// figure out what is the count of deleted visible children
 		let deletedVisibleChildrenCount = 0;
