@@ -261,9 +261,13 @@ export class WizardModal extends Modal {
 			() => undefined);
 	}
 
-	public open(): void {
+	/**
+	 * Opens the dialog to the first page
+	 * @param source Where the wizard was opened from for telemetry (ex: command palette, context menu)
+	 */
+	public open(source?: string): void {
 		this.showPage(0, false, true).then(() => {
-			this.show();
+			this.show(source);
 		}).catch(err => onUnexpectedError(err));
 	}
 
