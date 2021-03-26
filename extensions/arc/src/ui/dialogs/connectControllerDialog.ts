@@ -87,15 +87,11 @@ abstract class ControllerDialogBase extends InitializingComponent {
 		this.namespaceInputBox = this.modelBuilder.inputBox()
 			.withProps({
 				value: controllerInfo?.namespace,
-				// If we have a model then we're editing an existing connection so don't let them modify the namespace
-				readOnly: !!controllerInfo
 			}).component();
 		this.urlInputBox = this.modelBuilder.inputBox()
 			.withProps({
 				value: controllerInfo?.endpoint,
 				placeHolder: loc.controllerUrlPlaceholder,
-				// If we have a model then we're editing an existing connection so don't let them modify the URL
-				readOnly: !!controllerInfo
 			}).component();
 		this.kubeConfigInputBox = new FilePicker(
 			this.modelBuilder,
@@ -138,7 +134,7 @@ abstract class ControllerDialogBase extends InitializingComponent {
 		this.clusterContextRadioGroup.load(() => {
 			this._kubeClusters = getKubeConfigClusterContexts(this.kubeConfigInputBox.value!);
 			const currentClusterContext = getCurrentClusterContext(this._kubeClusters, previousClusterContext, false);
-			this.namespaceInputBox.value = currentClusterContext.namespace;
+			this.namespaceInputBox.value = currentClusterContext.namespace || this.namespaceInputBox.value;
 			return {
 				values: this._kubeClusters.map(c => c.name),
 				defaultValue: currentClusterContext.name
