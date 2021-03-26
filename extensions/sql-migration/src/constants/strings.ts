@@ -274,3 +274,6 @@ export function ENTER_YOUR_SQL_CREDS(sqlServerName: string) {
 	return localize('sql.migration.enter.your.sql.creds', "Enter the credentials for source SQL server instance ‘{0}’", sqlServerName);
 }
 export const USERNAME = localize('sql.migration.username', "Username");
+export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type', "Authentication Type");
+export const SQL_LOGIN = localize('sql.migration.sql.login', "SQL Login");
+export const WINDOWS_AUTHENTICATION = localize('sql.migration.windows.auth', "Windows Authentication");
