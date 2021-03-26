@@ -232,6 +232,7 @@ export const EASTUS2EUAP = localize('sql.migration.eastus2euap', 'East US 2 EUAP
 
 //Migration cutover dialog
 export const MIGRATION_CUTOVER = localize('sql.migration.cutover', "Migration cutover");
+export const SOURCE_DATABASE = localize('sql.migration.source.database', "Source database");
 export const SOURCE_SERVER = localize('sql.migration.source.server', "Source server");
 export const SOURCE_VERSION = localize('sql.migration.source.version', "Source version");
 export const TARGET_SERVER = localize('sql.migration.target.server', "Target server");

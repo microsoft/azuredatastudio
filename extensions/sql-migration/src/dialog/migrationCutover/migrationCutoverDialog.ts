@@ -26,6 +26,7 @@ export class MigrationCutoverDialog {
 
 	private _serverName!: azdata.TextComponent;
 	private _serverVersion!: azdata.TextComponent;
+	private _sourceDatabase!: azdata.TextComponent;
 	private _targetServer!: azdata.TextComponent;
 	private _targetVersion!: azdata.TextComponent;
 	private _migrationStatus!: azdata.TextComponent;
@@ -49,9 +50,11 @@ export class MigrationCutoverDialog {
 		let tab = azdata.window.createTab('');
 		tab.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
+			const sourceDatabase = this.createInfoField(loc.SOURCE_DATABASE, '');
 			const sourceDetails = this.createInfoField(loc.SOURCE_SERVER, '');
 			const sourceVersion = this.createInfoField(loc.SOURCE_VERSION, '');
 
+			this._sourceDatabase = sourceDatabase.text;
 			this._serverName = sourceDetails.text;
 			this._serverVersion = sourceVersion.text;
 
@@ -59,6 +62,11 @@ export class MigrationCutoverDialog {
 				flexFlow: 'column'
 			}).component();
 
+			flexServer.addItem(sourceDatabase.flexContainer, {
+				CSSStyles: {
+					'width': '150px'
+				}
+			});
 			flexServer.addItem(sourceDetails.flexContainer, {
 				CSSStyles: {
 					'width': '150px'
@@ -388,6 +396,7 @@ export class MigrationCutoverDialog {
 			};
 			const sqlServerInfo = await azdata.connection.getServerInfo(this._model._migration.sourceConnectionProfile.connectionId);
 			const sqlServerName = this._model._migration.sourceConnectionProfile.serverName;
+			const sourceDatabaseName = this._model._migration.migrationContext.properties.sourceDatabaseName;
 			const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
 			const sqlServerVersion = versionName ? versionName : sqlServerInfo.serverVersion;
 			const targetServerName = this._model._migration.targetManagedInstance.name;
@@ -427,6 +436,7 @@ export class MigrationCutoverDialog {
 				}
 			});
 
+			this._sourceDatabase.value = sourceDatabaseName;
 			this._serverName.value = sqlServerName;
 			this._serverVersion.value = `${sqlServerVersion}
 			${sqlServerInfo.serverVersion}`;
@@ -439,7 +449,7 @@ export class MigrationCutoverDialog {
 
 			this._lastAppliedLSN.value = lastAppliedSSN!;
 			this._lastAppliedBackupFile.value = this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename;
-			this._lastAppliedBackupTakenOn.value = new Date(lastAppliedBackupFileTakenOn!).toLocaleString();
+			this._lastAppliedBackupTakenOn.value = lastAppliedBackupFileTakenOn! ? new Date(lastAppliedBackupFileTakenOn).toLocaleString() : '';
 
 			this._fileCount.value = loc.ACTIVE_BACKUP_FILES_ITEMS(tableData.length);
 
