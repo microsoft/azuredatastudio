@@ -97,7 +97,7 @@
 
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.onceDocumentLoaded = void 0;
@@ -125,7 +125,7 @@ exports.onceDocumentLoaded = onceDocumentLoaded;
 
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = __webpack_require__(/*! ./events */ "./preview-src/events.ts");
