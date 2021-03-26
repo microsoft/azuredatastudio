@@ -46,7 +46,11 @@ suite('MainThreadNotebook Tests', () => {
 			undefined,
 			undefined,
 			new MockContextKeyService(),
-			instantiationService.get(IProductService)
+			instantiationService.get(IProductService),
+			undefined,
+			undefined,
+			undefined,
+			undefined
 		);
 		mockNotebookService = TypeMoq.Mock.ofInstance(notebookService);
 		notebookUri = URI.parse('file:/user/default/my.ipynb');

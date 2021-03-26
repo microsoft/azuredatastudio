@@ -39,7 +39,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 
-class MainThreadNotebookEditor extends Disposable {
+export class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	public readonly contentChanged: Event<NotebookContentChange> = this._contentChangedEmitter.event;
 	private _providerId: string = '';

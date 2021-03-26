@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as path from 'vs/base/common/path';
 
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
@@ -29,7 +28,6 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { URI } from 'vs/base/common/uri';
-import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -41,8 +39,6 @@ const msgSelectConnection = localize('selectConnection', "Select Connection");
 const msgLocalHost = localize('localhost', "localhost");
 
 export const noKernel: string = localize('noKernel', "No Kernel");
-const baseIconClass = 'codicon';
-const maskedIconClass = 'masked-icon';
 
 // Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {
@@ -105,15 +101,17 @@ export abstract class TooltipFromLabelAction extends Action {
 // Action to clear outputs of all code cells.
 export class ClearAllOutputsAction extends TooltipFromLabelAction {
 	private static readonly label = localize('clearResults', "Clear Results");
+	private static readonly baseClass = 'codicon';
 	private static readonly iconClass = 'icon-clear-results';
+	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(id: string, toggleTooltip: boolean,
 		@INotebookService private _notebookService: INotebookService) {
 		super(id, {
 			label: ClearAllOutputsAction.label,
-			baseClass: baseIconClass,
+			baseClass: ClearAllOutputsAction.baseClass,
 			iconClass: ClearAllOutputsAction.iconClass,
-			maskedIconClass: maskedIconClass,
+			maskedIconClass: ClearAllOutputsAction.maskedIconClass,
 			shouldToggleTooltip: toggleTooltip
 		});
 	}
@@ -172,22 +170,24 @@ export class TrustedAction extends ToggleableAction {
 	// Constants
 	private static readonly trustedLabel = localize('trustLabel', "Trusted");
 	private static readonly notTrustedLabel = localize('untrustLabel', "Not Trusted");
+	private static readonly baseClass = 'codicon';
 	private static readonly previewTrustedCssClass = 'icon-shield';
 	private static readonly trustedCssClass = 'icon-trusted';
 	private static readonly previewNotTrustedCssClass = 'icon-shield-x';
 	private static readonly notTrustedCssClass = 'icon-notTrusted';
+	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(
 		id: string, toggleTooltip: boolean,
 		@INotebookService private _notebookService: INotebookService
 	) {
 		super(id, {
-			baseClass: baseIconClass,
+			baseClass: TrustedAction.baseClass,
 			toggleOnLabel: TrustedAction.trustedLabel,
 			toggleOnClass: toggleTooltip === true ? TrustedAction.previewTrustedCssClass : TrustedAction.trustedCssClass,
 			toggleOffLabel: TrustedAction.notTrustedLabel,
 			toggleOffClass: toggleTooltip === true ? TrustedAction.previewNotTrustedCssClass : TrustedAction.notTrustedCssClass,
-			maskedIconClass: maskedIconClass,
+			maskedIconClass: TrustedAction.maskedIconClass,
 			shouldToggleTooltip: toggleTooltip,
 			isOn: false
 		});
@@ -232,20 +232,22 @@ export class RunAllCellsAction extends Action {
 export class CollapseCellsAction extends ToggleableAction {
 	private static readonly collapseCells = localize('collapseAllCells', "Collapse Cells");
 	private static readonly expandCells = localize('expandAllCells', "Expand Cells");
+	private static readonly baseClass = 'codicon';
 	private static readonly previewCollapseCssClass = 'icon-collapse-cells';
 	private static readonly collapseCssClass = 'icon-hide-cells';
 	private static readonly previewExpandCssClass = 'icon-expand-cells';
 	private static readonly expandCssClass = 'icon-show-cells';
+	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(id: string, toggleTooltip: boolean,
 		@INotebookService private _notebookService: INotebookService) {
 		super(id, {
-			baseClass: baseIconClass,
+			baseClass: CollapseCellsAction.baseClass,
 			toggleOnLabel: CollapseCellsAction.expandCells,
 			toggleOnClass: toggleTooltip === true ? CollapseCellsAction.previewExpandCssClass : CollapseCellsAction.expandCssClass,
 			toggleOffLabel: CollapseCellsAction.collapseCells,
 			toggleOffClass: toggleTooltip === true ? CollapseCellsAction.previewCollapseCssClass : CollapseCellsAction.collapseCssClass,
-			maskedIconClass: maskedIconClass,
+			maskedIconClass: CollapseCellsAction.maskedIconClass,
 			shouldToggleTooltip: toggleTooltip,
 			isOn: false
 		});
@@ -267,83 +269,6 @@ export class CollapseCellsAction extends ToggleableAction {
 			cell.isCollapsed = this.isCollapsed;
 		});
 		return true;
-	}
-}
-
-// Run Notebook with Parameters
-export class RunParametersAction extends TooltipFromLabelAction {
-	private static readonly label = localize('runParameters', "Run with Parameters");
-	private static readonly iconClass = 'icon-run-with-parameters';
-
-	constructor(id: string, toggleTooltip: boolean,
-		context: URI,
-		@IQuickInputService private quickInputService: IQuickInputService,
-		@INotebookService private _notebookService: INotebookService,
-		@INotificationService private notificationService: INotificationService,
-	) {
-		super(id, {
-			label: RunParametersAction.label,
-			baseClass: baseIconClass,
-			iconClass: RunParametersAction.iconClass,
-			maskedIconClass: maskedIconClass,
-			shouldToggleTooltip: toggleTooltip
-		});
-	}
-
-	// Open QuickPick dialog
-	public async run(context: URI): Promise<void> {
-		// TO DO - Set Default Parameters to the mapped string
-		let defaultParameters = new Map<string, string>();
-		// New Parameters to be set to injected parameters cell
-		let pick = new Map<string, string>();
-		let newParams: string = '';
-		let addParam: string;
-		let index = 0;
-
-		// Store new parameter values to map based off defaultParameters
-		if (defaultParameters.size === 0) {
-			// If there is no parameter cell indicate to user to create one
-			this.notificationService.warn('Unable to Run with Parameters as there is no parameter cell. Create a paramter cell first. Learn more here: https://docs.microsoft.com/en-us/sql/azure-data-studio/notebooks/notebooks-parameterization?view=sql-server-ver15');
-		} else {
-			for (let key of defaultParameters.keys()) {
-				let newParameterValue = await this.quickInputService.input({ prompt: key, placeHolder: defaultParameters.get(key) });
-				pick.set(key, newParameterValue);
-			}
-			if (pick.size > 0) {
-				// Format the new parameters to be append to URI
-				for (let key of pick.keys()) {
-					// The value of the key is not undefined
-					if (pick.get(key)) {
-						addParam = key + '=' + pick.get(key);
-						if (index === 0) {
-							newParams = newParams.concat(newParams, addParam);
-							index = index + 1;
-						} else {
-							// Parameters after the first will use the '&' denote another parameter value to be added
-							newParams = newParams + '&' + addParam;
-						}
-					}
-				}
-				let filePath = context.path;
-				filePath = filePath + '?' + newParams;
-
-				return this.openParameterizedNotebook(context, filePath);
-			}
-		}
-	}
-
-
-	public async openParameterizedNotebook(uri: URI, filePath: string): Promise<void> {
-		const editor = this._notebookService.findNotebookEditor(uri);
-		let modelContents = editor.model.toJSON();
-		let parameterizedURI = URI.parse(filePath);
-		let basename = path.basename(parameterizedURI.fsPath);
-		let untitledUri = parameterizedURI.with({ authority: '', scheme: 'untitled', path: basename });
-		// Call Extensibility API for ShowNotebook
-		this._notebookService.showNotebookDocument(untitledUri, {
-			initialContent: modelContents,
-			preserveFocus: true
-		});
 	}
 }
 

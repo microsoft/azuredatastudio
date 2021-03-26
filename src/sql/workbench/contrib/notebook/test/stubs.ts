@@ -289,6 +289,9 @@ export class NotebookServiceStub implements INotebookService {
 	navigateTo(notebookUri: URI, sectionId: string): void {
 		throw new Error('Method not implemented.');
 	}
+	showNotebookDocument(uri: URI, showOptions: nb.NotebookShowOptions): Thenable<nb.NotebookEditor> {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export class ClientSessionStub implements IClientSession {

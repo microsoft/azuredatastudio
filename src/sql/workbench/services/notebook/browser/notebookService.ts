@@ -129,6 +129,8 @@ export interface INotebookService {
 	 * @param isTrusted True if notebook is to be set to trusted, false otherwise.
 	 */
 	setTrusted(notebookUri: URI, isTrusted: boolean): Promise<boolean>;
+
+	showNotebookDocument(uri: URI, showOptions: azdata.nb.NotebookShowOptions): Thenable<azdata.nb.NotebookEditor>
 }
 
 export interface INotebookProvider {
