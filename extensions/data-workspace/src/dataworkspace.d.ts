@@ -20,6 +20,12 @@ declare module 'dataworkspace' {
 		getProjectsInWorkspace(ext?: string): vscode.Uri[];
 
 		/**
+		 * Returns the project provider for this file if there is one registered
+		 * @param projectFile project file to filter on
+		 */
+		getProjectProvider(projectFile: vscode.Uri): Promise<IProjectProvider | undefined>;
+
+		/**
 		 * Add projects to the workspace
 		 * @param projectFiles Uris of project files to add,
 		 * @param workspaceFilePath workspace file to create if no workspace is open

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { IExtension } from 'dataworkspace';
+import { IExtension, IProjectProvider } from 'dataworkspace';
 import { WorkspaceService } from '../services/workspaceService';
 import { defaultProjectSaveLocation } from './projectLocationHelper';
 
@@ -14,6 +14,10 @@ export class DataWorkspaceExtension implements IExtension {
 
 	getProjectsInWorkspace(ext?: string): vscode.Uri[] {
 		return this.workspaceService.getProjectsInWorkspace(ext);
+	}
+
+	getProjectProvider(projectFile: vscode.Uri): Promise<IProjectProvider | undefined> {
+		return this.workspaceService.getProjectProvider(projectFile);
 	}
 
 	addProjectsToWorkspace(projectFiles: vscode.Uri[], workspaceFilePath?: vscode.Uri): Promise<void> {
