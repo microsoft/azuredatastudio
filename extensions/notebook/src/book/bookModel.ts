@@ -29,7 +29,7 @@ export class BookModel {
 	private _errorMessage: string;
 	private _activePromise: Deferred<void> | undefined = undefined;
 	private _queuedPromises: Deferred<void>[] = [];
-	private _rootNode: BookTreeItem;
+	private _rootNode: BookTreeItem; // first node in the book that points to the contents folder.
 
 	constructor(
 		public readonly bookPath: string,
@@ -226,7 +226,7 @@ export class BookModel {
 		});
 	}
 
-	public async getSections(element: BookTreeItem): Promise<BookTreeItem[]> {
+	public async getSections(element?: BookTreeItem): Promise<BookTreeItem[]> {
 		let tableOfContents: IJupyterBookToc = element?.tableOfContents;
 		let sections: JupyterBookSection[] = element?.sections;
 		let root: string = element?.root;

@@ -48,8 +48,6 @@ export class BookTreeItem extends vscode.TreeItem {
 	public resourceUri: vscode.Uri;
 	private _rootContentPath: string;
 	private _tableOfContentsPath: string;
-	private _children: BookTreeItem[];
-	private _parent: BookTreeItem;
 
 	constructor(public book: BookTreeItemFormat, icons: any) {
 		super(book.title, book.treeItemCollapsibleState);
@@ -212,19 +210,19 @@ export class BookTreeItem extends vscode.TreeItem {
 	}
 
 	public get children(): BookTreeItem[] {
-		return this._children;
+		return this.book.children;
 	}
 
 	public set children(children: BookTreeItem[]) {
-		this._children = children;
+		this.book.children = children;
 	}
 
 	public get parent(): BookTreeItem {
-		return this._parent;
+		return this.book.parent;
 	}
 
 	public set parent(parent: BookTreeItem) {
-		this._parent = parent;
+		this.book.parent = parent;
 	}
 
 	/**

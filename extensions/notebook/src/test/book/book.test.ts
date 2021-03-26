@@ -179,7 +179,7 @@ describe('BooksTreeViewTests', function () {
 				sinon.restore();
 			});
 
-			it('getChildren should return only root node when element is undefined', async function (): Promise<void> {
+			it('getChildren should return all book nodes when element is undefined', async function (): Promise<void> {
 				const children = await bookTreeViewProvider.getChildren();
 				should(children).be.Array();
 				should(children.length).equal(1);

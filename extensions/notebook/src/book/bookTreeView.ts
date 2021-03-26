@@ -639,7 +639,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	getChildren(element?: BookTreeItem): Thenable<BookTreeItem[]> {
 		if (element) {
 			if (element.sections) {
-				return Promise.resolve(this.currentBook.getSections(element).then(sections => { return sections; }));
+				return Promise.resolve(this.currentBook.getSections(element));
 			} else {
 				return Promise.resolve([]);
 			}
@@ -658,7 +658,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 * throwing error if it is not implemented.
 	 */
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
-		// Remove it for perf issues.
 		return element?.parent;
 	}
 
