@@ -97,6 +97,8 @@ export function connectToMSSql(name: string): string { return localize('arc.conn
 export function connectToPGSql(name: string): string { return localize('arc.connectToPGSql', "Connect to PostgreSQL Hyperscale - Azure Arc ({0})", name); }
 export const passwordToController = localize('arc.passwordToController', "Provide Password to Controller");
 export const controllerUrl = localize('arc.controllerUrl', "Controller URL");
+export const controllerUrlPlaceholder = localize('arc.controllerUrlPlaceholder', "https://<IP or hostname>:<port>");
+export const controllerUrlDescription = localize('arc.controllerUrlDescription', "The Controller URL is necessary if there are multiple clusters with the same namespace - this should generally not be necessary.");
 export const serverEndpoint = localize('arc.serverEndpoint', "Server Endpoint");
 export const controllerName = localize('arc.controllerName', "Name");
 export const controllerKubeConfig = localize('arc.controllerKubeConfig', "Kube Config File Path");
