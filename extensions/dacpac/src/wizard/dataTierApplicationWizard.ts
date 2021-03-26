@@ -102,6 +102,13 @@ export class DataTierApplicationWizard {
 			this.model.database = profile.databaseName;
 		}
 
+		// the wizard was started from the context menu of a database or server if the connectionProfile is not undefined
+		// Otherwise it was launched from the command palette
+		TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, 'WizardOpened')
+			.withAdditionalProperties({
+				startedWithConnectionProfile: (!!profile).toString()
+			}).send();
+
 		this.connection = await azdata.connection.getCurrentConnection();
 		if (!this.connection || (profile && this.connection.connectionId !== profile.id)) {
 			// check if there are any active connections
