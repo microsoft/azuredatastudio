@@ -50,7 +50,21 @@ export async function getAvailableSqlServers(account: azdata.Account, subscripti
 	return result.resources;
 }
 
-export type SqlVMServer = AzureProduct;
+export type SqlVMServer = {
+	properties: {
+		virtualMachineResourceId: string,
+		provisioningState: string,
+		sqlImageOffer: string,
+		sqlManagement: string,
+		sqlImageSku: string
+	},
+	location: string,
+	id: string,
+	name: string,
+	type: string,
+	tenantId: string,
+	subscriptionId: string
+};
 export async function getAvailableSqlVMs(account: azdata.Account, subscription: Subscription): Promise<SqlVMServer[]> {
 	const api = await getAzureCoreAPI();
 	const path = `/subscriptions/${subscription.id}/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines?api-version=2017-03-01-preview`;
@@ -331,6 +345,7 @@ export interface StartDatabaseMigrationRequest {
 			},
 		},
 		sourceSqlConnection: {
+			authentication: string,
 			dataSource: string,
 			username: string,
 			password: string

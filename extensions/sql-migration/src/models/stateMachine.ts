@@ -33,6 +33,11 @@ export enum State {
 	EXIT,
 }
 
+export enum MigrationTargetType {
+	SQLVM = 'sqlvm',
+	SQLMI = 'sqlmi'
+}
+
 export enum MigrationCutover {
 	ONLINE,
 	OFFLINE
@@ -82,6 +87,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _azureAccount!: azdata.Account;
 	public _accountTenants!: azurecore.Tenant[];
 
+	public _connecionProfile!: azdata.connection.ConnectionProfile;
+	public _authenticationType!: string;
+	public _sqlServerUsername!: string;
+	public _sqlServerPassword!: string;
+
 	public _subscriptions!: azureResource.AzureResourceSubscription[];
 
 	public _targetSubscription!: azureResource.AzureResourceSubscription;
@@ -103,9 +113,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _stateChangeEventEmitter = new vscode.EventEmitter<StateChangeEvent>();
 	private _currentState: State;
 	private _gatheringInformationError: string | undefined;
-	private _skuRecommendations: SKURecommendations | undefined;
-	private _assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined;
 
+	private _skuRecommendations: SKURecommendations | undefined;
+	public _assessmentResults!: ServerAssessement;
+	public _vmDbs: string[] = [];
+	public _miDbs: string[] = [];
+	public _targetType!: MigrationTargetType;
 	public refreshDatabaseBackupPage!: boolean;
 
 	constructor(
@@ -127,18 +140,52 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public set currentState(newState: State) {
 		const oldState = this.currentState;
-
 		this._currentState = newState;
-
 		this._stateChangeEventEmitter.fire({ oldState, newState: this.currentState });
 	}
 
-	public get assessmentResults(): mssql.SqlMigrationAssessmentResultItem[] | undefined {
+	public async getServerAssessments(): Promise<ServerAssessement> {
+		const excludeDbs: string[] = [
+			'master',
+			'tempdb',
+			'msdb',
+			'model'
+		];
+
+		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
+
+		const assessmentResults = await this.migrationService.getAssessments(
+			ownerUri
+		);
+
+		const serverDatabases = await (await azdata.connection.listDatabases(this.sourceConnectionId)).filter((name) => !excludeDbs.includes(name));
+		const serverLevelAssessments: mssql.SqlMigrationAssessmentResultItem[] = [];
+		const databaseLevelAssessments = serverDatabases.map(db => {
+			return {
+				name: db,
+				issues: <mssql.SqlMigrationAssessmentResultItem[]>[]
+			};
+		});
+
+		assessmentResults?.items.forEach((item) => {
+			const dbIndex = serverDatabases.indexOf(item.databaseName);
+			if (dbIndex === -1) {
+				serverLevelAssessments.push(item);
+			} else {
+				databaseLevelAssessments[dbIndex].issues.push(item);
+			}
+		});
+
+		this._assessmentResults = {
+			issues: serverLevelAssessments,
+			databaseAssessments: databaseLevelAssessments
+		};
+
 		return this._assessmentResults;
 	}
 
-	public set assessmentResults(assessmentResults: mssql.SqlMigrationAssessmentResultItem[] | undefined) {
-		this._assessmentResults = assessmentResults;
+	public getDatabaseAssessments(databaseName: string): mssql.SqlMigrationAssessmentResultItem[] | undefined {
+		return this._assessmentResults.databaseAssessments.find(databaseAsssessment => databaseAsssessment.name === databaseName)?.issues;
 	}
 
 	public get gatheringInformationError(): string | undefined {
@@ -210,6 +257,17 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public getTenant(index: number): azurecore.Tenant {
 		return this._accountTenants[index];
+	}
+
+	public async getSourceConnectionProfile(): Promise<azdata.connection.ConnectionProfile> {
+		const sqlConnections = await azdata.connection.getConnections();
+		return sqlConnections.find((value) => {
+			if (value.connectionId === this.sourceConnectionId) {
+				return true;
+			} else {
+				return false;
+			}
+		})!;
 	}
 
 	public async getSubscriptionsDropdownValues(): Promise<azdata.CategoryValue[]> {
@@ -289,7 +347,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		let virtualMachineValues: azdata.CategoryValue[] = [];
 		try {
 			this._targetSqlVirtualMachines = await getAvailableSqlVMs(this._azureAccount, subscription);
-			virtualMachineValues = this._targetSqlVirtualMachines.map((virtualMachine) => {
+			virtualMachineValues = this._targetSqlVirtualMachines.filter((virtualMachine) => {
+				return virtualMachine.properties.sqlImageOffer.toLowerCase().includes('-ws'); //filtering out all non windows sql vms.
+			}).map((virtualMachine) => {
 				return {
 					name: virtualMachine.id,
 					displayName: `${virtualMachine.name}`
@@ -470,7 +530,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				return false;
 			}
 		});
-		const connectionPassword = await azdata.connection.getCredentials(this.sourceConnectionId);
 
 		const requestBody: StartDatabaseMigrationRequest = {
 			location: this._sqlMigrationService?.properties.location!,
@@ -492,8 +551,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				},
 				sourceSqlConnection: {
 					dataSource: currentConnection?.serverName!,
-					username: currentConnection?.userName!,
-					password: connectionPassword.password
+					authentication: this._authenticationType,
+					username: this._sqlServerUsername,
+					password: this._sqlServerPassword
 				},
 				scope: this._targetServerInstance.id
 			}
@@ -530,4 +590,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 		});
 	}
+}
+
+export interface ServerAssessement {
+	issues: mssql.SqlMigrationAssessmentResultItem[];
+	databaseAssessments: {
+		name: string;
+		issues: mssql.SqlMigrationAssessmentResultItem[];
+	}[];
 }

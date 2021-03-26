@@ -19,19 +19,19 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _windowsUserAccountText!: azdata.InputBoxComponent;
 	private _passwordText!: azdata.InputBoxComponent;
 	private _networkShareDatabaseConfigContainer!: azdata.FlexContainer;
-	private _networkShareLocations!: azdata.InputBoxComponent[];
+	private _networkShareLocations: azdata.InputBoxComponent[] = [];
 
 	private _blobContainer!: azdata.FlexContainer;
 	private _blobContainerSubscriptionDropdown!: azdata.DropDownComponent;
 	private _blobContainerStorageAccountDropdown!: azdata.DropDownComponent;
 	private _blobContainerDatabaseConfigContainer!: azdata.FlexContainer;
-	private _blobContainerDropdowns!: azdata.DropDownComponent[];
+	private _blobContainerDropdowns: azdata.DropDownComponent[] = [];
 
 	private _fileShareContainer!: azdata.FlexContainer;
 	private _fileShareSubscriptionDropdown!: azdata.DropDownComponent;
 	private _fileShareStorageAccountDropdown!: azdata.DropDownComponent;
 	private _fileShareDatabaseConfigContainer!: azdata.FlexContainer;
-	private _fileShareDropdowns!: azdata.DropDownComponent[];
+	private _fileShareDropdowns: azdata.DropDownComponent[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_BACKUP_PAGE_TITLE), migrationStateModel);

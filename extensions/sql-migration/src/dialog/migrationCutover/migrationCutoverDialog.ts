@@ -9,6 +9,7 @@ import { MigrationContext } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialogModel } from './migrationCutoverDialogModel';
 import * as loc from '../../constants/strings';
 import { getSqlServerName } from '../../api/utils';
+import { EOL } from 'os';
 export class MigrationCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
@@ -353,6 +354,13 @@ export class MigrationCutoverDialog {
 			this._cutoverButton.enabled = false;
 			this._cancelButton.enabled = false;
 			await this._model.fetchStatus();
+			const errors = [];
+			errors.push(this._model.migrationStatus.properties.migrationFailureError?.message);
+			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
+			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.restoreBlockingReason);
+			this._dialogObject.message = {
+				text: errors.filter(e => e !== undefined).join(EOL)
+			};
 			const sqlServerInfo = await azdata.connection.getServerInfo(this._model._migration.sourceConnectionProfile.connectionId);
 			const sqlServerName = this._model._migration.sourceConnectionProfile.serverName;
 			const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
