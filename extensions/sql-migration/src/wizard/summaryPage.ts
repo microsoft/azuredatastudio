@@ -72,6 +72,7 @@ export class SummaryPage extends MigrationWizardPage {
 				flexContainer.addItems(
 					[
 						createInformationRow(this._view, constants.TYPE, constants.NETWORK_SHARE),
+						createInformationRow(this._view, constants.DATABASE_BACKUP_NETWORK_SHARE_LOCATION_LABEL, this.migrationStateModel._databaseBackup.networkShareLocation),
 						createInformationRow(this._view, constants.USER_ACCOUNT, this.migrationStateModel._databaseBackup.windowsUser),
 						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name),
 						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel._databaseBackup.storageAccount.name),
@@ -80,7 +81,6 @@ export class SummaryPage extends MigrationWizardPage {
 				);
 				this.migrationStateModel._migrationDbs.forEach((db, index) => {
 					flexContainer.addItem(createInformationRow(this._view, constants.TARGET_NAME_FOR_DATABASE(db), this.migrationStateModel._targetDatabaseNames[index]));
-					flexContainer.addItem(createInformationRow(this._view, constants.TARGET_NETWORK_SHARE_LOCATION(db), this.migrationStateModel._databaseBackup.networkShareLocations[index]));
 				});
 				break;
 			case NetworkContainerType.FILE_SHARE:

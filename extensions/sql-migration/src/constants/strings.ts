@@ -87,10 +87,12 @@ export const DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL = localize('sql.migrat
 export const DATABASE_BACKUP_EMAIL_NOTIFICATION_LABEL = localize('sql.migration.database.backup.email.notification.label', "Email notifications");
 export const DATABASE_BACKUP_EMAIL_NOTIFICATION_CHECKBOX_LABEL = localize('sql.migration.database.backup.email.notification.checkbox.label', "Notify me when migration is complete");
 export const NO_SUBSCRIPTIONS_FOUND = localize('sql.migration.no.subscription.found', "No subscription found");
+export const NO_LOCATION_FOUND = localize('sql.migration.no.location.found', "No location found");
 export const NO_STORAGE_ACCOUNT_FOUND = localize('sql.migration.no.storageAccount.found', "No storage account found");
 export const NO_FILESHARES_FOUND = localize('sql.migration.no.fileShares.found', "No file shares found");
 export const NO_BLOBCONTAINERS_FOUND = localize('sql.migration.no.blobContainers.found', "No blob containers found");
 export const INVALID_SUBSCRIPTION_ERROR = localize('sql.migration.invalid.subscription.error', "Please select a valid subscription to proceed.");
+export const INVALID_LOCATION_ERROR = localize('sql.migration.invalid.location.error', "Please select a valid location to proceed.");
 export const INVALID_STORAGE_ACCOUNT_ERROR = localize('sql.migration.invalid.storageAccount.error', "Please select a valid storage account to proceed.");
 export const INVALID_FILESHARE_ERROR = localize('sql.migration.invalid.fileShare.error', "Please select a valid file share to proceed.");
 export const INVALID_BLOBCONTAINER_ERROR = localize('sql.migration.invalid.blobContainer.error', "Please select a valid blob container to proceed.");
@@ -108,7 +110,7 @@ export function TARGET_FILE_SHARE(dbName: string): string {
 export function TARGET_BLOB_CONTAINER(dbName: string): string {
 	return localize('sql.migration.blob.container', "Select the container that contains the backup files for ‘{0}’", dbName);
 }
-export const ENTER_NETWORK_SHARE_INFORMATION = localize('sql.migration.enter.network.share.information', "Enter network share path information for selected databases");
+export const ENTER_NETWORK_SHARE_INFORMATION = localize('sql.migration.enter.network.share.information', "Enter target names for selected databases");
 export const ENTER_BLOB_CONTAINER_INFORMATION = localize('sql.migration.blob.container.information', "Enter the target name and select the blob container location for selected databases");
 export const ENTER_FILE_SHARE_INFORMATION = localize('sql.migration.enter.file.share.information', "Enter the target name and select the file share location of selected databases");
 
@@ -152,7 +154,7 @@ export function SERVICE_NOT_READY(serviceName: string): string {
 export function SERVICE_READY(serviceName: string, host: string): string {
 	return localize('sql.migration.service.ready', "Azure Data Migration Service '{0}' is connected to self-hosted Integration Runtime running on the node - {1}", serviceName, host);
 }
-export const RESOURCE_GROUP_NOT_FOUND = localize('sql.migration.resource.group.not.found', "No resource Groups found");
+export const RESOURCE_GROUP_NOT_FOUND = localize('sql.migration.resource.group.not.found', "No resource groups found");
 export const INVALID_RESOURCE_GROUP_ERROR = localize('sql.migration.invalid.resourceGroup.error', "Please select a valid resource group to proceed.");
 export const INVALID_REGION_ERROR = localize('sql.migration.invalid.region.error', "Please select a valid region to proceed.");
 export const INVALID_SERVICE_NAME_ERROR = localize('sql.migration.invalid.service.name.error', "Please enter a valid name for the Migration Service.");
@@ -230,6 +232,7 @@ export const EASTUS2EUAP = localize('sql.migration.eastus2euap', 'East US 2 EUAP
 
 //Migration cutover dialog
 export const MIGRATION_CUTOVER = localize('sql.migration.cutover', "Migration cutover");
+export const SOURCE_DATABASE = localize('sql.migration.source.database', "Source database");
 export const SOURCE_SERVER = localize('sql.migration.source.server', "Source server");
 export const SOURCE_VERSION = localize('sql.migration.source.version', "Source version");
 export const TARGET_SERVER = localize('sql.migration.target.server', "Target server");
@@ -255,7 +258,7 @@ export function ACTIVE_BACKUP_FILES_ITEMS(fileCount: number) {
 		return localize('sql.migration.active.backup.files.multiple.items', "Active Backup files ({0} items)", fileCount);
 	}
 }
-
+export const COPY_MIGRATION_DETAILS = localize('sql.migration.copy.migration.details', "Copy Migration Details");
 
 //Migration status dialog
 export const SEARCH_FOR_MIGRATIONS = localize('sql.migration.search.for.migration', "Search for migrations");
