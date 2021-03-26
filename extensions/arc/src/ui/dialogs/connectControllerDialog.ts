@@ -64,7 +64,10 @@ abstract class ControllerDialogBase extends InitializingComponent {
 			}, {
 				component: this.nameInputBox,
 				title: loc.controllerName,
-				required: false
+				required: false,
+				layout: {
+					info: loc.controllerNameDescription
+				}
 			}, {
 				component: this.usernameInputBox,
 				title: loc.controllerUsername,

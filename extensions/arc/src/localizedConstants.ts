@@ -101,6 +101,7 @@ export const controllerUrlPlaceholder = localize('arc.controllerUrlPlaceholder',
 export const controllerUrlDescription = localize('arc.controllerUrlDescription', "The Controller URL is necessary if there are multiple clusters with the same namespace - this should generally not be necessary.");
 export const serverEndpoint = localize('arc.serverEndpoint', "Server Endpoint");
 export const controllerName = localize('arc.controllerName', "Name");
+export const controllerNameDescription = localize('arc.controllerNameDescription', "The name to display in the tree view, this is not applied to the controller itself.");
 export const controllerKubeConfig = localize('arc.controllerKubeConfig', "Kube Config File Path");
 export const controllerClusterContext = localize('arc.controllerClusterContext', "Cluster Context");
 export const defaultControllerName = localize('arc.defaultControllerName', "arc-dc");
