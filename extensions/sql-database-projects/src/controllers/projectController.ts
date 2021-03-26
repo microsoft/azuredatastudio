@@ -582,7 +582,7 @@ export class ProjectsController {
 			} else {
 				// update dacpacFileLocation to relative path to project file
 				const dacpacRefSettings = settings as IDacpacReferenceSettings;
-				dacpacRefSettings.dacpacFileLocation = vscode.Uri.file(utils.trimUri(vscode.Uri.file(project.projectFilePath), dacpacRefSettings.dacpacFileLocation));
+				dacpacRefSettings.dacpacFileLocation = vscode.Uri.file(path.relative(project.projectFolderPath, dacpacRefSettings.dacpacFileLocation.fsPath));
 				await project.addDatabaseReference(dacpacRefSettings);
 			}
 
