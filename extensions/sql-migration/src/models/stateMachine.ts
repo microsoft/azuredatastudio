@@ -655,9 +655,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 		};
 
-		this._migrationDbs.forEach(async (db, index) => {
-
-			requestBody.properties.sourceDatabaseName = db;
+		for (let i = 0; i < this._migrationDbs.length; i++) {
+			requestBody.properties.sourceDatabaseName = this._migrationDbs[i];
 			try {
 				requestBody.properties.backupConfiguration.sourceLocation.fileShare!.path = this._databaseBackup.networkShareLocation;
 				const response = await startDatabaseMigration(
@@ -665,7 +664,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					this._targetSubscription,
 					this._sqlMigrationService?.properties.location!,
 					this._targetServerInstance,
-					this._targetDatabaseNames[index],
+					this._targetDatabaseNames[i],
 					requestBody
 				);
 				if (response.status === 201) {
@@ -677,14 +676,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						this._targetSubscription,
 						this._sqlMigrationService
 					);
-					vscode.window.showInformationMessage(localize("sql.migration.starting.migration.message", 'Starting migration for database {0} to {1} - {2}', db, this._targetServerInstance.name, this._targetDatabaseNames[index]));
+					vscode.window.showInformationMessage(localize("sql.migration.starting.migration.message", 'Starting migration for database {0} to {1} - {2}', this._migrationDbs[i], this._targetServerInstance.name, this._targetDatabaseNames[i]));
 				}
 			} catch (e) {
 				console.log(e);
 				vscode.window.showInformationMessage(e);
 			}
-
-		});
+		}
 	}
 }
 
