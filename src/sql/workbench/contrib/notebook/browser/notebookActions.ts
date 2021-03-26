@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as path from 'vs/base/common/path';
 
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
@@ -290,20 +289,38 @@ export class RunParametersAction extends TooltipFromLabelAction {
 		});
 	}
 
-	// Open QuickPick dialog
+	/**
+	 * Gets Default Parameters in Notebook from Parameter Cell
+	 * Uses that as Placeholder values for user to inject new values for
+	 * Once user enters all values it will open the new parameterized notebook
+	 * with injected parameters value from the QuickInput
+	*/
 	public async run(context: URI): Promise<void> {
-		// TO DO - Set Default Parameters to the mapped string
+		// Get Parameters via Notebook Model
+		const editor = this._notebookService.findNotebookEditor(context);
+		// Set Default Parameters to the mapped string
 		let defaultParameters = new Map<string, string>();
+		editor.cells.forEach(cell => {
+			if (cell.isParameter) {
+				for (let parameter of cell.source) {
+					let param = parameter.trim().split('=');
+					defaultParameters.set(param[0].trim(), param[1].trim());
+				}
+			}
+		});
+
 		// New Parameters to be set to injected parameters cell
 		let pick = new Map<string, string>();
 		let newParams: string = '';
 		let addParam: string;
 		let index = 0;
-
 		// Store new parameter values to map based off defaultParameters
 		if (defaultParameters.size === 0) {
 			// If there is no parameter cell indicate to user to create one
-			this.notificationService.warn('Unable to Run with Parameters as there is no parameter cell. Create a paramter cell first. Learn more here: https://docs.microsoft.com/en-us/sql/azure-data-studio/notebooks/notebooks-parameterization?view=sql-server-ver15');
+			this.notificationService.notify({
+				severity: Severity.Info,
+				message: localize('noParametersCell', "Unable to Run with Parameters as there is no Parameter Cell. Create a Parameter Cell first. Learn more [here](https://docs.microsoft.com/en-us/sql/azure-data-studio/notebooks/notebooks-parameterization?view=sql-server-ver15)."),
+			});
 		} else {
 			for (let key of defaultParameters.keys()) {
 				let newParameterValue = await this.quickInputService.input({ prompt: key, placeHolder: defaultParameters.get(key) });
@@ -332,18 +349,19 @@ export class RunParametersAction extends TooltipFromLabelAction {
 		}
 	}
 
-
+	// This function will be used once the showNotebookDocument can be used
+	// TODO - Call Extensibility API for ShowNotebook
+	// (showNotebookDocument to be utilized in Notebook Service)
 	public async openParameterizedNotebook(uri: URI, filePath: string): Promise<void> {
-		const editor = this._notebookService.findNotebookEditor(uri);
-		let modelContents = editor.model.toJSON();
-		let parameterizedURI = URI.parse(filePath);
-		let basename = path.basename(parameterizedURI.fsPath);
-		let untitledUri = parameterizedURI.with({ authority: '', scheme: 'untitled', path: basename });
-		// Call Extensibility API for ShowNotebook
-		this._notebookService.showNotebookDocument(untitledUri, {
-			initialContent: modelContents,
-			preserveFocus: true
-		});
+		// const editor = this._notebookService.findNotebookEditor(uri);
+		// let modelContents = editor.model.toJSON();
+		// let parameterizedURI = URI.parse(filePath);
+		// let basename = path.basename(parameterizedURI.fsPath);
+		// let untitledUri = parameterizedURI.with({ authority: '', scheme: 'untitled', path: basename });
+		// this._notebookService.showNotebookDocument(untitledUri, {
+		// 	initialContent: modelContents,
+		// 	preserveFocus: true
+		// });
 	}
 }
 
