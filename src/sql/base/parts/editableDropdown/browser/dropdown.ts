@@ -202,7 +202,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 				case KeyCode.Space:
 					const focusedElements = this._selectList.getFocusedElements();
 					if (focusedElements.length !== 0) {
-						this._updateSelection(focusedElements[0].text);
+						this.updateSelection(focusedElements[0].text);
 						handled = true;
 					}
 					break;
@@ -216,7 +216,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		}));
 		this._register(this._selectList.onMouseClick((e) => {
 			if (e.element) {
-				this._updateSelection(e.element.text);
+				this.updateSelection(e.element.text);
 			}
 		}));
 
@@ -263,9 +263,11 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		this._selectListContainer.setAttribute('aria-hidden', `${!visible}`);
 	}
 
-	private _updateSelection(newValue: string): void {
-		this.value = newValue;
-		this._onValueChange.fire(newValue);
+	public updateSelection(newValue: string): void {
+		if (this.value !== newValue) {
+			this.value = newValue;
+			this._onValueChange.fire(newValue);
+		}
 		this._input.focus();
 		this._hideList();
 	}
