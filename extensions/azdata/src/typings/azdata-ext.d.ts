@@ -160,7 +160,7 @@ declare module 'azdata-ext' {
 
 	export interface PostgresServerShowResult {
 		apiVersion: string, // "arcdata.microsoft.com/v1alpha1"
-		kind: string, // "postgresql"
+		kind: string, // "postgresql-12"
 		metadata: {
 			creationTimestamp: string, // "2020-08-19T20:25:11Z"
 			generation: number, // 1
@@ -177,8 +177,7 @@ declare module 'azdata-ext' {
 				}[],
 				settings: {
 					default: { [key: string]: string } // { "max_connections": "101", "work_mem": "4MB" }
-				},
-				version: string // "12"
+				}
 			},
 			scale: {
 				shards: number, // 1 (shards was renamed to workers, kept here for backwards compatibility)
@@ -279,6 +278,7 @@ declare module 'azdata-ext' {
 							replaceEngineSettings?: boolean,
 							workers?: number
 						},
+						engineVersion?: string,
 						additionalEnvVars?: AdditionalEnvVars,
 						session?: AzdataSession
 					): Promise<AzdataOutput<void>>

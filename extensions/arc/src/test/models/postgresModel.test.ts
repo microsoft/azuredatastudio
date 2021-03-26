@@ -41,8 +41,7 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 				extensions: [{ name: '' }],
 				settings: {
 					default: { ['']: '' }
-				},
-				version: ''
+				}
 			},
 			scale: {
 				shards: 0,
