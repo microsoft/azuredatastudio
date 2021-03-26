@@ -537,9 +537,9 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#1.2.0":
-  version "1.2.0"
-  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/b0cdc1380ce30feda6531dc76faa67c339af1724"
+"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#1.2.2":
+  version "1.2.2"
+  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/3ffb03ba8b892cffe6ad363a2269c1f9439cf350"
   dependencies:
     vscode-languageclient "5.2.1"
 
