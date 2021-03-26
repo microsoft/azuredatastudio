@@ -71,6 +71,25 @@ declare module 'azureResource' {
 		export interface AzureResourceResourceGroup extends AzureResource {
 		}
 
+		export interface AzureLocation {
+			id: string,
+			name: string,
+			displayName: string,
+			regionalDisplayName: string,
+			metadata: {
+				regionType: string,
+				regionCategory: string,
+				geographyGroup: string,
+				longitude: number,
+				latitude: number,
+				physicalLocation: string,
+				pairedRegion: {
+					name: string,
+					id: string,
+				}[],
+			},
+		}
+
 		export interface AzureResourceDatabase extends AzureSqlResource {
 			serverName: string;
 			serverFullName: string;

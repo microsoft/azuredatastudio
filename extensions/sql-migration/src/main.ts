@@ -28,18 +28,7 @@ class SQLMigration {
 	async registerCommands(): Promise<void> {
 		const commandDisposables: vscode.Disposable[] = [ // Array of disposables returned by registerCommand
 			vscode.commands.registerCommand('sqlmigration.start', async () => {
-				let activeConnection = await azdata.connection.getCurrentConnection();
-				let connectionId: string = '';
-				if (!activeConnection) {
-					const connection = await azdata.connection.openConnectionDialog();
-					if (connection) {
-						connectionId = connection.connectionId;
-					}
-				} else {
-					connectionId = activeConnection.connectionId;
-				}
-				const wizardController = new WizardController(this.context);
-				await wizardController.openWizard(connectionId);
+				await this.launchMigrationWizard();
 			}),
 			vscode.commands.registerCommand('sqlmigration.openNotebooks', async () => {
 				const input = vscode.window.createQuickPick<MigrationNotebookInfo>();
@@ -64,10 +53,28 @@ class SQLMigration {
 				});
 
 				input.show();
+			}),
+			azdata.tasks.registerTask('sqlmigration.start', async () => {
+				await this.launchMigrationWizard();
 			})
 		];
 
 		this.context.subscriptions.push(...commandDisposables);
+	}
+
+	async launchMigrationWizard(): Promise<void> {
+		let activeConnection = await azdata.connection.getCurrentConnection();
+		let connectionId: string = '';
+		if (!activeConnection) {
+			const connection = await azdata.connection.openConnectionDialog();
+			if (connection) {
+				connectionId = connection.connectionId;
+			}
+		} else {
+			connectionId = activeConnection.connectionId;
+		}
+		const wizardController = new WizardController(this.context);
+		await wizardController.openWizard(connectionId);
 	}
 
 	stop(): void {

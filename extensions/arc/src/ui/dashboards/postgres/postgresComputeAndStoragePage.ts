@@ -209,7 +209,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 								this.saveButton!.enabled = true;
 								throw err;
 							}
-							await this._postgresModel.refresh();
+							try {
+								await this._postgresModel.refresh();
+							} catch (error) {
+								vscode.window.showErrorMessage(loc.refreshFailed(error));
+							}
 						}
 					);
 

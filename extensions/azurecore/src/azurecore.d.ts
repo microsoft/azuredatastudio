@@ -245,6 +245,7 @@ declare module 'azurecore' {
 	export interface IExtension {
 		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean, selectedOnly?: boolean): Promise<GetSubscriptionsResult>;
 		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<GetResourceGroupsResult>;
+		getLocations(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<GetLocationsResult>;
 		getSqlManagedInstances(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlManagedInstancesResult>;
 		getSqlServers(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlServersResult>;
 		getSqlVMServers(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlVMServersResult>;
@@ -275,6 +276,7 @@ declare module 'azurecore' {
 
 	export type GetSubscriptionsResult = { subscriptions: azureResource.AzureResourceSubscription[], errors: Error[] };
 	export type GetResourceGroupsResult = { resourceGroups: azureResource.AzureResourceResourceGroup[], errors: Error[] };
+	export type GetLocationsResult = {locations: azureResource.AzureLocation[], errors: Error[] };
 	export type GetSqlManagedInstancesResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };
 	export type GetSqlServersResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };
 	export type GetSqlVMServersResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };

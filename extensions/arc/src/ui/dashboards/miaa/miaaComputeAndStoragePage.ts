@@ -136,8 +136,11 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 								this.saveButton!.enabled = true;
 								throw err;
 							}
-
-							await this._miaaModel.refresh();
+							try {
+								await this._miaaModel.refresh();
+							} catch (error) {
+								vscode.window.showErrorMessage(loc.refreshFailed(error));
+							}
 						}
 					);
 
