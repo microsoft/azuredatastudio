@@ -49,7 +49,10 @@ abstract class ControllerDialogBase extends InitializingComponent {
 			},
 			{
 				component: this.urlInputBox,
-				title: loc.controllerUrl
+				title: loc.controllerUrl,
+				layout: {
+					info: loc.controllerUrlDescription
+				}
 			}, {
 				component: this.kubeConfigInputBox.component(),
 				title: loc.controllerKubeConfig,
@@ -61,7 +64,10 @@ abstract class ControllerDialogBase extends InitializingComponent {
 			}, {
 				component: this.nameInputBox,
 				title: loc.controllerName,
-				required: false
+				required: false,
+				layout: {
+					info: loc.controllerNameDescription
+				}
 			}, {
 				component: this.usernameInputBox,
 				title: loc.controllerUsername,
@@ -87,6 +93,7 @@ abstract class ControllerDialogBase extends InitializingComponent {
 		this.urlInputBox = this.modelBuilder.inputBox()
 			.withProps({
 				value: controllerInfo?.endpoint,
+				placeHolder: loc.controllerUrlPlaceholder,
 				// If we have a model then we're editing an existing connection so don't let them modify the URL
 				readOnly: !!controllerInfo
 			}).component();
