@@ -42,7 +42,6 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 			this._postgresModel.engineVersion,
 			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 			session);
-
 	}
 
 	protected async resetAllParameters(session: azdataExt.AzdataSession): Promise<void> {
@@ -52,7 +51,6 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 			this._postgresModel.engineVersion,
 			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 			session);
-
 	}
 
 	protected async resetParameter(parameterName: string, session: azdataExt.AzdataSession): Promise<void> {
@@ -62,7 +60,6 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 			this._postgresModel.engineVersion,
 			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 			session);
-
 	}
 
 	protected refreshParametersTable(): void {
