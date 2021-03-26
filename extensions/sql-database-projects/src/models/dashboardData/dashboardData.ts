@@ -18,7 +18,7 @@ export class DashboardData {
 }
 
 export enum Status {
-	success = 'Success',
-	failed = 'Failed',
-	inProgress = 'In progress'
+	success,
+	failed,
+	inProgress
 }

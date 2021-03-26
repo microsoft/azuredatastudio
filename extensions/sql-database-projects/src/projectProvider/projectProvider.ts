@@ -126,27 +126,27 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	}
 
 	/**
-	 * Gets the project information to be displayed in the project dashboard
+	 * Gets the data to be displayed in the project dashboard
 	 */
-	get projectInfo(): dataworkspace.IProjectInfo[] {
-		const deployInfo: dataworkspace.IProjectInfo = {
-			tableName: constants.Deployments,
-			columnInfo: [{ displayName: constants.ID, width: 75, valueType: azdata.DeclarativeDataType.string },
+	get dashboardData(): dataworkspace.IDashboardTable[] {
+		const deployInfo: dataworkspace.IDashboardTable = {
+			name: constants.Deployments,
+			columns: [{ displayName: constants.ID, width: 75, valueType: azdata.DeclarativeDataType.string },
 			{ displayName: constants.Status, width: 180, valueType: azdata.DeclarativeDataType.component },
 			{ displayName: constants.Target, width: 180, valueType: azdata.DeclarativeDataType.string },
 			{ displayName: constants.Time, width: 180, valueType: azdata.DeclarativeDataType.string },
 			{ displayName: constants.Date, width: 180, valueType: azdata.DeclarativeDataType.string }],
-			tableData: this.projectController.dashboardDeployData
+			data: this.projectController.dashboardDeployData
 		};
 
-		const buildInfo: dataworkspace.IProjectInfo = {
-			tableName: constants.Builds,
-			columnInfo: [{ displayName: constants.ID, width: 75, valueType: azdata.DeclarativeDataType.string },
+		const buildInfo: dataworkspace.IDashboardTable = {
+			name: constants.Builds,
+			columns: [{ displayName: constants.ID, width: 75, valueType: azdata.DeclarativeDataType.string },
 			{ displayName: constants.Status, width: 180, valueType: azdata.DeclarativeDataType.component },
 			{ displayName: constants.Target, width: 180, valueType: azdata.DeclarativeDataType.string },
 			{ displayName: constants.Time, width: 180, valueType: azdata.DeclarativeDataType.string },
 			{ displayName: constants.Date, width: 180, valueType: azdata.DeclarativeDataType.string }],
-			tableData: this.projectController.dashboardBuildData
+			data: this.projectController.dashboardBuildData
 		};
 
 		return [deployInfo, buildInfo];

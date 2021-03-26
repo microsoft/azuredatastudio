@@ -69,4 +69,5 @@ export const ProjectSaveLocationKey = 'defaultProjectSaveLocation';
 export namespace cssStyles {
 	export const title = { 'font-size': '18px', 'font-weight': '600' };
 	export const tableHeader = { 'text-align': 'left', 'font-weight': '500', 'font-size': '13px', 'user-select': 'text' };
+	export const tableRow = { 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none' };
 }

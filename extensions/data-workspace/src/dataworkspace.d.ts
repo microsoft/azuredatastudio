@@ -78,9 +78,9 @@ declare module 'dataworkspace' {
 		readonly projectActions: (IProjectAction | IProjectActionGroup)[];
 
 		/**
-		 * Gets the project information to be placed in the dashboard container
+		 * Gets the project data to be placed in the dashboard container
 		 */
-		 readonly projectInfo: IProjectInfo[];
+		readonly dashboardData: IDashboardTable[];
 	}
 
 	/**
@@ -154,23 +154,23 @@ declare module 'dataworkspace' {
 	}
 
 	/**
-	 * Defines project information to be presented in the dashboard container
+	 * Defines table to be presented in the dashboard container
 	 */
-	export interface IProjectInfo {
+	export interface IDashboardTable {
 		/**
 		 * name of the table
 		 */
-		tableName: string;
+		name: string;
 
 		/**
 		 * column header information
 		 */
-		columnInfo: IDashboardColumnInfo[];
+		columns: IDashboardColumnInfo[];
 
 		/**
 		 * data that goes in the table
 		 */
-		tableData: (IDashboardTableData | IDashboardTableDataGroup)[][];
+		data: (string | DashboardTableData)[][];
 	}
 
 	/**
@@ -183,16 +183,10 @@ declare module 'dataworkspace' {
 	}
 
 	/**
-	 * List of data to be presented on the table in the dashboard container
+	 * String and icon to be placed under one column in the dashboard container
 	 */
-	export interface IDashboardTableData {
-		value: any;
-	}
-
-	/**
-	 * List of data that should be grouped under one column
-	 */
-	export interface IDashboardTableDataGroup {
-		values: IDashboardTableData[];
-	}
+	export type DashboardTableData = {
+		text: string;
+		icon: azdata.IconPath;
+	};
 }

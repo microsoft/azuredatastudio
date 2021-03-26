@@ -90,3 +90,4 @@ export class BuildHelper {
 		return ` build ${projectPath} /p:NetCoreBuild=true /p:NETCoreTargetsPath=${buildDirPath}`;
 	}
 }
+

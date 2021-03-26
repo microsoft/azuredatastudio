@@ -112,15 +112,15 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 				id: 'Target Version',
 				run: async (): Promise<any> => { return Promise.resolve(); }
 			}],
-			projectInfo: [{
-				tableName: 'Deployments',
-				columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
-				tableData: [[{ value: 'd1' }]]
+			dashboardData: [{
+				name: 'Deployments',
+				columns: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				data: [['d1']]
 			},
 			{
-				tableName: 'Builds',
-				columnInfo: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
-				tableData: [[{ value: 'd1' }]]
+				name: 'Builds',
+				columns: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				data: [['d1']]
 			}]
 		};
 		const getProjectProviderStub = sinon.stub(workspaceService, 'getProjectProvider');

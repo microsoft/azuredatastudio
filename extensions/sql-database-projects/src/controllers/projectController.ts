@@ -52,25 +52,29 @@ export class ProjectsController {
 		this.buildHelper = new BuildHelper();
 	}
 
-	public get dashboardDeployData(): (dataworkspace.IDashboardTableData | dataworkspace.IDashboardTableDataGroup)[][] {
-		const infoRows: (dataworkspace.IDashboardTableData | dataworkspace.IDashboardTableDataGroup)[][] = [];
+	public get dashboardDeployData(): (string | dataworkspace.DashboardTableData)[][] {
+		const infoRows: (string | dataworkspace.DashboardTableData)[][] = [];
 		let count = 0;
 
 		for (let i = this.deployInfo.length - 1; i >= 0; i--) {
-			let icon;
+			let icon: azdata.IconPath;
+			let text: string;
 			if (this.deployInfo[i].status === Status.success) {
 				icon = IconPathHelper.success;
+				text = constants.Success;
 			} else if (this.deployInfo[i].status === Status.failed) {
 				icon = IconPathHelper.error;
+				text = constants.Failed;
 			} else {
 				icon = IconPathHelper.inProgress;
+				text = constants.InProgress;
 			}
 
-			let infoRow: (dataworkspace.IDashboardTableData | dataworkspace.IDashboardTableDataGroup)[] = [{ value: count.toString() },
-			{ values: [{ value: icon }, { value: this.deployInfo[i].status }] },
-			{ value: this.deployInfo[i].target },
-			{ value: this.deployInfo[i].timeToCompleteAction },
-			{ value: this.deployInfo[i].startDate }];
+			let infoRow: (string | dataworkspace.DashboardTableData)[] = [count.toString(),
+			{ text: text, icon: icon },
+			this.deployInfo[i].target,
+			this.deployInfo[i].timeToCompleteAction,
+			this.deployInfo[i].startDate];
 			infoRows.push(infoRow);
 			count++;
 		}
@@ -78,25 +82,29 @@ export class ProjectsController {
 		return infoRows;
 	}
 
-	public get dashboardBuildData(): (dataworkspace.IDashboardTableData | dataworkspace.IDashboardTableDataGroup)[][] {
-		const infoRows: (dataworkspace.IDashboardTableData | dataworkspace.IDashboardTableDataGroup)[][] = [];
+	public get dashboardBuildData(): (string | dataworkspace.DashboardTableData)[][] {
+		const infoRows: (string | dataworkspace.DashboardTableData)[][] = [];
 		let count = 0;
 
 		for (let i = this.buildInfo.length - 1; i >= 0; i--) {
-			let icon;
+			let icon: azdata.IconPath;
+			let text: string;
 			if (this.buildInfo[i].status === Status.success) {
 				icon = IconPathHelper.success;
+				text = constants.Success;
 			} else if (this.buildInfo[i].status === Status.failed) {
 				icon = IconPathHelper.error;
+				text = constants.Failed;
 			} else {
 				icon = IconPathHelper.inProgress;
+				text = constants.InProgress;
 			}
 
-			let infoRow: (dataworkspace.IDashboardTableData | dataworkspace.IDashboardTableDataGroup)[] = [{ value: count.toString() },
-			{ values: [{ value: icon }, { value: this.buildInfo[i].status }] },
-			{ value: this.buildInfo[i].target },
-			{ value: this.buildInfo[i].timeToCompleteAction },
-			{ value: this.buildInfo[i].startDate }];
+			let infoRow: (string | dataworkspace.DashboardTableData)[] = [count.toString(),
+			{ text: text, icon: icon },
+			this.buildInfo[i].target,
+			this.buildInfo[i].timeToCompleteAction,
+			this.buildInfo[i].startDate];
 			infoRows.push(infoRow);
 			count++;
 		}

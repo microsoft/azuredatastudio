@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as path from 'path';
-import { IDashboardTableData, IDashboardColumnInfo, IProjectAction, IProjectActionGroup, IProjectInfo, IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
+import { IDashboardColumnInfo, IProjectAction, IProjectActionGroup, IDashboardTable, IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import { IWorkspaceService } from '../common/interfaces';
 import { fileExist } from '../common/utils';
 
@@ -108,7 +108,7 @@ export class ProjectDashboard {
 	}
 
 	public createContainer(title: string, location: string): azdata.FlexContainer {
-		const projectInfo: IProjectInfo[] = this.projectProvider!.projectInfo;
+		const dashboardData: IDashboardTable[] = this.projectProvider!.dashboardData;
 
 		const rootContainer = this.modelView!.modelBuilder.flexContainer().withLayout(
 			{
@@ -129,14 +129,14 @@ export class ProjectDashboard {
 		rootContainer.addItem(locationLabel, { CSSStyles: { 'padding-left': '34px', 'padding-top': '15px', 'padding-bottom': '50px', 'font-size': '16px' } });
 
 		// Add all the tables to the container
-		projectInfo.forEach(info => {
+		dashboardData.forEach(info => {
 			const tableNameLabel = this.modelView!.modelBuilder.text()
-				.withProperties<azdata.TextComponentProperties>({ value: info.tableName, CSSStyles: { 'margin-block-start': '30px', 'margin-block-end': '0px' } })
+				.withProperties<azdata.TextComponentProperties>({ value: info.name, CSSStyles: { 'margin-block-start': '30px', 'margin-block-end': '0px' } })
 				.component();
 			rootContainer.addItem(tableNameLabel, { CSSStyles: { 'padding-left': '25px', 'padding-bottom': '20px', ...constants.cssStyles.title } });
 
 			const columns: azdata.DeclarativeTableColumn[] = [];
-			info.columnInfo.forEach((column: IDashboardColumnInfo) => {
+			info.columns.forEach((column: IDashboardColumnInfo) => {
 				let col = {
 					displayName: column.displayName,
 					valueType: column.valueType,
@@ -147,77 +147,45 @@ export class ProjectDashboard {
 						...constants.cssStyles.tableHeader
 					},
 					rowCssStyles: {
-						'border-top': 'solid 1px #ccc',
-						'border-bottom': 'solid 1px #ccc',
-						'border-left': 'none',
-						'border-right': 'none'
+						...constants.cssStyles.tableRow
 					},
 				};
 				columns.push(col);
 			});
 
 			const data: azdata.DeclarativeTableCellValue[][] = [];
-			info.tableData.forEach(values => {
+			info.data.forEach(values => {
 				const columnValue: azdata.DeclarativeTableCellValue[] = [];
 				values.forEach(val => {
 
-					if (this.isIDashboardTableData(val)) {
-						let v;
-						const type = typeof val.value;
-						if (type === 'string' || type === 'boolean' || type === 'number') {
-							v = val.value;
-						} else {
-							v = this.createComponent(val);
-						}
-						columnValue.push({ value: v });
+					if (typeof val === 'string') {
+						columnValue.push({ value: val });
 					} else {
-						let columnDataGroup = this.modelView!.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
-						val.values.forEach((values: IDashboardTableData) => {
-							let v = this.createComponent(values);
+						const iconComponent = this.modelView!.modelBuilder.image().withProperties<azdata.ImageComponentProperties>({
+							iconPath: val.icon,
+							width: '15px',
+							height: '15px',
+							iconHeight: '15px',
+							iconWidth: '15px'
+						}).component();
+						const stringComponent = this.modelView!.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+							value: val.text,
+							CSSStyles: { 'margin-block-start': 'auto', 'block-size': 'auto', 'margin-block-end': '0px' }
+						}).component();
 
-							columnDataGroup.addItem(v, { CSSStyles: { 'margin-right': '10px' } });
-						});
-						columnValue.push({ value: columnDataGroup });
+						const columnData = this.modelView!.modelBuilder.flexContainer().withItems([iconComponent, stringComponent], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row' }).component();
+						columnValue.push({ value: columnData });
 					}
 				});
 				data.push(columnValue);
 			});
 
 			let table = this.modelView!.modelBuilder.declarativeTable()
-				.withProperties<azdata.DeclarativeTableProperties>({ columns: columns, dataValues: data, ariaLabel: info.tableName, CSSStyles: { 'margin-left': '30px' } }).component();
+				.withProperties<azdata.DeclarativeTableProperties>({ columns: columns, dataValues: data, ariaLabel: info.name, CSSStyles: { 'margin-left': '30px' } }).component();
 
 			rootContainer.addItem(table);
 		});
 
 		return rootContainer;
-	}
-
-	/**
-	 * Returns true if the passed parameter is an object of IDashboardTableData
-	 */
-	private isIDashboardTableData(obj: any): obj is IDashboardTableData {
-		return obj.value !== undefined;
-	}
-
-	private createComponent(columnData: IDashboardTableData): azdata.Component {
-		let component;
-		const type = typeof columnData.value;
-		if (type === 'string' || type === 'boolean' || type === 'number') {
-			component = this.modelView!.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-				value: columnData.value, CSSStyles: { 'margin-block-start': 'auto', 'block-size': 'auto', 'margin-block-end': '0px' }
-			})
-				.component();
-		} else {	// it is an image
-			component = this.modelView!.modelBuilder.image().withProperties<azdata.ImageComponentProperties>({
-				iconPath: columnData.value,
-				width: '15px',
-				height: '15px',
-				iconHeight: '15px',
-				iconWidth: '15px'
-			})
-				.component();
-		}
-
-		return component;
 	}
 }
