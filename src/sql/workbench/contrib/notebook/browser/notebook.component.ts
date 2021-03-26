@@ -461,6 +461,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ action: collapseCellsAction }
 			]);
 		}
+
 	}
 
 	protected initNavSection(): void {

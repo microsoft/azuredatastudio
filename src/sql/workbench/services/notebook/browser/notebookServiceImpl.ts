@@ -7,7 +7,6 @@
 import * as azdata from 'azdata';
 import * as path from 'vs/base/common/path';
 
-
 import { localize } from 'vs/nls';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -667,7 +666,11 @@ export class NotebookService extends Disposable implements INotebookService {
 		return isTrusted;
 	}
 
-
+	/**
+	 * showNotebookDocument extensible API to be used for core
+	 * @param uri The notebook URI
+	 * @param showOptions Additional options when opening the notebook
+	 */
 	public showNotebookDocument(uri: URI, showOptions: azdata.nb.NotebookShowOptions): Thenable<azdata.nb.NotebookEditor> {
 		return this.doShowNotebookDocument(uri, showOptions);
 	}
