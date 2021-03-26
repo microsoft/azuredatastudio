@@ -343,14 +343,14 @@ export class MigrationCutoverDialog {
 			iconPath: IconPathHelper.copy,
 			iconHeight: '16px',
 			iconWidth: '16px',
-			label: 'Copy Migration Details',
+			label: loc.COPY_MIGRATION_DETAILS,
 			height: '55px',
 			width: '100px'
 		}).component();
 
 		this._copyDatabaseMigrationDetails.onDidClick(async (e) => {
 			await this.refreshStatus();
-			vscode.env.clipboard.writeText(JSON.stringify(this._model.migrationStatus, null, 2));
+			vscode.env.clipboard.writeText(JSON.stringify(this._model.migrationStatus, undefined, 2));
 		});
 
 		header.addItem(this._copyDatabaseMigrationDetails, {
