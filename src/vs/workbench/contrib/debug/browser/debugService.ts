@@ -19,7 +19,7 @@ import { DebugModel, FunctionBreakpoint, Breakpoint, DataBreakpoint } from 'vs/w
 import { ViewModel } from 'vs/workbench/contrib/debug/common/debugViewModel';
 import * as debugactions from 'vs/workbench/contrib/debug/browser/debugActions';
 import { ConfigurationManager } from 'vs/workbench/contrib/debug/browser/debugConfigurationManager';
-import { VIEWLET_ID as EXPLORER_VIEWLET_ID } from 'vs/workbench/contrib/files/common/files';
+import { VIEWLET_ID as EXPLORER_VIEWLET_ID } from 'vs/workbench/common/files';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
