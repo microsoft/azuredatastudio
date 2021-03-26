@@ -368,9 +368,9 @@ declare module 'azdata' {
 		dataValues?: DeclarativeTableCellValue[][];
 
 		/**
-		 * Should the table react to user selections
+		 * Gets a boolean value determines whether the row selection is enabled. Default value is false.
 		 */
-		selectEffect?: boolean; // Defaults to false
+		enableRowSelection?: boolean;
 	}
 
 	export interface DeclarativeTableCellValue {
