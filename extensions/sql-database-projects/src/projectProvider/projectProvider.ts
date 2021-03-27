@@ -130,21 +130,21 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	get dashboardComponents(): dataworkspace.IDashboardTable[] {
 		const deployInfo: dataworkspace.IDashboardTable = {
 			name: constants.Deployments,
-			columns: [{ displayName: constants.ID, width: 75, type: dataworkspace.IDashboardColumnType.string },
-			{ displayName: constants.Status, width: 180, type: dataworkspace.IDashboardColumnType.icon },
-			{ displayName: constants.Target, width: 180, type: dataworkspace.IDashboardColumnType.string },
-			{ displayName: constants.Time, width: 180, type: dataworkspace.IDashboardColumnType.string },
-			{ displayName: constants.Date, width: 180, type: dataworkspace.IDashboardColumnType.string }],
+			columns: [{ displayName: constants.ID, width: 75 },
+			{ displayName: constants.Status, width: 180, type: 'icon' },
+			{ displayName: constants.Target, width: 180 },
+			{ displayName: constants.Time, width: 180 },
+			{ displayName: constants.Date, width: 180 }],
 			data: this.projectController.dashboardDeployData
 		};
 
 		const buildInfo: dataworkspace.IDashboardTable = {
 			name: constants.Builds,
-			columns: [{ displayName: constants.ID, width: 75, type: dataworkspace.IDashboardColumnType.string },
-			{ displayName: constants.Status, width: 180, type: dataworkspace.IDashboardColumnType.icon },
-			{ displayName: constants.Target, width: 180, type: dataworkspace.IDashboardColumnType.string },
-			{ displayName: constants.Time, width: 180, type: dataworkspace.IDashboardColumnType.string },
-			{ displayName: constants.Date, width: 180, type: dataworkspace.IDashboardColumnType.string }],
+			columns: [{ displayName: constants.ID, width: 75 },
+			{ displayName: constants.Status, width: 180, type: 'icon' },
+			{ displayName: constants.Target, width: 180 },
+			{ displayName: constants.Time, width: 180 },
+			{ displayName: constants.Date, width: 180 }],
 			data: this.projectController.dashboardBuildData
 		};
 

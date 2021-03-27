@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDashboardColumnType, IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
+import { IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import 'mocha';
 import * as should from 'should';
 import * as sinon from 'sinon';
@@ -113,12 +113,12 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 			}],
 			dashboardComponents: [{
 				name: 'Deployments',
-				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
 				data: [['d1']]
 			},
 			{
 				name: 'Builds',
-				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
 				data: [['d1']]
 			}]
 		};

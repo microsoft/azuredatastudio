@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { IDashboardColumnInfo, IDashboardColumnType, IDashboardTable, IProjectAction, IProjectActionGroup, IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
+import { IDashboardColumnInfo, IDashboardTable, IProjectAction, IProjectActionGroup, IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
@@ -139,7 +139,7 @@ export class ProjectDashboard {
 			info.columns.forEach((column: IDashboardColumnInfo) => {
 				let col = {
 					displayName: column.displayName,
-					valueType: column.type === IDashboardColumnType.string ? azdata.DeclarativeDataType.string : azdata.DeclarativeDataType.component,
+					valueType: column.type === 'icon' ? azdata.DeclarativeDataType.component : azdata.DeclarativeDataType.string,
 					isReadOnly: true,
 					width: column.width,
 					headerCssStyles: {

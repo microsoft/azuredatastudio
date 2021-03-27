@@ -179,7 +179,7 @@ declare module 'dataworkspace' {
 	export interface IDashboardColumnInfo {
 		displayName: string;
 		width: number;
-		type: IDashboardColumnType;
+		type?: IDashboardColumnType;
 	}
 
 	/**
@@ -191,10 +191,7 @@ declare module 'dataworkspace' {
 	}
 
 	/**
-	 * Represents the data types present in dashboard table
+	 * Union type representing data types in dashboard table
 	 */
-	export enum IDashboardColumnType {
-		string,
-		icon
-	}
+	export type IDashboardColumnType = 'string' | 'icon';
 }

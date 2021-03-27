@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDashboardColumnType, IDashboardTable, IProjectAction, IProjectProvider, IProjectType } from 'dataworkspace';
+import { IDashboardTable, IProjectAction, IProjectProvider, IProjectType } from 'dataworkspace';
 import 'mocha';
 import * as should from 'should';
 import * as vscode from 'vscode';
@@ -65,12 +65,12 @@ suite('ProjectProviderRegistry Tests', function (): void {
 			}],
 			[{
 				name: 'ti1',
-				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
 				data: [['d1']]
 			},
 			{
 				name: 'ti2',
-				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
 				data: [['d1']]
 			}]);
 		const provider2 = createProjectProvider([
@@ -104,12 +104,12 @@ suite('ProjectProviderRegistry Tests', function (): void {
 			}],
 			[{
 				name: 'Deployments',
-				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
 				data: [['d1']]
 			},
 			{
 				name: 'Builds',
-				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
 				data: [['d1']]
 			}]);
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');
@@ -161,7 +161,7 @@ suite('ProjectProviderRegistry Tests', function (): void {
 			}],
 			[{
 				name: 'ti1',
-				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
 				data: [['d1']]
 			}]);
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');
