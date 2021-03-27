@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { IDashboardColumnInfo, IDashboardColumnType, IDashboardTable, IProjectAction, IProjectActionGroup, IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
+import * as path from 'path';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
-import * as path from 'path';
-import { IDashboardColumnInfo, IProjectAction, IProjectActionGroup, IDashboardTable, IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import { IWorkspaceService } from '../common/interfaces';
 import { fileExist } from '../common/utils';
 
@@ -107,8 +107,8 @@ export class ProjectDashboard {
 		return button;
 	}
 
-	public createContainer(title: string, location: string): azdata.FlexContainer {
-		const dashboardData: IDashboardTable[] = this.projectProvider!.dashboardData;
+	private createContainer(title: string, location: string): azdata.FlexContainer {
+		const dashboardData: IDashboardTable[] = this.projectProvider!.dashboardComponents;
 
 		const rootContainer = this.modelView!.modelBuilder.flexContainer().withLayout(
 			{
@@ -139,7 +139,7 @@ export class ProjectDashboard {
 			info.columns.forEach((column: IDashboardColumnInfo) => {
 				let col = {
 					displayName: column.displayName,
-					valueType: column.valueType,
+					valueType: column.type === IDashboardColumnType.string ? azdata.DeclarativeDataType.string : azdata.DeclarativeDataType.component,
 					isReadOnly: true,
 					width: column.width,
 					headerCssStyles: {
@@ -180,7 +180,7 @@ export class ProjectDashboard {
 				data.push(columnValue);
 			});
 
-			let table = this.modelView!.modelBuilder.declarativeTable()
+			const table = this.modelView!.modelBuilder.declarativeTable()
 				.withProperties<azdata.DeclarativeTableProperties>({ columns: columns, dataValues: data, ariaLabel: info.name, CSSStyles: { 'margin-left': '30px' } }).component();
 
 			rootContainer.addItem(table);

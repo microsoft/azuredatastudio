@@ -15,6 +15,7 @@ import * as utils from '../common/utils';
 import { WorkspaceService } from '../services/workspaceService';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import { createProjectProvider } from './projectProviderRegistry.test';
+import { IDashboardColumnType } from 'dataworkspace';
 
 const DefaultWorkspaceFilePath = '/test/folder/ws.code-workspace';
 
@@ -150,12 +151,12 @@ suite('WorkspaceService Tests', function (): void {
 		[
 			{
 				name: 'ti1',
-				columns: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
 				data: [['d1']]
 			},
 			{
 				name: 'ti2',
-				columns: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
 				data: [['d1']]
 			}
 		]);
@@ -193,12 +194,12 @@ suite('WorkspaceService Tests', function (): void {
 		[
 			{
 				name: 'Deployments',
-				columns: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
 				data: [['d1']]
 			},
 			{
 				name: 'Builds',
-				columns: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
 				data: [['d1']]
 			}
 		]);
@@ -257,12 +258,12 @@ suite('WorkspaceService Tests', function (): void {
 			}],
 			[{
 				name: 'Deployments',
-				columns: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
 				data: [['d1']]
 			},
 			{
 				name: 'Builds',
-				columns: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
 				data: [['d1']]
 			}]));
 		let provider = await service.getProjectProvider(vscode.Uri.file('abc.sqlproj'));
@@ -286,7 +287,7 @@ suite('WorkspaceService Tests', function (): void {
 			}],
 			[{
 				name: 'ti2',
-				columns: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
 				data: [['d1']]
 			}]));
 		provider = await service.getProjectProvider(vscode.Uri.file('abc.csproj'));

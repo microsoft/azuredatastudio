@@ -3,12 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IDashboardColumnType, IDashboardTable, IProjectAction, IProjectProvider, IProjectType } from 'dataworkspace';
 import 'mocha';
-import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import * as should from 'should';
+import * as vscode from 'vscode';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
-import { IProjectProvider, IProjectType, IProjectAction, IDashboardTable } from 'dataworkspace';
 
 export class MockTreeDataProvider implements vscode.TreeDataProvider<any>{
 	onDidChangeTreeData?: vscode.Event<any> | undefined;
@@ -20,7 +19,7 @@ export class MockTreeDataProvider implements vscode.TreeDataProvider<any>{
 	}
 }
 
-export function createProjectProvider(projectTypes: IProjectType[], projectActions: IProjectAction[], dashboardData: IDashboardTable[]): IProjectProvider {
+export function createProjectProvider(projectTypes: IProjectType[], projectActions: IProjectAction[], dashboardComponents: IDashboardTable[]): IProjectProvider {
 	const treeDataProvider = new MockTreeDataProvider();
 	const projectProvider: IProjectProvider = {
 		supportedProjectTypes: projectTypes,
@@ -34,7 +33,7 @@ export function createProjectProvider(projectTypes: IProjectType[], projectActio
 			return Promise.resolve(location);
 		},
 		projectActions: projectActions,
-		dashboardData: dashboardData
+		dashboardComponents: dashboardComponents
 	};
 	return projectProvider;
 }
@@ -66,12 +65,12 @@ suite('ProjectProviderRegistry Tests', function (): void {
 			}],
 			[{
 				name: 'ti1',
-				columns: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
 				data: [['d1']]
 			},
 			{
 				name: 'ti2',
-				columns: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
 				data: [['d1']]
 			}]);
 		const provider2 = createProjectProvider([
@@ -105,12 +104,12 @@ suite('ProjectProviderRegistry Tests', function (): void {
 			}],
 			[{
 				name: 'Deployments',
-				columns: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
 				data: [['d1']]
 			},
 			{
 				name: 'Builds',
-				columns: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
 				data: [['d1']]
 			}]);
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');
@@ -162,7 +161,7 @@ suite('ProjectProviderRegistry Tests', function (): void {
 			}],
 			[{
 				name: 'ti1',
-				columns: [{ displayName: 'c1', width: 75, valueType: azdata.DeclarativeDataType.string }],
+				columns: [{ displayName: 'c1', width: 75, type: IDashboardColumnType.string }],
 				data: [['d1']]
 			}]);
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');

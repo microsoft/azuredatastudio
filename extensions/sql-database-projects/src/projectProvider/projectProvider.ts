@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as dataworkspace from 'dataworkspace';
 import * as sqldbproj from 'sqldbproj';
 import * as vscode from 'vscode';
@@ -128,24 +127,24 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	/**
 	 * Gets the data to be displayed in the project dashboard
 	 */
-	get dashboardData(): dataworkspace.IDashboardTable[] {
+	get dashboardComponents(): dataworkspace.IDashboardTable[] {
 		const deployInfo: dataworkspace.IDashboardTable = {
 			name: constants.Deployments,
-			columns: [{ displayName: constants.ID, width: 75, valueType: azdata.DeclarativeDataType.string },
-			{ displayName: constants.Status, width: 180, valueType: azdata.DeclarativeDataType.component },
-			{ displayName: constants.Target, width: 180, valueType: azdata.DeclarativeDataType.string },
-			{ displayName: constants.Time, width: 180, valueType: azdata.DeclarativeDataType.string },
-			{ displayName: constants.Date, width: 180, valueType: azdata.DeclarativeDataType.string }],
+			columns: [{ displayName: constants.ID, width: 75, type: dataworkspace.IDashboardColumnType.string },
+			{ displayName: constants.Status, width: 180, type: dataworkspace.IDashboardColumnType.icon },
+			{ displayName: constants.Target, width: 180, type: dataworkspace.IDashboardColumnType.string },
+			{ displayName: constants.Time, width: 180, type: dataworkspace.IDashboardColumnType.string },
+			{ displayName: constants.Date, width: 180, type: dataworkspace.IDashboardColumnType.string }],
 			data: this.projectController.dashboardDeployData
 		};
 
 		const buildInfo: dataworkspace.IDashboardTable = {
 			name: constants.Builds,
-			columns: [{ displayName: constants.ID, width: 75, valueType: azdata.DeclarativeDataType.string },
-			{ displayName: constants.Status, width: 180, valueType: azdata.DeclarativeDataType.component },
-			{ displayName: constants.Target, width: 180, valueType: azdata.DeclarativeDataType.string },
-			{ displayName: constants.Time, width: 180, valueType: azdata.DeclarativeDataType.string },
-			{ displayName: constants.Date, width: 180, valueType: azdata.DeclarativeDataType.string }],
+			columns: [{ displayName: constants.ID, width: 75, type: dataworkspace.IDashboardColumnType.string },
+			{ displayName: constants.Status, width: 180, type: dataworkspace.IDashboardColumnType.icon },
+			{ displayName: constants.Target, width: 180, type: dataworkspace.IDashboardColumnType.string },
+			{ displayName: constants.Time, width: 180, type: dataworkspace.IDashboardColumnType.string },
+			{ displayName: constants.Date, width: 180, type: dataworkspace.IDashboardColumnType.string }],
 			data: this.projectController.dashboardBuildData
 		};
 

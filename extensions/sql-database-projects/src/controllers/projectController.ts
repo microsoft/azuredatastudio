@@ -52,8 +52,8 @@ export class ProjectsController {
 		this.buildHelper = new BuildHelper();
 	}
 
-	public get dashboardDeployData(): (string | dataworkspace.DashboardTableData)[][] {
-		const infoRows: (string | dataworkspace.DashboardTableData)[][] = [];
+	public get dashboardDeployData(): (string | dataworkspace.IconCellValue)[][] {
+		const infoRows: (string | dataworkspace.IconCellValue)[][] = [];
 		let count = 0;
 
 		for (let i = this.deployInfo.length - 1; i >= 0; i--) {
@@ -70,7 +70,7 @@ export class ProjectsController {
 				text = constants.InProgress;
 			}
 
-			let infoRow: (string | dataworkspace.DashboardTableData)[] = [count.toString(),
+			let infoRow: (string | dataworkspace.IconCellValue)[] = [count.toString(),
 			{ text: text, icon: icon },
 			this.deployInfo[i].target,
 			this.deployInfo[i].timeToCompleteAction,
@@ -82,8 +82,8 @@ export class ProjectsController {
 		return infoRows;
 	}
 
-	public get dashboardBuildData(): (string | dataworkspace.DashboardTableData)[][] {
-		const infoRows: (string | dataworkspace.DashboardTableData)[][] = [];
+	public get dashboardBuildData(): (string | dataworkspace.IconCellValue)[][] {
+		const infoRows: (string | dataworkspace.IconCellValue)[][] = [];
 		let count = 0;
 
 		for (let i = this.buildInfo.length - 1; i >= 0; i--) {
@@ -100,7 +100,7 @@ export class ProjectsController {
 				text = constants.InProgress;
 			}
 
-			let infoRow: (string | dataworkspace.DashboardTableData)[] = [count.toString(),
+			let infoRow: (string | dataworkspace.IconCellValue)[] = [count.toString(),
 			{ text: text, icon: icon },
 			this.buildInfo[i].target,
 			this.buildInfo[i].timeToCompleteAction,

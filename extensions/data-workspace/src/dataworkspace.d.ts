@@ -80,7 +80,7 @@ declare module 'dataworkspace' {
 		/**
 		 * Gets the project data to be placed in the dashboard container
 		 */
-		readonly dashboardData: IDashboardTable[];
+		readonly dashboardComponents: IDashboardTable[];
 	}
 
 	/**
@@ -163,14 +163,14 @@ declare module 'dataworkspace' {
 		name: string;
 
 		/**
-		 * column header information
+		 * column definitions
 		 */
 		columns: IDashboardColumnInfo[];
 
 		/**
-		 * data that goes in the table
+		 * project data
 		 */
-		data: (string | DashboardTableData)[][];
+		data: (string | IconCellValue)[][];
 	}
 
 	/**
@@ -179,14 +179,22 @@ declare module 'dataworkspace' {
 	export interface IDashboardColumnInfo {
 		displayName: string;
 		width: number;
-		valueType: azdata.DeclarativeDataType;
+		type: IDashboardColumnType;
 	}
 
 	/**
-	 * String and icon to be placed under one column in the dashboard container
+	 * Cell value of an icon for the table data
 	 */
-	export type DashboardTableData = {
+	export interface IconCellValue {
 		text: string;
 		icon: azdata.IconPath;
-	};
+	}
+
+	/**
+	 * Represents the data types present in dashboard table
+	 */
+	export enum IDashboardColumnType {
+		string,
+		icon
+	}
 }
