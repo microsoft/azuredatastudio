@@ -380,7 +380,12 @@ export class RunQueryShortcutAction extends Action {
 			// otherwise, either run the statement or the script depending on parameter
 			let parameterText: string = editor.getSelectionText();
 			return this.escapeStringParamIfNeeded(editor, shortcutText, parameterText).then((escapedParam) => {
-				let queryString = `${shortcutText} ${escapedParam}`;
+				let queryString = '';
+				if (shortcutText.includes('{arg}')) {
+					queryString = shortcutText.replace('{arg}', escapedParam);
+				} else {
+					queryString = `${shortcutText} ${escapedParam}`;
+				}
 				editor.input.runQueryString(queryString);
 			}).then(success => null, err => {
 				// swallow errors for now
