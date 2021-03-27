@@ -228,7 +228,6 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 			}
 			if (this.fireOnTextChange) {
 				this.value = e;
-				this._onValueChange.fire(e);
 			}
 		});
 
@@ -263,10 +262,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	}
 
 	public updateSelection(newValue: string): void {
-		if (this.value !== newValue) {
-			this.value = newValue;
-			this._onValueChange.fire(newValue);
-		}
+		this.value = newValue;
 		this._input.focus();
 		this._hideList();
 	}
@@ -334,7 +330,12 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	}
 
 	public set value(val: string) {
-		this._input.value = val;
+		if (this.value !== val) {
+			this._input.value = val;
+			if (this._input.validate()) {
+				this._onValueChange.fire(val);
+			}
+		}
 	}
 
 	public get inputElement(): HTMLInputElement {
