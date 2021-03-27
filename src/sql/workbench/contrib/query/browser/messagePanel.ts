@@ -201,7 +201,7 @@ export class MessagePanel extends Disposable {
 
 	private onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
 		if (isArray(message)) {
-			this.model.messages = this.model.messages.concat(message);
+			this.model.messages.push(...message);
 		} else {
 			this.model.messages.push(message);
 		}
