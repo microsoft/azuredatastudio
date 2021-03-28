@@ -70,14 +70,25 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 
 		const enterYourCredText = createLabelTextComponent(
 			this._view,
-			constants.ENTER_YOUR_SQL_CREDS(connectionProfile.serverName),
+			constants.ENTER_YOUR_SQL_CREDS,
 			{
 				'width': '400px'
 			}
 		);
 
+		const serverLabel = this._view.modelBuilder.text().withProps({
+			value: constants.SERVER,
+			requiredIndicator: true
+		}).component();
+
+		const server = this._view.modelBuilder.inputBox().withProps({
+			value: connectionProfile.serverName,
+			enabled: false
+		}).component();
+
 		const authenticationTypeLable = this._view.modelBuilder.text().withProps({
-			value: constants.AUTHENTICATION_TYPE
+			value: constants.AUTHENTICATION_TYPE,
+			requiredIndicator: true
 		}).component();
 
 		const authenticationTypeInput = this._view.modelBuilder.inputBox().withProps({
@@ -115,6 +126,8 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 			[
 				sourceCredText,
 				enterYourCredText,
+				serverLabel,
+				server,
 				authenticationTypeLable,
 				authenticationTypeInput,
 				usernameLable,

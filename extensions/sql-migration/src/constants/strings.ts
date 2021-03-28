@@ -275,9 +275,8 @@ export const FINISH_TIME = localize('sql.migration.finish.time', "Finish Time");
 //Source Credentials page.
 export const SOURCE_CONFIGURATION = localize('sql.migration.source.configuration', "Source Configuration");
 export const SOURCE_CREDENTIALS = localize('sql.migration.source.credentials', "Source Credentials");
-export function ENTER_YOUR_SQL_CREDS(sqlServerName: string) {
-	return localize('sql.migration.enter.your.sql.creds', "Enter the credentials for source SQL server instance ‘{0}’", sqlServerName);
-}
+export const ENTER_YOUR_SQL_CREDS = localize('sql.migration.enter.your.sql.cred', "Enter the credential for source SQL Server instance. This credential will be used while migrating database(s) to Azure SQL.");
+export const SERVER = localize('sql.migration.server', "Server");
 export const USERNAME = localize('sql.migration.username', "Username");
 
 //Assessment Dialog
