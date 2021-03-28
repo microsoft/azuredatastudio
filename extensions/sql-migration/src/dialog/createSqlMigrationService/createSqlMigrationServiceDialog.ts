@@ -15,7 +15,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 
 export class CreateSqlMigrationServiceDialog {
 
-	private migrationServiceSubscriptionDropdown!: azdata.DropDownComponent;
+	private migrationServiceSubscription!: azdata.TextComponent;
 	private migrationServiceResourceGroupDropdown!: azdata.DropDownComponent;
 	private migrationServiceRegionDropdown!: azdata.DropDownComponent;
 	private migrationServiceNameText!: azdata.InputBoxComponent;
@@ -155,16 +155,10 @@ export class CreateSqlMigrationServiceDialog {
 			value: constants.SUBSCRIPTION
 		}).component();
 
-		this.migrationServiceSubscriptionDropdown = this._view.modelBuilder.dropDown().withProps({
+		this.migrationServiceSubscription = this._view.modelBuilder.inputBox().withProps({
 			required: true,
 			enabled: false
 		}).component();
-
-		this.migrationServiceSubscriptionDropdown.onValueChanged((e) => {
-			if (this.migrationServiceSubscriptionDropdown.value) {
-				this.populateResourceGroups();
-			}
-		});
 
 		const resourceGroupDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.RESOURCE_GROUP
@@ -193,7 +187,7 @@ export class CreateSqlMigrationServiceDialog {
 			dialogDescription,
 			formHeading,
 			subscriptionDropdownLabel,
-			this.migrationServiceSubscriptionDropdown,
+			this.migrationServiceSubscription,
 			resourceGroupDropdownLabel,
 			this.migrationServiceResourceGroupDropdown,
 			migrationServiceNameLabel,
@@ -224,17 +218,8 @@ export class CreateSqlMigrationServiceDialog {
 	}
 
 	private async populateSubscriptions(): Promise<void> {
-		this.migrationServiceSubscriptionDropdown.loading = true;
 		this.migrationServiceResourceGroupDropdown.loading = true;
-
-
-		this.migrationServiceSubscriptionDropdown.values = [
-			{
-				displayName: this.migrationStateModel._targetSubscription.name,
-				name: ''
-			}
-		];
-		this.migrationServiceSubscriptionDropdown.loading = false;
+		this.migrationServiceSubscription.value = this.migrationStateModel._targetSubscription.name;
 		this.populateResourceGroups();
 	}
 

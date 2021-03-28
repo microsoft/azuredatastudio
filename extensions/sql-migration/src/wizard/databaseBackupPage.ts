@@ -14,7 +14,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 
 	private _networkShareContainer!: azdata.FlexContainer;
-	private _networkShareContainerSubscriptionDropdown!: azdata.DropDownComponent;
+	private _networkShareContainerSubscription!: azdata.InputBoxComponent;
 	private _networkShareContainerStorageAccountDropdown!: azdata.DropDownComponent;
 	private _windowsUserAccountText!: azdata.InputBoxComponent;
 	private _passwordText!: azdata.InputBoxComponent;
@@ -22,13 +22,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _networkShareLocations: azdata.InputBoxComponent[] = [];
 
 	private _blobContainer!: azdata.FlexContainer;
-	private _blobContainerSubscriptionDropdown!: azdata.DropDownComponent;
+	private _blobContainerSubscription!: azdata.InputBoxComponent;
 	private _blobContainerStorageAccountDropdown!: azdata.DropDownComponent;
 	private _blobContainerDatabaseConfigContainer!: azdata.FlexContainer;
 	private _blobContainerDropdowns: azdata.DropDownComponent[] = [];
 
 	private _fileShareContainer!: azdata.FlexContainer;
-	private _fileShareSubscriptionDropdown!: azdata.DropDownComponent;
+	private _fileShareSubscription!: azdata.InputBoxComponent;
 	private _fileShareStorageAccountDropdown!: azdata.DropDownComponent;
 	private _fileShareDatabaseConfigContainer!: azdata.FlexContainer;
 	private _fileShareDropdowns: azdata.DropDownComponent[] = [];
@@ -131,16 +131,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			value: constants.DATABASE_BACKUP_FILE_SHARE_SUBSCRIPTION_LABEL,
 			requiredIndicator: true,
 		}).component();
-		this._fileShareSubscriptionDropdown = view.modelBuilder.dropDown().withProps({
+		this._fileShareSubscription = view.modelBuilder.inputBox().withProps({
 			required: true,
+			enabled: false
 		}).component();
-		this._fileShareSubscriptionDropdown.onValueChanged(async (value) => {
-			if (value.selected) {
-				this.migrationStateModel._databaseBackup.subscription = this.migrationStateModel.getSubscription(value.index);
-				this.migrationStateModel._databaseBackup.storageAccount = undefined!;
-				await this.loadFileShareStorageDropdown();
-			}
-		});
 
 		const storageAccountLabel = view.modelBuilder.text()
 			.withProps({
@@ -172,7 +166,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withItems(
 				[
 					subscriptionLabel,
-					this._fileShareSubscriptionDropdown,
+					this._fileShareSubscription,
 					storageAccountLabel,
 					this._fileShareStorageAccountDropdown,
 					fileShareDatabaseConfigHeader,
@@ -193,17 +187,11 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				value: constants.DATABASE_BACKUP_BLOB_STORAGE_SUBSCRIPTION_LABEL,
 				requiredIndicator: true,
 			}).component();
-		this._blobContainerSubscriptionDropdown = view.modelBuilder.dropDown()
+		this._blobContainerSubscription = view.modelBuilder.inputBox()
 			.withProps({
-				required: true
+				required: true,
+				enabled: false
 			}).component();
-		this._blobContainerSubscriptionDropdown.onValueChanged(async (value) => {
-			if (value.selected) {
-				this.migrationStateModel._databaseBackup.subscription = this.migrationStateModel.getSubscription(value.index);
-				this.migrationStateModel._databaseBackup.storageAccount = undefined!;
-				await this.loadblobStorageDropdown();
-			}
-		});
 
 		const storageAccountLabel = view.modelBuilder.text()
 			.withProps({
@@ -235,7 +223,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withItems(
 				[
 					subscriptionLabel,
-					this._blobContainerSubscriptionDropdown,
+					this._blobContainerSubscription,
 					storageAccountLabel,
 					this._blobContainerStorageAccountDropdown,
 					blobContainerDatabaseConfigHeader,
@@ -306,17 +294,11 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				value: constants.DATABASE_BACKUP_NETWORK_SHARE_SUBSCRIPTION_LABEL,
 				requiredIndicator: true,
 			}).component();
-		this._networkShareContainerSubscriptionDropdown = view.modelBuilder.dropDown()
+		this._networkShareContainerSubscription = view.modelBuilder.inputBox()
 			.withProps({
-				required: true
+				required: true,
+				enabled: false
 			}).component();
-		this._networkShareContainerSubscriptionDropdown.onValueChanged(async (value) => {
-			if (value.selected) {
-				this.migrationStateModel._databaseBackup.subscription = this.migrationStateModel.getSubscription(value.index);
-				this.migrationStateModel._databaseBackup.storageAccount = undefined!;
-				await this.loadNetworkShareStorageDropdown();
-			}
-		});
 
 		const storageAccountLabel = view.modelBuilder.text()
 			.withProps({
@@ -374,7 +356,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				passwordLabel,
 				this._passwordText,
 				subscriptionLabel,
-				this._networkShareContainerSubscriptionDropdown,
+				this._networkShareContainerSubscription,
 				storageAccountLabel,
 				this._networkShareContainerStorageAccountDropdown,
 				networkShareDatabaseConfigHeader,
@@ -496,7 +478,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 			switch (this.migrationStateModel._databaseBackup.networkContainerType) {
 				case NetworkContainerType.NETWORK_SHARE:
-					if ((<azdata.CategoryValue>this._networkShareContainerSubscriptionDropdown.value).displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
+					if (this._networkShareContainerSubscription.value === constants.NO_SUBSCRIPTIONS_FOUND) {
 						errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
 					}
 					if ((<azdata.CategoryValue>this._networkShareContainerStorageAccountDropdown.value).displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
@@ -504,9 +486,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					}
 					break;
 				case NetworkContainerType.BLOB_CONTAINER:
-					if ((<azdata.CategoryValue>this._blobContainerSubscriptionDropdown.value).displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
-						errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
-					}
 					if ((<azdata.CategoryValue>this._blobContainerStorageAccountDropdown.value).displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
 						errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
 					}
@@ -518,9 +497,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					}
 					break;
 				case NetworkContainerType.FILE_SHARE:
-					if ((<azdata.CategoryValue>this._fileShareSubscriptionDropdown.value).displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
-						errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
-					}
 					if ((<azdata.CategoryValue>this._fileShareStorageAccountDropdown.value).displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
 						errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
 					}
@@ -575,14 +551,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		});
 		this._windowsUserAccountText.validate();
 		this._passwordText.validate();
-		this._networkShareContainerSubscriptionDropdown.validate();
+		this._networkShareContainerSubscription.validate();
 		this._networkShareContainerStorageAccountDropdown.validate();
-		this._blobContainerSubscriptionDropdown.validate();
+		this._blobContainerSubscription.validate();
 		this._blobContainerStorageAccountDropdown.validate();
 		this._blobContainerDropdowns.forEach((dropdown) => {
 			dropdown.validate();
 		});
-		this._fileShareSubscriptionDropdown.validate();
+		this._fileShareSubscription.validate();
 		this._fileShareStorageAccountDropdown.validate();
 		this._fileShareDropdowns.forEach(dropdown => {
 			dropdown.validate();
@@ -597,14 +573,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		});
 		this._windowsUserAccountText.validate();
 		this._passwordText.validate();
-		this._networkShareContainerSubscriptionDropdown.validate();
+		this._networkShareContainerSubscription.validate();
 		this._networkShareContainerStorageAccountDropdown.validate();
-		this._blobContainerSubscriptionDropdown.validate();
+		this._blobContainerSubscription.validate();
 		this._blobContainerStorageAccountDropdown.validate();
 		this._blobContainerDropdowns.forEach((dropdown) => {
 			dropdown.validate();
 		});
-		this._fileShareSubscriptionDropdown.validate();
+		this._fileShareSubscription.validate();
 		this._fileShareStorageAccountDropdown.validate();
 		this._fileShareDropdowns.forEach((dropdown) => {
 			dropdown.validate();
@@ -613,21 +589,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private async getSubscriptionValues(): Promise<void> {
 		if (!this.migrationStateModel._databaseBackup.subscription) {
-			this._networkShareContainerSubscriptionDropdown.loading = true;
-			this._fileShareSubscriptionDropdown.loading = true;
-			this._blobContainerSubscriptionDropdown.loading = true;
-			try {
-				const subscriptionDropdownValues = await this.migrationStateModel.getSubscriptionsDropdownValues();
-				this._fileShareSubscriptionDropdown.values = subscriptionDropdownValues;
-				this._networkShareContainerSubscriptionDropdown.values = subscriptionDropdownValues;
-				this._blobContainerSubscriptionDropdown.values = subscriptionDropdownValues;
-			} catch (error) {
-				console.log(error);
-			} finally {
-				this._networkShareContainerSubscriptionDropdown.loading = false;
-				this._fileShareSubscriptionDropdown.loading = false;
-				this._blobContainerSubscriptionDropdown.loading = false;
-			}
+			this._fileShareSubscription.value = this.migrationStateModel._targetSubscription.name;
+			this._networkShareContainerSubscription.value = this.migrationStateModel._targetSubscription.name;
+			this._blobContainerSubscription.value = this.migrationStateModel._targetSubscription.name;
+			this.migrationStateModel._databaseBackup.subscription = this.migrationStateModel._targetSubscription;
+			this.loadNetworkShareStorageDropdown();
+			this.loadFileShareStorageDropdown();
+			this.loadblobStorageDropdown();
 		}
 	}
 
