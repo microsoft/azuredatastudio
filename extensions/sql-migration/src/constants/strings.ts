@@ -259,6 +259,8 @@ export function ACTIVE_BACKUP_FILES_ITEMS(fileCount: number) {
 	}
 }
 export const COPY_MIGRATION_DETAILS = localize('sql.migration.copy.migration.details', "Copy Migration Details");
+export const DETAILS_COPIED = localize('sql.migration.details.copied', "Details copied");
+
 
 //Migration status dialog
 export const SEARCH_FOR_MIGRATIONS = localize('sql.migration.search.for.migration', "Search for migrations");

@@ -359,6 +359,7 @@ export class MigrationCutoverDialog {
 		this._copyDatabaseMigrationDetails.onDidClick(async (e) => {
 			await this.refreshStatus();
 			vscode.env.clipboard.writeText(JSON.stringify(this._model.migrationStatus, undefined, 2));
+			vscode.window.showInformationMessage(loc.DETAILS_COPIED);
 		});
 
 		header.addItem(this._copyDatabaseMigrationDetails, {
