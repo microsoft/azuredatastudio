@@ -176,7 +176,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 		},
 		getManagedDatabases(account: azdata.Account,
 			subscription: azureResource.AzureResourceSubscription,
-			managedInstance: azureResource.AzureGraphResource,
+			managedInstance: azureResource.AzureSqlManagedInstance,
 			ignoreErrors: boolean): Promise<azurecore.GetManagedDatabasesResult> {
 			return azureResourceUtils.getManagedDatabases(account, subscription, managedInstance, ignoreErrors);
 		},

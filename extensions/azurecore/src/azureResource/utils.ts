@@ -429,7 +429,7 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 	return result;
 }
 
-export async function getManagedDatabases(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, managedInstance: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetManagedDatabasesResult> {
+export async function getManagedDatabases(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, managedInstance: azureResource.AzureSqlManagedInstance, ignoreErrors: boolean): Promise<GetManagedDatabasesResult> {
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${managedInstance.resourceGroup}/providers/Microsoft.Sql/managedInstances/${managedInstance.name}/databases?api-version=2020-02-02-preview`;
 	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors);
 	return {
