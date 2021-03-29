@@ -24,9 +24,9 @@ export abstract class DialogBase {
 	public workspaceInputBox: azdata.InputBoxComponent | undefined;
 	protected workspaceInputFormComponent: azdata.FormComponent | undefined;
 
-	constructor(dialogTitle: string, dialogName: string, dialogWidth: azdata.window.DialogWidth = 600) {
+	constructor(dialogTitle: string, dialogName: string, okButtonText: string, dialogWidth: azdata.window.DialogWidth = 600) {
 		this.dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, dialogWidth);
-		this.dialogObject.okButton.label = constants.OkButtonText;
+		this.dialogObject.okButton.label = okButtonText;
 		this.register(this.dialogObject.cancelButton.onClick(() => this.onCancelButtonClicked()));
 		this.register(this.dialogObject.okButton.onClick(() => this.onOkButtonClicked()));
 		this.dialogObject.registerCloseValidator(async () => {
