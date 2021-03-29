@@ -391,6 +391,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.optimizedTable', "(Experimental) Use a optimized table in the results out. Some functionality might be missing and in the works."),
 			'default': false
 		},
+		'queryEditor.results.inMemoryDataProcessingThreshold': {
+			'type': 'number',
+			'default': 2000,
+			'description': localize('queryEditor.inMemoryDataProcessingThreshold', "Controls the max number of rows allowed to do filtering and sorting in memory. If the number is exceeded, sorting and filtering will be disabled.")
+		},
 		'queryEditor.messages.showBatchTime': {
 			'type': 'boolean',
 			'description': localize('queryEditor.messages.showBatchTime', "Should execution time be shown for individual batches"),

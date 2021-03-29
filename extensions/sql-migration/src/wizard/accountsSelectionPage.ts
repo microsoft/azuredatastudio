@@ -47,6 +47,15 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 					};
 					return false;
 				}
+				if (this.migrationStateModel._azureAccount?.isStale) {
+					this.wizard.message = {
+						text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount)
+					};
+					return false;
+				}
+				this.wizard.message = {
+					text: ''
+				};
 				return true;
 			}).component();
 
@@ -69,7 +78,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 				this.migrationStateModel._subscriptions = undefined!;
 				this.migrationStateModel._targetSubscription = undefined!;
 				this.migrationStateModel._databaseBackup.subscription = undefined!;
-
+				this._azureAccountsDropdown.validate();
 			}
 		});
 
@@ -83,6 +92,9 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		linkAccountButton.onDidClick(async (event) => {
 			await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
 			await this.populateAzureAccountsDropdown();
+			this.wizard.message = {
+				text: ''
+			};
 		});
 
 		const flexContainer = view.modelBuilder.flexContainer()
@@ -155,6 +167,15 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
+		this.wizard.registerNavigationValidator(pageChangeInfo => {
+			if (this.migrationStateModel._azureAccount.isStale === true) {
+				this.wizard.message = {
+					text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount)
+				};
+				return false;
+			}
+			return true;
+		});
 	}
 
 	public async onPageLeave(): Promise<void> {

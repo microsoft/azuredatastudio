@@ -446,7 +446,7 @@ class ListAccessibilityProvider implements IListAccessibilityProvider<TreeElemen
 		} else if (element instanceof SavedConnectionNode) {
 			return localize('savedConnection', "Saved Connections");
 		} else {
-			return element.element.handle;
+			return element.element.label.label;
 		}
 	}
 

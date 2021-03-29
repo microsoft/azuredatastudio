@@ -820,12 +820,13 @@ export interface ExtHostModelViewDialogShape {
 
 export interface MainThreadModelViewDialogShape extends IDisposable {
 	$openEditor(handle: number, modelViewId: string, title: string, name?: string, options?: azdata.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
+	$closeEditor(handle: number): Thenable<void>;
 	$openDialog(handle: number, dialogName?: string): Thenable<void>;
 	$closeDialog(handle: number): Thenable<void>;
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
 	$setTabDetails(handle: number, details: IModelViewTabDetails): Thenable<void>;
 	$setButtonDetails(handle: number, details: IModelViewButtonDetails): Thenable<void>;
-	$openWizard(handle: number): Thenable<void>;
+	$openWizard(handle: number, source?: string): Thenable<void>;
 	$closeWizard(handle: number): Thenable<void>;
 	$setWizardPageDetails(handle: number, details: IModelViewWizardPageDetails): Thenable<void>;
 	$setWizardDetails(handle: number, details: IModelViewWizardDetails): Thenable<void>;
@@ -869,6 +870,8 @@ export interface ExtHostNotebookShape {
 	$refreshSpecs(managerHandle: number): Thenable<azdata.nb.IAllKernels>;
 	$startNewSession(managerHandle: number, options: azdata.nb.ISessionOptions): Thenable<INotebookSessionDetails>;
 	$shutdownSession(managerHandle: number, sessionId: string): Thenable<void>;
+	$shutdownAll(managerHandle: number): Thenable<void>;
+	$dispose(managerHandle: number): void;
 
 	// Session APIs
 	$changeKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<INotebookKernelDetails>;

@@ -7,13 +7,17 @@ import * as azdata from 'azdata';
 
 export abstract class Dashboard {
 
-	private dashboard!: azdata.window.ModelViewDashboard;
+	protected dashboard!: azdata.window.ModelViewDashboard;
 
 	constructor(protected title: string, protected readonly name: string) { }
 
 	public async showDashboard(): Promise<void> {
 		this.dashboard = this.createDashboard();
 		await this.dashboard.open();
+	}
+
+	public async closeDashboard(): Promise<void> {
+		await this.dashboard.close();
 	}
 
 	protected createDashboard(): azdata.window.ModelViewDashboard {

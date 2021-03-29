@@ -18,7 +18,6 @@ import { ConnectToPGSqlDialog } from '../../ui/dialogs/connectPGDialog';
 import { AzureArcTreeDataProvider } from '../../ui/tree/azureArcTreeDataProvider';
 import { FakeControllerModel } from '../mocks/fakeControllerModel';
 import { FakeAzdataApi } from '../mocks/fakeAzdataApi';
-import { assert } from 'sinon';
 
 export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.PostgresServerShowResult> = {
 	logs: [],
@@ -41,8 +40,7 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 				extensions: [{ name: '' }],
 				settings: {
 					default: { ['']: '' }
-				},
-				version: ''
+				}
 			},
 			scale: {
 				shards: 0,
@@ -135,46 +133,34 @@ describe('PostgresModel', function (): void {
 		});
 
 		it('Updates model to expected config', async function (): Promise<void> {
-			const postgresShow = sinon.stub().returns(FakePostgresServerShowOutput);
-			sinon.stub(azdataApi, 'arc').get(() => {
-				return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
-			});
+			const postgresShowStub = sinon.stub(azdataApi.arc.postgres.server, 'show').resolves(FakePostgresServerShowOutput);
 
 			await postgresModel.refresh();
-			sinon.assert.calledOnceWithExactly(postgresShow, postgresModel.info.name);
-			assert.match(postgresModel.config, FakePostgresServerShowOutput.result);
+			sinon.assert.calledOnceWithExactly(postgresShowStub, postgresModel.info.name, sinon.match.any, sinon.match.any);
+			sinon.assert.match(postgresModel.config, FakePostgresServerShowOutput.result);
 		});
 
 		it('Updates onConfigLastUpdated when model is refreshed', async function (): Promise<void> {
-			const postgresShow = sinon.stub().returns(FakePostgresServerShowOutput);
-			sinon.stub(azdataApi, 'arc').get(() => {
-				return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
-			});
+			const postgresShowStub = sinon.stub(azdataApi.arc.postgres.server, 'show').resolves(FakePostgresServerShowOutput);
 
 			await postgresModel.refresh();
-			sinon.assert.calledOnceWithExactly(postgresShow, postgresModel.info.name);
+			sinon.assert.calledOnceWithExactly(postgresShowStub, postgresModel.info.name, sinon.match.any, sinon.match.any);
 			should(postgresModel.configLastUpdated).be.Date();
 		});
 
 		it('Calls onConfigUpdated event when model is refreshed', async function (): Promise<void> {
-			const postgresShow = sinon.stub().returns(FakePostgresServerShowOutput);
-			sinon.stub(azdataApi, 'arc').get(() => {
-				return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
-			});
+			const postgresShowStub = sinon.stub(azdataApi.arc.postgres.server, 'show').resolves(FakePostgresServerShowOutput);
 			const configUpdatedEvent = sinon.spy(vscode.EventEmitter.prototype, 'fire');
 
 			await postgresModel.refresh();
-			sinon.assert.calledOnceWithExactly(postgresShow, postgresModel.info.name);
+			sinon.assert.calledOnceWithExactly(postgresShowStub, postgresModel.info.name, sinon.match.any, sinon.match.any);
 			sinon.assert.calledOnceWithExactly(configUpdatedEvent, postgresModel.config);
 		});
 
 		it('Expected exception is thrown', async function (): Promise<void> {
 			// Stub 'azdata arc postgres server show' to throw an exception
-			const error = new Error("something bad happened");
-			const postgresShow = sinon.stub().throws(error);
-			sinon.stub(azdataApi, 'arc').get(() => {
-				return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
-			});
+			const error = new Error('something bad happened');
+			sinon.stub(azdataApi.arc.postgres.server, 'show').throws(error);
 
 			await should(postgresModel.refresh()).be.rejectedWith(error);
 		});
@@ -188,11 +174,7 @@ describe('PostgresModel', function (): void {
 			const registration: Registration = { instanceName: '', state: '', instanceType: ResourceType.postgresInstances };
 			postgresModel = new PostgresModel(controllerModel, postgresResource, registration, new AzureArcTreeDataProvider(TypeMoq.Mock.ofType<vscode.ExtensionContext>().object));
 
-			//Stub calling refresh postgres model
-			const postgresShow = sinon.stub().returns(FakePostgresServerShowOutput);
-			sinon.stub(azdataApi, 'arc').get(() => {
-				return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
-			});
+			sinon.stub(azdataApi.arc.postgres.server, 'show').resolves(FakePostgresServerShowOutput);
 
 			//Call to provide external endpoint
 			await postgresModel.refresh();
@@ -361,10 +343,7 @@ describe('PostgresModel', function (): void {
 			postgresModel = new PostgresModel(controllerModel, postgresResource, registration, new AzureArcTreeDataProvider(TypeMoq.Mock.ofType<vscode.ExtensionContext>().object));
 
 			//Stub calling refresh postgres model
-			const postgresShow = sinon.stub().returns(FakePostgresServerShowOutput);
-			sinon.stub(azdataApi, 'arc').get(() => {
-				return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
-			});
+			sinon.stub(azdataApi.arc.postgres.server, 'show').resolves(FakePostgresServerShowOutput);
 
 			//Stub how to get connection profile
 			const iconnectionProfileMock = TypeMoq.Mock.ofType<azdata.IConnectionProfile>();

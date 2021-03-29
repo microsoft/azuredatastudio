@@ -357,7 +357,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public async expandNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo> {
 		const provider = this._providers[providerId];
 		if (provider) {
-			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ObjectExplorerExpand)
+			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.ObjectExplorerExpand)
 				.withAdditionalProperties({
 					refresh: false,
 					provider: providerId
@@ -494,7 +494,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Promise<azdata.ObjectExplorerExpandInfo | undefined> {
 		let provider = this._providers[providerId];
 		if (provider) {
-			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.ObjectExplorerExpand)
+			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.ObjectExplorerExpand)
 				.withAdditionalProperties({
 					refresh: true,
 					provider: providerId

@@ -7,12 +7,12 @@ import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper } from '../../../constants';
 import { PostgresParametersPage } from './postgresParameters';
-import { PostgresModel } from '../../../models/postgresModel';
+import { PostgresModel, EngineSettingsModel } from '../../../models/postgresModel';
 
 export class PostgresCoordinatorNodeParametersPage extends PostgresParametersPage {
 
-	constructor(protected modelView: azdata.ModelView, _postgresModel: PostgresModel) {
-		super(modelView, _postgresModel);
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, postgresModel: PostgresModel) {
+		super(modelView, dashboard, postgresModel);
 	}
 
 	protected get title(): string {
@@ -31,11 +31,16 @@ export class PostgresCoordinatorNodeParametersPage extends PostgresParametersPag
 		return loc.coordinatorNodeParametersDescription;
 	}
 
+	protected get engineSettings(): EngineSettingsModel[] {
+		return this._postgresModel.coordinatorNodeEngineSettings;
+	}
+
 	protected async saveParameterEdits(): Promise<void> {
 		/* TODO add correct azdata call for editing coordinator parameters
 			await this._azdataApi.azdata.arc.postgres.server.edit(
 				this._postgresModel.info.name,
-				{ engineSettings: engineSettings.toString() },
+				{ engineSettings: engineSettings },
+				this._postgresModel.engineVersion,
 				this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 				session);
 		*/
@@ -46,6 +51,7 @@ export class PostgresCoordinatorNodeParametersPage extends PostgresParametersPag
 			await this._azdataApi.azdata.arc.postgres.server.edit(
 				this._postgresModel.info.name,
 				{ engineSettings: `''`, replaceEngineSettings: true },
+				this._postgresModel.engineVersion,
 				this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 				session);
 		*/
@@ -56,13 +62,9 @@ export class PostgresCoordinatorNodeParametersPage extends PostgresParametersPag
 			await this._azdataApi.azdata.arc.postgres.server.edit(
 				this._postgresModel.info.name,
 				{ engineSettings: parameterName + '=' },
+				this._postgresModel.engineVersion,
 				this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 				session);
 		*/
-	}
-
-	protected refreshParametersTable(): void {
-		this._parameters = this._postgresModel.coordinatorNodeEngineSettings.map(engineSetting => this.createParameterComponents(engineSetting));
-		this._parametersTable.data = this._parameters.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
 	}
 }

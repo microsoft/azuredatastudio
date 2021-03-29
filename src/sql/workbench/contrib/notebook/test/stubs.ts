@@ -88,6 +88,9 @@ export class NotebookModelStub implements INotebookModel {
 	getStandardKernelFromName(name: string): IStandardKernelWithProvider {
 		throw new Error('Method not implemented.');
 	}
+	restartSession(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
 	changeKernel(displayName: string): void {
 		throw new Error('Method not implemented.');
 	}
@@ -287,6 +290,12 @@ export class NotebookServiceStub implements INotebookService {
 		throw new Error('Method not implemented.');
 	}
 	navigateTo(notebookUri: URI, sectionId: string): void {
+		throw new Error('Method not implemented.');
+	}
+	get onCodeCellExecutionStart(): vsEvent.Event<void> {
+		throw new Error('Method not implemented.');
+	}
+	notifyCellExecutionStarted(): void {
 		throw new Error('Method not implemented.');
 	}
 }

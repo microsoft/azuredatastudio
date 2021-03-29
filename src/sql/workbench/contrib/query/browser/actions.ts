@@ -8,7 +8,6 @@ import { localize } from 'vs/nls';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { QueryEditor } from './queryEditor';
-import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
 import { INotificationService, Severity, NeverShowAgainScope } from 'vs/platform/notification/common/notification';
@@ -20,6 +19,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { IExtensionRecommendationsService } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
+import { IEncodingSupport } from 'vs/workbench/common/editor';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -70,9 +70,8 @@ export class SaveResultAction extends Action {
 
 	public async run(context: IGridActionContext): Promise<boolean> {
 
-		const activeEditor = this.editorService.activeEditorPane as QueryEditor;
-		let input = activeEditor.input as UntitledQueryEditorInput;
-		if (input.getEncoding() !== 'utf8') {
+		const activeEditor = this.editorService.activeEditorPane as unknown as IEncodingSupport;
+		if (typeof activeEditor.getEncoding === 'function' && activeEditor.getEncoding() !== 'utf8') {
 			this.notificationService.notify({
 				severity: Severity.Info,
 				message: localize('jsonEncoding', "Results encoding will not be saved when exporting to JSON, remember to save with desired encoding once file is created."),
@@ -110,15 +109,10 @@ export class CopyResultAction extends Action {
 		super(id, label);
 	}
 
-	public run(context: IGridActionContext): Promise<boolean> {
-		if (this.accountForNumberColumn) {
-			context.gridDataProvider.copyResults(
-				mapForNumberColumn(context.selection),
-				this.copyHeader);
-		} else {
-			context.gridDataProvider.copyResults(context.selection, this.copyHeader);
-		}
-		return Promise.resolve(true);
+	public async run(context: IGridActionContext): Promise<boolean> {
+		const selection = this.accountForNumberColumn ? mapForNumberColumn(context.selection) : context.selection;
+		context.gridDataProvider.copyResults(selection, this.copyHeader, context.table.getData());
+		return true;
 	}
 }
 

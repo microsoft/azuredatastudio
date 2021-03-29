@@ -19,6 +19,7 @@ export class MigrationStatusDialog {
 	private _refresh!: azdata.ButtonComponent;
 	private _statusDropdown!: azdata.DropDownComponent;
 	private _statusTable!: azdata.DeclarativeTableComponent;
+	private _refreshLoader!: azdata.LoadingComponent;
 
 	constructor(migrations: MigrationContext[], private _filter: MigrationCategory) {
 		this._model = new MigrationStatusDialogModel(migrations);
@@ -102,11 +103,19 @@ export class MigrationStatusDialog {
 			}
 		});
 
+		this._refreshLoader = this._view.modelBuilder.loadingComponent().withProps({
+			loading: false,
+			height: '55px'
+		}).component();
+
+		flexContainer.addItem(this._refreshLoader, {
+			flex: '0'
+		});
+
 		return flexContainer;
 	}
 
 	private populateMigrationTable(): void {
-
 		try {
 			const migrations = this._model.filterMigration(
 				this._searchBox.value!,
@@ -114,6 +123,10 @@ export class MigrationStatusDialog {
 			);
 
 			const data: azdata.DeclarativeTableCellValue[][] = [];
+
+			migrations.sort((m1, m2) => {
+				return new Date(m1.migrationContext.properties.startedOn) > new Date(m2.migrationContext.properties.startedOn) ? -1 : 1;
+			});
 
 			migrations.forEach((migration) => {
 				const migrationRow: azdata.DeclarativeTableCellValue[] = [];
@@ -133,8 +146,8 @@ export class MigrationStatusDialog {
 					value: migration.migrationContext.properties.migrationStatus
 				});
 
-				const sqlMigrationIcon = this._view.modelBuilder.image().withProps({
-					iconPath: IconPathHelper.sqlMigrationLogo,
+				const targetMigrationIcon = this._view.modelBuilder.image().withProps({
+					iconPath: (migration.targetManagedInstance.type === 'microsoft.sql/managedinstances') ? IconPathHelper.sqlMiLogo : IconPathHelper.sqlVmLogo,
 					iconWidth: '16px',
 					iconHeight: '16px',
 					width: '32px',
@@ -145,7 +158,7 @@ export class MigrationStatusDialog {
 					url: ''
 				}).component();
 				sqlMigrationName.onDidClick((e) => {
-					vscode.window.showInformationMessage('Feature coming soon');
+					vscode.window.showInformationMessage(loc.COMING_SOON);
 				});
 
 				const sqlMigrationContainer = this._view.modelBuilder.flexContainer().withProps({
@@ -153,7 +166,7 @@ export class MigrationStatusDialog {
 						'justify-content': 'center'
 					}
 				}).component();
-				sqlMigrationContainer.addItem(sqlMigrationIcon, {
+				sqlMigrationContainer.addItem(targetMigrationIcon, {
 					flex: '0',
 					CSSStyles: {
 						'width': '32px'
@@ -174,10 +187,10 @@ export class MigrationStatusDialog {
 				});
 
 				migrationRow.push({
-					value: '---'
+					value: (migration.migrationContext.properties.startedOn) ? new Date(migration.migrationContext.properties.startedOn).toLocaleString() : '---'
 				});
 				migrationRow.push({
-					value: '---'
+					value: (migration.migrationContext.properties.endedOn) ? new Date(migration.migrationContext.properties.endedOn).toLocaleString() : '---'
 				});
 
 				data.push(migrationRow);
@@ -190,6 +203,7 @@ export class MigrationStatusDialog {
 	}
 
 	private refreshTable(): void {
+		this._refreshLoader.loading = true;
 		this._model._migrations.forEach(async (migration) => {
 			migration.migrationContext = await getDatabaseMigration(
 				migration.azureAccount,
@@ -198,8 +212,8 @@ export class MigrationStatusDialog {
 				migration.migrationContext.id
 			);
 		});
-
 		this.populateMigrationTable();
+		this._refreshLoader.loading = false;
 	}
 
 	private createStatusTable(): azdata.DeclarativeTableComponent {

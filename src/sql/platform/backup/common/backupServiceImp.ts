@@ -42,7 +42,7 @@ export class BackupService implements IBackupService {
 		return new Promise<azdata.BackupResponse>((resolve, reject) => {
 			const providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
-				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.BackupCreated)
+				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.BackupCreated)
 					.withAdditionalProperties({ providerId: providerResult.providerName })
 					.send();
 				providerResult.provider.backup(connectionUri, backupInfo, taskExecutionMode).then(result => {

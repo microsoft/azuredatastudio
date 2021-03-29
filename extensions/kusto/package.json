@@ -420,7 +420,7 @@
     }
   },
   "dependencies": {
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.1.0",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.2.2",
     "figures": "^2.0.0",
     "find-remove": "1.2.1",
     "service-downloader": "0.2.1",
