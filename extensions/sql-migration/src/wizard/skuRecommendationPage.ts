@@ -38,6 +38,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _assessmentProgress!: azdata.TextComponent;
 	private _assessmentInfo!: azdata.TextComponent;
 	private _formContainer!: azdata.ComponentBuilder<azdata.FormContainer, azdata.ComponentProperties>;
+	private _assessmentLoader!: azdata.LoadingComponent;
 
 	private _supportedProducts: Product[] = [
 		{
@@ -148,7 +149,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._assessmentComponent.addItem(this.createAssessmentProgress(), { flex: '1 1 auto' });
 		this._assessmentComponent.addItem(this.createAssessmentInfo(), { flex: '1 1 auto' });
 
-		this._view = view;
 		this._formContainer = view.modelBuilder.formContainer().withFormItems(
 			[
 				{
@@ -374,7 +374,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._assessmentComponent.updateCssStyles({
 			display: 'none'
 		});
-
 		this._formContainer.component().updateCssStyles({
 			display: 'inline'
 		});
@@ -489,7 +488,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	private createAssessmentProgress(): azdata.FlexContainer {
 
-		this._rbgLoader = this._view.modelBuilder.loadingComponent().component();
+		this._assessmentLoader = this._view.modelBuilder.loadingComponent().component();
 		this._assessmentProgress = this._view.modelBuilder.text().withProps({
 			value: constants.ASSESSMENT_IN_PROGRESS,
 			CSSStyles: {
@@ -528,7 +527,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 
 	private async runAssessments(): Promise<void> {
-		this._rbgLoader.loading = true;
+		this._assessmentLoader.loading = true;
 		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 		try {
 			await this.migrationStateModel.getServerAssessments();
@@ -536,7 +535,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			console.log(e);
 		}
 		this._assessmentProgress.value = constants.ASSESSMENT_COMPLETED(serverName);
-		this._rbgLoader.loading = false;
+		this._assessmentLoader.loading = false;
 	}
 }
 

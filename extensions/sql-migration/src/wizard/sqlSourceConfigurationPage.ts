@@ -28,7 +28,6 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 				]
 			);
 		await view.initializeModel(form.component());
-
 	}
 
 	public async onPageEnter(): Promise<void> {
@@ -36,8 +35,6 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 			return true;
 		});
 	}
-
-
 	public async onPageLeave(): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			return true;
@@ -133,6 +130,4 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 			component: container
 		};
 	}
-
-
 }
