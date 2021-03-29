@@ -502,8 +502,8 @@ class WizardImpl implements azdata.window.Wizard {
 		return this._extHostModelViewDialog.setWizardPage(this, index);
 	}
 
-	public open(): Thenable<void> {
-		return this._extHostModelViewDialog.openWizard(this);
+	public open(source?: string): Thenable<void> {
+		return this._extHostModelViewDialog.openWizard(this, source);
 	}
 
 	public close(): Thenable<void> {
@@ -943,10 +943,10 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return this._proxy.$setWizardPage(this.getHandle(wizard), pageIndex);
 	}
 
-	public openWizard(wizard: azdata.window.Wizard): Thenable<void> {
+	public openWizard(wizard: azdata.window.Wizard, source?: string): Thenable<void> {
 		let handle = this.getHandle(wizard);
 		this.updateWizard(wizard);
-		return this._proxy.$openWizard(handle);
+		return this._proxy.$openWizard(handle, source);
 	}
 
 	public closeWizard(wizard: azdata.window.Wizard): Thenable<void> {
