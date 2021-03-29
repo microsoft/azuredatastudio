@@ -80,12 +80,13 @@ describe('Tests to verify utils functions', function (): void {
 	});
 
 	it('Should convert from milliseconds to hr min sec correctly', () => {
-		should(timeConversion((60 * 60 * 1000) + (59 * 60 * 1000) + (59 * 1000))).equal('1hr, 59min, 59sec');
-		should(timeConversion((60 * 60 * 1000) + (59 * 60 * 1000)              )).equal('1hr, 59min');
-		should(timeConversion((60 * 60 * 1000)                                 )).equal('1hr');
-		should(timeConversion((60 * 60 * 1000)                    + (59 * 1000))).equal('1hr, 59sec');
-		should(timeConversion(                   (59 * 60 * 1000) + (59 * 1000))).equal('59min, 59sec');
-		should(timeConversion(                                      (59 * 1000))).equal('59sec');
+		should(timeConversion((60 * 60 * 1000) + (59 * 60 * 1000) + (59 * 1000))).equal('1 hr, 59 min, 59 sec');
+		should(timeConversion((60 * 60 * 1000) + (59 * 60 * 1000)              )).equal('1 hr, 59 min');
+		should(timeConversion((60 * 60 * 1000)                                 )).equal('1 hr');
+		should(timeConversion((60 * 60 * 1000)                    + (59 * 1000))).equal('1 hr, 59 sec');
+		should(timeConversion(                   (59 * 60 * 1000) + (59 * 1000))).equal('59 min, 59 sec');
+		should(timeConversion(                                      (59 * 1000))).equal('59 sec');
+		should(timeConversion(                                      (59))).equal('59 msec');
 	});
 });
 
