@@ -30,11 +30,30 @@ export const edgeSqlDatabaseProjectTypeId = 'SqlDbEdgeProj';
 export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "SQL Edge");
 export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription', "Start with the core pieces to develop and publish schemas for SQL Edge");
 
+// Dashboard
 export const addItemAction = localize('addItemAction', "Add Item");
 export const schemaCompareAction = localize('schemaCompareAction', "Schema Compare");
 export const buildAction = localize('buildAction', "Build");
 export const publishAction = localize('publishAction', "Publish");
 export const changeTargetPlatformAction = localize('changeTargetPlatformAction', "Change Target Platform");
+
+export const ID = localize('ID', "ID");
+export const Status = localize('Status', "Status");
+export const Time = localize('Time', "Time");
+export const Date = localize('Date', "Date");
+export const Builds = localize('Builds', "Builds");
+export const Deployments = localize('Deployments', "Deployments");
+
+export const Success = localize('Success', "Success");
+export const Failed = localize('Failed', "Failed");
+export const InProgress = localize('InProgress', "In progress");
+
+export const hr = localize('hr', "hr");
+export const min = localize('min', "min");
+export const sec = localize('sec', "sec");
+export const msec = localize('msec', "msec");
+
+export const at = localize('at', "at");
 
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';

@@ -123,4 +123,31 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 		const project = await Project.openProject(projectFile.fsPath);
 		await project.addToProject(list);
 	}
+
+	/**
+	 * Gets the data to be displayed in the project dashboard
+	 */
+	get dashboardComponents(): dataworkspace.IDashboardTable[] {
+		const deployInfo: dataworkspace.IDashboardTable = {
+			name: constants.Deployments,
+			columns: [{ displayName: constants.ID, width: 75 },
+			{ displayName: constants.Status, width: 180, type: 'icon' },
+			{ displayName: constants.Target, width: 180 },
+			{ displayName: constants.Time, width: 180 },
+			{ displayName: constants.Date, width: 180 }],
+			data: this.projectController.dashboardDeployData
+		};
+
+		const buildInfo: dataworkspace.IDashboardTable = {
+			name: constants.Builds,
+			columns: [{ displayName: constants.ID, width: 75 },
+			{ displayName: constants.Status, width: 180, type: 'icon' },
+			{ displayName: constants.Target, width: 180 },
+			{ displayName: constants.Time, width: 180 },
+			{ displayName: constants.Date, width: 180 }],
+			data: this.projectController.dashboardBuildData
+		};
+
+		return [deployInfo, buildInfo];
+	}
 }

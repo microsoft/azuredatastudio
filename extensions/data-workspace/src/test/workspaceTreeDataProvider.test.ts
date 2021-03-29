@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import 'mocha';
-import * as sinon from 'sinon';
-import * as vscode from 'vscode';
 import * as should from 'should';
+import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
+import * as vscode from 'vscode';
 import { WorkspaceTreeDataProvider } from '../common/workspaceTreeDataProvider';
 import { WorkspaceService } from '../services/workspaceService';
-import { IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import { MockTreeDataProvider } from './projectProviderRegistry.test';
 
 interface ExtensionGlobalMemento extends vscode.Memento {
@@ -110,6 +110,16 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 			{
 				id: 'Target Version',
 				run: async (): Promise<any> => { return Promise.resolve(); }
+			}],
+			dashboardComponents: [{
+				name: 'Deployments',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			},
+			{
+				name: 'Builds',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
 			}]
 		};
 		const getProjectProviderStub = sinon.stub(workspaceService, 'getProjectProvider');

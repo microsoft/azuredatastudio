@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 declare module 'dataworkspace' {
+	import * as azdata from 'azdata';
 	import * as vscode from 'vscode';
 	export const enum extension {
 		name = 'Microsoft.data-workspace'
@@ -75,6 +76,11 @@ declare module 'dataworkspace' {
 		 * Gets the project actions to be placed on the dashboard toolbar
 		 */
 		readonly projectActions: (IProjectAction | IProjectActionGroup)[];
+
+		/**
+		 * Gets the project data to be placed in the dashboard container
+		 */
+		readonly dashboardComponents: IDashboardTable[];
 	}
 
 	/**
@@ -131,7 +137,7 @@ declare module 'dataworkspace' {
 		/**
 		 * icon path of the project action
 		 */
-		readonly icon?: string | vscode.Uri | { light: string | vscode.Uri, dark: string | vscode.Uri };
+		readonly icon?: azdata.IconPath;
 
 		/**
 		 * Run context for each project action
@@ -146,4 +152,46 @@ declare module 'dataworkspace' {
 	export interface IProjectActionGroup {
 		actions: IProjectAction[];
 	}
+
+	/**
+	 * Defines table to be presented in the dashboard container
+	 */
+	export interface IDashboardTable {
+		/**
+		 * name of the table
+		 */
+		name: string;
+
+		/**
+		 * column definitions
+		 */
+		columns: IDashboardColumnInfo[];
+
+		/**
+		 * project data
+		 */
+		data: (string | IconCellValue)[][];
+	}
+
+	/**
+	 * Project dashboard table's column information
+	 */
+	export interface IDashboardColumnInfo {
+		displayName: string;
+		width: number;
+		type?: IDashboardColumnType;
+	}
+
+	/**
+	 * Cell value of an icon for the table data
+	 */
+	export interface IconCellValue {
+		text: string;
+		icon: azdata.IconPath;
+	}
+
+	/**
+	 * Union type representing data types in dashboard table
+	 */
+	export type IDashboardColumnType = 'string' | 'icon';
 }

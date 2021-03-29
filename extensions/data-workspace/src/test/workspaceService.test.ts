@@ -137,14 +137,28 @@ suite('WorkspaceService Tests', function (): void {
 				displayName: 'test project 1'
 			}
 		],
-		[{
-			id: 'ta1',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		},
-		{
-			id: 'ta2',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		}]);
+		[
+			{
+				id: 'testAction1',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'testAction2',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}
+		],
+		[
+			{
+				name: 'tableInfo1',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			},
+			{
+				name: 'tableInfo2',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			}
+		]);
 		const provider2 = createProjectProvider([
 			{
 				id: 'sp1',
@@ -154,26 +168,40 @@ suite('WorkspaceService Tests', function (): void {
 				displayName: 'sql project'
 			}
 		],
-		[{
-			id: 'Add',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		},
-		{
-			id: 'Schema Compare',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		},
-		{
-			id: 'Build',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		},
-		{
-			id: 'Publish',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		},
-		{
-			id: 'Target Version',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		}]);
+		[
+			{
+				id: 'Add',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Schema Compare',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Build',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Publish',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Target Version',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}
+		],
+		[
+			{
+				name: 'Deployments',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			},
+			{
+				name: 'Builds',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			}
+		]);
 		sinon.stub(ProjectProviderRegistry, 'providers').value([provider1, provider2]);
 		const consoleErrorStub = sinon.stub(console, 'error');
 		const projectTypes = await service.getAllProjectTypes();
@@ -207,26 +235,36 @@ suite('WorkspaceService Tests', function (): void {
 				displayName: 'test project'
 			}
 		],
-		[{
-			id: 'Add',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		},
-		{
-			id: 'Schema Compare',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		},
-		{
-			id: 'Build',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		},
-		{
-			id: 'Publish',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		},
-		{
-			id: 'Target Version',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		}]));
+			[{
+				id: 'Add',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Schema Compare',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Build',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Publish',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Target Version',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}],
+			[{
+				name: 'Deployments',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			},
+			{
+				name: 'Builds',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			}]));
 		let provider = await service.getProjectProvider(vscode.Uri.file('abc.sqlproj'));
 		should.notStrictEqual(provider, undefined, 'Provider should be returned for sqlproj');
 		should.strictEqual(provider!.supportedProjectTypes[0].projectFileExtension, 'sqlproj');
@@ -242,10 +280,15 @@ suite('WorkspaceService Tests', function (): void {
 			icon: '',
 			displayName: 'test cs project'
 		}],
-		[{
-			id: 'ta2',
-			run: async (): Promise<any> => { return Promise.resolve(); }
-		}]));
+			[{
+				id: 'testAction2',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}],
+			[{
+				name: 'tableInfo2',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			}]));
 		provider = await service.getProjectProvider(vscode.Uri.file('abc.csproj'));
 		should.notStrictEqual(provider, undefined, 'Provider should be returned for csproj');
 		should.strictEqual(provider!.supportedProjectTypes[0].projectFileExtension, 'csproj');
@@ -376,7 +419,7 @@ suite('WorkspaceService Tests', function (): void {
 		await vscode.workspace.getConfiguration(constants.projectsConfigurationKey).update(constants.showNotAddedProjectsMessageKey, true, true);
 
 		sinon.stub(service, 'getProjectsInWorkspace').returns([vscode.Uri.file('abc.sqlproj'), vscode.Uri.file('folder1/abc1.sqlproj')]);
-		sinon.stub(vscode.workspace, 'workspaceFolders').value([{uri: vscode.Uri.file('.')}]);
+		sinon.stub(vscode.workspace, 'workspaceFolders').value([{ uri: vscode.Uri.file('.') }]);
 		sinon.stub(service, 'getAllProjectTypes').resolves([{
 			projectFileExtension: 'sqlproj',
 			id: 'sql project',
