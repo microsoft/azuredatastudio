@@ -493,7 +493,7 @@ describe('BookTocManagerTests', function () {
 
 
 				it('Add section to book', async () => {
-					bookTocManager = new BookTocManager(sourceBookModel, targetBookModel);
+					bookTocManager = new BookTocManager(sourceBookModel,targetBookModel);
 					await bookTocManager.updateBook(sectionA, targetBook, undefined);
 					const listFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionA'));
 					const listSourceFiles = await fs.promises.readdir(path.join(run.sourceBook.bookContentFolderPath));
@@ -546,7 +546,7 @@ describe('BookTocManagerTests', function () {
 				});
 
 				it('Add duplicated notebook to book', async () => {
-					bookTocManager = new BookTocManager(undefined, targetBookModel);
+					bookTocManager = new BookTocManager(undefined,targetBookModel);
 					await bookTocManager.updateBook(notebook, targetBook);
 					await bookTocManager.updateBook(duplicatedNotebook, targetBook);
 					const listFiles = await fs.promises.readdir(run.targetBook.bookContentFolderPath);
