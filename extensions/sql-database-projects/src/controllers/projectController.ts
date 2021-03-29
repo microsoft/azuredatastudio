@@ -122,13 +122,13 @@ export class ProjectsController {
 			await this.netCoreTool.runDotnetCommand(options);
 
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.build)
-				.withAdditionalMeasurements({ duration: new Date().getMilliseconds() - startTime.getMilliseconds() })
+				.withAdditionalMeasurements({ duration: new Date().getTime() - startTime.getTime() })
 				.send();
 
 			return project.dacpacOutputPath;
 		} catch (err) {
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.build)
-				.withAdditionalMeasurements({ duration: new Date().getMilliseconds() - startTime.getMilliseconds() })
+				.withAdditionalMeasurements({ duration: new Date().getTime() - startTime.getTime() })
 				.send();
 
 			vscode.window.showErrorMessage(constants.projBuildFailed(utils.getErrorMessage(err)));
@@ -162,11 +162,11 @@ export class ProjectsController {
 	public async publishProjectCallback(project: Project, settings: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
 		const telemetryProps: Record<string, string> = {};
 		const telemetryMeasures: Record<string, number> = {};
-		const buildStartTime = new Date().getMilliseconds();
+		const buildStartTime = new Date().getTime();
 
 		const dacpacPath = await this.buildProject(project);
 
-		const buildEndTime = new Date().getMilliseconds();
+		const buildEndTime = new Date().getTime();
 		telemetryMeasures.buildDuration = buildEndTime - buildStartTime;
 		telemetryProps.buildSucceeded = (dacpacPath !== '').toString();
 
@@ -187,7 +187,7 @@ export class ProjectsController {
 
 		let result: mssql.DacFxResult;
 		telemetryProps.profileUsed = (settings.profileUsed ?? false).toString();
-		const actionStartTime = new Date().getMilliseconds();
+		const actionStartTime = new Date().getTime();
 
 		try {
 			if ((<IPublishSettings>settings).upgradeExisting) {
@@ -199,7 +199,7 @@ export class ProjectsController {
 				result = await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdata.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
 			}
 		} catch (err) {
-			const actionEndTime = new Date().getMilliseconds();
+			const actionEndTime = new Date().getTime();
 			telemetryProps.actionDuration = (actionEndTime - actionStartTime).toString();
 			telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
 
@@ -210,7 +210,7 @@ export class ProjectsController {
 			throw err;
 		}
 
-		const actionEndTime = new Date().getMilliseconds();
+		const actionEndTime = new Date().getTime();
 		telemetryProps.actionDuration = (actionEndTime - actionStartTime).toString();
 		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
 
@@ -610,11 +610,11 @@ export class ProjectsController {
 		const streamingJobDefinition: string = (await fs.readFile(node.element.fileSystemUri.fsPath)).toString();
 
 		const dacFxService = await this.getDaxFxService();
-		const actionStartTime = new Date().getMilliseconds();
+		const actionStartTime = new Date().getTime();
 
 		const result: mssql.ValidateStreamingJobResult = await dacFxService.validateStreamingJob(dacpacPath, streamingJobDefinition);
 
-		const duration = new Date().getMilliseconds() - actionStartTime;
+		const duration = new Date().getTime() - actionStartTime;
 		telemetryProps.success = result.success.toString();
 
 		if (result.success) {
