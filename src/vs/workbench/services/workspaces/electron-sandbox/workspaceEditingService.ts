@@ -11,7 +11,6 @@ import { IJSONEditingService } from 'vs/workbench/services/configuration/common/
 import { IWorkspacesService, isUntitledWorkspace, IWorkspaceIdentifier, hasWorkspaceFileExtension } from 'vs/platform/workspaces/common/workspaces';
 import { WorkspaceService } from 'vs/workbench/services/configuration/browser/configurationService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { basename } from 'vs/base/common/resources';
@@ -42,7 +41,6 @@ export class NativeWorkspaceEditingService extends AbstractWorkspaceEditingServi
 		@INativeHostService private nativeHostService: INativeHostService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IStorageService private storageService: IStorageService,
-		@IExtensionService private extensionService: IExtensionService,
 		@IBackupFileService private backupFileService: IBackupFileService,
 		@INotificationService notificationService: INotificationService,
 		@ICommandService commandService: ICommandService,
@@ -176,16 +174,9 @@ export class NativeWorkspaceEditingService extends AbstractWorkspaceEditingServi
 			}
 		}
 
-		// TODO@aeschli: workaround until restarting works
-		if (this.environmentService.remoteAuthority) {
-			this.hostService.reload();
-		}
-
-		// Restart the extension host: entering a workspace means a new location for
-		// storage and potentially a change in the workspace.rootPath property.
-		else {
-			this.extensionService.restartExtensionHost();
-		}
+		// {{SQL CARBON EDIT}} - reload instead of restarting extension host because there is state maintained in the core
+		// that gets lost when the extension host is restarted
+		this.hostService.reload();
 	}
 
 	private migrateStorage(toWorkspace: IWorkspaceIdentifier): Promise<void> {

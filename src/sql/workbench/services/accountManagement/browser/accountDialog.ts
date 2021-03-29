@@ -22,7 +22,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import * as azdata from 'azdata';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { Modal } from 'sql/workbench/browser/modal/modal';
+import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel';
 import { AddAccountAction } from 'sql/platform/accounts/common/accountActions';
 import { AccountListRenderer, AccountListDelegate } from 'sql/workbench/services/accountManagement/browser/accountListRenderer';
@@ -84,6 +84,9 @@ class AccountPanel extends ViewPane {
 		this.tenantList = new List<Tenant>('TenantList', container, new TenantListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(TenantListRenderer)]);
 		this._register(attachListStyler(this.accountList, this.themeService));
 		this._register(attachListStyler(this.tenantList, this.themeService));
+
+		// Temporary workaround for https://github.com/microsoft/azuredatastudio/issues/14808 so that we can close an accessibility issue.
+		this.tenantList.getHTMLElement().tabIndex = -1;
 	}
 
 	protected layoutBody(size: number): void {
@@ -167,7 +170,7 @@ export class AccountDialog extends Modal {
 	) {
 		super(
 			localize('linkedAccounts', "Linked accounts"),
-			TelemetryKeys.Accounts,
+			TelemetryKeys.ModalDialogName.Accounts,
 			telemetryService,
 			layoutService,
 			clipboardService,
@@ -272,12 +275,12 @@ export class AccountDialog extends Modal {
 
 	/* Overwrite enter key behavior */
 	protected onAccept() {
-		this.close();
+		this.close('ok');
 	}
 
-	public close() {
+	public close(hideReason: HideReason = 'close') {
 		this._onCloseEmitter.fire();
-		this.hide();
+		this.hide(hideReason);
 	}
 
 	public open() {
@@ -301,9 +304,9 @@ export class AccountDialog extends Modal {
 		this._noaccountViewContainer!.hidden = true;
 		if (Iterable.consume(this._providerViewsMap.values()).length > 0) {
 			const firstView = this._providerViewsMap.values().next().value;
-			if (firstView instanceof AccountPanel) {
-				firstView.setSelection([0]);
-				firstView.focus();
+			if (firstView && firstView.view instanceof AccountPanel) {
+				firstView.view.setSelection([0]);
+				firstView.view.focus();
 			}
 		}
 	}

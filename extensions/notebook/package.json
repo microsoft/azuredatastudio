@@ -240,6 +240,10 @@
         "title": "%title.closeJupyterNotebook%"
       },
       {
+        "command": "notebook.command.removeNotebook",
+        "title": "%title.removeJupyterNotebook%"
+      },
+      {
         "command": "notebook.command.moveTo",
         "title": "%title.moveTo%"
       },
@@ -390,6 +394,10 @@
           "when": "false"
         },
         {
+          "command": "notebook.command.removeNotebook",
+          "when": "false"
+        },
+        {
           "command": "notebook.command.moveTo",
           "when": "false"
         },
@@ -466,12 +474,16 @@
           "when": "view == bookTreeView && viewItem == savedNotebook"
         },
         {
+          "command": "notebook.command.removeNotebook",
+          "when": "view == bookTreeView && viewItem == savedBookNotebook"
+        },
+        {
           "command": "notebook.command.moveTo",
-          "when": "view == bookTreeView && viewItem == savedNotebook || view == bookTreeView && viewItem == section"
+          "when": "view == bookTreeView && viewItem == savedNotebook || view == bookTreeView && viewItem == savedBookNotebook || view == bookTreeView && viewItem == section"
         },
         {
           "command": "notebook.command.pinNotebook",
-          "when": "view == bookTreeView && viewItem  == savedNotebook",
+          "when": "view == bookTreeView && viewItem  == savedNotebook || view == bookTreeView && viewItem == savedBookNotebook",
           "group": "inline"
         },
         {

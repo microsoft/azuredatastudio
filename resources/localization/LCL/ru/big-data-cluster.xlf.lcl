@@ -15,61 +15,13 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
-      <Item ItemId=";@extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage.bdc.dashboard.healthStatusD" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/big-data-cluster/dist/bigDataCluster/tree/controllerTreeDataProvider.bdc.controllerTreeDataProvider.er" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) etailsHeader" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) ror" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Health Status Details]]></Val>
+            <Val><![CDATA[Unexpected error loading saved controllers: {0}]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Сведения о состоянии работоспособности]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage.bdc.dashboard.healthStatusH" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) eader" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[Health Status]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Состояние работоспособности]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage.bdc.dashboard.metricsAndLog" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) sLabel" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[Metrics and Logs]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Метрики и журналы]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage.bdc.dashboard.nodeMetricsHe" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ader" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[Node Metrics]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Метрики узла]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage.bdc.dashboard.sqlMetricsHea" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) der" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[SQL Metrics]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Метрики SQL]]></Val>
+              <Val><![CDATA[Непредвиденная ошибка при загрузке сохраненных контроллеров: {0}]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -89,6 +41,15 @@
           <Val><![CDATA[Error retrieving BDC status from {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Ошибка при получении состояния модели подключения к бизнес-данным из {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi.bdc.error.getClusterConfig" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error retrieving cluster config from {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка при получении конфигурации кластера из {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -120,6 +81,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi.bdc.error.statusHdfs" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error getting mount status]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка при получении состояния подключения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/controller/clusterControllerApi.bdc.error.tokenPost" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error during authentication]]></Val>
@@ -147,43 +117,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog.basicAuthName" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Basic]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Обычный]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog.err.controller.password.required" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Password is required]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Требуется пароль]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog.err.controller.username.required" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Username is required]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Требуется имя пользователя]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog.integratedAuthName" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Windows Authentication]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Проверка подлинности Windows.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog.textAdd" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.add" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -192,106 +126,25 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog.textAddNewController" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.addNewController" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Add New Controller (preview)]]></Val>
+          <Val><![CDATA[Add New Controller]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Добавление контроллера (предварительная версия)]]></Val>
+            <Val><![CDATA[Добавление нового контроллера]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog.textAuthCapital" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.basicAuthName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Authentication type]]></Val>
+          <Val><![CDATA[Basic]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Тип проверки подлинности]]></Val>
+            <Val><![CDATA[Базовое]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog.textCancel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Cancel]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Отмена]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog.textPasswordCapital" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Password]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Пароль]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog.textPasswordLower" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[password]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Пароль]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog.textRememberPassword" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Remember Password]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Запомнить пароль]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog.textUrlCapital" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Cluster Management URL]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[URL-адрес управления кластером]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog.textUrlLower" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[url]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[URL-адрес]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog.textUsernameCapital" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Username]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Имя пользователя]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/addControllerDialog.textUsernameLower" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[username]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Имя пользователя]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboard.bdc.dashboard.clusterDetails" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Cluster Details]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Подробная информация о кластере]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboard.bdc.dashboard.overviewNavTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.bdcOverview" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Big Data Cluster overview]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -300,97 +153,16 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboard.bdc.dashboard.refreshButton" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.clusterDetails" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Refresh]]></Val>
+          <Val><![CDATA[Cluster Details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Обновить]]></Val>
+            <Val><![CDATA[Подробная информация о кластере]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboard.bdc.dashboard.troubleshootButton" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Troubleshoot]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Устранение неполадок]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage.bdc.dashboard.clusterState" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Cluster State :]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Состояние кластера:]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage.bdc.dashboard.copyTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Copy]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Копировать]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage.bdc.dashboard.endpointHeader" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Endpoint]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Конечная точка]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage.bdc.dashboard.endpointsLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Service Endpoints]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Конечные точки службы]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage.bdc.dashboard.healthStatus" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Health Status :]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Состояние работоспособности:]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage.bdc.dashboard.healthStatusHeader" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Health Status]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Состояние работоспособности]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage.bdc.dashboard.lastUpdated" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Last Updated : {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Последнее обновление: {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage.bdc.dashboard.noConnection" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[The dashboard requires a connection. Please click retry to enter your credentials.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Необходимо указать параметры подключения для панели мониторинга. Нажмите "Повторить", чтобы ввести свои учетные данные.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage.bdc.dashboard.overviewHeader" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.clusterOverview" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cluster Overview]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -399,7 +171,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage.bdc.dashboard.propertiesHeader" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.clusterProperties" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cluster Properties]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -408,61 +180,52 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage.bdc.dashboard.serviceHeader" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.clusterState" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Service]]></Val>
+          <Val><![CDATA[Cluster State]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Служба]]></Val>
+            <Val><![CDATA[Состояние кластера]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage.bdc.dashboard.serviceNameHeader" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.copy" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Service Name]]></Val>
+          <Val><![CDATA[Copy]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Имя службы]]></Val>
+            <Val><![CDATA[Копировать]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage.bdc.dashboard.stateHeader" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.endpoint" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[State]]></Val>
+          <Val><![CDATA[Endpoint]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Состояние]]></Val>
+            <Val><![CDATA[Конечная точка]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage.bdc.dashboard.unexpectedError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.healthStatus" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Unexpected error occurred: {0}]]></Val>
+          <Val><![CDATA[Health Status]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Произошла неожиданная ошибка: {0}]]></Val>
+            <Val><![CDATA[Состояние работоспособности]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage.copiedEndpoint" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.healthStatusDetails" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Endpoint '{0}' copied to clipboard]]></Val>
+          <Val><![CDATA[Health Status Details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Конечная точка "{0}" скопирована в буфер обмена]]></Val>
+            <Val><![CDATA[Сведения о состоянии работоспособности]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardOverviewPage.endpointsError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Unexpected error retrieving BDC Endpoints: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[При получении конечных точек модели подключения к бизнес-данным возникла неожиданная ошибка: {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage.bdc.dashboard.instanceHeader" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.instance" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Instance]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -471,7 +234,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage.bdc.dashboard.lastUpdated" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.lastUpdated" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Last Updated : {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -480,7 +243,25 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage.bdc.dashboard.logsHeader" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.loadingClusterStateCompleted" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Loading cluster state completed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Загрузка состояния кластера завершена]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.loadingHealthStatusCompleted" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Loading health status completed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Загрузка состояния работоспособности завершена]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.logs" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Logs]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -489,7 +270,34 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage.bdc.dashboard.notAvailable" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.metricsAndLogs" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Metrics and Logs]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Метрики и журналы]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.noConnection" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The dashboard requires a connection. Please click retry to enter your credentials.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Необходимо указать параметры подключения для панели мониторинга. Нажмите "Повторить", чтобы ввести свои учетные данные.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.nodeMetrics" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Node Metrics]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Метрики узла]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.notAvailable" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[N/A]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -498,7 +306,52 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage.bdc.dashboard.stateHeader" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.refresh" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Refresh]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Обновить]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.service" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Service]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Служба]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.serviceEndpoints" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Service Endpoints]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Конечные точки службы]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.serviceName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Service Name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Имя службы]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.sqlMetrics" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[SQL Metrics]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Метрики SQL]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.state" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[State]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -507,7 +360,34 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/bdcDashboardResourceStatusPage.bdc.dashboard.viewHyperlink" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.status" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Status Icon]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Значок состояния]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.troubleshoot" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Troubleshoot]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Устранение неполадок]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.unexpectedError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unexpected error occurred: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Произошла неожиданная ошибка: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.view" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[View]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -516,7 +396,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/commonControls.bdc.dashboard.viewDetails" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.viewDetails" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[View Details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -525,43 +405,43 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/connectControllerDialog.connectController.dialog.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.viewErrorDetails" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Connect to Controller (preview)]]></Val>
+          <Val><![CDATA[View Error Details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Подключение к контроллеру (предварительная версия)]]></Val>
+            <Val><![CDATA[Просмотреть сведения об ошибке]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase.basicAuthName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.viewLogs" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Basic]]></Val>
+          <Val><![CDATA[View Kibana Logs {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Обычный]]></Val>
+            <Val><![CDATA[Просмотреть журналы Kibana {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase.err.controller.password.required" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.viewNodeMetrics" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Password is required]]></Val>
+          <Val><![CDATA[View Node Metrics {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Требуется пароль]]></Val>
+            <Val><![CDATA[Просмотреть метрики узла {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase.err.controller.username.required" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.bdc.dashboard.viewSqlMetrics" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Username is required]]></Val>
+          <Val><![CDATA[View SQL Metrics {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Требуется имя пользователя]]></Val>
+            <Val><![CDATA[Просмотреть метрики SQL {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase.hdfs.dialog.cancel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.cancel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cancel]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -570,79 +450,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase.hdfs.dialog.ok" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[OK]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ОК]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase.hdsf.dialog.connection.section" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Cluster Connection]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Подключение к кластеру]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase.integratedAuthName" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Windows Authentication]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Проверка подлинности Windows.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase.mount.hdfs.loginerror1" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Login to controller failed]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Не удалось войти на контроллер]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase.mount.hdfs.loginerror2" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Login to controller failed: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ошибка входа на контроллер: {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase.textAuthCapital" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Authentication type]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Тип проверки подлинности]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase.textPasswordCapital" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Password]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Пароль]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase.textPasswordLower" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[password]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Пароль]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase.textUrlCapital" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.clusterManagementUrl" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cluster Management URL]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -651,232 +459,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase.textUrlLower" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[url]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[URL-адрес]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase.textUsernameCapital" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Username]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Имя пользователя]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/hdfsDialogBase.textUsernameLower" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[username]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Имя пользователя]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.deleteMount.dialog.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Delete Mount]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Удалить подключение]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.deletemount.task.name" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Deleting HDFS Mount on path {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Удаление подключения HDFS по пути {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.deletemount.task.submitted" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Delete mount request submitted]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Запрос на удаление подключения отправлен]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.mount.credentials.info" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Mount credentials for authentication to remote data source for reads]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Учетные данные подключения для проверки подлинности для чтения удаленного источника данных]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.mount.credentials.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Credentials]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Учетные данные]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.mount.dialog.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Mount HDFS Folder (preview)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Подключение папки HDFS (предварительная версия)]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.mount.err.formatting" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Bad formatting of credentials at {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Неправильное форматирование учетных данных в {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.mount.error.unknown" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Unknown error occurred during the mount process]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Неизвестная ошибка в процессе подключения]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.mount.hdfsPath.info" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Path to a new (non-existing) directory which you want to associate with the mount]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Путь к новому (несуществующему) каталогу, который вы хотите связать с точкой подключения]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.mount.hdfsPath.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[HDFS Path]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Путь HDFS]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.mount.main.section" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Mount Configuration]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Конфигурация подключения]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.mount.remoteUri.info" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[The URI to the remote data source. Example for ADLS: abfs://fs@saccount.dfs.core.windows.net/]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[URI удаленного источника данных. Например, для ADLS: abfs://fs@saccount.dfs.core.windows.net/]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.mount.remoteUri.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Remote URI]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Удаленный URI]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.mount.task.complete" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Mounting HDFS folder is complete]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Подключение папки HDFS выполнено]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.mount.task.error" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Error mounting folder: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ошибка при подключении папки: {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.mount.task.inprogress" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Mounting is likely to complete, check back later to verify]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Подключение, скорее всего, завершено, проверьте это позднее]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.mount.task.name" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Mounting HDFS folder on path {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Подключение папки HDFS по пути {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.mount.task.submitted" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Mount creation has started]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Было запущено создание подключения]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.refreshmount.dialog.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Refresh Mount]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Обновить подключение]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.refreshmount.task.name" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Refreshing HDFS Mount on path {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Обновление подключения HDFS по пути {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/dialog/mountHdfsDialog.refreshmount.task.submitted" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Refresh mount request submitted]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Запрос на обновление подключения отправлен]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/tree/addControllerNode.textBigDataClusterControllerWithDots" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Add SQL Server Big Data Cluster controller...]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Добавить контроллер кластера больших данных SQL Server…]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/tree/addControllerNode.textConnectToController" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.connectController.dialog.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connect to Controller]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -885,11 +468,317 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/tree/loadingControllerNode.textLoadingWithDots" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.copiedEndpoint" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Loading...]]></Val>
+          <Val><![CDATA[Endpoint '{0}' copied to clipboard]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Загрузка…]]></Val>
+            <Val><![CDATA[Конечная точка "{0}" скопирована в буфер обмена]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.deleteMount.dialog.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Delete Mount]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Удаление подключения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.deletemount.task.name" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Deleting HDFS Mount on path {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Удаление подключения HDFS по пути {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.deletemount.task.submitted" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Delete mount request submitted]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Запрос на удаление подключения отправлен]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.endpointsError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unexpected error retrieving BDC Endpoints: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[При получении конечных точек модели подключения к бизнес-данным возникла неожиданная ошибка: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.err.controller.password.required" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Password is required]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Требуется пароль]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.err.controller.username.required" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Username is required]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Требуется имя пользователя]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.hdsf.dialog.connection.section" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Cluster Connection]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Подключение к кластеру]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.integratedAuthName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Windows Authentication]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Проверка подлинности Windows]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.credentials.info" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Mount credentials for authentication to remote data source for reads]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Учетные данные подключения для проверки подлинности для чтения удаленного источника данных]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.credentials.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Credentials]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Учетные данные]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.dialog.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Mount HDFS Folder]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Подключение папки HDFS]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.err.formatting" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Bad formatting of credentials at {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Неправильное форматирование учетных данных в {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.error.unknown" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unknown error occurred during the mount process]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Неизвестная ошибка в процессе подключения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.hdfs.loginerror1" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Login to controller failed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удалось войти на контроллер]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.hdfs.loginerror2" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Login to controller failed: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка входа на контроллер: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.hdfsPath.info" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Path to a new (non-existing) directory which you want to associate with the mount]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Путь к новому (несуществующему) каталогу, который вы хотите связать с точкой подключения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.hdfsPath.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[HDFS Path]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Путь HDFS]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.main.section" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Mount Configuration]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Конфигурация подключения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.remoteUri.info" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The URI to the remote data source. Example for ADLS: abfs://fs@saccount.dfs.core.windows.net/]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[URI удаленного источника данных. Например, для ADLS: abfs://fs@saccount.dfs.core.windows.net/]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.remoteUri.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Remote URI]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Удаленный URI]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.task.complete" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Mounting HDFS folder is complete]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Подключение папки HDFS выполнено]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.task.error" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error mounting folder: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка при подключении папки: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.task.inprogress" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Mounting is likely to complete, check back later to verify]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Подключение, скорее всего, завершено, проверьте это позднее]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.task.name" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Mounting HDFS folder on path {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Подключение папки HDFS по пути {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.mount.task.submitted" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Mount creation has started]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Было запущено создание подключения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.ok" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[OK]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[OK]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.password" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Password]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пароль]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.refreshmount.dialog.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Refresh Mount]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Обновление подключения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.refreshmount.task.name" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Refreshing HDFS Mount on path {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Обновление подключения HDFS по пути {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.refreshmount.task.submitted" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Refresh mount request submitted]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Запрос на обновление подключения отправлен]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.rememberPassword" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Remember Password]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Запомнить пароль]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.textAuthCapital" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Authentication type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Тип проверки подлинности]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.url" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[URL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[URL-адрес]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/bigDataCluster/localizedConstants.username" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Username]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Имя пользователя]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1310,10 +1199,13 @@
       </Item>
       <Item ItemId=";extensions/big-data-cluster/dist/extension.bdc.dashboard.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Big Data Cluster Dashboard (preview) -]]></Val>
+          <Val><![CDATA[Big Data Cluster Dashboard -]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Панель мониторинга кластера больших данных (предварительная версия) -]]></Val>
+            <Val><![CDATA[Панель мониторинга кластера больших данных —]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Big Data Cluster Dashboard (preview) -]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1326,9 +1218,9 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/dist/extension.textConfirmDeleteController" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/dist/extension.textConfirmRemoveController" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Are you sure you want to delete '{0}'?]]></Val>
+          <Val><![CDATA[Are you sure you want to remove '{0}'?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Вы действительно хотите удалить "{0}"?]]></Val>
           </Tgt>
@@ -1371,20 +1263,38 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/package.command.addController.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/package.bdc.view.welcome.connect" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Connect to Controller]]></Val>
+          <Val><![CDATA[No SQL Big Data Cluster controllers registered. [Learn More]5D;(https://docs.microsoft.com/sql/big-data-cluster/big-data-cluster-overview)]D;]A;[Connect Controller]5D;(command:bigDataClusters.command.connectController)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Подключение к контроллеру]]></Val>
+            <Val><![CDATA[Контроллеры кластера больших данных SQL не зарегистрированы. [Дополнительные сведения]5D;(https://docs.microsoft.com/sql/big-data-cluster/big-data-cluster-overview)]D;]A;[Connect Controller]5D;(command:bigDataClusters.command.connectController)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/big-data-cluster/package.command.deleteController.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/big-data-cluster/package.bdc.view.welcome.loading" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Delete]]></Val>
+          <Val><![CDATA[Loading controllers...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Удалить]]></Val>
+            <Val><![CDATA[Загрузка контроллеров…]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/package.command.connectController.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Connect to Existing Controller]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Подключение к существующему контроллеру]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/package.command.createController.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Create New Controller]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Создание нового контроллера]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1430,6 +1340,15 @@
           <Val><![CDATA[Refresh Mount]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Обновить подключение]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/big-data-cluster/package.command.removeController.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Remove Controller]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Удаление контроллера]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

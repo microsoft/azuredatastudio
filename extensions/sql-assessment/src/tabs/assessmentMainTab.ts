@@ -135,7 +135,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 						if (append) {
 							await this.resultGrid.appendResult(result);
 						} else {
-							this.displayResults(result, assessmentType);
+							await this.displayResults(result, assessmentType);
 						}
 					});
 			}
@@ -168,7 +168,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 						if (append) {
 							await this.resultGrid.appendResult(result);
 						} else {
-							this.displayResults(result, assessmentType);
+							await this.displayResults(result, assessmentType);
 						}
 					});
 			}
@@ -299,11 +299,11 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 			).component();
 	}
 
-	private displayResults(result: azdata.SqlAssessmentResult, assessmentType: AssessmentType): void {
+	private async displayResults(result: azdata.SqlAssessmentResult, assessmentType: AssessmentType): Promise<void> {
 		this.apiVersionPropItem.value = result.apiVersion;
 		this.defaultRulesetPropItem.value = result.items?.length > 0 ? result.items[0].rulesetVersion : '';
 
-		this.resultGrid.displayResult(result, assessmentType);
+		await this.resultGrid.displayResult(result, assessmentType);
 		this.btnExportAsScript.enabled = this.btnHTMLExport.enabled = assessmentType === AssessmentType.InvokeAssessment;
 	}
 }

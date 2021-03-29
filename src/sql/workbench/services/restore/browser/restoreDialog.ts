@@ -29,7 +29,7 @@ import { CheckboxSelectColumn } from 'sql/base/browser/ui/table/plugins/checkbox
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
-import { Modal } from 'sql/workbench/browser/modal/modal';
+import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import { attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/workbench/services/restore/browser/restoreViewModel';
@@ -142,7 +142,7 @@ export class RestoreDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.Restore, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasErrors: true, width: 'wide', hasSpinner: true });
+		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.ModalDialogName.Restore, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasErrors: true, width: 'wide', hasSpinner: true });
 
 		// view model
 		this.viewModel = new RestoreViewModel(optionsMetadata);
@@ -688,12 +688,12 @@ export class RestoreDialog extends Modal {
 
 	public cancel() {
 		this._onCancel.fire();
-		this.close();
+		this.close('cancel');
 	}
 
-	public close() {
+	public close(hideReason: HideReason = 'close') {
 		this.resetDialog();
-		this.hide();
+		this.hide(hideReason);
 		this._onCloseEvent.fire();
 	}
 

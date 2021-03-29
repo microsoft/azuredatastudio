@@ -177,7 +177,8 @@ export enum ModelComponentTypes {
 	TabbedPanel,
 	Separator,
 	PropertiesContainer,
-	InfoBox
+	InfoBox,
+	Slider
 }
 
 export enum ModelViewAction {
@@ -242,7 +243,8 @@ export enum ComponentEventType {
 	onSelectedRowChanged,
 	onComponentCreated,
 	onCellAction,
-	onEnterKeyPressed
+	onEnterKeyPressed,
+	onInput
 }
 
 export interface IComponentEventArgs {
@@ -304,7 +306,7 @@ export interface IModelViewWizardDetails {
 	width: DialogWidth;
 }
 
-export type DialogWidth = 'narrow' | 'medium' | 'wide' | number;
+export type DialogWidth = 'narrow' | 'medium' | 'wide' | number | string;
 
 export type DialogStyle = 'normal' | 'flyout' | 'callout';
 

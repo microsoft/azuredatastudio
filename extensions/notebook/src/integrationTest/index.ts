@@ -8,7 +8,7 @@ const testRunner = require('vscodetestcover');
 
 const suite = 'notebook Extension Integration Tests';
 
-const options: any = {
+const mochaOptions: any = {
 	ui: 'bdd',
 	useColors: true,
 	timeout: 600000
@@ -16,25 +16,25 @@ const options: any = {
 
 // set relevant mocha options from the environment
 if (process.env.ADS_TEST_GREP) {
-	options.grep = process.env.ADS_TEST_GREP;
-	console.log(`setting options.grep to: ${options.grep}`);
+	mochaOptions.grep = process.env.ADS_TEST_GREP;
+	console.log(`setting options.grep to: ${mochaOptions.grep}`);
 }
 if (process.env.ADS_TEST_INVERT_GREP) {
-	options.invert = parseInt(process.env.ADS_TEST_INVERT_GREP);
-	console.log(`setting options.invert to: ${options.invert}`);
+	mochaOptions.invert = parseInt(process.env.ADS_TEST_INVERT_GREP);
+	console.log(`setting options.invert to: ${mochaOptions.invert}`);
 }
 if (process.env.ADS_TEST_TIMEOUT) {
-	options.timeout = parseInt(process.env.ADS_TEST_TIMEOUT);
-	console.log(`setting options.timeout to: ${options.timeout}`);
+	mochaOptions.timeout = parseInt(process.env.ADS_TEST_TIMEOUT);
+	console.log(`setting options.timeout to: ${mochaOptions.timeout}`);
 }
 if (process.env.ADS_TEST_RETRIES) {
-	options.retries = parseInt(process.env.ADS_TEST_RETRIES);
-	console.log(`setting options.retries to: ${options.retries}`);
+	mochaOptions.retries = parseInt(process.env.ADS_TEST_RETRIES);
+	console.log(`setting options.retries to: ${mochaOptions.retries}`);
 }
 
 if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
-	options.reporter = 'mocha-multi-reporters';
-	options.reporterOptions = {
+	mochaOptions.reporter = 'mocha-multi-reporters';
+	mochaOptions.reporterOptions = {
 		reporterEnabled: 'spec, mocha-junit-reporter',
 		mochaJunitReporterReporterOptions: {
 			testsuitesTitle: `${suite} ${process.platform}`,
@@ -43,6 +43,6 @@ if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 	};
 }
 
-testRunner.configure(options);
+testRunner.configure(mochaOptions, { coverConfig: '../../coverConfig.json' });
 
 export = testRunner;

@@ -6,9 +6,8 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { WizardController } from './wizard/wizardController';
-import { AssessmentResultsDialog } from './dialog/assessmentResults/assessmentResultsDialog';
 import { promises as fs } from 'fs';
-import * as loc from './models/strings';
+import * as loc from './constants/strings';
 import { MigrationNotebookInfo, NotebookPathHelper } from './constants/notebookPathHelper';
 import { IconPathHelper } from './constants/iconPathHelper';
 import { DashboardWidget } from './dashboard/sqlServerDashboard';
@@ -29,25 +28,8 @@ class SQLMigration {
 	async registerCommands(): Promise<void> {
 		const commandDisposables: vscode.Disposable[] = [ // Array of disposables returned by registerCommand
 			vscode.commands.registerCommand('sqlmigration.start', async () => {
-				let activeConnection = await azdata.connection.getCurrentConnection();
-				let connectionId: string = '';
-				if (!activeConnection) {
-					const connection = await azdata.connection.openConnectionDialog();
-					if (connection) {
-						connectionId = connection.connectionId;
-					}
-				} else {
-					connectionId = activeConnection.connectionId;
-				}
-				const wizardController = new WizardController(this.context);
-				await wizardController.openWizard(connectionId);
+				await this.launchMigrationWizard();
 			}),
-
-			vscode.commands.registerCommand('sqlmigration.testDialog', async () => {
-				let dialog = new AssessmentResultsDialog('ownerUri', undefined!, 'Assessment Dialog');
-				await dialog.openDialog();
-			}),
-
 			vscode.commands.registerCommand('sqlmigration.openNotebooks', async () => {
 				const input = vscode.window.createQuickPick<MigrationNotebookInfo>();
 				input.placeholder = loc.NOTEBOOK_QUICK_PICK_PLACEHOLDER;
@@ -71,10 +53,28 @@ class SQLMigration {
 				});
 
 				input.show();
+			}),
+			azdata.tasks.registerTask('sqlmigration.start', async () => {
+				await this.launchMigrationWizard();
 			})
 		];
 
 		this.context.subscriptions.push(...commandDisposables);
+	}
+
+	async launchMigrationWizard(): Promise<void> {
+		let activeConnection = await azdata.connection.getCurrentConnection();
+		let connectionId: string = '';
+		if (!activeConnection) {
+			const connection = await azdata.connection.openConnectionDialog();
+			if (connection) {
+				connectionId = connection.connectionId;
+			}
+		} else {
+			connectionId = activeConnection.connectionId;
+		}
+		const wizardController = new WizardController(this.context);
+		await wizardController.openWizard(connectionId);
 	}
 
 	stop(): void {

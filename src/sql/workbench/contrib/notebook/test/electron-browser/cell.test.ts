@@ -25,6 +25,8 @@ import { URI } from 'vs/base/common/uri';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
+import { ControlType, IChartOption } from 'sql/workbench/contrib/charts/browser/chartOptions';
+import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 
 let instantiationService: IInstantiationService;
 
@@ -1048,15 +1050,18 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let contents: nb.ICellContents = {
-			cell_type: CellTypes.Code,
+			cell_type: CellTypes.Markdown,
 			source: '',
 			attachments: cellAttachment
 		};
 		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
-		assert.deepEqual(model.attachments, contents.attachments);
+		assert.deepEqual(model.attachments, contents.attachments, 'Attachments do not match in cellModel');
+
+		let serializedCell = model.toJSON();
+		assert.deepEqual(serializedCell.attachments, cellAttachment, 'Cell attachment from JSON is incorrect');
 	});
 
-	test('Should read attachments name from notebook attachments', async function () {
+	test('Should not include attachments in notebook json if no attachments exist', async function () {
 		let notebookModel = new NotebookModelStub({
 			name: '',
 			version: '',
@@ -1067,10 +1072,84 @@ suite('Cell Model', function (): void {
 			source: ''
 		};
 		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
-		assert.deepEqual(model.attachments, {});
+		assert.deepEqual(model.attachments, undefined, 'Cell model attachments should return undefined if they do not exist');
 
-		contents.attachments = undefined;
-		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
-		assert.deepEqual(model.attachments, {});
+		let serializedCell = model.toJSON();
+		assert.deepEqual(serializedCell.attachments, undefined, 'JSON should not include attachments if attachments do not exist');
+	});
+
+	test('Should not have cache chart data after new cell created', async function () {
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: ''
+		};
+		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false }) as CellModel;
+		assert.deepEqual(cellModel.previousChartState, [], 'New cell should have no previous chart state');
+	});
+
+	test('Should not cache chart data after clear output', async function () {
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: '',
+			outputs: [
+				{
+					output_type: 'execute_result',
+					metadata: {
+						azdata_chartOptions: <IChartOption>{
+							configEntry: '',
+							default: '',
+							type: ControlType.input,
+							label: '',
+							displayableOptions: [''],
+						}
+					}
+				}
+			]
+		};
+
+		let future = TypeMoq.Mock.ofType(EmptyFuture);
+		let onIopub: nb.MessageHandler<nb.IIOPubMessage>;
+		future.setup(f => f.setIOPubHandler(TypeMoq.It.isAny())).callback((handler) => onIopub = handler);
+
+		// When I create a cell
+		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false }) as CellModel;
+		assert.deepEqual(cellModel.previousChartState, [], 'New cell should have no previous chart state');
+
+		// When previous chart state exists
+		cellModel[<any>'_previousChartState'] = contents.outputs[0].metadata.azdata_chartOptions;
+		assert.deepEqual(cellModel.previousChartState, contents.outputs[0].metadata.azdata_chartOptions, 'Previous chart state should be returned as is');
+
+		// When cell outputs are cleared
+		cellModel.clearOutputs();
+		assert.deepEqual(cellModel.previousChartState, [], 'Previous chart state should be erased after clearing outputs');
+
+		// Put previous chart state back
+		cellModel[<any>'_previousChartState'] = contents.outputs[0].metadata.azdata_chartOptions;
+
+		// When source is changed
+		cellModel.source = 'newSource';
+
+		// When output is generated
+		cellModel.setFuture(future.object);
+		await onIopub.handle({ channel: 'iopub', content: { data: 'Hello' }, type: 'execute_reply', metadata: contents.outputs[0].metadata, header: { msg_type: 'execute_result' } });
+		assert.deepEqual(cellModel.previousChartState, [], 'Previous chart state should not exist after cell source change');
+
+		// Put previous chart state back
+		cellModel[<any>'_previousChartState'] = contents.outputs[0].metadata.azdata_chartOptions;
+
+		// When output is generated
+		cellModel.setFuture(future.object);
+		await onIopub.handle({ channel: 'iopub', content: { data: 'Hello' }, type: 'execute_reply', metadata: contents.outputs[0].metadata, header: { msg_type: 'execute_result' } });
+		assert.deepEqual(cellModel.previousChartState, contents.outputs[0].metadata.azdata_chartOptions, 'Previous chart state should exist after output is generated');
 	});
 });

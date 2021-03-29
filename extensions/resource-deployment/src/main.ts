@@ -24,14 +24,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<rd.IEx
 	const toolsService = new ToolsService(platformService);
 	const notebookService = new NotebookService(platformService, context.extensionPath);
 	const resourceTypeService = new ResourceTypeService(platformService, toolsService, notebookService);
-	const resourceTypes = resourceTypeService.getResourceTypes();
-	const validationFailures = resourceTypeService.validateResourceTypes(resourceTypes);
-	if (validationFailures.length !== 0) {
-		const errorMessage = localize('resourceDeployment.FailedToLoadExtension', "Failed to load extension: {0}, Error detected in the resource type definition in package.json, check debug console for details.", context.extensionPath);
-		vscode.window.showErrorMessage(errorMessage);
-		validationFailures.forEach(message => console.error(message));
-		return <any>undefined;
-	}
+	resourceTypeService.loadResourceTypes();
+	context.subscriptions.push(vscode.extensions.onDidChange(() => {
+		resourceTypeService.loadResourceTypes();
+	}));
 	const uriHandlerService = new UriHandlerService(resourceTypeService);
 	vscode.window.registerUriHandler(uriHandlerService);
 	/**
@@ -41,7 +37,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<rd.IEx
 	 * resource types will be displayed
 	 */
 	const openDialog = (defaultResourceTypeName: string, resourceTypeNameFilters?: string[], optionValuesFilter?: OptionValuesFilter, initialVariableValues?: InitialVariableValues) => {
-		const defaultResourceType = resourceTypes.find(resourceType => resourceType.name === defaultResourceTypeName);
+		const defaultResourceType = resourceTypeService.getResourceTypes().find(resourceType => resourceType.name === defaultResourceTypeName);
 		if (!defaultResourceType) {
 			vscode.window.showErrorMessage(localize('resourceDeployment.UnknownResourceType', "The resource type: {0} is not defined", defaultResourceTypeName));
 		} else {

@@ -6,7 +6,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { MigrationStateModel } from '../models/stateMachine';
-import { WIZARD_TITLE } from '../models/strings';
+import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SKURecommendationPage } from './skuRecommendationPage';
 // import { SubscriptionSelectionPage } from './subscriptionSelectionPage';
@@ -14,6 +14,8 @@ import { DatabaseBackupPage } from './databaseBackupPage';
 import { AccountsSelectionPage } from './accountsSelectionPage';
 import { IntergrationRuntimePage } from './integrationRuntimePage';
 import { SummaryPage } from './summaryPage';
+import { MigrationModePage } from './migrationModePage';
+import { SqlSourceConfigurationPage } from './sqlSourceConfigurationPage';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '400px';
 export class WizardController {
@@ -31,12 +33,14 @@ export class WizardController {
 	}
 
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {
-		const wizard = azdata.window.createWizard(WIZARD_TITLE, 'wide');
+		const wizard = azdata.window.createWizard(loc.WIZARD_TITLE, 'MigrationWizard', 'wide');
 		wizard.generateScriptButton.enabled = false;
 		wizard.generateScriptButton.hidden = true;
 		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
 		// const subscriptionSelectionPage = new SubscriptionSelectionPage(wizard, stateModel);
+		const migrationModePage = new MigrationModePage(wizard, stateModel);
 		const azureAccountsPage = new AccountsSelectionPage(wizard, stateModel);
+		const sourceConfigurationPage = new SqlSourceConfigurationPage(wizard, stateModel);
 		const databaseBackupPage = new DatabaseBackupPage(wizard, stateModel);
 		const integrationRuntimePage = new IntergrationRuntimePage(wizard, stateModel);
 		const summaryPage = new SummaryPage(wizard, stateModel);
@@ -44,7 +48,9 @@ export class WizardController {
 		const pages: MigrationWizardPage[] = [
 			// subscriptionSelectionPage,
 			azureAccountsPage,
+			sourceConfigurationPage,
 			skuRecommendationPage,
+			migrationModePage,
 			databaseBackupPage,
 			integrationRuntimePage,
 			summaryPage
@@ -92,7 +98,7 @@ export function createInformationRow(view: azdata.ModelView, label: string, valu
 			})
 		.withItems(
 			[
-				creaetLabelTextComponent(view, label),
+				createLabelTextComponent(view, label),
 				createTextCompononent(view, value)
 			],
 			{
@@ -111,11 +117,9 @@ export function createHeadingTextComponent(view: azdata.ModelView, value: string
 }
 
 
-export function creaetLabelTextComponent(view: azdata.ModelView, value: string): azdata.TextComponent {
+export function createLabelTextComponent(view: azdata.ModelView, value: string, styles: { [key: string]: string; } = { 'width': '300px' }): azdata.TextComponent {
 	const component = createTextCompononent(view, value);
-	component.updateCssStyles({
-		'width': '250px'
-	});
+	component.updateCssStyles(styles);
 	return component;
 }
 

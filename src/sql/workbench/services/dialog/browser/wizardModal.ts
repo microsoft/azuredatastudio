@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/dialogModal';
-import { Modal, IModalOptions } from 'sql/workbench/browser/modal/modal';
+import { Modal, IModalOptions, HideReason } from 'sql/workbench/browser/modal/modal';
 import { Wizard, DialogButton, WizardPage } from 'sql/workbench/services/dialog/common/dialogTypes';
 import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
@@ -261,9 +261,13 @@ export class WizardModal extends Modal {
 			() => undefined);
 	}
 
-	public open(): void {
+	/**
+	 * Opens the dialog to the first page
+	 * @param source Where the wizard was opened from for telemetry (ex: command palette, context menu)
+	 */
+	public open(source?: string): void {
 		this.showPage(0, false, true).then(() => {
-			this.show();
+			this.show(source);
 		}).catch(err => onUnexpectedError(err));
 	}
 
@@ -274,15 +278,18 @@ export class WizardModal extends Modal {
 			}
 			this._onDone.fire();
 			this.dispose();
-			this.hide('done');
+			this.hide('ok');
 		}
 	}
 
-	public cancel(): void {
+	public close(): void {
+		this.cancel('close');
+	}
+	public cancel(hideReason: HideReason = 'cancel'): void {
 		const currentPage = this._wizard.pages[this._wizard.currentPage];
 		this._onCancel.fire();
 		this.dispose();
-		this.hide('cancel', currentPage.pageName ?? this._wizard.currentPage.toString());
+		this.hide(hideReason, currentPage.pageName ?? this._wizard.currentPage.toString());
 	}
 
 	private async validateNavigation(newPage: number): Promise<boolean> {

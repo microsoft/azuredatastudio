@@ -68,9 +68,9 @@ export const feedback = localize('arc.feedback', "Feedback");
 export const selectConnectionString = localize('arc.selectConnectionString', "Select from available client connection strings below.");
 export const addingWorkerNodes = localize('arc.addingWorkerNodes', "adding worker nodes");
 export const workerNodesDescription = localize('arc.workerNodesDescription', "Expand your server group and scale your database by adding worker nodes.");
-export const postgresConfigurationInformation = localize('arc.postgres.configurationInformation', "You can configure the number of CPU cores and storage size that will apply to both worker nodes and coordinator node. Each worker node will have the same configuration. Adjust the number of CPU cores and memory settings for your server group.");
-export const workerNodesConfigurationInformation = localize('arc.workerNodesConfigurationInformation', "You can configure the number of CPU cores and storage size that will apply to all worker nodes. Adjust the number of CPU cores and memory settings for your server group.");
-export const coordinatorNodeConfigurationInformation = localize('arc.coordinatorNodeConfigurationInformation', "You can configure the number of CPU cores and storage size that will apply to the coordinator node. Adjust the number of CPU cores and memory settings for your server group.");
+export const postgresConfigurationInformation = localize('arc.postgres.configurationInformation', "You can configure the number of CPU cores and storage size that will apply to both worker nodes and coordinator node. Each worker node will have the same configuration. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.");
+export const workerNodesConfigurationInformation = localize('arc.workerNodesConfigurationInformation', "You can configure the number of CPU cores and storage size that will apply to all worker nodes. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.");
+export const coordinatorNodeConfigurationInformation = localize('arc.coordinatorNodeConfigurationInformation', "You can configure the number of CPU cores and storage size that will apply to the coordinator node. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.");
 export const workerNodesInformation = localize('arc.workerNodeInformation', "In preview it is not possible to reduce the number of worker nodes. Please refer to documentation linked above for more information.");
 export const vCores = localize('arc.vCores', "vCores");
 export const ram = localize('arc.ram', "RAM");
@@ -79,6 +79,7 @@ export const resetAllToDefault = localize('arc.resetAllToDefault', "Reset all to
 export const resetToDefault = localize('arc.resetToDefault', "Reset to default");
 export const troubleshoot = localize('arc.troubleshoot', "Troubleshoot");
 export const clickTheNewSupportRequestButton = localize('arc.clickTheNewSupportRequestButton', "Click the new support request button to file a support request in the Azure Portal.");
+export const supportRequestNote = localize('arc.supportRequestNote', "Note that the resource configuration must have been uploaded to Azure first in order to open a support request.");
 export const running = localize('arc.running', "Running");
 export const ready = localize('arc.ready', "Ready");
 export const notReady = localize('arc.notReady', "Not Ready");
@@ -134,6 +135,8 @@ export const postgresArcProductName = localize('arc.postgresArcProductName', "Az
 export const coordinator = localize('arc.coordinator', "Coordinator");
 export const worker = localize('arc.worker', "Worker");
 export const monitor = localize('arc.monitor', "Monitor");
+export const available = localize('arc.available', "Available");
+export const issuesDetected = localize('arc.issuesDetected', "Issues Detected");
 export const newDatabase = localize('arc.newDatabase', "New Database");
 export const databaseName = localize('arc.databaseName', "Database name");
 export const enterNewPassword = localize('arc.enterNewPassword', "Enter a new password");
@@ -152,6 +155,7 @@ export const postgresComputeAndStorageDescriptionPartTwo = localize('arc.postgre
 export const computeAndStorageDescriptionPartThree = localize('arc.computeAndStorageDescriptionPartThree', "without downtime and by");
 export const computeAndStorageDescriptionPartFour = localize('arc.computeAndStorageDescriptionPartFour', "Before doing so, you need to ensure");
 export const computeAndStorageDescriptionPartFive = localize('arc.computeAndStorageDescriptionPartFive', "there are sufficient resources available");
+export const resourceHealthDescription = localize('arc.resourceHealthDescription', "Resource health can tell you if your resource is running as expected.");
 export const computeAndStorageDescriptionPartSix = localize('arc.computeAndStorageDescriptionPartSix', "in your Kubernetes cluster to honor this configuration.");
 export const node = localize('arc.node', "node");
 export const nodes = localize('arc.nodes', "nodes");
@@ -165,24 +169,27 @@ export const coresLimit = localize('arc.coresLimit', "CPU limit:");
 export const coresRequest = localize('arc.coresRequest', "CPU request:");
 export const memoryLimit = localize('arc.memoryLimit', "Memory limit (in GB):");
 export const memoryRequest = localize('arc.memoryRequest', "Memory request (in GB):");
-export const workerValidationErrorMessage = localize('arc.workerValidationErrorMessage', "The number of workers cannot be decreased.");
-export const memoryRequestValidationErrorMessage = localize('arc.memoryRequestValidationErrorMessage', "Memory request must be at least 0.25Gib");
-export const memoryLimitValidationErrorMessage = localize('arc.memoryLimitValidationErrorMessage', "Memory limit must be at least 0.25Gib");
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
 export const enterANonEmptyPassword = localize('arc.enterANonEmptyPassword', "Enter a non empty password or press escape to exit.");
 export const thePasswordsDoNotMatch = localize('arc.thePasswordsDoNotMatch', "The passwords do not match. Confirm the password or press escape to exit.");
 export const passwordReset = localize('arc.passwordReset', "Password reset successfully");
-export const podOverview = localize('arc.podOverview', "Pod overview");
 export const condition = localize('arc.condition', "Condition");
 export const details = localize('arc.details', "Details");
-export const lastUpdated = localize('arc.lastUpdated', "Last updated");
+export const lastTransition = localize('arc.lastTransition', "Last transition");
 export const noExternalEndpoint = localize('arc.noExternalEndpoint', "No External Endpoint has been configured so this information isn't available.");
 export const podsReady = localize('arc.podsReady', "pods ready");
+export const podsPresent = localize('arc.podsPresent', "Pods Present");
+export const podsUsedDescription = localize('arc.podsUsedDescription', "Select a pod in the dropdown below for detailed health information.");
 export const connectToPostgresDescription = localize('arc.connectToPostgresDescription', "A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.");
 export const postgresExtension = localize('arc.postgresExtension', "microsoft.azuredatastudio-postgresql");
+export const podInitialized = localize('arc.podInitialized', "Pod is initialized.");
+export const podReady = localize('arc.podReady', "Pod is ready.");
+export const noPodIssuesDetected = localize('arc.noPodIssuesDetected', "There aren’t any known issues affecting this PostgreSQL Hyperscale instance.");
+export const podIssuesDetected = localize('arc.podIssuesDetected', "The pods listed below are experiencing issues that may affect performance or availability.");
+export const containerReady = localize('arc.containerReady', "Pod containers are ready.");
+export const podScheduled = localize('arc.podScheduled', "Pod is schedulable.");
 
 export function rangeSetting(min: string, max: string): string { return localize('arc.rangeSetting', "Value is expected to be in the range {0} - {1}", min, max); }
-export function allowedValue(value: string): string { return localize('arc.allowedValue', "Value is expected to be {0}", value); }
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
 export function deletingInstance(name: string): string { return localize('arc.deletingInstance', "Deleting instance '{0}'...", name); }
 export function installingExtension(name: string): string { return localize('arc.installingExtension', "Installing extension '{0}'...", name); }
@@ -192,6 +199,9 @@ export function instanceDeleted(name: string): string { return localize('arc.ins
 export function instanceUpdated(name: string): string { return localize('arc.instanceUpdated', "Instance '{0}' updated", name); }
 export function copiedToClipboard(name: string): string { return localize('arc.copiedToClipboard', "{0} copied to clipboard", name); }
 export function clickTheTroubleshootButton(resourceType: string): string { return localize('arc.clickTheTroubleshootButton', "Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.", resourceType); }
+export function dataStorage(value: string): string { return localize('arc.dataStorage', "{0} data", value); }
+export function logStorage(value: string): string { return localize('arc.logStorage', "{0} log", value); }
+export function backupsStorage(value: string): string { return localize('arc.backupsStorage', "{0} backups", value); }
 export function numVCores(vCores: string | undefined): string {
 	if (vCores && +vCores > 0) {
 		if (+vCores === 1) {
@@ -204,13 +214,11 @@ export function numVCores(vCores: string | undefined): string {
 	}
 }
 export function updated(when: string): string { return localize('arc.updated', "Updated {0}", when); }
-export function validationMin(min: number): string { return localize('arc.validationMin', "Value must be greater than or equal to {0}.", min); }
 
 // Errors
 export const pgConnectionRequired = localize('arc.pgConnectionRequired', "A connection is required to show and set database engine settings.");
 export const miaaConnectionRequired = localize('arc.miaaConnectionRequired', "A connection is required to list the databases on this instance.");
 export const couldNotFindControllerRegistration = localize('arc.couldNotFindControllerRegistration', "Could not find controller registration.");
-export function outOfRange(min: string, max: string): string { return localize('arc.outOfRange', "The number must be in range {0} - {1}", min, max); }
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
 export function resetFailed(error: any): string { return localize('arc.resetFailed', "Reset failed. {0}", getErrorMessage(error)); }
 export function openDashboardFailed(error: any): string { return localize('arc.openDashboardFailed', "Error opening dashboard. {0}", getErrorMessage(error)); }
@@ -228,6 +236,7 @@ export function fetchEndpointsFailed(name: string, error: any): string { return 
 export function fetchRegistrationsFailed(name: string, error: any): string { return localize('arc.fetchRegistrationsFailed', "An unexpected error occurred retrieving the registrations for '{0}'. {1}", name, getErrorMessage(error)); }
 export function fetchDatabasesFailed(name: string, error: any): string { return localize('arc.fetchDatabasesFailed', "An unexpected error occurred retrieving the databases for '{0}'. {1}", name, getErrorMessage(error)); }
 export function fetchEngineSettingsFailed(name: string, error: any): string { return localize('arc.fetchEngineSettingsFailed', "An unexpected error occurred retrieving the engine settings for '{0}'. {1}", name, getErrorMessage(error)); }
+export function numberOfIssuesDetected(name: string, issues: number): string { return localize('arc.numberOfIssuesDetected', "• {0} ({1} issues)", name, issues); }
 export function instanceDeletionWarning(name: string): string { return localize('arc.instanceDeletionWarning', "Warning! Deleting an instance is permanent and cannot be undone. To delete the instance '{0}' type the name '{0}' below to proceed.", name); }
 export function invalidInstanceDeletionName(name: string): string { return localize('arc.invalidInstanceDeletionName', "The value '{0}' does not match the instance name. Try again or press escape to exit", name); }
 export function couldNotFindAzureResource(name: string): string { return localize('arc.couldNotFindAzureResource', "Could not find Azure resource for {0}", name); }

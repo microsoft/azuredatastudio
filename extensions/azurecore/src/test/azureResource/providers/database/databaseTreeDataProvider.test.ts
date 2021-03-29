@@ -14,7 +14,7 @@ import { azureResource } from 'azureResource';
 import { AzureResourceDatabaseTreeDataProvider } from '../../../../azureResource/providers/database/databaseTreeDataProvider';
 import { AzureResourceItemType } from '../../../../azureResource/constants';
 import { IAzureResourceService } from '../../../../azureResource/interfaces';
-import { AzureAccount } from '../../../../account-provider/interfaces';
+import { AzureAccount } from 'azurecore';
 import settings from '../../../../account-provider/providerSettings';
 
 // Mock services

@@ -446,19 +446,19 @@ export class AddDatabaseReferenceDialog {
 
 	private createVariableSection(): azdata.FormComponent {
 		// database name row
-		this.databaseNameTextbox = this.createInputBox(constants.databaseName, true);
+		this.databaseNameTextbox = this.createInputBox(constants.databaseName, true, true);
 		const databaseNameRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.databaseName, true), this.databaseNameTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		// database variable row
-		this.databaseVariableTextbox = this.createInputBox(constants.databaseVariable, false);
+		this.databaseVariableTextbox = this.createInputBox(constants.databaseVariable, false, false);
 		const databaseVariableRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.databaseVariable), this.databaseVariableTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		// server name row
-		this.serverNameTextbox = this.createInputBox(constants.serverName, false);
+		this.serverNameTextbox = this.createInputBox(constants.serverName, false, true);
 		const serverNameRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.serverName, true), this.serverNameTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		// server variable row
-		this.serverVariableTextbox = this.createInputBox(constants.serverVariable, false);
+		this.serverVariableTextbox = this.createInputBox(constants.serverVariable, false, true);
 		const serverVariableRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.serverVariable, true), this.serverVariableTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		const variableSection = this.view!.modelBuilder.flexContainer().withItems([databaseNameRow, databaseVariableRow, serverNameRow, serverVariableRow]).withLayout({ flexFlow: 'column' }).withProperties({ CSSStyles: { 'margin-bottom': '25px' } }).component();
@@ -480,11 +480,12 @@ export class AddDatabaseReferenceDialog {
 		return label;
 	}
 
-	private createInputBox(ariaLabel: string, enabled: boolean): azdata.InputBoxComponent {
+	private createInputBox(ariaLabel: string, enabled: boolean, required: boolean): azdata.InputBoxComponent {
 		const inputBox = this.view!.modelBuilder.inputBox().withProperties({
 			ariaLabel: ariaLabel,
 			enabled: enabled,
-			width: cssStyles.addDatabaseReferenceInputboxWidth
+			width: cssStyles.addDatabaseReferenceInputboxWidth,
+			required: required
 		}).component();
 
 		inputBox.onTextChanged(() => {

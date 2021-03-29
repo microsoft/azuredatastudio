@@ -608,6 +608,11 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					});
 				}
 			}
+			// ADS doesn't support extension tags, we need to return empty array to avoid breaking some scenarios. e.g. file extension based recommendations.
+			const tagFilters = query.criteria.filter(x => x.filterType === FilterType.Tag);
+			if (tagFilters?.length > 0) {
+				filteredExtensions = [];
+			}
 			const searchTexts = query.criteria.filter(x => x.filterType === FilterType.SearchText).map(v => v.value ? v.value.toLocaleLowerCase() : undefined);
 			if (searchTexts && searchTexts.length > 0) {
 				searchTexts.forEach(searchText => {

@@ -175,7 +175,7 @@ export const DashboardModule = (params, selector: string, instantiationService: 
 			this._router.events.subscribe(e => {
 				if (e instanceof NavigationEnd) {
 					this.navigations++;
-					this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.DashboardNavigated)
+					this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.DashboardNavigated)
 						.withAdditionalProperties({ numberOfNavigations: this.navigations })
 						.send();
 				}

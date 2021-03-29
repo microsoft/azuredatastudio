@@ -5,24 +5,24 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { createMigrationController, getMigrationControllerRegions, getMigrationController, getResourceGroups, getMigrationControllerAuthKeys, getMigrationControllerMonitoringData } from '../../api/azure';
+import { createSqlMigrationService, getSqlMigrationServiceRegions, getSqlMigrationService, getResourceGroups, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlMigrationService } from '../../api/azure';
 import { MigrationStateModel } from '../../models/stateMachine';
-import * as constants from '../../models/strings';
+import * as constants from '../../constants/strings';
 import * as os from 'os';
 import { azureResource } from 'azureResource';
 import { IntergrationRuntimePage } from '../../wizard/integrationRuntimePage';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 
-export class CreateMigrationControllerDialog {
+export class CreateSqlMigrationServiceDialog {
 
-	private migrationControllerSubscriptionDropdown!: azdata.DropDownComponent;
-	private migrationControllerResourceGroupDropdown!: azdata.DropDownComponent;
-	private migrationControllerRegionDropdown!: azdata.DropDownComponent;
-	private migrationControllerNameText!: azdata.InputBoxComponent;
+	private migrationServiceSubscriptionDropdown!: azdata.DropDownComponent;
+	private migrationServiceResourceGroupDropdown!: azdata.DropDownComponent;
+	private migrationServiceRegionDropdown!: azdata.DropDownComponent;
+	private migrationServiceNameText!: azdata.InputBoxComponent;
 	private _formSubmitButton!: azdata.ButtonComponent;
 
 	private _statusLoadingComponent!: azdata.LoadingComponent;
-	private migrationControllerAuthKeyTable!: azdata.DeclarativeTableComponent;
+	private migrationServiceAuthKeyTable!: azdata.DeclarativeTableComponent;
 	private _connectionStatus!: azdata.InfoBoxComponent;
 	private _copyKey1Button!: azdata.ButtonComponent;
 	private _copyKey2Button!: azdata.ButtonComponent;
@@ -33,8 +33,11 @@ export class CreateMigrationControllerDialog {
 	private _dialogObject!: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
 
+	private createdMigrationService!: SqlMigrationService;
+	private createdMigrationServiceNodeNames!: string[];
+
 	constructor(private migrationStateModel: MigrationStateModel, private irPage: IntergrationRuntimePage) {
-		this._dialogObject = azdata.window.createModelViewDialog(constants.IR_PAGE_TITLE, 'MigrationControllerDialog', 'medium');
+		this._dialogObject = azdata.window.createModelViewDialog(constants.CREATE_MIGRATION_SERVICE_TITLE, 'MigrationServiceDialog', 'medium');
 	}
 
 	initialize() {
@@ -51,15 +54,18 @@ export class CreateMigrationControllerDialog {
 			}).component();
 
 			this._formSubmitButton.onDidClick(async (e) => {
+				this._dialogObject.message = {
+					text: ''
+				};
 				this._statusLoadingComponent.loading = true;
 				this._formSubmitButton.enabled = false;
 
 				const subscription = this.migrationStateModel._targetSubscription;
-				const resourceGroup = (this.migrationControllerResourceGroupDropdown.value as azdata.CategoryValue).name;
-				const region = (this.migrationControllerRegionDropdown.value as azdata.CategoryValue).name;
-				const controllerName = this.migrationControllerNameText.value;
+				const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).name;
+				const region = (this.migrationServiceRegionDropdown.value as azdata.CategoryValue).name;
+				const serviceName = this.migrationServiceNameText.value;
 
-				const formValidationErrors = this.validateCreateControllerForm(subscription, resourceGroup, region, controllerName);
+				const formValidationErrors = this.validateCreateServiceForm(subscription, resourceGroup, region, serviceName);
 
 				if (formValidationErrors.length > 0) {
 					this.setDialogMessage(formValidationErrors);
@@ -69,9 +75,9 @@ export class CreateMigrationControllerDialog {
 				}
 
 				try {
-					const createdController = await createMigrationController(this.migrationStateModel._azureAccount, subscription, resourceGroup, region, controllerName!);
-					if (createdController.error) {
-						this.setDialogMessage(`${createdController.error.code} : ${createdController.error.message}`);
+					this.createdMigrationService = await createSqlMigrationService(this.migrationStateModel._azureAccount, subscription, resourceGroup, region, serviceName!);
+					if (this.createdMigrationService.error) {
+						this.setDialogMessage(`${this.createdMigrationService.error.code} : ${this.createdMigrationService.error.message}`);
 						this._statusLoadingComponent.loading = false;
 						this._formSubmitButton.enabled = true;
 						return;
@@ -79,13 +85,13 @@ export class CreateMigrationControllerDialog {
 					this._dialogObject.message = {
 						text: ''
 					};
-					this.migrationStateModel._migrationController = createdController;
 					await this.refreshAuthTable();
 					await this.refreshStatus();
 					this._setupContainer.display = 'inline';
 					this._statusLoadingComponent.loading = false;
 				} catch (e) {
 					console.log(e);
+					this.setDialogMessage(e.message);
 					this._statusLoadingComponent.loading = false;
 					this._formSubmitButton.enabled = true;
 					return;
@@ -93,16 +99,16 @@ export class CreateMigrationControllerDialog {
 			});
 
 			this._statusLoadingComponent = view.modelBuilder.loadingComponent().withProps({
-				loadingText: constants.CONTROLLER_DIALOG_CONTROLLER_CONTAINER_LOADING_HELP,
+				loadingText: constants.LOADING_MIGRATION_SERVICES,
 				loading: false
 			}).component();
 
-			const creationStatusContainer = this.createControllerStatus();
+			const creationStatusContainer = this.createServiceStatus();
 
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
-						component: this.migrationControllerDropdownsContainer()
+						component: this.migrationServiceDropdownContainer()
 					},
 					{
 						component: this._formSubmitButton
@@ -130,39 +136,32 @@ export class CreateMigrationControllerDialog {
 		this._dialogObject.okButton.enabled = false;
 		azdata.window.openDialog(this._dialogObject);
 		this._dialogObject.cancelButton.onClick((e) => {
-			this.migrationStateModel._migrationController = undefined!;
 		});
 		this._dialogObject.okButton.onClick((e) => {
-			this.irPage.populateMigrationController();
+			this.irPage.populateMigrationService(this.createdMigrationService, this.createdMigrationServiceNodeNames);
 		});
 	}
 
-	private migrationControllerDropdownsContainer(): azdata.FlexContainer {
+	private migrationServiceDropdownContainer(): azdata.FlexContainer {
 		const dialogDescription = this._view.modelBuilder.text().withProps({
-			value: constants.IR_PAGE_DESCRIPTION,
-			links: [
-				{
-					text: constants.LEARN_MORE,
-					url: 'https://www.microsoft.com' // TODO: add a proper link to the docs.
-				}
-			]
+			value: constants.MIGRATION_SERVICE_DIALOG_DESCRIPTION
 		}).component();
 
 		const formHeading = this._view.modelBuilder.text().withProps({
-			value: constants.CONTROLLER_DIALOG_CREATE_CONTROLLER_FORM_HEADING
+			value: constants.CREATE_SERVICE_FORM_HEADING
 		}).component();
 
 		const subscriptionDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION
 		}).component();
 
-		this.migrationControllerSubscriptionDropdown = this._view.modelBuilder.dropDown().withProps({
+		this.migrationServiceSubscriptionDropdown = this._view.modelBuilder.dropDown().withProps({
 			required: true,
 			enabled: false
 		}).component();
 
-		this.migrationControllerSubscriptionDropdown.onValueChanged((e) => {
-			if (this.migrationControllerSubscriptionDropdown.value) {
+		this.migrationServiceSubscriptionDropdown.onValueChanged((e) => {
+			if (this.migrationServiceSubscriptionDropdown.value) {
 				this.populateResourceGroups();
 			}
 		});
@@ -171,43 +170,43 @@ export class CreateMigrationControllerDialog {
 			value: constants.RESOURCE_GROUP
 		}).component();
 
-		this.migrationControllerResourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
+		this.migrationServiceResourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
 			required: true
 		}).component();
 
-		const controllerNameLabel = this._view.modelBuilder.text().withProps({
+		const migrationServiceNameLabel = this._view.modelBuilder.text().withProps({
 			value: constants.NAME
 		}).component();
 
-		this.migrationControllerNameText = this._view.modelBuilder.inputBox().component();
+		this.migrationServiceNameText = this._view.modelBuilder.inputBox().component();
 
 		const regionsDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.REGION
 		}).component();
 
-		this.migrationControllerRegionDropdown = this._view.modelBuilder.dropDown().withProps({
+		this.migrationServiceRegionDropdown = this._view.modelBuilder.dropDown().withProps({
 			required: true,
-			values: getMigrationControllerRegions()
+			values: getSqlMigrationServiceRegions()
 		}).component();
 
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems([
 			dialogDescription,
 			formHeading,
 			subscriptionDropdownLabel,
-			this.migrationControllerSubscriptionDropdown,
+			this.migrationServiceSubscriptionDropdown,
 			resourceGroupDropdownLabel,
-			this.migrationControllerResourceGroupDropdown,
-			controllerNameLabel,
-			this.migrationControllerNameText,
+			this.migrationServiceResourceGroupDropdown,
+			migrationServiceNameLabel,
+			this.migrationServiceNameText,
 			regionsDropdownLabel,
-			this.migrationControllerRegionDropdown
+			this.migrationServiceRegionDropdown
 		]).withLayout({
 			flexFlow: 'column'
 		}).component();
 		return flexContainer;
 	}
 
-	private validateCreateControllerForm(subscription: azureResource.AzureResourceSubscription, resourceGroup: string | undefined, region: string | undefined, controllerName: string | undefined): string {
+	private validateCreateServiceForm(subscription: azureResource.AzureResourceSubscription, resourceGroup: string | undefined, region: string | undefined, migrationServiceName: string | undefined): string {
 		const errors: string[] = [];
 		if (!subscription) {
 			errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
@@ -218,29 +217,29 @@ export class CreateMigrationControllerDialog {
 		if (!region) {
 			errors.push(constants.INVALID_REGION_ERROR);
 		}
-		if (!controllerName || controllerName.length === 0) {
-			errors.push(constants.INVALID_CONTROLLER_NAME_ERROR);
+		if (!migrationServiceName || migrationServiceName.length === 0) {
+			errors.push(constants.INVALID_SERVICE_NAME_ERROR);
 		}
 		return errors.join(os.EOL);
 	}
 
 	private async populateSubscriptions(): Promise<void> {
-		this.migrationControllerSubscriptionDropdown.loading = true;
-		this.migrationControllerResourceGroupDropdown.loading = true;
+		this.migrationServiceSubscriptionDropdown.loading = true;
+		this.migrationServiceResourceGroupDropdown.loading = true;
 
 
-		this.migrationControllerSubscriptionDropdown.values = [
+		this.migrationServiceSubscriptionDropdown.values = [
 			{
 				displayName: this.migrationStateModel._targetSubscription.name,
 				name: ''
 			}
 		];
-		this.migrationControllerSubscriptionDropdown.loading = false;
+		this.migrationServiceSubscriptionDropdown.loading = false;
 		this.populateResourceGroups();
 	}
 
 	private async populateResourceGroups(): Promise<void> {
-		this.migrationControllerResourceGroupDropdown.loading = true;
+		this.migrationServiceResourceGroupDropdown.loading = true;
 		let subscription = this.migrationStateModel._targetSubscription;
 		const resourceGroups = await getResourceGroups(this.migrationStateModel._azureAccount, subscription);
 		let resourceGroupDropdownValues: azdata.CategoryValue[] = [];
@@ -259,39 +258,39 @@ export class CreateMigrationControllerDialog {
 				}
 			];
 		}
-		this.migrationControllerResourceGroupDropdown.values = resourceGroupDropdownValues;
-		this.migrationControllerResourceGroupDropdown.loading = false;
+		this.migrationServiceResourceGroupDropdown.values = resourceGroupDropdownValues;
+		this.migrationServiceResourceGroupDropdown.loading = false;
 	}
 
-	private createControllerStatus(): azdata.FlexContainer {
+	private createServiceStatus(): azdata.FlexContainer {
 
 		const setupIRHeadingText = this._view.modelBuilder.text().withProps({
-			value: constants.CONTROLLER_DIALOG_CONTROLLER_CONTAINER_HEADING,
+			value: constants.SERVICE_CONTAINER_HEADING,
 			CSSStyles: {
 				'font-weight': 'bold'
 			}
 		}).component();
 
 		const setupIRdescription = this._view.modelBuilder.text().withProps({
-			value: constants.CONTROLLER_DIALOG_CONTROLLER_CONTAINER_DESCRIPTION,
+			value: constants.SERVICE_CONTAINER_DESCRIPTION,
 		}).component();
 
 		const irSetupStep1Text = this._view.modelBuilder.text().withProps({
-			value: constants.CONTROLLER_STEP1,
+			value: constants.SERVICE_STEP1,
 			links: [
 				{
-					text: constants.CONTROLLER_STEP1_LINK,
+					text: constants.SERVICE_STEP1_LINK,
 					url: 'https://www.microsoft.com/download/details.aspx?id=39717'
 				}
 			]
 		}).component();
 
 		const irSetupStep2Text = this._view.modelBuilder.text().withProps({
-			value: constants.CONTROLLER_STEP2
+			value: constants.SERVICE_STEP2
 		}).component();
 
 		const irSetupStep3Text = this._view.modelBuilder.hyperlink().withProps({
-			label: constants.CONTROLLER_STEP3,
+			label: constants.SERVICE_STEP3,
 			url: '',
 			CSSStyles: {
 				'margin-top': '10px',
@@ -327,7 +326,7 @@ export class CreateMigrationControllerDialog {
 		}).component();
 
 
-		this.migrationControllerAuthKeyTable = this._view.modelBuilder.declarativeTable().withProps({
+		this.migrationServiceAuthKeyTable = this._view.modelBuilder.declarativeTable().withProps({
 			columns: [
 				{
 					displayName: constants.NAME,
@@ -371,7 +370,7 @@ export class CreateMigrationControllerDialog {
 				setupIRdescription,
 				irSetupStep1Text,
 				irSetupStep2Text,
-				this.migrationControllerAuthKeyTable,
+				this.migrationServiceAuthKeyTable,
 				irSetupStep3Text,
 				this._connectionStatus,
 				refreshLoadingIndicator
@@ -390,26 +389,26 @@ export class CreateMigrationControllerDialog {
 
 	private async refreshStatus(): Promise<void> {
 		const subscription = this.migrationStateModel._targetSubscription;
-		const resourceGroup = (this.migrationControllerResourceGroupDropdown.value as azdata.CategoryValue).name;
-		const region = (this.migrationControllerRegionDropdown.value as azdata.CategoryValue).name;
-		const controllerStatus = await getMigrationController(this.migrationStateModel._azureAccount, subscription, resourceGroup, region, this.migrationStateModel._migrationController!.name);
-		const controllerMonitoringStatus = await getMigrationControllerMonitoringData(this.migrationStateModel._azureAccount, subscription, resourceGroup, region, this.migrationStateModel._migrationController!.name);
-		this.migrationStateModel._nodeNames = controllerMonitoringStatus.nodes.map((node) => {
+		const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).name;
+		const region = (this.migrationServiceRegionDropdown.value as azdata.CategoryValue).name;
+		const migrationServiceStatus = await getSqlMigrationService(this.migrationStateModel._azureAccount, subscription, resourceGroup, region, this.createdMigrationService!.name);
+		const migrationServiceMonitoringStatus = await getSqlMigrationServiceMonitoringData(this.migrationStateModel._azureAccount, subscription, resourceGroup, region, this.createdMigrationService!.name);
+		this.createdMigrationServiceNodeNames = migrationServiceMonitoringStatus.nodes.map((node) => {
 			return node.nodeName;
 		});
-		if (controllerStatus) {
-			const state = controllerStatus.properties.integrationRuntimeState;
+		if (migrationServiceStatus) {
+			const state = migrationServiceStatus.properties.integrationRuntimeState;
 
 			if (state === 'Online') {
 				this._connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
-					text: constants.CONTROLLER_READY(this.migrationStateModel._migrationController!.name, this.migrationStateModel._nodeNames.join(', ')),
+					text: constants.SERVICE_READY(this.createdMigrationService!.name, this.createdMigrationServiceNodeNames.join(', ')),
 					style: 'success'
 				});
 				this._dialogObject.okButton.enabled = true;
 			} else {
-				this._connectionStatus.text = constants.CONTROLLER_NOT_READY(this.migrationStateModel._migrationController!.name);
+				this._connectionStatus.text = constants.SERVICE_NOT_READY(this.createdMigrationService!.name);
 				this._connectionStatus.updateProperties(<azdata.InfoBoxComponentProperties>{
-					text: constants.CONTROLLER_NOT_READY(this.migrationStateModel._migrationController!.name),
+					text: constants.SERVICE_NOT_READY(this.createdMigrationService!.name),
 					style: 'warning'
 				});
 				this._dialogObject.okButton.enabled = false;
@@ -419,17 +418,17 @@ export class CreateMigrationControllerDialog {
 	}
 	private async refreshAuthTable(): Promise<void> {
 		const subscription = this.migrationStateModel._targetSubscription;
-		const resourceGroup = (this.migrationControllerResourceGroupDropdown.value as azdata.CategoryValue).name;
-		const region = (this.migrationControllerRegionDropdown.value as azdata.CategoryValue).name;
-		const keys = await getMigrationControllerAuthKeys(this.migrationStateModel._azureAccount, subscription, resourceGroup, region, this.migrationStateModel._migrationController!.name);
+		const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).name;
+		const region = (this.migrationServiceRegionDropdown.value as azdata.CategoryValue).name;
+		const keys = await getSqlMigrationServiceAuthKeys(this.migrationStateModel._azureAccount, subscription, resourceGroup, region, this.createdMigrationService!.name);
 
 		this._copyKey1Button = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.copy
 		}).component();
 
 		this._copyKey1Button.onDidClick((e) => {
-			vscode.env.clipboard.writeText(<string>this.migrationControllerAuthKeyTable.dataValues![0][1].value);
-			vscode.window.showInformationMessage(constants.CONTROLLER_KEY_COPIED_HELP);
+			vscode.env.clipboard.writeText(<string>this.migrationServiceAuthKeyTable.dataValues![0][1].value);
+			vscode.window.showInformationMessage(constants.SERVICE_KEY_COPIED_HELP);
 		});
 
 		this._copyKey2Button = this._view.modelBuilder.button().withProps({
@@ -437,8 +436,8 @@ export class CreateMigrationControllerDialog {
 		}).component();
 
 		this._copyKey2Button.onDidClick((e) => {
-			vscode.env.clipboard.writeText(<string>this.migrationControllerAuthKeyTable.dataValues![1][1].value);
-			vscode.window.showInformationMessage(constants.CONTROLLER_KEY_COPIED_HELP);
+			vscode.env.clipboard.writeText(<string>this.migrationServiceAuthKeyTable.dataValues![1][1].value);
+			vscode.window.showInformationMessage(constants.SERVICE_KEY_COPIED_HELP);
 		});
 
 		this._refreshKey1Button = this._view.modelBuilder.button().withProps({
@@ -455,11 +454,11 @@ export class CreateMigrationControllerDialog {
 		this._refreshKey2Button.onDidClick((e) => { //TODO: add refresh logic
 		});
 
-		this.migrationControllerAuthKeyTable.updateProperties({
+		this.migrationServiceAuthKeyTable.updateProperties({
 			dataValues: [
 				[
 					{
-						value: constants.CONTROLLER_KEY1_LABEL
+						value: constants.SERVICE_KEY1_LABEL
 					},
 					{
 						value: keys.authKey1
@@ -473,7 +472,7 @@ export class CreateMigrationControllerDialog {
 				],
 				[
 					{
-						value: constants.CONTROLLER_KEY2_LABEL
+						value: constants.SERVICE_KEY2_LABEL
 					},
 					{
 						value: keys.authKey2

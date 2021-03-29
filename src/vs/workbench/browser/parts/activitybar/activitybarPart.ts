@@ -71,7 +71,7 @@ interface ICachedViewContainer {
 	views?: { when?: string }[];
 }
 
-const settingsViewBarIcon = registerIcon('settings-view-bar-icon', Codicon.settingsGear, nls.localize('settingsViewBarIcon', 'Settings icon in the view bar.'));
+export const settingsViewBarIcon = registerIcon('settings-view-bar-icon', Codicon.settingsGear, nls.localize('settingsViewBarIcon', 'Settings icon in the view bar.')); // {{SQL CARBON EDIT}} exporting to use it in getting started tour
 const accountsViewBarIcon = registerIcon('accounts-view-bar-icon', Codicon.account, nls.localize('accountsViewBarIcon', 'Accounts icon in the view bar.'));
 
 export class ActivitybarPart extends Part implements IActivityBarService {

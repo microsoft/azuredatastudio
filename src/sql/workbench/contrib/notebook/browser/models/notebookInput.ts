@@ -122,7 +122,7 @@ export class NotebookEditorModel extends EditorModel {
 			this._isFirstKernelChange = false;
 			return;
 		}
-		if (!contentChange?.isDirty === false) {
+		if (contentChange?.isDirty === false) {
 			return;
 		}
 		this._lastEditFullReplacement = false;
@@ -252,6 +252,10 @@ export abstract class NotebookInput extends EditorInput {
 
 	public get notebookUri(): URI {
 		return this.resource;
+	}
+
+	public get notebookModel(): INotebookModel | undefined {
+		return this._model.getNotebookModel();
 	}
 
 	public get notebookFindModel(): NotebookFindModel {

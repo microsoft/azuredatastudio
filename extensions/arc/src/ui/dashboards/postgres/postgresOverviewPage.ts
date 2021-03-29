@@ -30,14 +30,15 @@ export class PostgresOverviewPage extends DashboardPage {
 	private properties!: azdata.PropertiesContainerComponent;
 	private kibanaLink!: azdata.HyperlinkComponent;
 	private grafanaLink!: azdata.HyperlinkComponent;
+	private deleteButton!: azdata.ButtonComponent;
 
 	private podStatusTable!: azdata.DeclarativeTableComponent;
 	private podStatusData: PodStatusModel[] = [];
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
-	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
-		super(modelView);
+	constructor(protected modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
+		super(modelView, dashboard);
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
 		this.disposables.push(
@@ -241,14 +242,14 @@ export class PostgresOverviewPage extends DashboardPage {
 			}));
 
 		// Delete service
-		const deleteButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.deleteButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.deleteText,
 			iconPath: IconPathHelper.delete
 		}).component();
 
 		this.disposables.push(
-			deleteButton.onDidClick(async () => {
-				deleteButton.enabled = false;
+			this.deleteButton.onDidClick(async () => {
+				this.deleteButton.enabled = false;
 				try {
 					if (await promptForInstanceDeletion(this._postgresModel.info.name)) {
 						await vscode.window.withProgress(
@@ -269,11 +270,18 @@ export class PostgresOverviewPage extends DashboardPage {
 						);
 						await this._controllerModel.refreshTreeNode();
 						vscode.window.showInformationMessage(loc.instanceDeleted(this._postgresModel.info.name));
+						try {
+							await this.dashboard.close();
+						} catch (err) {
+							// Failures closing the dashboard aren't something we need to show users
+							console.log('Error closing Arc Postgres dashboard ', err);
+						}
+
 					}
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceDeletionFailed(this._postgresModel.info.name, error));
 				} finally {
-					deleteButton.enabled = true;
+					this.deleteButton.enabled = true;
 				}
 			}));
 
@@ -323,7 +331,7 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
 			{ component: resetPasswordButton },
-			{ component: deleteButton },
+			{ component: this.deleteButton },
 			{ component: refreshButton, toolbarSeparatorAfter: true },
 			{ component: openInAzurePortalButton }
 		]).component();

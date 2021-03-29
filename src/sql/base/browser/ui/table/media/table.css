@@ -18,15 +18,15 @@
 	height: 100%;
 }
 
-.slick-sort-indicator-asc {
+.monaco-table .slick-sort-indicator-asc {
 	background: url('sort-asc.gif');
 }
 
-.slick-sort-indicator-desc {
+.monaco-table .slick-sort-indicator-desc {
 	background: url('sort-desc.gif');
 }
 
-.slick-sort-indicator {
+.monaco-table .slick-sort-indicator {
 	display: inline-block;
 	width: 8px;
 	height: 5px;
@@ -98,7 +98,6 @@
 	padding: 4px;
 	white-space: nowrap;
 	width: 200px;
-	display: grid;
 	align-content: flex-start;
 }
 

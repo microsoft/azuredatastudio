@@ -40,6 +40,10 @@ export const optionsTypeRadioOrDropdown = localize('optionsTypeRadioOrDropdown',
 export const azdataEulaNotAccepted = localize('azdataEulaNotAccepted', "Deployment cannot continue. Azure Data CLI license terms have not yet been accepted. Please accept the EULA to enable the features that requires Azure Data CLI.");
 export const azdataEulaDeclined = localize('azdataEulaDeclined', "Deployment cannot continue. Azure Data CLI license terms were declined.You can either Accept EULA to continue or Cancel this operation");
 export const acceptEulaAndSelect = localize('deploymentDialog.RecheckEulaButton', "Accept EULA & Select");
+export const extensionRequiredPrompt = (extensionName: string) => localize('resourceDeployment.extensionRequiredPrompt', "The '{0}' extension is required to deploy this resource, do you want to install it now?", extensionName);
+export const install = localize('resourceDeployment.install', "Install");
+export const installingExtension = (extensionName: string) => localize('resourceDeployment.installingExtension', "Installing extension '{0}'...", extensionName);
+export const unknownExtension = (extensionId: string) => localize('resourceDeployment.unknownExtension', "Unknown extension '{0}'", extensionId);
 
 export const resourceTypePickerDialogTitle = localize('resourceTypePickerDialog.title', "Select the deployment options");
 export const resourceTypeSearchBoxDescription = localize('resourceTypePickerDialog.resourceSearchPlaceholder', "Filter resources...");
