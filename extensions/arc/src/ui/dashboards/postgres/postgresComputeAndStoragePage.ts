@@ -280,7 +280,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	private initializeConfigurationBoxes(): void {
 		// Worker node count
 		this.workerComponent = this.modelView.modelBuilder.slider().withProps({
-			min: 0
+			min: 0,
+			width: '250px'
 		}).component();
 
 		this.disposables.push(
@@ -296,7 +297,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		// Worker nodes cores request
 		this.workerCoresRequestComponent = this.modelView.modelBuilder.slider().withProps({
 			min: 1,
-			max: 64
+			max: 64,
+			width: '250px'
 		}).component();
 
 		this.disposables.push(
@@ -314,7 +316,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		// Worker nodes cores limit
 		this.workerCoresLimitComponent = this.modelView.modelBuilder.slider().withProps({
 			min: 1,
-			max: 64
+			max: 64,
+			width: '250px'
 		}).component();
 
 		this.disposables.push(
@@ -332,7 +335,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		// Worker nodes memory request
 		this.workerMemoryRequestComponent = this.modelView.modelBuilder.slider().withProps({
 			min: 0.25,
-			max: 16384
+			max: 16384,
+			width: '250px'
 		}).component();
 
 		this.disposables.push(
@@ -350,7 +354,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		// Worker nodes memory limit
 		this.workerMemoryLimitComponent = this.modelView.modelBuilder.slider().withProps({
 			min: 0.25,
-			max: 16384
+			max: 16384,
+			width: '250px'
 		}).component();
 
 		this.disposables.push(
@@ -368,7 +373,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		// Coordinator node cores request
 		this.coordinatorCoresRequestComponent = this.modelView.modelBuilder.slider().withProps({
 			min: 1,
-			max: 64
+			max: 64,
+			width: '250px'
 		}).component();
 
 		this.disposables.push(
@@ -386,7 +392,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		// Coordinator node cores limit
 		this.coordinatorCoresLimitComponent = this.modelView.modelBuilder.slider().withProps({
 			min: 1,
-			max: 64
+			max: 64,
+			width: '250px'
 		}).component();
 
 		this.disposables.push(
@@ -404,7 +411,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		// Coordinator node memory request
 		this.coordinatorMemoryRequestComponent = this.modelView.modelBuilder.slider().withProps({
 			min: 0.25,
-			max: 16384
+			max: 16384,
+			width: '250px'
 		}).component();
 
 		this.disposables.push(
@@ -422,7 +430,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		// Coordinator node memory limit
 		this.coordinatorMemoryLimitComponent = this.modelView.modelBuilder.slider().withProps({
 			min: 0.25,
-			max: 16384
+			max: 16384,
+			width: '250px'
 		}).component();
 
 		this.disposables.push(
@@ -457,7 +466,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private createWorkerNodesSectionContainer(): azdata.FlexContainer {
-		const inputFlex = { flex: '0 1 500px' };
+		const inputFlex = { flex: '0 1 350px' };
 		const keyFlex = { flex: `0 1 250px` };
 
 		const flexContainer = this.modelView.modelBuilder.flexContainer().withLayout({
@@ -485,7 +494,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		flexContainer.addItem(keyContainer, keyFlex);
 
 		const inputContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-		inputContainer.addItem(this.workerComponent!, { CSSStyles: { 'margin-bottom': '15px', 'min-width': '100px', 'max-width': '350px' } });
+		inputContainer.addItem(this.workerComponent!, { CSSStyles: { 'margin-bottom': '15px' } });
 		flexContainer.addItem(inputContainer, inputFlex);
 
 		return flexContainer;
@@ -508,7 +517,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private createConfigurationSectionContainer(key: string, input: azdata.Component): azdata.FlexContainer {
-		const inputFlex = { flex: '0 1 500px' };
+		const inputFlex = { flex: '0 1 350px' };
 		const keyFlex = { flex: `0 1 250px` };
 
 		const flexContainer = this.modelView.modelBuilder.flexContainer().withLayout({
@@ -526,7 +535,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		flexContainer.addItem(keyContainer, keyFlex);
 
 		const inputContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-		inputContainer.addItem(input, { CSSStyles: { 'margin-bottom': '15px', 'min-width': '100px', 'max-width': '350px' } });
+		inputContainer.addItem(input, { CSSStyles: { 'margin-bottom': '15px' } });
 
 		flexContainer.addItem(inputContainer, inputFlex);
 
