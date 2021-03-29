@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import { FileExtension } from './bookTocManager';
+import { FileExtension } from '../common/utils';
 
-export class BookPathHandler {
+export class TocEntryPathHandler {
 	public fileInTocEntry: string;
 	public titleInTocEntry: string;
 	public fileExtension: FileExtension;

@@ -16,9 +16,9 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { getPinnedNotebooks, confirmMessageDialog, getNotebookType } from '../common/utils';
+import { getPinnedNotebooks, confirmMessageDialog, getNotebookType, FileExtension } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
-import { BookTocManager, FileExtension, IBookTocManager, quickPickResults } from './bookTocManager';
+import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { CreateBookDialog } from '../dialog/createBookDialog';
 import { AddFileDialog } from '../dialog/addFileDialog';
 import { getContentPath } from './bookVersionHandler';
@@ -199,36 +199,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			const updateBook = selectionResults.book;
 			const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
 			if (movingElement.tableOfContents.sections) {
-				if (movingElement.contextValue === 'savedNotebook' || movingElement.contextValue === 'savedBookNotebook') {
+				if (movingElement.contextValue === BookTreeItemType.savedNotebook || movingElement.contextValue === BookTreeItemType.savedBookNotebook) {
 					let sourceBook = this.books.find(book => book.getNotebook(path.normalize(movingElement.book.contentPath)));
 					movingElement.tableOfContents.sections = sourceBook?.bookItems[0].sections;
 				}
 			}
 			const sourceBook = this.books.find(book => book.bookPath === movingElement.book.root);
 			const targetBook = this.books.find(book => book.bookPath === updateBook.book.root);
-			this.bookTocManager = new BookTocManager(targetBook, sourceBook);
-			// remove watch on toc file from source book.
-			if (sourceBook) {
-				sourceBook.unwatchTOC();
-			}
-			try {
-				await this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
-			} catch (e) {
-				await this.bookTocManager.recovery();
-				vscode.window.showErrorMessage(loc.editBookError(updateBook.book.contentPath, e instanceof Error ? e.message : e));
-			} finally {
-				try {
-					await targetBook.reinitializeContents();
-				} finally {
-					if (sourceBook && sourceBook.bookPath !== targetBook.bookPath) {
-						// refresh source book model to pick up latest changes
-						await sourceBook.reinitializeContents();
-					}
-					if (sourceBook) {
-						sourceBook.watchTOC();
-					}
-				}
-			}
+			this.bookTocManager = new BookTocManager(sourceBook, targetBook);
+			await this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
 		}
 	}
 
@@ -277,12 +256,23 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async createNewFile(bookItem: BookTreeItem, extension: FileExtension): Promise<void> {
-		const dialog = new AddFileDialog(this.bookTocManager, bookItem, extension);
+	async createMarkdownFile(bookItem: BookTreeItem): Promise<void> {
+		const book = this.books.find(b => b.bookPath === bookItem.root);
+		this.bookTocManager = new BookTocManager(book);
+		const dialog = new AddFileDialog(this.bookTocManager, bookItem, FileExtension.Markdown);
+		await dialog.createDialog();
+	}
+
+	async createNotebook(bookItem: BookTreeItem): Promise<void> {
+		const book = this.books.find(b => b.bookPath === bookItem.root);
+		this.bookTocManager = new BookTocManager(book);
+		const dialog = new AddFileDialog(this.bookTocManager, bookItem, FileExtension.Notebook);
 		await dialog.createDialog();
 	}
 
 	async removeNotebook(bookItem: BookTreeItem): Promise<void> {
+		const book = this.books.find(b => b.bookPath === bookItem.root);
+		this.bookTocManager = new BookTocManager(book);
 		return this.bookTocManager.removeNotebook(bookItem);
 	}
 

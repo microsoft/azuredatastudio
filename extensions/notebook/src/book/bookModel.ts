@@ -25,7 +25,6 @@ export class BookModel {
 	private _contentFolderPath: string;
 	private _configPath: string;
 	private _bookVersion: BookVersion;
-	private _rootPath: string;
 	private _errorMessage: string;
 	private _activePromise: Deferred<void> | undefined = undefined;
 	private _queuedPromises: Deferred<void>[] = [];
@@ -104,11 +103,9 @@ export class BookModel {
 			}
 			this._bookVersion = BookVersion.v1;
 			this._contentFolderPath = path.posix.join(this.bookPath, content, '');
-			this._rootPath = path.dirname(path.dirname(this._tableOfContentsPath));
 		} else {
 			this._contentFolderPath = this.bookPath;
 			this._tableOfContentsPath = path.posix.join(this.bookPath, '_toc.yml');
-			this._rootPath = path.dirname(this._tableOfContentsPath);
 			this._bookVersion = BookVersion.v2;
 		}
 	}
@@ -147,7 +144,7 @@ export class BookModel {
 			root: this.notebookRootPath ? this.notebookRootPath : pathDetails.dir,
 			tableOfContents: { sections: undefined },
 			page: { sections: undefined },
-			type: pathDetails.ext === '.ipynb' ? BookTreeItemType.Notebook : BookTreeItemType.Markdown,
+			type: BookTreeItemType.Notebook,
 			treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
 			isUntitled: this.openAsUntitled,
 		},
@@ -190,7 +187,7 @@ export class BookModel {
 					version: this._bookVersion,
 					title: config.title,
 					contentPath: this._tableOfContentsPath,
-					root: this._rootPath,
+					root: this.bookPath,
 					tableOfContents: { sections: this.parseJupyterSections(this._bookVersion, tableOfContents) },
 					page: tableOfContents,
 					type: BookTreeItemType.Book,

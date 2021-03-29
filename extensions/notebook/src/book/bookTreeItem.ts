@@ -84,7 +84,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		}
 		else {
 			// if it's a section, book or a notebook's book then we set the table of contents path.
-			if (this.book.type === BookTreeItemType.Book || this.contextValue === BookTreeItemType.section || (book.tableOfContents.sections && book.type === BookTreeItemType.Notebook)) {
+			if (this.book.type === BookTreeItemType.Book || this.contextValue === BookTreeItemType.section || book.type === BookTreeItemType.savedBookNotebook || book.tableOfContents.sections && book.type === BookTreeItemType.Markdown) {
 				this._tableOfContentsPath = getTocPath(this.book.version, this.book.root);
 			}
 			this._rootContentPath = getContentPath(this.book.version, this.book.root, '');

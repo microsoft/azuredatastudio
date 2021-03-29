@@ -488,6 +488,12 @@ export interface IBookNotebook {
 	notebookPath: string;
 }
 
+export enum FileExtension {
+	Markdown = '.md',
+	Notebook = '.ipynb'
+}
+
+
 //Confirmation message dialog
 export async function confirmMessageDialog(prompter: IPrompter, msg: string): Promise<boolean> {
 	return await prompter.promptSingle<boolean>(<IQuestion>{
@@ -496,7 +502,6 @@ export async function confirmMessageDialog(prompter: IPrompter, msg: string): Pr
 		default: false
 	});
 }
-
 
 export async function selectFolder(): Promise<string | undefined> {
 	let uris = await vscode.window.showOpenDialog({

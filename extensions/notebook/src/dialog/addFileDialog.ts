@@ -6,12 +6,12 @@ import * as azdata from 'azdata';
 import * as path from 'path';
 import { pathExists } from 'fs-extra';
 import * as loc from '../common/localizedConstants';
-import { FileExtension, IBookTocManager } from '../book/bookTocManager';
-import { confirmMessageDialog } from '../common/utils';
+import { IBookTocManager } from '../book/bookTocManager';
+import { confirmMessageDialog, FileExtension } from '../common/utils';
 import { IPrompter } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem, BookTreeItemType } from '../book/bookTreeItem';
-import { BookPathHandler } from '../book/bookPathHandler';
+import { TocEntryPathHandler } from '../book/tocEntryPathHandler';
 
 export class AddFileDialog {
 	private _dialog: azdata.window.Dialog;
@@ -19,7 +19,7 @@ export class AddFileDialog {
 	private _formModel: azdata.FormContainer;
 	private _fileNameInputBox: azdata.InputBoxComponent;
 	private _titleInputBox: azdata.InputBoxComponent;
-	private _saveLocationInputBox: azdata.InputBoxComponent;
+	private _saveLocationInputBox: azdata.TextComponent;
 	private _prompter: IPrompter;
 
 	constructor(private _tocManager: IBookTocManager, private _bookItem: BookTreeItem, private _extension: FileExtension) {
@@ -98,7 +98,7 @@ export class AddFileDialog {
 			if (!isValid) {
 				throw (new Error(loc.msgSaveFolderError));
 			}
-			const pathDetails = new BookPathHandler(filePath, this._bookItem.rootContentPath, this._titleInputBox.value);
+			const pathDetails = new TocEntryPathHandler(filePath, this._bookItem.rootContentPath, this._titleInputBox.value);
 			await this._tocManager.addNewFile(pathDetails, this._bookItem);
 			return true;
 		} catch (error) {
