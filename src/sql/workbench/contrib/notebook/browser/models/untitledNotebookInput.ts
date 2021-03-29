@@ -42,4 +42,8 @@ export class UntitledNotebookInput extends NotebookInput {
 	public getTypeId(): string {
 		return UntitledNotebookInput.ID;
 	}
+
+	public getEncoding(): string | undefined {
+		return this.textInput.getEncoding();
+	}
 }
