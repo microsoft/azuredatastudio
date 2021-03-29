@@ -10,6 +10,8 @@ import * as should from 'should';
 import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
 import * as vscode from 'vscode';
+import { KeyValueContainer } from '../../../../ui/components/keyValueContainer';
+import { createModelViewMock } from '@microsoft/azdata-test/out/mocks/modelView/modelViewMock';
 import { ControllerModel, Registration } from '../../../../models/controllerModel';
 import { PostgresModel } from '../../../../models/postgresModel';
 import { PostgresConnectionStringsPage } from '../../../../ui/dashboards/postgres/postgresConnectionStringsPage';
@@ -38,8 +40,7 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 				extensions: [{ name: '' }],
 				settings: {
 					default: { ['']: '' }
-				},
-				version: ''
+				}
 			},
 			scale: {
 				shards: 0,
@@ -99,11 +100,14 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 	}
 };
 
-describe('PostgresModel', function (): void {
+
+
+describe('postgresConnectionStringsPage', function (): void {
 	let controllerModel: ControllerModel;
 	let postgresModel: PostgresModel;
 	let azdataApi: azdataExt.IAzdataApi;
 	let postgresConnectionStrings: PostgresConnectionStringsPage;
+	//let fakeKeyValueContainer: KeyValueContainer;
 
 	afterEach(function (): void {
 		sinon.restore();
@@ -133,24 +137,51 @@ describe('PostgresModel', function (): void {
 			return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
 		});
 
-		// Setup the PostgresConnectionsStringsPage -- TODO modelviewmock get file
-		const modelViewMock = TypeMoq.Mock.ofType<azdata.ModelView>();
-		modelViewMock.setup((x: any) => x.then).returns(() => undefined);
-		postgresConnectionStrings = new PostgresConnectionStringsPage(modelViewMock.object, postgresModel);
+		// Setup the PostgresConnectionsStringsPage -- TODO modelviewmock get file createContainerBuilderMock
+		let { modelViewMock } = createModelViewMock();
+		/* let { modelBuilderMock } = createModelViewMock();
+
+		//sinon.stub(azdata, 'div')
+		let flex = TypeMoq.Mock.ofType<azdata.FlexBuilder>();
+		let load = TypeMoq.Mock.ofType<azdata.LoadingComponentBuilder>();
+		let test = TypeMoq.Mock.ofType<azdata.ComponentBuilder<azdata.TextComponent, azdata.TextComponentProperties>>();
+		let hyp = TypeMoq.Mock.ofType<azdata.ComponentBuilder<azdata.HyperlinkComponent, azdata.HyperlinkComponentProperties>>();
+		modelBuilderMock.setup(x => x.divContainer()).returns(() =>  divContainer.object);
+		modelBuilderMock.setup(x => x.flexContainer()).returns(() =>  flex.object);
+		modelBuilderMock.setup(x => x.loadingComponent()).returns(() =>  load.object);
+		modelBuilderMock.setup(x => x.text()).returns(() =>  test.object);
+
+		modelBuilderMock.setup(x => x.hyperlink()).returns(() =>  hyp.object);
+
+		modelViewMock.setup(x => x.modelBuilder).returns(() =>  modelBuilderMock.object);*/
+		postgresConnectionStrings = new PostgresConnectionStringsPage(modelViewMock.object, undefined!, postgresModel);
+		//postgresConnectionStrings['container'];
 
 	});
 
 	describe('getConnectionStrings', function (): void {
 
-		it('Strings container should be empty since postgres model has not been refreshed', async function (): Promise<void> {
-			should(postgresConnectionStrings['keyValueContainer']?.container).be.empty();
-		});
+		/* it('Strings container should be empty since postgres model has not been refreshed', async function (): Promise<void> {
+			//(postgresConnectionStrings['container'] as StubComponent);
+			should(postgresConnectionStrings['keyValueContainer']!['pairs']).be.empty();
+		}); */
 
 		it('String contain correct ip and port', async function (): Promise<void> {
+			// eslint-disable-next-line code-no-unused-expressions
+
 			// Call to provide external endpoint
 			await postgresModel.refresh();
 
-			should(postgresConnectionStrings['keyValueContainer']?.container).be.not.empty();
+
+
+			//should(postgresConnectionStrings.tab.content).be.not.null();
+
+			//should(postgresConnectionStrings['keyValueContainer']?.container).be.not.empty();
+			should(postgresConnectionStrings['keyValueContainer']!['pairs']).be.not.empty();
+
+			const ke = TypeMoq.Mock.ofType<KeyValueContainer>();
+			const divContainer = TypeMoq.Mock.ofType<azdata.DivContainer>();
+			ke.setup(x => x.container).returns(() =>  divContainer.object);
 
 			postgresConnectionStrings['keyValueContainer']!['pairs'].forEach(p => {
 				should(p.value.includes('127.0.0.1')).be.True();
