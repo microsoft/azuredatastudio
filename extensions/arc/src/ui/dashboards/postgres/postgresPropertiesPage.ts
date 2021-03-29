@@ -17,8 +17,8 @@ export class PostgresPropertiesPage extends DashboardPage {
 	private loading?: azdata.LoadingComponent;
 	private keyValueContainer?: KeyValueContainer;
 
-	constructor(protected modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
-		super(modelView);
+	constructor(protected modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
+		super(modelView, dashboard);
 
 		this.disposables.push(this._postgresModel.onConfigUpdated(
 			() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())));

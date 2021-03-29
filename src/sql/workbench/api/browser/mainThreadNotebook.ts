@@ -255,6 +255,14 @@ class SessionManagerWrapper implements azdata.nb.SessionManager {
 			this._specs = specs;
 		}
 	}
+
+	shutdownAll(): Thenable<void> {
+		return this._proxy.ext.$shutdownAll(this.managerHandle);
+	}
+
+	dispose(): void {
+		return this._proxy.ext.$dispose(this.managerHandle);
+	}
 }
 
 class SessionWrapper implements azdata.nb.ISession {

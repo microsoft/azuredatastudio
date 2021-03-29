@@ -51,6 +51,16 @@ declare module 'azdata' {
 		export type ICellAttachments = { [key: string]: ICellAttachment };
 		export type ICellAttachment = { [key: string]: string };
 
+		export interface SessionManager {
+			/**
+			 * Shutdown all sessions.
+			 */
+			shutdownAll(): Thenable<void>;
+			/**
+			 * Disposes the session manager.
+			 */
+			dispose(): void;
+		}
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
@@ -315,8 +325,6 @@ declare module 'azdata' {
 		linkCodiconStyles?: CssStyles;
 	}
 
-	export type CssStyles = { [key: string]: string | number };
-
 	export interface RadioCardGroupComponentProperties extends ComponentProperties, TitledComponentProperties {
 		cards: RadioCard[];
 		cardWidth: string;
@@ -370,9 +378,9 @@ declare module 'azdata' {
 		dataValues?: DeclarativeTableCellValue[][];
 
 		/**
-		 * Should the table react to user selections
+		 * Gets a boolean value determines whether the row selection is enabled. Default value is false.
 		 */
-		selectEffect?: boolean; // Defaults to false
+		enableRowSelection?: boolean;
 	}
 
 	export interface DeclarativeTableCellValue {
@@ -525,6 +533,7 @@ declare module 'azdata' {
 		export interface ModelViewDashboard {
 			registerTabs(handler: (view: ModelView) => Thenable<(DashboardTab | DashboardTabGroup)[]>): void;
 			open(): Thenable<void>;
+			close(): Thenable<void>;
 			updateTabs(tabs: (DashboardTab | DashboardTabGroup)[]): void;
 			selectTab(id: string): void;
 		}
@@ -575,6 +584,12 @@ declare module 'azdata' {
 			 * Width of the wizard
 			 */
 			width?: DialogWidth;
+
+			/**
+			 * Open the wizard. Does nothing if the wizard is already open.
+			 * @param source Where the wizard was opened from for telemetry (ex: command palette, context menu)
+			 */
+			open(source?: string): Thenable<void>;
 		}
 
 		export interface WizardPage extends ModelViewPanel {

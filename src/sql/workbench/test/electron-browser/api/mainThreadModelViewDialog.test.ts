@@ -52,6 +52,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 	let page2Handle = 12;
 	let wizardHandle = 13;
 	let page3Handle = 14;
+	let source = 'command palette';
 
 	setup(() => {
 		mockExtHostModelViewDialog = Mock.ofInstance(<ExtHostModelViewDialogShape>{
@@ -73,7 +74,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 		mockDialogService.setup(x => x.showDialog(It.isAny(), undefined, It.isAny())).callback((dialog) => {
 			openedDialog = dialog;
 		});
-		mockDialogService.setup(x => x.showWizard(It.isAny(), It.isAny())).callback(wizard => {
+		mockDialogService.setup(x => x.showWizard(It.isAny(), It.isAny(), It.isAny())).callback(wizard => {
 			openedWizard = wizard;
 			// The actual service will set the page to 0 when it opens the wizard
 			openedWizard.setCurrentPage(0);
@@ -247,10 +248,10 @@ suite('MainThreadModelViewDialog Tests', () => {
 
 	test('Creating a wizard and calling open on it causes a wizard with correct pages and buttons to open', () => {
 		// If I open the wizard
-		mainThreadModelViewDialog.$openWizard(wizardHandle);
+		mainThreadModelViewDialog.$openWizard(wizardHandle, source);
 
 		// Then the opened wizard's content and buttons match what was set
-		mockDialogService.verify(x => x.showWizard(It.isAny(), It.isAny()), Times.once());
+		mockDialogService.verify(x => x.showWizard(It.isAny(), It.isAny(), It.isAny()), Times.once());
 		assert.notEqual(openedWizard, undefined);
 		assert.equal(openedWizard.title, wizardDetails.title);
 		assert.equal(openedWizard.doneButton.label, okButtonDetails.label);
@@ -281,7 +282,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 		mockExtHostModelViewDialog.setup(x => x.$onWizardPageChanged(It.isAny(), It.isAny()));
 
 		// If I open the wizard and change the page to index 1
-		mainThreadModelViewDialog.$openWizard(wizardHandle);
+		mainThreadModelViewDialog.$openWizard(wizardHandle, source);
 		openedWizard.setCurrentPage(1);
 
 		// Then a page changed event gets sent to the extension host
@@ -314,7 +315,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 		};
 
 		// If I open the wizard and then add a page
-		mainThreadModelViewDialog.$openWizard(wizardHandle);
+		mainThreadModelViewDialog.$openWizard(wizardHandle, source);
 		mainThreadModelViewDialog.$setWizardPageDetails(page3Handle, page3Details);
 		mainThreadModelViewDialog.$addWizardPage(wizardHandle, page3Handle, 0);
 
@@ -329,7 +330,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 		mockExtHostModelViewDialog.setup(x => x.$updateWizardPageInfo(It.isAny(), It.isAny(), It.isAny()));
 
 		// If I open the wizard and then remove a page
-		mainThreadModelViewDialog.$openWizard(wizardHandle);
+		mainThreadModelViewDialog.$openWizard(wizardHandle, source);
 		mainThreadModelViewDialog.$removeWizardPage(wizardHandle, 0);
 
 		// Then the updated page info gets sent to the extension host
@@ -343,7 +344,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 		mockExtHostModelViewDialog.setup(x => x.$validateNavigation(It.isAny(), It.isAny()));
 
 		// If I call validateNavigation on the wizard that gets created
-		mainThreadModelViewDialog.$openWizard(wizardHandle);
+		mainThreadModelViewDialog.$openWizard(wizardHandle, source);
 		openedWizard.validateNavigation(1);
 
 		// Then the call gets forwarded to the extension host
@@ -351,7 +352,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 	});
 
 	test('Adding a message to a wizard fires events on the created wizard', () => {
-		mainThreadModelViewDialog.$openWizard(wizardHandle);
+		mainThreadModelViewDialog.$openWizard(wizardHandle, source);
 		let newMessage: DialogMessage;
 		openedWizard.onMessageChange(message => newMessage = message);
 

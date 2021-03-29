@@ -3,12 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
 import { Color } from 'vs/base/common/color';
-
-export interface IDisposableDataProvider<T> extends Slick.DataProvider<T> {
-	dispose(): void;
-}
 
 export interface ITableMouseEvent {
 	anchor: HTMLElement | { x: number, y: number };
@@ -32,4 +29,5 @@ export interface ITableConfiguration<T> {
 
 export interface FilterableColumn<T> extends Slick.Column<T> {
 	filterable?: boolean;
+	filterValues?: Array<string>;
 }

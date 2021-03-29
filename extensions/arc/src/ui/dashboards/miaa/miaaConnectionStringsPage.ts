@@ -16,8 +16,8 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 	private _keyValueContainer!: KeyValueContainer;
 	private _connectionStringsMessage!: azdata.TextComponent;
 
-	constructor(modelView: azdata.ModelView, private _miaaModel: MiaaModel) {
-		super(modelView);
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _miaaModel: MiaaModel) {
+		super(modelView, dashboard);
 		this.disposables.push(this._miaaModel.onConfigUpdated(_ =>
 			this.eventuallyRunOnInitialized(() => this.updateConnectionStrings())));
 	}

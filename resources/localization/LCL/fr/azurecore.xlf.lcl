@@ -62,6 +62,9 @@
         <Item ItemId=";(...) .providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[PostgreSQL Hyperscale – Azure Arc]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[PostgreSQL Hyperscale – Azure Arc]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -71,8 +74,8 @@
         <Item ItemId=";(...) oviders.databaseServer.treeDataProvider.postgresServerContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Azure Database for PostgreSQL server]]></Val>
-            <Tgt Cat="Text" Stat="Update" Orig="New">
-              <Val><![CDATA[Serveurs Azure Database pour PostgreSQL]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Serveur Azure Database pour PostgreSQL]]></Val>
             </Tgt>
             <Prev Cat="Text">
               <Val><![CDATA[Azure Database for PostgreSQL Servers]]></Val>
@@ -86,8 +89,8 @@
         <Item ItemId=";(...) s.sqlInstanceContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Azure SQL DB managed instance]]></Val>
-            <Tgt Cat="Text" Stat="Update" Orig="New">
-              <Val><![CDATA[Instances managées SQL]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Instance managée Azure SQL DB]]></Val>
             </Tgt>
             <Prev Cat="Text">
               <Val><![CDATA[SQL Managed Instances]]></Val>
@@ -101,6 +104,9 @@
         <Item ItemId=";(...) oviders.sqlInstanceArcContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[SQL managed instance – Azure Arc]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Instance managée SQL - Azure Arc]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -134,6 +140,9 @@
         <Item ItemId=";(...) tLoadError" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Failed to load some Azure accounts. {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Le chargement de certains comptes Azure a échoué. {0}]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -155,6 +164,9 @@
         <Item ItemId=";(...) countsDialog" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Show Azure accounts]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Afficher les comptes Azure]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -164,6 +176,9 @@
         <Item ItemId=";(...) ror" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Failed to get credential for account {0}. Please go to the accounts dialog and refresh the account.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[L'obtention des informations d'identification a échoué pour le compte {0}. Accédez à la boîte de dialogue des comptes et actualisez le compte.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -183,30 +198,45 @@
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.accessTokenEmpty" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No access token returned from Microsoft OAuth]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aucun jeton d'accès n'a été renvoyé par Microsoft OAuth]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.cacheErrorAdd" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error when adding your account to the cache.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erreur pendant l'ajout de votre compte au cache.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.cacheErrorGet" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error when getting your account from the cache]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erreur pendant l'obtention de votre compte à partir du cache]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.cacheErrorParse" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error when parsing your account from the cache]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erreur pendant l'analyse de votre compte à partir du cache]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.cacheErrrorRemove" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error when removing your account from the cache.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erreur pendant la suppression de votre compte du cache.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -222,36 +252,54 @@
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.microsoftCorpAccount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Microsoft Corp]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Microsoft Corp]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.noBaseToken" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Something failed with the authentication, or your tokens have been deleted from the system. Please try adding your account to Azure Data Studio again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Une erreur s'est produite pendant l'authentification ou vos jetons ont été supprimés du système. Essayez de rajouter votre compte à Azure Data Studio.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.noUniqueIdentifier" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The user had no unique identifier within AAD]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L'utilisateur n'a pas d'identificateur unique dans AAD]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.responseError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Token retrival failed with an error. Open developer tools to view the error]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La récupération du jeton a échoué avec une erreur. Ouvrir les outils de développement pour voir l'erreur]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.tenantNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifed tenant with ID '{0}' not found.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Le locataire spécifié avec l'ID « {0} » est introuvable.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azureAuth.unidentifiedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unidentified error with azure authentication]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erreur non identifiée avec l'authentification Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -267,6 +315,9 @@
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.consentDialog.body" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Votre locataire « {0} ({1}) » exige une nouvelle authentification pour accéder aux ressources {2}. Appuyez sur Ouvrir pour démarrer le processus d'authentification.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -282,6 +333,9 @@
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azurecore.consentDialog.ignore" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Tenant]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ignorer le locataire]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -297,24 +351,36 @@
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuthCodeGrant.azure.azureAuthCodeGrantName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Auth Code Grant]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Octroi de code d'authentification Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuthCodeGrant.azure.serverCouldNotStart" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server could not start. This could be a permissions error or an incompatibility on your system. You can try enabling device code authentication from settings.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Le serveur n'a pas pu démarrer. Il peut s'agir d'une erreur d'autorisation ou d'une incompatibilité sur votre système. Vous pouvez essayer d'activer l'authentification du code d'appareil dans les paramètres.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuthCodeGrant.azureAuth.nonceError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Authentication failed due to a nonce mismatch, please close Azure Data Studio and try again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L'authentification a échoué en raison d'une incompatibilité de nonce, fermez Azure Data Studio et réessayez.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuthCodeGrant.azureAuth.stateError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Authentication failed due to a state mismatch, please close ADS and try again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L'authentification a échoué en raison d'une incompatibilité d'état, fermez ADS et réessayez.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -339,30 +405,45 @@
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureDeviceCode.azure.deviceCodeCheckFail" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error encountered when trying to check for login results]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erreur pendant la tentative de vérification des résultats de connexion]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureDeviceCode.azure.timeoutDeviceCode" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Timed out when waiting for device code login.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Expiration du délai d'attente de la connexion du code d'appareil.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/azureAccountProvider.azure.NoAuthMethod.Available" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Azure auth method available. You must enable the auth methods in ADS configuration.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aucune méthode d'authentification Azure disponible. Vous devez activer les méthodes d'authentification dans la configuration ADS.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/azureAccountProvider.azure.NoAuthMethod.Selected" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Azure auth method selected. You must select what method of authentication you want to use.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aucune méthode d'authentification Azure sélectionnée. Vous devez sélectionner la méthode d'authentification à utiliser.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/azureAccountProvider.azure.deprecatedGetSecurityToken" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Un appel a été effectué à azdata.accounts.getSecurityToken, cette méthode est dépréciée et sera supprimée dans les mises en production futures. Utilisez getAccountSecurityToken à la place.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -387,12 +468,18 @@
       <Item ItemId=";extensions/azurecore/dist/account-provider/providerSettings.chinaCloudDisplayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure (China)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure (Chine)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/providerSettings.germanyCloud" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure (Germany)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure (Allemagne)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -408,48 +495,72 @@
       <Item ItemId=";extensions/azurecore/dist/account-provider/providerSettings.usGovCloudDisplayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure (US Government)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure (US Government)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/providerSettings.usNatCloudDisplayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure (US National)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure (US National)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/commands.azure.accountNotSelectedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You must select an Azure account for this feature to work.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vous devez sélectionner un compte Azure pour que cette fonctionnalité fonctionne.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/commands.azure.cloudTerminalPreview" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You must enable preview features in order to use Azure Cloud Shell.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vous devez activer les fonctionnalités en préversion pour utiliser Azure Cloud Shell.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/commands.azure.mustPickTenant" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You must select a tenant for this feature to work.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vous devez sélectionner un locataire pour que cette fonctionnalité fonctionne.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/commands.azure.noAccountError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You are not currently signed into any Azure accounts, Please sign in and then try again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vous n'êtes pas connecté à un compte Azure, connectez-vous et réessayez.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/commands.azure.noTenants" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A tenant is required for this feature. Your Azure subscription seems to have no tenants.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Un locataire est nécessaire pour cette fonctionnalité. Apparemment, votre abonnement Azure n'a pas de locataire.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/commands.azure.pickAnAzureAccount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select an Azure account]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Sélectionner un compte Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -474,6 +585,9 @@
       <Item ItemId=";extensions/azurecore/dist/azureResource/commands.azure.startingCloudShell" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Starting cloud shell…]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Démarrage de Cloud Shell...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -489,6 +603,9 @@
       <Item ItemId=";extensions/azurecore/dist/azureResource/services/terminalService.azure.cloudShell" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Cloud Shell (Preview) {0} ({1})]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Cloud Shell (préversion) {0} ({1})]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -504,30 +621,45 @@
       <Item ItemId=";extensions/azurecore/dist/azureResource/services/terminalService.azure.cloudTerminal.openAzureShell" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Azure Shell]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ouvrir le shell Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/services/terminalService.azure.coudTerminal.neverUsed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[If you have not launched Azure Cloud Shell from this account before, please visit https://shell.azure.com/ to get started. Once you are set up, you can use AzureCloud Shell directly in Azure Data Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Si vous n'avez jamais lancé Azure Cloud Shell à partir de ce compte, accédez à https://shell.azure.com/ pour démarrer. Après la configuration, vous pouvez utiliser Azure Cloud Shell directement dans Azure Data Studio.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/services/terminalService.azure.selectShellType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Bash or PowerShell for Azure Cloud Shell]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Sélectionner Bash ou PowerShell pour Azure Cloud Shell]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/services/terminalService.azure.shellClosed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Shell closed.]D;]A;]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Shell fermé.]D;]A;]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/services/terminalService.azure.shellTypeRequired" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You must pick a shell type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vous devez choisir un type de shell]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -543,12 +675,18 @@
       <Item ItemId=";extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.tree.accountTreeNode.title" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} ({1}/{2} subscriptions)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} (abonnements {1}/{2})]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.tree.accountTreeNode.titleLoading" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} - Loading...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} - Chargement...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -564,18 +702,27 @@
       <Item ItemId=";extensions/azurecore/dist/azureResource/utils.azure.accounts.getResourceGroups.queryError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erreur de récupération des groupes de ressources pour le compte {0} ({1}), abonnement {2} ({3}), locataire {4} : {5}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/utils.azure.accounts.getSelectedSubscriptions.queryError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error fetching subscriptions for account {0} : {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erreur de récupération des abonnements pour le compte {0} : {1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/utils.azure.accounts.getSubscriptions.queryError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error fetching subscriptions for account {0} tenant {1} : {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erreur de récupération des abonnements pour le compte {0}, locataire {1} : {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -609,6 +756,9 @@
       <Item ItemId=";extensions/azurecore/dist/localizedConstants.azure.unableToOpenAzureLink" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unable to open link, missing required values]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Impossible d'ouvrir le lien, valeurs obligatoires manquantes]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -822,12 +972,18 @@
       <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.invalidAzureAccount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid account]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Compte non valide]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.invalidTenant" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid tenant for subscription]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Locataire non valide pour l'abonnement]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -871,7 +1027,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Emplacement]]></Val>
+            <Val><![CDATA[Localisation]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -924,6 +1080,9 @@
       <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.postgresServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Database for PostgreSQL server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Serveur Azure Database pour PostgreSQL]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -939,6 +1098,9 @@
       <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.requiresReload" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Modifying this setting requires reloading the window for all changes to take effect.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La modification de ce paramètre nécessite le rechargement de la fenêtre pour appliquer tous les changements.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1071,6 +1233,9 @@
       <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.typeIcon" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Type Icon]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Icône de type]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1096,7 +1261,7 @@
         <Str Cat="Text">
           <Val><![CDATA[UK South]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Sud du Royaume-Uni]]></Val>
+            <Val><![CDATA[Royaume-Uni Sud]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1105,7 +1270,7 @@
         <Str Cat="Text">
           <Val><![CDATA[UK West]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ouest du Royaume-Uni]]></Val>
+            <Val><![CDATA[Royaume-Uni Ouest]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1113,6 +1278,9 @@
       <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.unableToFetchToken" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unable to get token for tenant {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Impossible d'obtenir un jeton pour le locataire {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1156,7 +1324,7 @@
         <Str Cat="Text">
           <Val><![CDATA[West US 2]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[USA Ouest 2]]></Val>
+            <Val><![CDATA[USA Ouest 2]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1281,18 +1449,27 @@
       <Item ItemId=";extensions/azurecore/package.azure.resource.startterminal.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Start Cloud Shell]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Démarrer Cloud Shell]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/package.azure.resource.view.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure (préversion)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/package.azure.tenant.config.filter.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Liste des ID de locataire à ignorer pendant l'interrogation des ressources Azure. Chaque élément est un ID de locataire.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1308,24 +1485,36 @@
       <Item ItemId=";extensions/azurecore/package.config.azureAccountConfigurationSection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Account Configuration]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Configuration du compte Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/package.config.azureAuthMethodConfigurationSection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Authentication Method]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Méthode d'authentification Azure]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/package.config.azureCodeGrantMethod" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Code Grant Method]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Méthode d'octroi de code]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/package.config.azureDeviceCodeMethod" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Device Code Method]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Méthode de code d'appareil]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1368,18 +1557,27 @@
       <Item ItemId=";extensions/azurecore/package.config.enableUsNatCloudDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Should US National Azure cloud integration be enabled]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Spécifie si l'intégration du cloud Azure US National doit être activée]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/package.config.noSystemKeychain" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Désactivez l'intégration du trousseau système. Les informations d'identification sont stockées dans un fichier plat dans le dossier de base de l'utilisateur.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azurecore/package.config.piiLogging" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Should Personally Identifiable Information (PII) be logged in the console view locally]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Les informations d'identification personnelle (PII) doivent-elles être journalisées localement dans la vue de console]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

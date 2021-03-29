@@ -32,8 +32,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
-	constructor(protected modelView: azdata.ModelView, private _miaaModel: MiaaModel) {
-		super(modelView);
+	constructor(protected modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _miaaModel: MiaaModel) {
+		super(modelView, dashboard);
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
 		this.initializeConfigurationBoxes();
@@ -140,8 +140,11 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 							} finally {
 								session?.dispose();
 							}
-
-							await this._miaaModel.refresh();
+							try {
+								await this._miaaModel.refresh();
+							} catch (error) {
+								vscode.window.showErrorMessage(loc.refreshFailed(error));
+							}
 						}
 					);
 

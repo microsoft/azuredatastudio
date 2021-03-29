@@ -47,8 +47,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
-	constructor(protected modelView: azdata.ModelView, private _postgresModel: PostgresModel) {
-		super(modelView);
+	constructor(protected modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _postgresModel: PostgresModel) {
+		super(modelView, dashboard);
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
 		this.initializeConfigurationBoxes();
@@ -217,7 +217,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 							} finally {
 								session?.dispose();
 							}
-							await this._postgresModel.refresh();
+							try {
+								await this._postgresModel.refresh();
+							} catch (error) {
+								vscode.window.showErrorMessage(loc.refreshFailed(error));
+							}
 						}
 					);
 
