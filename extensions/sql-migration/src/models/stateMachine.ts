@@ -155,6 +155,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 	public async getServerAssessments(): Promise<ServerAssessement> {
+		// if (this._assessmentResults) {
+		// 	return this._assessmentResults;
+		// }
 		const excludeDbs: string[] = [
 			'master',
 			'tempdb',

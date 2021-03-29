@@ -283,14 +283,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private async constructDetails(): Promise<void> {
-		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
-		this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
-		try {
-			await this.migrationStateModel.getServerAssessments();
-			this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults.databaseAssessments.length);
-		} catch (e) {
-			console.log(e);
-		}
+		// get assessments from state machine
+		this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults.databaseAssessments.length);
+
 		this.refreshCardText();
 	}
 

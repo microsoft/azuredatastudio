@@ -14,6 +14,11 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 	private _usernameInput!: azdata.InputBoxComponent;
 	private _password!: azdata.InputBoxComponent;
+	private _progressContainer!: azdata.FlexContainer;
+	private _assessmentComponent!: azdata.FlexContainer;
+	private _assessmentProgress!: azdata.TextComponent;
+	private _assessmentInfo!: azdata.TextComponent;
+	private _rbgLoader!: azdata.LoadingComponent;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.SOURCE_CONFIGURATION, 'MigrationModePage'), migrationStateModel);
@@ -28,6 +33,14 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 				]
 			);
 		await view.initializeModel(form.component());
+		this._assessmentComponent = this._view.modelBuilder.flexContainer().withLayout({
+			height: '100%',
+			flexFlow: 'column'
+		}).component();
+
+		this._assessmentComponent.addItem(this.createAssessmentProgress(), { flex: '1 1 auto' });
+		this._assessmentComponent.addItem(this.createAssessmentInfo(), { flex: '1 1 auto' });
+		await view.initializeModel(this._assessmentComponent);
 	}
 
 	public async onPageEnter(): Promise<void> {
@@ -35,10 +48,16 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 			return true;
 		});
 	}
+
+
 	public async onPageLeave(): Promise<void> {
-		this.wizard.registerNavigationValidator((pageChangeInfo) => {
-			return true;
-		});
+		await this.runAssessments();
+		await this._view.initializeModel(this._assessmentComponent);
+		// if (this._rbgLoader.loading === false) {
+		// 	this.wizard.registerNavigationValidator((pageChangeInfo) => {
+		// 		return true;
+		// 	});
+		// }
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
@@ -129,5 +148,57 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 		return {
 			component: container
 		};
+	}
+
+	private createAssessmentProgress(): azdata.FlexContainer {
+
+		this._rbgLoader = this._view.modelBuilder.loadingComponent().component();
+		this._assessmentProgress = this._view.modelBuilder.text().withProps({
+			value: constants.ASSESSMENT_IN_PROGRESS,
+			CSSStyles: {
+				'font-size': '13px',
+				'line-height': '18px',
+				'width': '200px',
+				'font-weight': '600',
+				'margin': '8px 35px 5px 0px'
+			}
+		}).component();
+
+		this._progressContainer = this._view.modelBuilder.flexContainer().withLayout({
+			height: '100%',
+			flexFlow: 'row'
+		}).withItems([
+			this._assessmentProgress,
+			this._rbgLoader
+		]).component();
+
+		return this._progressContainer;
+	}
+
+	private createAssessmentInfo(): azdata.TextComponent {
+		this._assessmentInfo = this._view.modelBuilder.text().withProps({
+			value: constants.ASSESSMENT_IN_PROGRESS_CONTENT,
+			CSSStyles: {
+				'font-size': '13px',
+				'line-height': '18px',
+				'width': '200px',
+				'font-weight': '600',
+				'margin': '8px 35px 5px 0px'
+			}
+		}).component();
+		return this._assessmentInfo;
+	}
+
+
+	private async runAssessments(): Promise<void> {
+		this._rbgLoader.loading = true;
+		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+		try {
+			await this.migrationStateModel.getServerAssessments();
+		} catch (e) {
+			console.log(e);
+		}
+		this._assessmentProgress.value = constants.ASSESSMENT_COMPLETED(serverName);
+		this._rbgLoader.loading = false;
 	}
 }

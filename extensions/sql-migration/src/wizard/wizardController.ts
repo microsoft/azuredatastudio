@@ -37,7 +37,6 @@ export class WizardController {
 		wizard.generateScriptButton.enabled = false;
 		wizard.generateScriptButton.hidden = true;
 		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
-		// const subscriptionSelectionPage = new SubscriptionSelectionPage(wizard, stateModel);
 		const migrationModePage = new MigrationModePage(wizard, stateModel);
 		const azureAccountsPage = new AccountsSelectionPage(wizard, stateModel);
 		const sourceConfigurationPage = new SqlSourceConfigurationPage(wizard, stateModel);
@@ -46,7 +45,6 @@ export class WizardController {
 		const summaryPage = new SummaryPage(wizard, stateModel);
 
 		const pages: MigrationWizardPage[] = [
-			// subscriptionSelectionPage,
 			azureAccountsPage,
 			sourceConfigurationPage,
 			skuRecommendationPage,
