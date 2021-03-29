@@ -45,6 +45,16 @@ export function equalSections(actualSection: JupyterBookSection, expectedSection
 	return true;
 }
 
+function BookModelStub(root: string, bookItem: BookTreeItem, extension: MockExtensionContext): BookModel {
+	const bookModel = new BookModel(root, false, false, extension, undefined);
+	// create book model mock objects
+	sinon.stub(bookModel, 'bookItems').value([bookItem]);
+	sinon.stub(bookModel, 'unwatchTOC').returns();
+	sinon.stub(bookModel, 'reinitializeContents').resolves();
+	sinon.stub(bookModel, 'bookPath').value(root);
+	return bookModel;
+}
+
 describe('BookTocManagerTests', function () {
 	describe('CreatingBooks', () => {
 		let notebooks: string[];
@@ -477,16 +487,13 @@ describe('BookTocManagerTests', function () {
 
 					const mockExtensionContext = new MockExtensionContext();
 
-					sourceBookModel = new BookModel(run.sourceBook.rootBookFolderPath, false, false, mockExtensionContext, undefined);
-					targetBookModel = new BookModel(run.targetBook.rootBookFolderPath, false, false, mockExtensionContext, undefined);
-					// create book model mock objects
-					sinon.stub(sourceBookModel, 'bookItems').value([sectionA]);
-					sinon.stub(targetBookModel, 'bookItems').value([targetBook]);
+					sourceBookModel = BookModelStub(run.sourceBook.rootBookFolderPath, sectionA, mockExtensionContext);
+					targetBookModel = BookModelStub(run.targetBook.rootBookFolderPath, targetBook, mockExtensionContext);
 				});
 
 
 				it('Add section to book', async () => {
-					bookTocManager = new BookTocManager(targetBookModel, sourceBookModel);
+					bookTocManager = new BookTocManager(sourceBookModel, targetBookModel);
 					await bookTocManager.updateBook(sectionA, targetBook, undefined);
 					const listFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionA'));
 					const listSourceFiles = await fs.promises.readdir(path.join(run.sourceBook.bookContentFolderPath));
@@ -495,7 +502,7 @@ describe('BookTocManagerTests', function () {
 				});
 
 				it('Add section to section', async () => {
-					bookTocManager = new BookTocManager(targetBookModel, sourceBookModel);
+					bookTocManager = new BookTocManager(sourceBookModel, targetBookModel);
 					await bookTocManager.updateBook(sectionB, sectionC, {
 						'title': 'Notebook 6',
 						'file': path.join(path.sep, 'sectionC', 'notebook6')
@@ -507,7 +514,7 @@ describe('BookTocManagerTests', function () {
 				});
 
 				it('Add notebook to book', async () => {
-					bookTocManager = new BookTocManager(targetBookModel);
+					bookTocManager = new BookTocManager(undefined, targetBookModel);
 					await bookTocManager.updateBook(notebook, targetBook);
 					const listFiles = await fs.promises.readdir(run.targetBook.bookContentFolderPath);
 					should(JSON.stringify(listFiles).includes('notebook5.ipynb')).be.true('Notebook 5 should be under the target book content folder');
@@ -523,7 +530,7 @@ describe('BookTocManagerTests', function () {
 					});
 					should(notebookInToc).be.true('Verify the notebook is in toc before removing');
 
-					bookTocManager = new BookTocManager();
+					bookTocManager = new BookTocManager(sourceBookModel);
 					await bookTocManager.removeNotebook(notebook);
 
 					const listFiles = await fs.promises.readdir(run.sourceBook.bookContentFolderPath);
@@ -539,7 +546,7 @@ describe('BookTocManagerTests', function () {
 				});
 
 				it('Add duplicated notebook to book', async () => {
-					bookTocManager = new BookTocManager(targetBookModel);
+					bookTocManager = new BookTocManager(undefined, targetBookModel);
 					await bookTocManager.updateBook(notebook, targetBook);
 					await bookTocManager.updateBook(duplicatedNotebook, targetBook);
 					const listFiles = await fs.promises.readdir(run.targetBook.bookContentFolderPath);
@@ -550,7 +557,7 @@ describe('BookTocManagerTests', function () {
 				it('Recovery method is called after error', async () => {
 					const mockExtensionContext = new MockExtensionContext();
 					const recoverySpy = sinon.spy(BookTocManager.prototype, 'recovery');
-					sinon.stub(BookTocManager.prototype, 'updateBook').throws(new Error('Unexpected error.'));
+					sinon.stub(BookTocManager.prototype, 'updateTOC').throws(new Error('Unexpected error.'));
 					const bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 					const results: quickPickResults = {
 						book: targetBook,
