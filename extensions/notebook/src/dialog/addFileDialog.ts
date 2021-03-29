@@ -67,7 +67,7 @@ export class AddFileDialog {
 					components: [
 						{
 							title: loc.title,
-							required: false,
+							required: true,
 							component: this._titleInputBox
 						},
 						{
