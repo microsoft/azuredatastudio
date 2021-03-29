@@ -15,6 +15,7 @@ module.exports = withDefaults({
 		main: './src/main.ts'
 	},
 	externals: {
-		'ads-kerberos': 'commonjs ads-kerberos'
+		'ads-kerberos': 'commonjs ads-kerberos',
+		'keytar': 'commonjs keytar'
 	}
 });
