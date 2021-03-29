@@ -410,7 +410,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 						migrationServiceTitle,
 						createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
 						createInformationRow(this._view, constants.RESOURCE_GROUP, migrationService.properties.resourceGroup),
-						createInformationRow(this._view, constants.LOCATION, migrationService.properties.location),
+						createInformationRow(this._view, constants.LOCATION, await this.migrationStateModel.getLocationDisplayName(migrationService.properties.location)),
 						connectionLabelContainer,
 						connectionStatusLoader,
 						authenticationKeysLabel,
