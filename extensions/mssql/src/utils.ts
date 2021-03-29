@@ -35,10 +35,10 @@ export function getAppDataPath() {
  * This function returns whether the native credential management system
  * should be used instead of tools service
  */
-export function nativeCredentialsEnabled() {
+export function keytarCredentialsEnabled() {
 	const linux: boolean = os.platform() === 'linux';
-	const nativeCredentialsEnabled: boolean = true; // add setting for this after review
-	return linux && nativeCredentialsEnabled;
+	const keytarCredentialsEnabled: boolean = true; // add setting for this after review
+	return linux && keytarCredentialsEnabled;
 }
 
 /**

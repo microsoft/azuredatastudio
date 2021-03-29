@@ -32,7 +32,7 @@ export class TelemetryFeature implements StaticFeature {
 	}
 }
 
-export class NativeCredentialsFeature extends SqlOpsFeature<any>  {
+export class KeytarCredentialsFeature extends SqlOpsFeature<any>  {
 
 	private keychain: Keychain;
 
@@ -54,7 +54,7 @@ export class NativeCredentialsFeature extends SqlOpsFeature<any>  {
 	}
 
 	constructor(_client: SqlOpsDataClient) {
-		super(_client, NativeCredentialsFeature.messagesTypes);
+		super(_client, KeytarCredentialsFeature.messagesTypes);
 		this.keychain = new Keychain();
 	}
 
@@ -82,7 +82,7 @@ export class NativeCredentialsFeature extends SqlOpsFeature<any>  {
 		};
 
 		let deleteCredential = (credentialId: string): Thenable<boolean> => {
-			return this.keychain.deletePassword(credentialId).then((result) => { return result; });
+			return this.keychain.deletePassword(credentialId);
 		};
 
 		return azdata.credentials.registerProvider({
