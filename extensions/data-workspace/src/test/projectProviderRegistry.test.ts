@@ -56,20 +56,20 @@ suite('ProjectProviderRegistry Tests', function (): void {
 			}
 		],
 			[{
-				id: 'ta1',
+				id: 'testAction1',
 				run: async (): Promise<any> => { return Promise.resolve(); }
 			},
 			{
-				id: 'ta2',
+				id: 'testAction2',
 				run: async (): Promise<any> => { return Promise.resolve(); }
 			}],
 			[{
-				name: 'ti1',
+				name: 'tableInfo1',
 				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
 				data: [['d1']]
 			},
 			{
-				name: 'ti2',
+				name: 'tableInfo2',
 				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
 				data: [['d1']]
 			}]);
@@ -156,11 +156,11 @@ suite('ProjectProviderRegistry Tests', function (): void {
 			}
 		],
 			[{
-				id: 'ta1',
+				id: 'testAction1',
 				run: async (): Promise<any> => { return Promise.resolve(); }
 			}],
 			[{
-				name: 'ti1',
+				name: 'tableInfo1',
 				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
 				data: [['d1']]
 			}]);

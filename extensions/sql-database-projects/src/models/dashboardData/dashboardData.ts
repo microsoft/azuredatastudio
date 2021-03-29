@@ -9,11 +9,11 @@ export class DashboardData {
 	public timeToCompleteAction: string;
 	public startDate: string;
 
-	constructor(_status: Status, _target: string, _startDate: string) {
-		this.status = _status;
-		this.target = _target;
+	constructor(status: Status, target: string, startDate: string) {
+		this.status = status;
+		this.target = target;
 		this.timeToCompleteAction = '';
-		this.startDate = _startDate;
+		this.startDate = startDate;
 	}
 }
 

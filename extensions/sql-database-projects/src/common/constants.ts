@@ -53,6 +53,8 @@ export const min = localize('min', "min");
 export const sec = localize('sec', "sec");
 export const msec = localize('msec', "msec");
 
+export const at = localize('at', "at");
+
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';
 export const schemaCompareStartCommand = 'schemaCompare.start';

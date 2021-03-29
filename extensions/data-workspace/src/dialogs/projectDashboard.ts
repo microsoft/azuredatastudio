@@ -122,7 +122,7 @@ export class ProjectDashboard {
 			.component();
 		rootContainer.addItem(titleLabel, { CSSStyles: { 'padding-left': '34px', 'padding-top': '15px', 'font-size': '36px', 'font-weight': '400' } });
 
-		const projectFolderPath = vscode.Uri.file(path.dirname(location)).fsPath;
+		const projectFolderPath = path.dirname(location);
 		const locationLabel = this.modelView!.modelBuilder.text()
 			.withProperties<azdata.TextComponentProperties>({ value: projectFolderPath, CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
 			.component();
@@ -157,7 +157,6 @@ export class ProjectDashboard {
 			info.data.forEach(values => {
 				const columnValue: azdata.DeclarativeTableCellValue[] = [];
 				values.forEach(val => {
-
 					if (typeof val === 'string') {
 						columnValue.push({ value: val });
 					} else {

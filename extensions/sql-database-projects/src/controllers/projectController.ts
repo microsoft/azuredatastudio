@@ -34,7 +34,7 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, Status } from '../models/dashboardData/dashboardData';
 
-const tableLength = 10;
+const maxTableLength = 10;
 
 /**
  * Controller for managing lifecycle of projects
@@ -174,12 +174,12 @@ export class ProjectsController {
 		const project: Project = this.getProjectFromContext(context);
 
 		const startTime = new Date();
-		const currentBuildTimeInfo = startTime.toLocaleDateString() + ' at ' + startTime.toLocaleTimeString();
+		const currentBuildTimeInfo = `${startTime.toLocaleDateString()} ${constants.at} ${startTime.toLocaleTimeString()}`;
 
 		let buildInfoNew = new DashboardData(Status.inProgress, project.getProjectTargetVersion(), currentBuildTimeInfo);
 		this.buildInfo.push(buildInfoNew);
 
-		if (this.buildInfo.length - 1 === tableLength) {
+		if (this.buildInfo.length - 1 === maxTableLength) {
 			this.buildInfo.shift();		// Remove the first element to maintain the length
 		}
 
@@ -274,12 +274,12 @@ export class ProjectsController {
 		telemetryProps.profileUsed = (settings.profileUsed ?? false).toString();
 		const currentDate = new Date();
 		const actionStartTime = currentDate.getMilliseconds();
-		const currentDeployTimeInfo = currentDate.toLocaleDateString() + ' at ' + currentDate.toLocaleTimeString();
+		const currentDeployTimeInfo = `${currentDate.toLocaleDateString()} ${constants.at} ${currentDate.toLocaleTimeString()}`;
 
 		let deployInfoNew = new DashboardData(Status.inProgress, project.getProjectTargetVersion(), currentDeployTimeInfo);
 		this.deployInfo.push(deployInfoNew);
 
-		if (this.deployInfo.length - 1 === tableLength) {
+		if (this.deployInfo.length - 1 === maxTableLength) {
 			this.deployInfo.shift();	// Remove the first element to maintain the length
 		}
 

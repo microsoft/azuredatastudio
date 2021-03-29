@@ -137,7 +137,7 @@ declare module 'dataworkspace' {
 		/**
 		 * icon path of the project action
 		 */
-		readonly icon?: string | vscode.Uri | { light: string | vscode.Uri, dark: string | vscode.Uri };
+		readonly icon?: azdata.IconPath;
 
 		/**
 		 * Run context for each project action
@@ -174,7 +174,7 @@ declare module 'dataworkspace' {
 	}
 
 	/**
-	 * Header information of a column in the table
+	 * Project dashboard table's column information
 	 */
 	export interface IDashboardColumnInfo {
 		displayName: string;
