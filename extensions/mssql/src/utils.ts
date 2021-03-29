@@ -37,7 +37,7 @@ export function getAppDataPath() {
  */
 export function keytarCredentialsEnabled() {
 	const linux: boolean = os.platform() === 'linux';
-	const keytarCredentialsEnabled: boolean = true; // add setting for this after review
+	const keytarCredentialsEnabled: boolean = false; // add setting for this after review
 	return linux && keytarCredentialsEnabled;
 }
 
