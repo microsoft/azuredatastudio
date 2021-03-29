@@ -56,6 +56,13 @@ export async function getAvailableManagedInstanceProducts(account: azdata.Accoun
 	return result.resources;
 }
 
+export async function getSqlManagedInstanceDatabases(account: azdata.Account, subscription: Subscription, managedInstance: SqlManagedInstance): Promise<azureResource.ManagedDatabase[]> {
+	const api = await getAzureCoreAPI();
+	const result = await api.getManagedDatabases(account, subscription, managedInstance, false);
+	sortResourceArrayByName(result.databases);
+	return result.databases;
+}
+
 export type SqlServer = AzureProduct;
 export async function getAvailableSqlServers(account: azdata.Account, subscription: Subscription): Promise<SqlServer[]> {
 	const api = await getAzureCoreAPI();

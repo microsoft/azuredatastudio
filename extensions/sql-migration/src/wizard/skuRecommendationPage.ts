@@ -287,9 +287,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	private changeTargetType(newTargetType: string) {
 		if (newTargetType === MigrationTargetType.SQLMI) {
+			this.migrationStateModel._targetType = MigrationTargetType.SQLMI;
 			this._azureSubscriptionText.value = constants.SELECT_AZURE_MI;
 			this.migrationStateModel._migrationDbs = this.migrationStateModel._miDbs;
 		} else {
+			this.migrationStateModel._targetType = MigrationTargetType.SQLVM;
 			this._azureSubscriptionText.value = constants.SELECT_AZURE_VM;
 			this.migrationStateModel._migrationDbs = this.migrationStateModel._vmDbs;
 		}

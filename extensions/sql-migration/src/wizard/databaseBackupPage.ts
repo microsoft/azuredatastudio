@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import { getStorageAccountAccessKeys } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import * as vscode from 'vscode';
 import { IconPathHelper } from '../constants/iconPathHelper';
@@ -24,7 +24,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _windowsUserAccountText!: azdata.InputBoxComponent;
 	private _passwordText!: azdata.InputBoxComponent;
 	private _networkShareDatabaseConfigContainer!: azdata.FlexContainer;
-	private _networkShareLocations: azdata.InputBoxComponent[] = [];
+	private _targetDatabaseNames: azdata.InputBoxComponent[] = [];
 
 	private _blobContainer!: azdata.FlexContainer;
 	private _blobContainerSubscription!: azdata.InputBoxComponent;
@@ -37,6 +37,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _fileShareStorageAccountDropdown!: azdata.DropDownComponent;
 	private _fileShareDatabaseConfigContainer!: azdata.FlexContainer;
 	private _fileShareDropdowns: azdata.DropDownComponent[] = [];
+
+	private _existingDatabases: string[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_BACKUP_PAGE_TITLE), migrationStateModel);
@@ -157,7 +159,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				await this.loadFileShareDropdown();
 			}
 		});
-
 
 		const fileShareDatabaseConfigHeader = view.modelBuilder.text().withProps({
 			value: constants.ENTER_FILE_SHARE_INFORMATION
@@ -415,9 +416,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		const storageAccountContainer = view.modelBuilder.flexContainer().component();
 
-		storageAccountContainer.addItem(this._networkShareContainerStorageAccountDropdown);
+		storageAccountContainer.addItem(this._networkShareContainerStorageAccountDropdown, {
+			flex: '0 0 auto'
+		});
 
 		storageAccountContainer.addItem(this._networkShareContainerStorageAccountRefreshButton, {
+			flex: '0 0 auto',
 			CSSStyles: {
 				'margin-left': '5px'
 			}
@@ -467,8 +471,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	public async onPageEnter(): Promise<void> {
 		if (this.migrationStateModel.refreshDatabaseBackupPage) {
-
-			this._networkShareLocations = [];
+			this._targetDatabaseNames = [];
+			if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI) {
+				this._existingDatabases = await this.migrationStateModel.getManagedDatabases();
+			}
 			this._fileShareDropdowns = [];
 			this._blobContainerDropdowns = [];
 			this.migrationStateModel._targetDatabaseNames = [];
@@ -489,10 +495,22 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					required: true,
 					value: db,
 					width: WIZARD_INPUT_COMPONENT_WIDTH
+				}).withValidation(c => {
+					if (this._targetDatabaseNames.filter(t => t.value === c.value).length > 1) { //Making sure no databases have duplicate values.
+						c.validationErrorMessage = constants.DUPLICATE_NAME_ERROR;
+						return false;
+					}
+					if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI && this._existingDatabases.includes(c.value!)) { // Making sure if database with same name is not present on the target Azure SQL
+						c.validationErrorMessage = constants.DATABASE_ALREADY_EXISTS_MI(this.migrationStateModel._targetServerInstance.name);
+						return false;
+					}
+					return true;
 				}).component();
 				targetNameNetworkInputBox.onTextChanged((value) => {
 					this.migrationStateModel._targetDatabaseNames[index] = value;
 				});
+				this._targetDatabaseNames.push(targetNameNetworkInputBox);
+
 				this._networkShareDatabaseConfigContainer.addItems(
 					[
 						targetNameNetworkInputBoxLabel,
@@ -514,7 +532,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					.withProps({
 					}).component();
 				fileShareDropdown.onValueChanged((value) => {
-					if (value.selected) {
+					if (value.selected && value.selected !== constants.NO_FILESHARES_FOUND) {
 						this.validateFields();
 						this.migrationStateModel._databaseBackup.fileShares[index] = this.migrationStateModel.getFileShare(value.index);
 					}
@@ -544,7 +562,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					.withProps({
 					}).component();
 				blobContainerDropdown.onValueChanged((value) => {
-					if (value.selected) {
+					if (value.selected && value.selected !== constants.NO_BLOBCONTAINERS_FOUND) {
 						this.validateFields();
 						this.migrationStateModel._databaseBackup.blobContainers[index] = this.migrationStateModel.getBlobContainer(value.index);
 					}
@@ -633,18 +651,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._fileShareContainer.updateCssStyles({ 'display': (containerType === NetworkContainerType.FILE_SHARE) ? 'inline' : 'none' });
 		this._blobContainer.updateCssStyles({ 'display': (containerType === NetworkContainerType.BLOB_CONTAINER) ? 'inline' : 'none' });
 		this._networkShareContainer.updateCssStyles({ 'display': (containerType === NetworkContainerType.NETWORK_SHARE) ? 'inline' : 'none' });
-		this._networkShareLocations.forEach((inputBox) => {
-			inputBox.updateProperties({
-				required: containerType === NetworkContainerType.NETWORK_SHARE
-			});
-		});
 		this._windowsUserAccountText.updateProperties({
 			required: containerType === NetworkContainerType.NETWORK_SHARE
 		});
 		this._passwordText.updateProperties({
 			required: containerType === NetworkContainerType.NETWORK_SHARE
 		});
-		this._networkShareLocations.forEach((inputBox) => {
+		this._targetDatabaseNames.forEach((inputBox) => {
 			inputBox.validate();
 		});
 		this._windowsUserAccountText.validate();
@@ -666,7 +679,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 
 	private validateFields(): void {
-		this._networkShareLocations.forEach((inputBox) => {
+		this._targetDatabaseNames.forEach((inputBox) => {
 			inputBox.validate();
 		});
 		this._windowsUserAccountText.validate();
