@@ -247,6 +247,7 @@ declare module 'azurecore' {
 		getResourceGroups(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<GetResourceGroupsResult>;
 		getLocations(account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors?: boolean): Promise<GetLocationsResult>;
 		getSqlManagedInstances(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlManagedInstancesResult>;
+		getManagedDatabases(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, managedInstance: azureResource.AzureSqlManagedInstance, ignoreErrors?: boolean): Promise<GetManagedDatabasesResult>;
 		getSqlServers(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlServersResult>;
 		getSqlVMServers(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetSqlVMServersResult>;
 		getStorageAccounts(account: azdata.Account, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<GetStorageAccountResult>;
@@ -276,8 +277,9 @@ declare module 'azurecore' {
 
 	export type GetSubscriptionsResult = { subscriptions: azureResource.AzureResourceSubscription[], errors: Error[] };
 	export type GetResourceGroupsResult = { resourceGroups: azureResource.AzureResourceResourceGroup[], errors: Error[] };
-	export type GetLocationsResult = {locations: azureResource.AzureLocation[], errors: Error[] };
-	export type GetSqlManagedInstancesResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };
+	export type GetLocationsResult = { locations: azureResource.AzureLocation[], errors: Error[] };
+	export type GetSqlManagedInstancesResult = { resources: azureResource.AzureSqlManagedInstance[], errors: Error[] };
+	export type GetManagedDatabasesResult = { databases: azureResource.ManagedDatabase[], errors: Error[] };
 	export type GetSqlServersResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };
 	export type GetSqlVMServersResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };
 	export type GetStorageAccountResult = { resources: azureResource.AzureGraphResource[], errors: Error[] };

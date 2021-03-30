@@ -6,6 +6,12 @@
 import { getMigrationStatus, DatabaseMigration, startMigrationCutover, stopMigration } from '../../api/azure';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 
+export enum MigrationStatus {
+	Failed = 'Failed',
+	Succeeded = 'Succeeded',
+	InProgress = 'InProgress',
+	Canceled = 'Canceled'
+}
 
 export class MigrationCutoverDialogModel {
 

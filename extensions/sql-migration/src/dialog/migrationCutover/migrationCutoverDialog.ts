@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationContext } from '../../models/migrationLocalStorage';
-import { MigrationCutoverDialogModel } from './migrationCutoverDialogModel';
+import { MigrationCutoverDialogModel, MigrationStatus } from './migrationCutoverDialogModel';
 import * as loc from '../../constants/strings';
 import { getSqlServerName } from '../../api/utils';
 import { EOL } from 'os';
@@ -359,6 +359,7 @@ export class MigrationCutoverDialog {
 		this._copyDatabaseMigrationDetails.onDidClick(async (e) => {
 			await this.refreshStatus();
 			vscode.env.clipboard.writeText(JSON.stringify(this._model.migrationStatus, undefined, 2));
+			vscode.window.showInformationMessage(loc.DETAILS_COPIED);
 		});
 
 		header.addItem(this._copyDatabaseMigrationDetails, {
@@ -392,9 +393,10 @@ export class MigrationCutoverDialog {
 			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
 			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.restoreBlockingReason);
 			this._dialogObject.message = {
-				text: errors.filter(e => e !== undefined).join(EOL)
+				text: errors.filter(e => e !== undefined).join(EOL),
+				level: this._model.migrationStatus.properties.migrationStatus === MigrationStatus.InProgress ? azdata.window.MessageLevel.Warning : azdata.window.MessageLevel.Error
 			};
-			const sqlServerInfo = await azdata.connection.getServerInfo(this._model._migration.sourceConnectionProfile.connectionId);
+			const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
 			const sqlServerName = this._model._migration.sourceConnectionProfile.serverName;
 			const sourceDatabaseName = this._model._migration.migrationContext.properties.sourceDatabaseName;
 			const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
@@ -470,7 +472,7 @@ export class MigrationCutoverDialog {
 				this._startCutover = true;
 			}
 
-			if (migrationStatusTextValue === 'InProgress') {
+			if (migrationStatusTextValue === MigrationStatus.InProgress) {
 				const fileNotRestored = await tableData.some(file => file.status !== 'Restored');
 				this._cutoverButton.enabled = !fileNotRestored;
 				this._cancelButton.enabled = true;

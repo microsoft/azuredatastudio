@@ -161,7 +161,7 @@ export class SqlDatabaseTree {
 		this._instanceTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
 				enableRowSelection: true,
-				width: 200,
+				width: 170,
 				columns: [
 					{
 						displayName: constants.INSTANCE,
@@ -182,7 +182,6 @@ export class SqlDatabaseTree {
 
 		const instanceContainer = this._view.modelBuilder.divContainer().withItems([this._instanceTable]).withProps({
 			CSSStyles: {
-				'width': '200px',
 				'margin': '19px 8px 0px 34px'
 			}
 		}).component();
