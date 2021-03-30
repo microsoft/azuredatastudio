@@ -17,7 +17,7 @@ export const SOURCE_CONFIGURATION_PAGE_TITLE = localize('sql.migration.wizard.so
 export const ASSESSMENT_PROGRESS = localize('sql.migration.assessments.progress', "Assessments Progress");
 export const ASSESSMENT_IN_PROGRESS = localize('sql.migration.assessment.in.progress', "Assessment in progress");
 export function ASSESSMENT_IN_PROGRESS_CONTENT(dbName: string) {
-	return localize('sql.migration.assessment.in.progress.content', "We are assessing the selected databases in your SQL server instance {0} to identify the right Azure SQL target.\nThis may take some time.");
+	return localize('sql.migration.assessment.in.progress.content', "We are assessing the selected databases in your SQL server instance {0} to identify the right Azure SQL target.\n\nThis may take some time.", dbName);
 }
 export const COLLECTING_SOURCE_CONFIGURATIONS = localize('sql.migration.collecting_source_configurations', "Collecting source configurations");
 export const COLLECTING_SOURCE_CONFIGURATIONS_INFO = localize('sql.migration.collecting_source_configurations.info', "We need to collect some information about how your data is configured currently.\nThis may take some time.");

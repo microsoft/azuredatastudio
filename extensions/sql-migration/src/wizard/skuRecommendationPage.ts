@@ -175,6 +175,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._assessmentComponent = this._view.modelBuilder.flexContainer().withLayout({
 			height: '100%',
 			flexFlow: 'column'
+		}).withProps({
+			CSSStyles: {
+				'margin-left': '30px'
+			}
 		}).component();
 
 		this._assessmentComponent.addItem(this.createAssessmentProgress(), { flex: '0 0 auto' });
@@ -312,10 +316,18 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private async constructDetails(): Promise<void> {
-		// get assessments from state machine
-		this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults.databaseAssessments.length);
+		this._assessmentLoader.loading = true;
+		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+		this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
+		try {
+			await this.migrationStateModel.getServerAssessments();
+			this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults.databaseAssessments.length);
+		} catch (e) {
+			console.log(e);
+		}
 
 		this.refreshCardText();
+		this._assessmentLoader.loading = false;
 	}
 
 	private createAzureSubscriptionText(view: azdata.ModelView): azdata.TextComponent {
@@ -382,7 +394,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		// hide loading screen, show other components
 
 		if (!this.migrationStateModel._assessmentResults) {
-			await this.runAssessments();
+			await this.constructDetails();
 		}
 		this._assessmentComponent.updateCssStyles({
 			display: 'none'
@@ -391,7 +403,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			display: 'block'
 		});
 
-		this.constructDetails();
 		this.populateSubscriptionDropdown();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			const errors: string[] = [];
@@ -502,11 +513,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._assessmentProgress = this._view.modelBuilder.text().withProps({
 			value: constants.ASSESSMENT_IN_PROGRESS,
 			CSSStyles: {
-				'font-size': '13px',
-				'line-height': '18px',
-				'width': '200px',
-				'font-weight': '600',
-				'margin': '8px 35px 5px 0px'
+				'font-size': '18px',
+				'line-height': '24px',
+				'margin': '20px 35px 5px 0px'
 			}
 		}).component();
 
@@ -515,7 +524,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			flexFlow: 'row'
 		}).withItems([
 			this._assessmentProgress,
-			this._rbgLoader
+			this._assessmentLoader
 		]).component();
 
 		return this._progressContainer;
@@ -527,25 +536,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			CSSStyles: {
 				'font-size': '13px',
 				'line-height': '18px',
-				'width': '200px',
 				'font-weight': '600',
-				'margin': '8px 35px 5px 0px'
+				'margin': '20px 35px 5px 0px'
 			}
 		}).component();
 		return this._assessmentInfo;
-	}
-
-
-	private async runAssessments(): Promise<void> {
-		this._assessmentLoader.loading = true;
-		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
-		try {
-			await this.migrationStateModel.getServerAssessments();
-		} catch (e) {
-			console.log(e);
-		}
-		this._assessmentProgress.value = constants.ASSESSMENT_COMPLETED(serverName);
-		this._assessmentLoader.loading = false;
 	}
 }
 
