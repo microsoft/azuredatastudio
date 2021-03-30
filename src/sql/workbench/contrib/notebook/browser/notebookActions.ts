@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as path from 'vs/base/common/path';
 
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
@@ -29,6 +30,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { URI } from 'vs/base/common/uri';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { Uri } from 'vscode';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -298,7 +300,7 @@ export class RunParametersAction extends TooltipFromLabelAction {
 	public async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
 		// Set defaultParameters to the parameter values in parameter cell
-		let defaultParameters = new Map<any, string>();
+		let defaultParameters = new Map<string, string>();
 		editor.cells.forEach(cell => {
 			if (cell.isParameter) {
 				for (let parameter of cell.source) {
@@ -332,12 +334,17 @@ export class RunParametersAction extends TooltipFromLabelAction {
 			for (let key of inputParameters.keys()) {
 				// Will only add new injected parameters when the value is not the same as the defaultParameters values
 				if (inputParameters.get(key) !== defaultParameters.get(key)) {
-					uriParams.append(key, inputParameters.get(key));
+					// For empty strings we need to escape the value
+					// so that it is kept when adding uriParams.toString() to filePath
+					if (inputParameters.get(key) === '') {
+						uriParams.append(key, '\'\'');
+					} else {
+						uriParams.append(key, inputParameters.get(key));
+					}
 				}
 			}
 			let filePath = context.path;
-			filePath = filePath + '?' + uriParams.toString();
-
+			filePath = filePath + '?' + unescape(uriParams.toString());
 			return this.openParameterizedNotebook(context, filePath);
 		}
 	}
