@@ -170,7 +170,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.saveButton.onDidClick(async () => {
-				this.saveButton!.enabled = false;
+				this.saveButton.enabled = false;
 				try {
 					await vscode.window.withProgress(
 						{
@@ -212,7 +212,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since
 								// the edit wasn't successfully applied
-								this.saveButton!.enabled = true;
+								this.saveButton.enabled = true;
 								throw err;
 							} finally {
 								session?.dispose();
@@ -227,7 +227,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 
-					this.discardButton!.enabled = false;
+					this.discardButton.enabled = false;
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
@@ -243,17 +243,17 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.discardButton.onDidClick(async () => {
-				this.discardButton!.enabled = false;
+				this.discardButton.enabled = false;
 				try {
-					this.workerBox!.value = this.currentConfiguration.workers!.toString();
-					this.workerCoresRequestBox!.value = this.currentConfiguration.workerCoresRequest;
-					this.workerCoresLimitBox!.value = this.currentConfiguration.workerCoresLimit;
-					this.workerMemoryRequestBox!.value = this.currentConfiguration.workerMemoryRequest;
-					this.workerMemoryLimitBox!.value = this.currentConfiguration.workerMemoryLimit;
+					this.workerBox.value = this.currentConfiguration.workers!.toString();
+					this.workerCoresRequestBox.value = this.currentConfiguration.workerCoresRequest;
+					this.workerCoresLimitBox.value = this.currentConfiguration.workerCoresLimit;
+					this.workerMemoryRequestBox.value = this.currentConfiguration.workerMemoryRequest;
+					this.workerMemoryLimitBox.value = this.currentConfiguration.workerMemoryLimit;
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
-					this.saveButton!.enabled = false;
+					this.saveButton.enabled = false;
 				}
 			}));
 
@@ -274,10 +274,10 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.workerBox.onTextChanged(() => {
-				if (!this.saveValueToEdit(this.workerBox!, this.currentConfiguration.workers!.toString())) {
+				if (!this.saveValueToEdit(this.workerBox, this.currentConfiguration.workers!.toString())) {
 					this.saveArgs.workers = undefined;
 				} else {
-					this.saveArgs.workers = parseInt(this.workerBox!.value!);
+					this.saveArgs.workers = parseInt(this.workerBox.value!);
 				}
 			})
 		);
@@ -292,12 +292,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.workerCoresRequestBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.workerCoresRequestBox!, this.currentConfiguration.workerCoresRequest!))) {
+				if (!(this.saveValueToEdit(this.workerCoresRequestBox, this.currentConfiguration.workerCoresRequest!))) {
 					this.saveArgs.workerCoresRequest = undefined;
-				} else if (this.workerCoresRequestBox!.value === '') {
+				} else if (this.workerCoresRequestBox.value === '') {
 					this.saveArgs.workerCoresRequest = '""';
 				} else {
-					this.saveArgs.workerCoresRequest = this.workerCoresRequestBox!.value;
+					this.saveArgs.workerCoresRequest = this.workerCoresRequestBox.value;
 				}
 			})
 		);
@@ -312,12 +312,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.workerCoresLimitBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.workerCoresLimitBox!, this.currentConfiguration.workerCoresLimit!))) {
+				if (!(this.saveValueToEdit(this.workerCoresLimitBox, this.currentConfiguration.workerCoresLimit!))) {
 					this.saveArgs.workerCoresLimit = undefined;
-				} else if (this.workerCoresLimitBox!.value === '') {
+				} else if (this.workerCoresLimitBox.value === '') {
 					this.saveArgs.workerCoresLimit = '""';
 				} else {
-					this.saveArgs.workerCoresLimit = this.workerCoresLimitBox!.value;
+					this.saveArgs.workerCoresLimit = this.workerCoresLimitBox.value;
 				}
 			})
 		);
@@ -332,12 +332,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.workerMemoryRequestBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.workerMemoryRequestBox!, this.currentConfiguration.workerMemoryRequest!))) {
+				if (!(this.saveValueToEdit(this.workerMemoryRequestBox, this.currentConfiguration.workerMemoryRequest!))) {
 					this.saveArgs.workerMemoryRequest = undefined;
-				} else if (this.workerMemoryRequestBox!.value === '') {
+				} else if (this.workerMemoryRequestBox.value === '') {
 					this.saveArgs.workerMemoryRequest = '""';
 				} else {
-					this.saveArgs.workerMemoryRequest = this.workerMemoryRequestBox!.value + 'Gi';
+					this.saveArgs.workerMemoryRequest = this.workerMemoryRequestBox.value + 'Gi';
 				}
 			})
 		);
@@ -352,12 +352,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.workerMemoryLimitBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.workerMemoryLimitBox!, this.currentConfiguration.workerMemoryLimit!))) {
+				if (!(this.saveValueToEdit(this.workerMemoryLimitBox, this.currentConfiguration.workerMemoryLimit!))) {
 					this.saveArgs.workerMemoryLimit = undefined;
-				} else if (this.workerMemoryLimitBox!.value === '') {
+				} else if (this.workerMemoryLimitBox.value === '') {
 					this.saveArgs.workerMemoryLimit = '""';
 				} else {
-					this.saveArgs.workerMemoryLimit = this.workerMemoryLimitBox!.value + 'Gi';
+					this.saveArgs.workerMemoryLimit = this.workerMemoryLimitBox.value + 'Gi';
 				}
 			})
 		);
@@ -372,12 +372,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.coordinatorCoresRequestBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.coordinatorCoresRequestBox!, this.currentConfiguration.coordinatorCoresRequest!))) {
+				if (!(this.saveValueToEdit(this.coordinatorCoresRequestBox, this.currentConfiguration.coordinatorCoresRequest!))) {
 					this.saveArgs.coordinatorCoresRequest = undefined;
-				} else if (this.coordinatorCoresRequestBox!.value === '') {
+				} else if (this.coordinatorCoresRequestBox.value === '') {
 					this.saveArgs.coordinatorCoresRequest = '""';
 				} else {
-					this.saveArgs.coordinatorCoresRequest = this.coordinatorCoresRequestBox!.value;
+					this.saveArgs.coordinatorCoresRequest = this.coordinatorCoresRequestBox.value;
 				}
 			})
 		);
@@ -392,12 +392,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.coordinatorCoresLimitBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.coordinatorCoresLimitBox!, this.currentConfiguration.coordinatorCoresLimit!))) {
+				if (!(this.saveValueToEdit(this.coordinatorCoresLimitBox, this.currentConfiguration.coordinatorCoresLimit!))) {
 					this.saveArgs.coordinatorCoresLimit = undefined;
-				} else if (this.coordinatorCoresLimitBox!.value === '') {
+				} else if (this.coordinatorCoresLimitBox.value === '') {
 					this.saveArgs.coordinatorCoresLimit = '""';
 				} else {
-					this.saveArgs.coordinatorCoresLimit = this.coordinatorCoresLimitBox!.value;
+					this.saveArgs.coordinatorCoresLimit = this.coordinatorCoresLimitBox.value;
 				}
 			})
 		);
@@ -412,12 +412,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.coordinatorMemoryRequestBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.coordinatorMemoryRequestBox!, this.currentConfiguration.coordinatorMemoryRequest!))) {
+				if (!(this.saveValueToEdit(this.coordinatorMemoryRequestBox, this.currentConfiguration.coordinatorMemoryRequest!))) {
 					this.saveArgs.coordinatorMemoryRequest = undefined;
-				} else if (this.coordinatorMemoryRequestBox!.value === '') {
+				} else if (this.coordinatorMemoryRequestBox.value === '') {
 					this.saveArgs.coordinatorMemoryRequest = '""';
 				} else {
-					this.saveArgs.coordinatorMemoryRequest = this.coordinatorMemoryRequestBox!.value + 'Gi';
+					this.saveArgs.coordinatorMemoryRequest = this.coordinatorMemoryRequestBox.value + 'Gi';
 				}
 			})
 		);
@@ -432,12 +432,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.coordinatorMemoryLimitBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.coordinatorMemoryLimitBox!, this.currentConfiguration.coordinatorMemoryLimit!))) {
+				if (!(this.saveValueToEdit(this.coordinatorMemoryLimitBox, this.currentConfiguration.coordinatorMemoryLimit!))) {
 					this.saveArgs.coordinatorMemoryLimit = undefined;
-				} else if (this.coordinatorMemoryLimitBox!.value === '') {
+				} else if (this.coordinatorMemoryLimitBox.value === '') {
 					this.saveArgs.coordinatorMemoryLimit = '""';
 				} else {
-					this.saveArgs.coordinatorMemoryLimit = this.coordinatorMemoryLimitBox!.value + 'Gi';
+					this.saveArgs.coordinatorMemoryLimit = this.coordinatorMemoryLimitBox.value + 'Gi';
 				}
 			})
 		);
@@ -453,10 +453,10 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		return [
 			this.createWorkerNodesSectionContainer(),
 			this.createCoresMemorySection(loc.configurationPerNode, loc.postgresConfigurationInformation),	// use loc.workerNodesConfigurationInformation when coordinator section is included
-			this.createConfigurationSectionContainer(loc.coresRequest, this.workerCoresRequestBox!),
-			this.createConfigurationSectionContainer(loc.coresLimit, this.workerCoresLimitBox!),
-			this.createConfigurationSectionContainer(loc.memoryRequest, this.workerMemoryRequestBox!),
-			this.createConfigurationSectionContainer(loc.memoryLimit, this.workerMemoryLimitBox!)
+			this.createConfigurationSectionContainer(loc.coresRequest, this.workerCoresRequestBox),
+			this.createConfigurationSectionContainer(loc.coresLimit, this.workerCoresLimitBox),
+			this.createConfigurationSectionContainer(loc.memoryRequest, this.workerMemoryRequestBox),
+			this.createConfigurationSectionContainer(loc.memoryLimit, this.workerMemoryLimitBox)
 
 		];
 	}
@@ -490,7 +490,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		flexContainer.addItem(keyContainer, keyFlex);
 
 		const inputContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-		inputContainer.addItem(this.workerBox!, { CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '225px' } });
+		inputContainer.addItem(this.workerBox, { CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '225px' } });
 
 		flexContainer.addItem(inputContainer, inputFlex);
 
@@ -505,10 +505,10 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		return [
 			this.createCoresMemorySection(loc.configuration, loc.coordinatorNodeConfigurationInformation),
-			this.createConfigurationSectionContainer(loc.coresRequest, this.coordinatorCoresRequestBox!),
-			this.createConfigurationSectionContainer(loc.coresLimit, this.coordinatorCoresLimitBox!),
-			this.createConfigurationSectionContainer(loc.memoryRequest, this.coordinatorMemoryRequestBox!),
-			this.createConfigurationSectionContainer(loc.memoryLimit, this.coordinatorMemoryLimitBox!)
+			this.createConfigurationSectionContainer(loc.coresRequest, this.coordinatorCoresRequestBox),
+			this.createConfigurationSectionContainer(loc.coresLimit, this.coordinatorCoresLimitBox),
+			this.createConfigurationSectionContainer(loc.memoryRequest, this.coordinatorMemoryRequestBox),
+			this.createConfigurationSectionContainer(loc.memoryLimit, this.coordinatorMemoryLimitBox)
 
 		];
 	}
@@ -558,8 +558,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		} else if ((!component.valid)) {
 			return false;
 		} else {
-			this.saveButton!.enabled = true;
-			this.discardButton!.enabled = true;
+			this.saveButton.enabled = true;
+			this.discardButton.enabled = true;
 			return true;
 		}
 	}
@@ -569,9 +569,9 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		let scale = this._postgresModel.config?.spec.scale;
 		this.currentConfiguration.workers = scale?.workers ?? scale?.shards ?? 0;
 
-		this.workerBox!.min = this.currentConfiguration.workers;
-		this.workerBox!.placeHolder = '';
-		this.workerBox!.value = this.currentConfiguration.workers.toString();
+		this.workerBox.min = this.currentConfiguration.workers;
+		this.workerBox.placeHolder = '';
+		this.workerBox.value = this.currentConfiguration.workers.toString();
 		this.saveArgs.workers = undefined;
 	}
 
@@ -615,8 +615,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.currentConfiguration.workerCoresRequest = '';
 		}
 
-		this.workerCoresRequestBox!.placeHolder = '';
-		this.workerCoresRequestBox!.value = this.currentConfiguration.workerCoresRequest;
+		this.workerCoresRequestBox.placeHolder = '';
+		this.workerCoresRequestBox.value = this.currentConfiguration.workerCoresRequest;
 		this.saveArgs.workerCoresRequest = undefined;
 
 		// Cores Limit
@@ -625,8 +625,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.currentConfiguration.workerCoresLimit = '';
 		}
 
-		this.workerCoresLimitBox!.placeHolder = '';
-		this.workerCoresLimitBox!.value = this.currentConfiguration.workerCoresLimit;
+		this.workerCoresLimitBox.placeHolder = '';
+		this.workerCoresLimitBox.value = this.currentConfiguration.workerCoresLimit;
 		this.saveArgs.workerCoresLimit = undefined;
 	}
 
@@ -639,8 +639,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.currentConfiguration.workerMemoryRequest = convertToGibibyteString(currentMemorySize);
 		}
 
-		this.workerMemoryRequestBox!.placeHolder = '';
-		this.workerMemoryRequestBox!.value = this.currentConfiguration.workerMemoryRequest;
+		this.workerMemoryRequestBox.placeHolder = '';
+		this.workerMemoryRequestBox.value = this.currentConfiguration.workerMemoryRequest;
 		this.saveArgs.workerMemoryRequest = undefined;
 
 		//Memory Limit
@@ -651,8 +651,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.currentConfiguration.workerMemoryLimit = convertToGibibyteString(currentMemorySize);
 		}
 
-		this.workerMemoryLimitBox!.placeHolder = '';
-		this.workerMemoryLimitBox!.value = this.currentConfiguration.workerMemoryLimit;
+		this.workerMemoryLimitBox.placeHolder = '';
+		this.workerMemoryLimitBox.value = this.currentConfiguration.workerMemoryLimit;
 		this.saveArgs.workerMemoryLimit = undefined;
 	}
 
@@ -663,8 +663,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.currentConfiguration.coordinatorCoresRequest = '';
 		}
 
-		this.coordinatorCoresRequestBox!.placeHolder = '';
-		this.coordinatorCoresRequestBox!.value = this.currentConfiguration.coordinatorCoresRequest;
+		this.coordinatorCoresRequestBox.placeHolder = '';
+		this.coordinatorCoresRequestBox.value = this.currentConfiguration.coordinatorCoresRequest;
 		this.saveArgs.coordinatorCoresRequest = undefined;
 
 		// TODO get current cpu size for coordinator
@@ -673,8 +673,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.currentConfiguration.coordinatorCoresLimit = '';
 		}
 
-		this.coordinatorCoresLimitBox!.placeHolder = '';
-		this.coordinatorCoresLimitBox!.value = this.currentConfiguration.coordinatorCoresLimit;
+		this.coordinatorCoresLimitBox.placeHolder = '';
+		this.coordinatorCoresLimitBox.value = this.currentConfiguration.coordinatorCoresLimit;
 		this.saveArgs.coordinatorCoresLimit = undefined;
 	}
 
@@ -687,8 +687,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.currentConfiguration.coordinatorCoresRequest = convertToGibibyteString(currentMemorySize);
 		}
 
-		this.coordinatorMemoryRequestBox!.placeHolder = '';
-		this.coordinatorMemoryRequestBox!.value = this.currentConfiguration.coordinatorMemoryRequest;
+		this.coordinatorMemoryRequestBox.placeHolder = '';
+		this.coordinatorMemoryRequestBox.value = this.currentConfiguration.coordinatorMemoryRequest;
 		this.saveArgs.coordinatorMemoryRequest = undefined;
 
 		// TODO get current memory size for coordinator
@@ -699,8 +699,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.currentConfiguration.coordinatorCoresLimit = convertToGibibyteString(currentMemorySize);
 		}
 
-		this.coordinatorMemoryLimitBox!.placeHolder = '';
-		this.coordinatorMemoryLimitBox!.value = this.currentConfiguration.coordinatorMemoryLimit;
+		this.coordinatorMemoryLimitBox.placeHolder = '';
+		this.coordinatorMemoryLimitBox.value = this.currentConfiguration.coordinatorMemoryLimit;
 		this.saveArgs.coordinatorMemoryLimit = undefined;
 	}
 
