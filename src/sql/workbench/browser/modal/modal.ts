@@ -465,8 +465,9 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	/**
 	 * Shows the modal and attaches key listeners
+	 * @param source Where the modal was opened from for telemetry (ex: command palette, context menu)
 	 */
-	protected show() {
+	protected show(source?: string) {
 		if (this._modalOptions.dialogStyle === 'callout') {
 			this.positionCalloutDialog();
 		}
@@ -496,7 +497,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		}));
 
 		this.layout(DOM.getTotalHeight(this._modalBodySection!));
-		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.ModalDialogOpened)
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.ModalDialogOpened, undefined, source)
 			.withAdditionalProperties({ name: this._name })
 			.send();
 	}

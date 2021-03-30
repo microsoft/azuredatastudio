@@ -7,7 +7,7 @@ import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import axios, { AxiosRequestConfig } from 'axios';
 import * as azdata from 'azdata';
-import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod } from 'azurecore';
+import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult } from 'azurecore';
 import { azureResource } from 'azureResource';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
@@ -126,6 +126,40 @@ export async function getResourceGroups(appContext: AppContext, account?: azdata
 			result.resourceGroups.push(...await service.getResources([subscription], new TokenCredentials(token, tokenType), account));
 		} catch (err) {
 			const error = new Error(localize('azure.accounts.getResourceGroups.queryError', "Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
+				account.displayInfo.displayName,
+				account.displayInfo.userId,
+				subscription.id,
+				subscription.name,
+				tenant.id,
+				err instanceof Error ? err.message : err));
+			console.warn(error);
+			if (!ignoreErrors) {
+				throw error;
+			}
+			result.errors.push(error);
+		}
+	}));
+	return result;
+}
+
+export async function getLocations(appContext: AppContext, account?: azdata.Account, subscription?: azureResource.AzureResourceSubscription, ignoreErrors: boolean = false): Promise<GetLocationsResult> {
+	const result: GetLocationsResult = { locations: [], errors: [] };
+	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants) || !subscription) {
+		const error = new Error(invalidAzureAccount);
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+		return result;
+	}
+	await Promise.all(account.properties.tenants.map(async (tenant: { id: string; }) => {
+		try {
+			const path = `/subscriptions/${subscription.id}/locations?api-version=2020-01-01`;
+			const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors);
+			result.locations.push(...response.response.data.value);
+			result.errors.push(...response.errors);
+		} catch (err) {
+			const error = new Error(localize('azure.accounts.getLocations.queryError', "Error fetching locations for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
 				account.displayInfo.displayName,
 				account.displayInfo.userId,
 				subscription.id,
@@ -393,6 +427,15 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 	result.response = response;
 
 	return result;
+}
+
+export async function getManagedDatabases(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, managedInstance: azureResource.AzureSqlManagedInstance, ignoreErrors: boolean): Promise<GetManagedDatabasesResult> {
+	const path = `/subscriptions/${subscription.id}/resourceGroups/${managedInstance.resourceGroup}/providers/Microsoft.Sql/managedInstances/${managedInstance.name}/databases?api-version=2020-02-02-preview`;
+	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors);
+	return {
+		databases: response?.response?.data?.value ?? [],
+		errors: response.errors ? response.errors : []
+	};
 }
 
 export async function getBlobContainers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetBlobContainersResult> {

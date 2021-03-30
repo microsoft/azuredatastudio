@@ -125,7 +125,16 @@ export class DataTierApplicationWizard {
 		this.setPages();
 		this.configureButtons();
 
-		this.wizard.open();
+		// the wizard was started from the context menu of a database or server if the connectionProfile is not undefined
+		// Otherwise it was launched from the command palette
+		let launchedFrom: string;
+		if (profile) {
+			launchedFrom = profile.databaseName ? 'database context menu' : 'server context menu';
+		} else {
+			launchedFrom = 'command palette';
+		}
+
+		this.wizard.open(launchedFrom);
 		return true;
 	}
 

@@ -35,6 +35,14 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 
 	private createAzureAccountsDropdown(view: azdata.ModelView): azdata.FormComponent {
 
+		const azureAccountLabel = view.modelBuilder.text().withProps({
+			value: constants.ACCOUNTS_SELECTION_PAGE_TITLE,
+			requiredIndicator: true,
+			CSSStyles: {
+				'margin': '0px'
+			}
+		}).component();
+
 		this._azureAccountsDropdown = view.modelBuilder.dropDown()
 			.withProps({
 				width: WIZARD_INPUT_COMPONENT_WIDTH
@@ -101,7 +109,11 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			.withLayout({
 				flexFlow: 'column'
 			})
-			.withItems([this._azureAccountsDropdown, linkAccountButton])
+			.withItems([
+				azureAccountLabel,
+				this._azureAccountsDropdown,
+				linkAccountButton
+			])
 			.component();
 
 		return {
@@ -114,6 +126,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 
 		const azureTenantDropdownLabel = view.modelBuilder.text().withProps({
 			value: constants.AZURE_TENANT,
+			requiredIndicator: true,
 			CSSStyles: {
 				'margin': '0px'
 			}

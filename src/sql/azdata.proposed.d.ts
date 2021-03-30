@@ -584,6 +584,12 @@ declare module 'azdata' {
 			 * Width of the wizard
 			 */
 			width?: DialogWidth;
+
+			/**
+			 * Open the wizard. Does nothing if the wizard is already open.
+			 * @param source Where the wizard was opened from for telemetry (ex: command palette, context menu)
+			 */
+			open(source?: string): Thenable<void>;
 		}
 
 		export interface WizardPage extends ModelViewPanel {

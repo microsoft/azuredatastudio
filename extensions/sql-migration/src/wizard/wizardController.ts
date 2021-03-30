@@ -17,7 +17,7 @@ import { SummaryPage } from './summaryPage';
 import { MigrationModePage } from './migrationModePage';
 import { SqlSourceConfigurationPage } from './sqlSourceConfigurationPage';
 
-export const WIZARD_INPUT_COMPONENT_WIDTH = '400px';
+export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
 	constructor(private readonly extensionContext: vscode.ExtensionContext) {
 

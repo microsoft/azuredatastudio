@@ -473,9 +473,6 @@ export class DashboardWidget {
 		this._notStartedMigrationCard.container.onDidClick((e) => {
 			vscode.window.showInformationMessage('Feature coming soon');
 		});
-		this._migrationStatusCardsContainer.addItem(
-			this._notStartedMigrationCard.container
-		);
 
 		this._migrationStatusCardLoadingContainer = view.modelBuilder.loadingComponent().withItem(this._migrationStatusCardsContainer).component();
 

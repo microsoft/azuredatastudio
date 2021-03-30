@@ -161,19 +161,19 @@ export class SqlDatabaseTree {
 		this._instanceTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
 				enableRowSelection: true,
-				width: 200,
+				width: 170,
 				columns: [
 					{
 						displayName: constants.INSTANCE,
 						valueType: azdata.DeclarativeDataType.component,
-						width: 150,
+						width: 130,
 						isReadOnly: true,
 						headerCssStyles: headerLeft
 					},
 					{
 						displayName: constants.WARNINGS,
 						valueType: azdata.DeclarativeDataType.string,
-						width: 50,
+						width: 30,
 						isReadOnly: true,
 						headerCssStyles: headerRight
 					}
@@ -182,7 +182,6 @@ export class SqlDatabaseTree {
 
 		const instanceContainer = this._view.modelBuilder.divContainer().withItems([this._instanceTable]).withProps({
 			CSSStyles: {
-				'width': '200px',
 				'margin': '19px 8px 0px 34px'
 			}
 		}).component();
@@ -595,9 +594,9 @@ export class SqlDatabaseTree {
 
 	public selectedDbs(): string[] {
 		let result: string[] = [];
-		this._databaseTable.dataValues?.forEach((arr) => {
+		this._databaseTable.dataValues?.forEach((arr, index) => {
 			if (arr[0].value === true) {
-				result.push(arr[1].value.toString());
+				result.push(this._dbNames[index]);
 			}
 		});
 		return result;
@@ -615,8 +614,6 @@ export class SqlDatabaseTree {
 			);
 		});
 		this._assessmentResultsTable.dataValues = assessmentResults;
-		this._selectedIssue = this._activeIssues[0];
-		this.refreshAssessmentDetails();
 	}
 
 	public refreshAssessmentDetails(): void {
@@ -734,14 +731,8 @@ export class SqlDatabaseTree {
 				);
 			});
 		}
-		this._dbName.value = this._serverName;
 		this._instanceTable.dataValues = instanceTableValues;
 		this._databaseTable.dataValues = databaseTableValues;
-		if (this._targetType === MigrationTargetType.SQLMI) {
-			this._activeIssues = this._model._assessmentResults.issues;
-			this._selectedIssue = this._model._assessmentResults?.issues[0];
-			this.refreshResults();
-		}
 	}
 
 	private createIconTextCell(icon: IconPath, text: string): azdata.FlexContainer {
@@ -755,8 +746,10 @@ export class SqlDatabaseTree {
 		}).component();
 		const textComponent = this._view.modelBuilder.text().withProps({
 			value: text,
+			title: text,
 			CSSStyles: {
-				'margin': '0px'
+				'margin': '0px',
+				'width': '110px'
 			}
 		}).component();
 

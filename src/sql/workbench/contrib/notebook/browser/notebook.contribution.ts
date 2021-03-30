@@ -181,7 +181,7 @@ CommandsRegistry.registerCommand({
 		for (let editor of editors) {
 			if (editor instanceof NotebookInput) {
 				let model: INotebookModel = editor.notebookModel;
-				if (model.providerId === 'jupyter') {
+				if (model.providerId === 'jupyter' && model.clientSession.isReady) {
 					// Jupyter server needs to be restarted so that the correct Python installation is used
 					if (!jupyterServerRestarted) {
 						let jupyterNotebookManager: INotebookManager = model.notebookManagers.find(x => x.providerId === 'jupyter');

@@ -826,7 +826,7 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
 	$setTabDetails(handle: number, details: IModelViewTabDetails): Thenable<void>;
 	$setButtonDetails(handle: number, details: IModelViewButtonDetails): Thenable<void>;
-	$openWizard(handle: number): Thenable<void>;
+	$openWizard(handle: number, source?: string): Thenable<void>;
 	$closeWizard(handle: number): Thenable<void>;
 	$setWizardPageDetails(handle: number, details: IModelViewWizardPageDetails): Thenable<void>;
 	$setWizardDetails(handle: number, details: IModelViewWizardDetails): Thenable<void>;
