@@ -24,7 +24,10 @@ export class CustomDialogService {
 		if (options && (options.dialogStyle === 'callout')) {
 			options.dialogProperties.xPos = document.activeElement.getBoundingClientRect().left;
 			options.dialogProperties.yPos = document.activeElement.getBoundingClientRect().top;
-			options.renderFooter = false;
+
+			if (options.renderFooter !== false) {
+				options.renderFooter = true;
+			}
 		}
 		let dialogModal = this._instantiationService.createInstance(DialogModal, dialog, name, options || DefaultDialogOptions);
 		this._dialogModals.set(dialog, dialogModal);

@@ -158,7 +158,7 @@ export const modelsListEmptyDescription = localize('models.modelsListEmptyDescri
 export const databaseName = localize('databaseName', "Database");
 export const databaseToStoreInfo = localize('databaseToStoreInfo', "Select a database to store the new model.");
 export const tableToStoreInfo = localize('tableToStoreInfo', "Select an existing table that conforms the model schema or create a new one to store the imported model.");
-export const tableName = localize('tableName', "Table");
+export const tableName = localize('tableName', "Database table");
 export const modelTableInfo = localize('modelTableInfo', "Select a model table to view the list of existing / imported models.");
 export const modelDatabaseInfo = localize('modelDatabaseInfo', "Select a database where existing / imported models are stored.");
 export const existingTableName = localize('existingTableName', "Existing table");
@@ -282,7 +282,7 @@ export const mlsInstallOdbcDocTitle = localize('mlsInstallObdcDocTitle', "Instal
 export const mlsInstallOdbcDocDesc = localize('mlsInstallOdbcDocDesc', "This document explains how to install the Microsoft ODBC Driver for SQL Server.");
 export const onnxOnEdgeOdbcDocTitle = localize('onnxOnEdgeOdbcDocTitle', "Machine learning and AI with ONNX in SQL Database Edge Preview");
 export const onnxOnEdgeOdbcDocDesc = localize('onnxOnEdgeOdbcDocDesc', "Get started with machine learning in Azure SQL Database Edge");
-export const calloutTitleCreateNewTable = localize('callout.titleCreateNewTable', "Create new table");
+export const calloutTitleCreateNewTable = localize('callout.titleCreateNewTable', "Create new");
 export const calloutInputEnterTableName = localize('callout.inputEnterTableName', "Enter table name");
 export const calloutButtonCreate = localize('callout.buttonCreate', "Create");
 

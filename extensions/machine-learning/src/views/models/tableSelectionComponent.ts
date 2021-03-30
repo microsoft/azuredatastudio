@@ -104,8 +104,17 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 			label: 'Create new table'
 		}).component();
 
-		this._newTableLink.onDidClick(async () => {
-			await this.openNewTableCalloutDialog();
+		// this._newTableLink.onDidClick(async () => {
+		// 	await this.openNewTableCalloutDialog();
+		// });
+		this._newTableLink.onDidClick(() => {
+			let dialogProperties = {
+				xPos: 0,
+				yPos: 0,
+				width: 88,
+				height: 13
+			};
+			this.openNewTableCalloutDialog(dialogProperties);
 		});
 
 		this._existingTableButton.onDidClick(async () => {
@@ -338,27 +347,21 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 		};
 	}
 
-	public openNewTableCalloutDialog(): void {
+	public openNewTableCalloutDialog(dialogProperties?: azdata.window.IDialogProperties): void {
 		// This will appear at any wizard step where the table fields are shown.
 		//
 		// This is view which includes icon at bottom of page:
 		// extensions/machine-learning/src/views/models/manageModels/modelImportLocationPage.ts
 
+		// At this point, this._newTableLink is not a DOM element with dimensions. Can't be used to get width/height.
 		let dialogName: string = 'new-table-name';
-		let dialogProperties: azdata.window.IDialogProperties = {
-			xPos: 0,
-			yPos: 0,
-			width: 0,
-			height: 0
-		};
 
 		/**
 		 * Here a specific value is assigned to dialogWidth. This meets design guidelines.
 		 */
 
 		// Changing renderHeader / renderFooter does NOTHING. Why?
-		const dialog = this._apiWrapper.createModelViewDialog(constants.calloutTitleCreateNewTable, dialogName, 288, 'callout', 'right', true, true, dialogProperties);
-
+		const dialog = this._apiWrapper.createModelViewDialog(constants.calloutTitleCreateNewTable, dialogName, 306, 'callout', 'right', true, true, dialogProperties);
 		const createNewTableTab: azdata.window.DialogTab = this._apiWrapper.createTab('createNewTable');
 		createNewTableTab.registerContent(async view => {
 			const newTableContentContainer = view.modelBuilder.divContainer().component();
@@ -366,12 +369,18 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 				placeHolder: constants.calloutInputEnterTableName
 			}).component();
 			newTableContentContainer.addItem(this._newTableInputField);
+
+
+
+
+
 			view.initializeModel(newTableContentContainer);
 		});
+
 		dialog.okButton.label = constants.calloutButtonCreate;
+		dialog.okButton.onClick(async () => await this._newTableInputField?.value?.toString() ?? '');
 		dialog.cancelButton.label = constants.extLangCancelButtonText;
 
-		dialog.okButton.onClick(async () => await this._newTableInputField?.value?.toString() ?? '');
 
 		dialog.content = [createNewTableTab];
 

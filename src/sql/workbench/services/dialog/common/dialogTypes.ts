@@ -67,12 +67,13 @@ export class Dialog extends ModelViewPane {
 		if (dialogPosition) {
 			this.dialogPosition = dialogPosition;
 		}
-		if (renderHeader) {
-			this.renderHeader = renderHeader;
-		}
-		if (renderFooter) {
-			this.renderFooter = renderFooter;
-		}
+		this.renderHeader = renderHeader;
+		// After execution passes here,
+		// this.renderFooter is undefined.
+		// How?
+		// These properties are not used anywhere except for this section.
+		this.renderFooter = renderFooter;
+
 		if (dialogProperties) {
 			this.dialogProperties = dialogProperties;
 		}

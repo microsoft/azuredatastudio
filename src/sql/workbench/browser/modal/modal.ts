@@ -94,7 +94,12 @@ const defaultOptions: IModalOptions = {
 	hasSpinner: false,
 	renderHeader: true,
 	renderFooter: true,
-	dialogProperties: undefined
+	dialogProperties: {
+		xPos: 0,
+		yPos: 0,
+		width: 0,
+		height: 0
+	}
 };
 
 const tabbableElementsQuerySelector = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]';
@@ -459,6 +464,14 @@ export abstract class Modal extends Disposable implements IThemable {
 				this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos - this._modalOptions.dialogProperties.height * 2}px`;
 			} else {
 				this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos - (dialogWidth)}px`;
+				this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos}px`;
+			}
+		} else if (this._modalOptions.dialogPosition === 'right') {
+			if (this._modalOptions.dialogProperties) {
+				this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos + this._modalOptions.dialogProperties.width}px`;
+				this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos - this._modalOptions.dialogProperties.height * 2}px`;
+			} else {
+				this._modalDialog.style.left = `${this._modalOptions.dialogProperties.xPos + (dialogWidth)}px`;
 				this._modalDialog.style.top = `${this._modalOptions.dialogProperties.yPos}px`;
 			}
 		}

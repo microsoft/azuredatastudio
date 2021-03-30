@@ -738,12 +738,9 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		if (dialog.dialogPosition) {
 			dialogPosition = dialog.dialogPosition;
 		}
-		if (dialog.renderHeader) {
-			renderHeader = dialog.renderHeader;
-		}
-		if (dialog.renderFooter) {
-			renderFooter = dialog.renderFooter;
-		}
+		renderHeader = dialog.renderHeader;
+		renderFooter = dialog.renderFooter;
+
 		if (dialog.dialogProperties) {
 			dialogProperties = dialog.dialogProperties;
 		}
@@ -761,7 +758,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		/**
 		 * Only peform actions on footer if it is shown.
 		 */
-		if (!renderFooter === false) {
+		if (renderFooter !== false) {
 			this.updateButton(dialog.okButton);
 			this.updateButton(dialog.cancelButton);
 		}
