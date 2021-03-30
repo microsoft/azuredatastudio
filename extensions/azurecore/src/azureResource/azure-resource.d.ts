@@ -90,6 +90,20 @@ declare module 'azureResource' {
 			},
 		}
 
+		export interface AzureSqlManagedInstance extends AzureGraphResource {
+		}
+
+		export interface ManagedDatabase {
+			id: string,
+			location: string,
+			name: string,
+			properties: {
+				sourceDatabaseId: string,
+				status: string
+			},
+			type: string
+		}
+
 		export interface AzureResourceDatabase extends AzureSqlResource {
 			serverName: string;
 			serverFullName: string;

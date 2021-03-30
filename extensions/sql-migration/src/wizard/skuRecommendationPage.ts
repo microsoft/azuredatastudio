@@ -11,6 +11,7 @@ import * as constants from '../constants/strings';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
+import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 
 export interface Product {
 	type: MigrationTargetType;
@@ -60,9 +61,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 
 		const managedInstanceSubscriptionDropdownLabel = view.modelBuilder.text().withProps({
-			value: constants.SUBSCRIPTION
+			value: constants.SUBSCRIPTION,
+			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
-		this._managedInstanceSubscriptionDropdown = view.modelBuilder.dropDown().component();
+		this._managedInstanceSubscriptionDropdown = view.modelBuilder.dropDown().withProps({
+			width: WIZARD_INPUT_COMPONENT_WIDTH
+		}).component();
 		this._managedInstanceSubscriptionDropdown.onValueChanged((e) => {
 			if (e.selected) {
 				this.migrationStateModel._targetSubscription = this.migrationStateModel.getSubscription(e.index);
@@ -72,13 +76,17 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		});
 		this._resourceDropdownLabel = view.modelBuilder.text().withProps({
-			value: constants.MANAGED_INSTANCE
+			value: constants.MANAGED_INSTANCE,
+			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
 
 		const azureLocationLabel = view.modelBuilder.text().withProps({
-			value: constants.LOCATION
+			value: constants.LOCATION,
+			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
-		this._azureLocationDropdown = view.modelBuilder.dropDown().component();
+		this._azureLocationDropdown = view.modelBuilder.dropDown().withProps({
+			width: WIZARD_INPUT_COMPONENT_WIDTH
+		}).component();
 		this._azureLocationDropdown.onValueChanged((e) => {
 			if (e.selected) {
 				this.migrationStateModel._location = this.migrationStateModel.getLocation(e.index);
@@ -86,14 +94,18 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		});
 		this._resourceDropdownLabel = view.modelBuilder.text().withProps({
-			value: constants.MANAGED_INSTANCE
+			value: constants.MANAGED_INSTANCE,
+			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
 
 
 		const azureResourceGroupLabel = view.modelBuilder.text().withProps({
-			value: constants.RESOURCE_GROUP
+			value: constants.RESOURCE_GROUP,
+			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
-		this._azureResourceGroupDropdown = view.modelBuilder.dropDown().component();
+		this._azureResourceGroupDropdown = view.modelBuilder.dropDown().withProps({
+			width: WIZARD_INPUT_COMPONENT_WIDTH
+		}).component();
 		this._azureResourceGroupDropdown.onValueChanged((e) => {
 			if (e.selected) {
 				this.migrationStateModel._resourceGroup = this.migrationStateModel.getAzureResourceGroup(e.index);
@@ -101,10 +113,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		});
 		this._resourceDropdownLabel = view.modelBuilder.text().withProps({
-			value: constants.MANAGED_INSTANCE
+			value: constants.MANAGED_INSTANCE,
+			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
 
-		this._resourceDropdown = view.modelBuilder.dropDown().component();
+		this._resourceDropdown = view.modelBuilder.dropDown().withProps({
+			width: WIZARD_INPUT_COMPONENT_WIDTH
+		}).component();
 		this._resourceDropdown.onValueChanged((e) => {
 			if (e.selected &&
 				e.selected !== constants.NO_MANAGED_INSTANCE_FOUND &&
@@ -272,9 +287,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	private changeTargetType(newTargetType: string) {
 		if (newTargetType === MigrationTargetType.SQLMI) {
+			this.migrationStateModel._targetType = MigrationTargetType.SQLMI;
 			this._azureSubscriptionText.value = constants.SELECT_AZURE_MI;
 			this.migrationStateModel._migrationDbs = this.migrationStateModel._miDbs;
 		} else {
+			this.migrationStateModel._targetType = MigrationTargetType.SQLVM;
 			this._azureSubscriptionText.value = constants.SELECT_AZURE_VM;
 			this.migrationStateModel._migrationDbs = this.migrationStateModel._vmDbs;
 		}
