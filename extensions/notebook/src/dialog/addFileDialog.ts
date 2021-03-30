@@ -15,6 +15,7 @@ import { TocEntryPathHandler } from '../book/tocEntryPathHandler';
 
 export class AddFileDialog {
 	private _dialog: azdata.window.Dialog;
+	private readonly _dialogName = 'addNewFileBookTreeViewDialog';
 	public view: azdata.ModelView;
 	private _formModel: azdata.FormContainer;
 	private _fileNameInputBox: azdata.InputBoxComponent;
@@ -26,21 +27,22 @@ export class AddFileDialog {
 		this._prompter = new CodeAdapter();
 	}
 
-	public async validatePath(folderPath: string, fileBasename: string): Promise<boolean> {
+	public async validatePath(folderPath: string, fileBasename: string): Promise<void> {
 		const destinationUri = path.join(folderPath, fileBasename);
 		if (await pathExists(destinationUri)) {
 			const doOverwrite = await confirmMessageDialog(this._prompter, loc.confirmOverwrite);
-			if (doOverwrite) {
-				return true;
+			if (!doOverwrite) {
+				throw (new Error(loc.msgDuplicadFileName(destinationUri)));
 			}
-			return false;
 		}
-		return await pathExists(folderPath);
+		if (!(await pathExists(folderPath))) {
+			throw (new Error(loc.msgSaveFolderError));
+		}
 	}
 
 	public async createDialog(): Promise<void> {
 		const dialogTitle = this._extension === FileExtension.Notebook ? loc.newNotebook : loc.newMarkdown;
-		this._dialog = azdata.window.createModelViewDialog(dialogTitle);
+		this._dialog = azdata.window.createModelViewDialog(dialogTitle, this._dialogName);
 		this._dialog.registerContent(async view => {
 			this.view = view;
 			this._fileNameInputBox = this.view.modelBuilder.inputBox()
@@ -94,10 +96,7 @@ export class AddFileDialog {
 		try {
 			const dirPath = this._bookItem.contextValue === BookTreeItemType.Book ? this._bookItem.rootContentPath : path.dirname(this._bookItem.resourceUri.fsPath);
 			const filePath = path.join(dirPath, this._fileNameInputBox.value).concat(this._extension);
-			const isValid = await this.validatePath(dirPath, this._fileNameInputBox.value.concat(this._extension));
-			if (!isValid) {
-				throw (new Error(loc.msgSaveFolderError));
-			}
+			await this.validatePath(dirPath, this._fileNameInputBox.value.concat(this._extension));
 			const pathDetails = new TocEntryPathHandler(filePath, this._bookItem.rootContentPath, this._titleInputBox.value);
 			await this._tocManager.addNewFile(pathDetails, this._bookItem);
 			return true;

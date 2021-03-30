@@ -98,12 +98,14 @@ export const msgSaveFolderError = localize('msgSaveFolderError', "Save location 
 export function msgCreateBookWarningMsg(file: string): string { return localize('msgCreateBookWarningMsg', "Error while trying to access: {0}", file); }
 
 // Add a notebook dialog constants
-export const newFile = localize('newFile', "New File (Preview)");
 export const newNotebook = localize('newNotebook', "New Notebook (Preview)");
 export const newMarkdown = localize('newMarkdown', "New Markdown (Preview)");
 export const fileExtension = localize('fileExtension', "File Extension");
-export const confirmOverwrite = localize('confirmOverwrite', "Are you sure you want to overwrite this file?");
+export const confirmOverwrite = localize('confirmOverwrite', "File already exists. Are you sure you want to overwrite this file?");
 export const title = localize('title', "Title");
 export const fileName = localize('fileName', "File Name");
+export const msgInvalidSaveFolder = localize('msgInvalidSaveFolder', "Save location path is not valid.");
+export function msgDuplicadFileName(file: string): string { return localize('msgDuplicadFileName', "File {0} already exists in the destination folder", file); }
+
 
 
