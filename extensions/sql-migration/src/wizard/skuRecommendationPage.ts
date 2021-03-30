@@ -389,21 +389,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 
 	public async onPageEnter(): Promise<void> {
-		// show loading screen/hide other components
-		// call assessments
-		// hide loading screen, show other components
-
-		if (!this.migrationStateModel._assessmentResults) {
-			await this.constructDetails();
-		}
-		this._assessmentComponent.updateCssStyles({
-			display: 'none'
-		});
-		this._formContainer.component().updateCssStyles({
-			display: 'block'
-		});
-
-		this.populateSubscriptionDropdown();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			const errors: string[] = [];
 			this.wizard.message = {
@@ -444,6 +429,19 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 			return true;
 		});
+		this.wizard.nextButton.enabled = false;
+		if (!this.migrationStateModel._assessmentResults) {
+			await this.constructDetails();
+		}
+		this._assessmentComponent.updateCssStyles({
+			display: 'none'
+		});
+		this._formContainer.component().updateCssStyles({
+			display: 'block'
+		});
+
+		this.populateSubscriptionDropdown();
+		this.wizard.nextButton.enabled = true;
 	}
 
 	public async onPageLeave(): Promise<void> {
@@ -515,18 +513,17 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			CSSStyles: {
 				'font-size': '18px',
 				'line-height': '24px',
-				'margin': '20px 35px 5px 0px'
+				'margin-right': '20px'
 			}
 		}).component();
 
 		this._progressContainer = this._view.modelBuilder.flexContainer().withLayout({
 			height: '100%',
 			flexFlow: 'row'
-		}).withItems([
-			this._assessmentProgress,
-			this._assessmentLoader
-		]).component();
+		}).component();
 
+		this._progressContainer.addItem(this._assessmentProgress, { flex: '0 0 auto' });
+		this._progressContainer.addItem(this._assessmentLoader, { flex: '0 0 auto' });
 		return this._progressContainer;
 	}
 
@@ -537,7 +534,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				'font-size': '13px',
 				'line-height': '18px',
 				'font-weight': '600',
-				'margin': '20px 35px 5px 0px'
 			}
 		}).component();
 		return this._assessmentInfo;
