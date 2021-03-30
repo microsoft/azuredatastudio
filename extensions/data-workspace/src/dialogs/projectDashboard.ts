@@ -24,11 +24,11 @@ export class ProjectDashboard {
 	public async showDashboard(): Promise<void> {
 		const project = this._treeItem.element.project;
 
-		if (!(await fileExist(project.projectFilePath)) || project.projectFileName === null) {
+		if (!(await fileExist(project.projectFilePath))) {
 			throw new Error(constants.fileDoesNotExist(project.projectFilePath));
 		}
 
-		if (project.projectFileName === null) {
+		if (!project.projectFileName) {
 			throw new Error(constants.projectNameNull);
 		}
 
@@ -68,15 +68,13 @@ export class ProjectDashboard {
 
 		projectActions.forEach((action, actionIndex) => {
 			if (this.isProjectAction(action)) {
-				let button = this.createButton(action);
-
+				const button = this.createButton(action);
 				buttons.push({ component: button });
 			} else {
 				const groupLength = action.actions.length;
 
 				action.actions.forEach((groupAction, index) => {
-					let button = this.createButton(groupAction);
-
+					const button = this.createButton(groupAction);
 					buttons.push({ component: button, toolbarSeparatorAfter: ((groupLength - 1 === index) && (projectActionsLength - 1 !== actionIndex)) });	// Add toolbar separator at the end of the group, if the group is not the last in the list
 				});
 			}
