@@ -172,7 +172,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Select an Operation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Selecione uma Operação]]></Val>
+            <Val><![CDATA[Selecionar uma Operação]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -307,7 +307,7 @@
         <Str Cat="Text">
           <Val><![CDATA[File Location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Local do Arquivo]]></Val>
+            <Val><![CDATA[Localização do Arquivo]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -351,6 +351,9 @@
       <Item ItemId=";dacfx.operationErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} operation failed '{1}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Falha na operação {0} '{1}']]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

@@ -30,6 +30,8 @@ export const showNotAddedProjectsMessageKey = 'showNotAddedProjectsInWorkspacePr
 export const OkButtonText = localize('dataworkspace.ok', "OK");
 export const CancelButtonText = localize('dataworkspace.cancel', "Cancel");
 export const BrowseButtonText = localize('dataworkspace.browse', "Browse");
+export const OpenButtonText = localize('dataworkspace.open', "Open");
+export const CreateButtonText = localize('dataworkspace.create', "Create");
 export const WorkspaceFileExtension = '.code-workspace';
 export const DefaultInputWidth = '400px';
 export const DefaultButtonWidth = '80px';
@@ -53,12 +55,19 @@ export const WorkspaceFileAlreadyExistsError = (file: string): string => { retur
 //Open Existing Dialog
 export const OpenExistingDialogTitle = localize('dataworkspace.openExistingDialogTitle', "Open existing");
 export const FileNotExistError = (fileType: string, filePath: string): string => { return localize('dataworkspace.fileNotExistError', "The selected {0} file '{1}' does not exist or is not a file.", fileType, filePath); };
+export const CloneParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.cloneParentDirectoryNotExistError', "The selected clone path '{0}' does not exist or is not a directory.", location); };
 export const Project = localize('dataworkspace.project', "Project");
 export const Workspace = localize('dataworkspace.workspace', "Workspace");
 export const LocationSelectorTitle = localize('dataworkspace.locationSelectorTitle', "Location");
 export const ProjectFilePlaceholder = localize('dataworkspace.projectFilePlaceholder', "Select project (.sqlproj) file");
 export const WorkspacePlaceholder = localize('dataworkspace.workspacePlaceholder', "Select workspace ({0}) file", WorkspaceFileExtension);
 export const ProjectAlreadyOpened = (path: string): string => { return localize('dataworkspace.projectAlreadyOpened', "Project '{0}' is already opened.", path); };
+export const Local = localize('dataworksapce.local', 'Local');
+export const RemoteGitRepo = localize('dataworkspace.remoteGitRepo', "Remote git repository");
+export const GitRepoUrlTitle = localize('dataworkspace.gitRepoUrlTitle', "Git repository URL");
+export const GitRepoUrlPlaceholder = localize('dataworkspace.gitRepoUrlPlaceholder', "Enter remote git repository URL");
+export const LocalClonePathTitle = localize('dataworkspace.localClonePathTitle', "Local clone path");
+export const LocalClonePathPlaceholder = localize('dataworkspace.localClonePathPlaceholder', "Select location to clone repository locally");
 
 // Workspace settings for saving new projects
 export const ProjectConfigurationKey = 'projects';

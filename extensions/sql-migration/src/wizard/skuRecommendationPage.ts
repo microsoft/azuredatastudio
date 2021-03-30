@@ -26,10 +26,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _chooseTargetComponent!: azdata.DivContainer;
 	private _azureSubscriptionText!: azdata.TextComponent;
 	private _managedInstanceSubscriptionDropdown!: azdata.DropDownComponent;
+	private _azureLocationDropdown!: azdata.DropDownComponent;
+	private _azureResourceGroupDropdown!: azdata.DropDownComponent;
 	private _resourceDropdownLabel!: azdata.TextComponent;
 	private _resourceDropdown!: azdata.DropDownComponent;
 	private _rbg!: azdata.RadioCardGroupComponent;
 	private eventListener!: vscode.Disposable;
+	private _rbgLoader!: azdata.LoadingComponent;
 
 	private _supportedProducts: Product[] = [
 		{
@@ -65,6 +68,35 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this.migrationStateModel._targetSubscription = this.migrationStateModel.getSubscription(e.index);
 				this.migrationStateModel._targetServerInstance = undefined!;
 				this.migrationStateModel._sqlMigrationService = undefined!;
+				this.populateLocationAndResourceGroupDropdown();
+			}
+		});
+		this._resourceDropdownLabel = view.modelBuilder.text().withProps({
+			value: constants.MANAGED_INSTANCE
+		}).component();
+
+		const azureLocationLabel = view.modelBuilder.text().withProps({
+			value: constants.LOCATION
+		}).component();
+		this._azureLocationDropdown = view.modelBuilder.dropDown().component();
+		this._azureLocationDropdown.onValueChanged((e) => {
+			if (e.selected) {
+				this.migrationStateModel._location = this.migrationStateModel.getLocation(e.index);
+				this.populateResourceInstanceDropdown();
+			}
+		});
+		this._resourceDropdownLabel = view.modelBuilder.text().withProps({
+			value: constants.MANAGED_INSTANCE
+		}).component();
+
+
+		const azureResourceGroupLabel = view.modelBuilder.text().withProps({
+			value: constants.RESOURCE_GROUP
+		}).component();
+		this._azureResourceGroupDropdown = view.modelBuilder.dropDown().component();
+		this._azureResourceGroupDropdown.onValueChanged((e) => {
+			if (e.selected) {
+				this.migrationStateModel._resourceGroup = this.migrationStateModel.getAzureResourceGroup(e.index);
 				this.populateResourceInstanceDropdown();
 			}
 		});
@@ -90,6 +122,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			[
 				managedInstanceSubscriptionDropdownLabel,
 				this._managedInstanceSubscriptionDropdown,
+				azureLocationLabel,
+				this._azureLocationDropdown,
+				azureResourceGroupLabel,
+				this._azureResourceGroupDropdown,
 				this._resourceDropdownLabel,
 				this._resourceDropdown
 			]
@@ -222,10 +258,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._rbg.selectedCardId = MigrationTargetType.SQLMI;
 
+		this._rbgLoader = this._view.modelBuilder.loadingComponent().withItem(
+			this._rbg
+		).component();
 
 		const component = view.modelBuilder.divContainer().withItems(
 			[
-				this._rbg
+				this._rbgLoader
 			]
 		).component();
 		return component;
@@ -246,9 +285,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private async constructDetails(): Promise<void> {
 		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 		this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
-		await this.migrationStateModel.getServerAssessments();
-		if (this.migrationStateModel._assessmentResults) {
+		try {
+			await this.migrationStateModel.getServerAssessments();
 			this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults.databaseAssessments.length);
+		} catch (e) {
+			console.log(e);
 		}
 		this.refreshCardText();
 	}
@@ -278,16 +319,30 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 	}
 
+	public async populateLocationAndResourceGroupDropdown(): Promise<void> {
+		this._azureResourceGroupDropdown.loading = true;
+		this._azureLocationDropdown.loading = true;
+		try {
+			this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._targetSubscription);
+			this._azureLocationDropdown.values = await this.migrationStateModel.getAzureLocationDropdownValues(this.migrationStateModel._targetSubscription);
+		} catch (e) {
+			console.log(e);
+		} finally {
+			this._azureResourceGroupDropdown.loading = false;
+			this._azureLocationDropdown.loading = false;
+		}
+	}
+
 	private async populateResourceInstanceDropdown(): Promise<void> {
 		this._resourceDropdown.loading = true;
 		try {
 			if (this._rbg.selectedCardId === MigrationTargetType.SQLVM) {
 				this._resourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
-				this._resourceDropdown.values = await this.migrationStateModel.getSqlVirtualMachineValues(this.migrationStateModel._targetSubscription);
+				this._resourceDropdown.values = await this.migrationStateModel.getSqlVirtualMachineValues(this.migrationStateModel._targetSubscription, this.migrationStateModel._location, this.migrationStateModel._resourceGroup);
 
 			} else {
 				this._resourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
-				this._resourceDropdown.values = await this.migrationStateModel.getManagedInstanceValues(this.migrationStateModel._targetSubscription);
+				this._resourceDropdown.values = await this.migrationStateModel.getManagedInstanceValues(this.migrationStateModel._targetSubscription, this.migrationStateModel._location, this.migrationStateModel._resourceGroup);
 			}
 		} catch (e) {
 			console.log(e);
@@ -298,14 +353,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 
 	public async onPageEnter(): Promise<void> {
-		try {
-			this.migrationStateModel.getServerAssessments().then((result) => {
-				this.constructDetails();
-			});
-		} catch (e) {
-			console.log(e);
-		}
-
+		this.constructDetails();
 		this.populateSubscriptionDropdown();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			const errors: string[] = [];
@@ -322,6 +370,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 			if ((<azdata.CategoryValue>this._managedInstanceSubscriptionDropdown.value).displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
 				errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
+			}
+			if ((<azdata.CategoryValue>this._azureLocationDropdown.value).displayName === constants.NO_LOCATION_FOUND) {
+				errors.push(constants.INVALID_LOCATION_ERROR);
+			}
+
+			if ((<azdata.CategoryValue>this._managedInstanceSubscriptionDropdown.value).displayName === constants.RESOURCE_GROUP_NOT_FOUND) {
+				errors.push(constants.INVALID_RESOURCE_GROUP_ERROR);
 			}
 			const resourceDropdownValue = (<azdata.CategoryValue>this._resourceDropdown.value).displayName;
 			if (resourceDropdownValue === constants.NO_MANAGED_INSTANCE_FOUND) {
@@ -362,6 +417,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	public refreshCardText(): void {
+		this._rbgLoader.loading = true;
 		this.wizard.message = {
 			text: '',
 			level: azdata.window.MessageLevel.Error
@@ -377,8 +433,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		if (this.migrationStateModel._assessmentResults) {
 			const dbCount = this.migrationStateModel._assessmentResults.databaseAssessments.length;
 
-			const dbWithIssuesCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter(db => db.issues.length > 0).length;
-			const miCardText = `${dbWithIssuesCount} out of ${dbCount} databases can be migrated (${this.migrationStateModel._miDbs.length} selected)`;
+			const dbWithoutIssuesCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter(db => db.issues.length === 0).length;
+			const miCardText = `${dbWithoutIssuesCount} out of ${dbCount} databases can be migrated (${this.migrationStateModel._miDbs.length} selected)`;
 			this._rbg.cards[0].descriptions[1].textValue = miCardText;
 
 			const vmCardText = `${dbCount} out of ${dbCount} databases can be migrated (${this.migrationStateModel._vmDbs.length} selected)`;
@@ -399,7 +455,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				cards: this._rbg.cards
 			});
 		}
-
+		this._rbgLoader.loading = false;
 	}
 }
 
