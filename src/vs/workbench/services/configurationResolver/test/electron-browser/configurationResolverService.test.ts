@@ -643,7 +643,7 @@ class MockCommandService implements ICommandService {
 	}
 }
 
-class MockQuickInputService implements IQuickInputService {
+export class MockQuickInputService implements IQuickInputService {
 	declare readonly _serviceBrand: undefined;
 
 	readonly onShow = Event.None;

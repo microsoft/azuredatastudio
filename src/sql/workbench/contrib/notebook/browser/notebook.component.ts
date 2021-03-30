@@ -448,8 +448,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 			let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', false);
 
-			let runParametersAction = this.instantiationService.createInstance(RunParametersAction, 'notebook.runParameters', true, this._notebookParams.notebookUri);
-
 			let taskbar = <HTMLElement>this.toolbar.nativeElement;
 			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 			this._actionBar.context = this._notebookParams.notebookUri;
@@ -463,7 +461,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ action: this._runAllCellsAction },
 				{ action: clearResultsButton },
 				{ action: collapseCellsAction },
-				{ action: runParametersAction },
 			]);
 		}
 	}

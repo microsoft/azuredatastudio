@@ -269,12 +269,12 @@ export class CollapseCellsAction extends ToggleableAction {
 	}
 }
 
-// Run Notebook with Parameters
 export class RunParametersAction extends TooltipFromLabelAction {
 	private static readonly label = localize('runParameters', "Run with Parameters");
 	private static readonly iconClass = 'icon-run-with-parameters';
 
-	constructor(id: string, toggleTooltip: boolean,
+	constructor(id: string,
+		toggleTooltip: boolean,
 		context: URI,
 		@IQuickInputService private quickInputService: IQuickInputService,
 		@INotebookService private _notebookService: INotebookService,
@@ -302,7 +302,7 @@ export class RunParametersAction extends TooltipFromLabelAction {
 		editor.cells.forEach(cell => {
 			if (cell.isParameter) {
 				for (let parameter of cell.source) {
-					let param = parameter.trim().split('=');
+					let param = parameter.split('=', 2);
 					defaultParameters.set(param[0].trim(), param[1].trim());
 				}
 			}
@@ -318,19 +318,20 @@ export class RunParametersAction extends TooltipFromLabelAction {
 			// If there is no parameter cell indicate to user to create one
 			this.notificationService.notify({
 				severity: Severity.Info,
-				message: localize('noParametersCell', "Unable to Run with Parameters as there is no Parameter Cell. Create a Parameter Cell first. Learn more [here](https://docs.microsoft.com/en-us/sql/azure-data-studio/notebooks/notebooks-parameterization?view=sql-server-ver15)."),
+				message: localize('noParametersCell', "Unable to Run with Parameters as there is no Parameter Cell. Create a Parameter Cell first. Learn more [here](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)."),
 			});
+			return;
 		} else {
 			for (let key of defaultParameters.keys()) {
 				let newParameterValue = await this.quickInputService.input({ prompt: key, placeHolder: defaultParameters.get(key) });
 				inputParameters.set(key, newParameterValue);
 			}
 			if (inputParameters.size > 0) {
-				// Format the new parameters to be append to URI
+				// Format the new parameters to be append to the URI
 				for (let key of inputParameters.keys()) {
 					// Will only add parameters that user updates
 					if (inputParameters.get(key)) {
-						addParameter = key + '=' + inputParameters.get(key);
+						addParameter = `${key}=${inputParameters.get(key)}`;
 						if (index === 0) {
 							parametersQuery = parametersQuery.concat(parametersQuery, addParameter);
 							index = index + 1;
@@ -348,9 +349,11 @@ export class RunParametersAction extends TooltipFromLabelAction {
 		}
 	}
 
-	// This function will be used once the showNotebookDocument can be used
-	// TODO - Call Extensibility API for ShowNotebook
-	// (showNotebookDocument to be utilized in Notebook Service)
+	/**
+	 * This function will be used once the showNotebookDocument can be used
+	 * TODO - Call Extensibility API for ShowNotebook
+	 * (showNotebookDocument to be utilized in Notebook Service)
+	**/
 	public async openParameterizedNotebook(uri: URI, filePath: string): Promise<void> {
 		// const editor = this._notebookService.findNotebookEditor(uri);
 		// let modelContents = editor.model.toJSON();
