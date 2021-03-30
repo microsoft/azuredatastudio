@@ -82,6 +82,8 @@
 	"mssql.query.ansiNulls": "Enable SET ANSI_NULLS",
 	"mssql.query.alwaysEncryptedParameterization": "Enable Parameterization for Always Encrypted",
 	"mssql.ignorePlatformWarning": "[Optional] Do not show unsupported platform warnings",
+	"mssql.useKeytarCredential": "Use Keytar for saving credentials (Recommended)",
+	"mssql.migrateLinuxCredential": "Delete old credentials from system and migrate to Keytar",
 
 	"onprem.databaseProperties.recoveryModel": "Recovery Model",
 	"onprem.databaseProperties.lastBackupDate": "Last Database Backup",

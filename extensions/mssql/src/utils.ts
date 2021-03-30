@@ -18,6 +18,8 @@ const configLogRetentionMinutes = 'logRetentionMinutes';
 const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
 const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
+const configUseKeytarCredential = 'useKeytarCredential';
+const configMigrateLinuxCredential = 'migrateLinuxCredential';
 
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
@@ -32,13 +34,33 @@ export function getAppDataPath() {
 }
 
 /**
+ *
+ * @returns Whether the current OS is linux or not
+ */
+export function isLinux(): boolean {
+	return os.platform() === 'linux';
+}
+
+/**
  * This function returns whether the native credential management system
  * should be used instead of tools service
  */
 export function keytarCredentialsEnabled() {
-	const linux: boolean = os.platform() === 'linux';
-	const keytarCredentialsEnabled: boolean = false; // add setting for this after review
-	return linux && keytarCredentialsEnabled;
+	const linux: boolean = isLinux();
+	const useKeytarCredential: boolean = getConfigKeytar();
+	return linux && useKeytarCredential;
+}
+
+/**
+ * This function returns whether the user wants to delete the old credentials
+ * from their Linux system when migrating to keytar
+ * @returns
+ */
+
+export function migrateLinuxCredentials() {
+	const linux: boolean = isLinux();
+	const migrateLinuxCredentials: boolean = getConfigMigrateLinuxCredential();
+	return linux && migrateLinuxCredentials;
 }
 
 /**
@@ -72,8 +94,7 @@ export function getConfigLogFilesRemovalLimit(): number {
 	let config = getConfiguration();
 	if (config) {
 		return Number((config[configLogFilesRemovalLimit]).toFixed(0));
-	}
-	else {
+	} else {
 		return undefined;
 	}
 }
@@ -82,8 +103,7 @@ export function getConfigLogRetentionSeconds(): number {
 	let config = getConfiguration();
 	if (config) {
 		return Number((config[configLogRetentionMinutes] * 60).toFixed(0));
-	}
-	else {
+	} else {
 		return undefined;
 	}
 }
@@ -92,8 +112,34 @@ export function getConfigTracingLevel(): string {
 	let config = getConfiguration();
 	if (config) {
 		return config[configTracingLevel];
+	} else {
+		return undefined;
 	}
-	else {
+}
+
+/**
+ *
+ * @returns The setting that tells ADS to use keytar for credentials or not
+ */
+function getConfigKeytar(): boolean {
+	let config = getConfiguration();
+	if (config) {
+		return Boolean(config[configUseKeytarCredential]);
+	} else {
+		return undefined;
+	}
+}
+
+/**
+ *
+ * @returns The setting that tells whether the user wants the old credentials
+ * deleted from their linux system
+ */
+function getConfigMigrateLinuxCredential(): boolean {
+	let config = getConfiguration();
+	if (config) {
+		return Boolean(config[configMigrateLinuxCredential]);
+	} else {
 		return undefined;
 	}
 }

@@ -367,6 +367,16 @@
           "type": "boolean",
           "description": "%mssql.ignorePlatformWarning%",
           "default": false
+        },
+        "mssql.useKeytarCredential": {
+          "type": "boolean",
+          "description": "%mssql.useKeytarCredential%",
+          "default": true
+        },
+        "mssql.migrateLinuxCredential": {
+          "type": "boolean",
+          "description": "%mssql.migrateLinuxCredential%",
+          "default": true
         }
       }
     },
