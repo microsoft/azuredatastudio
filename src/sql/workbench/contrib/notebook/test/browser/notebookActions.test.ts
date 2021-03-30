@@ -278,7 +278,7 @@ suite('Notebook Actions', function (): void {
 			notebookModel = new TestNotebookModel();
 			notebookEditor = new NotebookEditorStub({ model: notebookModel });
 			await notebookEditor.modelReady;
-			kernelsDropdown = new KernelsDropdown(container, contextViewProvider, notebookEditor.modelReady, configurationService, new NullAdsTelemetryService());
+			kernelsDropdown = new KernelsDropdown(container, contextViewProvider, notebookEditor.modelReady, configurationService);
 			setOptionsSpy = sandbox.spy(kernelsDropdown, 'setOptions');
 		});
 
