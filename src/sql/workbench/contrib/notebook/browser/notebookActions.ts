@@ -298,7 +298,7 @@ export class RunParametersAction extends TooltipFromLabelAction {
 	public async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
 		// Set defaultParameters to the parameter values in parameter cell
-		let defaultParameters = new Map<string, string>();
+		let defaultParameters = new Map<any, string>();
 		editor.cells.forEach(cell => {
 			if (cell.isParameter) {
 				for (let parameter of cell.source) {
@@ -310,42 +310,35 @@ export class RunParametersAction extends TooltipFromLabelAction {
 
 		// Store new parameters values the user inputs
 		let inputParameters = new Map<string, string>();
-		let parametersQuery: string = '';
-		let addParameter: string;
-		let index = 0;
+		let uriParams = new URLSearchParams();
 		// Store new parameter values to map based off defaultParameters
 		if (defaultParameters.size === 0) {
 			// If there is no parameter cell indicate to user to create one
 			this.notificationService.notify({
 				severity: Severity.Info,
-				message: localize('noParametersCell', "Unable to Run with Parameters as there is no Parameter Cell. Create a Parameter Cell first. Learn more [here](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)."),
+				message: localize('noParametersCell', "This notebook cannot run with parameters until a parameter cell is added. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)."),
 			});
 			return;
 		} else {
 			for (let key of defaultParameters.keys()) {
-				let newParameterValue = await this.quickInputService.input({ prompt: key, placeHolder: defaultParameters.get(key) });
+				let newParameterValue = await this.quickInputService.input({ prompt: key, value: defaultParameters.get(key) });
+				// If user cancels or escapes then it stops the action entirely
+				if (newParameterValue === undefined) {
+					return;
+				}
 				inputParameters.set(key, newParameterValue);
 			}
-			if (inputParameters.size > 0) {
-				// Format the new parameters to be append to the URI
-				for (let key of inputParameters.keys()) {
-					// Will only add parameters that user updates
-					if (inputParameters.get(key)) {
-						addParameter = `${key}=${inputParameters.get(key)}`;
-						if (index === 0) {
-							parametersQuery = parametersQuery.concat(parametersQuery, addParameter);
-							index = index + 1;
-						} else {
-							// Subsequent parameters will use the '&' denote another parameter value to be injected
-							parametersQuery = parametersQuery + '&' + addParameter;
-						}
-					}
+			// Format the new parameters to be append to the URI
+			for (let key of inputParameters.keys()) {
+				// Will only add new injected parameters when the value is not the same as the defaultParameters values
+				if (inputParameters.get(key) !== defaultParameters.get(key)) {
+					uriParams.append(key, inputParameters.get(key));
 				}
-				let filePath = context.path;
-				filePath = filePath + '?' + parametersQuery;
-
-				return this.openParameterizedNotebook(context, filePath);
 			}
+			let filePath = context.path;
+			filePath = filePath + '?' + uriParams.toString();
+
+			return this.openParameterizedNotebook(context, filePath);
 		}
 	}
 
