@@ -1748,26 +1748,26 @@
 					},
 					"versions": [
 						{
-							"version": "1.9.0",
-							"lastUpdated": "6/24/2019",
+							"version": "1.26.0",
+							"lastUpdated": "3/29/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-de-1.9.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.26.0/ads-language-pack-de-1.26.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-de/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-de/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-de/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-de/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-de/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-de/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -1781,11 +1781,11 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": ">=1.34.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1813,26 +1813,26 @@
 					},
 					"versions": [
 						{
-							"version": "1.9.0",
-							"lastUpdated": "6/24/2019",
+							"version": "1.26.0",
+							"lastUpdated": "3/29/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-es-1.9.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.26.0/ads-language-pack-es-1.26.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-es/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-es/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-es/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-es/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-es/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-es/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -1846,11 +1846,11 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": ">=1.34.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1878,26 +1878,26 @@
 					},
 					"versions": [
 						{
-							"version": "1.9.0",
-							"lastUpdated": "6/24/2019",
+							"version": "1.26.0",
+							"lastUpdated": "3/29/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-fr-1.9.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.26.0/ads-language-pack-fr-1.26.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-fr/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-fr/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-fr/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-fr/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-fr/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-fr/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -1911,11 +1911,11 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": ">=1.34.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1943,26 +1943,26 @@
 					},
 					"versions": [
 						{
-							"version": "1.9.0",
-							"lastUpdated": "6/24/2019",
+							"version": "1.26.0",
+							"lastUpdated": "3/29/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-it-1.9.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.26.0/ads-language-pack-it-1.26.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-it/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-it/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-it/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-it/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-it/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-it/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -1976,11 +1976,11 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": ">=1.34.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2008,26 +2008,26 @@
 					},
 					"versions": [
 						{
-							"version": "1.9.0",
-							"lastUpdated": "6/24/2019",
+							"version": "1.26.0",
+							"lastUpdated": "3/29/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-ko-1.9.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.26.0/ads-language-pack-ko-1.26.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ko/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-ko/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ko/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-ko/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ko/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-ko/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -2041,11 +2041,11 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": ">=1.34.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2073,26 +2073,26 @@
 					},
 					"versions": [
 						{
-							"version": "1.9.0",
-							"lastUpdated": "6/24/2019",
+							"version": "1.26.0",
+							"lastUpdated": "3/29/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-pt-br-1.9.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.26.0/ads-language-pack-pt-br-1.26.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-pt-BR/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-pt-BR/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-pt-BR/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-pt-BR/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-pt-BR/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-pt-BR/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -2106,11 +2106,11 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": ">=1.34.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2138,26 +2138,26 @@
 					},
 					"versions": [
 						{
-							"version": "1.9.0",
-							"lastUpdated": "6/24/2019",
+							"version": "1.26.0",
+							"lastUpdated": "3/29/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-ru-1.9.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.26.0/ads-language-pack-ru-1.26.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ru/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-ru/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ru/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-ru/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ru/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-ru/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -2171,11 +2171,11 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": ">=1.34.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2203,26 +2203,26 @@
 					},
 					"versions": [
 						{
-							"version": "1.9.0",
-							"lastUpdated": "6/24/2019",
+							"version": "1.26.0",
+							"lastUpdated": "3/29/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-zh-hans-1.9.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.26.0/ads-language-pack-zh-hans-1.26.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-zh-hans/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-zh-hans/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-zh-hans/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-zh-hans/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-zh-hans/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-zh-hans/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -2236,11 +2236,11 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": ">=1.34.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2268,26 +2268,26 @@
 					},
 					"versions": [
 						{
-							"version": "1.9.0",
-							"lastUpdated": "6/24/2019",
+							"version": "1.26.0",
+							"lastUpdated": "3/29/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-zh-hant-1.9.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.26.0/ads-language-pack-zh-hant-1.26.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-zh-hant/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-zh-hant/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-zh-hant/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-zh-hant/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-zh-hant/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-zh-hant/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -2301,11 +2301,11 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": ">=1.34.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2333,26 +2333,26 @@
 					},
 					"versions": [
 						{
-							"version": "1.9.0",
-							"lastUpdated": "6/24/2019",
+							"version": "1.26.0",
+							"lastUpdated": "3/29/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-ja-1.9.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.26.0/ads-language-pack-ja-1.26.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ja/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-ja/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ja/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-ja/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/language-pack-ja/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/i18n/ads-language-pack-ja/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
@@ -2366,11 +2366,11 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": ">=1.34.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
