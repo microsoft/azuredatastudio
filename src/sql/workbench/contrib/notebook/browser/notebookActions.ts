@@ -355,9 +355,6 @@ export class KernelsDropdown extends SelectBox {
 	}
 
 	public doChangeKernel(displayName: string): void {
-		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.ChangeKernel)
-			.withAdditionalProperties({ kernel: displayName })
-			.send();
 		this.setOptions([msgChanging], 0);
 		this.model.changeKernel(displayName);
 	}
