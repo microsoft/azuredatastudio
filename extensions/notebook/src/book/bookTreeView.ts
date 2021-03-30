@@ -325,7 +325,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				let openDocument = azdata.nb.activeNotebookEditor;
 				let notebookPath = openDocument?.document.uri;
 				// call reveal only once on the correct view
-				if (e.visible && notebookPath.fsPath.replace(/\\/g, '/').indexOf(book.bookPath) > -1 && ((!this._openAsUntitled && notebookPath?.scheme !== 'untitled') || (this._openAsUntitled && notebookPath?.scheme === 'untitled'))) {
+				if (e.visible && notebookPath?.fsPath.replace(/\\/g, '/').indexOf(book.bookPath) > -1 && ((!this._openAsUntitled && notebookPath?.scheme !== 'untitled') || (this._openAsUntitled && notebookPath?.scheme === 'untitled'))) {
 					await this.revealActiveDocumentInViewlet(notebookPath);
 				}
 			});
