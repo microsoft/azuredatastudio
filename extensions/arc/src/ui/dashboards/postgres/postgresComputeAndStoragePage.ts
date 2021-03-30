@@ -294,6 +294,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.workerCoresRequestBox.onTextChanged(() => {
 				if (!(this.saveValueToEdit(this.workerCoresRequestBox!, this.currentConfiguration.workerCoresRequest!))) {
 					this.saveArgs.workerCoresRequest = undefined;
+				} else if (this.workerCoresRequestBox!.value === '') {
+					this.saveArgs.workerCoresRequest = '""';
 				} else {
 					this.saveArgs.workerCoresRequest = this.workerCoresRequestBox!.value;
 				}
@@ -312,6 +314,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.workerCoresLimitBox.onTextChanged(() => {
 				if (!(this.saveValueToEdit(this.workerCoresLimitBox!, this.currentConfiguration.workerCoresLimit!))) {
 					this.saveArgs.workerCoresLimit = undefined;
+				} else if (this.workerCoresLimitBox!.value === '') {
+					this.saveArgs.workerCoresLimit = '""';
 				} else {
 					this.saveArgs.workerCoresLimit = this.workerCoresLimitBox!.value;
 				}
@@ -370,6 +374,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.coordinatorCoresRequestBox.onTextChanged(() => {
 				if (!(this.saveValueToEdit(this.coordinatorCoresRequestBox!, this.currentConfiguration.coordinatorCoresRequest!))) {
 					this.saveArgs.coordinatorCoresRequest = undefined;
+				} else if (this.coordinatorCoresRequestBox!.value === '') {
+					this.saveArgs.coordinatorCoresRequest = '""';
 				} else {
 					this.saveArgs.coordinatorCoresRequest = this.coordinatorCoresRequestBox!.value;
 				}
@@ -388,6 +394,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.coordinatorCoresLimitBox.onTextChanged(() => {
 				if (!(this.saveValueToEdit(this.coordinatorCoresLimitBox!, this.currentConfiguration.coordinatorCoresLimit!))) {
 					this.saveArgs.coordinatorCoresLimit = undefined;
+				} else if (this.coordinatorCoresLimitBox!.value === '') {
+					this.saveArgs.coordinatorCoresLimit = '""';
 				} else {
 					this.saveArgs.coordinatorCoresLimit = this.coordinatorCoresLimitBox!.value;
 				}
