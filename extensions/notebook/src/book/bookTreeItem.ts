@@ -80,7 +80,6 @@ export class BookTreeItem extends vscode.TreeItem {
 		}
 		this.iconPath = icons;
 		this._tableOfContentsPath = undefined;
-		this.parent = book.parent;
 
 		if (this.book.type === BookTreeItemType.ExternalLink) {
 			this.tooltip = `${this._uri}`;
