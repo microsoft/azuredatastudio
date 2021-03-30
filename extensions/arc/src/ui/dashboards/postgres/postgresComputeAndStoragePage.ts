@@ -74,16 +74,16 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		const content = this.modelView.modelBuilder.divContainer().component();
 		root.addItem(content, { CSSStyles: { 'margin': '20px' } });
 
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.computeAndStorage,
 			CSSStyles: { ...cssStyles.title }
 		}).component());
 
-		const infoComputeStorage_p1 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const infoComputeStorage_p1 = this.modelView.modelBuilder.text().withProps({
 			value: loc.postgresComputeAndStorageDescriptionPartOne,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 		}).component();
-		const infoComputeStorage_p2 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const infoComputeStorage_p2 = this.modelView.modelBuilder.text().withProps({
 			value: loc.postgresComputeAndStorageDescriptionPartTwo,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
@@ -94,7 +94,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const infoComputeStorage_p3 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const infoComputeStorage_p3 = this.modelView.modelBuilder.text().withProps({
 			value: loc.computeAndStorageDescriptionPartThree,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
@@ -105,17 +105,17 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const infoComputeStorage_p4 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const infoComputeStorage_p4 = this.modelView.modelBuilder.text().withProps({
 			value: loc.computeAndStorageDescriptionPartFour,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const infoComputeStorage_p5 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const infoComputeStorage_p5 = this.modelView.modelBuilder.text().withProps({
 			value: loc.computeAndStorageDescriptionPartFive,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const infoComputeStorage_p6 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const infoComputeStorage_p6 = this.modelView.modelBuilder.text().withProps({
 			value: loc.computeAndStorageDescriptionPartSix,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
@@ -137,7 +137,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		// Worker nodes section
 		this.workerContainer = this.modelView.modelBuilder.divContainer().component();
-		this.workerContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		this.workerContainer.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.workerNodes,
 			CSSStyles: { ...cssStyles.title, 'margin-top': '25px' }
 		}).component());
@@ -146,7 +146,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		// Coordinator node section
 		this.coordinatorContainer = this.modelView.modelBuilder.divContainer().component();
-		this.coordinatorContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		this.coordinatorContainer.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.coordinatorNode,
 			CSSStyles: { ...cssStyles.title, 'margin-top': '25px' }
 		}).component());
@@ -162,7 +162,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
 		// Save Edits
-		this.saveButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.saveButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.saveText,
 			iconPath: IconPathHelper.save,
 			enabled: false
@@ -235,7 +235,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			}));
 
 		// Discard
-		this.discardButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.discardButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.discardText,
 			iconPath: IconPathHelper.discard,
 			enabled: false
@@ -265,7 +265,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private initializeConfigurationBoxes(): void {
 		// Worker node count
-		this.workerBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.workerBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			inputType: 'number',
 			placeHolder: loc.loading,
@@ -283,7 +283,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		);
 
 		// Worker nodes cores request
-		this.workerCoresRequestBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.workerCoresRequestBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: 1,
 			inputType: 'number',
@@ -303,7 +303,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		);
 
 		// Worker nodes cores limit
-		this.workerCoresLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.workerCoresLimitBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: 1,
 			inputType: 'number',
@@ -323,7 +323,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		);
 
 		// Worker nodes memory request
-		this.workerMemoryRequestBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.workerMemoryRequestBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: 0.25,
 			inputType: 'number',
@@ -343,7 +343,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		);
 
 		// Worker nodes memory limit
-		this.workerMemoryLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.workerMemoryLimitBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: 0.25,
 			inputType: 'number',
@@ -363,7 +363,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		);
 
 		// Coordinator node cores request
-		this.coordinatorCoresRequestBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.coordinatorCoresRequestBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: 1,
 			inputType: 'number',
@@ -383,7 +383,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		);
 
 		// Coordinator node cores limit
-		this.coordinatorCoresLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.coordinatorCoresLimitBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: 1,
 			inputType: 'number',
@@ -403,7 +403,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		);
 
 		// Coordinator node memory request
-		this.coordinatorMemoryRequestBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.coordinatorMemoryRequestBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: 0.25,
 			inputType: 'number',
@@ -423,7 +423,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		);
 
 		// Coordinator node memory limit
-		this.coordinatorMemoryLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.coordinatorMemoryLimitBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: 0.25,
 			inputType: 'number',
@@ -470,7 +470,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			alignItems: 'center'
 		}).component();
 
-		const keyComponent = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const keyComponent = this.modelView.modelBuilder.text().withProps({
 			value: loc.workerNodeCount,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
@@ -478,7 +478,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		const keyContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 		keyContainer.addItem(keyComponent, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
 
-		const information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const information = this.modelView.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.information,
 			title: loc.workerNodesInformation,
 			width: '15px',
@@ -522,7 +522,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			alignItems: 'center'
 		}).component();
 
-		const keyComponent = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const keyComponent = this.modelView.modelBuilder.text().withProps({
 			value: key,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
@@ -583,7 +583,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			alignItems: 'center'
 		}).component();
 
-		const titleComponent = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const titleComponent = this.modelView.modelBuilder.text().withProps({
 			value: title,
 			CSSStyles: { ...cssStyles.title, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
@@ -591,7 +591,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		const titleContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 		titleContainer.addItem(titleComponent, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
 
-		const information = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const information = this.modelView.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.information,
 			title: description,
 			width: '15px',
