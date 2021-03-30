@@ -9,9 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Tema Seti per le icone dei file",
-			"description": "Un tema per le icone dei file creato sulla base di Seti UI",
-			"themeLabel": "Seti (Visual Studio Code)"
+			"displayName": "Elementos básicos del lenguaje TypeScript",
+			"description": "Proporciona fragmentos de código, resaltado de sintaxis, correspondencia de corchetes y plegado de código en archivos de TypeScript."
 		}
 	}
 }

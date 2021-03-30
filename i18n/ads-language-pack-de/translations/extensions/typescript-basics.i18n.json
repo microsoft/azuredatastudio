@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Operazioni matematiche in notebook Markdown",
-			"description": "Fornisce un supporto avanzato del linguaggio per Markdown."
+			"displayName": "TypeScript-Sprachgrundlagen",
+			"description": "Bietet Ausschnitte, Syntaxhervorhebung, Klammernpaare und Falten in TypeScript-Dateien."
 		}
 	}
 }

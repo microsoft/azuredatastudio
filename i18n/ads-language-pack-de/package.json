@@ -201,6 +201,10 @@
 						"path": "./translations/extensions/theme-tomorrow-night-blue.i18n.json"
 					},
 					{
+						"id": "vscode.typescript-basics",
+						"path": "./translations/extensions/typescript-basics.i18n.json"
+					},
+					{
 						"id": "vscode.xml",
 						"path": "./translations/extensions/xml.i18n.json"
 					},
