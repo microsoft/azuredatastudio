@@ -128,13 +128,13 @@ describe('postgresConnectionStringsPage', function (): void {
 		const registration: Registration = { instanceName: '', state: '', instanceType: ResourceType.postgresInstances };
 		postgresModel = new PostgresModel(controllerModel, postgresResource, registration, new AzureArcTreeDataProvider(TypeMoq.Mock.ofType<vscode.ExtensionContext>().object));
 
-		// Setp stub of show call
+		// Setup stub of show call
 		const postgresShow = sinon.stub().returns(FakePostgresServerShowOutput);
 		sinon.stub(azdataApi, 'arc').get(() => {
 			return { postgres: { server: { show(name: string) { return postgresShow(name); } } } };
 		});
 
-		// Setup the PostgresConnectionsStringsPage -- TODO modelviewmock get file createContainerBuilderMock
+		// Setup the PostgresConnectionsStringsPage
 		let { modelViewMock } = createModelViewMock();
 		postgresConnectionStrings = new PostgresConnectionStringsPage(modelViewMock.object, undefined!, postgresModel);
 	});
@@ -149,9 +149,11 @@ describe('postgresConnectionStringsPage', function (): void {
 			// Call to provide external endpoint
 			await postgresModel.refresh();
 
+			let endpoint = FakePostgresServerShowOutput.result.status.externalEndpoint.split(':');
+
 			postgresConnectionStrings['getConnectionStrings']().forEach(k => {
-				should(k.value.includes('127.0.0.1')).be.True();
-				should(k.value.includes('5432')).be.True();
+				should(k.value.includes(endpoint[0])).be.True();
+				should(k.value.includes(endpoint[1])).be.True();
 			});
 		});
 
