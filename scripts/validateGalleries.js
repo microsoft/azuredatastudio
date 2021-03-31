@@ -168,6 +168,12 @@ function validateVersion(path, extensionName, extensionVersionJson) {
     extensionVersionJson.files.forEach(file => validateExtensionFile(path, extensionName, file));
     if (extensionVersionJson.properties && extensionVersionJson.properties.length) {
         extensionVersionJson.properties.forEach(property => validateExtensionProperty(path, extensionName, property));
+        const azdataEngineVersion = extensionVersionJson.properties.find(property => property.key === 'Microsoft.AzDataEngine' && (property.value.startsWith('>=') || property.value === '*'))
+        if (!azdataEngineVersion) {
+            throw new Error(`${path} - ${extensionName} - No valid Microsoft.AzdataEngine property found. Value must be either * or >=x.x.x where x.x.x is the minimum Azure Data Studio version the extension requires\n${JSON.stringify(extensionVersionJson.properties)}`)
+        }
+    } else {
+        throw new Error(`${path} - ${extensionName} - No properties, extensions must have an AzDataEngine version defined`)
     }
 }
 
