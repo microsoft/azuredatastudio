@@ -1790,25 +1790,6 @@
 			"morecCommands": "outros comandos",
 			"canNotRun": "O comando '{0}' resultou em um erro ({1})"
 		},
-		"readme.md": {
-			"LanguagePackTitle": "O Pacote de Idiomas fornece a experiência de interface do usuário localizada para o VS Code.",
-			"Usage": "Uso",
-			"displayLanguage": "Você pode substituir o idioma da interface do usuário padrão definindo explicitamente o idioma de exibição do VS Code com o comando \"Configurar o Idioma de Exibição\".",
-			"Command Palette": "Pressione \"Ctrl+Shift+P\" para exibir a \"Paleta de Comandos\" e comece a digitar \"display\" para filtrar e exibir o comando \"Configurar o Idioma de Exibição\".",
-			"ShowLocale": "Pressione \"Enter\" e será exibida uma lista de idiomas instalados por localidade, com a localidade atual realçada.",
-			"SwtichUI": "Selecione outra \"localidade\" para mudar o idioma da interface do usuário.",
-			"DocLink": "Confira \"Docs\" para obter mais informações.",
-			"Contributing": "Contribuição",
-			"Feedback": "Para obter comentários sobre a melhoria da tradução, crie um Problema no repositório \"vscode-loc\".",
-			"LocPlatform": "As cadeias de caracteres de tradução são mantidas na Plataforma de Localização da Microsoft. As alterações só podem ser feitas na Plataforma de Localização da Microsoft e depois exportadas para o repositório vscode-loc. Portanto, a solicitação de pull não será aceita no repositório vscode-loc.",
-			"LicenseTitle": "Licença",
-			"LicenseMessage": "O código-fonte e as cadeias de caracteres são licenciados com a licença \"MIT\".",
-			"Credits": "Créditos",
-			"Contributed": "Este Pacote de Idiomas recebeu contribuições por meio da ação de localização da comunidade \"Pela comunidade, para a comunidade\". Agradecemos especialmente os colaboradores da comunidade por disponibilizá-las.",
-			"TopContributors": "Principais Colaboradores:",
-			"Contributors": "Colaboradores:",
-			"EnjoyLanguagePack": "Aproveite!"
-		},
 		"win32/i18n/Default": {
 			"SetupAppTitle": "Instalação",
 			"SetupWindowTitle": "Instalação – %1",
