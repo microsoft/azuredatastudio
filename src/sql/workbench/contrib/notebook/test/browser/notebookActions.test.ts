@@ -24,7 +24,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
-import { MockQuickInputService } from 'vs/workbench/services/configurationResolver/common/quickInputServiceMock';
+import { MockQuickInputService } from 'sql/workbench/contrib/notebook/test/common/quickInputServiceMock';
 
 class TestClientSession extends ClientSessionStub {
 	private _errorState: boolean = false;
