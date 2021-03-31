@@ -73,6 +73,10 @@
 						"path": "./translations/extensions/schema-compare.i18n.json"
 					},
 					{
+						"id": "Microsoft.sqlservernotebook",
+						"path": "./translations/extensions/Microsoft.sqlservernotebook.i18n.json"
+					},
+					{
 						"id": "vscode",
 						"path": "./translations/main.i18n.json"
 					},
