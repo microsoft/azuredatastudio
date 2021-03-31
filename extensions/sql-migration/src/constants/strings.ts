@@ -15,6 +15,12 @@ export function WIZARD_TITLE(instanceName: string): string {
 export const SOURCE_CONFIGURATION_PAGE_TITLE = localize('sql.migration.wizard.source_configuration.title', "SQL Source Configuration");
 // //#endregion
 
+// Assessments Progress Page
+export const ASSESSMENT_PROGRESS = localize('sql.migration.assessments.progress', "Assessments Progress");
+export const ASSESSMENT_IN_PROGRESS = localize('sql.migration.assessment.in.progress', "Assessment in progress");
+export function ASSESSMENT_IN_PROGRESS_CONTENT(dbName: string) {
+	return localize('sql.migration.assessment.in.progress.content', "We are assessing the databases in your SQL server instance {0} to identify the right Azure SQL target.\n\nThis may take some time.", dbName);
+}
 export const COLLECTING_SOURCE_CONFIGURATIONS = localize('sql.migration.collecting_source_configurations', "Collecting source configurations");
 export const COLLECTING_SOURCE_CONFIGURATIONS_INFO = localize('sql.migration.collecting_source_configurations.info', "We need to collect some information about how your data is configured currently.\nThis may take some time.");
 export const COLLECTING_SOURCE_CONFIGURATIONS_ERROR = (error: string = ''): string => {
@@ -312,6 +318,7 @@ export const RECOMMENDATION = localize('sql.migration.recommendation', "Recommen
 export const MORE_INFO = localize('sql.migration.more.info', "More Info");
 export const TARGET_PLATFORM = localize('sql.migration.target.platform', "Target Platform");
 export const WARNINGS_DETAILS = localize('sql.migration.warnings.details', "Warnings Details");
+export const SELECT_DB_PROMPT = localize('sql.migration.select.prompt', "Click on SQL Server Instance or any of the databases on the left to view its details.");
 export function IMPACT_OBJECT_TYPE(objectType: string): string {
 	return localize('sql.migration.impact.object.type', "Type: {0}", objectType);
 }
