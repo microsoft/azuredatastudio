@@ -111,6 +111,10 @@
 									"value": "*"
 								},
 								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/azuredatastudio"
 								}
@@ -165,6 +169,10 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
 									"value": "*"
 								},
 								{
@@ -225,6 +233,10 @@
 									"value": "*"
 								},
 								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/kevcunnane/ssmskeymap"
 								}
@@ -279,6 +291,10 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
 									"value": "*"
 								},
 								{
@@ -339,6 +355,10 @@
 									"value": "*"
 								},
 								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Matticusau/sqlops-alwayson-insights"
 								}
@@ -393,6 +413,10 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
 									"value": "*"
 								},
 								{
@@ -453,6 +477,10 @@
 									"value": "*"
 								},
 								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Matticusau/sqlops-mssql-db-insights"
 								}
@@ -507,7 +535,11 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.3"
+									"value": ">=*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -567,6 +599,10 @@
 									"value": "*"
 								},
 								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/sql-data-warehouse-samples/tree/master/samples/sqlops/MonitoringScripts"
 								}
@@ -621,6 +657,10 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
 									"value": "*"
 								},
 								{
@@ -805,6 +845,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								}
 							]
 						}
@@ -861,6 +905,10 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
 									"value": "*"
 								}
 							]
@@ -919,6 +967,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								}
 							]
 						}
@@ -972,6 +1024,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								}
 							]
 						}
@@ -1024,6 +1080,10 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
 									"value": "*"
 								},
 								{
@@ -1086,6 +1146,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								}
 							]
 						}
@@ -1138,6 +1202,10 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
 									"value": "*"
 								}
 							]
@@ -1198,6 +1266,10 @@
 									"value": "*"
 								},
 								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/azuredatastudio"
 								}
@@ -1252,7 +1324,11 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.1"
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1309,7 +1385,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -1370,7 +1446,11 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.1"
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1432,6 +1512,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								}
 							]
 						}
@@ -1484,7 +1568,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -1548,6 +1632,10 @@
 									"value": ">=0.32.1"
 								},
 								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/SandDance"
 								}
@@ -1602,7 +1690,11 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.1"
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1659,7 +1751,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -1720,7 +1812,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2554,6 +2646,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								}
 							]
 						}
@@ -2606,7 +2702,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2672,6 +2768,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								}
 							]
 						}
@@ -2724,7 +2824,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.29.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2851,6 +2951,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								}
 							]
 						}
@@ -2907,6 +3011,10 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
 									"value": "*"
 								}
 							]
@@ -2965,6 +3073,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								}
 							]
 						}
@@ -3022,6 +3134,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								}
 							]
 						}
@@ -3074,6 +3190,10 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
 									"value": "*"
 								}
 							]
@@ -3131,7 +3251,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -3185,6 +3305,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": "^1.38.0"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								}
 							]
 						}
@@ -3233,7 +3357,7 @@
 							"properties": [
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.46.0"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -3354,6 +3478,10 @@
 									"value": ">=1.35.1"
 								},
 								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/shanalikhan/code-settings-sync"
 								}
@@ -3465,6 +3593,10 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
 									"value": "*"
 								},
 								{
@@ -3639,6 +3771,10 @@
 									"value": "*"
 								},
 								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/azuredatastudio"
 								},
@@ -3757,6 +3893,10 @@
 									"value": "*"
 								},
 								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/azuredatastudio"
 								},
@@ -3820,6 +3960,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								}
 							]
 						}
@@ -3877,6 +4021,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								}
 							]
 						}
@@ -3933,6 +4081,10 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
 									"value": "*"
 								}
 							]
