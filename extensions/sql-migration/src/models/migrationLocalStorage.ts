@@ -57,16 +57,19 @@ export class MigrationLocalStorage {
 		targetMI: SqlManagedInstance,
 		azureAccount: azdata.Account,
 		subscription: azureResource.AzureResourceSubscription,
-		controller: SqlMigrationService): void {
+		controller: SqlMigrationService,
+		asyncURL: string): void {
 		try {
-			const migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
+			let migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
+			migrationMementos = migrationMementos.filter(m => m.migrationContext.id !== migrationContext.id);
 			migrationMementos.push({
 				sourceConnectionProfile: connectionProfile,
 				migrationContext: migrationContext,
 				targetManagedInstance: targetMI,
 				subscription: subscription,
 				azureAccount: azureAccount,
-				controller: controller
+				controller: controller,
+				asyncUrl: asyncURL
 			});
 			this.context.globalState.update(this.mementoToken, migrationMementos);
 		} catch (e) {
@@ -85,5 +88,6 @@ export interface MigrationContext {
 	targetManagedInstance: SqlManagedInstance,
 	azureAccount: azdata.Account,
 	subscription: azureResource.AzureResourceSubscription,
-	controller: SqlMigrationService
+	controller: SqlMigrationService,
+	asyncUrl: string
 }

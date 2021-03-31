@@ -21,6 +21,8 @@ export const WorkspaceContainsNotAddedProjects = localize('dataworkspace.workspa
 export const LaunchOpenExisitingDialog = localize('dataworkspace.launchOpenExistingDialog', "Launch Open existing dialog");
 export const DoNotShowAgain = localize('dataworkspace.doNotShowAgain', "Do not show again");
 export const ProjectsFailedToLoad = localize('dataworkspace.projectsFailedToLoad', "Some projects failed to load. Please open console for more information");
+export const fileDoesNotExist = (name: string): string => { return localize('fileDoesNotExist', "File '{0}' doesn't exist", name); };
+export const projectNameNull = localize('projectNameNull', "Project name is null");
 
 // config settings
 export const projectsConfigurationKey = 'projects';
@@ -72,3 +74,9 @@ export const LocalClonePathPlaceholder = localize('dataworkspace.localClonePathP
 // Workspace settings for saving new projects
 export const ProjectConfigurationKey = 'projects';
 export const ProjectSaveLocationKey = 'defaultProjectSaveLocation';
+
+export namespace cssStyles {
+	export const title = { 'font-size': '18px', 'font-weight': '600' };
+	export const tableHeader = { 'text-align': 'left', 'font-weight': '500', 'font-size': '13px', 'user-select': 'text' };
+	export const tableRow = { 'border-top': 'solid 1px #ccc', 'border-bottom': 'solid 1px #ccc', 'border-left': 'none', 'border-right': 'none' };
+}

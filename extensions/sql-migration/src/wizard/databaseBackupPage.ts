@@ -139,7 +139,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			requiredIndicator: true,
 		}).component();
 		this._fileShareSubscription = view.modelBuilder.inputBox().withProps({
-			required: true,
+			required: false,
 			enabled: false
 		}).component();
 
@@ -150,7 +150,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._fileShareStorageAccountDropdown = view.modelBuilder.dropDown()
 			.withProps({
-				required: true
+				required: false
 			}).component();
 		this._fileShareStorageAccountDropdown.onValueChanged(async (value) => {
 			if (value.selected) {
@@ -195,7 +195,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._blobContainerSubscription = view.modelBuilder.inputBox()
 			.withProps({
-				required: true,
+				required: false,
 				enabled: false
 			}).component();
 
@@ -206,7 +206,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._blobContainerStorageAccountDropdown = view.modelBuilder.dropDown()
 			.withProps({
-				required: true
+				required: false
 			}).component();
 		this._blobContainerStorageAccountDropdown.onValueChanged(async (value) => {
 			if (value.selected) {
@@ -335,7 +335,11 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const azureAccountHeader = view.modelBuilder.text()
 			.withProps({
 				value: constants.DATABASE_BACKUP_NETWORK_SHARE_AZURE_ACCOUNT_HEADER,
-				width: WIZARD_INPUT_COMPONENT_WIDTH
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: {
+					'font-size': '14px',
+					'font-weight': 'bold'
+				}
 			}).component();
 
 		const azureAccountHelpText = view.modelBuilder.text()
@@ -429,7 +433,11 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		const networkShareDatabaseConfigHeader = view.modelBuilder.text().withProps({
 			value: constants.ENTER_NETWORK_SHARE_INFORMATION,
-			width: WIZARD_INPUT_COMPONENT_WIDTH
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '14px',
+				'font-weight': 'bold'
+			}
 		}).component();
 		this._networkShareDatabaseConfigContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',

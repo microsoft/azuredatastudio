@@ -399,6 +399,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async getManagedInstanceValues(subscription: azureResource.AzureResourceSubscription, location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
 		let managedInstanceValues: azdata.CategoryValue[] = [];
+		if (!this._azureAccount) {
+			return managedInstanceValues;
+		}
 		try {
 			this._targetManagedInstances = (await getAvailableManagedInstanceProducts(this._azureAccount, subscription)).filter((mi) => {
 				if (mi.location.toLowerCase() === location.name.toLowerCase() && mi.resourceGroup?.toLowerCase() === resourceGroup.name.toLowerCase()) {
@@ -488,6 +491,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async getStorageAccountValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
 		let storageAccountValues: azdata.CategoryValue[] = [];
+		if (!this._databaseBackup.resourceGroup) {
+			return storageAccountValues;
+		}
 		try {
 			const storageAccount = (await getAvailableStorageAccounts(this._azureAccount, subscription));
 			this._storageAccounts = storageAccount.filter(sa => {
@@ -652,7 +658,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					},
 					sourceLocation: {
 						fileShare: {
-							path: '',
+							path: this._databaseBackup.networkShareLocation,
 							username: this._databaseBackup.windowsUser,
 							password: this._databaseBackup.password,
 						}
@@ -680,14 +686,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					this._targetDatabaseNames[i],
 					requestBody
 				);
-				if (response.status === 201) {
+				if (response.status === 201 || response.status === 200) {
 					MigrationLocalStorage.saveMigration(
 						currentConnection!,
 						response.databaseMigration,
 						this._targetServerInstance,
 						this._azureAccount,
 						this._targetSubscription,
-						this._sqlMigrationService
+						this._sqlMigrationService,
+						response.asyncUrl
 					);
 					vscode.window.showInformationMessage(localize("sql.migration.starting.migration.message", 'Starting migration for database {0} to {1} - {2}', this._migrationDbs[i], this._targetServerInstance.name, this._targetDatabaseNames[i]));
 				}
@@ -695,6 +702,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				console.log(e);
 				vscode.window.showInformationMessage(e);
 			}
+
+			vscode.commands.executeCommand('sqlmigration.refreshMigrationTiles');
 		}
 	}
 }

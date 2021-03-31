@@ -104,17 +104,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 	private migrationServiceDropdownContainer(): azdata.FlexContainer {
 		const descriptionText = this._view.modelBuilder.text().withProps({
-			value: constants.IR_PAGE_DESCRIPTION,
-			links: [
-				{
-					url: 'https://www.microsoft.com', // TODO: Add proper link
-					text: constants.LEARN_MORE
-				},
-			]
-		}).component();
-
-		const noteText = this._view.modelBuilder.text().withProps({
-			value: constants.IR_PAGE_NOTE
+			value: constants.IR_PAGE_DESCRIPTION
 		}).component();
 
 		const migrationServcieDropdownLabel = this._view.modelBuilder.text().withProps({
@@ -140,7 +130,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems([
 			descriptionText,
-			noteText,
 			migrationServcieDropdownLabel,
 			this.migrationServiceDropdown
 		]).withLayout({
