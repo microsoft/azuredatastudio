@@ -172,6 +172,10 @@ function validateVersion(path, extensionName, extensionVersionJson) {
         if (!azdataEngineVersion) {
             throw new Error(`${path} - ${extensionName} - No valid Microsoft.AzdataEngine property found. Value must be either * or >=x.x.x where x.x.x is the minimum Azure Data Studio version the extension requires\n${JSON.stringify(extensionVersionJson.properties)}`)
         }
+        const vscodeEngineVersion = extensionVersionJson.properties.find(property => property.key === 'Microsoft.VisualStudio.Code.Engine');
+        if (vscodeEngineVersion && vscodeEngineVersion.value.startsWith('>=') && azdataEngineVersion.value.startsWith('>=')) {
+            throw new Error(`${path} - ${extensionName} - Both Microsoft.AzDataEngine and Microsoft.VisualStudio.Code.Engine should not have minimum versions. Each Azure Data Studio version is tied to a specific VS Code version and so having both is redundant.`)
+        }
     } else {
         throw new Error(`${path} - ${extensionName} - No properties, extensions must have an AzDataEngine version defined`)
     }

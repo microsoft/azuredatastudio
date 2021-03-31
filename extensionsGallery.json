@@ -47,7 +47,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -1385,7 +1385,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -1568,7 +1568,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -1751,7 +1751,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -1812,7 +1812,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -1873,7 +1873,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -1938,7 +1938,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2003,7 +2003,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2068,7 +2068,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2133,7 +2133,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2198,7 +2198,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2263,7 +2263,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2328,7 +2328,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2393,7 +2393,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2458,7 +2458,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.30.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2519,7 +2519,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2584,7 +2584,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2702,7 +2702,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2824,7 +2824,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.29.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -2885,7 +2885,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.33.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -3247,7 +3247,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=0.32.1"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -3357,7 +3357,7 @@
 							"properties": [
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.46.0"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -3711,7 +3711,7 @@
 							"properties": [
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.20.0"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -3771,12 +3771,12 @@
 									"value": "*"
 								},
 								{
-									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Microsoft/azuredatastudio"
-								},
-								{
 									"key": "Microsoft.AzDataEngine",
 									"value": ">=1.22.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
 								}
 							]
 						}
@@ -3889,12 +3889,12 @@
 									"value": "*"
 								},
 								{
-									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Microsoft/azuredatastudio"
-								},
-								{
 									"key": "Microsoft.AzDataEngine",
 									"value": ">=1.25.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
 								}
 							]
 						}
