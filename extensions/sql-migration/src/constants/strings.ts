@@ -310,6 +310,7 @@ export const RECOMMENDATION = localize('sql.migration.recommendation', "Recommen
 export const MORE_INFO = localize('sql.migration.more.info', "More Info");
 export const TARGET_PLATFORM = localize('sql.migration.target.platform', "Target Platform");
 export const WARNINGS_DETAILS = localize('sql.migration.warnings.details', "Warnings Details");
+export const SELECT_DB_PROMPT = localize('sql.migration.select.prompt', "Click on SQL Server Instance or any of the databases on the left to view its details.");
 export function IMPACT_OBJECT_TYPE(objectType: string): string {
 	return localize('sql.migration.impact.object.type', "Type: {0}", objectType);
 }
