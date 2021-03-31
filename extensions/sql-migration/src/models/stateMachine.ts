@@ -702,6 +702,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				console.log(e);
 				vscode.window.showInformationMessage(e);
 			}
+
+			vscode.commands.executeCommand('sqlmigration.refreshMigrationTiles');
 		}
 	}
 }

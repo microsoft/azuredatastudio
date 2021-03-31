@@ -41,6 +41,9 @@ export class DashboardWidget {
 	private _viewAllMigrationsButton!: azdata.ButtonComponent;
 
 	constructor() {
+		vscode.commands.registerCommand('sqlmigration.refreshMigrationTiles', () => {
+			this.refreshMigrations();
+		});
 	}
 
 	public register(): void {
