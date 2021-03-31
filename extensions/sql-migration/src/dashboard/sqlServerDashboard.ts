@@ -265,7 +265,6 @@ export class DashboardWidget {
 
 		const cardTitleText = this._view.modelBuilder.text().withProps({ value: cardTitle }).withProps({
 			CSSStyles: {
-				'font-weight': 'bold',
 				'height': '40px',
 				'margin-top': '15px',
 				'margin-bottom': '0px',
@@ -535,7 +534,7 @@ export class DashboardWidget {
 		const links = [{
 			title: loc.HELP_LINK1_TITLE,
 			description: loc.HELP_LINK1_DESCRIPTION,
-			link: 'https://www.microsoft.com' //TODO: add proper link over here.
+			link: 'https://docs.microsoft.com/azure/azure-sql/migration-guides/managed-instance/sql-server-to-sql-managed-instance-assessment-rules'
 		}];
 
 		const styles = {
