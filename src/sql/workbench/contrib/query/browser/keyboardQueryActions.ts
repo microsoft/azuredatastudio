@@ -382,7 +382,7 @@ export class RunQueryShortcutAction extends Action {
 			return this.escapeStringParamIfNeeded(editor, shortcutText, parameterText).then((escapedParam) => {
 				let queryString = '';
 				if (shortcutText.includes('{arg}')) {
-					queryString = shortcutText.replace('{arg}', escapedParam);
+					queryString = shortcutText.replace(/{arg}/g, escapedParam);
 				} else {
 					queryString = `${shortcutText} ${escapedParam}`;
 				}
