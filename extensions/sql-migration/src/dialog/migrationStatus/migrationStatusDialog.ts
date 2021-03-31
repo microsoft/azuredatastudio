@@ -143,7 +143,7 @@ export class MigrationStatusDialog {
 				});
 
 				migrationRow.push({
-					value: migration.migrationContext.properties.migrationStatus
+					value: migration.migrationContext.properties.migrationStatus ? migration.migrationContext.properties.migrationStatus : migration.migrationContext.properties.provisioningState
 				});
 
 				const targetMigrationIcon = this._view.modelBuilder.image().withProps({
@@ -247,7 +247,7 @@ export class MigrationStatusDialog {
 					}
 				},
 				{
-					displayName: loc.CUTOVER_TYPE,
+					displayName: loc.MIGRATION_MODE,
 					valueType: azdata.DeclarativeDataType.string,
 					width: '100px',
 					isReadOnly: true,

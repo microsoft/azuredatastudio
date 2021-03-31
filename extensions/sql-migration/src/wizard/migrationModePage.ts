@@ -44,7 +44,17 @@ export class MigrationModePage extends MigrationWizardPage {
 		const onlineButton = view.modelBuilder.radioButton().withProps({
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL,
 			name: buttonGroup,
+			CSSStyles: {
+				'font-weight': 'bold'
+			},
 			checked: true
+		}).component();
+
+		const onlineDescription = view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_DESCRIPTION,
+			CSSStyles: {
+				'margin': '0 0 10px 20px'
+			}
 		}).component();
 
 		this.migrationStateModel._databaseBackup.migrationCutover = MigrationCutover.ONLINE;
@@ -57,8 +67,19 @@ export class MigrationModePage extends MigrationWizardPage {
 
 		const offlineButton = view.modelBuilder.radioButton().withProps({
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL,
-			name: buttonGroup
+			name: buttonGroup,
+			CSSStyles: {
+				'font-weight': 'bold'
+			},
 		}).component();
+
+		const offlineDescription = view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_DESCRIPTION,
+			CSSStyles: {
+				'margin': '0 0 10px 20px'
+			}
+		}).component();
+
 
 		offlineButton.onDidChangeCheckedState((e) => {
 			if (e) {
@@ -71,7 +92,9 @@ export class MigrationModePage extends MigrationWizardPage {
 		const flexContainer = view.modelBuilder.flexContainer().withItems(
 			[
 				onlineButton,
-				offlineButton
+				onlineDescription,
+				offlineButton,
+				offlineDescription
 			]
 		).withLayout({
 			flexFlow: 'column'

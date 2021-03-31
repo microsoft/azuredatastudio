@@ -31,7 +31,8 @@ export class MigrationStatusDialogModel {
 		} else if (category === 'Ongoing') {
 			filteredMigration = this._migrations.filter((value) => {
 				const status = value.migrationContext.properties.migrationStatus;
-				return status === 'InProgress' || status === 'Creating' || status === 'Completing';
+				const provisioning = value.migrationContext.properties.provisioningState;
+				return status === 'InProgress' || status === 'Creating' || status === 'Completing' || provisioning === 'Creating';
 			});
 		} else if (category === 'Succeeded') {
 			filteredMigration = this._migrations.filter((value) => {
