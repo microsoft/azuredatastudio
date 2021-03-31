@@ -627,13 +627,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async getTreeItem(element: BookTreeItem): Promise<vscode.TreeItem> {
-		let bookItem: BookTreeItem = undefined;
-		let notebookPath = element.tooltip;
-		let bookOfElement = this.books.length > 1 ? this.books.find(b => notebookPath.indexOf(b.bookPath) > -1) : this.currentBook;
-		if (bookOfElement?.bookItems.indexOf(element) > -1) {
-			bookItem = bookOfElement?.bookItems.find(b => b === element);
-		}
-		return bookItem;
+		return element;
 	}
 
 	getChildren(element?: BookTreeItem): Thenable<BookTreeItem[]> {
