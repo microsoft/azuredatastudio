@@ -3940,6 +3940,63 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "80",
+					"extensionName": "sql-data-inspector",
+					"displayName": "SQL Data Inspector",
+					"shortDescription": "This extension simplify the inspection of data stored in tables and columns to just few clicks.",
+					"publisher": {
+						"displayName": "Ernesto Cianciotta",
+						"publisherId": "ernstc",
+						"publisherName": "ernstc"
+					},
+					"versions": [
+						{
+							"version": "0.1.0",
+							"lastUpdated": "31/03/2021",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/ernstc/SqlDataInspector/releases/tag/0.1.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/ernstc/SqlDataInspector/main/images/icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/ernstc/SqlDataInspector/main/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/ernstc/SqlDataInspector/main/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://github.com/ernstc/SqlDataInspector/blob/main/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/ernstc/SqlDataInspector"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
