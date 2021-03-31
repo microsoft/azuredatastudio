@@ -216,10 +216,21 @@ export class SqlDatabaseTree {
 		}).component();
 
 		this._instanceTable.onRowSelected((e) => {
+
+			this._instanceTable.focus();
 			this._activeIssues = this._model._assessmentResults?.issues;
 			this._selectedIssue = this._model._assessmentResults?.issues[0];
 			this._dbName.value = this._serverName;
-			this.refreshResults();
+			this._resultComponent.updateCssStyles({
+				'display': 'block'
+			});
+			this._dbMessageContainer.updateCssStyles({
+				'display': 'none'
+			});
+
+			if (this._model._targetType === MigrationTargetType.SQLMI) {
+				this.refreshResults();
+			}
 		});
 
 		return instanceContainer;
@@ -246,7 +257,6 @@ export class SqlDatabaseTree {
 
 		return container;
 	}
-
 
 	private createTopContainer(): azdata.FlexContainer {
 		const title = this.createTitleComponent();
