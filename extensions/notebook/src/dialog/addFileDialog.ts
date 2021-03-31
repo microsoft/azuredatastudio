@@ -59,7 +59,7 @@ export class AddFileDialog {
 
 			this._saveLocationInputBox = this.view.modelBuilder.inputBox()
 				.withProperties({
-					value: this._bookItem.contextValue === BookTreeItemType.Book ? this._bookItem.rootContentPath : path.dirname(this._bookItem.resourceUri.fsPath),
+					value: this._bookItem.contextValue === BookTreeItemType.savedBook ? this._bookItem.rootContentPath : path.dirname(this._bookItem.resourceUri.fsPath),
 					enabled: false,
 					width: '400px'
 				}).component();
@@ -94,7 +94,7 @@ export class AddFileDialog {
 
 	private async createFile(): Promise<boolean> {
 		try {
-			const dirPath = this._bookItem.contextValue === BookTreeItemType.Book ? this._bookItem.rootContentPath : path.dirname(this._bookItem.resourceUri.fsPath);
+			const dirPath = this._bookItem.contextValue === BookTreeItemType.savedBook ? this._bookItem.rootContentPath : path.dirname(this._bookItem.resourceUri.fsPath);
 			const filePath = path.join(dirPath, this._fileNameInputBox.value).concat(this._extension);
 			await this.validatePath(dirPath, this._fileNameInputBox.value.concat(this._extension));
 			const pathDetails = new TocEntryPathHandler(filePath, this._bookItem.rootContentPath, this._titleInputBox.value);
