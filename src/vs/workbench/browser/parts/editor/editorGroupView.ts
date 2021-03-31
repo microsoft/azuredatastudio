@@ -1071,7 +1071,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 						message: localize('editorOpenError', "Unable to open '{0}': {1}.", editor.getName(), toErrorMessage(error)),
 						actions
 					});
-					console.log(`Unable to open '{0}': `, error); // {{SQL CARBON EDIT}} Print full stack trace to console
+					console.log(`Unable to open '${editor.getName()}': `, error); // {{SQL CARBON EDIT}} Print full stack trace to console
 
 					Event.once(handle.onDidClose)(() => actions.primary && dispose(actions.primary));
 				}
