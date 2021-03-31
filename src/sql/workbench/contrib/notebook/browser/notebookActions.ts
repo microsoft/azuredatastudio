@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as path from 'vs/base/common/path';
 
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
@@ -30,7 +29,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { URI } from 'vs/base/common/uri';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { Uri } from 'vscode';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -323,7 +321,7 @@ export class RunParametersAction extends TooltipFromLabelAction {
 			return;
 		} else {
 			for (let key of defaultParameters.keys()) {
-				let newParameterValue = await this.quickInputService.input({ prompt: key, value: defaultParameters.get(key) });
+				let newParameterValue = await this.quickInputService.input({ prompt: key, value: defaultParameters.get(key), ignoreFocusLost: true });
 				// If user cancels or escapes then it stops the action entirely
 				if (newParameterValue === undefined) {
 					return;
@@ -343,9 +341,9 @@ export class RunParametersAction extends TooltipFromLabelAction {
 					}
 				}
 			}
-			let filePath = context.path;
-			filePath = filePath + '?' + unescape(uriParams.toString());
-			return this.openParameterizedNotebook(context, filePath);
+			let stringParams = unescape(uriParams.toString());
+			context = context.with({ query: stringParams });
+			return this.openParameterizedNotebook(context);
 		}
 	}
 
@@ -354,12 +352,11 @@ export class RunParametersAction extends TooltipFromLabelAction {
 	 * TODO - Call Extensibility API for ShowNotebook
 	 * (showNotebookDocument to be utilized in Notebook Service)
 	**/
-	public async openParameterizedNotebook(uri: URI, filePath: string): Promise<void> {
+	public async openParameterizedNotebook(uri: URI): Promise<void> {
 		// const editor = this._notebookService.findNotebookEditor(uri);
 		// let modelContents = editor.model.toJSON();
-		// let parameterizedURI = URI.parse(filePath);
-		// let basename = path.basename(parameterizedURI.fsPath);
-		// let untitledUri = parameterizedURI.with({ authority: '', scheme: 'untitled', path: basename });
+		// let basename = path.basename(uri.fsPath);
+		// let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: basename });
 		// this._notebookService.showNotebookDocument(untitledUri, {
 		// 	initialContent: modelContents,
 		// 	preserveFocus: true
