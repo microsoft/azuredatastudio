@@ -3991,6 +3991,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
 								}
 							]
 						}
