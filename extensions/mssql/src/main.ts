@@ -38,6 +38,9 @@ const msgMigrateLinuxCredentials = localize('msgMigrateLinuxCredentials',
 	'Azure Data Studio now recommends using the internal \
 	credential services to store your credentials. \
 	Do you want to migrate your credentials to the new secure system?');
+const msgYes = localize('mssql.yes', 'Yes');
+const msgNo = localize('mssql.no', 'No');
+
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	// lets make sure we support this platform first
@@ -87,12 +90,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	// check for Keytar credential setting on linux machines
 	if (Utils.keytarCredentialsEnabled() && Utils.migrateLinuxCredentials()) {
 		// default is true for both, so every linux user will be prompted to migrate
-		// if the user says yes,
-		vscode.window.showInformationMessage(msgMigrateLinuxCredentials, localize('mssql.yes', 'Yes'), localize('mssql.no', 'No')).then((response) => {
-			if (response === 'No') {
+		// if the user says no, turn the setting off
+		vscode.window.showInformationMessage(msgMigrateLinuxCredentials, msgYes, msgNo).then((response) => {
+			if (response === msgNo) {
 				// turn the setting off and don't migrate
-			} else {
-				// delete the credentials existing on
+				Utils.disableCredentialMigration();
 			}
 		});
 	}

@@ -21,6 +21,15 @@ const configLogDebugInfo = 'logDebugInfo';
 const configUseKeytarCredential = 'useKeytarCredential';
 const configMigrateLinuxCredential = 'migrateLinuxCredential';
 
+// Credential Constants
+const CRED_PREFIX = 'Microsoft.SqlTools';
+const CRED_SEPARATOR = '|';
+const CRED_ID_PREFIX = 'id:';
+const CRED_ITEMTYPE_PREFIX = 'itemtype:';
+const CRED_NAME_VALUE_SEPARATOR = ':';
+const CRED_PROVIDER_NAME = 'providerName';
+export const CRED_PROFILE_USER = 'Profile';
+
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
 export function getAppDataPath() {
@@ -45,22 +54,66 @@ export function isLinux(): boolean {
  * This function returns whether the native credential management system
  * should be used instead of tools service
  */
-export function keytarCredentialsEnabled() {
+export function keytarCredentialsEnabled(): boolean {
 	const linux: boolean = isLinux();
 	const useKeytarCredential: boolean = getConfigKeytar();
 	return linux && useKeytarCredential;
 }
 
 /**
- * This function returns whether the user wants to delete the old credentials
- * from their Linux system when migrating to keytar
- * @returns
+ * Gets the prefix for a formatted credential ID
  */
 
-export function migrateLinuxCredentials() {
+function getConnectionInfoId() {
+	let idNames = ['authenticationType', 'database', 'server', 'user'];
+
+	//Sort to make sure using names in the same order every time otherwise the ids would be different
+	idNames.sort();
+
+	let idValues: string[] = [];
+	for (let index = 0; index < idNames.length; index++) {
+		let value = this.options[idNames[index]!];
+		value = value ? value : '';
+		idValues.push(`${idNames[index]}${CRED_NAME_VALUE_SEPARATOR}${value}`);
+	}
+	return CRED_PROVIDER_NAME + CRED_SEPARATOR + this.providerName + CRED_SEPARATOR + idValues.join(CRED_SEPARATOR);
+}
+
+/**
+ * Creates a formatted credential usable for uniquely identifying a SQL Connection.
+ * This string can be decoded but is not optimized for this.
+ * @param connectionProfile connection profile - require
+ * @param itemType type of the item (MRU or Profile) - optional
+ * @returns formatted string with server, DB and username
+ */
+export function formatCredentialId(connectionProfile: azdata.connection.ConnectionProfile): string {
+	const cred: string[] = [CRED_PREFIX];
+	cred.push(CRED_ITEMTYPE_PREFIX.concat(CRED_PROFILE_USER));
+	cred.push(CRED_ID_PREFIX.concat(getConnectionInfoId()));
+	return cred.join(CRED_SEPARATOR);
+}
+
+/**
+ * This function returns whether the user wants to delete the old credentials
+ * from their Linux system when migrating to keytar
+ * It's true by default, and the system tries to migrate if true, else skips
+ * since it can only be false if the user set it or the migration is done
+ * @returns
+ */
+export function migrateLinuxCredentials(): boolean {
 	const linux: boolean = isLinux();
 	const migrateLinuxCredentials: boolean = getConfigMigrateLinuxCredential();
 	return linux && migrateLinuxCredentials;
+}
+
+/**
+ * Switches off the setting/flag migrateLinuxCredentials which controls
+ * the migration of credentials. This is set to false either when the user
+ * explicitly refuses to migrate or when the migration is all done
+ */
+export function disableCredentialMigration() {
+	let config = getConfiguration();
+	config.update(configMigrateLinuxCredential, false);
 }
 
 /**

@@ -41,7 +41,72 @@ class CredentialsFeature extends SqlOpsFeature<any> {
 		});
 	}
 
-	protected registerProvider(options: any): Disposable {
+	private migrateCredentials(): Thenable<boolean> {
+		return azdata.connection.getConnections(false).then((connections) => {
+			const savedPasswordConnections = connections.filter(conn => conn.savePassword === true);
+			return new Promise((resolve, reject) => {
+				savedPasswordConnections.forEach(async (conn) => {
+					const credentialId = Utils.formatCredentialId(conn);
+					// read password from every saved password connection
+					this._client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId, password: undefined }).then((credential) => {
+						if (credential) {
+							const password = credential.password;
+							// save it in keychain
+							this.keychain.setPassword(credentialId, password).then(() => {
+								// check if it's saved
+								this.keychain.getPassword(credentialId).then((savedPassword) => {
+									if (savedPassword === password) {
+										// delete from tools service
+										this._client.sendRequest(Contracts.DeleteCredentialRequest.type,
+											{ credentialId, password: undefined }).then((result) => resolve(result));
+									} else {
+										reject('Password couldn\'t be saved');
+									}
+								});
+							});
+						}
+					});
+				});
+			});
+		});
+	}
+
+	private registerKeytarProvider(options: any): Disposable {
+
+		let readCredential = (credentialId: string): Thenable<azdata.Credential> => {
+			return this.keychain.getPassword(credentialId).then((password) => {
+				if (password) {
+					const credential: azdata.Credential = {
+						credentialId: credentialId,
+						password: password
+					};
+					return credential;
+				}
+				return undefined;
+			});
+		};
+
+		let saveCredential = (credentialId: string, password: string): Thenable<boolean> => {
+			return this.keychain.setPassword(credentialId, password).then(() => {
+				return this.keychain.getPassword(credentialId).then((savedPassword) => {
+					return savedPassword === password;
+				});
+			});
+		};
+
+		let deleteCredential = (credentialId: string): Thenable<boolean> => {
+			return this.keychain.deletePassword(credentialId);
+		};
+
+		return azdata.credentials.registerProvider({
+			deleteCredential,
+			readCredential,
+			saveCredential,
+			handle: 0
+		});
+	}
+
+	private registerToolsServiceProvider(options: any): Disposable {
 		const client = this._client;
 
 		let readCredential = (credentialId: string): Thenable<azdata.Credential> => {
@@ -62,6 +127,21 @@ class CredentialsFeature extends SqlOpsFeature<any> {
 			saveCredential,
 			handle: 0
 		});
+	}
+
+	protected registerProvider(options: any): Disposable {
+		if (Utils.keytarCredentialsEnabled() && !Utils.migrateLinuxCredentials()) {
+			return this.registerKeytarProvider(options);
+		} else if (Utils.keytarCredentialsEnabled() && Utils.migrateLinuxCredentials()) {
+			this.migrateCredentials().then((result) => {
+				if (result) {
+					Utils.disableCredentialMigration();
+				}
+			});
+			return this.registerKeytarProvider(options);
+		} else {
+			return this.registerToolsServiceProvider(options);
+		}
 	}
 }
 
