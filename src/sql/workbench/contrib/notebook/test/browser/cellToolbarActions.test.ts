@@ -117,7 +117,6 @@ suite('CellToolbarActions', function (): void {
 				undefined,
 				undefined,
 				undefined,
-				undefined,
 			);
 			instantiationService.stub(INotificationService, new TestNotificationService());
 			instantiationService.stub(INotebookService, notebookService);

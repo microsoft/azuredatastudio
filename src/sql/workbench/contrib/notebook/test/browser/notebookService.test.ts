@@ -33,7 +33,6 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 /**
  * class to mock azdata.nb.ServerManager object
@@ -115,7 +114,6 @@ suite.skip('NotebookService:', function (): void {
 	let productService: IProductService;
 	let editorService: IEditorService;
 	let untitledTextEditorService: IUntitledTextEditorService;
-	let capabilitiesService: ICapabilitiesService;
 	let editorGroupsService: IEditorGroupsService;
 
 	let installExtensionEmitter: Emitter<InstallExtensionEvent>,
@@ -157,12 +155,11 @@ suite.skip('NotebookService:', function (): void {
 		productService = instantiationService.get(IProductService);
 		editorService = new IEditorService;
 		untitledTextEditorService = new IUntitledTextEditorService;
-		capabilitiesService = new ICapabilitiesService;
 		editorGroupsService = new IEditorGroupsService;
 
-		notebookService = new NotebookService(lifecycleService, storageService, extensionServiceMock.object, extensionManagementService, instantiationService, fileService, logServiceMock.object, queryManagementService, contextService, productService, undefined, undefined,
-			undefined,
-			undefined);
+		notebookService = new NotebookService(lifecycleService, storageService, extensionServiceMock.object, extensionManagementService,
+			instantiationService, fileService, logServiceMock.object, queryManagementService, contextService, productService,
+			undefined, undefined, undefined);
 		sandbox = sinon.sandbox.create();
 	});
 
@@ -460,7 +457,7 @@ suite.skip('NotebookService:', function (): void {
 		};
 		errorHandler.setUnexpectedErrorHandler(onUnexpectedErrorVerifier);
 		// The following call throws an exception internally with queryManagementService parameter being undefined.
-		new NotebookService(lifecycleService, storageService, extensionService, extensionManagementService, instantiationService, fileService, logService, /* queryManagementService */ undefined, contextService, productService, untitledTextEditorService, editorService, capabilitiesService, editorGroupsService);
+		new NotebookService(lifecycleService, storageService, extensionService, extensionManagementService, instantiationService, fileService, logService, /* queryManagementService */ undefined, contextService, productService, editorService, untitledTextEditorService, editorGroupsService);
 		await unexpectedErrorPromise;
 		assert.strictEqual(unexpectedErrorCalled, true, `onUnexpectedError must be have been raised when queryManagementService is undefined when calling NotebookService constructor`);
 	});

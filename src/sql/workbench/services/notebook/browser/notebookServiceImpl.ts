@@ -1,19 +1,16 @@
-/* eslint-disable code-import-patterns */
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
-import * as path from 'vs/base/common/path';
-
+import { nb } from 'azdata';
 import { localize } from 'vs/nls';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
 	INotebookService, INotebookManager, INotebookProvider,
-	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, INavigationProvider, ILanguageMagic, NavigationProviders, unsavedBooksContextKey
+	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, INavigationProvider, ILanguageMagic, NavigationProviders, unsavedBooksContextKey, INotebookOpenOptions
 } from 'sql/workbench/services/notebook/browser/notebookService';
 import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { standardRendererFactories } from 'sql/workbench/services/notebook/browser/outputs/factories';
@@ -39,22 +36,23 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IProductService } from 'vs/platform/product/common/productService';
-import { ExtHostNotebookEditor } from 'sql/workbench/api/common/extHostNotebookEditor';
-import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
+
+import * as path from 'vs/base/common/path';
+
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
-import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { MainThreadNotebookEditor } from 'sql/workbench/api/browser/mainThreadNotebookDocumentsAndEditors';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
-import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
-import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
+
+import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
+// eslint-disable-next-line code-import-patterns
+import { NotebookEditorInputAssociation } from 'sql/workbench/contrib/notebook/browser/models/nodebookInputFactory';
+
+// const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
+const languageAssociationRegistry = Registry.as<NotebookEditorInputAssociation>(LanguageAssociationExtensions.LanguageAssociations);
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -122,14 +120,12 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
 	private _editors = new Map<string, INotebookEditor>();
 	private _fileToProviders = new Map<string, NotebookProviderRegistration[]>();
-	private _providerToStandardKernels = new Map<string, azdata.nb.IStandardKernel[]>();
+	private _providerToStandardKernels = new Map<string, nb.IStandardKernel[]>();
 	private _registrationComplete = new Deferred<void>();
 	private _isRegistrationComplete = false;
 	private _trustedCacheQueue: URI[] = [];
 	private _unTrustedCacheQueue: URI[] = [];
-	private _notebookEditors = new Map<string, MainThreadNotebookEditor>();
-	private readonly _nbeditors = new Map<string, ExtHostNotebookEditor>();
-
+	private _onCodeCellExecutionStart: Emitter<void> = new Emitter<void>();
 
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
@@ -142,10 +138,9 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IQueryManagementService private readonly _queryManagementService: IQueryManagementService,
 		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IProductService private readonly productService: IProductService,
-		@IUntitledTextEditorService private _untitledEditorService: IUntitledTextEditorService,
 		@IEditorService private _editorService: IEditorService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
+		@IUntitledTextEditorService private _untitledEditorService: IUntitledTextEditorService,
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService
 	) {
 		super();
 		this._providersMemento = new Memento('notebookProviders', this._storageService);
@@ -188,8 +183,40 @@ export class NotebookService extends Disposable implements INotebookService {
 		lifecycleService.onWillShutdown(() => this.shutdown());
 	}
 
-	public dispose(): void {
-		super.dispose();
+	public async openNotebook(resource: UriComponents, options: INotebookOpenOptions): Promise<IEditorPane | undefined> {
+		const uri = URI.revive(resource);
+
+		const editorOptions: ITextEditorOptions = {
+			preserveFocus: options.preserveFocus,
+			pinned: !options.preview
+		};
+		let isUntitled: boolean = uri.scheme === Schemas.untitled;
+
+		let fileInput: IEditorInput;
+		if (isUntitled && path.isAbsolute(uri.fsPath)) {
+			const model = this._untitledEditorService.create({ associatedResource: uri, mode: 'notebook', initialValue: options.initialContent });
+			fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
+		} else {
+			if (isUntitled) {
+				const model = this._untitledEditorService.create({ untitledResource: uri, mode: 'notebook', initialValue: options.initialContent });
+				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
+			} else {
+				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: 'notebook' });
+			}
+		}
+		const input = languageAssociationRegistry.convertInput(fileInput);
+		input.defaultKernel = options.defaultKernel;
+		input.connectionProfile = options.connectionProfile;
+
+		if (isUntitled) {
+			let untitledModel = await input.resolve();
+			await untitledModel.load();
+			if (options.initialDirtyState === false) {
+				input.setDirty(false);
+			}
+		}
+
+		return await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
 	}
 
 	private updateSQLRegistrationWithConnectionProviders() {
@@ -310,7 +337,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		return providers ? providers.map(provider => provider.provider) : undefined;
 	}
 
-	getStandardKernelsForProvider(provider: string): azdata.nb.IStandardKernel[] {
+	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] {
 		return this._providerToStandardKernels.get(provider.toUpperCase());
 	}
 
@@ -666,120 +693,11 @@ export class NotebookService extends Disposable implements INotebookService {
 		return isTrusted;
 	}
 
-	/**
-	 * showNotebookDocument extensible API to be used for core
-	 * @param uri The notebook URI
-	 * @param showOptions Additional options when opening the notebook
-	 */
-	public showNotebookDocument(uri: URI, showOptions: azdata.nb.NotebookShowOptions): Thenable<azdata.nb.NotebookEditor> {
-		return this.doShowNotebookDocument(uri, showOptions);
+	get onCodeCellExecutionStart(): Event<void> {
+		return this._onCodeCellExecutionStart.event;
 	}
 
-	private async doShowNotebookDocument(uri: URI, showOptions: azdata.nb.NotebookShowOptions): Promise<azdata.nb.NotebookEditor> {
-		let options: INotebookShowOptions = {};
-		if (showOptions) {
-			options.preserveFocus = showOptions.preserveFocus;
-			options.preview = showOptions.preview;
-			options.position = showOptions.viewColumn;
-			options.providerId = showOptions.providerId;
-			options.connectionProfile = showOptions.connectionProfile;
-			options.defaultKernel = showOptions.defaultKernel;
-			if (showOptions.initialContent) {
-				if (typeof (showOptions.initialContent) !== 'string') {
-					options.initialContent = JSON.stringify(showOptions.initialContent);
-				} else {
-					options.initialContent = showOptions.initialContent;
-				}
-			}
-			options.initialDirtyState = showOptions.initialDirtyState;
-		}
-		let id = await this.$tryShowNotebookDocument(uri, options);
-		let editor = this.getEditor(id);
-		if (editor) {
-			return editor;
-		} else {
-			throw new Error(`Failed to show notebook document ${uri.toString()}, should show in editor #${id}`);
-		}
-	}
-
-	private getEditor(id: string): ExtHostNotebookEditor {
-		return this._nbeditors.get(id);
-	}
-
-	private $tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
-		return Promise.resolve(this.doOpenEditor(resource, options));
-	}
-
-
-	private async doOpenEditor(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
-
-		const uri = URI.revive(resource);
-
-		const editorOptions: ITextEditorOptions = {
-			preserveFocus: options.preserveFocus,
-			pinned: !options.preview
-		};
-		let isUntitled: boolean = uri.scheme === Schemas.untitled;
-
-		let fileInput: UntitledTextEditorInput | FileEditorInput;
-		if (isUntitled && path.isAbsolute(uri.fsPath)) {
-			const model = this._untitledEditorService.create({ associatedResource: uri, mode: 'notebook', initialValue: options.initialContent });
-			fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
-		} else {
-			if (isUntitled) {
-				const model = this._untitledEditorService.create({ untitledResource: uri, mode: 'notebook', initialValue: options.initialContent });
-				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
-			} else {
-				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: 'notebook' }) as FileEditorInput;
-			}
-		}
-		let input: NotebookInput;
-		if (isUntitled) {
-			input = this._instantiationService.createInstance(UntitledNotebookInput, path.basename(uri.fsPath), uri, fileInput as UntitledTextEditorInput);
-		} else {
-			input = this._instantiationService.createInstance(FileNotebookInput, path.basename(uri.fsPath), uri, fileInput as FileEditorInput);
-		}
-		input.defaultKernel = options.defaultKernel;
-		input.connectionProfile = new ConnectionProfile(this._capabilitiesService, options.connectionProfile);
-		if (isUntitled) {
-			let untitledModel = await (input as UntitledNotebookInput).textInput.resolve();
-			await untitledModel.load();
-			input.untitledEditorModel = untitledModel;
-			if (options.initialDirtyState === false) {
-				(input.untitledEditorModel as UntitledTextEditorModel).setDirty(false);
-			}
-		}
-		let editor = await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
-		if (!editor) {
-			return undefined;
-		}
-		return this.waitOnEditor(input);
-	}
-
-	private async waitOnEditor(input: NotebookInput): Promise<string> {
-		let id: string = undefined;
-		let attemptsLeft = 10;
-		let timeoutMs = 20;
-		while (!id && attemptsLeft > 0) {
-			id = this.findNotebookEditorIdFor(input);
-			if (!id) {
-				await this.wait(timeoutMs);
-			}
-		}
-		return id;
-	}
-
-	private findNotebookEditorIdFor(input: NotebookInput): string {
-		let foundId: string = undefined;
-		this._notebookEditors.forEach(e => {
-			if (e.matches(input)) {
-				foundId = e.id;
-			}
-		});
-		return foundId;
-	}
-
-	private wait(timeMs: number): Promise<void> {
-		return new Promise((resolve: Function) => setTimeout(resolve, timeMs));
+	notifyCellExecutionStarted(): void {
+		this._onCodeCellExecutionStart.fire();
 	}
 }

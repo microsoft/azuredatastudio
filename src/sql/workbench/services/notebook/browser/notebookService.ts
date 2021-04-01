@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { URI } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -18,6 +18,8 @@ import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootst
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { Range } from 'vs/editor/common/core/range';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
+import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
+import { IEditorPane } from 'vs/workbench/common/editor';
 
 export const SERVICE_ID = 'sqlNotebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -43,6 +45,17 @@ export enum NavigationProviders {
 }
 
 export const unsavedBooksContextKey = 'unsavedBooks';
+
+export interface INotebookOpenOptions {
+	position?: EditorViewColumn;
+	preserveFocus?: boolean;
+	preview?: boolean;
+	providerId?: string;
+	connectionProfile?: azdata.IConnectionProfile;
+	defaultKernel?: azdata.nb.IKernelSpec;
+	initialContent?: string;
+	initialDirtyState?: boolean;
+}
 
 export interface INotebookService {
 	_serviceBrand: undefined;
@@ -130,7 +143,17 @@ export interface INotebookService {
 	 */
 	setTrusted(notebookUri: URI, isTrusted: boolean): Promise<boolean>;
 
-	showNotebookDocument(uri: URI, showOptions: azdata.nb.NotebookShowOptions): Thenable<azdata.nb.NotebookEditor>
+	/**
+	 * Event that gets fired when a cell is executed.
+	 */
+	onCodeCellExecutionStart: Event<void>;
+
+	/**
+	 * Fires the onCodeCellExecutionStart event.
+	 */
+	notifyCellExecutionStarted(): void;
+
+	openNotebook(resource: UriComponents, options: INotebookOpenOptions): Promise<IEditorPane | undefined>;
 }
 
 export interface INotebookProvider {

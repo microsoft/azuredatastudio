@@ -121,7 +121,6 @@ suite('Notebook Editor Model', function (): void {
 		undefined,
 		undefined,
 		undefined,
-		undefined
 	);
 	let mockNotebookService = TypeMoq.Mock.ofInstance(notebookService);
 

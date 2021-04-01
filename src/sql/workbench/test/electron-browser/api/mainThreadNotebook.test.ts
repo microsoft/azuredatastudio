@@ -50,7 +50,6 @@ suite('MainThreadNotebook Tests', () => {
 			undefined,
 			undefined,
 			undefined,
-			undefined
 		);
 		mockNotebookService = TypeMoq.Mock.ofInstance(notebookService);
 		notebookUri = URI.parse('file:/user/default/my.ipynb');
