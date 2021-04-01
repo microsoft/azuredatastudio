@@ -154,11 +154,10 @@ export class ProjectDashboard {
 		const image = this.projectProvider!.image;
 		headerContainer.addItem(header, {
 			CSSStyles: {
-				'background-image': `url(${vscode.Uri.file(image!.light.toString())}),
-					linear-gradient(360deg, rgba(127,181,239,0.15) 0%, rgba(242,242,242,0) 42.2%, rgba(242,242,242,0.0572917) 42.2%)`,
-				'background-repeat': 'no-repeat, no-repeat',
-				'background-position': '85% bottom, top',
-				'background-size': '10%, 100%',
+				'background-image': `url(${vscode.Uri.file(image!.light.toString())})`,
+				'background-repeat': 'no-repeat',
+				'background-position': '85% bottom',
+				'background-size': '10%',
 				'border': 'none',
 				'width': '100%',
 				'height': '100%'
