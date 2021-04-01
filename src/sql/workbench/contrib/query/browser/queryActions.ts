@@ -768,8 +768,8 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 	}
 
 	/**
-	 * Fetches the list of database names from
-	 * @returns The list of database names for the current editor connection
+	 * Fetches the list of database names from the current editor connection
+	 * @returns The list of database names
 	 */
 	private async getDatabaseNames(): Promise<string[]> {
 		if (!this._editor.input) {
