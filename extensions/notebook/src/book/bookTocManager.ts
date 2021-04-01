@@ -349,9 +349,9 @@ export class BookTocManager implements IBookTocManager {
 			this.cleanUp(path.dirname(section.book.contentPath));
 		}
 
-		if (book.version === BookVersion.v1) {
+		if (book.book.version === BookVersion.v1) {
 			// here we only convert if is v1 because we are already using the v2 notation for every book that we read.
-			this.newSection = convertTo(book.version, this.newSection);
+			this.newSection = convertTo(book.book.version, this.newSection);
 		}
 	}
 
@@ -385,9 +385,9 @@ export class BookTocManager implements IBookTocManager {
 		fileName = fileName === undefined ? filePath.name : path.parse(fileName).name;
 		this.newSection.file = path.posix.join(path.posix.sep, fileName);
 		this.newSection.title = file.book.title;
-		if (book.version === BookVersion.v1) {
+		if (book.book.version === BookVersion.v1) {
 			// here we only convert if is v1 because we are already using the v2 notation for every book that we read.
-			this.newSection = convertTo(book.version, this.newSection);
+			this.newSection = convertTo(book.book.version, this.newSection);
 		}
 	}
 

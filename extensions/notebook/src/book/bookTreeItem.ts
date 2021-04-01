@@ -41,7 +41,6 @@ export class BookTreeItem extends vscode.TreeItem {
 	private _uri: string | undefined;
 	private _previousUri: string;
 	private _nextUri: string;
-	public readonly version: BookVersion;
 	public command: vscode.Command;
 	public resourceUri: vscode.Uri;
 	private _rootContentPath: string;
@@ -52,7 +51,6 @@ export class BookTreeItem extends vscode.TreeItem {
 		if (book.type === BookTreeItemType.Book) {
 			this.collapsibleState = book.treeItemCollapsibleState;
 			this._sections = book.page;
-			this.version = book.version;
 			if (book.isUntitled) {
 				this.contextValue = BookTreeItemType.providedBook;
 			} else {
