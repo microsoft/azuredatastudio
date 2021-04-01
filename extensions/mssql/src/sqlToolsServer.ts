@@ -8,7 +8,7 @@ import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { getCommonLaunchArgsAndCleanupOldLogFiles, keytarCredentialsEnabled } from './utils';
+import { getCommonLaunchArgsAndCleanupOldLogFiles, keytarCredentialsEnabled, migrateLinuxCredentials } from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, KeytarCredentialsFeature } from './features';
@@ -89,7 +89,7 @@ export class SqlToolsServer {
 	private activateFeatures(context: AppContext): Promise<void> {
 		const resourceProvider = new AzureResourceProvider(context.extensionContext.logPath, this.config);
 		this.disposables.push(resourceProvider);
-		if (keytarCredentialsEnabled()) {
+		if (keytarCredentialsEnabled() && !migrateLinuxCredentials) {
 			return resourceProvider.start().then();
 		} else {
 			const credsStore = new CredentialStore(context.extensionContext.logPath, this.config);
@@ -164,7 +164,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 		ProfilerFeature,
 		SqlMigrationService.asFeature(context)
 	];
-	if (keytarCredentialsEnabled()) {
+	if (keytarCredentialsEnabled() && !migrateLinuxCredentials) {
 		features.push(KeytarCredentialsFeature);
 	}
 	return {

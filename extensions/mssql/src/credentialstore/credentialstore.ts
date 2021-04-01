@@ -13,8 +13,11 @@ import * as azdata from 'azdata';
 import * as Contracts from './contracts';
 import * as Constants from './constants';
 import * as Utils from '../utils';
+import { Keychain } from './keychain';
 
 class CredentialsFeature extends SqlOpsFeature<any> {
+
+	private keychain: Keychain;
 
 	private static readonly messagesTypes: RPCMessageType[] = [
 		Contracts.DeleteCredentialRequest.type,
@@ -24,6 +27,7 @@ class CredentialsFeature extends SqlOpsFeature<any> {
 
 	constructor(client: SqlOpsDataClient) {
 		super(client, CredentialsFeature.messagesTypes);
+		this.keychain = new Keychain();
 	}
 
 	fillClientCapabilities(capabilities: ClientCapabilities): void {
