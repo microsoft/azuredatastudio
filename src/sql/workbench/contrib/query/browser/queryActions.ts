@@ -764,7 +764,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 	private onDropdownFocus(): void {
 		this.getDatabaseNames().then(databaseNames => {
 			this._dropdown.values = databaseNames;
-		});
+		}).catch(onUnexpectedError);
 	}
 
 	/**
@@ -799,7 +799,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 				.then(databaseNames => {
 					this._databaseSelectBox.setOptions(databaseNames);
 					this._databaseSelectBox.selectWithOptionName(databaseName);
-				});
+				}).catch(onUnexpectedError);
 		} else {
 			// Set the value immediately to the initial database so the user can see that, and then
 			// populate the list with just that value to avoid displaying an error while we load
