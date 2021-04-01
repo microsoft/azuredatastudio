@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { EditorInput, EditorModel, IEditorInput } from 'vs/workbench/common/editor';
-import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ILanguageAssociation } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 
 export class QueryPlanConverter implements ILanguageAssociation {
 	static readonly languages = ['sqlplan'];
@@ -40,7 +40,7 @@ export class QueryPlanInput extends EditorInput {
 
 	constructor(
 		private _uri: URI,
-		@IFileService private readonly fileService: IFileService
+		@ITextFileService private readonly fileService: ITextFileService
 	) {
 		super();
 	}
@@ -67,7 +67,7 @@ export class QueryPlanInput extends EditorInput {
 
 	public async resolve(refresh?: boolean): Promise<EditorModel | null> {
 		if (!this._xml) {
-			this._xml = (await this.fileService.readFile(this._uri)).value.toString();
+			this._xml = (await this.fileService.read(this._uri, { acceptTextOnly: true })).value;
 		}
 		return null;
 	}
