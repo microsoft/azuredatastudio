@@ -44,6 +44,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IRange } from 'vs/editor/common/core/range';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -800,14 +801,15 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 					this._databaseSelectBox.selectWithOptionName(databaseName);
 				});
 		} else {
-			// Set the value immediately to the initial database so the user can see that, but
-			// keep the control disabled while we load the rest of the database names
+			// Set the value immediately to the initial database so the user can see that, and then
+			// populate the list with just that value to avoid displaying an error while we load
+			// the full list of databases
 			this._dropdown.value = databaseName;
+			this._dropdown.values = [databaseName];
+			this._dropdown.enabled = true;
 			this.getDatabaseNames().then(databaseNames => {
 				this._dropdown.values = databaseNames;
-			}).finally(() => {
-				this._dropdown.enabled = true;
-			});
+			}).catch(onUnexpectedError);
 		}
 	}
 
