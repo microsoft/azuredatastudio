@@ -95,7 +95,7 @@ export class AddFileDialog {
 	private async createFile(): Promise<boolean> {
 		try {
 			const dirPath = this._bookItem.contextValue === BookTreeItemType.savedBook ? this._bookItem.rootContentPath : path.dirname(this._bookItem.resourceUri.fsPath);
-			const filePath = path.join(dirPath, this._fileNameInputBox.value).concat(this._extension);
+			const filePath = path.posix.join(dirPath, this._fileNameInputBox.value).concat(this._extension);
 			await this.validatePath(dirPath, this._fileNameInputBox.value.concat(this._extension));
 			const pathDetails = new TocEntryPathHandler(filePath, this._bookItem.rootContentPath, this._titleInputBox.value);
 			await this._tocManager.addNewFile(pathDetails, this._bookItem);

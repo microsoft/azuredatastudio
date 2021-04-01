@@ -11,7 +11,7 @@ export class TocEntryPathHandler {
 	public readonly titleInTocEntry: string;
 	public readonly fileExtension: FileExtension;
 	constructor(public readonly filePath: string, public readonly bookRoot: string, title?: string) {
-		const relativePath = path.relative(bookRoot, filePath);
+		const relativePath = path.posix.join(path.posix.sep, path.relative(bookRoot, filePath));
 		const pathDetails = path.parse(relativePath);
 		this.fileInTocEntry = relativePath.replace(pathDetails.ext, '');
 		this.titleInTocEntry = title ?? pathDetails.name;
