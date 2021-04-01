@@ -132,15 +132,21 @@ export class HTMLMarkdownConverter {
 		this.turndownService.addRule('a', {
 			filter: 'a',
 			replacement: (content, node) => {
-				//On Windows, if notebook is not trusted then the href attr is removed for all non-web URL links
-				// href contains either a hyperlink or a URI-encoded absolute path. (See resolveUrls method in notebookMarkdown.ts)
-				const notebookLink = node.href ? URI.parse(node.href) : URI.file(node.title);
-				const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
-				let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
-				if (relativePath) {
-					return `[${node.innerText}](${relativePath})`;
+				let href = node.href;
+				const isAnchorLink = node.attributes.href.nodeValue.startsWith('#');
+				if (isAnchorLink) {
+					href = node.attributes.href.nodeValue;
+				} else {
+					//On Windows, if notebook is not trusted then the href attr is removed for all non-web URL links
+					// href contains either a hyperlink or a URI-encoded absolute path. (See resolveUrls method in notebookMarkdown.ts)
+					const notebookLink = node.href ? URI.parse(node.href) : URI.file(node.title);
+					const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
+					let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
+					if (relativePath) {
+						return `[${node.innerText}](${relativePath})`;
+					}
 				}
-				return `[${content}](${node.href})`;
+				return `[${content}](${href})`;
 			}
 		});
 		// Only nested list case differs from original turndown rule
