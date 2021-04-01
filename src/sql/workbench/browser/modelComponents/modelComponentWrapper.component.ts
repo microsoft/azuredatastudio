@@ -110,7 +110,7 @@ export class ModelComponentWrapper extends AngularDisposable implements AfterVie
 		let selector = componentRegistry.getCtorFromId(this.descriptor.type);
 
 		if (selector === undefined) {
-			this.logService.error('No selector defined for type {0}', this.descriptor.type);
+			this.logService.error('No selector defined for type ', this.descriptor.type);
 			return;
 		}
 
@@ -128,7 +128,13 @@ export class ModelComponentWrapper extends AngularDisposable implements AfterVie
 			this._componentInstance.modelStore = this.modelStore;
 			this._changeref.detectChanges();
 		} catch (e) {
-			this.logService.error('Error rendering component: {0}', e);
+			// There's a possible race condition here where a component that is added is then immediately removed,
+			// which then makes it so that while the changeRef isn't destroyed when we call detectChanges above
+			// it becomes destroyed during the detectChanges call and thus eventually throws. So to avoid a pointless
+			// error message in the console we just make sure that we aren't disposed before printing it out
+			if (!this.isDisposed) {
+				this.logService.error('Error rendering component: ', e);
+			}
 			return;
 		}
 		let el = <HTMLElement>componentRef.location.nativeElement;
