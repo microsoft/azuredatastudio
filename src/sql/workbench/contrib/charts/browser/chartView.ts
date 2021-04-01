@@ -2,15 +2,16 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 import 'vs/css!./media/chartView';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Extensions, IInsightData, IInsightRegistry } from 'sql/platform/dashboard/browser/insightRegistry';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ChartState } from 'sql/workbench/common/editor/query/chartState';
 import { ConfigureChartAction, CopyAction, CreateInsightAction, IChartActionContext, SaveImageAction } from 'sql/workbench/contrib/charts/browser/actions';
+import { IChartsConfiguration } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { ChartType, IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { ICellValue, VisualizationOptions } from 'sql/workbench/services/query/common/query';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
@@ -23,13 +24,13 @@ import * as nls from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { INotificationService } from 'vs/platform/notification/common/notification';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { attachInputBoxStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ChartOptions, ControlType, IChartOption } from './chartOptions';
 import { Insight } from './insight';
-import { IChartsConfiguration } from 'sql/workbench/contrib/charts/browser/interfaces';
 
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
@@ -92,7 +93,9 @@ export class ChartView extends Disposable implements IPanelView {
 		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotificationService private readonly _notificationService: INotificationService,
-		@IConfigurationService private readonly _configurationService: IConfigurationService
+		@IConfigurationService private readonly _configurationService: IConfigurationService,
+		@IStorageService private readonly _storageService: IStorageService,
+		@IAdsTelemetryService private readonly _adsTelemetryService: IAdsTelemetryService
 	) {
 		super();
 		this.taskbarContainer = DOM.$('div.taskbar-container');
@@ -198,7 +201,7 @@ export class ChartView extends Disposable implements IPanelView {
 	public chart(dataId: { batchId: number, resultId: number }) {
 		this.state.dataId = dataId;
 		this._currentData = dataId;
-		this.shouldGraph();
+		this.showGraph();
 	}
 
 	layout(dimension: DOM.Dimension): void {
@@ -212,7 +215,7 @@ export class ChartView extends Disposable implements IPanelView {
 
 	public set queryRunner(runner: QueryRunner) {
 		this._queryRunner = runner;
-		this.shouldGraph();
+		this.showGraph();
 	}
 
 	public setData(rows: ICellValue[][], columns: string[]): void {
@@ -231,7 +234,7 @@ export class ChartView extends Disposable implements IPanelView {
 		}
 	}
 
-	private shouldGraph() {
+	private showGraph() {
 		// Check if we have the necessary information
 		if (this._currentData && this._queryRunner) {
 			// check if we are being asked to graph something that is available
@@ -240,9 +243,23 @@ export class ChartView extends Disposable implements IPanelView {
 				let summary = batch.resultSetSummaries[this._currentData.resultId];
 				if (summary) {
 					const maxRowCount = this._configurationService.getValue<IChartsConfiguration>('charts').maxRowCount;
+					const storageKey = 'charts/ignoreMaxRowCountExceededNotification';
+
 					if (summary.rowCount > maxRowCount) {
-						this._notificationService.info(nls.localize('charting.maxAllowedRowsExceeded', "Maximum row count for charts has been exceeded, only the first {0} rows are used. To configure the value, you can open user settings and search for: 'charts.maxRowCount'.", maxRowCount));
+						this._adsTelemetryService.sendTelemetryEvent('charts.maxRowCountExceeded');
+						if (!this._storageService.getBoolean(storageKey, StorageScope.GLOBAL, false)) {
+							this._notificationService.prompt(Severity.Info,
+								nls.localize('charting.maxAllowedRowsExceeded', "Maximum row count for charts has been exceeded, only the first {0} rows are used. To configure the value, you can open user settings and search for: 'charts.maxRowCount'.", maxRowCount),
+								[{
+									label: nls.localize('charts.neverShowAgain', "Don't Show Again"),
+									isSecondary: true,
+									run: () => {
+										this._storageService.store(storageKey, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
+									}
+								}]);
+						}
 					}
+
 					this._queryRunner.getQueryRows(0, Math.min(maxRowCount, summary.rowCount), this._currentData.batchId, this._currentData.resultId).then(d => {
 						let rows = d.rows;
 						let columns = summary.columnInfo.map(c => c.columnName);
