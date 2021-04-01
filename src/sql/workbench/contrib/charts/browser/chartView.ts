@@ -249,7 +249,7 @@ export class ChartView extends Disposable implements IPanelView {
 						this._adsTelemetryService.sendTelemetryEvent('charts.maxRowCountExceeded');
 						if (!this._storageService.getBoolean(storageKey, StorageScope.GLOBAL, false)) {
 							this._notificationService.prompt(Severity.Info,
-								nls.localize('charting.maxAllowedRowsExceeded', "Maximum row count for charts has been exceeded, only the first {0} rows are used. To configure the value, you can open user settings and search for: 'charts.maxRowCount'.", maxRowCount),
+								nls.localize('charts.maxAllowedRowsExceeded', "Maximum row count for charts has been exceeded, only the first {0} rows are used. To configure the value, you can open user settings and search for: 'charts.maxRowCount'.", maxRowCount),
 								[{
 									label: nls.localize('charts.neverShowAgain', "Don't Show Again"),
 									isSecondary: true,
