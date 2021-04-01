@@ -4,31 +4,33 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/chartView';
-
-import { IPanelView } from 'sql/base/browser/ui/panel/panel';
-import { Insight } from './insight';
-import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { ICellValue, VisualizationOptions } from 'sql/workbench/services/query/common/query';
-import { ChartOptions, IChartOption, ControlType } from './chartOptions';
-import { Extensions, IInsightRegistry, IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
-import { Registry } from 'vs/platform/registry/common/platform';
-import * as DOM from 'vs/base/browser/dom';
-import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
-import { attachSelectBoxStyler, attachInputBoxStyler } from 'vs/platform/theme/common/styler';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { isUndefinedOrNull } from 'vs/base/common/types';
-import { CreateInsightAction, CopyAction, SaveImageAction, IChartActionContext, ConfigureChartAction } from 'sql/workbench/contrib/charts/browser/actions';
-import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
-import { IInsightOptions, ChartType, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { IPanelView } from 'sql/base/browser/ui/panel/panel';
+import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
+import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { Extensions, IInsightData, IInsightRegistry } from 'sql/platform/dashboard/browser/insightRegistry';
 import { ChartState } from 'sql/workbench/common/editor/query/chartState';
+import { ConfigureChartAction, CopyAction, CreateInsightAction, IChartActionContext, SaveImageAction } from 'sql/workbench/contrib/charts/browser/actions';
+import { ChartType, IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
+import { ICellValue, VisualizationOptions } from 'sql/workbench/services/query/common/query';
+import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
+import * as DOM from 'vs/base/browser/dom';
+import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
+import { Emitter, Event } from 'vs/base/common/event';
+import { Disposable, dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 import * as nls from 'vs/nls';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { Event, Emitter } from 'vs/base/common/event';
+import { Registry } from 'vs/platform/registry/common/platform';
+import { attachInputBoxStyler, attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { ChartOptions, ControlType, IChartOption } from './chartOptions';
+import { Insight } from './insight';
+import { IChartsConfiguration } from 'sql/workbench/contrib/charts/browser/interfaces';
+
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -89,7 +91,8 @@ export class ChartView extends Disposable implements IPanelView {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@INotificationService private readonly _notificationService: INotificationService
+		@INotificationService private readonly _notificationService: INotificationService,
+		@IConfigurationService private readonly _configurationService: IConfigurationService
 	) {
 		super();
 		this.taskbarContainer = DOM.$('div.taskbar-container');
@@ -236,7 +239,11 @@ export class ChartView extends Disposable implements IPanelView {
 			if (batch) {
 				let summary = batch.resultSetSummaries[this._currentData.resultId];
 				if (summary) {
-					this._queryRunner.getQueryRows(0, summary.rowCount, this._currentData.batchId, this._currentData.resultId).then(d => {
+					const maxRowCount = this._configurationService.getValue<IChartsConfiguration>('charts').maxRowCount;
+					if (summary.rowCount > maxRowCount) {
+						this._notificationService.info(nls.localize('charting.maxAllowedRowsExceeded', "Maximum row count for charts has been exceeded, only the first {0} rows are used. To configure the value, you can open user settings and search for: 'charts.maxRowCount'.", maxRowCount));
+					}
+					this._queryRunner.getQueryRows(0, Math.min(maxRowCount, summary.rowCount), this._currentData.batchId, this._currentData.resultId).then(d => {
 						let rows = d.rows;
 						let columns = summary.columnInfo.map(c => c.columnName);
 						this.setData(rows, columns);
