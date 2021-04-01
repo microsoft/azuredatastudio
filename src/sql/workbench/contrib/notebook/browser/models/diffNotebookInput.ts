@@ -10,21 +10,25 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { Deferred } from 'sql/base/common/promise';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class DiffNotebookInput extends SideBySideEditorInput {
 	public static ID: string = 'workbench.editorinputs.DiffNotebookInput';
 	private _notebookService: INotebookService;
+	private _logService: ILogService;
 
 	constructor(
 		title: string,
 		diffInput: DiffEditorInput,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@INotebookService notebookService: INotebookService
+		@INotebookService notebookService: INotebookService,
+		@ILogService logService: ILogService
 	) {
 		let originalInput = instantiationService.createInstance(FileNotebookInput, diffInput.primary.getName(), diffInput.primary.resource, diffInput.originalInput as FileEditorInput);
 		let modifiedInput = instantiationService.createInstance(FileNotebookInput, diffInput.secondary.getName(), diffInput.secondary.resource, diffInput.modifiedInput as FileEditorInput);
 		super(title, diffInput.getTitle(), modifiedInput, originalInput);
 		this._notebookService = notebookService;
+		this._logService = logService;
 		this.setupScrollListeners(originalInput, modifiedInput);
 	}
 
@@ -56,13 +60,13 @@ export class DiffNotebookInput extends SideBySideEditorInput {
 			}
 
 			// If not already shown, listen for add events
-			this._notebookService.onNotebookEditorAdd((e) => {
+			this._register(this._notebookService.onNotebookEditorAdd((e) => {
 				if (e.id === originalInput.notebookUri.toString()) {
 					originalNotebookEditorShown.resolve();
 				} else if (e.id === modifiedInput.notebookUri.toString()) {
 					modifiedNotebookEditorShown.resolve();
 				}
-			});
+			}));
 
 			// Once both are shown, look for scrollable DIV. Add scroll listeners here
 			Promise.all([originalNotebookEditorShown.promise, modifiedNotebookEditorShown.promise]).then(() => {
@@ -77,7 +81,11 @@ export class DiffNotebookInput extends SideBySideEditorInput {
 						originalScrollableNode.scroll({ top: modifiedScrollableNode.scrollTop });
 					});
 				}
+			}).catch(error => {
+				this._logService.error(`Issue encountered waiting for original and modified notebook editors to be shown in notebook diff input: ${error}`);
 			});
+		}).catch(error => {
+			this._logService.error(`Issue encountered waiting for original and modified notebook containers to exist in notebook diff input: ${error}`);
 		});
 	}
 }
