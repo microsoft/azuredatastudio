@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, EditorModel, IEditorInput } from 'vs/workbench/common/editor';
-import { URI } from 'vs/base/common/uri';
-import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ILanguageAssociation } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
+import { URI } from 'vs/base/common/uri';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { EditorInput, EditorModel, IEditorInput } from 'vs/workbench/common/editor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 
 export class QueryPlanConverter implements ILanguageAssociation {
 	static readonly languages = ['sqlplan'];
