@@ -761,48 +761,53 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 	}
 
 	private onDropdownFocus(): void {
+		this.getDatabaseNames().then(databaseNames => {
+			this._dropdown.values = databaseNames;
+		});
+	}
+
+	/**
+	 * Fetches the list of database names from
+	 * @returns The list of database names for the current editor connection
+	 */
+	private async getDatabaseNames(): Promise<string[]> {
 		if (!this._editor.input) {
 			this.logService.error('editor input was null');
-			return;
+			return [];
 		}
 
 		let uri = this._editor.input.uri;
 		if (!uri) {
-			return;
+			return [];
 		}
-
-		this.connectionManagementService.listDatabases(uri)
-			.then(result => {
-				if (result && result.databaseNames) {
-					this._dropdown.values = result.databaseNames;
-				}
-			});
+		try {
+			const result = await this.connectionManagementService.listDatabases(uri);
+			return result.databaseNames;
+		} catch (err) {
+			this.logService.error(`Error loading database names for query editor `, err);
+		}
+		return [];
 	}
 
-	private updateConnection(databaseName: string) {
+	private updateConnection(databaseName: string): void {
 		this._isConnected = true;
 		this._currentDatabaseName = databaseName;
 
 		if (this._isInAccessibilityMode) {
-			this._databaseSelectBox.enable();
-			if (!this._editor.input) {
-				this.logService.error('editor input was null');
-				return;
-			}
-			let uri = this._editor.input.uri;
-			if (!uri) {
-				return;
-			}
-			this.connectionManagementService.listDatabases(uri)
-				.then(result => {
-					if (result && result.databaseNames) {
-						this._databaseSelectBox.setOptions(result.databaseNames);
-					}
+			this.getDatabaseNames()
+				.then(databaseNames => {
+					this._databaseSelectBox.setOptions(databaseNames);
 					this._databaseSelectBox.selectWithOptionName(databaseName);
 				});
 		} else {
-			this._dropdown.enabled = true;
+			// Set the value immediately to the initial database so the user can see that, but
+			// keep the control disabled while we load the rest of the database names
 			this._dropdown.value = databaseName;
+			this.getDatabaseNames().then(databaseNames => {
+				this._dropdown.values = databaseNames;
+			}).finally(() => {
+				this._dropdown.enabled = true;
+			});
 		}
 	}
 
