@@ -151,14 +151,14 @@ export class ProjectDashboard {
 			.component();
 		header.addItem(locationLabel, { CSSStyles: { 'padding-left': '34px', 'padding-top': '15px', 'padding-bottom': '50px', 'font-size': '16px' } });
 
-		const image = this.projectProvider!.image;
+		const image = this.projectProvider!.image;		// background image added at the bottom right of the header
 		headerContainer.addItem(header, {
 			CSSStyles: {
 				'background-image': `url(${vscode.Uri.file(image!.light.toString())})`,
 				'background-repeat': 'no-repeat',
 				'background-position': '85% bottom',
 				'background-size': '10%',
-				'border': 'none',
+				'border-bottom': 'solid 1px',
 				'width': '100%',
 				'height': '100%'
 			}
