@@ -158,7 +158,7 @@ export class ProjectDashboard {
 				'background-repeat': 'no-repeat',
 				'background-position': '85% bottom',
 				'background-size': '10%',
-				'border-bottom': 'solid 1px',
+				'border-bottom': 'solid 1px #ccc',
 				'width': '100%',
 				'height': '100%'
 			}
