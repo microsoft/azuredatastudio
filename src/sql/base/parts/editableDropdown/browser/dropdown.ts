@@ -13,7 +13,6 @@ import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { IListStyles, List } from 'vs/base/browser/ui/list/listWidget';
 import { Color } from 'vs/base/common/color';
-import { onUnexpectedError } from 'vs/base/common/errors';
 import { Emitter, Event } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Disposable } from 'vs/base/common/lifecycle';
