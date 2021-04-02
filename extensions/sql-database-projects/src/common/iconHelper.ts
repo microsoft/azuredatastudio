@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 
 export interface IconPath {
 	dark: string;
@@ -39,6 +40,8 @@ export class IconPathHelper {
 	public static error: IconPath;
 	public static inProgress: IconPath;
 
+	public static dashboardSqlProj: azdata.ThemedIconPath;
+
 	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
 		IconPathHelper.extensionContext = extensionContext;
 
@@ -68,6 +71,8 @@ export class IconPathHelper {
 		IconPathHelper.success = IconPathHelper.makeIcon('success', true);
 		IconPathHelper.error = IconPathHelper.makeIcon('error', true);
 		IconPathHelper.inProgress = IconPathHelper.makeIcon('inProgress', true);
+
+		IconPathHelper.dashboardSqlProj = IconPathHelper.makeIcon('dashboardSqlProj', true);
 	}
 
 	private static makeIcon(name: string, sameIcon: boolean = false) {
