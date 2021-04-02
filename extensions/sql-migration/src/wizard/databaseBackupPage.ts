@@ -512,7 +512,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						c.validationErrorMessage = constants.DATABASE_ALREADY_EXISTS_MI(this.migrationStateModel._targetServerInstance.name);
 						return false;
 					}
-					if (c.value!.length < 1 || c.value!.length > 128 || !/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/.test(c.value!)) {
+					if (c.value!.length < 1 || c.value!.length > 128 || !/[^ <>*%&:\\\/?]/.test(c.value!)) {
 						c.validationErrorMessage = constants.INVALID_TARGET_NAME_ERROR;
 						return false;
 					}
