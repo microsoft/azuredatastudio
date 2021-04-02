@@ -155,6 +155,7 @@ export class BookModel {
 			}
 		);
 		this._bookItems.push(notebookItem);
+		this._rootNode = notebookItem;
 		if (this.openAsUntitled && !this._allNotebooks.get(pathDetails.base)) {
 			this._allNotebooks.set(pathDetails.base, notebookItem);
 		} else {
