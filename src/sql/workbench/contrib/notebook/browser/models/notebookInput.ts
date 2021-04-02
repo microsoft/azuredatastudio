@@ -118,6 +118,11 @@ export class NotebookEditorModel extends EditorModel {
 	}
 
 	public updateModel(contentChange?: NotebookContentChange, type?: NotebookChangeType): void {
+		// If text editor model is readonly, exit early as no changes need to occur on the model
+		// Note: this follows what happens in fileCommands where update/save logic is skipped for readonly text editor models
+		if (this.textEditorModel?.isReadonly()) {
+			return;
+		}
 		if (type === NotebookChangeType.KernelChanged && this._isFirstKernelChange) {
 			this._isFirstKernelChange = false;
 			return;

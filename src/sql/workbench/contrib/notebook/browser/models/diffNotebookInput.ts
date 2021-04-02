@@ -61,9 +61,9 @@ export class DiffNotebookInput extends SideBySideEditorInput {
 
 			// If not already shown, listen for add events
 			this._register(this._notebookService.onNotebookEditorAdd((e) => {
-				if (e.id === originalInput.notebookUri.toString()) {
+				if (e.notebookParams.input === originalInput) {
 					originalNotebookEditorShown.resolve();
-				} else if (e.id === modifiedInput.notebookUri.toString()) {
+				} else if (e.notebookParams.input === modifiedInput) {
 					modifiedNotebookEditorShown.resolve();
 				}
 			}));
@@ -74,10 +74,30 @@ export class DiffNotebookInput extends SideBySideEditorInput {
 				const modifiedScrollableNode = modifiedInput.container?.querySelector('.scrollable');
 
 				if (originalScrollableNode && modifiedScrollableNode) {
+
+					// origTarget/modTarget track the scrollTop for the other editor.
+					// This ensures that events are getting fired while a scroll is ongoing, which can
+					// result in scrolling speed that seems much slower than expected
+					let origTarget: number | undefined;
+					let modTarget: number | undefined;
 					originalScrollableNode.addEventListener('scroll', () => {
+						if (origTarget !== undefined) {
+							if (origTarget === originalScrollableNode.scrollTop) {
+								origTarget = undefined;
+							}
+							return;
+						}
+						modTarget = originalScrollableNode.scrollTop;
 						modifiedScrollableNode.scroll({ top: originalScrollableNode.scrollTop });
 					});
 					modifiedScrollableNode.addEventListener('scroll', () => {
+						if (modTarget !== undefined) {
+							if (modTarget === modifiedScrollableNode.scrollTop) {
+								modTarget = undefined;
+							}
+							return;
+						}
+						origTarget = modifiedScrollableNode.scrollTop;
 						originalScrollableNode.scroll({ top: modifiedScrollableNode.scrollTop });
 					});
 				}
