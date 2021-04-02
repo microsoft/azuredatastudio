@@ -143,6 +143,8 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '[msft](http://www.microsoft.com/images/msft.png)', 'Basic http link test failed');
 		htmlString = 'Test <a href="http://www.microsoft.com/images/msft.png">msft</a>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Test [msft](http://www.microsoft.com/images/msft.png)', 'Basic http link + text test failed');
+		htmlString = '<a href="#hello">hello</a>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '[hello](#hello)', 'Basic link to a section failed');
 	});
 
 	test('Should transform <li> tags', () => {
