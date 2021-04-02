@@ -65,7 +65,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			// Only reveal if...
 			if (e.visible && // If the view is currently visible - if not then we'll just wait until this is called when the view is made visible
 				book && // The notebook is part of a book in the viewlet (otherwise nothing to reveal)
-				this._openAsUntitled ? notebookPath?.scheme === 'untitled' : notebookPath?.scheme !== 'untitled') // The notebook is of the correct type for this tree view
+				(this._openAsUntitled ? notebookPath?.scheme === 'untitled' : notebookPath?.scheme !== 'untitled')) // The notebook is of the correct type for this tree view
 			{
 				await this.revealDocumentInTreeView(notebookPath);
 			}
