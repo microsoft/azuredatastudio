@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationCutover, MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
+import { MigrationMode, MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 
 export class MigrationModePage extends MigrationWizardPage {
@@ -57,11 +57,11 @@ export class MigrationModePage extends MigrationWizardPage {
 			}
 		}).component();
 
-		this.migrationStateModel._databaseBackup.migrationCutover = MigrationCutover.ONLINE;
+		this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.ONLINE;
 
 		onlineButton.onDidChangeCheckedState((e) => {
 			if (e) {
-				this.migrationStateModel._databaseBackup.migrationCutover = MigrationCutover.ONLINE;
+				this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.ONLINE;
 			}
 		});
 
