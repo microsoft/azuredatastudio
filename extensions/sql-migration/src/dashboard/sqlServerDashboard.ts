@@ -41,6 +41,9 @@ export class DashboardWidget {
 	private _viewAllMigrationsButton!: azdata.ButtonComponent;
 
 	constructor() {
+		vscode.commands.registerCommand('sqlmigration.refreshMigrationTiles', () => {
+			this.refreshMigrations();
+		});
 	}
 
 	public register(): void {
@@ -220,7 +223,8 @@ export class DashboardWidget {
 
 			const inProgressMigrations = this._migrationStatus.filter((value) => {
 				const status = value.migrationContext.properties.migrationStatus;
-				return status === 'InProgress' || status === 'Creating' || status === 'Completing';
+				const provisioning = value.migrationContext.properties.provisioningState;
+				return status === 'InProgress' || status === 'Creating' || status === 'Completing' || provisioning === 'Creating';
 			});
 
 			this._inProgressMigrationButton.count.value = inProgressMigrations.length.toString();
@@ -261,17 +265,16 @@ export class DashboardWidget {
 
 		const cardTitleText = this._view.modelBuilder.text().withProps({ value: cardTitle }).withProps({
 			CSSStyles: {
-				'font-weight': 'bold',
-				'height': '20px',
-				'margin-top': '6px',
+				'height': '40px',
+				'margin-top': '15px',
 				'margin-bottom': '0px',
 				'width': '300px',
-				'font-size': '14px'
+				'font-size': '14px',
 			}
 		}).component();
 		const cardDescriptionText = this._view.modelBuilder.text().withProps({ value: cardDescription }).withProps({
 			CSSStyles: {
-				'height': '18px',
+				'height': '0px',
 				'margin-top': '0px',
 				'margin-bottom': '0px',
 				'width': '300px'
@@ -442,7 +445,7 @@ export class DashboardWidget {
 		this._inProgressMigrationButton = this.createStatusCard(
 			IconPathHelper.inProgressMigration,
 			loc.MIGRATION_IN_PROGRESS,
-			loc.LOG_SHIPPING_IN_PROGRESS
+			''
 		);
 		this._inProgressMigrationButton.container.onDidClick((e) => {
 			const dialog = new MigrationStatusDialog(this._migrationStatus, MigrationCategory.ONGOING);
@@ -455,7 +458,7 @@ export class DashboardWidget {
 		this._successfulMigrationButton = this.createStatusCard(
 			IconPathHelper.completedMigration,
 			loc.MIGRATION_COMPLETED,
-			loc.SUCCESSFULLY_MIGRATED_TO_AZURE_SQL
+			''
 		);
 		this._successfulMigrationButton.container.onDidClick((e) => {
 			const dialog = new MigrationStatusDialog(this._migrationStatus, MigrationCategory.SUCCEEDED);
@@ -473,9 +476,6 @@ export class DashboardWidget {
 		this._notStartedMigrationCard.container.onDidClick((e) => {
 			vscode.window.showInformationMessage('Feature coming soon');
 		});
-		this._migrationStatusCardsContainer.addItem(
-			this._notStartedMigrationCard.container
-		);
 
 		this._migrationStatusCardLoadingContainer = view.modelBuilder.loadingComponent().withItem(this._migrationStatusCardsContainer).component();
 
@@ -534,7 +534,7 @@ export class DashboardWidget {
 		const links = [{
 			title: loc.HELP_LINK1_TITLE,
 			description: loc.HELP_LINK1_DESCRIPTION,
-			link: 'https://www.microsoft.com' //TODO: add proper link over here.
+			link: 'https://docs.microsoft.com/azure/azure-sql/migration-guides/managed-instance/sql-server-to-sql-managed-instance-assessment-rules'
 		}];
 
 		const styles = {

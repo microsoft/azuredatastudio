@@ -8,7 +8,7 @@ import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
-import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups } from '../api/azure';
+import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases } from '../api/azure';
 import { SKURecommendations } from './externalContract';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
@@ -68,6 +68,7 @@ export interface DatabaseBackupModel {
 	windowsUser: string;
 	password: string;
 	subscription: azureResource.AzureResourceSubscription;
+	resourceGroup: azureResource.AzureResourceResourceGroup;
 	storageAccount: StorageAccount;
 	storageKey: string;
 	azureSecurityToken: string;
@@ -356,6 +357,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._locations[index];
 	}
 
+	public getLocationDisplayName(location: string): Promise<string> {
+		return getLocationDisplayName(location);
+	}
+
 	public async getAzureResourceGroupDropdownValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
 		let resourceGroupValues: azdata.CategoryValue[] = [];
 		try {
@@ -384,7 +389,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				}
 			];
 		}
-
 		return resourceGroupValues;
 	}
 
@@ -395,9 +399,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async getManagedInstanceValues(subscription: azureResource.AzureResourceSubscription, location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
 		let managedInstanceValues: azdata.CategoryValue[] = [];
+		if (!this._azureAccount) {
+			return managedInstanceValues;
+		}
 		try {
 			this._targetManagedInstances = (await getAvailableManagedInstanceProducts(this._azureAccount, subscription)).filter((mi) => {
-				if (mi.location === location.name && mi.resourceGroup?.toLocaleLowerCase() === resourceGroup.name.toLowerCase()) {
+				if (mi.location.toLowerCase() === location.name.toLowerCase() && mi.resourceGroup?.toLowerCase() === resourceGroup.name.toLowerCase()) {
 					return true;
 				}
 				return false;
@@ -431,6 +438,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public getManagedInstance(index: number): SqlManagedInstance {
 		return this._targetManagedInstances[index];
+	}
+
+	public async getManagedDatabases(): Promise<string[]> {
+		return (await getSqlManagedInstanceDatabases(this._azureAccount,
+			this._targetSubscription,
+			this._targetServerInstance)).map(t => t.name);
 	}
 
 	public async getSqlVirtualMachineValues(subscription: azureResource.AzureResourceSubscription, location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
@@ -478,8 +491,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async getStorageAccountValues(subscription: azureResource.AzureResourceSubscription): Promise<azdata.CategoryValue[]> {
 		let storageAccountValues: azdata.CategoryValue[] = [];
+		if (!this._databaseBackup.resourceGroup) {
+			return storageAccountValues;
+		}
 		try {
-			this._storageAccounts = (await getAvailableStorageAccounts(this._azureAccount, subscription)).filter(sa => sa.location === this._targetServerInstance.location);
+			const storageAccount = (await getAvailableStorageAccounts(this._azureAccount, subscription));
+			this._storageAccounts = storageAccount.filter(sa => {
+				return sa.location.toLowerCase() === this._targetServerInstance.location.toLowerCase() && sa.resourceGroup?.toLowerCase() === this._databaseBackup.resourceGroup.name.toLowerCase();
+			});
 			this._storageAccounts.forEach((storageAccount) => {
 				storageAccountValues.push({
 					name: storageAccount.id,
@@ -585,7 +604,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async getSqlMigrationServiceValues(subscription: azureResource.AzureResourceSubscription, managedInstance: SqlManagedInstance): Promise<azdata.CategoryValue[]> {
 		let sqlMigrationServiceValues: azdata.CategoryValue[] = [];
 		try {
-			this._sqlMigrationServices = await getSqlMigrationServices(this._azureAccount, subscription, managedInstance.location);
+			this._sqlMigrationServices = (await getSqlMigrationServices(this._azureAccount, subscription, managedInstance.location)).filter(sms => sms.location.toLowerCase() === this._targetServerInstance.location.toLowerCase());
 			this._sqlMigrationServices.forEach((sqlMigrationService) => {
 				sqlMigrationServiceValues.push({
 					name: sqlMigrationService.id,
@@ -639,7 +658,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					},
 					sourceLocation: {
 						fileShare: {
-							path: '',
+							path: this._databaseBackup.networkShareLocation,
 							username: this._databaseBackup.windowsUser,
 							password: this._databaseBackup.password,
 						}
@@ -667,14 +686,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					this._targetDatabaseNames[i],
 					requestBody
 				);
-				if (response.status === 201) {
+				if (response.status === 201 || response.status === 200) {
 					MigrationLocalStorage.saveMigration(
 						currentConnection!,
 						response.databaseMigration,
 						this._targetServerInstance,
 						this._azureAccount,
 						this._targetSubscription,
-						this._sqlMigrationService
+						this._sqlMigrationService,
+						response.asyncUrl
 					);
 					vscode.window.showInformationMessage(localize("sql.migration.starting.migration.message", 'Starting migration for database {0} to {1} - {2}', this._migrationDbs[i], this._targetServerInstance.name, this._targetDatabaseNames[i]));
 				}
@@ -682,6 +702,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				console.log(e);
 				vscode.window.showInformationMessage(e);
 			}
+
+			vscode.commands.executeCommand('sqlmigration.refreshMigrationTiles');
 		}
 	}
 }

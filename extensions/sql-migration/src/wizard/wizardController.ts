@@ -17,7 +17,7 @@ import { SummaryPage } from './summaryPage';
 import { MigrationModePage } from './migrationModePage';
 import { SqlSourceConfigurationPage } from './sqlSourceConfigurationPage';
 
-export const WIZARD_INPUT_COMPONENT_WIDTH = '400px';
+export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
 	constructor(private readonly extensionContext: vscode.ExtensionContext) {
 
@@ -33,11 +33,11 @@ export class WizardController {
 	}
 
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {
-		const wizard = azdata.window.createWizard(loc.WIZARD_TITLE, 'MigrationWizard', 'wide');
+		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
+		const wizard = azdata.window.createWizard(loc.WIZARD_TITLE(serverName), 'MigrationWizard', 'wide');
 		wizard.generateScriptButton.enabled = false;
 		wizard.generateScriptButton.hidden = true;
 		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
-		// const subscriptionSelectionPage = new SubscriptionSelectionPage(wizard, stateModel);
 		const migrationModePage = new MigrationModePage(wizard, stateModel);
 		const azureAccountsPage = new AccountsSelectionPage(wizard, stateModel);
 		const sourceConfigurationPage = new SqlSourceConfigurationPage(wizard, stateModel);
@@ -46,7 +46,6 @@ export class WizardController {
 		const summaryPage = new SummaryPage(wizard, stateModel);
 
 		const pages: MigrationWizardPage[] = [
-			// subscriptionSelectionPage,
 			azureAccountsPage,
 			sourceConfigurationPage,
 			skuRecommendationPage,
