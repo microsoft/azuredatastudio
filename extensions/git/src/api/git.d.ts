@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Uri, Event, Disposable, ProviderResult } from 'vscode';
+import { Uri, Event, Disposable, ProviderResult, CancellationToken } from 'vscode';
+import { ICloneOptions } from '../git';
 export { ProviderResult } from 'vscode';
 
 export interface Git {
@@ -239,6 +240,7 @@ export interface API {
 	readonly onDidOpenRepository: Event<Repository>;
 	readonly onDidCloseRepository: Event<Repository>;
 
+	clone(url: string, options: ICloneOptions, cancellationToken?: CancellationToken): Promise<string>;
 	toGitUri(uri: Uri, ref: string): Uri;
 	getRepository(uri: Uri): Repository | null;
 	init(root: Uri): Promise<Repository | null>;

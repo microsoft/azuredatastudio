@@ -6,11 +6,12 @@
 import { Model } from '../model';
 import { Repository as BaseRepository, Resource } from '../repository';
 import { InputBox, Git, API, Repository, Remote, RepositoryState, Branch, Ref, Submodule, Commit, Change, RepositoryUIState, Status, LogOptions, APIState, CommitOptions, RefType, RemoteSourceProvider, CredentialsProvider, BranchQuery, PushErrorHandler } from './git';
-import { Event, SourceControlInputBox, Uri, SourceControl, Disposable, commands } from 'vscode';
+import { CancellationToken, commands, Disposable, Event, SourceControl, SourceControlInputBox, Uri } from 'vscode';
 import { mapEvent } from '../util';
 import { toGitUri } from '../uri';
 import { pickRemoteSource, PickRemoteSourceOptions } from '../remoteSource';
 import { GitExtensionImpl } from './extension';
+import { ICloneOptions } from '../git';
 
 class ApiInputBox implements InputBox {
 	set value(value: string) { this._inputBox.value = value; }
@@ -247,6 +248,10 @@ export class ApiImpl implements API {
 
 	get repositories(): Repository[] {
 		return this._model.repositories.map(r => new ApiRepository(r));
+	}
+
+	async clone(url: string, options: ICloneOptions, cancellationToken?: CancellationToken): Promise<string> {
+		return this._model.git.clone(url, options, cancellationToken);
 	}
 
 	toGitUri(uri: Uri, ref: string): Uri {
