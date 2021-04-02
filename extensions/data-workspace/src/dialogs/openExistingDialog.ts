@@ -49,7 +49,11 @@ export class OpenExistingDialog extends DialogBase {
 		try {
 			// the selected location should be an existing directory
 			if (this.targetTypeRadioCardGroup?.selectedCardId === constants.Project) {
-				await this.validateFile(this.filePathTextBox!.value!, constants.Project.toLowerCase());
+				if (this.localRadioButton?.checked) {
+					await this.validateFile(this.filePathTextBox!.value!, constants.Project.toLowerCase());
+				} else {
+					await this.validateClonePath(<string>this.localClonePathTextBox!.value);
+				}
 
 				if (this.workspaceInputBox!.enabled) {
 					await this.validateNewWorkspace(false);
@@ -113,14 +117,23 @@ export class OpenExistingDialog extends DialogBase {
 				const validateWorkspace = await this.workspaceService.validateWorkspace();
 				let addProjectsPromise: Promise<void>;
 
-				if (validateWorkspace) {
-					telemetryProps.workspaceProjectRelativity = calculateRelativity(this.filePathTextBox!.value!, this.workspaceInputBox!.value!);
-					telemetryProps.cancelled = 'false';
-					addProjectsPromise = this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this.filePathTextBox!.value!)], vscode.Uri.file(this.workspaceInputBox!.value!));
+				if (this.remoteGitRepoRadioButton!.checked) {
+					TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, TelemetryActions.GitClone)
+						.withAdditionalProperties({ selectedTarget: 'workspace' })
+						.send();
+
+					// after this executes, the git extension will show a popup asking if you want to enter the workspace
+					addProjectsPromise = this.workspaceService.gitCloneProject((<azdata.InputBoxComponent>this.gitRepoTextBoxComponent?.component).value!, this.localClonePathTextBox!.value!, vscode.Uri.file(this.workspaceInputBox!.value!));
 				} else {
-					telemetryProps.workspaceProjectRelativity = 'none';
-					telemetryProps.cancelled = 'true';
-					addProjectsPromise = this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this.filePathTextBox!.value!)], vscode.Uri.file(this.workspaceInputBox!.value!));
+					if (validateWorkspace) {
+						telemetryProps.workspaceProjectRelativity = calculateRelativity(this.filePathTextBox!.value!, this.workspaceInputBox!.value!);
+						telemetryProps.cancelled = 'false';
+						addProjectsPromise = this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this.filePathTextBox!.value!)], vscode.Uri.file(this.workspaceInputBox!.value!));
+					} else {
+						telemetryProps.workspaceProjectRelativity = 'none';
+						telemetryProps.cancelled = 'true';
+						addProjectsPromise = this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this.filePathTextBox!.value!)], vscode.Uri.file(this.workspaceInputBox!.value!));
+					}
 				}
 
 				TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, TelemetryActions.OpeningProject)
@@ -278,19 +291,21 @@ export class OpenExistingDialog extends DialogBase {
 		this.register(this.targetTypeRadioCardGroup.onSelectionChanged(({ cardId }) => {
 			if (cardId === constants.Project) {
 				this.filePathTextBox!.placeHolder = constants.ProjectFilePlaceholder;
-				// hide these two radio buttons for now since git clone is just for workspaces
-				this.localRadioButton?.updateCssStyles({ 'display': 'none' });
-				this.remoteGitRepoRadioButton?.updateCssStyles({ 'display': 'none' });
 				this.formBuilder?.removeFormItem(<azdata.FormComponent>this.gitRepoTextBoxComponent);
 				this.formBuilder?.removeFormItem(<azdata.FormComponent>this.localClonePathComponent);
 
-				this.formBuilder?.addFormItem(this.filePathAndButtonComponent!);
+				if (this.remoteGitRepoRadioButton!.checked) {
+					this.formBuilder?.removeFormItem(<azdata.FormComponent>this.filePathAndButtonComponent);
+					this.formBuilder?.insertFormItem(<azdata.FormComponent>this.gitRepoTextBoxComponent, 2);
+					this.formBuilder?.insertFormItem(<azdata.FormComponent>this.localClonePathComponent, 3);
+				} else {
+					this.formBuilder?.addFormItem(this.filePathAndButtonComponent!);
+				}
+
 				this.formBuilder?.addFormItem(this.workspaceDescriptionFormComponent!);
 				this.formBuilder?.addFormItem(this.workspaceInputFormComponent!);
 			} else if (cardId === constants.Workspace) {
 				this.filePathTextBox!.placeHolder = constants.WorkspacePlaceholder;
-				this.localRadioButton?.updateCssStyles({ 'display': 'block' });
-				this.remoteGitRepoRadioButton?.updateCssStyles({ 'display': 'block' });
 
 				this.formBuilder?.removeFormItem(this.workspaceDescriptionFormComponent!);
 				this.formBuilder?.removeFormItem(this.workspaceInputFormComponent!);

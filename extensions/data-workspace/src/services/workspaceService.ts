@@ -7,13 +7,14 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as dataworkspace from 'dataworkspace';
 import * as path from 'path';
+import * as git from '../api/git';
 import * as constants from '../common/constants';
 import * as glob from 'fast-glob';
 import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
 import { TelemetryReporter, TelemetryViews, calculateRelativity, TelemetryActions } from '../common/telemetry';
-import { isCurrentWorkspaceUntitled } from '../common/utils';
+import { directoryExist, isCurrentWorkspaceUntitled } from '../common/utils';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
@@ -193,7 +194,7 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 
 		for (const folder of workspaceFolders) {
-			const results = await this.getAllProjectsInWorkspaceFolder(folder);
+			const results = await this.getAllProjectsInFolder(folder.uri);
 
 			let containsNotAddedProject = false;
 			for (const projFile of results) {
@@ -218,12 +219,12 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 	}
 
-	async getAllProjectsInWorkspaceFolder(folder: vscode.WorkspaceFolder): Promise<string[]> {
+	async getAllProjectsInFolder(folder: vscode.Uri): Promise<string[]> {
 		// get the unique supported project extensions
 		const supportedProjectExtensions = [...new Set((await this.getAllProjectTypes()).map(p => { return p.projectFileExtension; }))];
 
 		// path needs to use forward slashes for glob to work
-		const escapedPath = glob.escapePath(folder.uri.fsPath.replace(/\\/g, '/'));
+		const escapedPath = glob.escapePath(folder.fsPath.replace(/\\/g, '/'));
 
 		// can filter for multiple file extensions using folder/**/*.{sqlproj,csproj} format, but this notation doesn't work if there's only one extension
 		// so the filter needs to be in the format folder/**/*.sqlproj if there's only one supported projectextension
@@ -269,6 +270,36 @@ export class WorkspaceService implements IWorkspaceService {
 		} else {
 			throw new Error(constants.ProviderNotFoundForProjectTypeError(projectTypeId));
 		}
+	}
+
+	async gitCloneProject(url: string, localClonePath: string, workspaceFile: vscode.Uri): Promise<void> {
+		// git.clone command doesn't return the folder that will be created, so this is how it's calculated
+		const gitApi: git.API = (<git.GitExtension>vscode.extensions.getExtension('vscode.git')!.exports).getAPI(1);
+
+		const opts = {
+			location: vscode.ProgressLocation.Notification,
+			title: `Cloning git repository '${url}'...`,
+			cancellable: true
+		};
+		const repositoryPath = await vscode.window.withProgress(
+			opts,
+			(progress, token) => gitApi.clone(url!, { parentPath: localClonePath!, progress, recursive: true }, token)
+		);
+
+		// git clone wasn't successful if folder wasn't created
+		if (!(await directoryExist(repositoryPath))) {
+			return;
+		} else {
+			console.error('it exists!');
+		}
+
+		// // get all the project files in the cloned repo and add them to workspace
+		const repoProjects = await (await this.getAllProjectsInFolder(vscode.Uri.file(repositoryPath))).map(p => { return vscode.Uri.file(p); });
+		this.addProjectsToWorkspace(repoProjects, workspaceFile);
+	}
+
+	async sleep(ms: number): Promise<{}> {
+		return new Promise(resolve => setTimeout(resolve, ms));
 	}
 
 	/**
