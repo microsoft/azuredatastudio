@@ -60,9 +60,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			// in the tree view
 			let openDocument = azdata.nb.activeNotebookEditor;
 			let notebookPath = openDocument?.document.uri;
+			// Find the book that this notebook belongs to
 			const book = this.books.find(book => notebookPath?.fsPath.replace(/\\/g, '/').indexOf(book.bookPath) >= -1);
 			// Only reveal if...
-			if (e.visible && // If the view is currently visible to save execution time
+			if (e.visible && // If the view is currently visible - if not then we'll just wait until this is called when the view is made visible
 				book && ( // The notebook is part of a book in the viewlet (otherwise nothing to reveal)
 					(!this._openAsUntitled && notebookPath?.scheme !== 'untitled') || // This view is for titled notebooks and the notebook is not untitled
 					(this._openAsUntitled && notebookPath?.scheme === 'untitled') // The view is for untitled notebooks and the notebook is untitled
@@ -78,8 +79,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			await Promise.all(getPinnedNotebooks().map(async (notebook) => {
 				try {
 					await this.createAndAddBookModel(notebook.notebookPath, true, notebook.bookPath);
-				} catch (err) {
-					console.log('caught error');
+				} catch {
 					// no-op, not all workspace folders are going to be valid books
 				}
 			}));
@@ -87,8 +87,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
 				try {
 					await this.loadNotebooksInFolder(workspaceFolder.uri.fsPath);
-				} catch (err) {
-					console.log('error');
+				} catch {
 					// no-op, not all workspace folders are going to be valid books
 				}
 			}));
