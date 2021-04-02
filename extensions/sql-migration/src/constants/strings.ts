@@ -256,6 +256,14 @@ export const SUCCESSFULLY_MIGRATED_TO_AZURE_SQL = localize('sql.migration.succes
 export const MIGRATION_NOT_STARTED = localize('sql.migration.migration.not.started', "Migration not started");
 export const CHOOSE_TO_MIGRATE_TO_AZURE_SQL = localize('sql.migration.choose.to.migrate.to.azure.sql', "Choose to migrate to Azure SQL");
 export const COMING_SOON = localize('sql.migration.coming.soon', "Coming soon");
+export function MIGRATION_INPROGRESS_WARNING(count: number) {
+	switch (count) {
+		case 1:
+			return localize('sql.migration.inprogress.warning.single', "{0} database has warnings", count);
+		default:
+			return localize('sql.migration.inprogress.warning.multiple', "{0} databases have warnings", count);
+	}
+}
 
 // Azure APIs
 export const EASTUS2EUAP = localize('sql.migration.eastus2euap', 'East US 2 EUAP');
@@ -302,6 +310,28 @@ export const TARGET_AZURE_SQL_INSTANCE_NAME = localize('sql.migration.target.azu
 export const MIGRATION_MODE = localize('sql.migration.cutover.type', "Migration Mode");
 export const START_TIME = localize('sql.migration.start.time', "Start Time");
 export const FINISH_TIME = localize('sql.migration.finish.time', "Finish Time");
+export function STATUS_WARNING_COUNT(status: string, count: number): string {
+	if (status === 'InProgress' || status === 'Creating' || status === 'Completing' || status === 'Creating') {
+		switch (count) {
+			case 0:
+				return localize('sql.migration.status.warning.count.none', "{0}", status);
+			case 1:
+				return localize('sql.migration.status.warning.count.single', "{0} ({1} Warning)", status, count);
+			default:
+				return localize('sql.migration.status.warning.count.multiple', "{0} ({1} Warnings)", status, count);
+		}
+	} else {
+		switch (count) {
+			case 0:
+				return localize('sql.migration.status.error.count.none', "{0}", status);
+			case 1:
+				return localize('sql.migration.status.error.count.single', "{0} ({1} Error)", status, count);
+			default:
+				return localize('sql.migration.status.error.count.multiple', "{0} ({1} Errors)", status, count);
+		}
+	}
+
+}
 
 //Source Credentials page.
 export const SOURCE_CONFIGURATION = localize('sql.migration.source.configuration', "Source Configuration");

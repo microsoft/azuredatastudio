@@ -10,7 +10,6 @@ import * as loc from '../constants/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatusDialog';
 import { MigrationCategory } from '../dialog/migrationStatus/migrationStatusDialogModel';
-import { getMigrationAsyncOperationDetails } from '../api/azure';
 
 interface IActionMetadata {
 	title?: string,
@@ -41,14 +40,23 @@ export class DashboardWidget {
 	private _inProgressWarningMigrationButton!: StatusCard;
 	private _successfulMigrationButton!: StatusCard;
 	private _notStartedMigrationCard!: StatusCard;
-	private _migrationStatus!: MigrationContext[];
-
+	private _migrationStatusMap: Map<string, MigrationContext[]> = new Map();
 	private _viewAllMigrationsButton!: azdata.ButtonComponent;
 
 	constructor() {
 		vscode.commands.registerCommand('sqlmigration.refreshMigrationTiles', () => {
 			this.refreshMigrations();
 		});
+	}
+
+	private async getCurrentMigrations(): Promise<MigrationContext[]> {
+		const connectionId = (await azdata.connection.getCurrentConnection()).connectionId;
+		return this._migrationStatusMap.get(connectionId)!;
+	}
+
+	private async setCurrentMigrations(migrations: MigrationContext[]): Promise<void> {
+		const connectionId = (await azdata.connection.getCurrentConnection()).connectionId;
+		this._migrationStatusMap.set(connectionId, migrations);
 	}
 
 	public register(): void {
@@ -224,9 +232,9 @@ export class DashboardWidget {
 		this._viewAllMigrationsButton.enabled = false;
 		this._migrationStatusCardLoadingContainer.loading = true;
 		try {
-			this._migrationStatus = await this.getMigrations();
-
-			const inProgressMigrations = this._migrationStatus.filter((value) => {
+			this.setCurrentMigrations(await this.getMigrations());
+			const migrationStatus = await this.getCurrentMigrations();
+			const inProgressMigrations = migrationStatus.filter((value) => {
 				const status = value.migrationContext.properties.migrationStatus;
 				const provisioning = value.migrationContext.properties.provisioningState;
 				return status === 'InProgress' || status === 'Creating' || status === 'Completing' || provisioning === 'Creating';
@@ -235,16 +243,8 @@ export class DashboardWidget {
 			let warningCount = 0;
 
 			for (let i = 0; i < inProgressMigrations.length; i++) {
-				let asynError;
-				if (inProgressMigrations[i].asyncUrl) {
-					asynError = await getMigrationAsyncOperationDetails(
-						inProgressMigrations[i].azureAccount,
-						inProgressMigrations[i].subscription,
-						inProgressMigrations[i].asyncUrl
-					);
-				}
 				if (
-					asynError?.error?.message ||
+					inProgressMigrations[i].asyncOperationResult?.error?.message ||
 					inProgressMigrations[i].migrationContext.properties.migrationFailureError?.message ||
 					inProgressMigrations[i].migrationContext.properties.migrationStatusDetails?.fileUploadBlockingErrors ||
 					inProgressMigrations[i].migrationContext.properties.migrationStatusDetails?.restoreBlockingReason
@@ -254,7 +254,7 @@ export class DashboardWidget {
 			}
 
 			if (warningCount > 0) {
-				this._inProgressWarningMigrationButton.warningText!.value = `${warningCount} database(s) have warnings`;
+				this._inProgressWarningMigrationButton.warningText!.value = loc.MIGRATION_INPROGRESS_WARNING(warningCount);
 				this._inProgressMigrationButton.container.display = 'none';
 				this._inProgressWarningMigrationButton.container.display = 'inline';
 			} else {
@@ -264,7 +264,7 @@ export class DashboardWidget {
 			this._inProgressMigrationButton.count.value = inProgressMigrations.length.toString();
 			this._inProgressWarningMigrationButton.count.value = inProgressMigrations.length.toString();
 
-			const successfulMigration = this._migrationStatus.filter((value) => {
+			const successfulMigration = migrationStatus.filter((value) => {
 				const status = value.migrationContext.properties.migrationStatus;
 				return status === 'Succeeded';
 			});
@@ -272,7 +272,7 @@ export class DashboardWidget {
 			this._successfulMigrationButton.count.value = successfulMigration.length.toString();
 			const currentConnection = (await azdata.connection.getCurrentConnection());
 			const migrationDatabases = new Set(
-				this._migrationStatus.map((value) => {
+				migrationStatus.map((value) => {
 					return value.migrationContext.properties.sourceDatabaseName;
 				}));
 			const serverDatabases = await azdata.connection.listDatabases(currentConnection.connectionId);
@@ -526,7 +526,8 @@ export class DashboardWidget {
 		}).component();
 
 		this._viewAllMigrationsButton.onDidClick(async (e) => {
-			new MigrationStatusDialog(this._migrationStatus ? this._migrationStatus : await this.getMigrations(), MigrationCategory.ALL).initialize();
+			const migrationStatus = await this.getCurrentMigrations();
+			new MigrationStatusDialog(migrationStatus ? migrationStatus : await this.getMigrations(), MigrationCategory.ALL).initialize();
 		});
 
 		const refreshButton = view.modelBuilder.hyperlink().withProps({
@@ -580,8 +581,8 @@ export class DashboardWidget {
 			IconPathHelper.inProgressMigration,
 			loc.MIGRATION_IN_PROGRESS
 		);
-		this._inProgressMigrationButton.container.onDidClick((e) => {
-			const dialog = new MigrationStatusDialog(this._migrationStatus, MigrationCategory.ONGOING);
+		this._inProgressMigrationButton.container.onDidClick(async (e) => {
+			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), MigrationCategory.ONGOING);
 			dialog.initialize();
 		});
 
@@ -594,8 +595,8 @@ export class DashboardWidget {
 			loc.MIGRATION_IN_PROGRESS,
 			''
 		);
-		this._inProgressWarningMigrationButton.container.onDidClick((e) => {
-			const dialog = new MigrationStatusDialog(this._migrationStatus, MigrationCategory.ONGOING);
+		this._inProgressWarningMigrationButton.container.onDidClick(async (e) => {
+			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), MigrationCategory.ONGOING);
 			dialog.initialize();
 		});
 
@@ -607,8 +608,8 @@ export class DashboardWidget {
 			IconPathHelper.completedMigration,
 			loc.MIGRATION_COMPLETED
 		);
-		this._successfulMigrationButton.container.onDidClick((e) => {
-			const dialog = new MigrationStatusDialog(this._migrationStatus, MigrationCategory.SUCCEEDED);
+		this._successfulMigrationButton.container.onDidClick(async (e) => {
+			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), MigrationCategory.SUCCEEDED);
 			dialog.initialize();
 		});
 		this._migrationStatusCardsContainer.addItem(

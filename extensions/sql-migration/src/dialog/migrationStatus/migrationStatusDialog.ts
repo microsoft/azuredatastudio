@@ -6,11 +6,10 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { MigrationContext } from '../../models/migrationLocalStorage';
+import { MigrationContext, MigrationLocalStorage } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
 import { MigrationCategory, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
-import { AzureAsyncOperationResource, getMigrationAsyncOperationDetails, getMigrationStatus } from '../../api/azure';
 export class MigrationStatusDialog {
 	private _model: MigrationStatusDialogModel;
 	private _dialogObject!: azdata.window.Dialog;
@@ -21,8 +20,8 @@ export class MigrationStatusDialog {
 	private _statusTable!: azdata.DeclarativeTableComponent;
 	private _refreshLoader!: azdata.LoadingComponent;
 
-	constructor(migrations: MigrationContext[], private _filter: MigrationCategory, _asyncErrors: number[] = []) {
-		this._model = new MigrationStatusDialogModel(migrations, _asyncErrors);
+	constructor(migrations: MigrationContext[], private _filter: MigrationCategory) {
+		this._model = new MigrationStatusDialogModel(migrations);
 		this._dialogObject = azdata.window.createModelViewDialog(loc.MIGRATION_STATUS, 'MigrationControllerDialog', 'wide');
 	}
 
@@ -191,16 +190,23 @@ export class MigrationStatusDialog {
 
 				let migrationStatus = migration.migrationContext.properties.migrationStatus ? migration.migrationContext.properties.migrationStatus : migration.migrationContext.properties.provisioningState;
 
-				if (this._model._migrationWarnings[index]) {
-					if (this._model._migrationWarnings[index] === 1) {
-						migrationStatus += ` (${this._model._migrationWarnings[index]} Warning)`;
-					} else {
-						migrationStatus += ` (${this._model._migrationWarnings[index]} Warnings)`;
-					}
+				let warningCount = 0;
+
+				if (migration.asyncOperationResult?.error?.message) {
+					warningCount++;
+				}
+				if (migration.migrationContext.properties.migrationFailureError?.message) {
+					warningCount++;
+				}
+				if (migration.migrationContext.properties.migrationStatusDetails?.fileUploadBlockingErrors) {
+					warningCount += migration.migrationContext.properties.migrationStatusDetails?.fileUploadBlockingErrors.length;
+				}
+				if (migration.migrationContext.properties.migrationStatusDetails?.restoreBlockingReason) {
+					warningCount++;
 				}
 
 				migrationRow.push({
-					value: migrationStatus
+					value: loc.STATUS_WARNING_COUNT(migrationStatus, warningCount)
 				});
 
 				migrationRow.push({
@@ -221,38 +227,8 @@ export class MigrationStatusDialog {
 
 	private async refreshTable(): Promise<void> {
 		this._refreshLoader.loading = true;
-		this._model._migrationWarnings = [];
-		for (let i = 0; i < this._model._migrations.length; i++) {
-			this._model._migrations[i].migrationContext = await getMigrationStatus(
-				this._model._migrations[i].azureAccount,
-				this._model._migrations[i].subscription,
-				this._model._migrations[i].migrationContext
-			);
-
-			let warningCount = 0;
-			let asynError: AzureAsyncOperationResource | undefined;
-			if (this._model._migrations[i].asyncUrl) {
-				asynError = await getMigrationAsyncOperationDetails(
-					this._model._migrations[i].azureAccount,
-					this._model._migrations[i].subscription,
-					this._model._migrations[i].asyncUrl
-				);
-			}
-			if (asynError?.error?.message) {
-				warningCount++;
-			}
-			if (this._model._migrations[i].migrationContext.properties.migrationFailureError?.message) {
-				warningCount++;
-			}
-			if (this._model._migrations[i].migrationContext.properties.migrationStatusDetails?.fileUploadBlockingErrors) {
-				warningCount += this._model._migrations[i].migrationContext.properties.migrationStatusDetails?.fileUploadBlockingErrors.length!;
-			}
-			if (this._model._migrations[i].migrationContext.properties.migrationStatusDetails?.restoreBlockingReason) {
-				warningCount += 1;
-			}
-
-			this._model._migrationWarnings.push(warningCount);
-		}
+		const currentConnection = await azdata.connection.getCurrentConnection();
+		this._model._migrations = await MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection, true);
 		this.populateMigrationTable();
 		this._refreshLoader.loading = false;
 	}

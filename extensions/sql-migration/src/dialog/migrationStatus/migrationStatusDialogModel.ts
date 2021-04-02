@@ -20,7 +20,7 @@ export class MigrationStatusDialogModel {
 		}
 	];
 
-	constructor(public _migrations: MigrationContext[], public _migrationWarnings: number[] = []) {
+	constructor(public _migrations: MigrationContext[]) {
 	}
 
 	public filterMigration(databaseName: string, category: string): MigrationContext[] {
