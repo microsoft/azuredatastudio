@@ -44,6 +44,11 @@ import { assign } from 'vs/base/common/objects';
 import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
 import { equals } from 'vs/base/common/arrays';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { getChartMaxRowCount, notifyMaxRowCountExceeded } from 'sql/workbench/contrib/charts/browser/utils';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+
 @Component({
 	selector: GridOutputComponent.SELECTOR,
 	template: `<div #output class="notebook-cellTable"></div>`
@@ -535,7 +540,11 @@ export class NotebookChartAction extends ToggleableAction {
 	public static SHOWTABLE_LABEL = localize('notebook.showTable', "Show table");
 	public static SHOWTABLE_ICON = 'table';
 
-	constructor(private resourceTable: DataResourceTable) {
+	constructor(private resourceTable: DataResourceTable,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IStorageService private readonly storageService: IStorageService,
+		@INotificationService private readonly notificationService: INotificationService,
+		@IAdsTelemetryService private readonly adsTelemetryService: IAdsTelemetryService) {
 		super(NotebookChartAction.ID, {
 			toggleOnLabel: NotebookChartAction.SHOWTABLE_LABEL,
 			toggleOnClass: NotebookChartAction.SHOWTABLE_ICON,
@@ -549,9 +558,17 @@ export class NotebookChartAction extends ToggleableAction {
 		this.resourceTable.toggleChartVisibility();
 		this.toggle(!this.state.isOn);
 		if (this.state.isOn) {
-			let rowCount = context.table.getData().getLength();
-			let columnCount = context.table.columns.length;
-			this.resourceTable.updateChartData(rowCount, columnCount, context.gridDataProvider);
+			const rowCount = context.table.getData().getLength();
+			const columnCount = context.table.columns.length;
+			const maxRowCount = getChartMaxRowCount(this.configurationService);
+			const maxRowCountExceeded = rowCount > maxRowCount;
+			if (maxRowCountExceeded) {
+				notifyMaxRowCountExceeded(this.storageService, this.notificationService, this.configurationService);
+			}
+			this.adsTelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.ShowChart).withAdditionalProperties(
+				{ [TelemetryKeys.TelemetryPropertyName.ChartMaxRowCountExceeded]: maxRowCountExceeded }
+			).send();
+			this.resourceTable.updateChartData(Math.min(rowCount, maxRowCount), columnCount, context.gridDataProvider);
 		}
 		return true;
 	}

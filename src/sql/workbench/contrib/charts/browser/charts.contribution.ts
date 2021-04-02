@@ -12,12 +12,12 @@ const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Con
 const chartsConfiguration: IConfigurationNode = {
 	id: 'charts',
 	type: 'object',
-	title: nls.localize('chartsConfigurationTitle', "Charts"),
+	title: nls.localize('chartsConfigurationTitle', "Built-in Charts"),
 	properties: {
 		'charts.maxRowCount': {
 			type: 'number',
 			default: 300,
-			description: nls.localize('charts.maxRowCountDescription', "Maximum allowed rows for charts to render, this is introduced to prevent the application hang. If exceeded, ADS will only take the first N rows for chart rendering.")
+			description: nls.localize('charts.maxRowCountDescription', "The maximum number of rows for charts to display. Warning: increasing this may impact performance.")
 		}
 	}
 };

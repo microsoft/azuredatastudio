@@ -12,7 +12,6 @@ import { TestInstantiationService } from 'vs/platform/instantiation/test/common/
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
-import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 
 suite('Chart View', () => {
 	test('initializes without error', () => {
@@ -43,7 +42,6 @@ function createChartView(isQueryEditorChart: boolean): ChartView {
 	const instantiationService = new TestInstantiationService();
 	const notificationService = new TestNotificationService();
 	const configurationService = new TestConfigurationService();
-	const storageService = new TestStorageService();
 	instantiationService.stub(IThemeService, themeService);
-	return new ChartView(isQueryEditorChart, contextViewService, themeService, instantiationService, notificationService, configurationService, storageService, undefined);
+	return new ChartView(isQueryEditorChart, contextViewService, themeService, instantiationService, notificationService, configurationService);
 }
