@@ -540,7 +540,6 @@ export class DashboardWidget {
 		}).component();
 
 		refreshButton.onDidClick(async (e) => {
-			console.count();
 			refreshButton.enabled = false;
 			await this.refreshMigrations();
 			refreshButton.enabled = true;
