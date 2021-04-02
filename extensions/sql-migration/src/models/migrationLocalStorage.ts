@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
-import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getDatabaseMigration } from '../api/azure';
+import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus } from '../api/azure';
 import * as azdata from 'azdata';
 
 
@@ -27,11 +27,10 @@ export class MigrationLocalStorage {
 			if (migration.sourceConnectionProfile.serverName === connectionProfile.serverName) {
 				if (refreshStatus) {
 					try {
-						migration.migrationContext = await getDatabaseMigration(
+						migration.migrationContext = await getMigrationStatus(
 							migration.azureAccount,
 							migration.subscription,
-							migration.targetManagedInstance.location,
-							migration.migrationContext.id
+							migration.migrationContext
 						);
 					}
 					catch (e) {
