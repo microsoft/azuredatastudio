@@ -10,6 +10,7 @@ import * as loc from '../constants/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatusDialog';
 import { MigrationCategory } from '../dialog/migrationStatus/migrationStatusDialogModel';
+import { getMigrationAsyncOperationDetails } from '../api/azure';
 
 interface IActionMetadata {
 	title?: string,
@@ -23,7 +24,10 @@ const maxWidth = 800;
 
 interface StatusCard {
 	container: azdata.DivContainer;
-	count: azdata.TextComponent
+	count: azdata.TextComponent,
+	textContainer?: azdata.FlexContainer,
+	warningContainer?: azdata.FlexContainer,
+	warningText?: azdata.TextComponent,
 }
 
 export class DashboardWidget {
@@ -34,6 +38,7 @@ export class DashboardWidget {
 
 
 	private _inProgressMigrationButton!: StatusCard;
+	private _inProgressWarningMigrationButton!: StatusCard;
 	private _successfulMigrationButton!: StatusCard;
 	private _notStartedMigrationCard!: StatusCard;
 	private _migrationStatus!: MigrationContext[];
@@ -199,7 +204,7 @@ export class DashboardWidget {
 			height: maxHeight,
 			iconHeight: 32,
 			iconPath: taskMetaData.iconPath,
-			iconWidth: 32,
+			iconWidth: 36,
 			label: taskMetaData.title,
 			title: taskMetaData.title,
 			width: maxWidth,
@@ -227,7 +232,37 @@ export class DashboardWidget {
 				return status === 'InProgress' || status === 'Creating' || status === 'Completing' || provisioning === 'Creating';
 			});
 
+			let warningCount = 0;
+
+			for (let i = 0; i < inProgressMigrations.length; i++) {
+				let asynError;
+				if (inProgressMigrations[i].asyncUrl) {
+					asynError = await getMigrationAsyncOperationDetails(
+						inProgressMigrations[i].azureAccount,
+						inProgressMigrations[i].subscription,
+						inProgressMigrations[i].asyncUrl
+					);
+				}
+				if (
+					asynError?.error?.message ||
+					inProgressMigrations[i].migrationContext.properties.migrationFailureError?.message ||
+					inProgressMigrations[i].migrationContext.properties.migrationStatusDetails?.fileUploadBlockingErrors ||
+					inProgressMigrations[i].migrationContext.properties.migrationStatusDetails?.restoreBlockingReason
+				) {
+					warningCount += 1;
+				}
+			}
+
+			if (warningCount > 0) {
+				this._inProgressWarningMigrationButton.warningText!.value = `${warningCount} database(s) have warnings`;
+				this._inProgressMigrationButton.container.display = 'none';
+				this._inProgressWarningMigrationButton.container.display = 'inline';
+			} else {
+				this._inProgressMigrationButton.container.display = 'inline';
+				this._inProgressWarningMigrationButton.container.display = 'none';
+			}
 			this._inProgressMigrationButton.count.value = inProgressMigrations.length.toString();
+			this._inProgressWarningMigrationButton.count.value = inProgressMigrations.length.toString();
 
 			const successfulMigration = this._migrationStatus.filter((value) => {
 				const status = value.migrationContext.properties.migrationStatus;
@@ -235,7 +270,6 @@ export class DashboardWidget {
 			});
 
 			this._successfulMigrationButton.count.value = successfulMigration.length.toString();
-
 			const currentConnection = (await azdata.connection.getCurrentConnection());
 			const migrationDatabases = new Set(
 				this._migrationStatus.map((value) => {
@@ -260,26 +294,18 @@ export class DashboardWidget {
 	private createStatusCard(
 		cardIconPath: IconPath,
 		cardTitle: string,
-		cardDescription: string
 	): StatusCard {
 
 		const cardTitleText = this._view.modelBuilder.text().withProps({ value: cardTitle }).withProps({
 			CSSStyles: {
-				'height': '40px',
+				'height': '23px',
 				'margin-top': '15px',
 				'margin-bottom': '0px',
 				'width': '300px',
 				'font-size': '14px',
 			}
 		}).component();
-		const cardDescriptionText = this._view.modelBuilder.text().withProps({ value: cardDescription }).withProps({
-			CSSStyles: {
-				'height': '0px',
-				'margin-top': '0px',
-				'margin-bottom': '0px',
-				'width': '300px'
-			}
-		}).component();
+
 		const cardCount = this._view.modelBuilder.text().withProps({
 			value: '0',
 			CSSStyles: {
@@ -289,22 +315,123 @@ export class DashboardWidget {
 			}
 		}).component();
 
+		const flex = this._view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'width': '400px',
+				'height': '50px',
+				'margin-top': '10px',
+				'border': '1px solid',
+			}
+		}).component();
+
+		const img = this._view.modelBuilder.image().withProps({
+			iconPath: cardIconPath!.light,
+			iconHeight: 24,
+			iconWidth: 24,
+			width: 64,
+			height: 30,
+			CSSStyles: {
+				'margin-top': '10px'
+			}
+		}).component();
+
+		flex.addItem(img, {
+			flex: '0'
+		});
+		flex.addItem(cardTitleText, {
+			flex: '0',
+			CSSStyles: {
+				'width': '300px'
+			}
+		});
+		flex.addItem(cardCount, {
+			flex: '0'
+		});
+
+		const compositeButton = this._view.modelBuilder.divContainer().withItems([flex]).withProps({
+			ariaRole: 'button',
+			ariaLabel: 'show status',
+			clickable: true
+		}).component();
+		return {
+			container: compositeButton,
+			count: cardCount
+		};
+	}
+
+	private createStatusWithSubtextCard(
+		cardIconPath: IconPath,
+		cardTitle: string,
+		cardDescription: string
+	): StatusCard {
+
+		const cardTitleText = this._view.modelBuilder.text().withProps({ value: cardTitle }).withProps({
+			CSSStyles: {
+				'height': '23px',
+				'margin-top': '15px',
+				'margin-bottom': '0px',
+				'width': '300px',
+				'font-size': '14px',
+			}
+		}).component();
+
+		const cardDescriptionWarning = this._view.modelBuilder.image().withProps({
+			iconPath: IconPathHelper.warning,
+			iconWidth: 12,
+			iconHeight: 12,
+			width: 12,
+			height: 17
+		}).component();
+
+		const cardDescriptionText = this._view.modelBuilder.text().withProps({ value: cardDescription }).withProps({
+			CSSStyles: {
+				'height': '13px',
+				'margin-top': '0px',
+				'margin-bottom': '0px',
+				'width': '250px',
+				'font-height': '13px',
+				'margin': '0 0 0 4px'
+			}
+		}).component();
+
+		const subTextContainer = this._view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'justify-content': 'left',
+			}
+		}).component();
+
+		subTextContainer.addItem(cardDescriptionWarning, {
+			flex: '0 0 auto'
+		});
+
+		subTextContainer.addItem(cardDescriptionText, {
+			flex: '0 0 auto'
+		});
+
+		const cardCount = this._view.modelBuilder.text().withProps({
+			value: '0',
+			CSSStyles: {
+				'font-size': '28px',
+				'line-height': '28px',
+				'margin-top': '15px'
+			}
+		}).component();
+
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems([
 			cardTitleText,
-			cardDescriptionText
+			subTextContainer
 		]).withLayout({
 			flexFlow: 'column'
 		}).withProps({
 			CSSStyles: {
 				'width': '300px',
-				'height': '50px'
 			}
 		}).component();
 
 		const flex = this._view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'width': '400px',
-				'height': '50px',
+				'height': '70px',
 				'margin-top': '10px',
 				'border': '1px solid'
 			}
@@ -312,10 +439,13 @@ export class DashboardWidget {
 
 		const img = this._view.modelBuilder.image().withProps({
 			iconPath: cardIconPath!.light,
-			iconHeight: 16,
-			iconWidth: 16,
+			iconHeight: 24,
+			iconWidth: 24,
 			width: 64,
-			height: 50
+			height: 30,
+			CSSStyles: {
+				'margin-top': '20px'
+			}
 		}).component();
 
 		flex.addItem(img, {
@@ -338,7 +468,10 @@ export class DashboardWidget {
 		}).component();
 		return {
 			container: compositeButton,
-			count: cardCount
+			count: cardCount,
+			textContainer: flexContainer,
+			warningContainer: subTextContainer,
+			warningText: cardDescriptionText
 		};
 	}
 
@@ -377,7 +510,7 @@ export class DashboardWidget {
 		const statusContainerTitle = view.modelBuilder.text().withProps({
 			value: loc.DATABASE_MIGRATION_STATUS,
 			CSSStyles: {
-				'font-size': '18px',
+				'font-size': '14px',
 				'font-weight': 'bold',
 				'margin': '0px',
 				'width': '290px'
@@ -406,6 +539,7 @@ export class DashboardWidget {
 		}).component();
 
 		refreshButton.onDidClick(async (e) => {
+			console.count();
 			refreshButton.enabled = false;
 			await this.refreshMigrations();
 			refreshButton.enabled = true;
@@ -444,21 +578,34 @@ export class DashboardWidget {
 
 		this._inProgressMigrationButton = this.createStatusCard(
 			IconPathHelper.inProgressMigration,
-			loc.MIGRATION_IN_PROGRESS,
-			''
+			loc.MIGRATION_IN_PROGRESS
 		);
 		this._inProgressMigrationButton.container.onDidClick((e) => {
 			const dialog = new MigrationStatusDialog(this._migrationStatus, MigrationCategory.ONGOING);
 			dialog.initialize();
 		});
+
 		this._migrationStatusCardsContainer.addItem(
 			this._inProgressMigrationButton.container
 		);
 
+		this._inProgressWarningMigrationButton = this.createStatusWithSubtextCard(
+			IconPathHelper.inProgressMigration,
+			loc.MIGRATION_IN_PROGRESS,
+			''
+		);
+		this._inProgressWarningMigrationButton.container.onDidClick((e) => {
+			const dialog = new MigrationStatusDialog(this._migrationStatus, MigrationCategory.ONGOING);
+			dialog.initialize();
+		});
+
+		this._migrationStatusCardsContainer.addItem(
+			this._inProgressWarningMigrationButton.container
+		);
+
 		this._successfulMigrationButton = this.createStatusCard(
 			IconPathHelper.completedMigration,
-			loc.MIGRATION_COMPLETED,
-			''
+			loc.MIGRATION_COMPLETED
 		);
 		this._successfulMigrationButton.container.onDidClick((e) => {
 			const dialog = new MigrationStatusDialog(this._migrationStatus, MigrationCategory.SUCCEEDED);
@@ -470,8 +617,7 @@ export class DashboardWidget {
 
 		this._notStartedMigrationCard = this.createStatusCard(
 			IconPathHelper.notStartedMigration,
-			loc.MIGRATION_NOT_STARTED,
-			loc.CHOOSE_TO_MIGRATE_TO_AZURE_SQL
+			loc.MIGRATION_NOT_STARTED
 		);
 		this._notStartedMigrationCard.container.onDidClick((e) => {
 			vscode.window.showInformationMessage('Feature coming soon');
@@ -546,16 +692,6 @@ export class DashboardWidget {
 		});
 
 		const videosContainer = this.createVideoLinkContainers(view, [
-			{
-				iconPath: IconPathHelper.sqlMiVideoThumbnail,
-				description: loc.HELP_VIDEO1_TITLE,
-				link: 'https://www.youtube.com/watch?v=sE99cSoFOHs' //TODO: Fix Video link
-			},
-			{
-				iconPath: IconPathHelper.sqlVmVideoThumbnail,
-				description: loc.HELP_VIDEO2_TITLE,
-				link: 'https://www.youtube.com/watch?v=R4GCBoxADyQ' //TODO: Fix video link
-			}
 		]);
 		const viewPanelStyle = {
 			'padding': '10px 5px 10px 10px',
