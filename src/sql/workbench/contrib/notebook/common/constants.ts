@@ -29,6 +29,10 @@ export const SearchViewFocusedKey = new RawContextKey<boolean>('notebookSearchVi
 export const InputBoxFocusedKey = new RawContextKey<boolean>('inputBoxFocus', false);
 export const SearchInputBoxFocusedKey = new RawContextKey<boolean>('searchInputBoxFocus', false);
 
+export const enum NotebookLanguage {
+	Notebook = 'notebook',
+	Ipynb = 'ipynb'
+}
 export interface INotebookSearchConfigurationProperties {
 	exclude: glob.IExpression;
 	useRipgrep: boolean;

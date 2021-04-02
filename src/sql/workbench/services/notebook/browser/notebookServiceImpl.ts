@@ -39,7 +39,7 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
+import { Extensions as LanguageAssociationExtensions, ILanguageAssociationRegistry } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 
 import * as path from 'vs/base/common/path';
 
@@ -48,11 +48,10 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 
 import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
-// eslint-disable-next-line code-import-patterns
-import { NotebookEditorInputAssociation } from 'sql/workbench/contrib/notebook/browser/models/nodebookInputFactory';
+import { isINotebookInput } from 'sql/workbench/services/notebook/common/interface';
 
-// const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
-const languageAssociationRegistry = Registry.as<NotebookEditorInputAssociation>(LanguageAssociationExtensions.LanguageAssociations);
+const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
+// const languageAssociationRegistry = Registry.as<NotebookEditorInputAssociation>(LanguageAssociationExtensions.LanguageAssociations);
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -183,6 +182,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		lifecycleService.onWillShutdown(() => this.shutdown());
 	}
 
+
 	public async openNotebook(resource: UriComponents, options: INotebookOpenOptions): Promise<IEditorPane | undefined> {
 		const uri = URI.revive(resource);
 
@@ -204,19 +204,24 @@ export class NotebookService extends Disposable implements INotebookService {
 				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: 'notebook' });
 			}
 		}
-		const input = languageAssociationRegistry.convertInput(fileInput);
-		input.defaultKernel = options.defaultKernel;
-		input.connectionProfile = options.connectionProfile;
+		let language = 'ipynb';
+		const inputCreator = languageAssociationRegistry.getAssociationForLanguage(language);
+		if (inputCreator) {
+			fileInput = await inputCreator.convertInput(fileInput);
+			if (isINotebookInput(fileInput)) {
+				fileInput.defaultKernel = options.defaultKernel;
+				fileInput.connectionProfile = options.connectionProfile;
 
-		if (isUntitled) {
-			let untitledModel = await input.resolve();
-			await untitledModel.load();
-			if (options.initialDirtyState === false) {
-				input.setDirty(false);
+				if (isUntitled) {
+					let untitledModel = await fileInput.resolve();
+					await untitledModel.load();
+					if (options.initialDirtyState === false) {
+						fileInput.setDirty(false);
+					}
+				}
 			}
 		}
-
-		return await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
+		return await this._editorService.openEditor(fileInput, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
 	}
 
 	private updateSQLRegistrationWithConnectionProviders() {
