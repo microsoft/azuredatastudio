@@ -19,7 +19,7 @@ const fsPromises = fileServices.promises;
 const content = 'content';
 
 export class BookModel {
-	private _bookItems: BookTreeItem[];
+	private _bookItems: BookTreeItem[] = [];
 	private _allNotebooks = new Map<string, BookTreeItem>();
 	private _tableOfContentsPath: string;
 	private _contentFolderPath: string;
@@ -28,7 +28,10 @@ export class BookModel {
 	private _errorMessage: string;
 	private _activePromise: Deferred<void> | undefined = undefined;
 	private _queuedPromises: Deferred<void>[] = [];
-	private _rootNode: BookTreeItem; // first node in the book that points to the contents folder.
+	/**
+	 * The root tree item for this model
+	 */
+	private _rootNode: BookTreeItem;
 
 	constructor(
 		public readonly bookPath: string,
@@ -36,9 +39,7 @@ export class BookModel {
 		public readonly isNotebook: boolean,
 		private _extensionContext: vscode.ExtensionContext,
 		private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined>,
-		public readonly notebookRootPath?: string) {
-		this._bookItems = [];
-	}
+		public readonly notebookRootPath?: string) { }
 
 	public unwatchTOC(): void {
 		fs.unwatchFile(this.tableOfContentsPath);
@@ -224,12 +225,12 @@ export class BookModel {
 		});
 	}
 
-	public async getSections(element?: BookTreeItem): Promise<BookTreeItem[]> {
-		let tableOfContents: IJupyterBookToc = element?.tableOfContents;
-		let sections: JupyterBookSection[] = element?.sections;
-		let root: string = element?.root;
-		let book: BookTreeItemFormat = element?.book;
-		let notebooks: BookTreeItem[] = [];
+	public async getSections(element: BookTreeItem): Promise<BookTreeItem[]> {
+		let tableOfContents: IJupyterBookToc = element.tableOfContents;
+		let sections: JupyterBookSection[] = element.sections;
+		let root: string = element.root;
+		let book: BookTreeItemFormat = element.book;
+		let treeItems: BookTreeItem[] = [];
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url) {
 				let externalLink: BookTreeItem = new BookTreeItem({
@@ -242,7 +243,7 @@ export class BookModel {
 					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 					isUntitled: this.openAsUntitled,
 					version: book.version,
-					parent: element ?? this._rootNode
+					parent: element
 				},
 					{
 						light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
@@ -250,7 +251,7 @@ export class BookModel {
 					}
 				);
 
-				notebooks.push(externalLink);
+				treeItems.push(externalLink);
 			} else if (sections[i].file) {
 				const pathToNotebook: string = getContentPath(book.version, book.root, sections[i].file.concat('.ipynb'));
 				const pathToMarkdown: string = getContentPath(book.version, book.root, sections[i].file.concat('.md'));
@@ -268,7 +269,7 @@ export class BookModel {
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 						isUntitled: this.openAsUntitled,
 						version: book.version,
-						parent: element ?? this._rootNode
+						parent: element
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
@@ -280,14 +281,14 @@ export class BookModel {
 						if (!this._allNotebooks.get(path.basename(pathToNotebook))) {
 							this._allNotebooks.set(path.basename(pathToNotebook), notebook);
 						}
-						notebooks.push(notebook);
+						treeItems.push(notebook);
 					} else {
 						// convert to URI to avoid causing issue with drive letters when getting navigation links
 						let uriToNotebook: vscode.Uri = vscode.Uri.file(pathToNotebook);
 						if (!this._allNotebooks.get(uriToNotebook.fsPath)) {
 							this._allNotebooks.set(uriToNotebook.fsPath, notebook);
 						}
-						notebooks.push(notebook);
+						treeItems.push(notebook);
 					}
 				} else if (await fs.pathExists(pathToMarkdown)) {
 					let markdown: BookTreeItem = new BookTreeItem({
@@ -300,7 +301,7 @@ export class BookModel {
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 						isUntitled: this.openAsUntitled,
 						version: book.version,
-						parent: element ?? this._rootNode
+						parent: element
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),
@@ -318,20 +319,16 @@ export class BookModel {
 							this._allNotebooks.set(uriToNotebook.fsPath, markdown);
 						}
 					}
-					notebooks.push(markdown);
+					treeItems.push(markdown);
 				} else {
 					this._errorMessage = loc.missingFileError(sections[i].title, book.title);
 					vscode.window.showErrorMessage(this._errorMessage);
 				}
 			}
 		}
-		if (element) {
-			element.children = notebooks;
-		} else {
-			this._rootNode.children = notebooks;
-		}
-		this.bookItems = notebooks;
-		return notebooks;
+		element.children = treeItems;
+		this.bookItems = treeItems;
+		return treeItems;
 	}
 
 	/**

@@ -39,7 +39,7 @@ export interface BookTreeItemFormat {
 }
 
 export class BookTreeItem extends vscode.TreeItem {
-	private _sections: JupyterBookSection[];
+	private _sections: JupyterBookSection[] | undefined;
 	private _uri: string | undefined;
 	private _previousUri: string;
 	private _nextUri: string;
