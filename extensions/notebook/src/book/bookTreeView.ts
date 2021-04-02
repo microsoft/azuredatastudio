@@ -42,20 +42,34 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	private _bookViewer: vscode.TreeView<BookTreeItem>;
 	public viewId: string;
-	public books: BookModel[];
+	public books: BookModel[] = [];
 	public currentBook: BookModel;
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
-		this.books = [];
 		this.bookPinManager = new BookPinManager();
 		this.viewId = view;
 		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books);
 		this.bookTocManager = new BookTocManager();
-
+		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
+		this._bookViewer.onDidChangeVisibility(async e => {
+			// Whenever the viewer changes visibility then try and reveal the currently active document
+			// in the tree view
+			let openDocument = azdata.nb.activeNotebookEditor;
+			let notebookPath = openDocument?.document.uri;
+			const book = this.books.find(book => notebookPath?.fsPath.replace(/\\/g, '/').indexOf(book.bookPath) >= -1);
+			// Only reveal if...
+			if (e.visible && // If the view is currently visible to save execution time
+				book && ( // The notebook is part of a book in the viewlet (otherwise nothing to reveal)
+					(!this._openAsUntitled && notebookPath?.scheme !== 'untitled') || // This view is for titled notebooks and the notebook is not untitled
+					(this._openAsUntitled && notebookPath?.scheme === 'untitled') // The view is for untitled notebooks and the notebook is untitled
+				)) {
+				await this.revealDocumentInTreeView(notebookPath);
+			}
+		});
 		this._extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
 	}
 
@@ -64,7 +78,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			await Promise.all(getPinnedNotebooks().map(async (notebook) => {
 				try {
 					await this.createAndAddBookModel(notebook.notebookPath, true, notebook.bookPath);
-				} catch {
+				} catch (err) {
+					console.log('caught error');
 					// no-op, not all workspace folders are going to be valid books
 				}
 			}));
@@ -72,7 +87,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			await Promise.all(workspaceFolders.map(async (workspaceFolder) => {
 				try {
 					await this.loadNotebooksInFolder(workspaceFolder.uri.fsPath);
-				} catch {
+				} catch (err) {
+					console.log('error');
 					// no-op, not all workspace folders are going to be valid books
 				}
 			}));
@@ -310,15 +326,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (!this.currentBook) {
 				this.currentBook = book;
 			}
-			this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
-			this._bookViewer.onDidChangeVisibility(async e => {
-				let openDocument = azdata.nb.activeNotebookEditor;
-				let notebookPath = openDocument?.document.uri;
-				// call reveal only once on the correct view
-				if (e.visible && notebookPath?.fsPath.replace(/\\/g, '/').indexOf(book.bookPath) > -1 && ((!this._openAsUntitled && notebookPath?.scheme !== 'untitled') || (this._openAsUntitled && notebookPath?.scheme === 'untitled'))) {
-					await this.revealActiveDocumentInViewlet(notebookPath);
-				}
-			});
+			this._onDidChangeTreeData.fire(undefined);
 		}
 	}
 
@@ -383,7 +391,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async revealActiveDocumentInViewlet(uri?: vscode.Uri, shouldReveal: boolean = true): Promise<BookTreeItem | undefined> {
+	async revealDocumentInTreeView(uri?: vscode.Uri, shouldReveal: boolean = true): Promise<BookTreeItem | undefined> {
 		let bookItem: BookTreeItem;
 		let notebookPath: string;
 		// If no uri is passed in, try to use the current active notebook editor
@@ -560,7 +568,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	public async loadNotebooksInFolder(folderPath: string, urlToOpen?: string, showPreview?: boolean) {
+	public async loadNotebooksInFolder(folderPath: string, urlToOpen?: string, showPreview?: boolean): Promise<void> {
 		let bookCollection = await this.getNotebooksInTree(folderPath);
 		for (let i = 0; i < bookCollection.bookPaths.length; i++) {
 			await this.openBook(bookCollection.bookPaths[i], urlToOpen, showPreview);
@@ -628,11 +636,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				return Promise.resolve([]);
 			}
 		} else {
-			let bookItems: BookTreeItem[] = [];
-			this.books.map(book => {
-				bookItems = bookItems.concat(book.bookItems);
-			});
-			return Promise.resolve(bookItems);
+			return Promise.resolve(this.books.map(book => book.rootNode));
 		}
 	}
 

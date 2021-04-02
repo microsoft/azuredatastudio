@@ -253,7 +253,7 @@ describe('BooksTreeViewTests', function () {
 				let notebook2Path = path.join(rootFolderPath, 'Book', 'content', 'notebook2.ipynb');
 				let notebookUri = vscode.Uri.file(notebook2Path);
 
-				let revealActiveDocumentInViewletSpy = sinon.spy(bookTreeViewProvider, 'revealActiveDocumentInViewlet');
+				let revealActiveDocumentInViewletSpy = sinon.spy(bookTreeViewProvider, 'revealDocumentInTreeView');
 				await azdata.nb.showNotebookDocument(notebookUri);
 				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === notebookUri.fsPath)).not.be.undefined();
 				should(revealActiveDocumentInViewletSpy.calledOnce).be.true('revealActiveDocumentInViewlet should have been called');
@@ -336,7 +336,7 @@ describe('BooksTreeViewTests', function () {
 				const untitledNotebook1Uri = vscode.Uri.parse(`untitled:notebook1.ipynb`);
 				const untitledNotebook2Uri = vscode.Uri.parse(`untitled:notebook2.ipynb`);
 
-				let revealActiveDocumentInViewletSpy = sinon.spy(providedbookTreeViewProvider, 'revealActiveDocumentInViewlet');
+				let revealActiveDocumentInViewletSpy = sinon.spy(providedbookTreeViewProvider, 'revealDocumentInTreeView');
 				await azdata.nb.showNotebookDocument(untitledNotebook1Uri);
 				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === untitledNotebook1Uri.fsPath)).not.be.undefined();
 				should(revealActiveDocumentInViewletSpy.calledOnce).be.true('revealActiveDocumentInViewlet should have been called');
