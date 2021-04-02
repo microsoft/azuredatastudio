@@ -1068,7 +1068,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 
 					const handle = this.notificationService.notify({
 						severity: Severity.Error,
-						message: localize('editorOpenError', "Unable to open '{0}': {1}.", editor.getName(), toErrorMessage(error)),
+						message: localize('editorOpenError', "Unable to open '{0}': {1}.", editor.getName(), toErrorMessage(error, true)), // {{SQL CARBON EDIT}} add verbose parameter to toErrorMessage method
 						actions
 					});
 					console.log(`Unable to open '${editor.getName()}': `, error); // {{SQL CARBON EDIT}} Print full stack trace to console
