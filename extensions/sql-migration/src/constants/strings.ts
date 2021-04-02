@@ -134,6 +134,7 @@ export function TARGET_BLOB_CONTAINER(dbName: string): string {
 export const ENTER_NETWORK_SHARE_INFORMATION = localize('sql.migration.enter.network.share.information', "Enter target names for selected source database(s)");
 export const ENTER_BLOB_CONTAINER_INFORMATION = localize('sql.migration.blob.container.information', "Enter the target name and select the blob container location for selected databases");
 export const ENTER_FILE_SHARE_INFORMATION = localize('sql.migration.enter.file.share.information', "Enter the target name and select the file share location of selected databases");
+export const INVALID_TARGET_NAME_ERROR = localize('sql.migration.invalid.target.name.error', "Please enter a valid name for the target database.");
 
 // integration runtime page
 export const IR_PAGE_TITLE = localize('sql.migration.ir.page.title', "Azure Database Migration Service");
@@ -212,8 +213,8 @@ export const SUMMARY_PAGE_TITLE = localize('sql.migration.summary.page.title', "
 export const AZURE_ACCOUNT_LINKED = localize('sql.migration.summary.azure.account.linked', "Azure account linked");
 export const MIGRATION_TARGET = localize('sql.migration.summary.migration.target', "Migration target");
 export const SUMMARY_MI_TYPE = localize('sql.migration.summary.mi.type', "Azure SQL Managed Instance");
-export const SUMMARY_VM_TYPE = localize('sql.migration.summary.vm.type', "Azure SQL Virtual Machine");
-export const SUMMARY_DATABASE_COUNT_LABEL = localize('sql.migration.summary.database.count', "Number of database to be migrated");
+export const SUMMARY_VM_TYPE = localize('sql.migration.summary.vm.type', "SQL Server on Azure Virtual Machine");
+export const SUMMARY_DATABASE_COUNT_LABEL = localize('sql.migration.summary.database.count', "Database(s) to be migrated");
 export const SUMMARY_AZURE_STORAGE_SUBSCRIPTION = localize('sql.migration.summary.azure.storage.subscription', "Azure storage subscription");
 export const SUMMARY_AZURE_STORAGE = localize('sql.migration.summary.azure.storage', "Azure storage");
 export const SUMMARY_IR_NODE = localize('sql.migration.ir.node', "Integration Runtime node");
@@ -221,6 +222,11 @@ export const NETWORK_SHARE = localize('sql.migration.network.share', "Network Sh
 export const BLOB_CONTAINER = localize('sql.migration.blob.container.title', "Blob Container");
 export const FILE_SHARE = localize('sql.migration.file.share.title', "File Share");
 export const MIGRATION_STARTED = localize('sql.migration.started.notification', "Migration in progress");
+export const SOURCE_DATABASES = localize('sql.migration.source.databases', "Source Database(s)");
+export const MODE = localize('sql.migration.mode', "Mode");
+export const BACKUP_LOCATION = localize('sql.migration.backup.location', "Backup Location");
+export const AZURE_STORAGE_ACCOUNT_TO_UPLOAD_BACKUPS = localize('sql.migration.azure.storage.account.to.upload.backups', "Azure Storage Account to Upload Backups");
+export const SHIR = localize('sql.migration.shir', "Self-hosted Integration Runtime node");
 
 // Open notebook quick pick string
 export const NOTEBOOK_QUICK_PICK_PLACEHOLDER = localize('sql.migration.quick.pick.placeholder', "Select the operation you'd like to perform");
@@ -243,9 +249,9 @@ export const PRE_REQ_TITLE = localize('sql.migration.pre.req.title', "Things you
 export const PRE_REQ_1 = localize('sql.migration.pre.req.1', "Azure account details");
 export const PRE_REQ_2 = localize('sql.migration.pre.req.2', "Azure SQL Managed Instance or SQL Server on Azure Virtual Machine");
 export const PRE_REQ_3 = localize('sql.migration.pre.req.3', "Backup location details");
-export const MIGRATION_IN_PROGRESS = localize('sql.migration.migration.in.progress', "Migration in progress");
+export const MIGRATION_IN_PROGRESS = localize('sql.migration.migration.in.progress', "Database migration in progress");
 export const LOG_SHIPPING_IN_PROGRESS = localize('sql.migration.log.shipping.in.progress', "Log shipping in progress");
-export const MIGRATION_COMPLETED = localize('sql.migration.migration.completed', "Migration completed");
+export const MIGRATION_COMPLETED = localize('sql.migration.migration.completed', "Database migration completed");
 export const SUCCESSFULLY_MIGRATED_TO_AZURE_SQL = localize('sql.migration.successfully.migrated.to.azure.sql', "Successfully migrated to Azure SQL");
 export const MIGRATION_NOT_STARTED = localize('sql.migration.migration.not.started', "Migration not started");
 export const CHOOSE_TO_MIGRATE_TO_AZURE_SQL = localize('sql.migration.choose.to.migrate.to.azure.sql', "Choose to migrate to Azure SQL");
@@ -259,6 +265,7 @@ export const MIGRATION_CUTOVER = localize('sql.migration.cutover', "Migration cu
 export const SOURCE_DATABASE = localize('sql.migration.source.database', "Source database");
 export const SOURCE_SERVER = localize('sql.migration.source.server', "Source server");
 export const SOURCE_VERSION = localize('sql.migration.source.version', "Source version");
+export const TARGET_DATABASE_NAME = localize('sql.migration.target.database.name', "Target database name");
 export const TARGET_SERVER = localize('sql.migration.target.server', "Target server");
 export const TARGET_VERSION = localize('sql.migration.target.version', "Target version");
 export const MIGRATION_STATUS = localize('sql.migration.migration.status', "Migration status");
