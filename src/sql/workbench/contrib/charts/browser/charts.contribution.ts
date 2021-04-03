@@ -10,14 +10,14 @@ import * as nls from 'vs/nls';
 const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
 
 const chartsConfiguration: IConfigurationNode = {
-	id: 'charts',
+	id: 'builtinCharts',
 	type: 'object',
-	title: nls.localize('chartsConfigurationTitle', "Built-in Charts"),
+	title: nls.localize('builtinChartsConfigurationTitle', "Built-in Charts"),
 	properties: {
-		'charts.maxRowCount': {
+		'builtinCharts.maxRowCount': {
 			type: 'number',
 			default: 300,
-			description: nls.localize('charts.maxRowCountDescription', "The maximum number of rows for charts to display. Warning: increasing this may impact performance.")
+			description: nls.localize('builtinCharts.maxRowCountDescription', "The maximum number of rows for charts to display. Warning: increasing this may impact performance.")
 		}
 	}
 };

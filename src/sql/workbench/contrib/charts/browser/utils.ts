@@ -13,7 +13,7 @@ import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storag
  * Gets the max allowed row count for chart rendering.
  */
 export function getChartMaxRowCount(configurationService: IConfigurationService): number {
-	return configurationService.getValue<IChartsConfiguration>('charts').maxRowCount;
+	return configurationService.getValue<IChartsConfiguration>('builtinCharts').maxRowCount;
 }
 
 /**
@@ -23,7 +23,7 @@ export function notifyMaxRowCountExceeded(storageService: IStorageService, notif
 	const storageKey = 'charts/ignoreMaxRowCountExceededNotification';
 	if (!storageService.getBoolean(storageKey, StorageScope.GLOBAL, false)) {
 		notificationService.prompt(Severity.Info,
-			nls.localize('charts.maxAllowedRowsExceeded', "Maximum row count for charts has been exceeded, only the first {0} rows are used. To configure the value, you can open user settings and search for: 'charts.maxRowCount'.", getChartMaxRowCount(configurationService)),
+			nls.localize('charts.maxAllowedRowsExceeded', "Maximum row count for built-in charts has been exceeded, only the first {0} rows are used. To configure the value, you can open user settings and search for: 'builtinCharts.maxRowCount'.", getChartMaxRowCount(configurationService)),
 			[{
 				label: nls.localize('charts.neverShowAgain', "Don't Show Again"),
 				isSecondary: true,

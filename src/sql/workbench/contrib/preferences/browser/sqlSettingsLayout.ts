@@ -38,9 +38,9 @@ let sqlTocItems: ITOCEntry<string>[] = [{
 			settings: ['profiler.*']
 		},
 		{
-			id: 'data/charts',
-			label: localize('charts', "Charts"),
-			settings: ['charts.*']
+			id: 'data/builtinCharts',
+			label: localize('builtinCharts', "Built-in Charts"),
+			settings: ['builtinCharts.*']
 		}
 	]
 }];
