@@ -289,8 +289,9 @@ class DataResourceTable extends GridTableBase<any> {
 
 	public updateChartData(rowCount: number, columnCount: number, gridDataProvider: IGridDataProvider): void {
 		if (this.chartDisplayed) {
-			gridDataProvider.getRowData(0, rowCount).then(result => {
-				let range = new Slick.Range(0, 0, rowCount - 1, columnCount - 1);
+			const actualRowCount = Math.min(getChartMaxRowCount(this.configurationService), rowCount);
+			gridDataProvider.getRowData(0, actualRowCount).then(result => {
+				let range = new Slick.Range(0, 0, actualRowCount - 1, columnCount - 1);
 				let columns = gridDataProvider.getColumnHeaders(range);
 				this._chart.setData(result.rows, columns);
 			});
