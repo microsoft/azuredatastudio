@@ -133,7 +133,7 @@ export class HTMLMarkdownConverter {
 			filter: 'a',
 			replacement: (content, node) => {
 				let href = node.href;
-				const isAnchorLink = node.attributes.href.nodeValue.startsWith('#');
+				const isAnchorLink = node.attributes.href?.nodeValue.startsWith('#');
 				if (isAnchorLink) {
 					href = node.attributes.href.nodeValue;
 				} else {
