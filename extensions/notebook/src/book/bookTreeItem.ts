@@ -206,11 +206,11 @@ export class BookTreeItem extends vscode.TreeItem {
 		this._tableOfContentsPath = tocPath;
 	}
 
-	public get children(): BookTreeItem[] {
+	public get children(): BookTreeItem[] | undefined {
 		return this.book.children;
 	}
 
-	public set children(children: BookTreeItem[]) {
+	public set children(children: BookTreeItem[] | undefined) {
 		this.book.children = children;
 	}
 

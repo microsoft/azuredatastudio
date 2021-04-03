@@ -413,36 +413,51 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return bookItem;
 	}
 
-	async findAndExpandParentNode(notebookPath: string): Promise<BookTreeItem> {
-		let bookItem: BookTreeItem = this.currentBook?.getNotebook(notebookPath);
-		this.currentBook = this.books.length > 1 ? this.books.find(b => notebookPath.indexOf(b.bookPath) > -1) : this.currentBook;
-		// Try to expand the parent node until we get to the notebook
-		if (!bookItem && this.currentBook) {
-			// get the children of root node and expand the nodes to the notebook level.
-			await this.getChildren(this.currentBook.rootNode);
-			// number of levels to expand
-			let depthOfNotebookInBook: number = path.relative(notebookPath, this.currentBook.bookPath)?.split(path.sep)?.length ?? 0;
-			if (this.currentBook.bookItems.length > 0 && depthOfNotebookInBook > 0) {
-				while (depthOfNotebookInBook > 0) {
-					// check if the notebook is available in already expanded levels.
-					bookItem = this.currentBook.bookItems.find(b => b.tooltip === notebookPath);
-					if (bookItem) {
-						break;
-					}
-					// search for the parent book
-					// notebook can be inside the same folder as parent and can be in a different folder as well
-					// so check for both scenarios.
-					let book = this.currentBook.bookItems.find(b => b.tooltip.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf(path.posix.sep))) > -1) ?? this.currentBook.bookItems.find(b => path.relative(notebookPath, b.tooltip)?.split(path.sep)?.length === depthOfNotebookInBook);
-					if (!book) {
-						break;
-					}
-					if (!book.children) {
-						await this.getChildren(book);
-					}
-					await this._bookViewer.reveal(book, { select: false, focus: true, expand: 3 });
-					depthOfNotebookInBook--;
-				}
+	async findAndExpandParentNode(notebookPath: string): Promise<BookTreeItem | undefined> {
+		const parentBook = this.books.find(b => notebookPath.indexOf(b.bookPath) > -1);
+		if (!parentBook) {
+			// No parent book, likely because the Notebook is at the top level and not under a Notebook.
+			// Nothing to expand in that case so just return immediately
+			return undefined;
+		}
+		this.currentBook = parentBook;
+		let bookItem: BookTreeItem = parentBook.getNotebook(notebookPath);
+		if (bookItem) {
+			// We already have the Notebook loaded so just return it immediately
+			return bookItem;
+		}
+		// We couldn't find the Notebook which may mean that we don't have it loaded yet, starting from
+		// the top we'll expand nodes until we find the parent of the Notebook we're looking for
+		// get the children of root node and expand the nodes to the notebook level.
+		await this.getChildren(parentBook.rootNode);
+		// The path to the parent of the Notebook we're looking for (this is the node we're looking to expand)
+		const parentPath = notebookPath.substring(0, notebookPath.lastIndexOf(path.posix.sep));
+		// Find number of directories between the Notebook path and the root of the book it's contained in
+		// so we know how many parent nodes to expand
+		let depthOfNotebookInBook: number = path.relative(notebookPath, parentBook.bookPath).split(path.sep).length;
+		// Walk the tree, expanding parent nodes as needed to load the child nodes until
+		// we find the one for our Notebook
+		while (depthOfNotebookInBook > 0) {
+			// check if the notebook is available in already expanded levels.
+			bookItem = parentBook.bookItems.find(b => b.tooltip === notebookPath);
+			if (bookItem) {
+				return bookItem;
 			}
+			// Search for the parent item
+			// notebook can be inside the same folder as parent and can be in a different folder as well
+			// so check for both scenarios.
+			let bookItemToExpand = parentBook.bookItems.find(b => b.tooltip.indexOf(parentPath) > -1) ??
+				parentBook.bookItems.find(b => path.relative(notebookPath, b.tooltip)?.split(path.sep)?.length === depthOfNotebookInBook);
+			if (!bookItemToExpand) {
+				break;
+			}
+			if (!bookItemToExpand.children) {
+				// We haven't loaded children of this node yet so do that now so we can
+				// continue expanding and search its children
+				await this.getChildren(bookItemToExpand);
+			}
+			await this._bookViewer.reveal(bookItemToExpand, { select: false, focus: true, expand: 3 });
+			depthOfNotebookInBook--;
 		}
 		return bookItem;
 	}
