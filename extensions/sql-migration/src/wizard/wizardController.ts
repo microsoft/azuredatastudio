@@ -110,7 +110,7 @@ export function createHeadingTextComponent(view: azdata.ModelView, value: string
 	const component = createTextCompononent(view, value);
 	component.updateCssStyles({
 		'font-size': '13px',
-		'font-weight': 'bold'
+		'font-weight': 'bold',
 	});
 	return component;
 }

@@ -44,7 +44,7 @@ export enum MigrationSourceAuthenticationType {
 	Sql = 'SqlAuthentication'
 }
 
-export enum MigrationCutover {
+export enum MigrationMode {
 	ONLINE,
 	OFFLINE
 }
@@ -62,7 +62,7 @@ export interface NetworkShare {
 }
 
 export interface DatabaseBackupModel {
-	migrationCutover: MigrationCutover;
+	migrationMode: MigrationMode;
 	networkContainerType: NetworkContainerType;
 	networkShareLocation: string;
 	windowsUser: string;

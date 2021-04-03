@@ -681,7 +681,7 @@ export class SqlDatabaseTree {
 			this._assessmentTitle.value = this._selectedIssue.checkId;
 			this._descriptionText.value = this._selectedIssue.description;
 			this._moreInfo.url = this._selectedIssue.helpLink;
-			this._moreInfo.label = this._selectedIssue.helpLink;
+			this._moreInfo.label = this._selectedIssue.message;
 			this._impactedObjects = this._selectedIssue.impactedObjects;
 			this._recommendationText.value = this._selectedIssue.message; //TODO: Expose correct property for recommendation.
 			this._impactedObjectsTable.dataValues = this._selectedIssue.impactedObjects.map((object) => {
