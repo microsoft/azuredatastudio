@@ -304,7 +304,6 @@ export const SERVER = localize('sql.migration.server', "Server");
 export const USERNAME = localize('sql.migration.username', "Username");
 
 //Assessment Dialog
-export const DATABASES = localize('sql.migration.databases', "Databases");
 export const ISSUES = localize('sql.migration.issues', "Issues");
 export const SEARCH = localize('sql.migration.search', "Search");
 export const INSTANCE = localize('sql.migration.instance', "Instance");
@@ -324,6 +323,9 @@ export function IMPACT_OBJECT_TYPE(objectType: string): string {
 }
 export function IMPACT_OBJECT_NAME(objectName: string): string {
 	return localize('sql.migration.impact.object.name', "Name: {0}", objectName);
+}
+export function DATABASES(selectedCount: number, totalCount: number): string {
+	return localize('sql.migration.databases', "Databases ({0}/{1})", selectedCount, totalCount);
 }
 export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type', "Authentication Type");
 export const SQL_LOGIN = localize('sql.migration.sql.login', "SQL Login");

@@ -130,7 +130,7 @@ export class SqlDatabaseTree {
 						headerCssStyles: headerLeft,
 					},
 					{
-						displayName: constants.DATABASES,
+						displayName: constants.DATABASES(this.selectedDbs.length, this._model._serverDatabases.length),
 						valueType: azdata.DeclarativeDataType.component,
 						width: 100,
 						isReadOnly: true,
@@ -146,8 +146,36 @@ export class SqlDatabaseTree {
 				]
 			}
 		).component();
-
+		this._databaseTable.onDataChanged(() => {
+			this._databaseTable.updateProperties({
+				'columns': [
+					{
+						displayName: '',
+						valueType: azdata.DeclarativeDataType.boolean,
+						width: 20,
+						isReadOnly: false,
+						showCheckAll: true,
+						headerCssStyles: headerLeft,
+					},
+					{
+						displayName: constants.DATABASES(this.selectedDbs.length, this._model._serverDatabases.length),
+						valueType: azdata.DeclarativeDataType.component,
+						width: 100,
+						isReadOnly: true,
+						headerCssStyles: headerLeft
+					},
+					{
+						displayName: constants.ISSUES,
+						valueType: azdata.DeclarativeDataType.string,
+						width: 30,
+						isReadOnly: true,
+						headerCssStyles: headerRight,
+					}
+				]
+			});
+		});
 		this._databaseTable.onRowSelected(({ row }) => {
+
 			this._databaseTable.focus();
 			this._activeIssues = this._model._assessmentResults?.databaseAssessments[row].issues;
 			this._selectedIssue = this._model._assessmentResults?.databaseAssessments[row].issues[0];
