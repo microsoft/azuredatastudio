@@ -73,6 +73,7 @@ export enum TelemetryAction {
 	RunQuery = 'RunQuery',
 	RunQueryStatement = 'RunQueryStatement',
 	RunQueryString = 'RunQueryString',
+	ShowChart = 'ShowChart',
 	StopAgentJob = 'StopAgentJob',
 	WizardPagesNavigation = 'WizardPagesNavigation'
 }
@@ -80,5 +81,9 @@ export enum TelemetryAction {
 export enum NbTelemetryAction {
 	RunCell = 'RunCell',
 	RunAll = 'RunNotebook'
+}
+
+export enum TelemetryPropertyName {
+	ChartMaxRowCountExceeded = 'chartMaxRowCountExceeded'
 }
 

@@ -46,3 +46,7 @@ export interface IInsightCtor {
 	new <Services extends BrandedService[]>(container: HTMLElement, options: IInsightOptions, ...services: Services): IInsight;
 	readonly types: Array<InsightType | ChartType>;
 }
+
+export interface IChartsConfiguration {
+	readonly maxRowCount: number;
+}
