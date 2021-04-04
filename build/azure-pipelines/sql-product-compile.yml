@@ -53,7 +53,7 @@ steps:
 - task: Cache@2
   displayName: Restore Cache - Node Modules
   inputs:
-    key: 'nodeModules | $(Agent.OS) | .build/yarnlockhash'
+    key: 'nodeModules | $(Agent.OS) | yarn.lock'
     path: .build/node_modules_cache
     cacheHitVar: NODE_MODULES_RESTORED
 
