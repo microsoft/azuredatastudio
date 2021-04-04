@@ -50,32 +50,38 @@ steps:
   displayName: Merge distro
   condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
 
-- task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+- task: Cache@2
   displayName: Restore Cache - Node Modules
   inputs:
-    keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
-    targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
-    vstsFeed: 'BuildCache'
+    key: 'nodeModules | $(Agent.OS) | .build/yarnlockhash'
+    path: .build/node_modules_cache
+    cacheHitVar: NODE_MODULES_RESTORED
+
+- script: |
+    set -e
+    tar -xzf .build/node_modules_cache/cache.tgz
+  condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
+  displayName: Extract node_modules archive
 
 - script: |
     set -e
     CHILD_CONCURRENCY=1 yarn --frozen-lockfile
   displayName: Install dependencies
-  condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+  condition: and(succeeded(), ne(variables['NODE_MODULES_RESTORED'], 'true'))
 
-- task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
-  displayName: Save Cache - Node Modules
-  inputs:
-    keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
-    targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
-    vstsFeed: 'BuildCache'
-  condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+- script: |
+    set -e
+    node build/azure-pipelines/common/listNodeModules.js .build/node_modules_list.txt
+    mkdir -p .build/node_modules_cache
+    tar -czf .build/node_modules_cache/cache.tgz --files-from .build/node_modules_list.txt
+  condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+  displayName: Create node_modules archive
 
 - script: |
     set -e
     yarn postinstall
   displayName: Run postinstall scripts
-  condition: and(succeeded(), eq(variables['CacheRestored'], 'true'))
+  condition: and(succeeded(), eq(variables['NODE_MODULES_RESTORED'], 'true'))
 
 # Mixin must run before optimize, because the CSS loader will
 # inline small SVGs
