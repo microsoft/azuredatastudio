@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-// import * as path from 'vs/base/common/path';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
