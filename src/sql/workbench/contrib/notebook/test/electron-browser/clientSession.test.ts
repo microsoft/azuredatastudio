@@ -38,7 +38,7 @@ suite('Client Session', function (): void {
 			notebookUri: path,
 			notificationService: notificationService.object,
 			kernelSpec: { name: 'python', display_name: 'Python 3', language: 'python' }
-		}, new NullAdsTelemetryService());
+		});
 
 		let serverlessNotebookManager = new NotebookManagerStub();
 		serverlessNotebookManager.sessionManager = mockSessionManager.object;
