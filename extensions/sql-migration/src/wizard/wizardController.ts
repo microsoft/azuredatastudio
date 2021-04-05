@@ -15,8 +15,9 @@ import { AccountsSelectionPage } from './accountsSelectionPage';
 import { IntergrationRuntimePage } from './integrationRuntimePage';
 import { SummaryPage } from './summaryPage';
 import { MigrationModePage } from './migrationModePage';
+import { SqlSourceConfigurationPage } from './sqlSourceConfigurationPage';
 
-export const WIZARD_INPUT_COMPONENT_WIDTH = '400px';
+export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
 	constructor(private readonly extensionContext: vscode.ExtensionContext) {
 
@@ -32,20 +33,21 @@ export class WizardController {
 	}
 
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {
-		const wizard = azdata.window.createWizard(loc.WIZARD_TITLE, 'MigrationWizard', 'wide');
+		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
+		const wizard = azdata.window.createWizard(loc.WIZARD_TITLE(serverName), 'MigrationWizard', 'wide');
 		wizard.generateScriptButton.enabled = false;
 		wizard.generateScriptButton.hidden = true;
 		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
-		// const subscriptionSelectionPage = new SubscriptionSelectionPage(wizard, stateModel);
 		const migrationModePage = new MigrationModePage(wizard, stateModel);
 		const azureAccountsPage = new AccountsSelectionPage(wizard, stateModel);
+		const sourceConfigurationPage = new SqlSourceConfigurationPage(wizard, stateModel);
 		const databaseBackupPage = new DatabaseBackupPage(wizard, stateModel);
 		const integrationRuntimePage = new IntergrationRuntimePage(wizard, stateModel);
 		const summaryPage = new SummaryPage(wizard, stateModel);
 
 		const pages: MigrationWizardPage[] = [
-			// subscriptionSelectionPage,
 			azureAccountsPage,
+			sourceConfigurationPage,
 			skuRecommendationPage,
 			migrationModePage,
 			databaseBackupPage,
@@ -95,7 +97,7 @@ export function createInformationRow(view: azdata.ModelView, label: string, valu
 			})
 		.withItems(
 			[
-				creaetLabelTextComponent(view, label),
+				createLabelTextComponent(view, label),
 				createTextCompononent(view, value)
 			],
 			{
@@ -108,17 +110,15 @@ export function createHeadingTextComponent(view: azdata.ModelView, value: string
 	const component = createTextCompononent(view, value);
 	component.updateCssStyles({
 		'font-size': '13px',
-		'font-weight': 'bold'
+		'font-weight': 'bold',
 	});
 	return component;
 }
 
 
-export function creaetLabelTextComponent(view: azdata.ModelView, value: string): azdata.TextComponent {
+export function createLabelTextComponent(view: azdata.ModelView, value: string, styles: { [key: string]: string; } = { 'width': '300px' }): azdata.TextComponent {
 	const component = createTextCompononent(view, value);
-	component.updateCssStyles({
-		'width': '300px'
-	});
+	component.updateCssStyles(styles);
 	return component;
 }
 

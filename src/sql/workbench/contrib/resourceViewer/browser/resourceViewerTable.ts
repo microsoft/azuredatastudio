@@ -11,10 +11,10 @@ import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectio
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { HyperlinkCellValue, isHyperlinkCellValue, TextCellValue } from 'sql/base/browser/ui/table/formatters';
-import { HeaderFilter, CommandEventArgs, IExtendedColumn } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
+import { HeaderFilter, CommandEventArgs } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
+import { FilterableColumn, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { isString } from 'vs/base/common/types';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -127,7 +127,7 @@ export class ResourceViewerTable extends Disposable {
 		const columns = this._resourceViewerTable.grid.getColumns();
 		let value = true;
 		for (let i = 0; i < columns.length; i++) {
-			const col: IExtendedColumn<Slick.SlickData> = columns[i];
+			const col: FilterableColumn<Slick.SlickData> = columns[i];
 			if (!col.field) {
 				continue;
 			}

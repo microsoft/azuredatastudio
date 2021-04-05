@@ -89,6 +89,9 @@ export class NotebookModelStub implements INotebookModel {
 	getStandardKernelFromName(name: string): IStandardKernelWithProvider {
 		throw new Error('Method not implemented.');
 	}
+	restartSession(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
 	changeKernel(displayName: string): void {
 		throw new Error('Method not implemented.');
 	}
@@ -217,7 +220,6 @@ export class ServerManagerStub implements nb.ServerManager {
 }
 
 export class NotebookServiceStub implements INotebookService {
-	onCodeCellExecutionStart: vsEvent.Event<void>;
 	_serviceBrand: undefined;
 	get onNotebookEditorAdd(): vsEvent.Event<INotebookEditor> {
 		throw new Error('Method not implemented.');
@@ -291,10 +293,13 @@ export class NotebookServiceStub implements INotebookService {
 	navigateTo(notebookUri: URI, sectionId: string): void {
 		throw new Error('Method not implemented.');
 	}
-	notifyCellExecutionStarted(): void {
+	openNotebook(resource: UriComponents, options: INotebookOpenOptions): Promise<IEditorPane> {
 		throw new Error('Method not implemented.');
 	}
-	openNotebook(resource: UriComponents, options: INotebookOpenOptions): Promise<IEditorPane> {
+	get onCodeCellExecutionStart(): vsEvent.Event<void> {
+		throw new Error('Method not implemented.');
+	}
+	notifyCellExecutionStarted(): void {
 		throw new Error('Method not implemented.');
 	}
 }

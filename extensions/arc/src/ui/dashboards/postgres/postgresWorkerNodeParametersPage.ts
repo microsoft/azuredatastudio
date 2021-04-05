@@ -4,16 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as azdataExt from 'azdata-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper } from '../../../constants';
 import { PostgresParametersPage } from './postgresParameters';
-import { PostgresModel } from '../../../models/postgresModel';
+import { PostgresModel, EngineSettingsModel } from '../../../models/postgresModel';
 
 export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 
-	constructor(protected modelView: azdata.ModelView, _postgresModel: PostgresModel) {
-		super(modelView, _postgresModel);
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, postgresModel: PostgresModel) {
+		super(modelView, dashboard, postgresModel);
 	}
 
 	protected get title(): string {
@@ -35,35 +34,32 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 		return loc.nodeParametersDescription;
 	}
 
-	protected async saveParameterEdits(engineSettings: string, session: azdataExt.AzdataSession): Promise<void> {
+
+	protected get engineSettings(): EngineSettingsModel[] {
+		return this._postgresModel.workerNodesEngineSettings;
+	}
+
+	protected async saveParameterEdits(engineSettings: string): Promise<void> {
 		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
 			{ engineSettings: engineSettings },
 			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-			session);
-
+			this._postgresModel.controllerModel.controllerContext);
 	}
 
-	protected async resetAllParameters(session: azdataExt.AzdataSession): Promise<void> {
+	protected async resetAllParameters(): Promise<void> {
 		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
 			{ engineSettings: `''`, replaceEngineSettings: true },
 			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-			session);
-
+			this._postgresModel.controllerModel.controllerContext);
 	}
 
-	protected async resetParameter(parameterName: string, session: azdataExt.AzdataSession): Promise<void> {
+	protected async resetParameter(parameterName: string): Promise<void> {
 		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
 			{ engineSettings: parameterName + '=' },
 			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-			session);
-
-	}
-
-	protected refreshParametersTable(): void {
-		this._parameters = this._postgresModel.workerNodesEngineSettings.map(engineSetting => this.createParameterComponents(engineSetting));
-		this._parametersTable.data = this._parameters.map(p => [p.parameterName, p.valueContainer, p.description, p.resetButton]);
+			this._postgresModel.controllerModel.controllerContext);
 	}
 }

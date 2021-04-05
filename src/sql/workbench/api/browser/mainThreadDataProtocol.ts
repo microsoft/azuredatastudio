@@ -478,14 +478,14 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			providerId: providerId,
 			title: title,
 			getDataGridItems(): Thenable<azdata.DataGridItem[]> {
-				self._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.GetDataGridItems)
+				self._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.GetDataGridItems)
 					.withAdditionalProperties({
 						provider: providerId
 					}).send();
 				return self._proxy.$getDataGridItems(handle);
 			},
 			getDataGridColumns(): Thenable<azdata.DataGridColumn[]> {
-				self._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.GetDataGridColumns)
+				self._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.GetDataGridColumns)
 					.withAdditionalProperties({
 						provider: providerId
 					}).send();

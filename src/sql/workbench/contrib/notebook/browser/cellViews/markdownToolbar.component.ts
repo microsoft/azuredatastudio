@@ -19,6 +19,9 @@ import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ILinkCalloutDialogOptions, LinkCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/linkCalloutDialog';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { IEditor } from 'vs/editor/common/editorCommon';
+import * as path from 'vs/base/common/path';
+import { URI } from 'vs/base/common/uri';
+import { escape } from 'vs/base/common/strings';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
@@ -232,10 +235,16 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			if (this.cellModel.currentMode !== CellEditModes.WYSIWYG) {
 				needsTransform = false;
 			} else {
+				let linkUrl = linkCalloutResult.insertUnescapedLinkUrl;
+				const isFile = URI.parse(linkUrl).scheme === 'file';
+				if (isFile && !path.isAbsolute(linkUrl)) {
+					const notebookDirName = path.dirname(this.cellModel?.notebookModel?.notebookUri.fsPath);
+					const relativePath = (linkUrl).replace(/\\/g, path.posix.sep);
+					linkUrl = path.resolve(notebookDirName, relativePath);
+				}
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
-				// Callout is responsible for returning escaped strings
-				document.execCommand('insertHTML', false, `<a href="${linkCalloutResult?.insertUnescapedLinkUrl}">${linkCalloutResult?.insertUnescapedLinkLabel}</a>`);
+				document.execCommand('insertHTML', false, `<a href="${escape(linkUrl)}">${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
 				return;
 			}
 		}

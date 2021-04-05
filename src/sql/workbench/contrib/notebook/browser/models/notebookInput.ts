@@ -119,6 +119,11 @@ export class NotebookEditorModel extends EditorModel {
 	}
 
 	public updateModel(contentChange?: NotebookContentChange, type?: NotebookChangeType): void {
+		// If text editor model is readonly, exit early as no changes need to occur on the model
+		// Note: this follows what happens in fileCommands where update/save logic is skipped for readonly text editor models
+		if (this.textEditorModel?.isReadonly()) {
+			return;
+		}
 		if (type === NotebookChangeType.KernelChanged && this._isFirstKernelChange) {
 			this._isFirstKernelChange = false;
 			return;
@@ -223,6 +228,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	private _notebookEditorOpenedTimestamp: number;
 	private _modelResolveInProgress: boolean = false;
 	private _modelResolved: Deferred<void> = new Deferred<void>();
+	private _containerResolved: Deferred<void> = new Deferred<void>();
 
 	private _notebookFindModel: NotebookFindModel;
 
@@ -253,6 +259,10 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 
 	public get notebookUri(): URI {
 		return this.resource;
+	}
+
+	public get notebookModel(): INotebookModel | undefined {
+		return this._model.getNotebookModel();
 	}
 
 	public get notebookFindModel(): NotebookFindModel {
@@ -453,10 +463,15 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	set container(container: HTMLElement) {
 		this._disposeContainer();
 		this._parentContainer = container;
+		this._containerResolved.resolve();
 	}
 
 	get container(): HTMLElement {
 		return this._parentContainer;
+	}
+
+	get containerResolved(): Promise<void> {
+		return this._containerResolved.promise;
 	}
 
 	/**

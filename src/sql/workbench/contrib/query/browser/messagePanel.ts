@@ -34,6 +34,7 @@ import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
 import { IRange } from 'vs/editor/common/core/range';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { push } from 'vs/base/common/arrays';
 
 export interface IResultMessageIntern {
 	id?: string;
@@ -201,7 +202,7 @@ export class MessagePanel extends Disposable {
 
 	private onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
 		if (isArray(message)) {
-			this.model.messages.push(...message);
+			push(this.model.messages, message);
 		} else {
 			this.model.messages.push(message);
 		}

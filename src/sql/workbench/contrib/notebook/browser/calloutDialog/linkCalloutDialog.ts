@@ -56,7 +56,7 @@ export class LinkCalloutDialog extends Modal {
 	) {
 		super(
 			title,
-			TelemetryKeys.CalloutDialog,
+			TelemetryKeys.ModalDialogName.CalloutDialog,
 			telemetryService,
 			layoutService,
 			clipboardService,

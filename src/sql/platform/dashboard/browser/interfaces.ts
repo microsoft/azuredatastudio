@@ -20,7 +20,8 @@ export enum ComponentEventType {
 	onSelectedRowChanged,
 	onComponentCreated,
 	onCellAction,
-	onEnterKeyPressed
+	onEnterKeyPressed,
+	onInput
 }
 
 /**
@@ -145,5 +146,6 @@ export enum ModelComponentTypes {
 	TabbedPanel,
 	Separator,
 	PropertiesContainer,
-	InfoBox
+	InfoBox,
+	Slider
 }

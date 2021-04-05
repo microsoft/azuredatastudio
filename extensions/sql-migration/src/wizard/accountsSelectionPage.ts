@@ -35,6 +35,14 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 
 	private createAzureAccountsDropdown(view: azdata.ModelView): azdata.FormComponent {
 
+		const azureAccountLabel = view.modelBuilder.text().withProps({
+			value: constants.ACCOUNTS_SELECTION_PAGE_TITLE,
+			requiredIndicator: true,
+			CSSStyles: {
+				'margin': '0px'
+			}
+		}).component();
+
 		this._azureAccountsDropdown = view.modelBuilder.dropDown()
 			.withProps({
 				width: WIZARD_INPUT_COMPONENT_WIDTH
@@ -47,6 +55,15 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 					};
 					return false;
 				}
+				if (this.migrationStateModel._azureAccount?.isStale) {
+					this.wizard.message = {
+						text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount)
+					};
+					return false;
+				}
+				this.wizard.message = {
+					text: ''
+				};
 				return true;
 			}).component();
 
@@ -69,7 +86,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 				this.migrationStateModel._subscriptions = undefined!;
 				this.migrationStateModel._targetSubscription = undefined!;
 				this.migrationStateModel._databaseBackup.subscription = undefined!;
-
+				this._azureAccountsDropdown.validate();
 			}
 		});
 
@@ -83,13 +100,21 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		linkAccountButton.onDidClick(async (event) => {
 			await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
 			await this.populateAzureAccountsDropdown();
+			this.wizard.message = {
+				text: ''
+			};
+			this._azureAccountsDropdown.validate();
 		});
 
 		const flexContainer = view.modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'column'
 			})
-			.withItems([this._azureAccountsDropdown, linkAccountButton])
+			.withItems([
+				azureAccountLabel,
+				this._azureAccountsDropdown,
+				linkAccountButton
+			])
 			.component();
 
 		return {
@@ -102,6 +127,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 
 		const azureTenantDropdownLabel = view.modelBuilder.text().withProps({
 			value: constants.AZURE_TENANT,
+			requiredIndicator: true,
 			CSSStyles: {
 				'margin': '0px'
 			}
@@ -155,6 +181,15 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
+		this.wizard.registerNavigationValidator(pageChangeInfo => {
+			if (this.migrationStateModel._azureAccount.isStale === true) {
+				this.wizard.message = {
+					text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount)
+				};
+				return false;
+			}
+			return true;
+		});
 	}
 
 	public async onPageLeave(): Promise<void> {

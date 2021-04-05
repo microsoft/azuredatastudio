@@ -536,6 +536,7 @@ export interface SqlMigrationAssessmentResultItem {
 	message: string;
 	appliesToMigrationTargetPlatform: string;
 	issueCategory: string;
+	databaseName: string;
 	impactedObjects: SqlMigrationImpactedObjectInfo[];
 }
 

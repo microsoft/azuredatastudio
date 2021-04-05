@@ -301,7 +301,8 @@ describe('Manage Package Dialog', () => {
 				tabbedPanel: undefined!,
 				separator: undefined!,
 				propertiesContainer: undefined!,
-				infoBox: undefined!
+				infoBox: undefined!,
+				slider: undefined!
 			}
 		};
 

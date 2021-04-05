@@ -3,10 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
-
-import { AssessmentDialogComponent } from './model/assessmentDialogComponent';
-
-export class SqlAssessmentResult extends AssessmentDialogComponent {
+export class SqlAssessmentResult {
 	async createComponent(view: azdata.ModelView): Promise<azdata.Component> {
 
 		const title = this.createTitleComponent(view);

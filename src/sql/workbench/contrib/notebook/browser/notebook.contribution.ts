@@ -7,7 +7,7 @@ import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } fro
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
-import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions, ActiveEditorContext } from 'vs/workbench/common/editor';
+import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions, ActiveEditorContext, IEditorInput } from 'vs/workbench/common/editor';
 
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
@@ -33,7 +33,7 @@ import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
-import { ConnectedContext } from 'azdata';
+import { ConnectedContext, nb } from 'azdata';
 import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
 import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
@@ -52,6 +52,9 @@ import { isMacintosh } from 'vs/base/common/platform';
 import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
 import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(FileNotebookInput.ID, FileNoteBookEditorInputFactory);
@@ -167,6 +170,40 @@ CommandsRegistry.registerCommand({
 	}
 });
 
+const RESTART_JUPYTER_NOTEBOOK_SESSIONS = 'notebook.action.restartJupyterNotebookSessions';
+
+CommandsRegistry.registerCommand({
+	id: RESTART_JUPYTER_NOTEBOOK_SESSIONS,
+	handler: async (accessor: ServicesAccessor) => {
+		const editorService: IEditorService = accessor.get(IEditorService);
+		const editors: readonly IEditorInput[] = editorService.editors;
+		let jupyterServerRestarted: boolean = false;
+
+		for (let editor of editors) {
+			if (editor instanceof NotebookInput) {
+				let model: INotebookModel = editor.notebookModel;
+				if (model.providerId === 'jupyter' && model.clientSession.isReady) {
+					// Jupyter server needs to be restarted so that the correct Python installation is used
+					if (!jupyterServerRestarted) {
+						let jupyterNotebookManager: INotebookManager = model.notebookManagers.find(x => x.providerId === 'jupyter');
+						// Shutdown all current Jupyter sessions before stopping the server
+						await jupyterNotebookManager.sessionManager.shutdownAll();
+						// Jupyter session manager needs to be disposed so that a new one is created with the new server info
+						jupyterNotebookManager.sessionManager.dispose();
+						await jupyterNotebookManager.serverManager.stopServer();
+						let spec: nb.IKernelSpec = model.defaultKernel;
+						await jupyterNotebookManager.serverManager.startServer(spec);
+						jupyterServerRestarted = true;
+					}
+
+					// Start a new session for each Jupyter notebook
+					await model.restartSession();
+				}
+			}
+		}
+	}
+});
+
 MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 	command: {
 		id: TOGGLE_TAB_FOCUS_COMMAND_ID,
@@ -252,7 +289,12 @@ configurationRegistry.registerConfiguration({
 			'default': 1.5,
 			'minimum': 1,
 			'description': localize('notebook.markdownPreviewLineHeight', "Controls the line height used in the notebook markdown preview. This number is relative to the font size.")
-		}
+		},
+		'notebook.showRenderedNotebookInDiffEditor': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('notebook.showRenderedNotebookinDiffEditor', "(Preview) Show rendered notebook in diff editor.")
+		},
 	}
 });
 
