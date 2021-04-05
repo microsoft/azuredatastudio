@@ -140,16 +140,6 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
 
-- task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
-  displayName: Save Cache - Compiled Files
-  inputs:
-    keyfile: 'build/.cachesalt, .build/commit, .build/quality'
-    targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
-    vstsFeed: 'BuildCache'
-    platformIndependent: true
-    alias: 'Compilation'
-  condition: and(succeeded(), ne(variables.COMPILATION_RESTORED, 'true'))
-
 - script: |
     set -e
     node build/azure-pipelines/common/listCompiledFiles.js .build/compilation_list.txt
