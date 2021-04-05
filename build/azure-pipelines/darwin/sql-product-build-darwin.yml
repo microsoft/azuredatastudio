@@ -5,30 +5,18 @@ steps:
       certSecureFile: 'osx_signing_key.p12'
     condition: eq(variables['signed'], true)
 
-  - script: |
-      mkdir -p .build
-      echo -n $BUILD_SOURCEVERSION > .build/commit
-      echo -n $VSCODE_QUALITY > .build/quality
-    displayName: Prepare cache flag
-
-  - task: Cache@2
-    displayName: Restore Cache - Compiled Files
+  - task: DownloadPipelineArtifact@2
     inputs:
-      key: '$(Build.SourceVersion),$(VSCODE_QUALITY)'
-      path: .build/compilation_cache
-      cacheHitVar: COMPILATION_RESTORED
+      artifact: Compilation
+      path: $(Build.ArtifactStagingDirectory)
+    displayName: Download compilation output
+    condition: and(succeeded(), ne(variables['VSCODE_ARCH'], 'universal'))
 
   - script: |
       set -e
-      exit 1
-    displayName: Check RestoreCache
-    condition: and(succeeded(), ne(variables.COMPILATION_RESTORED, 'true'))
-
-  - script: |
-      set -e
-      tar -xzf .build/compilation_cache/cache.tgz
-    condition: and(succeeded(), eq(variables.COMPILATION_RESTORED, 'true'))
-    displayName: Extract compilation archive
+      tar -xzf $(Build.ArtifactStagingDirectory)/compilation.tar.gz
+    displayName: Extract compilation output
+    condition: and(succeeded(), ne(variables['VSCODE_ARCH'], 'universal'))
 
   - task: NodeTool@0
     inputs:
@@ -66,6 +54,7 @@ steps:
     displayName: Merge distro
 
   - script: |
+      mkdir -p .build
       node build/azure-pipelines/common/computeNodeModulesCacheKey.js > .build/yarnlockhash
     displayName: Prepare yarn cache flags
 

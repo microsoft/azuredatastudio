@@ -2,31 +2,6 @@ parameters:
   extensionsToUnitTest: []
 
 steps:
-  - script: |
-      mkdir -p .build
-      echo -n $BUILD_SOURCEVERSION > .build/commit
-      echo -n $VSCODE_QUALITY > .build/quality
-    displayName: Prepare cache flag
-
-  - task: Cache@2
-    displayName: Restore Cache - Compiled Files
-    inputs:
-      key: '$(Build.SourceVersion),$(VSCODE_QUALITY)'
-      path: .build/compilation_cache
-      cacheHitVar: COMPILATION_RESTORED
-
-  - script: |
-      set -e
-      exit 1
-    displayName: Check RestoreCache
-    condition: and(succeeded(), ne(variables.COMPILATION_RESTORED, 'true'))
-
-  - script: |
-      set -e
-      tar -xzf .build/compilation_cache/cache.tgz
-    condition: and(succeeded(), eq(variables.COMPILATION_RESTORED, 'true'))
-    displayName: Extract compilation archive
-
   - task: NodeTool@0
     inputs:
       versionSpec: "12.13.0"
@@ -41,6 +16,17 @@ steps:
       azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
       KeyVaultName: ado-secrets
       SecretsFilter: 'github-distro-mixin-password'
+
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      artifact: Compilation
+      path: $(Build.ArtifactStagingDirectory)
+    displayName: Download compilation output
+
+  - script: |
+      set -e
+      tar -xzf $(Build.ArtifactStagingDirectory)/compilation.tar.gz
+    displayName: Extract compilation output
 
   - script: |
       set -e
@@ -62,6 +48,7 @@ steps:
     displayName: Merge distro
 
   - script: |
+      mkdir -p .build
       node build/azure-pipelines/common/computeNodeModulesCacheKey.js > .build/yarnlockhash
     displayName: Prepare yarn cache flags
 
