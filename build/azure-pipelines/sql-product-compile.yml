@@ -15,7 +15,7 @@ steps:
 - script: |
     set -e
     tar -xzf .build/compilation_cache/cache.tgz
-  condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
+  condition: and(succeeded(), eq(variables.COMPILATION_RESTORED, 'true'))
   displayName: Extract compilation archive
 
 - task: NodeTool@0
@@ -125,7 +125,7 @@ steps:
     AZURE_STORAGE_ACCESS_KEY="$(sourcemap-storage-key)" \
       node build/azure-pipelines/upload-sourcemaps
   displayName: Upload sourcemaps
-  condition: and(succeeded(), ne(variables['CacheExists-Compilation'], 'true'))
+  condition: and(succeeded(), ne(variables.COMPILATION_RESTORED, 'true'))
 
 - script: |
     set -e

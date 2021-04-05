@@ -5,20 +5,24 @@ steps:
     echo -n $VSCODE_QUALITY > .build/quality
   displayName: Prepare cache flag
 
-- task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
-  displayName: Restore Cache - Compiled Files
-  inputs:
-    keyfile: 'build/.cachesalt, .build/commit, .build/quality'
-    targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
-    vstsFeed: 'BuildCache'
-    platformIndependent: true
-    alias: 'Compilation'
+  - task: Cache@2
+    displayName: Restore Cache - Compiled Files
+    inputs:
+      key: 'build/.cachesalt | .build/commit | .build/quality'
+      path: .build/compilation_cache
+      cacheHitVar: COMPILATION_RESTORED
 
 - script: |
     set -e
     exit 1
   displayName: Check RestoreCache
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+  condition: and(succeeded(), ne(variables.COMPILATION_RESTORED, 'true'))
+
+- script: |
+    set -e
+    tar -xzf .build/compilation_cache/cache.tgz
+  condition: and(succeeded(), eq(variables.COMPILATION_RESTORED, 'true'))
+  displayName: Extract compilation archive
 
 - task: NodeTool@0
   inputs:
