@@ -3,7 +3,7 @@ steps:
     mkdir -p .build
     echo -n $BUILD_SOURCEVERSION > .build/commit
     echo -n $VSCODE_QUALITY > .build/quality
-    node build/azure-pipelines/common/computeCompilationCacheKey.js > .build/compilationhashkey
+    md5sum build/.cachesalt .build/commit .build/quality' | md5sum > .build/compilationhashkey
   displayName: Prepare cache flag
 
 - task: Cache@2
