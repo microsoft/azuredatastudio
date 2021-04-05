@@ -148,6 +148,6 @@ steps:
 - script: |
     set -e
     mkdir -p .build/compilation_cache
-    tar -czf .build/compilation_cache/cache.tgz .build out-build out-vscode-min out-vscode-reh-min out-vscode-reh-web-min
+    find .build out-build out-vscode-min out-vscode-reh-min out-vscode-reh-web-min 2>/dev/null | xargs tar -czf .build/compilation_cache/cache.tgz
   condition: and(succeeded(), ne(variables.CACHERESTORED_COMPILATION, 'true'))
   displayName: Create compilation archive
