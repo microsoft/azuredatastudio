@@ -296,7 +296,8 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
 			const defaultLabel = this.getCurrentSelectionText();
-			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogPosition, dialogProperties, defaultLabel);
+			const defaultLinkLabel = this.getCurrentLinkAddress();
+			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogPosition, dialogProperties, defaultLabel, defaultLinkLabel);
 			this._linkCallout.render();
 			calloutOptions = await this._linkCallout.open();
 		}
@@ -316,6 +317,10 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			}
 			return '';
 		}
+	}
+
+	private getCurrentLinkAddress(): string {
+		return document.getSelection().anchorNode.parentNode['href'] || '';
 	}
 
 	private getCellEditorControl(): IEditor | undefined {
