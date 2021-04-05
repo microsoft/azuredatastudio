@@ -55,7 +55,6 @@ steps:
   condition: and(succeeded(), ne(variables.COMPILATION_RESTORED, 'true'))
 
 - script: |
-    mkdir -p .build
     node build/azure-pipelines/common/computeNodeModulesCacheKey.js > .build/yarnlockhash
   displayName: Prepare yarn cache flags
 

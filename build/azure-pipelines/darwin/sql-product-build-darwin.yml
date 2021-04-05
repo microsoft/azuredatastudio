@@ -66,7 +66,6 @@ steps:
     displayName: Merge distro
 
   - script: |
-      mkdir -p .build
       node build/azure-pipelines/common/computeNodeModulesCacheKey.js > .build/yarnlockhash
     displayName: Prepare yarn cache flags
 
