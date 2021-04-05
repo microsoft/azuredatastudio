@@ -5,7 +5,7 @@ steps:
     echo -n $VSCODE_QUALITY > .build/quality
   displayName: Prepare cache flag
 
-  - task: Cache@2
+- task: Cache@2
   displayName: Restore Cache - Compiled Files
   inputs:
     key: 'build/.cachesalt | .build/commit | .build/quality'
