@@ -9,7 +9,7 @@ steps:
       mkdir -p .build
       echo -n $BUILD_SOURCEVERSION > .build/commit
       echo -n $VSCODE_QUALITY > .build/quality
-      md5 build/.cachesalt .build/commit .build/quality' | md5 > .build/compilationhashkey
+      md5 build/.cachesalt .build/commit .build/quality | md5 > .build/compilationhashkey
     displayName: Prepare cache flag
 
   - task: Cache@2
