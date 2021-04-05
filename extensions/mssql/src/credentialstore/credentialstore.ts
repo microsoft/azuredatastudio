@@ -9,7 +9,6 @@ import { ServerOptions, RPCMessageType, ClientCapabilities, ServerCapabilities, 
 import { Disposable } from 'vscode';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as azdata from 'azdata';
-
 import * as Contracts from './contracts';
 import * as Constants from './constants';
 import * as Utils from '../utils';
@@ -41,32 +40,47 @@ class CredentialsFeature extends SqlOpsFeature<any> {
 		});
 	}
 
+	/**
+	 * Removes a credential for a given connection profile from sqltoolsservice
+	 * and adds it to keytar
+	 */
+	private async cleanCredential(conn: azdata.connection.ConnectionProfile): Promise<boolean> {
+		const credentialId = Utils.formatCredentialId(conn);
+		// read password from every saved password connection
+		const credential = await this._client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId, password: undefined });
+		if (credential.password) {
+			const password = credential.password;
+			// save it in keychain
+			await this.keychain.setPassword(credentialId, password);
+			// check if it's saved
+			const savedPassword = await this.keychain.getPassword(credentialId);
+			if (savedPassword === password) {
+				// delete from tools service
+				const result = await this._client.sendRequest(Contracts.DeleteCredentialRequest.type,
+					{ credentialId, password: undefined });
+				return result;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Try to migrate all the credentials to the keytar system
+	 * @returns
+	 */
 	private migrateCredentials(): Thenable<boolean> {
 		return azdata.connection.getConnections(false).then((connections) => {
 			const savedPasswordConnections = connections.filter(conn => conn.savePassword === true);
-			return new Promise((resolve, reject) => {
-				savedPasswordConnections.forEach(async (conn) => {
-					const credentialId = Utils.formatCredentialId(conn);
-					// read password from every saved password connection
-					this._client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId, password: undefined }).then((credential) => {
-						if (credential) {
-							const password = credential.password;
-							// save it in keychain
-							this.keychain.setPassword(credentialId, password).then(() => {
-								// check if it's saved
-								this.keychain.getPassword(credentialId).then((savedPassword) => {
-									if (savedPassword === password) {
-										// delete from tools service
-										this._client.sendRequest(Contracts.DeleteCredentialRequest.type,
-											{ credentialId, password: undefined }).then((result) => resolve(result));
-									} else {
-										reject('Password couldn\'t be saved');
-									}
-								});
-							});
-						}
-					});
-				});
+			return new Promise(async (resolve, reject) => {
+				for (let i = 0; i < savedPasswordConnections.length; i++) {
+					let conn = savedPasswordConnections[i];
+					await this.cleanCredential(conn);
+				}
+				await Utils.removeCredentialFile();
+				resolve(true);
 			});
 		});
 	}

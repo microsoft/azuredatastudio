@@ -43,6 +43,15 @@ export function getAppDataPath() {
 }
 
 /**
+ * Returns the credential folder path on the user's system
+ */
+export async function removeCredentialFile(): Promise<void> {
+	const home = os.homedir();
+	const credentialPath = path.join(home, '.sqlsecrets');
+	await fs.rmdir(credentialPath, { recursive: true });
+}
+
+/**
  *
  * @returns Whether the current OS is linux or not
  */
@@ -64,19 +73,20 @@ export function keytarCredentialsEnabled(): boolean {
  * Gets the prefix for a formatted credential ID
  */
 
-function getConnectionInfoId() {
-	let idNames = ['authenticationType', 'database', 'server', 'user'];
+function getConnectionInfoId(connectionProfile: azdata.connection.ConnectionProfile): string {
+	let idNames = ['authenticationType', 'database', 'server', 'user', 'applicationName'];
 
 	//Sort to make sure using names in the same order every time otherwise the ids would be different
 	idNames.sort();
 
 	let idValues: string[] = [];
 	for (let index = 0; index < idNames.length; index++) {
-		let value = this.options[idNames[index]!];
+		let value = connectionProfile.options[idNames[index]!];
 		value = value ? value : '';
 		idValues.push(`${idNames[index]}${CRED_NAME_VALUE_SEPARATOR}${value}`);
 	}
-	return CRED_PROVIDER_NAME + CRED_SEPARATOR + this.providerName + CRED_SEPARATOR + idValues.join(CRED_SEPARATOR);
+	return CRED_PROVIDER_NAME + CRED_NAME_VALUE_SEPARATOR + connectionProfile.providerId +
+		CRED_SEPARATOR + idValues.join(CRED_SEPARATOR);
 }
 
 /**
@@ -89,7 +99,7 @@ function getConnectionInfoId() {
 export function formatCredentialId(connectionProfile: azdata.connection.ConnectionProfile): string {
 	const cred: string[] = [CRED_PREFIX];
 	cred.push(CRED_ITEMTYPE_PREFIX.concat(CRED_PROFILE_USER));
-	cred.push(CRED_ID_PREFIX.concat(getConnectionInfoId()));
+	cred.push(CRED_ID_PREFIX.concat(getConnectionInfoId(connectionProfile)));
 	return cred.join(CRED_SEPARATOR);
 }
 

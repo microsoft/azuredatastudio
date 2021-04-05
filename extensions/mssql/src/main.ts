@@ -34,13 +34,6 @@ import { INotebookConvertService } from './notebookConvert/notebookConvertServic
 
 const localize = nls.loadMessageBundle();
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
-const msgMigrateLinuxCredentials = localize('msgMigrateLinuxCredentials',
-	'Azure Data Studio now recommends using the internal \
-	credential services to store your credentials. \
-	Do you want to migrate your credentials to the new secure system?');
-const msgYes = localize('mssql.yes', 'Yes');
-const msgNo = localize('mssql.no', 'No');
-
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	// lets make sure we support this platform first
@@ -86,19 +79,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	const server = new SqlToolsServer();
 	context.subscriptions.push(server);
 	await server.start(appContext);
-
-	// check for Keytar credential setting on linux machines
-	if (Utils.keytarCredentialsEnabled() && Utils.migrateLinuxCredentials()) {
-		// default is true for both, so every linux user will be prompted to migrate
-		// if the user says no, turn the setting off
-		vscode.window.showInformationMessage(msgMigrateLinuxCredentials, msgYes, msgNo).then((response) => {
-			if (response === msgNo) {
-				// turn the setting off and don't migrate
-				Utils.disableCredentialMigration();
-			}
-		});
-	}
-
 
 	vscode.commands.registerCommand('mssql.exportSqlAsNotebook', async (uri: vscode.Uri) => {
 		try {

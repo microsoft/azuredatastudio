@@ -8,10 +8,17 @@ import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { getCommonLaunchArgsAndCleanupOldLogFiles, keytarCredentialsEnabled, migrateLinuxCredentials } from './utils';
+import {
+	disableCredentialMigration, getCommonLaunchArgsAndCleanupOldLogFiles,
+	keytarCredentialsEnabled, migrateLinuxCredentials
+} from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, KeytarCredentialsFeature } from './features';
+import {
+	TelemetryFeature, AgentServicesFeature, SerializationFeature,
+	AccountFeature, SqlAssessmentServicesFeature,
+	ProfilerFeature, KeytarCredentialsFeature
+} from './features';
 import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import { SchemaCompareService } from './schemaCompare/schemaCompareService';
@@ -26,11 +33,19 @@ import { SqlAssessmentService } from './sqlAssessment/sqlAssessmentService';
 import { NotebookConvertService } from './notebookConvert/notebookConvertService';
 import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
 
+
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
 export class SqlToolsServer {
+
+	static msgMigrateLinuxCredentials = localize('msgMigrateLinuxCredentials',
+		'Azure Data Studio now recommends using the internal \
+	credential services to store your credentials. \
+	Do you want to migrate your credentials to the new secure system?');
+	static msgYes = localize('mssql.yes', 'Yes');
+	static msgNo = localize('mssql.no', 'No');
 
 	private client: SqlOpsDataClient;
 	private config: IConfig;
@@ -64,12 +79,29 @@ export class SqlToolsServer {
 			statusView.show();
 			statusView.text = localize('startingServiceStatusMsg', "Starting {0}", Constants.serviceName);
 			this.client.start();
+
+			// check for Keytar credential setting on linux machines
+			await this.checkKeytarEnabled();
+
 			await Promise.all([this.activateFeatures(context), clientReadyPromise]);
 			return this.client;
 		} catch (e) {
 			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
 			vscode.window.showErrorMessage(localize('failedToStartServiceErrorMsg', "Failed to start {0}", Constants.serviceName));
 			throw e;
+		}
+	}
+
+	private async checkKeytarEnabled(): Promise<void> {
+		if (keytarCredentialsEnabled() && migrateLinuxCredentials()) {
+			// default is true for both, so every linux user will be prompted to migrate
+			// if the user says no, turn the setting off
+			const response = await vscode.window.showInformationMessage(SqlToolsServer.msgMigrateLinuxCredentials,
+				SqlToolsServer.msgYes, SqlToolsServer.msgNo);
+			if (response === SqlToolsServer.msgNo) {
+				// turn the setting off and don't migrate
+				disableCredentialMigration();
+			}
 		}
 	}
 
@@ -89,7 +121,7 @@ export class SqlToolsServer {
 	private activateFeatures(context: AppContext): Promise<void> {
 		const resourceProvider = new AzureResourceProvider(context.extensionContext.logPath, this.config);
 		this.disposables.push(resourceProvider);
-		if (keytarCredentialsEnabled() && !migrateLinuxCredentials) {
+		if (keytarCredentialsEnabled() && !migrateLinuxCredentials()) {
 			return resourceProvider.start().then();
 		} else {
 			const credsStore = new CredentialStore(context.extensionContext.logPath, this.config);
@@ -164,7 +196,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 		ProfilerFeature,
 		SqlMigrationService.asFeature(context)
 	];
-	if (keytarCredentialsEnabled() && !migrateLinuxCredentials) {
+	if (keytarCredentialsEnabled() && !migrateLinuxCredentials()) {
 		features.push(KeytarCredentialsFeature);
 	}
 	return {
