@@ -159,7 +159,7 @@ suite.skip('NotebookService:', function (): void {
 
 		notebookService = new NotebookService(lifecycleService, storageService, extensionServiceMock.object, extensionManagementService,
 			instantiationService, fileService, logServiceMock.object, queryManagementService, contextService, productService,
-			undefined, undefined, undefined);
+			editorService, untitledTextEditorService, editorGroupsService);
 		sandbox = sinon.sandbox.create();
 	});
 
