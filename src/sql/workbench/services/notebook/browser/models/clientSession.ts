@@ -15,8 +15,6 @@ import { IClientSession, IClientSessionOptions } from 'sql/workbench/services/no
 import { Deferred } from 'sql/base/common/promise';
 import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 type KernelChangeHandler = (kernel: nb.IKernelChangedArgs) => Promise<void>;
 /**
@@ -52,7 +50,7 @@ export class ClientSession implements IClientSession {
 	private _kernelConfigActions: ((kernelName: string) => Promise<any>)[] = [];
 	private _connectionId: string = '';
 
-	constructor(private options: IClientSessionOptions, @IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
+	constructor(private options: IClientSessionOptions) {
 		this._notebookUri = options.notebookUri;
 		this.notebookManager = options.notebookManager;
 		this._isReady = false;
@@ -246,12 +244,6 @@ export class ClientSession implements IClientSession {
 	}
 
 	private async notifyKernelChanged(newKernel: nb.IKernel, oldKernel?: nb.IKernel): Promise<void> {
-		this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.KernelChanged)
-			.withAdditionalProperties({
-				newKernel: newKernel.name,
-				oldKernel: oldKernel?.name || ''
-			})
-			.send();
 		let changeArgs: nb.IKernelChangedArgs = {
 			oldValue: oldKernel,
 			newValue: newKernel

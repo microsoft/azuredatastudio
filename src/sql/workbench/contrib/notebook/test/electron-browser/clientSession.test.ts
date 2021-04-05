@@ -173,7 +173,7 @@ suite('Client Session', function (): void {
 			notebookManager: newNotebookManager,
 			notebookUri: path,
 			notificationService: notificationService.object
-		}, new NullAdsTelemetryService());
+		});
 		await remoteSession.initialize();
 
 		// When I call shutdown
