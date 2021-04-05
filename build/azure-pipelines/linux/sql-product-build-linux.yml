@@ -11,7 +11,7 @@ steps:
   - task: Cache@2
     displayName: Restore Cache - Compiled Files
     inputs:
-      key: '${BUILD_SOURCEVERSION}${VSCODE_QUALITY}'
+      key: '$(BUILD_SOURCEVERSION), $(VSCODE_QUALITY)'
       path: .build/compilation_cache
       cacheHitVar: COMPILATION_RESTORED
 
@@ -62,6 +62,7 @@ steps:
     displayName: Merge distro
 
   - script: |
+      mkdir -p .build
       node build/azure-pipelines/common/computeNodeModulesCacheKey.js > .build/yarnlockhash
     displayName: Prepare yarn cache flags
 
