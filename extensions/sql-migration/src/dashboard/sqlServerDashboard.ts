@@ -23,7 +23,10 @@ const maxWidth = 800;
 
 interface StatusCard {
 	container: azdata.DivContainer;
-	count: azdata.TextComponent
+	count: azdata.TextComponent,
+	textContainer?: azdata.FlexContainer,
+	warningContainer?: azdata.FlexContainer,
+	warningText?: azdata.TextComponent,
 }
 
 export class DashboardWidget {
@@ -34,13 +37,26 @@ export class DashboardWidget {
 
 
 	private _inProgressMigrationButton!: StatusCard;
+	private _inProgressWarningMigrationButton!: StatusCard;
 	private _successfulMigrationButton!: StatusCard;
 	private _notStartedMigrationCard!: StatusCard;
-	private _migrationStatus!: MigrationContext[];
-
+	private _migrationStatusMap: Map<string, MigrationContext[]> = new Map();
 	private _viewAllMigrationsButton!: azdata.ButtonComponent;
 
 	constructor() {
+		vscode.commands.registerCommand('sqlmigration.refreshMigrationTiles', () => {
+			this.refreshMigrations();
+		});
+	}
+
+	private async getCurrentMigrations(): Promise<MigrationContext[]> {
+		const connectionId = (await azdata.connection.getCurrentConnection()).connectionId;
+		return this._migrationStatusMap.get(connectionId)!;
+	}
+
+	private async setCurrentMigrations(migrations: MigrationContext[]): Promise<void> {
+		const connectionId = (await azdata.connection.getCurrentConnection()).connectionId;
+		this._migrationStatusMap.set(connectionId, migrations);
 	}
 
 	public register(): void {
@@ -196,7 +212,7 @@ export class DashboardWidget {
 			height: maxHeight,
 			iconHeight: 32,
 			iconPath: taskMetaData.iconPath,
-			iconWidth: 32,
+			iconWidth: 36,
 			label: taskMetaData.title,
 			title: taskMetaData.title,
 			width: maxWidth,
@@ -216,25 +232,47 @@ export class DashboardWidget {
 		this._viewAllMigrationsButton.enabled = false;
 		this._migrationStatusCardLoadingContainer.loading = true;
 		try {
-			this._migrationStatus = await this.getMigrations();
-
-			const inProgressMigrations = this._migrationStatus.filter((value) => {
+			this.setCurrentMigrations(await this.getMigrations());
+			const migrationStatus = await this.getCurrentMigrations();
+			const inProgressMigrations = migrationStatus.filter((value) => {
 				const status = value.migrationContext.properties.migrationStatus;
-				return status === 'InProgress' || status === 'Creating' || status === 'Completing';
+				const provisioning = value.migrationContext.properties.provisioningState;
+				return status === 'InProgress' || status === 'Creating' || status === 'Completing' || provisioning === 'Creating';
 			});
 
-			this._inProgressMigrationButton.count.value = inProgressMigrations.length.toString();
+			let warningCount = 0;
 
-			const successfulMigration = this._migrationStatus.filter((value) => {
+			for (let i = 0; i < inProgressMigrations.length; i++) {
+				if (
+					inProgressMigrations[i].asyncOperationResult?.error?.message ||
+					inProgressMigrations[i].migrationContext.properties.migrationFailureError?.message ||
+					inProgressMigrations[i].migrationContext.properties.migrationStatusDetails?.fileUploadBlockingErrors ||
+					inProgressMigrations[i].migrationContext.properties.migrationStatusDetails?.restoreBlockingReason
+				) {
+					warningCount += 1;
+				}
+			}
+
+			if (warningCount > 0) {
+				this._inProgressWarningMigrationButton.warningText!.value = loc.MIGRATION_INPROGRESS_WARNING(warningCount);
+				this._inProgressMigrationButton.container.display = 'none';
+				this._inProgressWarningMigrationButton.container.display = 'inline';
+			} else {
+				this._inProgressMigrationButton.container.display = 'inline';
+				this._inProgressWarningMigrationButton.container.display = 'none';
+			}
+			this._inProgressMigrationButton.count.value = inProgressMigrations.length.toString();
+			this._inProgressWarningMigrationButton.count.value = inProgressMigrations.length.toString();
+
+			const successfulMigration = migrationStatus.filter((value) => {
 				const status = value.migrationContext.properties.migrationStatus;
 				return status === 'Succeeded';
 			});
 
 			this._successfulMigrationButton.count.value = successfulMigration.length.toString();
-
 			const currentConnection = (await azdata.connection.getCurrentConnection());
 			const migrationDatabases = new Set(
-				this._migrationStatus.map((value) => {
+				migrationStatus.map((value) => {
 					return value.migrationContext.properties.sourceDatabaseName;
 				}));
 			const serverDatabases = await azdata.connection.listDatabases(currentConnection.connectionId);
@@ -256,27 +294,18 @@ export class DashboardWidget {
 	private createStatusCard(
 		cardIconPath: IconPath,
 		cardTitle: string,
-		cardDescription: string
 	): StatusCard {
 
 		const cardTitleText = this._view.modelBuilder.text().withProps({ value: cardTitle }).withProps({
 			CSSStyles: {
-				'font-weight': 'bold',
-				'height': '20px',
-				'margin-top': '6px',
+				'height': '23px',
+				'margin-top': '15px',
 				'margin-bottom': '0px',
 				'width': '300px',
-				'font-size': '14px'
+				'font-size': '14px',
 			}
 		}).component();
-		const cardDescriptionText = this._view.modelBuilder.text().withProps({ value: cardDescription }).withProps({
-			CSSStyles: {
-				'height': '18px',
-				'margin-top': '0px',
-				'margin-bottom': '0px',
-				'width': '300px'
-			}
-		}).component();
+
 		const cardCount = this._view.modelBuilder.text().withProps({
 			value: '0',
 			CSSStyles: {
@@ -286,22 +315,123 @@ export class DashboardWidget {
 			}
 		}).component();
 
+		const flex = this._view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'width': '400px',
+				'height': '50px',
+				'margin-top': '10px',
+				'border': '1px solid',
+			}
+		}).component();
+
+		const img = this._view.modelBuilder.image().withProps({
+			iconPath: cardIconPath!.light,
+			iconHeight: 24,
+			iconWidth: 24,
+			width: 64,
+			height: 30,
+			CSSStyles: {
+				'margin-top': '10px'
+			}
+		}).component();
+
+		flex.addItem(img, {
+			flex: '0'
+		});
+		flex.addItem(cardTitleText, {
+			flex: '0',
+			CSSStyles: {
+				'width': '300px'
+			}
+		});
+		flex.addItem(cardCount, {
+			flex: '0'
+		});
+
+		const compositeButton = this._view.modelBuilder.divContainer().withItems([flex]).withProps({
+			ariaRole: 'button',
+			ariaLabel: 'show status',
+			clickable: true
+		}).component();
+		return {
+			container: compositeButton,
+			count: cardCount
+		};
+	}
+
+	private createStatusWithSubtextCard(
+		cardIconPath: IconPath,
+		cardTitle: string,
+		cardDescription: string
+	): StatusCard {
+
+		const cardTitleText = this._view.modelBuilder.text().withProps({ value: cardTitle }).withProps({
+			CSSStyles: {
+				'height': '23px',
+				'margin-top': '15px',
+				'margin-bottom': '0px',
+				'width': '300px',
+				'font-size': '14px',
+			}
+		}).component();
+
+		const cardDescriptionWarning = this._view.modelBuilder.image().withProps({
+			iconPath: IconPathHelper.warning,
+			iconWidth: 12,
+			iconHeight: 12,
+			width: 12,
+			height: 17
+		}).component();
+
+		const cardDescriptionText = this._view.modelBuilder.text().withProps({ value: cardDescription }).withProps({
+			CSSStyles: {
+				'height': '13px',
+				'margin-top': '0px',
+				'margin-bottom': '0px',
+				'width': '250px',
+				'font-height': '13px',
+				'margin': '0 0 0 4px'
+			}
+		}).component();
+
+		const subTextContainer = this._view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'justify-content': 'left',
+			}
+		}).component();
+
+		subTextContainer.addItem(cardDescriptionWarning, {
+			flex: '0 0 auto'
+		});
+
+		subTextContainer.addItem(cardDescriptionText, {
+			flex: '0 0 auto'
+		});
+
+		const cardCount = this._view.modelBuilder.text().withProps({
+			value: '0',
+			CSSStyles: {
+				'font-size': '28px',
+				'line-height': '28px',
+				'margin-top': '15px'
+			}
+		}).component();
+
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems([
 			cardTitleText,
-			cardDescriptionText
+			subTextContainer
 		]).withLayout({
 			flexFlow: 'column'
 		}).withProps({
 			CSSStyles: {
 				'width': '300px',
-				'height': '50px'
 			}
 		}).component();
 
 		const flex = this._view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'width': '400px',
-				'height': '50px',
+				'height': '70px',
 				'margin-top': '10px',
 				'border': '1px solid'
 			}
@@ -309,10 +439,13 @@ export class DashboardWidget {
 
 		const img = this._view.modelBuilder.image().withProps({
 			iconPath: cardIconPath!.light,
-			iconHeight: 16,
-			iconWidth: 16,
+			iconHeight: 24,
+			iconWidth: 24,
 			width: 64,
-			height: 50
+			height: 30,
+			CSSStyles: {
+				'margin-top': '20px'
+			}
 		}).component();
 
 		flex.addItem(img, {
@@ -335,7 +468,10 @@ export class DashboardWidget {
 		}).component();
 		return {
 			container: compositeButton,
-			count: cardCount
+			count: cardCount,
+			textContainer: flexContainer,
+			warningContainer: subTextContainer,
+			warningText: cardDescriptionText
 		};
 	}
 
@@ -374,7 +510,7 @@ export class DashboardWidget {
 		const statusContainerTitle = view.modelBuilder.text().withProps({
 			value: loc.DATABASE_MIGRATION_STATUS,
 			CSSStyles: {
-				'font-size': '18px',
+				'font-size': '14px',
 				'font-weight': 'bold',
 				'margin': '0px',
 				'width': '290px'
@@ -390,7 +526,8 @@ export class DashboardWidget {
 		}).component();
 
 		this._viewAllMigrationsButton.onDidClick(async (e) => {
-			new MigrationStatusDialog(this._migrationStatus ? this._migrationStatus : await this.getMigrations(), MigrationCategory.ALL).initialize();
+			const migrationStatus = await this.getCurrentMigrations();
+			new MigrationStatusDialog(migrationStatus ? migrationStatus : await this.getMigrations(), MigrationCategory.ALL).initialize();
 		});
 
 		const refreshButton = view.modelBuilder.hyperlink().withProps({
@@ -441,24 +578,37 @@ export class DashboardWidget {
 
 		this._inProgressMigrationButton = this.createStatusCard(
 			IconPathHelper.inProgressMigration,
-			loc.MIGRATION_IN_PROGRESS,
-			loc.LOG_SHIPPING_IN_PROGRESS
+			loc.MIGRATION_IN_PROGRESS
 		);
-		this._inProgressMigrationButton.container.onDidClick((e) => {
-			const dialog = new MigrationStatusDialog(this._migrationStatus, MigrationCategory.ONGOING);
+		this._inProgressMigrationButton.container.onDidClick(async (e) => {
+			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), MigrationCategory.ONGOING);
 			dialog.initialize();
 		});
+
 		this._migrationStatusCardsContainer.addItem(
 			this._inProgressMigrationButton.container
 		);
 
+		this._inProgressWarningMigrationButton = this.createStatusWithSubtextCard(
+			IconPathHelper.inProgressMigration,
+			loc.MIGRATION_IN_PROGRESS,
+			''
+		);
+		this._inProgressWarningMigrationButton.container.onDidClick(async (e) => {
+			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), MigrationCategory.ONGOING);
+			dialog.initialize();
+		});
+
+		this._migrationStatusCardsContainer.addItem(
+			this._inProgressWarningMigrationButton.container
+		);
+
 		this._successfulMigrationButton = this.createStatusCard(
 			IconPathHelper.completedMigration,
-			loc.MIGRATION_COMPLETED,
-			loc.SUCCESSFULLY_MIGRATED_TO_AZURE_SQL
+			loc.MIGRATION_COMPLETED
 		);
-		this._successfulMigrationButton.container.onDidClick((e) => {
-			const dialog = new MigrationStatusDialog(this._migrationStatus, MigrationCategory.SUCCEEDED);
+		this._successfulMigrationButton.container.onDidClick(async (e) => {
+			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), MigrationCategory.SUCCEEDED);
 			dialog.initialize();
 		});
 		this._migrationStatusCardsContainer.addItem(
@@ -467,15 +617,11 @@ export class DashboardWidget {
 
 		this._notStartedMigrationCard = this.createStatusCard(
 			IconPathHelper.notStartedMigration,
-			loc.MIGRATION_NOT_STARTED,
-			loc.CHOOSE_TO_MIGRATE_TO_AZURE_SQL
+			loc.MIGRATION_NOT_STARTED
 		);
 		this._notStartedMigrationCard.container.onDidClick((e) => {
 			vscode.window.showInformationMessage('Feature coming soon');
 		});
-		this._migrationStatusCardsContainer.addItem(
-			this._notStartedMigrationCard.container
-		);
 
 		this._migrationStatusCardLoadingContainer = view.modelBuilder.loadingComponent().withItem(this._migrationStatusCardsContainer).component();
 
@@ -534,7 +680,7 @@ export class DashboardWidget {
 		const links = [{
 			title: loc.HELP_LINK1_TITLE,
 			description: loc.HELP_LINK1_DESCRIPTION,
-			link: 'https://www.microsoft.com' //TODO: add proper link over here.
+			link: 'https://docs.microsoft.com/azure/azure-sql/migration-guides/managed-instance/sql-server-to-sql-managed-instance-assessment-rules'
 		}];
 
 		const styles = {
@@ -546,16 +692,6 @@ export class DashboardWidget {
 		});
 
 		const videosContainer = this.createVideoLinkContainers(view, [
-			{
-				iconPath: IconPathHelper.sqlMiVideoThumbnail,
-				description: loc.HELP_VIDEO1_TITLE,
-				link: 'https://www.youtube.com/watch?v=sE99cSoFOHs' //TODO: Fix Video link
-			},
-			{
-				iconPath: IconPathHelper.sqlVmVideoThumbnail,
-				description: loc.HELP_VIDEO2_TITLE,
-				link: 'https://www.youtube.com/watch?v=R4GCBoxADyQ' //TODO: Fix video link
-			}
 		]);
 		const viewPanelStyle = {
 			'padding': '10px 5px 10px 10px',

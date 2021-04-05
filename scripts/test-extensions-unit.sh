@@ -109,6 +109,11 @@ echo *** starting sql-database-projects tests ***
 echo ********************************************
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX --extensionDevelopmentPath=$ROOT/extensions/sql-database-projects --extensionTestsPath=$ROOT/extensions/sql-database-projects/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
 
+echo ********************************************
+echo *** starting data-workspace tests ***
+echo ********************************************
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_NO_SANDBOX --extensionDevelopmentPath=$ROOT/extensions/data-workspace --extensionTestsPath=$ROOT/extensions/data-workspace/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --disable-telemetry --disable-crash-reporter --disable-updates --nogpu
+
 if [[ "$NO_CLEANUP" == "" ]]; then
 	rm -r $VSCODEUSERDATADIR
 	rm -r $VSCODEEXTDIR

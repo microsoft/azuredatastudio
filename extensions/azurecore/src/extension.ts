@@ -174,6 +174,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			ignoreErrors: boolean): Promise<azurecore.GetSqlManagedInstancesResult> {
 			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azureResource.AzureResourceType.sqlManagedInstance}"`);
 		},
+		getManagedDatabases(account: azdata.Account,
+			subscription: azureResource.AzureResourceSubscription,
+			managedInstance: azureResource.AzureSqlManagedInstance,
+			ignoreErrors: boolean): Promise<azurecore.GetManagedDatabasesResult> {
+			return azureResourceUtils.getManagedDatabases(account, subscription, managedInstance, ignoreErrors);
+		},
 		getSqlServers(account: azdata.Account,
 			subscriptions: azureResource.AzureResourceSubscription[],
 			ignoreErrors: boolean): Promise<azurecore.GetSqlServersResult> {

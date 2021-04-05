@@ -46,6 +46,10 @@ export class SqlDatabaseTree {
 	private _databaseTable!: azdata.DeclarativeTableComponent;
 	private _assessmentResultsTable!: azdata.DeclarativeTableComponent;
 	private _impactedObjectsTable!: azdata.DeclarativeTableComponent;
+	private _assessmentContainer!: azdata.FlexContainer;
+	private _dbMessageContainer!: azdata.FlexContainer;
+	private _rootContainer!: azdata.FlexContainer;
+	private _resultComponent!: azdata.Component;
 
 	private _recommendation!: azdata.TextComponent;
 	private _dbName!: azdata.TextComponent;
@@ -65,10 +69,29 @@ export class SqlDatabaseTree {
 	private _serverName!: string;
 	private _dbNames!: string[];
 
+
 	constructor(
 		private _model: MigrationStateModel,
 		private _targetType: MigrationTargetType
 	) {
+	}
+
+	async createRootContainer(view: azdata.ModelView): Promise<azdata.Component> {
+		this._view = view;
+
+		const selectDbMessage = this.createSelectDbMessage();
+		this._resultComponent = await this.createComponentResult(view);
+		const treeComponent = await this.createComponent(view, this._targetType === MigrationTargetType.SQLVM ? this._model._vmDbs : this._model._miDbs);
+		this._rootContainer = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row',
+			height: '100%',
+			width: '100%'
+		}).component();
+		this._rootContainer.addItem(treeComponent, { flex: '0 0 auto' });
+		this._rootContainer.addItem(this._resultComponent, { flex: '0 0 auto' });
+		this._rootContainer.addItem(selectDbMessage, { flex: '1 1 auto' });
+
+		return this._rootContainer;
 	}
 
 	async createComponent(view: azdata.ModelView, dbs: string[]): Promise<azdata.Component> {
@@ -129,6 +152,12 @@ export class SqlDatabaseTree {
 			this._activeIssues = this._model._assessmentResults?.databaseAssessments[row].issues;
 			this._selectedIssue = this._model._assessmentResults?.databaseAssessments[row].issues[0];
 			this._dbName.value = this._dbNames[row];
+			this._resultComponent.updateCssStyles({
+				'display': 'block'
+			});
+			this._dbMessageContainer.updateCssStyles({
+				'display': 'none'
+			});
 			this.refreshResults();
 		});
 
@@ -161,7 +190,7 @@ export class SqlDatabaseTree {
 		this._instanceTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
 				enableRowSelection: true,
-				width: 200,
+				width: 170,
 				columns: [
 					{
 						displayName: constants.INSTANCE,
@@ -182,16 +211,26 @@ export class SqlDatabaseTree {
 
 		const instanceContainer = this._view.modelBuilder.divContainer().withItems([this._instanceTable]).withProps({
 			CSSStyles: {
-				'width': '200px',
 				'margin': '19px 8px 0px 34px'
 			}
 		}).component();
 
 		this._instanceTable.onRowSelected((e) => {
+
+			this._instanceTable.focus();
 			this._activeIssues = this._model._assessmentResults?.issues;
 			this._selectedIssue = this._model._assessmentResults?.issues[0];
 			this._dbName.value = this._serverName;
-			this.refreshResults();
+			this._resultComponent.updateCssStyles({
+				'display': 'block'
+			});
+			this._dbMessageContainer.updateCssStyles({
+				'display': 'none'
+			});
+
+			if (this._model._targetType === MigrationTargetType.SQLMI) {
+				this.refreshResults();
+			}
 		});
 
 		return instanceContainer;
@@ -200,7 +239,7 @@ export class SqlDatabaseTree {
 	async createComponentResult(view: azdata.ModelView): Promise<azdata.Component> {
 		this._view = view;
 		const topContainer = this.createTopContainer();
-		const bottomContainer = this.createBottomContainer();
+		this._assessmentContainer = this.createBottomContainer();
 
 		const container = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
@@ -208,16 +247,16 @@ export class SqlDatabaseTree {
 		}).withProps({
 			CSSStyles: {
 				'margin': '32px 0px 0px 18px',
-				'overflow-y': 'hidden'
+				'overflow-y': 'hidden',
+				'display': 'none'
 			}
 		}).component();
 
 		container.addItem(topContainer, { flex: '0 0 auto' });
-		container.addItem(bottomContainer, { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'hidden' } });
+		container.addItem(this._assessmentContainer, { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'hidden' } });
 
 		return container;
 	}
-
 
 	private createTopContainer(): azdata.FlexContainer {
 		const title = this.createTitleComponent();
@@ -266,6 +305,26 @@ export class SqlDatabaseTree {
 		container.addItem(impactedObjects, { flex: '0 0 auto', CSSStyles: { 'border-right': 'solid 1px', 'overflow-y': 'auto' } });
 		container.addItem(rightContainer, { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'auto' } });
 		return container;
+	}
+
+	private createSelectDbMessage(): azdata.FlexContainer {
+		const message = this._view.modelBuilder.text().withProps({
+			value: constants.SELECT_DB_PROMPT,
+			CSSStyles: {
+				'font-size': '14px',
+				'width': '400px',
+				'margin': '10px 0px 0px 0px',
+				'text-align': 'left'
+			}
+		}).component();
+		this._dbMessageContainer = this._view.modelBuilder.flexContainer().withItems([message]).withProps({
+			CSSStyles: {
+				'margin-left': '24px',
+				'margin-top': '20px'
+			}
+		}).component();
+
+		return this._dbMessageContainer;
 	}
 
 	private createAssessmentContainer(): azdata.FlexContainer {
@@ -622,7 +681,7 @@ export class SqlDatabaseTree {
 			this._assessmentTitle.value = this._selectedIssue.checkId;
 			this._descriptionText.value = this._selectedIssue.description;
 			this._moreInfo.url = this._selectedIssue.helpLink;
-			this._moreInfo.label = this._selectedIssue.helpLink;
+			this._moreInfo.label = this._selectedIssue.message;
 			this._impactedObjects = this._selectedIssue.impactedObjects;
 			this._recommendationText.value = this._selectedIssue.message; //TODO: Expose correct property for recommendation.
 			this._impactedObjectsTable.dataValues = this._selectedIssue.impactedObjects.map((object) => {
@@ -713,6 +772,9 @@ export class SqlDatabaseTree {
 					}
 				]
 			];
+			this._model._assessmentResults.databaseAssessments.sort((db1, db2) => {
+				return db2.issues.length - db1.issues.length;
+			});
 			this._model._assessmentResults.databaseAssessments.forEach((db) => {
 				databaseTableValues.push(
 					[

@@ -54,6 +54,27 @@ export class AddDatabaseReferenceDialog {
 	constructor(private project: Project) {
 		this.dialog = azdata.window.createModelViewDialog(constants.addDatabaseReferenceDialogName, 'addDatabaseReferencesDialog');
 		this.addDatabaseReferenceTab = azdata.window.createTab(constants.addDatabaseReferenceDialogName);
+		this.dialog.registerCloseValidator(async () => {
+			return this.validate();
+		});
+	}
+
+	validate(): boolean {
+		// only support adding dacpacs that are on the same drive as the sqlproj
+		if (this.currentReferenceType === ReferenceType.dacpac) {
+			const projectDrive = path.parse(this.project.projectFilePath).root;
+			const dacpacDrive = path.parse(this.dacpacTextbox!.value!).root;
+
+			if (projectDrive !== dacpacDrive) {
+				this.dialog.message = {
+					text: constants.dacpacNotOnSameDrive(this.project.projectFilePath),
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public async openDialog(): Promise<void> {
