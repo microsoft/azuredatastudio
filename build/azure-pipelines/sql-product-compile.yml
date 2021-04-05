@@ -5,14 +5,18 @@ steps:
     echo -n $VSCODE_QUALITY > .build/quality
   displayName: Prepare cache flag
 
-- task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+- task: Cache@2
   displayName: Restore Cache - Compiled Files
   inputs:
-    keyfile: 'build/.cachesalt, .build/commit, .build/quality'
-    targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
-    vstsFeed: 'BuildCache'
-    platformIndependent: true
-    alias: 'Compilation'
+    keyfile: 'build/.cachesalt | .build/commit | .build/quality'
+    path: .build/compilation_cache
+    cacheHitVar: CACHERESTORED_COMPILATION
+
+- script: |
+    set -e
+    tar -xzf .build/compilation_cache/cache.tgz
+  condition: and(succeeded(), eq(variables.CACHERESTORED_COMPILATION, 'true'))
+  displayName: Extract compilation archive
 
 - task: NodeTool@0
   inputs:
@@ -27,7 +31,7 @@ steps:
   inputs:
     azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
     KeyVaultName: ado-secrets
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+  condition: and(succeeded(), ne(variables.CACHERESTORED_COMPILATION, 'true'))
 
 - script: |
     set -e
@@ -40,7 +44,7 @@ steps:
     git config user.email "sqltools@service.microsoft.com"
     git config user.name "AzureDataStudio"
   displayName: Prepare tooling
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+  condition: and(succeeded(), ne(variables.CACHERESTORED_COMPILATION, 'true'))
 
 - script: |
     set -e
@@ -48,12 +52,12 @@ steps:
     git fetch distro
     git merge $(node -p "require('./package.json').distro")
   displayName: Merge distro
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+  condition: and(succeeded(), ne(variables.CACHERESTORED_COMPILATION, 'true'))
 
 - task: Cache@2
   displayName: Restore Cache - Node Modules
   inputs:
-    key: 'nodeModules | $(Agent.OS) | yarn.lock'
+    key: 'nodeModules | $(Agent.OS) | **/yarn.lock'
     path: .build/node_modules_cache
     cacheHitVar: NODE_MODULES_RESTORED
 
@@ -89,7 +93,7 @@ steps:
     set -e
     node build/azure-pipelines/mixin
   displayName: Mix in quality
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+  condition: and(succeeded(), ne(variables.CACHERESTORED_COMPILATION, 'true'))
 
 - script: |
     set -e
@@ -98,7 +102,7 @@ steps:
     yarn strict-vscode
     yarn valid-layers-check
   displayName: Run hygiene, eslint
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
+  condition: and(succeeded(), ne(variables.CACHERESTORED_COMPILATION, 'true'), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
 
 - script: |
     set -e
@@ -108,7 +112,7 @@ steps:
     yarn gulp vscode-reh-linux-x64-min
     yarn gulp vscode-reh-web-linux-x64-min
   displayName: Compile
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+  condition: and(succeeded(), ne(variables.CACHERESTORED_COMPILATION, 'true'))
 
 - script: |
     set -e
@@ -116,7 +120,7 @@ steps:
     AZURE_STORAGE_ACCESS_KEY="$(sourcemap-storage-key)" \
       node build/azure-pipelines/upload-sourcemaps
   displayName: Upload sourcemaps
-  condition: and(succeeded(), ne(variables['CacheExists-Compilation'], 'true'))
+  condition: and(succeeded(), ne(variables.CACHERESTORED_COMPILATION, 'true'))
 
 - script: |
     set -e
@@ -139,4 +143,11 @@ steps:
     vstsFeed: 'BuildCache'
     platformIndependent: true
     alias: 'Compilation'
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+  condition: and(succeeded(), ne(variables.CACHERESTORED_COMPILATION, 'true'))
+
+- script: |
+    set -e
+    mkdir -p .build/compilation_cache
+    tar -czf .build/compilation_cache/cache.tgz .build out-build out-vscode-min out-vscode-reh-min out-vscode-reh-web-min
+  condition: and(succeeded(), ne(variables.CACHERESTORED_COMPILATION, 'true'))
+  displayName: Create compilation archive
