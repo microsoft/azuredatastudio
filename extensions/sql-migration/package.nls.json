@@ -1,7 +1,9 @@
 {
-	"displayName": "SQL Migration",
-	"description": "SQL migration description",
-	"migration-notebook-command-title": "Open SQL migration notebooks",
-	"migration-dashboard-title": "SQL Migration",
-	"migration-dashboard-tasks": "Migration Tasks"
+	"displayName": "Azure SQL Migration",
+	"description": "Azure SQL migration description",
+	"migration-notebook-command-title": "Open Azure SQL migration notebooks",
+	"migration-dashboard-title": "Azure SQL Migration",
+	"migration-dashboard-tasks": "Migration Tasks",
+	"migration-command-category": "Azure SQL Migration",
+	"start-migration-command": "Migrate to Azure SQL"
 }

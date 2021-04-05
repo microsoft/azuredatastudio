@@ -39,15 +39,12 @@ export class AssessmentResultsDialog {
 		return new Promise<void>((resolve, reject) => {
 			dialog.registerContent(async (view) => {
 				try {
-					const resultComponent = await this._tree.createComponentResult(view);
-					const treeComponent = await this._tree.createComponent(view, this._targetType === MigrationTargetType.SQLVM ? this.model._vmDbs : this._model._miDbs);
 					const flex = view.modelBuilder.flexContainer().withLayout({
 						flexFlow: 'row',
 						height: '100%',
 						width: '100%'
 					}).component();
-					flex.addItem(treeComponent, { flex: '0 0 auto' });
-					flex.addItem(resultComponent, { flex: '1 1 auto' });
+					flex.addItem(await this._tree.createRootContainer(view), { flex: '1 1 auto' });
 
 					view.initializeModel(flex);
 					resolve();

@@ -133,6 +133,16 @@ export class SqlSessionManager implements nb.SessionManager {
 		}
 		return Promise.resolve();
 	}
+
+	shutdownAll(): Thenable<void> {
+		return Promise.all(SqlSessionManager._sessions.map(session => {
+			return this.shutdown(session.id);
+		})).then();
+	}
+
+	dispose(): void {
+		// no-op
+	}
 }
 
 export class SqlSession implements nb.ISession {
