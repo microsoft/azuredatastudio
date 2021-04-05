@@ -10,7 +10,6 @@ steps:
   inputs:
     key: 'build/.cachesalt | .build/commit | .build/quality'
     path: .build/compilation_cache
-    targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
     cacheHitVar: COMPILATION_RESTORED
 
 - script: |
