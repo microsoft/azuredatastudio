@@ -75,12 +75,17 @@ export enum TelemetryAction {
 	RunQueryString = 'RunQueryString',
 	ShowChart = 'ShowChart',
 	StopAgentJob = 'StopAgentJob',
-	WizardPagesNavigation = 'WizardPagesNavigation'
+	WizardPagesNavigation = 'WizardPagesNavigation',
+	SearchStarted = 'SearchStarted',
+	SearchCompleted = 'SearchCompleted'
 }
 
 export enum NbTelemetryAction {
 	RunCell = 'RunCell',
-	RunAll = 'RunNotebook'
+	RunAll = 'RunNotebook',
+	AddCell = 'AddCell',
+	KernelChanged = 'KernelChanged',
+	NewNotebookFromConnections = 'NewNotebookWithConnectionProfile'
 }
 
 export enum TelemetryPropertyName {
