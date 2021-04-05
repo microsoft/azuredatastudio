@@ -6,12 +6,13 @@ steps:
       mkdir -p .build
       echo -n $BUILD_SOURCEVERSION > .build/commit
       echo -n $VSCODE_QUALITY > .build/quality
+      node build/azure-pipelines/common/computeCompilationCacheKey.js > .build/compilationhashkey
     displayName: Prepare cache flag
 
   - task: Cache@2
     displayName: Restore Cache - Compiled Files
     inputs:
-      key: 'build/.cachesalt | .build/commit | .build/quality'
+      key: .build/compilationhashkey
       path: .build/compilation_cache
       cacheHitVar: COMPILATION_RESTORED
 

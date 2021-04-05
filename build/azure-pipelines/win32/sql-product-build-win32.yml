@@ -3,12 +3,13 @@ steps:
       mkdir .build -ea 0
       "$env:BUILD_SOURCEVERSION" | Out-File -Encoding ascii -NoNewLine .build\commit
       "$env:VSCODE_QUALITY" | Out-File -Encoding ascii -NoNewLine .build\quality
+      node build/azure-pipelines/common/computeNodeModulesCacheKey.js > .build/yarnlockhash
     displayName: Prepare cache flag
 
   - task: Cache@2
     displayName: Restore Cache - Compiled Files
     inputs:
-      key: 'build/.cachesalt | .build/commit | .build/quality'
+      key: .build/compilationhashkey
       path: .build/compilation_cache
       cacheHitVar: COMPILATION_RESTORED
 
