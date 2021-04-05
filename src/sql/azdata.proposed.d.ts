@@ -323,8 +323,6 @@ declare module 'azdata' {
 		azureAccount?: string;
 		azureResourceId?: string;
 		azurePortalEndpoint?: string;
-		getOptionsKey(): string;
-		matches(profile: IConnectionProfile): boolean;
 	}
 
 	/*
