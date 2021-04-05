@@ -15,7 +15,6 @@ import { ClientSession } from 'sql/workbench/services/notebook/browser/models/cl
 import { SessionManager, EmptySession } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
 import { NotebookManagerStub, ServerManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 
 suite('Client Session', function (): void {
 	let path = URI.file('my/notebook.ipynb');
