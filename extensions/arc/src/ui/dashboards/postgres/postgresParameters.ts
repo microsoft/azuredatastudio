@@ -152,12 +152,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 								this.parameterUpdates.forEach((value, key) => {
 									engineSettings.push(`${key}="${value}"`);
 								});
-								const session = await this._postgresModel.controllerModel.acquireAzdataSession();
-								try {
-									await this.saveParameterEdits(engineSettings.toString(), session);
-								} finally {
-									session.dispose();
-								}
+								await this.saveParameterEdits(engineSettings.toString());
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since
 								// the edit wasn't successfully applied
@@ -230,12 +225,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 						},
 						async (_progress, _token): Promise<void> => {
 							try {
-								const session = await this._postgresModel.controllerModel.acquireAzdataSession();
-								try {
-									await this.resetAllParameters(session);
-								} finally {
-									session.dispose();
-								}
+								await this.resetAllParameters();
 							} catch (err) {
 								// If an error occurs while resetting the instance then re-enable the reset button since
 								// the edit wasn't successfully applied
@@ -423,12 +413,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
-							const session = await this._postgresModel.controllerModel.acquireAzdataSession();
-							try {
-								await this.resetParameter(engineSetting.parameterName!, session);
-							} finally {
-								session.dispose();
-							}
+							await this.resetParameter(engineSetting.parameterName!);
 							try {
 								await this._postgresModel.refresh();
 							} catch (error) {
@@ -633,9 +618,9 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		}
 	}
 
-	protected abstract saveParameterEdits(engineSettings: string, session: azdataExt.AzdataSession): Promise<void>;
+	protected abstract saveParameterEdits(engineSettings: string): Promise<void>;
 
-	protected abstract resetAllParameters(session: azdataExt.AzdataSession): Promise<void>;
+	protected abstract resetAllParameters(): Promise<void>;
 
-	protected abstract resetParameter(parameterName: string, session: azdataExt.AzdataSession): Promise<void>;
+	protected abstract resetParameter(parameterName: string): Promise<void>;
 }

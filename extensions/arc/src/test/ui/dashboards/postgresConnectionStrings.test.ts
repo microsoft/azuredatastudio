@@ -38,7 +38,8 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 				extensions: [{ name: '' }],
 				settings: {
 					default: { ['']: '' }
-				}
+				},
+				version: '12'
 			},
 			scale: {
 				shards: 0,
@@ -121,7 +122,7 @@ describe('postgresConnectionStringsPage', function (): void {
 		controllerModel = new FakeControllerModel();
 
 		//Stub calling azdata login and acquiring session
-		sinon.stub(controllerModel, 'acquireAzdataSession').returns(Promise.resolve(vscode.Disposable.from()));
+		sinon.stub(controllerModel, 'login').returns(Promise.resolve());
 
 		// Setup PostgresModel
 		const postgresResource: PGResourceInfo = { name: 'pgt', resourceType: '' };
