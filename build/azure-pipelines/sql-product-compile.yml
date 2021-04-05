@@ -3,13 +3,12 @@ steps:
     mkdir -p .build
     echo -n $BUILD_SOURCEVERSION > .build/commit
     echo -n $VSCODE_QUALITY > .build/quality
-    md5sum build/.cachesalt .build/commit .build/quality | md5sum > .build/compilationhashkey
   displayName: Prepare cache flag
 
 - task: Cache@2
   displayName: Restore Cache - Compiled Files
   inputs:
-    key: .build/compilationhashkey
+    key: '.build/commit | .build/quality'
     path: .build/compilation_cache
     cacheHitVar: COMPILATION_RESTORED
 
