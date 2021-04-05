@@ -28,7 +28,6 @@ export type Keytar = {
 	deletePassword: typeof keytarType['deletePassword'];
 };
 
-// const OLD_SERVICE_ID = `${vscode.env.uriScheme}-microsoft.login`;
 const SERVICE_ID = `ads.sql`;
 
 export class Keychain {
@@ -85,21 +84,6 @@ export class Keychain {
 			return Promise.resolve(undefined);
 		}
 	}
-
-	// async tryMigrate(): Promise<string | null> {
-	// 	try {
-	// 		const oldValue = await this.keytar.getPassword(OLD_SERVICE_ID, ACCOUNT_ID);
-	// 		if (oldValue) {
-	// 			await this.setToken(oldValue);
-	// 			await this.keytar.deletePassword(OLD_SERVICE_ID, ACCOUNT_ID);
-	// 		}
-
-	// 		return oldValue;
-	// 	} catch (_) {
-	// 		// Ignore
-	// 		return Promise.resolve(null);
-	// 	}
-	// }
 }
 
 export const keychain = new Keychain();
