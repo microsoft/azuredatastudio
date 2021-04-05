@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as azdataExt from 'azdata-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper } from '../../../constants';
 import { PostgresParametersPage } from './postgresParameters';
@@ -35,34 +34,32 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 		return loc.nodeParametersDescription;
 	}
 
+
 	protected get engineSettings(): EngineSettingsModel[] {
 		return this._postgresModel.workerNodesEngineSettings;
 	}
 
-	protected async saveParameterEdits(engineSettings: string, session: azdataExt.AzdataSession): Promise<void> {
+	protected async saveParameterEdits(engineSettings: string): Promise<void> {
 		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
 			{ engineSettings: engineSettings },
-			this._postgresModel.engineVersion,
 			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-			session);
+			this._postgresModel.controllerModel.controllerContext);
 	}
 
-	protected async resetAllParameters(session: azdataExt.AzdataSession): Promise<void> {
+	protected async resetAllParameters(): Promise<void> {
 		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
 			{ engineSettings: `''`, replaceEngineSettings: true },
-			this._postgresModel.engineVersion,
 			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-			session);
+			this._postgresModel.controllerModel.controllerContext);
 	}
 
-	protected async resetParameter(parameterName: string, session: azdataExt.AzdataSession): Promise<void> {
+	protected async resetParameter(parameterName: string): Promise<void> {
 		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
 			{ engineSettings: parameterName + '=' },
-			this._postgresModel.engineVersion,
 			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-			session);
+			this._postgresModel.controllerModel.controllerContext);
 	}
 }
