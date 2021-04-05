@@ -178,7 +178,7 @@ suite('notebook model', function (): void {
 			notificationService: notificationService.object,
 			kernelSpec: defaultModelOptions.defaultKernel
 		};
-		mockClientSession = new ClientSession(clientSessionOptions);
+		mockClientSession = new ClientSession(clientSessionOptions, new NullAdsTelemetryService());
 		mockClientSession.initialize();
 		mockModelFactory = TypeMoq.Mock.ofType(ModelFactory);
 		mockModelFactory.callBase = true;

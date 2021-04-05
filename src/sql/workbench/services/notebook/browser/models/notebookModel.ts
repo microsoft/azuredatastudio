@@ -896,8 +896,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public changeKernel(displayName: string): void {
 		this._selectedKernelDisplayName = displayName;
 		this._currentKernelAlias = this.context?.serverCapabilities?.notebookKernelAlias;
-		this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.ChangeKernel)
-			.withAdditionalProperties({ kernel: displayName });
 		if (this._currentKernelAlias && this.kernelAliases.includes(this._currentKernelAlias) && displayName === this._currentKernelAlias) {
 			this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
 		} else {

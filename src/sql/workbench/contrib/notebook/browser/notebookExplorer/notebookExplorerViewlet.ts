@@ -127,7 +127,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IFileService private readonly fileService: IFileService,
-		@IAdsTelemetryService private _telemetryService?: IAdsTelemetryService
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
 		super(VIEWLET_ID, { mergeViewWithContainerWhenSingleView: true }, instantiationService, configurationService, layoutService, contextMenuService, telemetryService, extensionService, themeService, storageService, contextService, viewDescriptorService);
 		this.inputBoxFocused = Constants.InputBoxFocusedKey.bindTo(this.contextKeyService);
@@ -258,7 +258,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 			onQueryValidationError(err);
 			return;
 		}
-		this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.SearchStarted)
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.SearchStarted)
 			.withAdditionalProperties({ triggeredOnType: triggeredOnType })
 			.send();
 
