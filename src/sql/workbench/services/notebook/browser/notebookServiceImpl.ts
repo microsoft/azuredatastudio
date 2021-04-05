@@ -49,9 +49,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 
 import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/common/interface';
-
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
-// const languageAssociationRegistry = Registry.as<NotebookEditorInputAssociation>(LanguageAssociationExtensions.LanguageAssociations);
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -181,7 +179,6 @@ export class NotebookService extends Disposable implements INotebookService {
 
 		lifecycleService.onWillShutdown(() => this.shutdown());
 	}
-
 
 	public async openNotebook(resource: UriComponents, options: INotebookOpenOptions): Promise<IEditorPane | undefined> {
 		const uri = URI.revive(resource);
@@ -408,6 +405,8 @@ export class NotebookService extends Disposable implements INotebookService {
 			return undefined;
 		}
 		let uriString = notebookUri.toString();
+		// Format the URI string without query parameters
+		uriString = uriString.split('?')[0];
 		let editor = this.listNotebookEditors().find(n => n.id === uriString);
 		return editor;
 	}

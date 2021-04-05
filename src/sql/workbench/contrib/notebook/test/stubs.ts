@@ -218,14 +218,6 @@ export class ServerManagerStub implements nb.ServerManager {
 
 export class NotebookServiceStub implements INotebookService {
 	onCodeCellExecutionStart: vsEvent.Event<void>;
-
-	notifyCellExecutionStarted(): void {
-		throw new Error('Method not implemented.');
-	}
-
-	openNotebook(resource: UriComponents, options: INotebookOpenOptions): Promise<IEditorPane> {
-		throw new Error('Method not implemented.');
-	}
 	_serviceBrand: undefined;
 	get onNotebookEditorAdd(): vsEvent.Event<INotebookEditor> {
 		throw new Error('Method not implemented.');
@@ -299,7 +291,10 @@ export class NotebookServiceStub implements INotebookService {
 	navigateTo(notebookUri: URI, sectionId: string): void {
 		throw new Error('Method not implemented.');
 	}
-	showNotebookDocument(uri: URI, showOptions: nb.NotebookShowOptions): Thenable<nb.NotebookEditor> {
+	notifyCellExecutionStarted(): void {
+		throw new Error('Method not implemented.');
+	}
+	openNotebook(resource: UriComponents, options: INotebookOpenOptions): Promise<IEditorPane> {
 		throw new Error('Method not implemented.');
 	}
 }
