@@ -151,7 +151,7 @@ steps:
     inputs:
       ConnectedServiceName: 'Code Signing'
       FolderPath: '$(agent.builddirectory)/azuredatastudio-win32-x64'
-      Pattern: '*.exe,*.node,resources/app/node_modules.asar.unpacked/*.dll,swiftshader/*.dll,d3dcompiler_47.dll,libGLESv2.dll,ffmpeg.dll,libEGL.dll,Microsoft.SqlTools.Hosting.dll,Microsoft.SqlTools.ResourceProvider.Core.dll,Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll,MicrosoftSqlToolsCredentials.dll,MicrosoftSqlToolsServiceLayer.dll,Newtonsoft.Json.dll,SqlSerializationService.dll,SqlToolsResourceProviderService.dll,Microsoft.SqlServer.*.dll,Microsoft.Data.Tools.Sql.BatchParser.dll'
+      Pattern: '*.dll,*.exe,*.node,resources/app/node_modules.asar.unpacked/*.dll,swiftshader/*.dll,d3dcompiler_47.dll,libGLESv2.dll,ffmpeg.dll,libEGL.dll,Microsoft.SqlTools.Hosting.dll,Microsoft.SqlTools.ResourceProvider.Core.dll,Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll,MicrosoftSqlToolsCredentials.dll,MicrosoftSqlToolsServiceLayer.dll,Newtonsoft.Json.dll,SqlSerializationService.dll,SqlToolsResourceProviderService.dll,Microsoft.SqlServer.*.dll,Microsoft.Data.Tools.Sql.BatchParser.dll'
       signConfigType: inlineSignParams
       inlineOperation: |
         [
