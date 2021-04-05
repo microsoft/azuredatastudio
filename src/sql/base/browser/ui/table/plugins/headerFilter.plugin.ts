@@ -37,7 +37,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private columnDef!: FilterableColumn<T>;
 	private buttonStyles?: IButtonStyles;
 	private disposableStore = new DisposableStore();
-	public enabled: boolean = true;
+	private _enabled: boolean = true;
 
 	constructor() {
 	}
@@ -434,5 +434,19 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 		e.preventDefault();
 		e.stopPropagation();
+	}
+
+	public get enabled(): boolean {
+		return this._enabled;
+	}
+
+	public set enabled(value: boolean) {
+		if (this._enabled !== value) {
+			this._enabled = value;
+			// force the table header to redraw.
+			this.grid.getColumns().forEach((column) => {
+				this.grid.updateColumnHeader(column.id);
+			});
+		}
 	}
 }
