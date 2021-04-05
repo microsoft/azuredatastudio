@@ -320,7 +320,11 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	}
 
 	private getCurrentLinkAddress(): string {
-		return document.getSelection().anchorNode.parentNode['href'] || '';
+		if (document.getSelection().anchorNode.parentNode['protocol'] === 'file:') {
+			return document.getSelection().anchorNode.parentNode['pathname'] || '';
+		} else {
+			return document.getSelection().anchorNode.parentNode['href'] || '';
+		}
 	}
 
 	private getCellEditorControl(): IEditor | undefined {
