@@ -8,7 +8,7 @@ steps:
 - task: Cache@2
   displayName: Restore Cache - Compiled Files
   inputs:
-    key: '$(Build.SourceVersion), $(VSCODE_QUALITY)'
+    key: '$(Build.SourceVersion),$(VSCODE_QUALITY)'
     path: .build/compilation_cache
     cacheHitVar: COMPILATION_RESTORED
 
