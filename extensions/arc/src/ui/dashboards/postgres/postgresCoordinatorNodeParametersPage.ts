@@ -39,8 +39,7 @@ export class PostgresCoordinatorNodeParametersPage extends PostgresParametersPag
 		/* TODO add correct azdata call for editing coordinator parameters
 			await this._azdataApi.azdata.arc.postgres.server.edit(
 				this._postgresModel.info.name,
-				{ engineSettings: engineSettings },
-				this._postgresModel.engineVersion,
+				{ engineSettings: engineSettings.toString() },
 				this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 				session);
 		*/
@@ -51,7 +50,6 @@ export class PostgresCoordinatorNodeParametersPage extends PostgresParametersPag
 			await this._azdataApi.azdata.arc.postgres.server.edit(
 				this._postgresModel.info.name,
 				{ engineSettings: `''`, replaceEngineSettings: true },
-				this._postgresModel.engineVersion,
 				this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 				session);
 		*/
@@ -62,7 +60,6 @@ export class PostgresCoordinatorNodeParametersPage extends PostgresParametersPag
 			await this._azdataApi.azdata.arc.postgres.server.edit(
 				this._postgresModel.info.name,
 				{ engineSettings: parameterName + '=' },
-				this._postgresModel.engineVersion,
 				this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 				session);
 		*/
