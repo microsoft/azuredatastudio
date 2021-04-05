@@ -8,7 +8,7 @@ steps:
 - task: Cache@2
   displayName: Restore Cache - Compiled Files
   inputs:
-    keyfile: 'build/.cachesalt | .build/commit | .build/quality'
+    key: 'build/.cachesalt | .build/commit | .build/quality'
     path: .build/compilation_cache
     cacheHitVar: CACHERESTORED_COMPILATION
 
