@@ -8,9 +8,29 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
-const { dirs } = require('../../npm/dirs');
 
 const ROOT = path.join(__dirname, '../../../');
+
+function findFiles(location: string, pattern: string, result: string[]) {
+	const entries = fs.readdirSync(path.join(ROOT, location));
+
+	for (const entry of entries) {
+		const entryPath = `${location}/${entry}`;
+		let stat: fs.Stats;
+		try {
+			stat = fs.statSync(path.join(ROOT, entryPath));
+		} catch (err) {
+			continue;
+		}
+		if (stat.isDirectory()) {
+			findFiles(entryPath, pattern, result);
+		} else {
+			if (stat.isFile() && entry.endsWith(pattern)) {
+				result.push(path.join(ROOT, entryPath));
+			}
+		}
+	}
+}
 
 const shasum = crypto.createHash('sha1');
 
@@ -18,11 +38,10 @@ shasum.update(fs.readFileSync(path.join(ROOT, 'build/.cachesalt')));
 shasum.update(fs.readFileSync(path.join(ROOT, '.yarnrc')));
 shasum.update(fs.readFileSync(path.join(ROOT, 'remote/.yarnrc')));
 
-// Add `yarn.lock` files
-for (let dir of dirs) {
-	const yarnLockPath = path.join(ROOT, dir, 'yarn.lock');
-	shasum.update(fs.readFileSync(yarnLockPath));
-}
+
+const result: string[] = [];
+findFiles('', 'yarn.lock', result);
+result.forEach(f => shasum.update(fs.readFileSync(f)));
 
 // Add any other command line arguments
 for (let i = 2; i < process.argv.length; i++) {
