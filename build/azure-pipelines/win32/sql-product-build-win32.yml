@@ -63,7 +63,6 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { if (!(test-path .build)) { New-Item -ItemType Directory .build } }
       exec { node build/azure-pipelines/common/computeNodeModulesCacheKey.js > .build/yarnlockhash }
     displayName: Prepare yarn cache flags
 
@@ -95,7 +94,7 @@ steps:
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { node build/azure-pipelines/common/listNodeModules.js .build/node_modules_list.txt }
-      exec { mkdir -p .build/node_modules_cache }
+      exec { mkdir .build/node_modules_cache -ea 0}
       exec { tar -czf .build/node_modules_cache/cache.tgz --files-from .build/node_modules_list.txt }
     condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
     displayName: Create node_modules archive
