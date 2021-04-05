@@ -84,7 +84,7 @@ export class NotebookSearchView extends SearchView {
 		@IOpenerService openerService: IOpenerService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@ICommandService readonly commandService: ICommandService,
-		@IAdsTelemetryService private _telemetryService?: IAdsTelemetryService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 
 		super(options, fileService, editorService, progressService, notificationService, dialogService, contextViewService, instantiationService, viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService, replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService, menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService);
@@ -258,7 +258,7 @@ export class NotebookSearchView extends SearchView {
 
 		const onComplete = async (completed?: ISearchComplete) => {
 			let end = new Date().getTime();
-			this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.SearchCompleted)
+			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.SearchCompleted)
 				.withAdditionalProperties({ resultsReturned: completed.results.length })
 				.withAdditionalMeasurements({ timeTakenMs: end - start })
 				.send();
