@@ -6,11 +6,11 @@ steps:
   displayName: Prepare cache flag
 
   - task: Cache@2
-    displayName: Restore Cache - Compiled Files
-    inputs:
-      key: 'build/.cachesalt | .build/commit | .build/quality'
-      path: .build/compilation_cache
-      cacheHitVar: COMPILATION_RESTORED
+  displayName: Restore Cache - Compiled Files
+  inputs:
+    key: 'build/.cachesalt | .build/commit | .build/quality'
+    path: .build/compilation_cache
+    cacheHitVar: COMPILATION_RESTORED
 
 - script: |
     set -e
