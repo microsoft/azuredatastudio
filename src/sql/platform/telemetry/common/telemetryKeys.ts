@@ -84,7 +84,7 @@ export enum NbTelemetryAction {
 	RunCell = 'RunCell',
 	RunAll = 'RunNotebook',
 	AddCell = 'AddCell',
-	ChangeKernel = 'ChangeKernel',
+	KernelChanged = 'KernelChanged',
 	NewNotebookFromConnections = 'NewNotebookWithConnectionProfile'
 }
 

@@ -246,8 +246,11 @@ export class ClientSession implements IClientSession {
 	}
 
 	private async notifyKernelChanged(newKernel: nb.IKernel, oldKernel?: nb.IKernel): Promise<void> {
-		this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.ChangeKernel)
-			.withAdditionalProperties({ kernel: newKernel.name })
+		this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.KernelChanged)
+			.withAdditionalProperties({
+				newKernel: newKernel.name,
+				oldKernel: oldKernel?.name || ''
+			})
 			.send();
 		let changeArgs: nb.IKernelChangedArgs = {
 			oldValue: oldKernel,
