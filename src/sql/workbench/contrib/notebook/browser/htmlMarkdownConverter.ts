@@ -133,18 +133,25 @@ export class HTMLMarkdownConverter {
 			filter: 'a',
 			replacement: (content, node) => {
 				let href = node.href;
-				const isAnchorLink = node.attributes.href?.nodeValue.startsWith('#');
+				let notebookLink: URI;
+				const isAnchorLink = node.attributes.href?.nodeValue.startsWith('#') || href.includes('#');
 				if (isAnchorLink) {
-					href = node.attributes.href.nodeValue;
+					notebookLink = getUriAnchorLink(node, this.notebookUri);
 				} else {
 					//On Windows, if notebook is not trusted then the href attr is removed for all non-web URL links
 					// href contains either a hyperlink or a URI-encoded absolute path. (See resolveUrls method in notebookMarkdown.ts)
-					const notebookLink = node.href ? URI.parse(node.href) : URI.file(node.title);
+					notebookLink = href ? URI.parse(href) : URI.file(node.title);
+				}
+				if (notebookLink.fsPath !== this.notebookUri.fsPath) {
 					const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
 					let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
 					if (relativePath) {
 						return `[${node.innerText}](${relativePath})`;
 					}
+				} else if (notebookLink.fragment) {
+					// if it's the same path as the current notebook then it's a link to a section
+					// check fragment is not empty else return the initial node.href
+					href = notebookLink.fragment;
 				}
 				return `[${content}](${href})`;
 			}
@@ -300,4 +307,16 @@ export function addHighlightIfYellowBgExists(node, content: string): string {
 		return '<mark>' + content + '</mark>';
 	}
 	return content;
+}
+
+export function getUriAnchorLink(node, notebookUri: URI): URI {
+	let notebookLink: URI;
+	const sectionLinkToAnotherFile = node.href.startsWith('file://') && node.href.includes('#') && !node.attributes.href?.nodeValue.startsWith('#');
+	if (sectionLinkToAnotherFile) {
+		// if section link is different from the current notebook
+		notebookLink = URI.file(node.attributes.href?.nodeValue);
+	} else {
+		notebookLink = URI.from({ scheme: 'file', path: notebookUri.fsPath, fragment: node.attributes.href?.nodeValue });
+	}
+	return notebookLink;
 }
