@@ -12,7 +12,6 @@ import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKe
 import { Deferred } from 'sql/base/common/promise';
 import { escapeLabel, escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 import { IDialogProperties } from 'sql/workbench/browser/modal/modal';
-import * as DOM from 'vs/base/browser/dom';
 
 suite('Link Callout Dialog', function (): void {
 	let layoutService: ILayoutService;
