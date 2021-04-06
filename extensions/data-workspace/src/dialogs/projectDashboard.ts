@@ -181,59 +181,67 @@ export class ProjectDashboard {
 			}).component();
 
 		dashboardData.forEach(info => {
-			const tableNameLabel = this.modelView!.modelBuilder.text()
-				.withProperties<azdata.TextComponentProperties>({ value: info.name, CSSStyles: { 'margin-block-start': '30px', 'margin-block-end': '0px' } })
-				.component();
-			tableContainer.addItem(tableNameLabel, { CSSStyles: { 'padding-left': '25px', 'padding-bottom': '20px', ...constants.cssStyles.title } });
+			if (info.data.length === 0) {
+				const noDataText = constants.noPreviousData(info.name.toLocaleLowerCase());
+				const noDataLabel = this.modelView!.modelBuilder.text()
+					.withProperties<azdata.TextComponentProperties>({ value: noDataText, CSSStyles: { 'margin-block-start': '30px', 'margin-block-end': '0px' } })
+					.component();
+				tableContainer.addItem(noDataLabel, { CSSStyles: { 'padding-left': '25px', 'padding-bottom': '20px', ...constants.cssStyles.title } });
+			} else {
+				const tableNameLabel = this.modelView!.modelBuilder.text()
+					.withProperties<azdata.TextComponentProperties>({ value: info.name, CSSStyles: { 'margin-block-start': '30px', 'margin-block-end': '0px' } })
+					.component();
+				tableContainer.addItem(tableNameLabel, { CSSStyles: { 'padding-left': '25px', 'padding-bottom': '20px', ...constants.cssStyles.title } });
 
-			const columns: azdata.DeclarativeTableColumn[] = [];
-			info.columns.forEach((column: IDashboardColumnInfo) => {
-				let col = {
-					displayName: column.displayName,
-					valueType: column.type === 'icon' ? azdata.DeclarativeDataType.component : azdata.DeclarativeDataType.string,
-					isReadOnly: true,
-					width: column.width,
-					headerCssStyles: {
-						'border': 'none',
-						...constants.cssStyles.tableHeader
-					},
-					rowCssStyles: {
-						...constants.cssStyles.tableRow
-					},
-				};
-				columns.push(col);
-			});
-
-			const data: azdata.DeclarativeTableCellValue[][] = [];
-			info.data.forEach(values => {
-				const columnValue: azdata.DeclarativeTableCellValue[] = [];
-				values.forEach(val => {
-					if (typeof val === 'string') {
-						columnValue.push({ value: val });
-					} else {
-						const iconComponent = this.modelView!.modelBuilder.image().withProperties<azdata.ImageComponentProperties>({
-							iconPath: val.icon,
-							width: '15px',
-							height: '15px',
-							iconHeight: '15px',
-							iconWidth: '15px'
-						}).component();
-						const stringComponent = this.modelView!.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-							value: val.text,
-							CSSStyles: { 'margin-block-start': 'auto', 'block-size': 'auto', 'margin-block-end': '0px' }
-						}).component();
-
-						const columnData = this.modelView!.modelBuilder.flexContainer().withItems([iconComponent, stringComponent], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row' }).component();
-						columnValue.push({ value: columnData });
-					}
+				const columns: azdata.DeclarativeTableColumn[] = [];
+				info.columns.forEach((column: IDashboardColumnInfo) => {
+					let col = {
+						displayName: column.displayName,
+						valueType: column.type === 'icon' ? azdata.DeclarativeDataType.component : azdata.DeclarativeDataType.string,
+						isReadOnly: true,
+						width: column.width,
+						headerCssStyles: {
+							'border': 'none',
+							...constants.cssStyles.tableHeader
+						},
+						rowCssStyles: {
+							...constants.cssStyles.tableRow
+						},
+					};
+					columns.push(col);
 				});
-				data.push(columnValue);
-			});
 
-			const table = this.modelView!.modelBuilder.declarativeTable()
-				.withProperties<azdata.DeclarativeTableProperties>({ columns: columns, dataValues: data, ariaLabel: info.name, CSSStyles: { 'margin-left': '30px' } }).component();
+				const data: azdata.DeclarativeTableCellValue[][] = [];
+				info.data.forEach(values => {
+					const columnValue: azdata.DeclarativeTableCellValue[] = [];
+					values.forEach(val => {
+						if (typeof val === 'string') {
+							columnValue.push({ value: val });
+						} else {
+							const iconComponent = this.modelView!.modelBuilder.image().withProperties<azdata.ImageComponentProperties>({
+								iconPath: val.icon,
+								width: '15px',
+								height: '15px',
+								iconHeight: '15px',
+								iconWidth: '15px'
+							}).component();
+							const stringComponent = this.modelView!.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+								value: val.text,
+								CSSStyles: { 'margin-block-start': 'auto', 'block-size': 'auto', 'margin-block-end': '0px' }
+							}).component();
 
-			tableContainer.addItem(table);
+							const columnData = this.modelView!.modelBuilder.flexContainer().withItems([iconComponent, stringComponent], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row' }).component();
+							columnValue.push({ value: columnData });
+						}
+					});
+					data.push(columnValue);
+				});
+
+				const table = this.modelView!.modelBuilder.declarativeTable()
+					.withProperties<azdata.DeclarativeTableProperties>({ columns: columns, dataValues: data, ariaLabel: info.name, CSSStyles: { 'margin-left': '30px' } }).component();
+
+				tableContainer.addItem(table);
+			}
 		});
 		return tableContainer;
 	}
