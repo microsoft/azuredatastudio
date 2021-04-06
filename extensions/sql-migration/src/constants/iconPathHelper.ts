@@ -27,6 +27,8 @@ export class IconPathHelper {
 	public static sqlServerLogo: IconPath;
 	public static sqlDatabaseLogo: IconPath;
 	public static sqlDatabaseWarningLogo: IconPath;
+	public static cancel: IconPath;
+	public static warning: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -92,6 +94,14 @@ export class IconPathHelper {
 		IconPathHelper.sqlDatabaseWarningLogo = {
 			light: context.asAbsolutePath('images/sqlDatabaseWarning.svg'),
 			dark: context.asAbsolutePath('images/sqlDatabaseWarning.svg')
+		};
+		IconPathHelper.cancel = {
+			light: context.asAbsolutePath('images/cancel.svg'),
+			dark: context.asAbsolutePath('images/cancel.svg')
+		};
+		IconPathHelper.warning = {
+			light: context.asAbsolutePath('images/warning.svg'),
+			dark: context.asAbsolutePath('images/warning.svg')
 		};
 	}
 }

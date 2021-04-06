@@ -23,9 +23,9 @@ export class FakeAzdataApi implements azdataExt.IAzdataApi {
 		},
 		postgres: {
 			server: {
-				postgresInstances: [],
+				postgresInstances: <azdataExt.PostgresServerListResult[]>[],
 				delete(_name: string): Promise<azdataExt.AzdataOutput<void>> { throw new Error('Method not implemented.'); },
-				async list(): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerListResult[]>> { return <any>{ result: this.postgresInstances }; },
+				async list(): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerListResult[]>> { return { result: this.postgresInstances, logs: [], stdout: [], stderr: [] }; },
 				show(_name: string): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerShowResult>> { throw new Error('Method not implemented.'); },
 				edit(
 					_name: string,
@@ -42,16 +42,15 @@ export class FakeAzdataApi implements azdataExt.IAzdataApi {
 						replaceEngineSettings?: boolean,
 						workers?: number
 					},
-					_engineVersion?: string,
 					_additionalEnvVars?: azdataExt.AdditionalEnvVars
 				): Promise<azdataExt.AzdataOutput<void>> { throw new Error('Method not implemented.'); }
 			}
 		},
 		sql: {
 			mi: {
-				miaaInstances: [],
+				miaaInstances: <azdataExt.SqlMiListResult[]>[],
 				delete(_name: string): Promise<azdataExt.AzdataOutput<void>> { throw new Error('Method not implemented.'); },
-				async list(): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiListResult[]>> { return <any>{ result: this.miaaInstances }; },
+				async list(): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiListResult[]>> { return { logs: [], stdout: [], stderr: [], result: this.miaaInstances }; },
 				show(_name: string): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiShowResult>> { throw new Error('Method not implemented.'); },
 				edit(
 					_name: string,
@@ -66,16 +65,13 @@ export class FakeAzdataApi implements azdataExt.IAzdataApi {
 		}
 	};
 
-	// public postgresInstances: azdataExt.PostgresServerListResult[] = [];
 	public set postgresInstances(instances: azdataExt.PostgresServerListResult[]) {
-		this._arcApi.postgres.server.postgresInstances = <any>instances;
+		this._arcApi.postgres.server.postgresInstances = instances;
 	}
 
 	public set miaaInstances(instances: azdataExt.SqlMiListResult[]) {
-		this._arcApi.sql.mi.miaaInstances = <any>instances;
+		this._arcApi.sql.mi.miaaInstances = instances;
 	}
-
-	// public miaaInstances: azdataExt.SqlMiListResult[] = [];
 
 	//
 	// API Implementation
@@ -86,11 +82,8 @@ export class FakeAzdataApi implements azdataExt.IAzdataApi {
 	getPath(): Promise<string> {
 		throw new Error('Method not implemented.');
 	}
-	login(_endpoint: string, _username: string, _password: string): Promise<azdataExt.AzdataOutput<void>> {
+	login(_endpointOrNamespace: azdataExt.EndpointOrNamespace, _username: string, _password: string, _additionalEnvVars: azdataExt.AdditionalEnvVars = {}, _azdataContext?: string): Promise<azdataExt.AzdataOutput<void>> {
 		return <any>undefined;
-	}
-	acquireSession(_endpoint: string, _username: string, _password: string): Promise<azdataExt.AzdataSession> {
-		return Promise.resolve({ dispose: () => { } });
 	}
 	version(): Promise<azdataExt.AzdataOutput<string>> {
 		throw new Error('Method not implemented.');

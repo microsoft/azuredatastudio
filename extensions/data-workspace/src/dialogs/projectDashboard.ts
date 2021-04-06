@@ -106,8 +106,6 @@ export class ProjectDashboard {
 	}
 
 	private createContainer(title: string, location: string): azdata.FlexContainer {
-		const dashboardData: IDashboardTable[] = this.projectProvider!.dashboardComponents;
-
 		const rootContainer = this.modelView!.modelBuilder.flexContainer().withLayout(
 			{
 				flexFlow: 'column',
@@ -115,23 +113,78 @@ export class ProjectDashboard {
 				height: '100%'
 			}).component();
 
+		const headerContainer = this.createHeader(title, location);
+		const tableContainer = this.createTables();
+
+		rootContainer.addItem(headerContainer);
+		rootContainer.addItem(tableContainer);
+
+		return rootContainer;
+	}
+
+	/**
+	 * Create header with title, location and background
+	 */
+	private createHeader(title: string, location: string): azdata.Component {
+		const headerContainer = this.modelView!.modelBuilder.flexContainer().withLayout(
+			{
+				flexFlow: 'column',
+				width: '100%',
+				height: '30%'
+			}).component();
+
+		const header = this.modelView!.modelBuilder.flexContainer().withLayout(
+			{
+				flexFlow: 'column',
+				width: '100%',
+				height: '30%'
+			}).component();
+
 		const titleLabel = this.modelView!.modelBuilder.text()
 			.withProperties<azdata.TextComponentProperties>({ value: title, CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
 			.component();
-		rootContainer.addItem(titleLabel, { CSSStyles: { 'padding-left': '34px', 'padding-top': '15px', 'font-size': '36px', 'font-weight': '400' } });
+		header.addItem(titleLabel, { CSSStyles: { 'padding-left': '34px', 'padding-top': '15px', 'font-size': '36px', 'font-weight': '400' } });
 
 		const projectFolderPath = path.dirname(location);
 		const locationLabel = this.modelView!.modelBuilder.text()
 			.withProperties<azdata.TextComponentProperties>({ value: projectFolderPath, CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
 			.component();
-		rootContainer.addItem(locationLabel, { CSSStyles: { 'padding-left': '34px', 'padding-top': '15px', 'padding-bottom': '50px', 'font-size': '16px' } });
+		header.addItem(locationLabel, { CSSStyles: { 'padding-left': '34px', 'padding-top': '15px', 'padding-bottom': '50px', 'font-size': '16px' } });
 
-		// Add all the tables to the container
+		const image = this.projectProvider!.image;		// background image added at the bottom right of the header
+		headerContainer.addItem(header, {
+			CSSStyles: {
+				'background-image': `url(${vscode.Uri.file(image!.light.toString())})`,
+				'background-repeat': 'no-repeat',
+				'background-position': '85% bottom',
+				'background-size': '10%',
+				'border-bottom': 'solid 1px #ccc',
+				'width': '100%',
+				'height': '100%'
+			}
+		});
+
+		return headerContainer;
+	}
+
+	/**
+	 * Adds all the tables to the container
+	 */
+	private createTables(): azdata.Component {
+		const dashboardData: IDashboardTable[] = this.projectProvider!.dashboardComponents;
+
+		const tableContainer = this.modelView!.modelBuilder.flexContainer().withLayout(
+			{
+				flexFlow: 'column',
+				width: '100%',
+				height: 'auto'
+			}).component();
+
 		dashboardData.forEach(info => {
 			const tableNameLabel = this.modelView!.modelBuilder.text()
 				.withProperties<azdata.TextComponentProperties>({ value: info.name, CSSStyles: { 'margin-block-start': '30px', 'margin-block-end': '0px' } })
 				.component();
-			rootContainer.addItem(tableNameLabel, { CSSStyles: { 'padding-left': '25px', 'padding-bottom': '20px', ...constants.cssStyles.title } });
+			tableContainer.addItem(tableNameLabel, { CSSStyles: { 'padding-left': '25px', 'padding-bottom': '20px', ...constants.cssStyles.title } });
 
 			const columns: azdata.DeclarativeTableColumn[] = [];
 			info.columns.forEach((column: IDashboardColumnInfo) => {
@@ -180,9 +233,8 @@ export class ProjectDashboard {
 			const table = this.modelView!.modelBuilder.declarativeTable()
 				.withProperties<azdata.DeclarativeTableProperties>({ columns: columns, dataValues: data, ariaLabel: info.name, CSSStyles: { 'margin-left': '30px' } }).component();
 
-			rootContainer.addItem(table);
+			tableContainer.addItem(table);
 		});
-
-		return rootContainer;
+		return tableContainer;
 	}
 }

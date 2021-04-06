@@ -96,15 +96,8 @@ describe('api', function (): void {
 		async function assertApiCalls(api: azdataExt.IExtension, assertCallback: (promise: Promise<any>, message: string) => Promise<void>): Promise<void> {
 			await assertCallback(api.azdata.getPath(), 'getPath');
 			await assertCallback(api.azdata.getSemVersion(), 'getSemVersion');
-			await assertCallback(api.azdata.login('', '', ''), 'login');
-			await assertCallback((async () => {
-				let session: azdataExt.AzdataSession | undefined;
-				try {
-					session = await api.azdata.acquireSession('', '', '');
-				} finally {
-					session?.dispose();
-				}
-			})(), 'acquireSession');
+			await assertCallback(api.azdata.login({ endpoint: 'https://127.0.0.1' }, '', ''), 'login');
+			await assertCallback(api.azdata.login({ namespace: 'namespace' }, '', ''), 'login');
 			await assertCallback(api.azdata.version(), 'version');
 
 			await assertCallback(api.azdata.arc.dc.create('', '', '', '', '', ''), 'arc dc create');
@@ -117,7 +110,7 @@ describe('api', function (): void {
 			await assertCallback(api.azdata.arc.sql.mi.list(), 'arc sql mi list');
 			await assertCallback(api.azdata.arc.sql.mi.delete(''), 'arc sql mi delete');
 			await assertCallback(api.azdata.arc.sql.mi.show(''), 'arc sql mi show');
-			await assertCallback(api.azdata.arc.sql.mi.edit('', { }), 'arc sql mi edit');
+			await assertCallback(api.azdata.arc.sql.mi.edit('', {}), 'arc sql mi edit');
 			await assertCallback(api.azdata.arc.postgres.server.list(), 'arc sql postgres server list');
 			await assertCallback(api.azdata.arc.postgres.server.delete(''), 'arc sql postgres server delete');
 			await assertCallback(api.azdata.arc.postgres.server.show(''), 'arc sql postgres server show');

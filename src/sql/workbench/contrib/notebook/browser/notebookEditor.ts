@@ -210,6 +210,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 		}
 	}
 
+
 	private async setFindInput(parentElement: HTMLElement): Promise<void> {
 		parentElement.appendChild(this._overlay);
 		await this.setNotebookModel();
