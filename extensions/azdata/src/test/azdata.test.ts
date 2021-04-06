@@ -17,7 +17,7 @@ import { AzdataReleaseInfo } from '../azdataReleaseInfo';
 import * as TypeMoq from 'typemoq';
 import { eulaAccepted } from '../constants';
 
-const oldAzdataMock = new azdata.AzdataTool('/path/to/azdata', '0.0.0');
+const oldAzdataMock = new azdata.AzdataTool('/path/to/azdata', azdata.MIN_AZDATA_VERSION.raw);
 const currentAzdataMock = new azdata.AzdataTool('/path/to/azdata', '9999.999.999');
 
 /**
@@ -665,7 +665,7 @@ async function testDarwinSkippedUpdateDontPrompt() {
 async function testWin32SkippedUpdateDontPrompt() {
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
 	await azdata.checkAndUpdateAzdata(oldAzdataMock);
-	should(executeSudoCommandStub.notCalled).be.true('executeSudoCommand should not have been called');
+	should(executeSudoCommandStub.notCalled).be.true(`executeSudoCommand should not have been called ${executeSudoCommandStub.getCalls().join(os.EOL)}`);
 }
 
 async function testLinuxSkippedUpdateDontPrompt() {
