@@ -314,7 +314,7 @@ export function getUriAnchorLink(node, notebookUri: URI): URI {
 	if (sectionLinkToAnotherFile) {
 		let absolutePath = !path.isAbsolute(node.attributes.href?.nodeValue) ? path.resolve(path.dirname(notebookUri.fsPath), node.attributes.href?.nodeValue) : node.attributes.href?.nodeValue;
 		// if section link is different from the current notebook
-		notebookLink = URI.parse(absolutePath);
+		notebookLink = URI.file(absolutePath);
 	} else {
 		notebookLink = URI.from({ scheme: 'file', path: notebookUri.fsPath, fragment: node.attributes.href?.nodeValue });
 	}
