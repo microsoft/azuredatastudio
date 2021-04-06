@@ -134,7 +134,7 @@ export class HTMLMarkdownConverter {
 			replacement: (content, node) => {
 				let href = node.href;
 				let notebookLink: URI = undefined;
-				const isAnchorLink = node.sdattributes.href?.nodeValue.startsWith('#') || href.includes('#');
+				const isAnchorLink = node.attributes.href?.nodeValue.startsWith('#') || href.includes('#');
 				if (isAnchorLink) {
 					notebookLink = getUriAnchorLink(node, this.notebookUri);
 				} else {
@@ -149,7 +149,7 @@ export class HTMLMarkdownConverter {
 						return `[${node.innerText}](${relativePath})`;
 					}
 				} else if (notebookLink.fragment) {
-					return `[${node.innerText}](${notebookLink.fragment})`;
+					return `[${content}](${notebookLink.fragment})`;
 				}
 
 				return `[${content}](${href})`;
@@ -287,7 +287,7 @@ function blankReplacement(content, node) {
 export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined): string {
 	if (notebookFolder) {
 		if (contentPath?.scheme === 'file') {
-			let relativePath = contentPath.fragment ? path.relative(notebookFolder, contentPath.fsPath).concat(contentPath.fragment) : path.relative(notebookFolder, contentPath.fsPath);
+			let relativePath = contentPath.fragment ? path.relative(notebookFolder, contentPath.fsPath).concat('#', contentPath.fragment) : path.relative(notebookFolder, contentPath.fsPath);
 			//if path contains whitespaces then it's not identified as a link
 			relativePath = relativePath.replace(/\s/g, '%20');
 			if (relativePath.startsWith(path.join('..', path.sep) || path.join('.', path.sep))) {
