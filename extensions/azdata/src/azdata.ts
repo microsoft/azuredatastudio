@@ -17,6 +17,9 @@ import { getErrorMessage, NoAzdataError, searchForCmd } from './common/utils';
 import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataInstallKey, azdataUpdateKey, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
 
+/**
+ * The minimum required azdata CLI version for this extension to function properly
+ */
 export const MIN_AZDATA_VERSION = new SemVer('20.3.2');
 
 export const enum AzdataDeployOption {
