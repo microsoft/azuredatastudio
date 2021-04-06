@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
-import { MIN_AZDATA_VERSION } from './azdata';
 import { getErrorMessage } from './common/utils';
 import { azdataConfigSection, azdataInstallKey, azdataUpdateKey } from './constants';
 const localize = nls.loadMessageBundle();
