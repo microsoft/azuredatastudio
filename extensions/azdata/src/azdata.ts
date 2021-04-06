@@ -448,6 +448,7 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
  * @param newVersion - provides the new version that the user will be prompted to update to
  * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
  * returns true if update was done and false otherwise.
+ * @param required - Whether this update is required. If true then we will always show the prompt and warn the user if they decline it
  */
 async function promptToUpdateAzdata(newVersion: string, userRequested: boolean = false, required = false): Promise<boolean> {
 	if (required) {
