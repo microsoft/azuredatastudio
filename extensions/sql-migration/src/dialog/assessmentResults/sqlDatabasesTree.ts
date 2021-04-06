@@ -146,8 +146,8 @@ export class SqlDatabaseTree {
 				]
 			}
 		).component();
-		this._databaseTable.onDataChanged(() => {
-			this._databaseTable.updateProperties({
+		this._databaseTable.onDataChanged(async () => {
+			await this._databaseTable.updateProperties({
 				'columns': [
 					{
 						displayName: '',
