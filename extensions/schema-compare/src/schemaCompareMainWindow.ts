@@ -894,7 +894,7 @@ export class SchemaCompareMainWindow {
 
 		this.selectSourceButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSelectSource');
-			this.schemaCompareDialog = new SchemaCompareDialog(this);
+			this.schemaCompareDialog = new SchemaCompareDialog(this, undefined, this.extensionContext);
 			this.promise = this.schemaCompareDialog.openDialog();
 			await this.promise;
 		});
@@ -908,7 +908,7 @@ export class SchemaCompareMainWindow {
 
 		this.selectTargetButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSelectTarget');
-			this.schemaCompareDialog = new SchemaCompareDialog(this);
+			this.schemaCompareDialog = new SchemaCompareDialog(this, undefined, this.extensionContext);
 			this.promise = await this.schemaCompareDialog.openDialog();
 			await this.promise;
 		});
