@@ -451,7 +451,7 @@ async function promptToUpdateAzdata(newVersion: string, userRequested: boolean =
 		let response: string | undefined = loc.yes;
 
 		const responses = [loc.yes, loc.no];
-		Logger.log(loc.promptForRequiredAzdataUpdateLog(newVersion));
+		Logger.log(loc.promptForRequiredAzdataUpdateLog(MIN_AZDATA_VERSION.raw, newVersion));
 		response = await vscode.window.showInformationMessage(loc.promptForRequiredAzdataUpdate(MIN_AZDATA_VERSION.raw, newVersion), ...responses);
 		Logger.log(loc.userResponseToUpdatePrompt(response));
 		if (response === loc.yes) {
