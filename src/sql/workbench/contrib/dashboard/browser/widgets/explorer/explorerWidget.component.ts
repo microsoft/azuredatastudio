@@ -184,6 +184,6 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	}
 
 	public getTableHeight(): string {
-		return `calc(100% - ${this._input.height}px)`;
+		return this._input ? `calc(100% - ${this._input.height}px)` : '100%';
 	}
 }
