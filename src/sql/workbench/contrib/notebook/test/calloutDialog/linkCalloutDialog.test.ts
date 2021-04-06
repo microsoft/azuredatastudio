@@ -12,6 +12,7 @@ import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKe
 import { Deferred } from 'sql/base/common/promise';
 import { escapeLabel, escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 import { IDialogProperties } from 'sql/workbench/browser/modal/modal';
+import * as DOM from 'vs/base/browser/dom';
 
 suite('Link Callout Dialog', function (): void {
 	let layoutService: ILayoutService;
@@ -106,4 +107,27 @@ suite('Link Callout Dialog', function (): void {
 		assert.equal(escapeUrl('<>&()'), '&lt;&gt;&amp;%28%29', 'URL test known escaped characters failed');
 		assert.equal(escapeUrl('<>&()[]'), '&lt;&gt;&amp;%28%29[]', 'URL test all escaped characters failed');
 	});
+
+	test('Should return file link properly', async function (): Promise<void> {
+		const defaultLabel = 'defaultLabel';
+		const sampleUrl = 'C:/Test/Test.ipynb';
+		let linkCalloutDialog = new LinkCalloutDialog('Title', 'below', defaultDialogProperties, defaultLabel, sampleUrl,
+			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
+		linkCalloutDialog.render();
+
+		let deferred = new Deferred<ILinkCalloutDialogOptions>();
+		// When I first open the callout dialog
+		linkCalloutDialog.open().then(value => {
+			deferred.resolve(value);
+		});
+		linkCalloutDialog.url = sampleUrl;
+
+		// And insert the dialog
+		linkCalloutDialog.insert();
+		let result = await deferred.promise;
+		assert.equal(result.insertUnescapedLinkLabel, defaultLabel, 'Label not returned correctly');
+		assert.equal(result.insertUnescapedLinkUrl, sampleUrl, 'URL not returned correctly');
+		assert.equal(result.insertEscapedMarkdown, `[${defaultLabel}](${sampleUrl})`, 'Markdown not returned correctly');
+	});
+
 });
