@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - release/extensions
+      - extensions/rc1
   pull_request:
     branches:
       - release/extensions
+      - extensions/rc1
 
 jobs:
   validate-galleries:
