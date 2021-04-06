@@ -93,7 +93,7 @@ export class SchemaCompareMainWindow {
 			let ownerUri = await azdata.connection.getUriForConnection((profile.id));
 			this.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
-				serverDisplayName: `${profile.serverName} ${profile.userName}`,
+				serverDisplayName: `${profile.serverName} (${profile.userName})`,
 				serverName: profile.serverName,
 				databaseName: profile.databaseName,
 				ownerUri: ownerUri,
