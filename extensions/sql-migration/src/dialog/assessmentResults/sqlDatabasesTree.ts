@@ -182,6 +182,7 @@ export class SqlDatabaseTree {
 			this._selectedIssue = this._model._assessmentResults?.databaseAssessments[row].issues[0];
 			this._dbName.value = this._dbNames[row];
 			this._recommendationTitle.value = constants.WARNINGS_COUNT(this._activeIssues.length);
+			this._recommendation.value = constants.ISSUES_DETAILS;
 			this._resultComponent.updateCssStyles({
 				'display': 'block'
 			});
@@ -257,6 +258,7 @@ export class SqlDatabaseTree {
 			this._dbMessageContainer.updateCssStyles({
 				'display': 'none'
 			});
+			this._recommendation.value = constants.WARNINGS_DETAILS;
 
 			if (this._model._targetType === MigrationTargetType.SQLMI) {
 				this.refreshResults();
