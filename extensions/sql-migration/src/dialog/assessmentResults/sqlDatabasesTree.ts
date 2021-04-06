@@ -62,6 +62,7 @@ export class SqlDatabaseTree {
 	private _objectDetailsSample!: azdata.TextComponent;
 	private _moreInfo!: azdata.HyperlinkComponent;
 	private _assessmentTitle!: azdata.TextComponent;
+	private _databaseTableValues!: azdata.DeclarativeTableCellValue[][];
 
 	private _activeIssues!: SqlMigrationAssessmentResultItem[];
 	private _selectedIssue!: SqlMigrationAssessmentResultItem;
@@ -69,6 +70,7 @@ export class SqlDatabaseTree {
 
 	private _serverName!: string;
 	private _dbNames!: string[];
+	private _databaseCount!: azdata.TextComponent;
 
 
 	constructor(
@@ -108,8 +110,21 @@ export class SqlDatabaseTree {
 
 		component.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		component.addItem(this.createInstanceComponent(), { flex: '0 0 auto' });
+		component.addItem(this.createDatabaseCount(), { flex: '0 0 auto' });
 		component.addItem(this.createDatabaseComponent(dbs), { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'auto' } });
 		return component;
+	}
+
+	private createDatabaseCount(): azdata.TextComponent {
+		this._databaseCount = this._view.modelBuilder.text().withProps({
+			CSSStyles: {
+				'font-size': '11px',
+				'font-weight': 'bold',
+				'margin': '0px 8px 0px 36px'
+			},
+			value: constants.DATABASES(this.selectedDbs.length, this._model._serverDatabases.length)
+		}).component();
+		return this._databaseCount;
 	}
 
 	private createDatabaseComponent(dbs: string[]): azdata.DivContainer {
@@ -131,7 +146,7 @@ export class SqlDatabaseTree {
 						headerCssStyles: headerLeft,
 					},
 					{
-						displayName: constants.DATABASES(this.selectedDbs.length, this._model._serverDatabases.length),
+						displayName: constants.DATABASE,
 						valueType: azdata.DeclarativeDataType.component,
 						width: 100,
 						isReadOnly: true,
@@ -147,32 +162,9 @@ export class SqlDatabaseTree {
 				]
 			}
 		).component();
-		this._databaseTable.onDataChanged(async () => {
-			await this._databaseTable.updateProperties({
-				'columns': [
-					{
-						displayName: '',
-						valueType: azdata.DeclarativeDataType.boolean,
-						width: 20,
-						isReadOnly: false,
-						showCheckAll: true,
-						headerCssStyles: headerLeft,
-					},
-					{
-						displayName: constants.DATABASES(this.selectedDbs.length, this._model._serverDatabases.length),
-						valueType: azdata.DeclarativeDataType.component,
-						width: 100,
-						isReadOnly: true,
-						headerCssStyles: headerLeft
-					},
-					{
-						displayName: constants.ISSUES,
-						valueType: azdata.DeclarativeDataType.string,
-						width: 30,
-						isReadOnly: true,
-						headerCssStyles: headerRight,
-					}
-				]
+		this._databaseTable.onDataChanged(() => {
+			this._databaseCount.updateProperties({
+				'value': constants.DATABASES(this.selectedDbs().length, this._model._serverDatabases.length)
 			});
 		});
 		this._databaseTable.onRowSelected(({ row }) => {
@@ -754,7 +746,7 @@ export class SqlDatabaseTree {
 
 	public async initialize(): Promise<void> {
 		let instanceTableValues: azdata.DeclarativeTableCellValue[][] = [];
-		let databaseTableValues: azdata.DeclarativeTableCellValue[][] = [];
+		this._databaseTableValues = [];
 		const excludedDatabases = ['master', 'msdb', 'tempdb', 'model'];
 		this._dbNames = (await azdata.connection.listDatabases(this._model.sourceConnectionId)).filter(db => !excludedDatabases.includes(db));
 		const selectedDbs = (this._targetType === MigrationTargetType.SQLVM) ? this._model._vmDbs : this._model._miDbs;
@@ -774,7 +766,7 @@ export class SqlDatabaseTree {
 				]
 			];
 			this._dbNames.forEach((db) => {
-				databaseTableValues.push(
+				this._databaseTableValues.push(
 					[
 						{
 							value: selectedDbs.includes(db),
@@ -805,7 +797,7 @@ export class SqlDatabaseTree {
 				]
 			];
 			this._model._assessmentResults.databaseAssessments.forEach((db) => {
-				databaseTableValues.push(
+				this._databaseTableValues.push(
 					[
 						{
 							value: selectedDbs.includes(db.name),
@@ -824,7 +816,7 @@ export class SqlDatabaseTree {
 			});
 		}
 		this._instanceTable.dataValues = instanceTableValues;
-		this._databaseTable.dataValues = databaseTableValues;
+		this._databaseTable.dataValues = this._databaseTableValues;
 	}
 
 	private createIconTextCell(icon: IconPath, text: string): azdata.FlexContainer {
