@@ -13,7 +13,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { ILanguageAssociation } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
-import { NotebookLanguage } from 'sql/workbench/contrib/notebook/common/constants';
+import { NotebookLanguage } from 'sql/workbench/common/constants';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { DiffNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/diffNotebookInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';

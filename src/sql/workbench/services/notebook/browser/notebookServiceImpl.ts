@@ -49,6 +49,9 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 
 import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/common/interface';
+import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { NotebookLanguage } from 'sql/workbench/common/constants';
+
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
 export interface NotebookProviderProperties {
@@ -180,7 +183,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		lifecycleService.onWillShutdown(() => this.shutdown());
 	}
 
-	public async openNotebook(resource: UriComponents, options: INotebookOpenOptions): Promise<IEditorPane | undefined> {
+	public async openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined> {
 		const uri = URI.revive(resource);
 
 		const editorOptions: ITextEditorOptions = {
@@ -201,8 +204,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: 'notebook' });
 			}
 		}
-		let language = 'ipynb';
-		const inputCreator = languageAssociationRegistry.getAssociationForLanguage(language);
+		const inputCreator = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
 		if (inputCreator) {
 			fileInput = await inputCreator.convertInput(fileInput);
 			if (isINotebookInput(fileInput)) {
