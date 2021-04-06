@@ -24,6 +24,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
+import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 
 class TestClientSession extends ClientSessionStub {
 	private _errorState: boolean = false;
@@ -124,7 +125,7 @@ suite('Notebook Actions', function (): void {
 		let actualCellType: CellType;
 
 
-		let action = new AddCellAction('TestId', 'TestLabel', 'TestClass', mockNotebookService.object);
+		let action = new AddCellAction('TestId', 'TestLabel', 'TestClass', mockNotebookService.object, new NullAdsTelemetryService());
 		action.cellType = testCellType;
 
 		// Normal use case
@@ -191,7 +192,7 @@ suite('Notebook Actions', function (): void {
 		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
 		mockNotification.setup(n => n.notify(TypeMoq.It.isAny()));
 
-		let action = new RunAllCellsAction('TestId', 'TestLabel', 'TestClass', mockNotification.object, mockNotebookService.object);
+		let action = new RunAllCellsAction('TestId', 'TestLabel', 'TestClass', mockNotification.object, mockNotebookService.object, new NullAdsTelemetryService());
 
 		// Normal use case
 		mockNotebookEditor.setup(c => c.runAllCells()).returns(() => Promise.resolve(true));
@@ -251,7 +252,7 @@ suite('Notebook Actions', function (): void {
 				return Promise.resolve(true);
 			});
 
-		let action = new NewNotebookAction('TestId', 'TestLabel', mockCommandService.object, undefined);
+		let action = new NewNotebookAction('TestId', 'TestLabel', mockCommandService.object, undefined, new NullAdsTelemetryService());
 		action.run(undefined);
 
 		assert.strictEqual(actualCmdId, NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID);
