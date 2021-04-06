@@ -296,7 +296,8 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
 			const defaultLabel = this.getCurrentSelectionText();
-			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogPosition, dialogProperties, defaultLabel);
+			const defaultLinkUrl = this.getCurrentLinkUrl();
+			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogPosition, dialogProperties, defaultLabel, defaultLinkUrl);
 			this._linkCallout.render();
 			calloutOptions = await this._linkCallout.open();
 		}
@@ -315,6 +316,14 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				return value || '';
 			}
 			return '';
+		}
+	}
+
+	private getCurrentLinkUrl(): string {
+		if (document.getSelection().anchorNode.parentNode['protocol'] === 'file:') {
+			return document.getSelection().anchorNode.parentNode['pathname'] || '';
+		} else {
+			return document.getSelection().anchorNode.parentNode['href'] || '';
 		}
 	}
 

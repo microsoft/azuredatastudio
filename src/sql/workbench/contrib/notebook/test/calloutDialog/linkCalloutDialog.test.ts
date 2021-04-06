@@ -29,7 +29,7 @@ suite('Link Callout Dialog', function (): void {
 	});
 
 	test('Should return empty markdown on cancel', async function (): Promise<void> {
-		let linkCalloutDialog = new LinkCalloutDialog('Title', 'below', defaultDialogProperties, 'defaultLabel',
+		let linkCalloutDialog = new LinkCalloutDialog('Title', 'below', defaultDialogProperties, 'defaultLabel', 'defaultLinkLabel',
 			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
 		linkCalloutDialog.render();
 
@@ -50,7 +50,7 @@ suite('Link Callout Dialog', function (): void {
 	test('Should return expected values on insert', async function (): Promise<void> {
 		const defaultLabel = 'defaultLabel';
 		const sampleUrl = 'https://www.aka.ms/azuredatastudio';
-		let linkCalloutDialog = new LinkCalloutDialog('Title', 'below', defaultDialogProperties, defaultLabel,
+		let linkCalloutDialog = new LinkCalloutDialog('Title', 'below', defaultDialogProperties, defaultLabel, sampleUrl,
 			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
 		linkCalloutDialog.render();
 
@@ -73,7 +73,7 @@ suite('Link Callout Dialog', function (): void {
 	test('Should return expected values on insert when escape necessary', async function (): Promise<void> {
 		const defaultLabel = 'default[]Label';
 		const sampleUrl = 'https://www.aka.ms/azuredatastudio()';
-		let linkCalloutDialog = new LinkCalloutDialog('Title', 'below', defaultDialogProperties, defaultLabel,
+		let linkCalloutDialog = new LinkCalloutDialog('Title', 'below', defaultDialogProperties, defaultLabel, sampleUrl,
 			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
 		linkCalloutDialog.render();
 
@@ -106,4 +106,27 @@ suite('Link Callout Dialog', function (): void {
 		assert.equal(escapeUrl('<>&()'), '&lt;&gt;&amp;%28%29', 'URL test known escaped characters failed');
 		assert.equal(escapeUrl('<>&()[]'), '&lt;&gt;&amp;%28%29[]', 'URL test all escaped characters failed');
 	});
+
+	test('Should return file link properly', async function (): Promise<void> {
+		const defaultLabel = 'defaultLabel';
+		const sampleUrl = 'C:/Test/Test.ipynb';
+		let linkCalloutDialog = new LinkCalloutDialog('Title', 'below', defaultDialogProperties, defaultLabel, sampleUrl,
+			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
+		linkCalloutDialog.render();
+
+		let deferred = new Deferred<ILinkCalloutDialogOptions>();
+		// When I first open the callout dialog
+		linkCalloutDialog.open().then(value => {
+			deferred.resolve(value);
+		});
+		linkCalloutDialog.url = sampleUrl;
+
+		// And insert the dialog
+		linkCalloutDialog.insert();
+		let result = await deferred.promise;
+		assert.equal(result.insertUnescapedLinkLabel, defaultLabel, 'Label not returned correctly');
+		assert.equal(result.insertUnescapedLinkUrl, sampleUrl, 'URL not returned correctly');
+		assert.equal(result.insertEscapedMarkdown, `[${defaultLabel}](${sampleUrl})`, 'Markdown not returned correctly');
+	});
+
 });
