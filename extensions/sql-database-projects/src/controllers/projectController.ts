@@ -57,7 +57,7 @@ export class ProjectsController {
 		let count = 0;
 
 		for (let i = this.deployInfo.length - 1; i >= 0; i--) {
-			if (this.buildInfo[i].projectFile === projectFile) {
+			if (this.deployInfo[i].projectFile === projectFile) {
 				let icon: azdata.IconPath;
 				let text: string;
 				if (this.deployInfo[i].status === Status.success) {
