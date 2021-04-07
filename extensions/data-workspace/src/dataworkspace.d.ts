@@ -68,7 +68,7 @@ declare module 'dataworkspace' {
 		createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
 
 		/**
-		 * Gets the project data to be placed in the dashboard container
+		 * Gets the project data corresponding to the project file, to be placed in the dashboard container
 		 */
 		getDashboardComponents(projectFile: string): IDashboardTable[];
 
