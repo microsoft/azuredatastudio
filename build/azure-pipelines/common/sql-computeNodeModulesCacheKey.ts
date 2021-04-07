@@ -14,6 +14,9 @@ const ROOT = path.join(__dirname, '../../../');
 
 const shasum = crypto.createHash('sha1');
 
+/**
+ * Creating a sha hash of all the files that can cause packages to change/redownload.
+ */
 shasum.update(fs.readFileSync(path.join(ROOT, 'build/.cachesalt')));
 shasum.update(fs.readFileSync(path.join(ROOT, '.yarnrc')));
 shasum.update(fs.readFileSync(path.join(ROOT, 'remote/.yarnrc')));
