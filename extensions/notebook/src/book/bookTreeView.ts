@@ -56,6 +56,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this.bookTocManager = new BookTocManager();
 		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 		this._bookViewer.onDidChangeVisibility(async e => {
+			await this.initialized;
 			// Whenever the viewer changes visibility then try and reveal the currently active document
 			// in the tree view
 			let openDocument = azdata.nb.activeNotebookEditor;
@@ -430,14 +431,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		// the top we'll expand nodes until we find the parent of the Notebook we're looking for
 		// get the children of root node and expand the nodes to the notebook level.
 		await this.getChildren(parentBook.rootNode);
-		// The path to the parent of the Notebook we're looking for (this is the node we're looking to expand)
-		const parentPath = notebookPath.substring(0, notebookPath.lastIndexOf(path.posix.sep));
+		// The path to the Notebook we're looking for (these are the nodes we're looking to expand)
+		const notebookFolders = notebookPath.split(path.sep);
 		// Find number of directories between the Notebook path and the root of the book it's contained in
 		// so we know how many parent nodes to expand
 		let depthOfNotebookInBook: number = path.relative(notebookPath, parentBook.bookPath).split(path.sep).length;
 		// Walk the tree, expanding parent nodes as needed to load the child nodes until
 		// we find the one for our Notebook
-		while (depthOfNotebookInBook > 0) {
+		while (depthOfNotebookInBook > -1) {
 			// check if the notebook is available in already expanded levels.
 			bookItem = parentBook.bookItems.find(b => b.tooltip === notebookPath);
 			if (bookItem) {
@@ -446,7 +447,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			// Search for the parent item
 			// notebook can be inside the same folder as parent and can be in a different folder as well
 			// so check for both scenarios.
-			let bookItemToExpand = parentBook.bookItems.find(b => b.tooltip.indexOf(parentPath) > -1) ??
+			let parentBookPath: string = notebookFolders.slice(0, notebookFolders.length - depthOfNotebookInBook).join(path.sep);
+			let bookItemToExpand = parentBook.bookItems.find(b => b.tooltip.indexOf(parentBookPath) > -1) ??
 				parentBook.bookItems.find(b => path.relative(notebookPath, b.tooltip)?.split(path.sep)?.length === depthOfNotebookInBook);
 			if (!bookItemToExpand) {
 				break;
