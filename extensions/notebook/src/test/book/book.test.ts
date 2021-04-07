@@ -34,13 +34,13 @@ export interface IExpectedBookItem {
 }
 
 export function equalBookItems(book: BookTreeItem, expectedBook: IExpectedBookItem, errorMsg?: string): void {
-	should(book.title).equal(expectedBook.title, `Book titles do not match, expected ${expectedBook?.title} and got ${book?.title}`);
-	if (expectedBook.file) {
+	should(book?.title).equal(expectedBook?.title, `Book titles do not match, expected ${expectedBook?.title} and got ${book?.title}`);
+	if (expectedBook?.file) {
 		should(path.posix.parse(book.uri)).deepEqual(path.posix.parse(expectedBook.file));
 	} else {
 		should(path.posix.parse(book.uri)).deepEqual(path.posix.parse(expectedBook.url));
 	}
-	if (expectedBook.previousUri || expectedBook.nextUri) {
+	if (expectedBook?.previousUri || expectedBook?.nextUri) {
 		let prevUri = book.previousUri ? book.previousUri.toLocaleLowerCase() : undefined;
 		let expectedPrevUri = expectedBook.previousUri ? expectedBook.previousUri.replace(/\\/g, '/') : undefined;
 		should(prevUri).equal(expectedPrevUri, errorMsg ?? `PreviousUri\'s do not match, expected ${expectedPrevUri} and got ${prevUri}`);
@@ -233,7 +233,7 @@ describe('BooksTreeViewTests', function () {
 
 			});
 
-			it.skip('getParent should return when element is a valid child notebook', async () => {
+			it('getParent should return when element is a valid child notebook', async () => {
 				let parent = await bookTreeViewProvider.getParent();
 				should(parent).be.undefined();
 
@@ -243,7 +243,7 @@ describe('BooksTreeViewTests', function () {
 			});
 
 			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
-				let notebook1Path = vscode.Uri.file(path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb')).fsPath;
+				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb').replace(/\\/g, '/');
 				let currentSelection = await bookTreeViewProvider.findAndExpandParentNode(notebook1Path);
 				equalBookItems(currentSelection, expectedNotebook1);
 			});
@@ -327,7 +327,7 @@ describe('BooksTreeViewTests', function () {
 			});
 
 			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
-				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
+				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb').replace(/\\/g, '/');
 				let currentSelection = await providedbookTreeViewProvider.findAndExpandParentNode(notebook1Path);
 				equalBookItems(currentSelection, expectedNotebook1);
 			});

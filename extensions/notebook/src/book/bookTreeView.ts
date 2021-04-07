@@ -432,7 +432,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		// get the children of root node and expand the nodes to the notebook level.
 		await this.getChildren(parentBook.rootNode);
 		// The path to the Notebook we're looking for (these are the nodes we're looking to expand)
-		const notebookFolders = notebookPath.split(path.sep);
+		const notebookFolders = notebookPath.split(path.posix.sep);
 		// Find number of directories between the Notebook path and the root of the book it's contained in
 		// so we know how many parent nodes to expand
 		let depthOfNotebookInBook: number = path.relative(notebookPath, parentBook.bookPath).split(path.sep).length;
@@ -447,7 +447,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			// Search for the parent item
 			// notebook can be inside the same folder as parent and can be in a different folder as well
 			// so check for both scenarios.
-			let parentBookPath: string = notebookFolders.slice(0, notebookFolders.length - depthOfNotebookInBook).join(path.sep);
+			let parentBookPath: string = notebookFolders.slice(0, notebookFolders.length - depthOfNotebookInBook).join(path.posix.sep);
 			let bookItemToExpand = parentBook.bookItems.find(b => b.tooltip.indexOf(parentBookPath) > -1) ??
 				parentBook.bookItems.find(b => path.relative(notebookPath, b.tooltip)?.split(path.sep)?.length === depthOfNotebookInBook);
 			if (!bookItemToExpand) {
@@ -458,7 +458,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				// continue expanding and search its children
 				await this.getChildren(bookItemToExpand);
 			}
-			await this._bookViewer.reveal(bookItemToExpand, { select: false, focus: true, expand: 3 });
+			try {
+				await this._bookViewer.reveal(bookItemToExpand, { select: false, focus: true, expand: 3 });
+			}
+			catch (e) {
+				console.error(e);
+			}
 			depthOfNotebookInBook--;
 		}
 		return bookItem;
