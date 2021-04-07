@@ -48,7 +48,7 @@ class TelemetryEventImpl implements ITelemetryEvent {
 		assign(this._properties,
 			{
 				authenticationType: connectionInfo?.authenticationType,
-				providerName: connectionInfo?.providerName
+				provider: connectionInfo?.providerName
 			});
 		return this;
 	}
