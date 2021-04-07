@@ -316,7 +316,7 @@ export function getUriAnchorLink(node, notebookUri: URI): URI {
 		// if section link is different from the current notebook
 		notebookLink = URI.file(absolutePath);
 	} else {
-		notebookLink = URI.from({ scheme: 'file', path: notebookUri.fsPath, fragment: node.attributes.href?.nodeValue });
+		notebookLink = URI.from({ scheme: 'file', path: notebookUri.path, fragment: node.attributes.href?.nodeValue });
 	}
 	return notebookLink;
 }
