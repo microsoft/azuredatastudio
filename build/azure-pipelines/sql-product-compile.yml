@@ -35,7 +35,7 @@ steps:
 - script: |
     mkdir -p .build
     node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js > .build/yarnlockhash
-  displayName: Prepare yarn cache flags
+  displayName: Prepare yarn cache key
 
 - task: Cache@2
   inputs:
