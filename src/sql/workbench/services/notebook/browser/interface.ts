@@ -5,6 +5,8 @@
 import * as azdata from 'azdata';
 import { URI } from 'vs/base/common/uri';
 import { Event } from 'vs/base/common/event';
+import { IContentManager } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 
 export interface INotebookInput {
 	defaultKernel: azdata.nb.IKernelSpec,
@@ -13,14 +15,21 @@ export interface INotebookInput {
 	setDirty(boolean);
 	readonly notebookUri: URI;
 	updateModel(): void;
-	isDirty(): boolean;
 	readonly editorOpenedTimestamp: number;
 	readonly layoutChanged: Event<void>;
+	readonly contentManager: IContentManager;
+	readonly standardKernels: IStandardKernelWithProvider[];
 }
 
 export function isINotebookInput(value: any): value is INotebookInput {
 	if (typeof value.defaultKernel === 'object' &&
-		typeof value.connectionProfile === 'object') {
+		typeof value.connectionProfile === 'object' &&
+		typeof value.isDirty === 'boolean' &&
+		value.notebookUri instanceof URI &&
+		typeof value.editorOpenedTimestamp === 'number' &&
+		typeof value.layoutChanged === 'object' &&
+		typeof value.contentManager === 'object' &&
+		typeof value.standardKernels === 'object') {
 		return true;
 	}
 	return false;

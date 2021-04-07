@@ -34,7 +34,7 @@ import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel'
 import { NotebookFindModel } from 'sql/workbench/contrib/notebook/browser/find/notebookFindModel';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { INotebookInput } from 'sql/workbench/services/notebook/common/interface';
+import { INotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 

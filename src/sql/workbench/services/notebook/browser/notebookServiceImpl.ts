@@ -48,7 +48,7 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 
 import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
-import { isINotebookInput } from 'sql/workbench/services/notebook/common/interface';
+import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { NotebookLanguage } from 'sql/workbench/common/constants';
 
@@ -407,7 +407,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (!notebookUri) {
 			return undefined;
 		}
-		// Format the URI string without query or fragment
+		// The NotebookEditor will not be found if there is query or fragments attached to the URI
 		let uriString = notebookUri.with({ query: '', fragment: '' }).toString();
 		let editor = this.listNotebookEditors().find(n => n.id === uriString);
 		return editor;

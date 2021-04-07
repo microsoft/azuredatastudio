@@ -18,7 +18,7 @@ import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootst
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { Range } from 'vs/editor/common/core/range';
 import { IEditorPane } from 'vs/workbench/common/editor';
-import { INotebookInput } from 'sql/workbench/services/notebook/common/interface';
+import { INotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 
 export const SERVICE_ID = 'sqlNotebookService';
