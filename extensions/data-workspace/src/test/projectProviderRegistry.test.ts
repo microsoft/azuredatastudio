@@ -33,7 +33,9 @@ export function createProjectProvider(projectTypes: IProjectType[], projectActio
 			return Promise.resolve(location);
 		},
 		projectActions: projectActions,
-		dashboardComponents: dashboardComponents
+		getDashboardComponents: (projectFile: string): IDashboardTable[] => {
+			return dashboardComponents;
+		}
 	};
 	return projectProvider;
 }

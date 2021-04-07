@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
+import { IDashboardTable, IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import 'mocha';
 import * as should from 'should';
 import * as sinon from 'sinon';
@@ -111,7 +111,8 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 				id: 'Target Version',
 				run: async (): Promise<any> => { return Promise.resolve(); }
 			}],
-			dashboardComponents: [{
+			getDashboardComponents: (projectFile: string): IDashboardTable[] => {
+				return [{
 				name: 'Deployments',
 				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
 				data: [['d1']]
@@ -120,8 +121,8 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 				name: 'Builds',
 				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
 				data: [['d1']]
-			}]
-		};
+			}];
+		}};
 		const getProjectProviderStub = sinon.stub(workspaceService, 'getProjectProvider');
 		getProjectProviderStub.onFirstCall().resolves(undefined);
 		getProjectProviderStub.onSecondCall().resolves(projectProvider);
