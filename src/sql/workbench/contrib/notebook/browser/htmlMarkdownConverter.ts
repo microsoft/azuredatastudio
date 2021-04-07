@@ -133,9 +133,9 @@ export class HTMLMarkdownConverter {
 			filter: 'a',
 			replacement: (content, node) => {
 				let href = node.href;
-				let notebookLink: URI = undefined;
-				const isAnchorLink = (node.attributes.href?.nodeValue.startsWith('#') || href.includes('#')) && href.startsWith('file://');
-				if (isAnchorLink) {
+				let notebookLink: URI | undefined;
+				const isAnchorLinkInFile = (node.attributes.href?.nodeValue.startsWith('#') || href.includes('#')) && href.startsWith('file://');
+				if (isAnchorLinkInFile) {
 					notebookLink = getUriAnchorLink(node, this.notebookUri);
 				} else {
 					//On Windows, if notebook is not trusted then the href attr is removed for all non-web URL links
@@ -148,7 +148,8 @@ export class HTMLMarkdownConverter {
 					if (relativePath) {
 						return `[${node.innerText}](${relativePath})`;
 					}
-				} else if (notebookLink.fragment) {
+				} else if (notebookLink?.fragment) {
+					// if the anchor link is to a section in the same notebook then just add the fragment
 					return `[${content}](${notebookLink.fragment})`;
 				}
 
@@ -309,14 +310,13 @@ export function addHighlightIfYellowBgExists(node, content: string): string {
 }
 
 export function getUriAnchorLink(node, notebookUri: URI): URI {
-	let notebookLink: URI;
 	const sectionLinkToAnotherFile = node.href.includes('#') && !node.attributes.href?.nodeValue.startsWith('#');
 	if (sectionLinkToAnotherFile) {
 		let absolutePath = !path.isAbsolute(node.attributes.href?.nodeValue) ? path.resolve(path.dirname(notebookUri.fsPath), node.attributes.href?.nodeValue) : node.attributes.href?.nodeValue;
 		// if section link is different from the current notebook
-		notebookLink = URI.file(absolutePath);
+		return URI.file(absolutePath);
 	} else {
-		notebookLink = URI.from({ scheme: 'file', path: notebookUri.path, fragment: node.attributes.href?.nodeValue });
+		// else build an uri using the current notebookUri
+		return URI.from({ scheme: 'file', path: notebookUri.path, fragment: node.attributes.href?.nodeValue });
 	}
-	return notebookLink;
 }

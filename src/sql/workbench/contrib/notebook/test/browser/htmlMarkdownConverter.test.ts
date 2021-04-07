@@ -147,6 +147,8 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '[hello](#hello)', 'Basic link to a section failed');
 		htmlString = '<a href="file.md#hello">hello</a>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `[hello](.${path.sep}file.md#hello)`, 'Basic anchor link to a section failed');
+		htmlString = '<a href="http://www.microsoft.com/images/msft.png#Hello">hello</a>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '[hello](http://www.microsoft.com/images/msft.png#Hello)', 'Http link containing # sign failed');
 	});
 
 	test('Should transform <li> tags', () => {
