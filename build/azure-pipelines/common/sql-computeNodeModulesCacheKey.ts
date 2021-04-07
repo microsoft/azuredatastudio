@@ -3,49 +3,28 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
- 'use strict';
+'use strict';
 
- import * as fs from 'fs';
- import * as path from 'path';
- import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as crypto from 'crypto';
+import * as glob from 'glob';
 
- const ROOT = path.join(__dirname, '../../../');
+const ROOT = path.join(__dirname, '../../../');
 
- function findFiles(location: string, pattern: string, result: string[]) {
- 	const entries = fs.readdirSync(path.join(ROOT, location));
+const shasum = crypto.createHash('sha1');
 
- 	for (const entry of entries) {
- 		const entryPath = `${location}/${entry}`;
- 		let stat: fs.Stats;
- 		try {
- 			stat = fs.statSync(path.join(ROOT, entryPath));
- 		} catch (err) {
- 			continue;
- 		}
- 		if (stat.isDirectory()) {
- 			findFiles(entryPath, pattern, result);
- 		} else {
- 			if (stat.isFile() && entry.endsWith(pattern)) {
- 				result.push(path.join(ROOT, entryPath));
- 			}
- 		}
- 	}
- }
+shasum.update(fs.readFileSync(path.join(ROOT, 'build/.cachesalt')));
+shasum.update(fs.readFileSync(path.join(ROOT, '.yarnrc')));
+shasum.update(fs.readFileSync(path.join(ROOT, 'remote/.yarnrc')));
 
- const shasum = crypto.createHash('sha1');
+// Adding all yarn.lock files into sha sum.
+const files = glob.sync(`${ROOT}/**/yarn.lock`);
+files.forEach(f => shasum.update(fs.readFileSync(f)));
 
- shasum.update(fs.readFileSync(path.join(ROOT, 'build/.cachesalt')));
- shasum.update(fs.readFileSync(path.join(ROOT, '.yarnrc')));
- shasum.update(fs.readFileSync(path.join(ROOT, 'remote/.yarnrc')));
+// Add any other command line arguments
+for (let i = 2; i < process.argv.length; i++) {
+	shasum.update(process.argv[i]);
+}
 
-
- const result: string[] = [];
- findFiles('', 'yarn.lock', result);
- result.forEach(f => shasum.update(fs.readFileSync(f)));
-
- // Add any other command line arguments
- for (let i = 2; i < process.argv.length; i++) {
- 	shasum.update(process.argv[i]);
- }
-
- process.stdout.write(shasum.digest('hex'));
+process.stdout.write(shasum.digest('hex'));

@@ -115,7 +115,6 @@ steps:
 - script: |
     set -e
     tar -czf $(Build.ArtifactStagingDirectory)/compilation.tar.gz .build out-*
-  condition: and(succeeded(), ne(variables.COMPILATION_RESTORED, 'true'))
   displayName: Compress compilation artifact
 
 - task: PublishPipelineArtifact@1

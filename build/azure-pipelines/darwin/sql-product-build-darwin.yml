@@ -10,13 +10,11 @@ steps:
       artifact: Compilation
       path: $(Build.ArtifactStagingDirectory)
     displayName: Download compilation output
-    condition: and(succeeded(), ne(variables['VSCODE_ARCH'], 'universal'))
 
   - script: |
       set -e
       tar -xzf $(Build.ArtifactStagingDirectory)/compilation.tar.gz
     displayName: Extract compilation output
-    condition: and(succeeded(), ne(variables['VSCODE_ARCH'], 'universal'))
 
   - task: NodeTool@0
     inputs:
