@@ -53,7 +53,7 @@ export class ProjectDashboard {
 				title: '',
 				id: 'overview-tab',
 				content: this.createContainer(title, location),
-				toolbar: this.createToolbarContainer()
+				toolbar: this.createToolbarContainer(location)
 			};
 			return [
 				this.overviewTab
@@ -61,7 +61,7 @@ export class ProjectDashboard {
 		});
 	}
 
-	private createToolbarContainer(): azdata.ToolbarContainer {
+	private createToolbarContainer(location: string): azdata.ToolbarContainer {
 		const projectActions: (IProjectAction | IProjectActionGroup)[] = this.projectProvider!.projectActions;
 
 		// Add actions as buttons
@@ -92,7 +92,7 @@ export class ProjectDashboard {
 
 		refreshButton.onDidClick(() => {
 			this.rootContainer?.removeItem(this.tableContainer!);
-			this.tableContainer = this.createTables();
+			this.tableContainer = this.createTables(location);
 			this.rootContainer?.addItem(this.tableContainer);
 		});
 
@@ -132,7 +132,7 @@ export class ProjectDashboard {
 			}).component();
 
 		const headerContainer = this.createHeader(title, location);
-		this.tableContainer = this.createTables();
+		this.tableContainer = this.createTables(location);
 
 		this.rootContainer.addItem(headerContainer);
 		this.rootContainer.addItem(this.tableContainer);
@@ -188,8 +188,8 @@ export class ProjectDashboard {
 	/**
 	 * Adds all the tables to the container
 	 */
-	private createTables(): azdata.Component {
-		const dashboardData: IDashboardTable[] = this.projectProvider!.dashboardComponents;
+	private createTables(projectFile: string): azdata.Component {
+		const dashboardData: IDashboardTable[] = this.projectProvider!.getDashboardComponents(projectFile);
 
 		const tableContainer = this.modelView!.modelBuilder.flexContainer().withLayout(
 			{
