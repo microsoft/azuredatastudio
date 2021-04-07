@@ -84,6 +84,7 @@ steps:
     yarn strict-vscode
     yarn valid-layers-check
   displayName: Run hygiene, eslint
+  condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
 
 - script: |
     set -e
@@ -111,6 +112,9 @@ steps:
     node build/azure-pipelines/common/copyArtifacts.js
   displayName: Write Version Information
 
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+
 - script: |
     set -e
     tar -czf $(Build.ArtifactStagingDirectory)/compilation.tar.gz .build out-*
@@ -121,6 +125,3 @@ steps:
     targetPath: $(Build.ArtifactStagingDirectory)/compilation.tar.gz
     artifactName: Compilation
   displayName: Publish compilation artifact
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: drop'
