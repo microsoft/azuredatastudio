@@ -7,7 +7,7 @@ import * as should from 'should';
 import * as path from 'path';
 import * as os from 'os';
 import { createDummyFileStructure } from './testUtils';
-import { exists, trimUri, removeSqlCmdVariableFormatting, formatSqlCmdVariable, isValidSqlCmdVariableName } from '../common/utils';
+import { exists, trimUri, removeSqlCmdVariableFormatting, formatSqlCmdVariable, isValidSqlCmdVariableName, timeConversion } from '../common/utils';
 import { Uri } from 'vscode';
 
 describe('Tests to verify utils functions', function (): void {
@@ -77,6 +77,16 @@ describe('Tests to verify utils functions', function (): void {
 		should(isValidSqlCmdVariableName('test"')).equal(false);
 		should(isValidSqlCmdVariableName('test\'')).equal(false);
 		should(isValidSqlCmdVariableName('test-1')).equal(false);
+	});
+
+	it('Should convert from milliseconds to hr min sec correctly', () => {
+		should(timeConversion((60 * 60 * 1000) + (59 * 60 * 1000) + (59 * 1000))).equal('1 hr, 59 min, 59 sec');
+		should(timeConversion((60 * 60 * 1000) + (59 * 60 * 1000)              )).equal('1 hr, 59 min');
+		should(timeConversion((60 * 60 * 1000)                                 )).equal('1 hr');
+		should(timeConversion((60 * 60 * 1000)                    + (59 * 1000))).equal('1 hr, 59 sec');
+		should(timeConversion(                   (59 * 60 * 1000) + (59 * 1000))).equal('59 min, 59 sec');
+		should(timeConversion(                                      (59 * 1000))).equal('59 sec');
+		should(timeConversion(                                      (59))).equal('59 msec');
 	});
 });
 

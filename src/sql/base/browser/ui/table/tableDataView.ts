@@ -7,38 +7,56 @@ import { Event, Emitter } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
 import { compare as stringCompare } from 'vs/base/common/strings';
 
-import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
+import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
+import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 
 export interface IFindPosition {
 	col: number;
 	row: number;
 }
 
-function defaultSort<T extends { [key: string]: any }>(args: Slick.OnSortEventArgs<T>, data: Array<T>): Array<T> {
+export type CellValueGetter = (data: any) => any;
+export type TableFilterFunc<T extends Slick.SlickData> = (data: Array<T>, columns: Slick.Column<T>[]) => Array<T>;
+export type TableSortFunc<T extends Slick.SlickData> = (args: Slick.OnSortEventArgs<T>, data: Array<T>) => Array<T>;
+export type TableFindFunc<T extends Slick.SlickData> = (val: T, exp: string) => Array<number>;
+
+function defaultCellValueGetter(data: any): any {
+	return data;
+}
+
+function defaultSort<T extends Slick.SlickData>(args: Slick.OnSortEventArgs<T>, data: Array<T>, cellValueGetter: CellValueGetter = defaultCellValueGetter): Array<T> {
 	if (!args.sortCol || !args.sortCol.field || data.length === 0) {
 		return data;
 	}
 	const field = args.sortCol.field;
 	const sign = args.sortAsc ? 1 : -1;
+	let sampleData = data[0][field];
+	sampleData = types.isObject(sampleData) ? cellValueGetter(sampleData) : sampleData;
 	let comparer: (a: T, b: T) => number;
-	if (types.isString(data[0][field])) {
-		if (!isNaN(Number(data[0][field]))) {
-			comparer = (a: T, b: T) => {
-				let anum = Number(a[field]);
-				let bnum = Number(b[field]);
-				return anum === bnum ? 0 : anum > bnum ? 1 : -1;
-			};
-		} else {
-			comparer = (a: T, b: T) => {
-				return stringCompare(a[field], b[field]);
-			};
-		}
+	if (!isNaN(Number(sampleData))) {
+		comparer = (a: T, b: T) => {
+			let anum = Number(cellValueGetter(a[field]));
+			let bnum = Number(cellValueGetter(b[field]));
+			return anum === bnum ? 0 : anum > bnum ? 1 : -1;
+		};
 	} else {
 		comparer = (a: T, b: T) => {
-			return a[field] === b[field] ? 0 : (a[field] > b[field] ? 1 : -1);
+			return stringCompare(cellValueGetter(a[field]), cellValueGetter(b[field]));
 		};
 	}
 	return data.sort((a, b) => comparer(a, b) * sign);
+}
+
+function defaultFilter<T extends Slick.SlickData>(data: T[], columns: FilterableColumn<T>[], cellValueGetter: CellValueGetter = defaultCellValueGetter): T[] {
+	let filteredData = data;
+	columns?.forEach(column => {
+		if (column.filterValues?.length > 0 && column.field) {
+			filteredData = filteredData.filter((item) => {
+				return column.filterValues.includes(cellValueGetter(item[column.field!]));
+			});
+		}
+	});
+	return filteredData;
 }
 
 export class TableDataView<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
@@ -49,6 +67,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 	private _findArray?: Array<IFindPosition>;
 	private _findIndex?: number;
 	private _filterEnabled: boolean;
+	private _currentColumnFilters: FilterableColumn<T>[];
 
 	private _onRowCountChange = new Emitter<number>();
 	get onRowCountChange(): Event<number> { return this._onRowCountChange.event; }
@@ -59,14 +78,15 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 	private _onFilterStateChange = new Emitter<void>();
 	get onFilterStateChange(): Event<void> { return this._onFilterStateChange.event; }
 
-	private _filterFn: (data: Array<T>) => Array<T>;
-	private _sortFn: (args: Slick.OnSortEventArgs<T>, data: Array<T>) => Array<T>;
+	private _onSortComplete = new Emitter<Slick.OnSortEventArgs<T>>();
+	get onSortComplete(): Event<Slick.OnSortEventArgs<T>> { return this._onSortComplete.event; }
 
 	constructor(
 		data?: Array<T>,
-		private _findFn?: (val: T, exp: string) => Array<number>,
-		_sortFn?: (args: Slick.OnSortEventArgs<T>, data: Array<T>) => Array<T>,
-		_filterFn?: (data: Array<T>) => Array<T>
+		private _findFn?: TableFindFunc<T>,
+		private _sortFn?: TableSortFunc<T>,
+		private _filterFn?: TableFilterFunc<T>,
+		private _cellValueGetter: CellValueGetter = defaultCellValueGetter
 	) {
 		if (data) {
 			this._data = data;
@@ -75,25 +95,59 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		}
 
 		// @todo @anthonydresser 5/1/19 theres a lot we could do by just accepting a regex as a exp rather than accepting a full find function
-		this._sortFn = _sortFn ? _sortFn : defaultSort;
-
-		this._filterFn = _filterFn ? _filterFn : (dataToFilter) => dataToFilter;
+		this._sortFn = _sortFn ? _sortFn : (args, data) => {
+			return defaultSort(args, data, _cellValueGetter);
+		};
+		this._filterFn = _filterFn ? _filterFn : (data, columns) => {
+			return defaultFilter(data, columns, _cellValueGetter);
+		};
 		this._filterEnabled = false;
+		this._cellValueGetter = this._cellValueGetter ? this._cellValueGetter : (cellValue) => cellValue?.toString();
+	}
+
+	public get isDataInMemory(): boolean {
+		return true;
+	}
+
+	async getRangeAsync(startIndex: number, length: number): Promise<T[]> {
+		return this._data.slice(startIndex, startIndex + length);
+	}
+
+	public async getFilteredColumnValues(column: Slick.Column<T>): Promise<string[]> {
+		return this.getDistinctColumnValues(this._data, column);
+	}
+
+	public async getColumnValues(column: Slick.Column<T>): Promise<string[]> {
+		return this.getDistinctColumnValues(this.filterEnabled ? this._allData : this._data, column);
+	}
+
+	private getDistinctColumnValues(source: T[], column: Slick.Column<T>): string[] {
+		const distinctValues: Set<string> = new Set();
+		source.forEach(items => {
+			const value = items[column.field!];
+			const valueArr = value instanceof Array ? value : [value];
+			valueArr.forEach(v => distinctValues.add(this._cellValueGetter(v)));
+		});
+
+		return Array.from(distinctValues);
 	}
 
 	public get filterEnabled(): boolean {
 		return this._filterEnabled;
 	}
 
-	public filter() {
+	public async filter(columns?: Slick.Column<T>[]) {
 		if (!this.filterEnabled) {
 			this._allData = new Array(...this._data);
-			this._data = this._filterFn(this._allData);
 			this._filterEnabled = true;
 		}
-
-		this._data = this._filterFn(this._allData);
-		this._onFilterStateChange.fire();
+		this._currentColumnFilters = columns;
+		this._data = this._filterFn(this._allData, columns);
+		if (this._data.length === this._allData.length) {
+			this.clearFilter();
+		} else {
+			this._onFilterStateChange.fire();
+		}
 	}
 
 	public clearFilter() {
@@ -105,8 +159,9 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		}
 	}
 
-	sort(args: Slick.OnSortEventArgs<T>) {
+	async sort(args: Slick.OnSortEventArgs<T>): Promise<void> {
 		this._data = this._sortFn(args, this._data);
+		this._onSortComplete.fire(args);
 	}
 
 	getLength(): number {
@@ -137,7 +192,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 
 		if (this._filterEnabled) {
 			this._allData.push(...inputArray);
-			let filteredArray = this._filterFn(inputArray);
+			let filteredArray = this._filterFn(inputArray, this._currentColumnFilters);
 			if (filteredArray.length !== 0) {
 				this._data.push(...filteredArray);
 			}

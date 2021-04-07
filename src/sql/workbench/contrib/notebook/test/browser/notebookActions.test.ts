@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as sinon from 'sinon';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
-import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, KernelsDropdown, msgChanging, NewNotebookAction, noKernelName, RunAllCellsAction, TrustedAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, KernelsDropdown, msgChanging, NewNotebookAction, noKernelName, RunAllCellsAction, RunParametersAction, TrustedAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { ClientSessionStub, ContextViewProviderStub, NotebookComponentStub, NotebookModelStub, NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -24,6 +24,8 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
+import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
+import { MockQuickInputService } from 'sql/workbench/contrib/notebook/test/common/quickInputServiceMock';
 
 class TestClientSession extends ClientSessionStub {
 	private _errorState: boolean = false;
@@ -124,7 +126,7 @@ suite('Notebook Actions', function (): void {
 		let actualCellType: CellType;
 
 
-		let action = new AddCellAction('TestId', 'TestLabel', 'TestClass', mockNotebookService.object);
+		let action = new AddCellAction('TestId', 'TestLabel', 'TestClass', mockNotebookService.object, new NullAdsTelemetryService());
 		action.cellType = testCellType;
 
 		// Normal use case
@@ -191,7 +193,7 @@ suite('Notebook Actions', function (): void {
 		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
 		mockNotification.setup(n => n.notify(TypeMoq.It.isAny()));
 
-		let action = new RunAllCellsAction('TestId', 'TestLabel', 'TestClass', mockNotification.object, mockNotebookService.object);
+		let action = new RunAllCellsAction('TestId', 'TestLabel', 'TestClass', mockNotification.object, mockNotebookService.object, new NullAdsTelemetryService());
 
 		// Normal use case
 		mockNotebookEditor.setup(c => c.runAllCells()).returns(() => Promise.resolve(true));
@@ -251,10 +253,28 @@ suite('Notebook Actions', function (): void {
 				return Promise.resolve(true);
 			});
 
-		let action = new NewNotebookAction('TestId', 'TestLabel', mockCommandService.object, undefined);
+		let action = new NewNotebookAction('TestId', 'TestLabel', mockCommandService.object, undefined, new NullAdsTelemetryService());
 		action.run(undefined);
 
 		assert.strictEqual(actualCmdId, NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID);
+	});
+
+	test.skip('Run with Parameters Action', async function (): Promise<void> {
+		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
+		mockNotification.setup(n => n.notify(TypeMoq.It.isAny()));
+		let quickInputService = new MockQuickInputService;
+
+		let action = new RunParametersAction('TestId', true, testUri, quickInputService, mockNotebookService.object, mockNotification.object);
+
+		// Normal use case
+		const testCells = [<ICellModel>{
+			isParameter: true,
+			source: ['x=2.0\n', 'y=5.0']
+		}];
+
+		mockNotebookEditor.setup(x => x.cells).returns(() => testCells);
+
+		assert.doesNotThrow(() => action.run(testUri));
 	});
 
 	suite('Kernels dropdown', async () => {

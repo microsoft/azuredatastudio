@@ -1020,6 +1020,11 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 	public get databaseName(): string {
 		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
 	}
+
+	public pathForSqlProj(): string {
+		// need to remove the leading slash from path for build to work
+		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
+	}
 }
 
 export class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {

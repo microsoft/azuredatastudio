@@ -22,7 +22,6 @@ import * as loc from '../../common/localizedConstants';
 import { BookVersion } from '../../book/bookVersionHandler';
 import * as yaml from 'js-yaml';
 
-
 export function equalTOC(actualToc: IJupyterBookSectionV2[], expectedToc: IJupyterBookSectionV2[]): boolean {
 	for (let [i, section] of actualToc.entries()) {
 		if (section.title !== expectedToc[i].title || section.file !== expectedToc[i].file) {
@@ -43,6 +42,37 @@ export function equalSections(actualSection: JupyterBookSection, expectedSection
 		return false;
 	}
 	return true;
+}
+
+function BookModelStub(root: string, bookItem: BookTreeItem, extension: MockExtensionContext): BookModel {
+	const bookModel = new BookModel(root, false, false, extension, undefined);
+	sinon.stub(bookModel, 'bookItems').value([bookItem]);
+	sinon.stub(bookModel, 'unwatchTOC').returns();
+	sinon.stub(bookModel, 'reinitializeContents').resolves();
+	sinon.stub(bookModel, 'bookPath').value(root);
+	return bookModel;
+}
+
+function createBookTreeItemFormat(item: any, root: string, version: BookVersion): BookTreeItemFormat {
+	const pageFormat = item.type === BookTreeItemType.section ? {
+		title: item.sectionName,
+		file: item.uri,
+		sections: item.sectionFormat
+	} : item.sectionFormat;
+	const sections = item.type === BookTreeItemType.section ? item.sectionFormat : [item.sectionFormat];
+	return {
+		title: item.sectionName,
+		contentPath: item.contentPath,
+		root: root,
+		tableOfContents: {
+			sections: sections
+		},
+		isUntitled: undefined,
+		treeItemCollapsibleState: undefined,
+		type: item.type,
+		version: version,
+		page: pageFormat
+	};
 }
 
 describe('BookTocManagerTests', function () {
@@ -90,15 +120,18 @@ describe('BookTocManagerTests', function () {
 			let bookTocManager: BookTocManager = new BookTocManager();
 			let expectedSection: IJupyterBookSectionV2[] = [{
 				title: 'notebook2',
-				file: path.join(subfolder, 'notebook2')
+				file: path.posix.join(subfolder, 'notebook2')
 			},
 			{
 				title: 'notebook3',
-				file: path.join(subfolder, 'notebook3')
+				file: path.posix.join(subfolder, 'notebook3')
 			}];
 			await bookTocManager.createBook(bookFolderPath, root2FolderPath);
-			should(equalTOC(bookTocManager.tableofContents[1].sections, expectedSection)).be.true;
-			should((bookTocManager.tableofContents[1] as IJupyterBookSectionV2).file).be.equal(path.join(path.sep, subfolder, 'index'));
+			const index = bookTocManager.tableofContents.findIndex(entry => entry.file === path.posix.join(path.posix.sep, subfolder, 'index'));
+			should(index).not.be.equal(-1, 'Should find a section with the Subfolder entry');
+			if (index !== -1) {
+				should(equalTOC(bookTocManager.tableofContents[index].sections, expectedSection)).be.true;
+			}
 		});
 
 		it('should ignore invalid file extensions', async () => {
@@ -130,90 +163,111 @@ describe('BookTocManagerTests', function () {
 				version: BookVersion.v1,
 				sourceBook: {
 					'rootBookFolderPath': sourceBookFolderPath,
-					'bookContentFolderPath': path.join(sourceBookFolderPath, 'content'),
-					'tocPath': path.join(sourceBookFolderPath, '_data', 'toc.yml'),
-					'readme': path.join(sourceBookFolderPath, 'content', 'readme.md'),
+					'bookContentFolderPath': path.posix.join(sourceBookFolderPath, 'content'),
+					'tocPath': path.posix.join(sourceBookFolderPath, '_data', 'toc.yml'),
+					'readme': path.posix.join(sourceBookFolderPath, 'content', 'readme.md'),
 					'toc': [
 						{
 							'title': 'Notebook 1',
-							'file': path.join(path.sep, 'sectionA', 'notebook1')
+							'file': path.posix.join(path.posix.sep, 'sectionA', 'notebook1')
 						},
 						{
 							'title': 'Notebook 2',
-							'file': path.join(path.sep, 'sectionA', 'notebook2')
+							'file': path.posix.join(path.posix.sep, 'sectionA', 'notebook2')
 						}
-					]
+					],
+					'type': BookTreeItemType.savedBook
 				},
 				sectionA: {
-					'contentPath': path.join(sourceBookFolderPath, 'content', 'sectionA', 'readme.md'),
-					'sectionRoot': path.join(sourceBookFolderPath, 'content', 'sectionA'),
+					'contentPath': path.posix.join(sourceBookFolderPath, 'content', 'sectionA', 'readme.md'),
+					'sectionRoot': path.posix.join(sourceBookFolderPath, 'content', 'sectionA'),
 					'sectionName': 'Section A',
-					'notebook1': path.join(sourceBookFolderPath, 'content', 'sectionA', 'notebook1.ipynb'),
-					'notebook2': path.join(sourceBookFolderPath, 'content', 'sectionA', 'notebook2.ipynb'),
+					'uri': path.posix.join(path.posix.sep, 'sectionA', 'readme'),
+					'notebook1': path.posix.join(sourceBookFolderPath, 'content', 'sectionA', 'notebook1.ipynb'),
+					'notebook2': path.posix.join(sourceBookFolderPath, 'content', 'sectionA', 'notebook2.ipynb'),
 					'sectionFormat': [
 						{
 							'title': 'Notebook 1',
-							'file': path.join(path.sep, 'sectionA', 'notebook1')
+							'file': path.posix.join(path.posix.sep, 'sectionA', 'notebook1')
 						},
 						{
 							'title': 'Notebook 2',
-							'file': path.join(path.sep, 'sectionA', 'notebook2')
+							'file': path.posix.join(path.posix.sep, 'sectionA', 'notebook2')
 						}
-					]
+					],
+					'type': BookTreeItemType.section
 				},
 				sectionB: {
-					'contentPath': path.join(sourceBookFolderPath, 'content', 'sectionB', 'readme.md'),
-					'sectionRoot': path.join(sourceBookFolderPath, 'content', 'sectionB'),
+					'contentPath': path.posix.join(sourceBookFolderPath, 'content', 'sectionB', 'readme.md'),
+					'sectionRoot': path.posix.join(sourceBookFolderPath, 'content', 'sectionB'),
 					'sectionName': 'Section B',
-					'notebook3': path.join(sourceBookFolderPath, 'content', 'sectionB', 'notebook3.ipynb'),
-					'notebook4': path.join(sourceBookFolderPath, 'content', 'sectionB', 'notebook4.ipynb'),
+					'uri': path.posix.join(path.posix.sep, 'sectionB', 'readme'),
+					'notebook3': path.posix.join(sourceBookFolderPath, 'content', 'sectionB', 'notebook3.ipynb'),
+					'notebook4': path.posix.join(sourceBookFolderPath, 'content', 'sectionB', 'notebook4.ipynb'),
 					'sectionFormat': [
 						{
 							'title': 'Notebook 3',
-							'file': path.join(path.sep, 'sectionB', 'notebook3')
+							'file': path.posix.join(path.posix.sep, 'sectionB', 'notebook3')
 						},
 						{
 							'title': 'Notebook 4',
-							'file': path.join(path.sep, 'sectionB', 'notebook4')
+							'file': path.posix.join(path.posix.sep, 'sectionB', 'notebook4')
 						}
-					]
+					],
+					'type': BookTreeItemType.section
 				},
 				notebook5: {
-					'contentPath': path.join(sourceBookFolderPath, 'content', 'notebook5.ipynb')
+					'contentPath': path.posix.join(sourceBookFolderPath, 'content', 'notebook5.ipynb'),
+					'sectionFormat': {
+						'title': 'Notebook 5',
+						'file': path.posix.join(path.posix.sep, 'notebook5')
+					},
+					'type': BookTreeItemType.Notebook
+				},
+				duplicatedNotebook: {
+					'contentPath': path.posix.join(duplicatedNotebookPath, 'notebook5.ipynb'),
+					'sectionFormat': {
+						'title': 'Notebook 5',
+						'file': path.posix.join(path.posix.sep, 'notebook5')
+					},
+					'type': BookTreeItemType.Notebook
 				},
 				targetBook: {
 					'rootBookFolderPath': targetBookFolderPath,
-					'bookContentFolderPath': path.join(targetBookFolderPath, 'content'),
-					'tocPath': path.join(targetBookFolderPath, '_data', 'toc.yml'),
-					'readme': path.join(targetBookFolderPath, 'content', 'readme.md'),
+					'bookContentFolderPath': path.posix.join(targetBookFolderPath, 'content'),
+					'tocPath': path.posix.join(targetBookFolderPath, '_data', 'toc.yml'),
+					'readme': path.posix.join(targetBookFolderPath, 'content', 'readme.md'),
 					'toc': [
 						{
 							'title': 'Welcome page',
-							'file': path.join(path.sep, 'readme'),
+							'file': path.posix.join(path.posix.sep, 'readme'),
 						},
 						{
 							'title': 'Section C',
-							'file': path.join(path.sep, 'sectionC', 'readme'),
+							'file': path.posix.join(path.posix.sep, 'sectionC', 'readme'),
 							'sections': [
 								{
 									'title': 'Notebook 6',
-									'file': path.join(path.sep, 'sectionC', 'notebook6')
+									'file': path.posix.join(path.posix.sep, 'sectionC', 'notebook6')
 								}
 							]
 						}
-					]
+					],
+					'type': BookTreeItemType.Book
 				},
 				sectionC: {
-					'contentPath': path.join(targetBookFolderPath, 'content', 'sectionC', 'readme.md'),
-					'sectionRoot': path.join(targetBookFolderPath, 'content', 'sectionC'),
+					'contentPath': path.posix.join(targetBookFolderPath, 'content', 'sectionC', 'readme.md'),
+					'sectionRoot': path.posix.join(targetBookFolderPath, 'content', 'sectionC'),
 					'sectionName': 'Section C',
-					'notebook6': path.join(targetBookFolderPath, 'content', 'sectionC', 'notebook6.ipynb'),
+					'uri': path.posix.join(path.posix.sep, 'sectionC', 'readme'),
+					'notebook6': path.posix.join(targetBookFolderPath, 'content', 'sectionC', 'notebook6.ipynb'),
 					'sectionFormat': [
 						{
 							'title': 'Notebook 6',
-							'file': path.join(path.sep, 'sectionC', 'notebook6')
+							'file': path.posix.join(path.posix.sep, 'sectionC', 'notebook6')
 						}
-					]
+					],
+					'type': BookTreeItemType.section
 				}
 			}, {
 				it: 'using the jupyter-book legacy version >= 0.7.0',
@@ -221,79 +275,99 @@ describe('BookTocManagerTests', function () {
 				sourceBook: {
 					'rootBookFolderPath': sourceBookFolderPath,
 					'bookContentFolderPath': sourceBookFolderPath,
-					'tocPath': path.join(sourceBookFolderPath, '_toc.yml'),
-					'readme': path.join(sourceBookFolderPath, 'readme.md')
+					'tocPath': path.posix.join(sourceBookFolderPath, '_toc.yml'),
+					'readme': path.posix.join(sourceBookFolderPath, 'readme.md')
 				},
 				sectionA: {
-					'contentPath': path.join(sourceBookFolderPath, 'sectionA', 'readme.md'),
-					'sectionRoot': path.join(sourceBookFolderPath, 'sectionA'),
+					'contentPath': path.posix.join(sourceBookFolderPath, 'sectionA', 'readme.md'),
+					'sectionRoot': path.posix.join(sourceBookFolderPath, 'sectionA'),
 					'sectionName': 'Section A',
-					'notebook1': path.join(sourceBookFolderPath, 'sectionA', 'notebook1.ipynb'),
-					'notebook2': path.join(sourceBookFolderPath, 'sectionA', 'notebook2.ipynb'),
+					'uri': path.posix.join(path.posix.sep, 'sectionA', 'readme'),
+					'notebook1': path.posix.join(sourceBookFolderPath, 'sectionA', 'notebook1.ipynb'),
+					'notebook2': path.posix.join(sourceBookFolderPath, 'sectionA', 'notebook2.ipynb'),
 					'sectionFormat': [
 						{
 							'title': 'Notebook 1',
-							'file': path.join(path.sep, 'sectionA', 'notebook1')
+							'file': path.posix.join(path.posix.sep, 'sectionA', 'notebook1')
 						},
 						{
 							'title': 'Notebook 2',
-							'file': path.join(path.sep, 'sectionA', 'notebook2')
+							'file': path.posix.join(path.posix.sep, 'sectionA', 'notebook2')
 						}
-					]
+					],
+					'type': BookTreeItemType.section
 				},
 				sectionB: {
-					'contentPath': path.join(sourceBookFolderPath, 'sectionB', 'readme.md'),
-					'sectionRoot': path.join(sourceBookFolderPath, 'sectionB'),
+					'contentPath': path.posix.join(sourceBookFolderPath, 'sectionB', 'readme.md'),
+					'sectionRoot': path.posix.join(sourceBookFolderPath, 'sectionB'),
 					'sectionName': 'Section B',
-					'notebook3': path.join(sourceBookFolderPath, 'sectionB', 'notebook3.ipynb'),
-					'notebook4': path.join(sourceBookFolderPath, 'sectionB', 'notebook4.ipynb'),
+					'uri': path.posix.join(path.posix.sep, 'sectionB', 'readme'),
+					'notebook3': path.posix.join(sourceBookFolderPath, 'sectionB', 'notebook3.ipynb'),
+					'notebook4': path.posix.join(sourceBookFolderPath, 'sectionB', 'notebook4.ipynb'),
 					'sectionFormat': [
 						{
 							'title': 'Notebook 3',
-							'file': path.join(path.sep, 'sectionB', 'notebook3')
+							'file': path.posix.join(path.posix.sep, 'sectionB', 'notebook3')
 						},
 						{
 							'title': 'Notebook 4',
-							'file': path.join(path.sep, 'sectionB', 'notebook4')
+							'file': path.posix.join(path.posix.sep, 'sectionB', 'notebook4')
 						}
-					]
+					],
+					'type': BookTreeItemType.section
 				},
 				notebook5: {
-					'contentPath': path.join(sourceBookFolderPath, 'notebook5.ipynb')
+					'contentPath': path.posix.join(sourceBookFolderPath, 'notebook5.ipynb'),
+					'sectionFormat': {
+						'title': 'Notebook 5',
+						'file': path.posix.join(path.posix.sep, 'notebook5')
+					},
+					'type': BookTreeItemType.Notebook
+				},
+				duplicatedNotebook: {
+					'contentPath': path.posix.join(duplicatedNotebookPath, 'notebook5.ipynb'),
+					'sectionFormat': {
+						'title': 'Notebook 5',
+						'file': path.posix.join(path.posix.sep, 'notebook5')
+					},
+					'type': BookTreeItemType.Notebook
 				},
 				targetBook: {
 					'rootBookFolderPath': targetBookFolderPath,
 					'bookContentFolderPath': targetBookFolderPath,
-					'tocPath': path.join(targetBookFolderPath, '_toc.yml'),
-					'readme': path.join(targetBookFolderPath, 'readme.md'),
+					'tocPath': path.posix.join(targetBookFolderPath, '_toc.yml'),
+					'readme': path.posix.join(targetBookFolderPath, 'readme.md'),
 					'toc': [
 						{
 							'title': 'Welcome',
-							'file': path.join(path.sep, 'readme'),
+							'file': path.posix.join(path.posix.sep, 'readme'),
 						},
 						{
 							'title': 'Section C',
-							'file': path.join(path.sep, 'sectionC', 'readme'),
+							'file': path.posix.join(path.posix.sep, 'sectionC', 'readme'),
 							'sections': [
 								{
 									'title': 'Notebook 6',
-									'file': path.join(path.sep, 'sectionC', 'notebook6')
+									'file': path.posix.join(path.posix.sep, 'sectionC', 'notebook6')
 								}
 							]
 						}
-					]
+					],
+					'type': BookTreeItemType.Book
 				},
 				sectionC: {
-					'contentPath': path.join(targetBookFolderPath, 'sectionC', 'readme.md'),
-					'sectionRoot': path.join(targetBookFolderPath, 'sectionC'),
+					'contentPath': path.posix.join(targetBookFolderPath, 'sectionC', 'readme.md'),
+					'sectionRoot': path.posix.join(targetBookFolderPath, 'sectionC'),
 					'sectionName': 'Section C',
-					'notebook6': path.join(targetBookFolderPath, 'sectionC', 'notebook6.ipynb'),
+					'uri': path.posix.join(path.posix.sep, 'sectionC', 'readme'),
+					'notebook6': path.posix.join(targetBookFolderPath, 'sectionC', 'notebook6.ipynb'),
 					'sectionFormat': [
 						{
 							'title': 'Notebook 6',
-							'file': path.join(path.sep, 'sectionC', 'notebook6')
+							'file': path.posix.join(path.posix.sep, 'sectionC', 'notebook6')
 						}
-					]
+					],
+					'type': BookTreeItemType.section
 				}
 			}
 		];
@@ -314,103 +388,11 @@ describe('BookTocManagerTests', function () {
 						version: run.version,
 						page: run.targetBook.toc
 					};
-
-					let sectionCTreeItemFormat: BookTreeItemFormat = {
-						title: run.sectionC.sectionName,
-						contentPath: run.sectionC.contentPath,
-						root: run.targetBook.rootBookFolderPath,
-						tableOfContents: {
-							sections: run.sectionC.sectionFormat
-						},
-						isUntitled: undefined,
-						treeItemCollapsibleState: undefined,
-						type: BookTreeItemType.Markdown,
-						version: run.version,
-						page: run.sectionC.sectionFormat
-					};
-
-					// section A is from source book
-					let sectionATreeItemFormat: BookTreeItemFormat = {
-						title: run.sectionA.sectionName,
-						contentPath: run.sectionA.contentPath,
-						root: run.sourceBook.rootBookFolderPath,
-						tableOfContents: {
-							sections: run.sectionA.sectionFormat
-						},
-						isUntitled: undefined,
-						treeItemCollapsibleState: undefined,
-						type: BookTreeItemType.Markdown,
-						version: run.version,
-						page: {
-							title: run.sectionA.sectionName,
-							file: path.join(path.sep, 'sectionA', 'readme'),
-							sections: run.sectionA.sectionFormat
-						}
-					};
-
-					// section B is from source book
-					let sectionBTreeItemFormat: BookTreeItemFormat = {
-						title: run.sectionB.sectionName,
-						contentPath: run.sectionB.contentPath,
-						root: run.sourceBook.rootBookFolderPath,
-						tableOfContents: {
-							sections: run.sectionB.sectionFormat
-						},
-						isUntitled: undefined,
-						treeItemCollapsibleState: undefined,
-						type: BookTreeItemType.Markdown,
-						version: run.version,
-						page: {
-							title: run.sectionB.sectionName,
-							file: path.join(path.sep, 'sectionB', 'readme'),
-							sections: run.sectionB.sectionFormat
-						}
-					};
-
-					// notebook5 is from source book
-					let notebookTreeItemFormat: BookTreeItemFormat = {
-						title: '',
-						contentPath: run.notebook5.contentPath,
-						root: run.sourceBook.rootBookFolderPath,
-						tableOfContents: {
-							sections: [
-								{
-									'title': 'Notebook 5',
-									'file': path.join(path.sep, 'notebook5')
-								}
-							]
-						},
-						isUntitled: undefined,
-						treeItemCollapsibleState: undefined,
-						type: BookTreeItemType.Notebook,
-						version: run.version,
-						page: {
-							'title': 'Notebook 5',
-							'file': path.join(path.sep, 'notebook5')
-						}
-					};
-
-					let duplicatedNbTreeItemFormat: BookTreeItemFormat = {
-						title: 'Duplicated Notebook',
-						contentPath: path.join(duplicatedNotebookPath, 'notebook5.ipynb'),
-						root: duplicatedNotebookPath,
-						tableOfContents: {
-							sections: [
-								{
-									'title': 'Notebook 5',
-									'file': path.join(path.sep, 'notebook5')
-								}
-							]
-						},
-						isUntitled: undefined,
-						treeItemCollapsibleState: undefined,
-						type: BookTreeItemType.Notebook,
-						version: run.version,
-						page: {
-							'title': 'Notebook 5',
-							'file': path.join(path.sep, 'notebook5')
-						}
-					};
+					const sectionCTreeItemFormat = createBookTreeItemFormat(run.sectionC, run.targetBook.rootBookFolderPath, run.version);
+					const sectionATreeItemFormat = createBookTreeItemFormat(run.sectionA, run.sourceBook.rootBookFolderPath, run.version);
+					const sectionBTreeItemFormat = createBookTreeItemFormat(run.sectionB, run.sourceBook.rootBookFolderPath, run.version);
+					const notebookTreeItemFormat = createBookTreeItemFormat(run.notebook5, run.sourceBook.rootBookFolderPath, run.version);
+					const duplicatedNbTreeItemFormat = createBookTreeItemFormat(run.duplicatedNotebook, duplicatedNotebookPath, undefined);
 
 					targetBook = new BookTreeItem(targetBookTreeItemFormat, undefined);
 					sectionC = new BookTreeItem(sectionCTreeItemFormat, undefined);
@@ -420,9 +402,9 @@ describe('BookTocManagerTests', function () {
 					duplicatedNotebook = new BookTreeItem(duplicatedNbTreeItemFormat, undefined);
 
 
-					sectionC.uri = path.join('sectionC', 'readme');
-					sectionA.uri = path.join('sectionA', 'readme');
-					sectionB.uri = path.join('sectionB', 'readme');
+					sectionC.uri = path.posix.join('sectionC', 'readme');
+					sectionA.uri = path.posix.join('sectionA', 'readme');
+					sectionB.uri = path.posix.join('sectionB', 'readme');
 
 					targetBook.contextValue = 'savedBook';
 					sectionA.contextValue = 'section';
@@ -440,12 +422,7 @@ describe('BookTocManagerTests', function () {
 					sectionA.sections = run.sectionA.sectionFormat;
 					sectionB.sections = run.sectionB.sectionFormat;
 					sectionC.sections = run.sectionC.sectionFormat;
-					notebook.sections = [
-						{
-							'title': 'Notebook 5',
-							'file': path.join(path.sep, 'notebook5')
-						}
-					];
+					notebook.sections = [run.notebook5.sectionFormat];
 					duplicatedNotebook.sections = notebook.sections;
 
 					await fs.promises.mkdir(run.targetBook.bookContentFolderPath, { recursive: true });
@@ -477,16 +454,13 @@ describe('BookTocManagerTests', function () {
 
 					const mockExtensionContext = new MockExtensionContext();
 
-					sourceBookModel = new BookModel(run.sourceBook.rootBookFolderPath, false, false, mockExtensionContext, undefined);
-					targetBookModel = new BookModel(run.targetBook.rootBookFolderPath, false, false, mockExtensionContext, undefined);
-					// create book model mock objects
-					sinon.stub(sourceBookModel, 'bookItems').value([sectionA]);
-					sinon.stub(targetBookModel, 'bookItems').value([targetBook]);
+					sourceBookModel = BookModelStub(run.sourceBook.rootBookFolderPath, sectionA, mockExtensionContext);
+					targetBookModel = BookModelStub(run.targetBook.rootBookFolderPath, targetBook, mockExtensionContext);
 				});
 
 
 				it('Add section to book', async () => {
-					bookTocManager = new BookTocManager(targetBookModel, sourceBookModel);
+					bookTocManager = new BookTocManager(sourceBookModel, targetBookModel);
 					await bookTocManager.updateBook(sectionA, targetBook, undefined);
 					const listFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionA'));
 					const listSourceFiles = await fs.promises.readdir(path.join(run.sourceBook.bookContentFolderPath));
@@ -495,10 +469,10 @@ describe('BookTocManagerTests', function () {
 				});
 
 				it('Add section to section', async () => {
-					bookTocManager = new BookTocManager(targetBookModel, sourceBookModel);
+					bookTocManager = new BookTocManager(sourceBookModel, targetBookModel);
 					await bookTocManager.updateBook(sectionB, sectionC, {
 						'title': 'Notebook 6',
-						'file': path.join(path.sep, 'sectionC', 'notebook6')
+						'file': path.posix.join(path.posix.sep, 'sectionC', 'notebook6')
 					});
 					const sectionCFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionC'));
 					const sectionBFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionB'));
@@ -507,7 +481,7 @@ describe('BookTocManagerTests', function () {
 				});
 
 				it('Add notebook to book', async () => {
-					bookTocManager = new BookTocManager(targetBookModel);
+					bookTocManager = new BookTocManager(undefined, targetBookModel);
 					await bookTocManager.updateBook(notebook, targetBook);
 					const listFiles = await fs.promises.readdir(run.targetBook.bookContentFolderPath);
 					should(JSON.stringify(listFiles).includes('notebook5.ipynb')).be.true('Notebook 5 should be under the target book content folder');
@@ -516,20 +490,20 @@ describe('BookTocManagerTests', function () {
 				it('Remove notebook from book', async () => {
 					let toc: JupyterBookSection[] = yaml.safeLoad((await fs.promises.readFile(notebook.tableOfContentsPath)).toString());
 					let notebookInToc = toc.some(section => {
-						if (section.title === 'Notebook 5' && section.file === path.join(path.sep, 'notebook5')) {
+						if (section.title === 'Notebook 5' && section.file === path.posix.join(path.posix.sep, 'notebook5')) {
 							return true;
 						}
 						return false;
 					});
 					should(notebookInToc).be.true('Verify the notebook is in toc before removing');
 
-					bookTocManager = new BookTocManager();
+					bookTocManager = new BookTocManager(sourceBookModel);
 					await bookTocManager.removeNotebook(notebook);
 
 					const listFiles = await fs.promises.readdir(run.sourceBook.bookContentFolderPath);
 					toc = yaml.safeLoad((await fs.promises.readFile(notebook.tableOfContentsPath)).toString());
 					notebookInToc = toc.some(section => {
-						if (section.title === 'Notebook 5' && section.file === path.join(path.sep, 'notebook5')) {
+						if (section.title === 'Notebook 5' && section.file === path.posix.join(path.posix.sep, 'notebook5')) {
 							return true;
 						}
 						return false;
@@ -539,7 +513,7 @@ describe('BookTocManagerTests', function () {
 				});
 
 				it('Add duplicated notebook to book', async () => {
-					bookTocManager = new BookTocManager(targetBookModel);
+					bookTocManager = new BookTocManager(undefined, targetBookModel);
 					await bookTocManager.updateBook(notebook, targetBook);
 					await bookTocManager.updateBook(duplicatedNotebook, targetBook);
 					const listFiles = await fs.promises.readdir(run.targetBook.bookContentFolderPath);
@@ -550,7 +524,7 @@ describe('BookTocManagerTests', function () {
 				it('Recovery method is called after error', async () => {
 					const mockExtensionContext = new MockExtensionContext();
 					const recoverySpy = sinon.spy(BookTocManager.prototype, 'recovery');
-					sinon.stub(BookTocManager.prototype, 'updateBook').throws(new Error('Unexpected error.'));
+					sinon.stub(BookTocManager.prototype, 'updateTOC').throws(new Error('Unexpected error.'));
 					const bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 					const results: quickPickResults = {
 						book: targetBook,

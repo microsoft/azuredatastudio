@@ -23,8 +23,8 @@ export class IconPathHelper {
 			light: IconPathHelper.extensionContext.asAbsolutePath('resources/light/delete.svg')
 		};
 		IconPathHelper.folder = {
-			dark: IconPathHelper.extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-			light: IconPathHelper.extensionContext.asAbsolutePath('resources/light/folder.svg')
+			dark: IconPathHelper.extensionContext.asAbsolutePath('resources/folder.svg'),
+			light: IconPathHelper.extensionContext.asAbsolutePath('resources/folder.svg')
 		};
 	}
 }

@@ -28,7 +28,7 @@ export class BookTrustManager implements IBookTrustManager {
 		let trustableBookPaths = this.getTrustableBookPaths();
 		let hasTrustedBookPath: boolean = treeBookItems
 			.filter(bookItem => trustableBookPaths.some(trustableBookPath => trustableBookPath === path.join(bookItem.book.root, path.sep)))
-			.some(bookItem => normalizedNotebookUri.startsWith(bookItem.version === BookVersion.v1 ? path.join(bookItem.book.root, 'content', path.sep) : path.join(bookItem.book.root, path.sep)));
+			.some(bookItem => normalizedNotebookUri.startsWith(bookItem.book.version === BookVersion.v1 ? path.join(bookItem.book.root, 'content', path.sep) : path.join(bookItem.book.root, path.sep)));
 		let isNotebookTrusted = hasTrustedBookPath && this.books.some(bookModel => bookModel.getNotebook(normalizedNotebookUri));
 		return isNotebookTrusted;
 	}

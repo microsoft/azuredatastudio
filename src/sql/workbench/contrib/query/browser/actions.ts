@@ -8,7 +8,6 @@ import { localize } from 'vs/nls';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { QueryEditor } from './queryEditor';
-import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
 import { INotificationService, Severity, NeverShowAgainScope } from 'vs/platform/notification/common/notification';
@@ -20,6 +19,10 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { IExtensionRecommendationsService } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
+import { IEncodingSupport } from 'vs/workbench/common/editor';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { getChartMaxRowCount, notifyMaxRowCountExceeded } from 'sql/workbench/contrib/charts/browser/utils';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -70,9 +73,8 @@ export class SaveResultAction extends Action {
 
 	public async run(context: IGridActionContext): Promise<boolean> {
 
-		const activeEditor = this.editorService.activeEditorPane as QueryEditor;
-		let input = activeEditor.input as UntitledQueryEditorInput;
-		if (input.getEncoding() !== 'utf8') {
+		const activeEditor = this.editorService.activeEditorPane as unknown as IEncodingSupport;
+		if (typeof activeEditor.getEncoding === 'function' && activeEditor.getEncoding() !== 'utf8') {
 			this.notificationService.notify({
 				severity: Severity.Info,
 				message: localize('jsonEncoding', "Results encoding will not be saved when exporting to JSON, remember to save with desired encoding once file is created."),
@@ -110,15 +112,10 @@ export class CopyResultAction extends Action {
 		super(id, label);
 	}
 
-	public run(context: IGridActionContext): Promise<boolean> {
-		if (this.accountForNumberColumn) {
-			context.gridDataProvider.copyResults(
-				mapForNumberColumn(context.selection),
-				this.copyHeader);
-		} else {
-			context.gridDataProvider.copyResults(context.selection, this.copyHeader);
-		}
-		return Promise.resolve(true);
+	public async run(context: IGridActionContext): Promise<boolean> {
+		const selection = this.accountForNumberColumn ? mapForNumberColumn(context.selection) : context.selection;
+		context.gridDataProvider.copyResults(selection, this.copyHeader, context.table.getData());
+		return true;
 	}
 }
 
@@ -173,7 +170,11 @@ export class ChartDataAction extends Action {
 
 	constructor(
 		@IEditorService private editorService: IEditorService,
-		@IExtensionRecommendationsService private readonly extensionTipsService: IExtensionRecommendationsService
+		@IExtensionRecommendationsService private readonly extensionTipsService: IExtensionRecommendationsService,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IStorageService private readonly storageService: IStorageService,
+		@INotificationService private readonly notificationService: INotificationService,
+		@IAdsTelemetryService private readonly adsTelemetryService: IAdsTelemetryService
 	) {
 		super(ChartDataAction.ID, ChartDataAction.LABEL, ChartDataAction.ICON);
 	}
@@ -181,7 +182,15 @@ export class ChartDataAction extends Action {
 	public run(context: IGridActionContext): Promise<boolean> {
 		// show the visualizer extension recommendation notification
 		this.extensionTipsService.promptRecommendedExtensionsByScenario(Constants.visualizerExtensions);
-
+		const maxRowCount = getChartMaxRowCount(this.configurationService);
+		const rowCount = context.table.getData().getLength();
+		const maxRowCountExceeded = rowCount > maxRowCount;
+		if (maxRowCountExceeded) {
+			notifyMaxRowCountExceeded(this.storageService, this.notificationService, this.configurationService);
+		}
+		this.adsTelemetryService.createActionEvent(TelemetryKeys.TelemetryView.ResultsPanel, TelemetryKeys.TelemetryAction.ShowChart).withAdditionalProperties(
+			{ [TelemetryKeys.TelemetryPropertyName.ChartMaxRowCountExceeded]: maxRowCountExceeded }
+		).send();
 		const activeEditor = this.editorService.activeEditorPane as QueryEditor;
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
 		return Promise.resolve(true);

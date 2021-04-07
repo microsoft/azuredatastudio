@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationMode, MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { createHeadingTextComponent, createInformationRow } from './wizardController';
 
@@ -36,19 +36,32 @@ export class SummaryPage extends MigrationWizardPage {
 	public async onPageEnter(): Promise<void> {
 		this._flexContainer.addItems(
 			[
-				createHeadingTextComponent(this._view, constants.AZURE_ACCOUNT_LINKED),
-				createHeadingTextComponent(this._view, this.migrationStateModel._azureAccount.displayInfo.displayName),
-				createHeadingTextComponent(this._view, constants.MIGRATION_TARGET),
-				createInformationRow(this._view, constants.TYPE, (this.migrationStateModel._targetServerInstance.type === 'microsoft.compute/virtualmachines') ? constants.SUMMARY_VM_TYPE : constants.SUMMARY_MI_TYPE),
-				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
-				createInformationRow(this._view, constants.SUMMARY_MI_TYPE, this.migrationStateModel._targetServerInstance.name),
-				createInformationRow(this._view, constants.SUMMARY_DATABASE_COUNT_LABEL, this.migrationStateModel._migrationDbs.length.toString()),
-				createHeadingTextComponent(this._view, constants.DATABASE_BACKUP_PAGE_TITLE),
-				this.createNetworkContainerRows(),
-				createHeadingTextComponent(this._view, constants.IR_PAGE_TITLE),
-				createInformationRow(this._view, constants.IR_PAGE_TITLE, this.migrationStateModel._sqlMigrationService?.name!),
-				createInformationRow(this._view, constants.SUMMARY_IR_NODE, this.migrationStateModel._nodeNames.join(', ')),
+				createHeadingTextComponent(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE),
+				createInformationRow(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE, this.migrationStateModel._azureAccount.displayInfo.displayName),
 
+				createHeadingTextComponent(this._view, constants.SOURCE_DATABASES),
+				createInformationRow(this._view, constants.SUMMARY_DATABASE_COUNT_LABEL, this.migrationStateModel._migrationDbs.length.toString()),
+
+				createHeadingTextComponent(this._view, constants.SKU_RECOMMENDATION_PAGE_TITLE),
+				createInformationRow(this._view, constants.SKU_RECOMMENDATION_PAGE_TITLE, (this.migrationStateModel._targetServerInstance.type === 'microsoft.compute/virtualmachines') ? constants.SUMMARY_VM_TYPE : constants.SUMMARY_MI_TYPE),
+				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
+				createInformationRow(this._view, constants.LOCATION, await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._targetServerInstance.location)),
+				createInformationRow(this._view, constants.RESOURCE_GROUP, await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._targetServerInstance.resourceGroup!)),
+				createInformationRow(this._view, (this.migrationStateModel._targetServerInstance.type === 'microsoft.compute/virtualmachines') ? constants.SUMMARY_VM_TYPE : constants.SUMMARY_MI_TYPE, await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._targetServerInstance.name!)),
+
+				createHeadingTextComponent(this._view, constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL),
+				createInformationRow(this._view, constants.MODE, this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.ONLINE ? constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL : constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL),
+
+				createHeadingTextComponent(this._view, constants.DATABASE_BACKUP_PAGE_TITLE),
+				await this.createNetworkContainerRows(),
+
+				createHeadingTextComponent(this._view, constants.IR_PAGE_TITLE),
+				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
+				createInformationRow(this._view, constants.LOCATION, this.migrationStateModel._sqlMigrationService.location),
+				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._sqlMigrationService.properties.resourceGroup),
+				createInformationRow(this._view, constants.IR_PAGE_TITLE, this.migrationStateModel._targetSubscription.name),
+				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._sqlMigrationService.name),
+				createInformationRow(this._view, constants.SHIR, this.migrationStateModel._nodeNames[0]),
 			]
 		);
 	}
@@ -63,7 +76,7 @@ export class SummaryPage extends MigrationWizardPage {
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
 	}
 
-	private createNetworkContainerRows(): azdata.FlexContainer {
+	private async createNetworkContainerRows(): Promise<azdata.FlexContainer> {
 		const flexContainer = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
 		}).component();
@@ -71,16 +84,19 @@ export class SummaryPage extends MigrationWizardPage {
 			case NetworkContainerType.NETWORK_SHARE:
 				flexContainer.addItems(
 					[
-						createInformationRow(this._view, constants.TYPE, constants.NETWORK_SHARE),
+						createInformationRow(this._view, constants.BACKUP_LOCATION, constants.NETWORK_SHARE),
+						createInformationRow(this._view, constants.NETWORK_SHARE, this.migrationStateModel._databaseBackup.networkShareLocation),
 						createInformationRow(this._view, constants.USER_ACCOUNT, this.migrationStateModel._databaseBackup.windowsUser),
-						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name),
-						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel._databaseBackup.storageAccount.name),
+						createHeadingTextComponent(this._view, constants.AZURE_STORAGE_ACCOUNT_TO_UPLOAD_BACKUPS),
+						createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name),
+						createInformationRow(this._view, constants.LOCATION, this.migrationStateModel._databaseBackup.storageAccount.location),
+						createInformationRow(this._view, constants.RESOURCE_GROUP, this.migrationStateModel._databaseBackup.storageAccount.resourceGroup!),
+						createInformationRow(this._view, constants.STORAGE_ACCOUNT, this.migrationStateModel._databaseBackup.storageAccount.name!),
 						createHeadingTextComponent(this._view, 'Target Databases:')
 					]
 				);
 				this.migrationStateModel._migrationDbs.forEach((db, index) => {
 					flexContainer.addItem(createInformationRow(this._view, constants.TARGET_NAME_FOR_DATABASE(db), this.migrationStateModel._targetDatabaseNames[index]));
-					flexContainer.addItem(createInformationRow(this._view, constants.TARGET_NETWORK_SHARE_LOCATION(db), this.migrationStateModel._databaseBackup.networkShareLocations[index]));
 				});
 				break;
 			case NetworkContainerType.FILE_SHARE:

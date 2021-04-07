@@ -9,8 +9,11 @@ import * as azdata from 'azdata';
 import { convertSize } from 'sql/base/browser/dom';
 import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
+import { EventHelper } from 'vs/base/browser/dom';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { equals as arrayEquals } from 'vs/base/common/arrays';
+import { KeyCode } from 'vs/base/common/keyCodes';
 import { localize } from 'vs/nls';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as colorRegistry from 'vs/platform/theme/common/colorRegistry';
@@ -37,6 +40,14 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	private columns: azdata.DeclarativeTableColumn[] = [];
 	private _selectedRow: number;
 	private _colorTheme: IColorTheme;
+	private _hasFocus: boolean;
+
+	/**
+	 * The flag is set to true when the table gains focus. When a row is selected and the flag is true the row selected event will
+	 * fire regardless whether the row is already selected.
+	 *
+	 */
+	private _rowSelectionFocusFlag: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -285,25 +296,29 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		super.setProperties(properties);
 	}
 
+	public clearContainer(): void {
+		super.clearContainer();
+		this._selectedRow = -1;
+	}
+
 	public get data(): azdata.DeclarativeTableCellValue[][] {
 		return this._data;
 	}
 
 	public isRowSelected(row: number): boolean {
-		// Only react when the user wants you to
-		if (this.getProperties().selectEffect !== true) {
+		if (!this.enableRowSelection) {
 			return false;
 		}
 		return this._selectedRow === row;
 	}
 
-	public onCellClick(row: number) {
-		// Only react when the user wants you to
-		if (this.getProperties().selectEffect !== true) {
+	public onRowSelected(row: number) {
+		if (!this.enableRowSelection) {
 			return;
 		}
-		if (!this.isRowSelected(row)) {
+		if (this._rowSelectionFocusFlag || !this.isRowSelected(row)) {
 			this._selectedRow = row;
+			this._rowSelectionFocusFlag = false;
 			this._changeRef.detectChanges();
 
 			this.fireEvent({
@@ -312,6 +327,18 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 					row
 				}
 			});
+		}
+	}
+
+	public onKey(e: KeyboardEvent, row: number) {
+		// Ignore the bubble up events
+		if (e.target !== e.currentTarget) {
+			return;
+		}
+		const event = new StandardKeyboardEvent(e);
+		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
+			this.onRowSelected(row);
+			EventHelper.stop(e, true);
 		}
 	}
 
@@ -338,13 +365,33 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 			'width': this.getWidth(),
 			'height': this.getHeight()
 		});
-
 	}
 
 	public getRowStyle(rowIndex: number): azdata.CssStyles {
-		return this.isRowSelected(rowIndex) ? {
-			'background-color': this._colorTheme.getColor(colorRegistry.listActiveSelectionBackground).toString(),
-			'color': this._colorTheme.getColor(colorRegistry.listActiveSelectionForeground).toString()
-		} : {};
+		if (this.isRowSelected(rowIndex)) {
+			const bgColor = this._hasFocus ? colorRegistry.listActiveSelectionBackground : colorRegistry.listInactiveSelectionBackground;
+			const color = this._hasFocus ? colorRegistry.listActiveSelectionForeground : colorRegistry.listInactiveSelectionForeground;
+			return {
+				'background-color': this._colorTheme.getColor(bgColor)?.toString(),
+				'color': this._colorTheme.getColor(color)?.toString()
+			};
+		} else {
+			return {};
+		}
+	}
+
+	onFocusIn() {
+		this._hasFocus = true;
+		this._rowSelectionFocusFlag = true;
+		this._changeRef.detectChanges();
+	}
+
+	onFocusOut() {
+		this._hasFocus = false;
+		this._changeRef.detectChanges();
+	}
+
+	public get enableRowSelection(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.enableRowSelection, false);
 	}
 }

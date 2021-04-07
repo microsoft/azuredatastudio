@@ -13,10 +13,14 @@ import { getPlatformDownloadLink, getPlatformReleaseVersion } from './azdataRele
 import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
-import { Deferred } from './common/promise';
 import { getErrorMessage, NoAzdataError, searchForCmd } from './common/utils';
 import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataInstallKey, azdataUpdateKey, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
+
+/**
+ * The minimum required azdata CLI version for this extension to function properly
+ */
+export const MIN_AZDATA_VERSION = new SemVer('20.3.2');
 
 export const enum AzdataDeployOption {
 	dontPrompt = 'dontPrompt',
@@ -32,20 +36,7 @@ export interface IAzdataTool extends azdataExt.IAzdataApi {
 	 * @param args The args to pass to azdata
 	 * @param parseResult A function used to parse out the raw result into the desired shape
 	 */
-	executeCommand<R>(args: string[], additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<R>>
-}
-
-class AzdataSession implements azdataExt.AzdataSession {
-
-	private _session = new Deferred<void>();
-
-	public sessionEnded(): Promise<void> {
-		return this._session.promise;
-	}
-
-	public dispose(): void {
-		this._session.resolve();
-	}
+	executeCommand<R>(args: string[], additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<R>>
 }
 
 /**
@@ -54,9 +45,6 @@ class AzdataSession implements azdataExt.AzdataSession {
 export class AzdataTool implements azdataExt.IAzdataApi {
 
 	private _semVersion: SemVer;
-	private _currentSession: azdataExt.AzdataSession | undefined = undefined;
-	private _currentlyExecutingCommands: Deferred<void>[] = [];
-	private _queuedCommands: { deferred: Deferred<void>, session?: azdataExt.AzdataSession }[] = [];
 
 	constructor(private _path: string, version: string) {
 		this._semVersion = new SemVer(version);
@@ -90,7 +78,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 				profileName?: string,
 				storageClass?: string,
 				additionalEnvVars?: azdataExt.AdditionalEnvVars,
-				session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<void>> => {
+				azdataContext?: string): Promise<azdataExt.AzdataOutput<void>> => {
 				const args = ['arc', 'dc', 'create',
 					'--namespace', namespace,
 					'--name', name,
@@ -104,32 +92,32 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 				if (storageClass) {
 					args.push('--storage-class', storageClass);
 				}
-				return this.executeCommand<void>(args, additionalEnvVars, session);
+				return this.executeCommand<void>(args, additionalEnvVars, azdataContext);
 			},
 			endpoint: {
-				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<azdataExt.DcEndpointListResult[]>> => {
-					return this.executeCommand<azdataExt.DcEndpointListResult[]>(['arc', 'dc', 'endpoint', 'list'], additionalEnvVars, session);
+				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<azdataExt.DcEndpointListResult[]>> => {
+					return this.executeCommand<azdataExt.DcEndpointListResult[]>(['arc', 'dc', 'endpoint', 'list'], additionalEnvVars, azdataContext);
 				}
 			},
 			config: {
-				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigListResult[]>> => {
-					return this.executeCommand<azdataExt.DcConfigListResult[]>(['arc', 'dc', 'config', 'list'], additionalEnvVars, session);
+				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigListResult[]>> => {
+					return this.executeCommand<azdataExt.DcConfigListResult[]>(['arc', 'dc', 'config', 'list'], additionalEnvVars, azdataContext);
 				},
-				show: (additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigShowResult>> => {
-					return this.executeCommand<azdataExt.DcConfigShowResult>(['arc', 'dc', 'config', 'show'], additionalEnvVars, session);
+				show: (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigShowResult>> => {
+					return this.executeCommand<azdataExt.DcConfigShowResult>(['arc', 'dc', 'config', 'show'], additionalEnvVars, azdataContext);
 				}
 			}
 		},
 		postgres: {
 			server: {
-				delete: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<void>> => {
-					return this.executeCommand<void>(['arc', 'postgres', 'server', 'delete', '-n', name, '--force'], additionalEnvVars, session);
+				delete: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<void>> => {
+					return this.executeCommand<void>(['arc', 'postgres', 'server', 'delete', '-n', name, '--force'], additionalEnvVars, azdataContext);
 				},
-				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerListResult[]>> => {
-					return this.executeCommand<azdataExt.PostgresServerListResult[]>(['arc', 'postgres', 'server', 'list'], additionalEnvVars, session);
+				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerListResult[]>> => {
+					return this.executeCommand<azdataExt.PostgresServerListResult[]>(['arc', 'postgres', 'server', 'list'], additionalEnvVars, azdataContext);
 				},
-				show: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerShowResult>> => {
-					return this.executeCommand<azdataExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name], additionalEnvVars, session);
+				show: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerShowResult>> => {
+					return this.executeCommand<azdataExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name], additionalEnvVars, azdataContext);
 				},
 				edit: (
 					name: string,
@@ -146,9 +134,8 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 						replaceEngineSettings?: boolean,
 						workers?: number
 					},
-					engineVersion?: string,
 					additionalEnvVars?: azdataExt.AdditionalEnvVars,
-					session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<void>> => {
+					azdataContext?: string): Promise<azdataExt.AzdataOutput<void>> => {
 					const argsArray = ['arc', 'postgres', 'server', 'edit', '-n', name];
 					if (args.adminPassword) { argsArray.push('--admin-password'); }
 					if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
@@ -161,21 +148,20 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 					if (args.port) { argsArray.push('--port', args.port.toString()); }
 					if (args.replaceEngineSettings) { argsArray.push('--replace-engine-settings'); }
 					if (args.workers) { argsArray.push('--workers', args.workers.toString()); }
-					if (engineVersion) { argsArray.push('--engine-version', engineVersion); }
-					return this.executeCommand<void>(argsArray, additionalEnvVars, session);
+					return this.executeCommand<void>(argsArray, additionalEnvVars, azdataContext);
 				}
 			}
 		},
 		sql: {
 			mi: {
-				delete: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<void>> => {
-					return this.executeCommand<void>(['arc', 'sql', 'mi', 'delete', '-n', name], additionalEnvVars, session);
+				delete: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<void>> => {
+					return this.executeCommand<void>(['arc', 'sql', 'mi', 'delete', '-n', name], additionalEnvVars, azdataContext);
 				},
-				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiListResult[]>> => {
-					return this.executeCommand<azdataExt.SqlMiListResult[]>(['arc', 'sql', 'mi', 'list'], additionalEnvVars, session);
+				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiListResult[]>> => {
+					return this.executeCommand<azdataExt.SqlMiListResult[]>(['arc', 'sql', 'mi', 'list'], additionalEnvVars, azdataContext);
 				},
-				show: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiShowResult>> => {
-					return this.executeCommand<azdataExt.SqlMiShowResult>(['arc', 'sql', 'mi', 'show', '-n', name], additionalEnvVars, session);
+				show: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiShowResult>> => {
+					return this.executeCommand<azdataExt.SqlMiShowResult>(['arc', 'sql', 'mi', 'show', '-n', name], additionalEnvVars, azdataContext);
 				},
 				edit: (
 					name: string,
@@ -186,8 +172,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 						memoryRequest?: string,
 						noWait?: boolean,
 					},
-					additionalEnvVars?: azdataExt.AdditionalEnvVars,
-					session?: azdataExt.AzdataSession
+					additionalEnvVars?: azdataExt.AdditionalEnvVars
 				): Promise<azdataExt.AzdataOutput<void>> => {
 					const argsArray = ['arc', 'sql', 'mi', 'edit', '-n', name];
 					if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
@@ -195,59 +180,22 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 					if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
 					if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
 					if (args.noWait) { argsArray.push('--no-wait'); }
-					return this.executeCommand<void>(argsArray, additionalEnvVars, session);
+					return this.executeCommand<void>(argsArray, additionalEnvVars);
 				}
 			}
 		}
 	};
 
-	public async login(endpoint: string, username: string, password: string, additionalEnvVars: azdataExt.AdditionalEnvVars = {}): Promise<azdataExt.AzdataOutput<void>> {
-		// Since login changes the context we want to wait until all currently executing commands are finished before this is executed
-		while (this._currentlyExecutingCommands.length > 0) {
-			await this._currentlyExecutingCommands[0];
-		}
-		// Logins need to be done outside the session aware logic so call impl directly
-		return this.executeCommandImpl<void>(['login', '-e', endpoint, '-u', username], Object.assign({}, additionalEnvVars, { 'AZDATA_PASSWORD': password }));
-	}
-
-	public async acquireSession(endpoint: string, username: string, password: string, additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataSession> {
-		const session = new AzdataSession();
-		session.sessionEnded().then(async () => {
-			// Wait for all commands running for this session to end
-			while (this._currentlyExecutingCommands.length > 0) {
-				await this._currentlyExecutingCommands[0].promise;
-			}
-			this._currentSession = undefined;
-			// Start our next command now that we're all done with this session
-			// TODO: Should we check if the command has a session that hasn't started? That should never happen..
-			// TODO: Look into kicking off multiple commands
-			this._queuedCommands.shift()?.deferred.resolve();
-		});
-
-		// We're not in a session or waiting on anything so just set the current session right now
-		if (!this._currentSession && this._queuedCommands.length === 0) {
-			this._currentSession = session;
+	public async login(endpointOrNamespace: azdataExt.EndpointOrNamespace, username: string, password: string, additionalEnvVars: azdataExt.AdditionalEnvVars = {}, azdataContext?: string): Promise<azdataExt.AzdataOutput<void>> {
+		const args = ['login', '-u', username];
+		if (endpointOrNamespace.endpoint) {
+			args.push('-e', endpointOrNamespace.endpoint);
+		} else if (endpointOrNamespace.namespace) {
+			args.push('--namespace', endpointOrNamespace.namespace);
 		} else {
-			// We're in a session or another command is executing so add this to the end of the queued commands and wait our turn
-			const deferred = new Deferred<void>();
-			deferred.promise.then(() => {
-				this._currentSession = session;
-				// We've started a new session so look at all our queued commands and start
-				// the ones for this session now.
-				this._queuedCommands = this._queuedCommands.filter(c => {
-					if (c.session === this._currentSession) {
-						c.deferred.resolve();
-						return false;
-					}
-					return true;
-				});
-			});
-			this._queuedCommands.push({ deferred, session: undefined });
-			await deferred.promise;
+			throw new Error(loc.endpointOrNamespaceRequired);
 		}
-
-		await this.login(endpoint, username, password, additionalEnvVars);
-		return session;
+		return this.executeCommand<void>(args, Object.assign({}, additionalEnvVars, { 'AZDATA_PASSWORD': password }), azdataContext);
 	}
 
 	/**
@@ -265,34 +213,16 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 		};
 	}
 
-	public async executeCommand<R>(args: string[], additionalEnvVars?: azdataExt.AdditionalEnvVars, session?: azdataExt.AzdataSession): Promise<azdataExt.AzdataOutput<R>> {
-		if (this._currentSession && this._currentSession !== session) {
-			const deferred = new Deferred<void>();
-			this._queuedCommands.push({ deferred, session: session });
-			await deferred.promise;
-		}
-		const executingDeferred = new Deferred<void>();
-		this._currentlyExecutingCommands.push(executingDeferred);
-		try {
-			return await this.executeCommandImpl<R>(args, additionalEnvVars);
-		}
-		finally {
-			this._currentlyExecutingCommands = this._currentlyExecutingCommands.filter(c => c !== executingDeferred);
-			executingDeferred.resolve();
-			// If there isn't an active session and we still have queued commands then we have to manually kick off the next one
-			if (this._queuedCommands.length > 0 && !this._currentSession) {
-				this._queuedCommands.shift()?.deferred.resolve();
-			}
-		}
-	}
-
 	/**
-	 * Executes the specified azdata command. This is NOT session-aware so should only be used for calls that don't care about a session
+	 * Executes the specified azdata command.
 	 * @param args The args to pass to azdata
 	 * @param additionalEnvVars Additional environment variables to set for this execution
 	 */
-	private async executeCommandImpl<R>(args: string[], additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<R>> {
+	public async executeCommand<R>(args: string[], additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<R>> {
 		try {
+			if (azdataContext) {
+				args = args.concat('--controller-context', azdataContext);
+			}
 			const output = JSON.parse((await executeAzdataCommand(`"${this._path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
 			return {
 				logs: <string[]>output.log,
@@ -442,8 +372,22 @@ export async function checkAndInstallAzdata(userRequested: boolean = false): Pro
 export async function checkAndUpdateAzdata(currentAzdata?: IAzdataTool, userRequested: boolean = false): Promise<boolean> {
 	if (currentAzdata !== undefined) {
 		const newSemVersion = await discoverLatestAvailableAzdataVersion();
-		if (newSemVersion.compare(await currentAzdata.getSemVersion()) === 1) {
-			Logger.log(loc.foundAzdataVersionToUpdateTo(newSemVersion.raw, (await currentAzdata.getSemVersion()).raw));
+		const currentSemVersion = await currentAzdata.getSemVersion();
+		Logger.log(loc.foundAzdataVersionToUpdateTo(newSemVersion.raw, currentSemVersion.raw));
+		if (MIN_AZDATA_VERSION.compare(currentSemVersion) === 1) {
+			if (newSemVersion.compare(MIN_AZDATA_VERSION) >= 0) {
+				return await promptToUpdateAzdata(newSemVersion.raw, userRequested, true);
+			} else {
+				// This should never happen - it means that the currently available version to download
+				// is < the version we require. If this was to happen it'd imply something is wrong with
+				// the version JSON or the minimum required version.
+				// Regardless, there's nothing we can do and so we just bail out at this point and tell the user
+				// they have to install it manually (hopefully it's available and wasn't a publishing mistake)
+				vscode.window.showInformationMessage(loc.requiredVersionNotAvailable(MIN_AZDATA_VERSION.raw, newSemVersion.raw));
+				Logger.log(loc.requiredVersionNotAvailable(newSemVersion.raw, currentSemVersion.raw));
+			}
+		}
+		else if (newSemVersion.compare(currentSemVersion) === 1) {
 			return await promptToUpdateAzdata(newSemVersion.raw, userRequested);
 		} else {
 			Logger.log(loc.currentlyInstalledVersionIsLatest((await currentAzdata.getSemVersion()).raw));
@@ -504,39 +448,65 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
  * @param newVersion - provides the new version that the user will be prompted to update to
  * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
  * returns true if update was done and false otherwise.
+ * @param required - Whether this update is required. If true then we will always show the prompt and warn the user if they decline it
  */
-async function promptToUpdateAzdata(newVersion: string, userRequested: boolean = false): Promise<boolean> {
-	let response: string | undefined = loc.yes;
-	const config = <AzdataDeployOption>getConfig(azdataUpdateKey);
-	if (userRequested) {
-		Logger.show();
-		Logger.log(loc.userRequestedUpdate);
-	}
-	if (config === AzdataDeployOption.dontPrompt && !userRequested) {
-		Logger.log(loc.skipUpdate(config));
-		return false;
-	}
-	const responses = userRequested
-		? [loc.yes, loc.no]
-		: [loc.yes, loc.askLater, loc.doNotAskAgain];
-	if (config === AzdataDeployOption.prompt) {
-		Logger.log(loc.promptForAzdataUpdateLog(newVersion));
-		response = await vscode.window.showInformationMessage(loc.promptForAzdataUpdate(newVersion), ...responses);
+async function promptToUpdateAzdata(newVersion: string, userRequested: boolean = false, required = false): Promise<boolean> {
+	if (required) {
+		let response: string | undefined = loc.yes;
+
+		const responses = [loc.yes, loc.no];
+		Logger.log(loc.promptForRequiredAzdataUpdateLog(MIN_AZDATA_VERSION.raw, newVersion));
+		response = await vscode.window.showInformationMessage(loc.promptForRequiredAzdataUpdate(MIN_AZDATA_VERSION.raw, newVersion), ...responses);
 		Logger.log(loc.userResponseToUpdatePrompt(response));
-	}
-	if (response === loc.doNotAskAgain) {
-		await setConfig(azdataUpdateKey, AzdataDeployOption.dontPrompt);
-	} else if (response === loc.yes) {
-		try {
-			await updateAzdata();
-			vscode.window.showInformationMessage(loc.azdataUpdated(newVersion));
-			Logger.log(loc.azdataUpdated(newVersion));
-			return true;
-		} catch (err) {
-			// Windows: 1602 is User cancelling installation/update - not unexpected so don't display
-			if (!(err instanceof ExitCodeError) || err.code !== 1602) {
-				vscode.window.showWarningMessage(loc.updateError(err));
-				Logger.log(loc.updateError(err));
+		if (response === loc.yes) {
+			try {
+				await updateAzdata();
+				vscode.window.showInformationMessage(loc.azdataUpdated(newVersion));
+				Logger.log(loc.azdataUpdated(newVersion));
+				return true;
+			} catch (err) {
+				// Windows: 1602 is User cancelling installation/update - not unexpected so don't display
+				if (!(err instanceof ExitCodeError) || err.code !== 1602) {
+					vscode.window.showWarningMessage(loc.updateError(err));
+					Logger.log(loc.updateError(err));
+				}
+			}
+		} else {
+			vscode.window.showWarningMessage(loc.missingRequiredVersion(MIN_AZDATA_VERSION.raw));
+		}
+	} else {
+		let response: string | undefined = loc.yes;
+		const config = <AzdataDeployOption>getConfig(azdataUpdateKey);
+		if (userRequested) {
+			Logger.show();
+			Logger.log(loc.userRequestedUpdate);
+		}
+		if (config === AzdataDeployOption.dontPrompt && !userRequested) {
+			Logger.log(loc.skipUpdate(config));
+			return false;
+		}
+		const responses = userRequested
+			? [loc.yes, loc.no]
+			: [loc.yes, loc.askLater, loc.doNotAskAgain];
+		if (config === AzdataDeployOption.prompt) {
+			Logger.log(loc.promptForAzdataUpdateLog(newVersion));
+			response = await vscode.window.showInformationMessage(loc.promptForAzdataUpdate(newVersion), ...responses);
+			Logger.log(loc.userResponseToUpdatePrompt(response));
+		}
+		if (response === loc.doNotAskAgain) {
+			await setConfig(azdataUpdateKey, AzdataDeployOption.dontPrompt);
+		} else if (response === loc.yes) {
+			try {
+				await updateAzdata();
+				vscode.window.showInformationMessage(loc.azdataUpdated(newVersion));
+				Logger.log(loc.azdataUpdated(newVersion));
+				return true;
+			} catch (err) {
+				// Windows: 1602 is User cancelling installation/update - not unexpected so don't display
+				if (!(err instanceof ExitCodeError) || err.code !== 1602) {
+					vscode.window.showWarningMessage(loc.updateError(err));
+					Logger.log(loc.updateError(err));
+				}
 			}
 		}
 	}
