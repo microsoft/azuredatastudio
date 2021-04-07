@@ -317,11 +317,13 @@ export class ChartView extends Disposable implements IPanelView {
 	}
 
 	private createOption(option: IChartOption, container: HTMLElement) {
-		const label = DOM.$('div.option-label');
-		label.innerText = option.label;
 		const optionContainer = DOM.$('div.option-container');
 		const optionInput = DOM.$('div.option-input');
-		optionContainer.appendChild(label);
+		if (option.type !== ControlType.checkbox) {
+			const label = DOM.$('div.option-label');
+			label.innerText = option.label;
+			optionContainer.appendChild(label);
+		}
 		optionContainer.appendChild(optionInput);
 		let setFunc: ((val: string) => void) | ((val: number) => void) | ((val: boolean) => void);
 		let entry = option.configEntry as keyof IInsightOptions;
@@ -329,7 +331,7 @@ export class ChartView extends Disposable implements IPanelView {
 		switch (option.type) {
 			case ControlType.checkbox:
 				let checkbox = new Checkbox(optionInput, {
-					label: '',
+					label: option.label,
 					ariaLabel: option.label,
 					checked: value,
 					onChange: () => {
