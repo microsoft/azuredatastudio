@@ -204,6 +204,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: 'notebook' });
 			}
 		}
+		// We only need to get the Notebook language association as such we only need to use ipynb
 		const inputCreator = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
 		if (inputCreator) {
 			fileInput = await inputCreator.convertInput(fileInput);
@@ -406,9 +407,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (!notebookUri) {
 			return undefined;
 		}
-		let uriString = notebookUri.toString();
-		// Format the URI string without query parameters
-		uriString = uriString.split('?')[0];
+		// Format the URI string without query or fragment
+		let uriString = notebookUri.with({ query: '', fragment: '' }).toString();
 		let editor = this.listNotebookEditors().find(n => n.id === uriString);
 		return editor;
 	}
