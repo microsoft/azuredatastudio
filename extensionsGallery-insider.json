@@ -1877,7 +1877,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1942,7 +1942,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2007,7 +2007,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2072,7 +2072,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2137,7 +2137,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2202,7 +2202,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2267,7 +2267,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2332,7 +2332,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2397,7 +2397,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2462,7 +2462,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.9.0"
+									"value": ">=1.26.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
