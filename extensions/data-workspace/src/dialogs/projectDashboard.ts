@@ -8,6 +8,7 @@ import { IDashboardColumnInfo, IDashboardTable, IProjectAction, IProjectActionGr
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
+import { IconPathHelper } from '../common/iconHelper';
 import { IWorkspaceService } from '../common/interfaces';
 import { fileExist } from '../common/utils';
 
@@ -17,6 +18,8 @@ export class ProjectDashboard {
 	private modelView: azdata.ModelView | undefined;
 	private projectProvider: IProjectProvider | undefined;
 	private overviewTab: azdata.DashboardTab | undefined;
+	private rootContainer: azdata.FlexContainer | undefined;
+	private tableContainer: azdata.Component | undefined;
 
 	constructor(private _workspaceService: IWorkspaceService, private _treeItem: WorkspaceTreeItem) {
 	}
@@ -69,16 +72,31 @@ export class ProjectDashboard {
 		projectActions.forEach((action, actionIndex) => {
 			if (this.isProjectAction(action)) {
 				const button = this.createButton(action);
-				buttons.push({ component: button });
+				buttons.push({ component: button, toolbarSeparatorAfter: (projectActionsLength - 1 === actionIndex) });
 			} else {
 				const groupLength = action.actions.length;
 
 				action.actions.forEach((groupAction, index) => {
 					const button = this.createButton(groupAction);
-					buttons.push({ component: button, toolbarSeparatorAfter: ((groupLength - 1 === index) && (projectActionsLength - 1 !== actionIndex)) });	// Add toolbar separator at the end of the group, if the group is not the last in the list
+					buttons.push({ component: button, toolbarSeparatorAfter: ((groupLength - 1 === index) || (projectActionsLength - 1 === actionIndex)) });	// Add toolbar separator at the end of the group
 				});
 			}
 		});
+
+		const refreshButton = this.modelView!.modelBuilder.button()
+			.withProperties<azdata.ButtonProperties>({
+				label: constants.Refresh,
+				iconPath: IconPathHelper.refresh,
+				height: '20px'
+			}).component();
+
+		refreshButton.onDidClick(() => {
+			this.rootContainer?.removeItem(this.tableContainer!);
+			this.tableContainer = this.createTables();
+			this.rootContainer?.addItem(this.tableContainer);
+		});
+
+		buttons.push({ component: refreshButton });
 
 		return this.modelView!.modelBuilder.toolbarContainer()
 			.withToolbarItems(
@@ -106,7 +124,7 @@ export class ProjectDashboard {
 	}
 
 	private createContainer(title: string, location: string): azdata.FlexContainer {
-		const rootContainer = this.modelView!.modelBuilder.flexContainer().withLayout(
+		this.rootContainer = this.modelView!.modelBuilder.flexContainer().withLayout(
 			{
 				flexFlow: 'column',
 				width: '100%',
@@ -114,12 +132,12 @@ export class ProjectDashboard {
 			}).component();
 
 		const headerContainer = this.createHeader(title, location);
-		const tableContainer = this.createTables();
+		this.tableContainer = this.createTables();
 
-		rootContainer.addItem(headerContainer);
-		rootContainer.addItem(tableContainer);
+		this.rootContainer.addItem(headerContainer);
+		this.rootContainer.addItem(this.tableContainer);
 
-		return rootContainer;
+		return this.rootContainer;
 	}
 
 	/**
@@ -181,18 +199,18 @@ export class ProjectDashboard {
 			}).component();
 
 		dashboardData.forEach(info => {
+			const tableNameLabel = this.modelView!.modelBuilder.text()
+				.withProperties<azdata.TextComponentProperties>({ value: info.name, CSSStyles: { 'margin-block-start': '30px', 'margin-block-end': '0px' } })
+				.component();
+			tableContainer.addItem(tableNameLabel, { CSSStyles: { 'padding-left': '25px', 'padding-bottom': '20px', ...constants.cssStyles.title } });
+
 			if (info.data.length === 0) {
 				const noDataText = constants.noPreviousData(info.name.toLocaleLowerCase());
 				const noDataLabel = this.modelView!.modelBuilder.text()
-					.withProperties<azdata.TextComponentProperties>({ value: noDataText, CSSStyles: { 'margin-block-start': '30px', 'margin-block-end': '0px' } })
+					.withProperties<azdata.TextComponentProperties>({ value: noDataText })//, CSSStyles: { 'margin-block-start': '30px', 'margin-block-end': '0px' } })
 					.component();
-				tableContainer.addItem(noDataLabel, { CSSStyles: { 'padding-left': '25px', 'padding-bottom': '20px', ...constants.cssStyles.title } });
+				tableContainer.addItem(noDataLabel, { CSSStyles: { 'padding-left': '25px', 'padding-bottom': '20px' } });
 			} else {
-				const tableNameLabel = this.modelView!.modelBuilder.text()
-					.withProperties<azdata.TextComponentProperties>({ value: info.name, CSSStyles: { 'margin-block-start': '30px', 'margin-block-end': '0px' } })
-					.component();
-				tableContainer.addItem(tableNameLabel, { CSSStyles: { 'padding-left': '25px', 'padding-bottom': '20px', ...constants.cssStyles.title } });
-
 				const columns: azdata.DeclarativeTableColumn[] = [];
 				info.columns.forEach((column: IDashboardColumnInfo) => {
 					let col = {

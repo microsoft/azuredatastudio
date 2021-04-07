@@ -13,11 +13,13 @@ export interface IconPath {
 export class IconPathHelper {
 	private static extensionContext: vscode.ExtensionContext;
 	public static folder: IconPath;
+	public static refresh: IconPath;
 
 	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
 		IconPathHelper.extensionContext = extensionContext;
 
 		IconPathHelper.folder = IconPathHelper.makeIcon('folder', true);
+		IconPathHelper.refresh = IconPathHelper.makeIcon('refresh', true);
 	}
 
 	private static makeIcon(name: string, sameIcon: boolean = false) {
