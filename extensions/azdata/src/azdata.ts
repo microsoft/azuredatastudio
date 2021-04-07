@@ -17,6 +17,11 @@ import { getErrorMessage, NoAzdataError, searchForCmd } from './common/utils';
 import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataInstallKey, azdataUpdateKey, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
 
+/**
+ * The minimum required azdata CLI version for this extension to function properly
+ */
+export const MIN_AZDATA_VERSION = new SemVer('20.3.2');
+
 export const enum AzdataDeployOption {
 	dontPrompt = 'dontPrompt',
 	prompt = 'prompt'
@@ -367,8 +372,22 @@ export async function checkAndInstallAzdata(userRequested: boolean = false): Pro
 export async function checkAndUpdateAzdata(currentAzdata?: IAzdataTool, userRequested: boolean = false): Promise<boolean> {
 	if (currentAzdata !== undefined) {
 		const newSemVersion = await discoverLatestAvailableAzdataVersion();
-		if (newSemVersion.compare(await currentAzdata.getSemVersion()) === 1) {
-			Logger.log(loc.foundAzdataVersionToUpdateTo(newSemVersion.raw, (await currentAzdata.getSemVersion()).raw));
+		const currentSemVersion = await currentAzdata.getSemVersion();
+		Logger.log(loc.foundAzdataVersionToUpdateTo(newSemVersion.raw, currentSemVersion.raw));
+		if (MIN_AZDATA_VERSION.compare(currentSemVersion) === 1) {
+			if (newSemVersion.compare(MIN_AZDATA_VERSION) >= 0) {
+				return await promptToUpdateAzdata(newSemVersion.raw, userRequested, true);
+			} else {
+				// This should never happen - it means that the currently available version to download
+				// is < the version we require. If this was to happen it'd imply something is wrong with
+				// the version JSON or the minimum required version.
+				// Regardless, there's nothing we can do and so we just bail out at this point and tell the user
+				// they have to install it manually (hopefully it's available and wasn't a publishing mistake)
+				vscode.window.showInformationMessage(loc.requiredVersionNotAvailable(MIN_AZDATA_VERSION.raw, newSemVersion.raw));
+				Logger.log(loc.requiredVersionNotAvailable(newSemVersion.raw, currentSemVersion.raw));
+			}
+		}
+		else if (newSemVersion.compare(currentSemVersion) === 1) {
 			return await promptToUpdateAzdata(newSemVersion.raw, userRequested);
 		} else {
 			Logger.log(loc.currentlyInstalledVersionIsLatest((await currentAzdata.getSemVersion()).raw));
@@ -429,39 +448,65 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
  * @param newVersion - provides the new version that the user will be prompted to update to
  * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
  * returns true if update was done and false otherwise.
+ * @param required - Whether this update is required. If true then we will always show the prompt and warn the user if they decline it
  */
-async function promptToUpdateAzdata(newVersion: string, userRequested: boolean = false): Promise<boolean> {
-	let response: string | undefined = loc.yes;
-	const config = <AzdataDeployOption>getConfig(azdataUpdateKey);
-	if (userRequested) {
-		Logger.show();
-		Logger.log(loc.userRequestedUpdate);
-	}
-	if (config === AzdataDeployOption.dontPrompt && !userRequested) {
-		Logger.log(loc.skipUpdate(config));
-		return false;
-	}
-	const responses = userRequested
-		? [loc.yes, loc.no]
-		: [loc.yes, loc.askLater, loc.doNotAskAgain];
-	if (config === AzdataDeployOption.prompt) {
-		Logger.log(loc.promptForAzdataUpdateLog(newVersion));
-		response = await vscode.window.showInformationMessage(loc.promptForAzdataUpdate(newVersion), ...responses);
+async function promptToUpdateAzdata(newVersion: string, userRequested: boolean = false, required = false): Promise<boolean> {
+	if (required) {
+		let response: string | undefined = loc.yes;
+
+		const responses = [loc.yes, loc.no];
+		Logger.log(loc.promptForRequiredAzdataUpdateLog(MIN_AZDATA_VERSION.raw, newVersion));
+		response = await vscode.window.showInformationMessage(loc.promptForRequiredAzdataUpdate(MIN_AZDATA_VERSION.raw, newVersion), ...responses);
 		Logger.log(loc.userResponseToUpdatePrompt(response));
-	}
-	if (response === loc.doNotAskAgain) {
-		await setConfig(azdataUpdateKey, AzdataDeployOption.dontPrompt);
-	} else if (response === loc.yes) {
-		try {
-			await updateAzdata();
-			vscode.window.showInformationMessage(loc.azdataUpdated(newVersion));
-			Logger.log(loc.azdataUpdated(newVersion));
-			return true;
-		} catch (err) {
-			// Windows: 1602 is User cancelling installation/update - not unexpected so don't display
-			if (!(err instanceof ExitCodeError) || err.code !== 1602) {
-				vscode.window.showWarningMessage(loc.updateError(err));
-				Logger.log(loc.updateError(err));
+		if (response === loc.yes) {
+			try {
+				await updateAzdata();
+				vscode.window.showInformationMessage(loc.azdataUpdated(newVersion));
+				Logger.log(loc.azdataUpdated(newVersion));
+				return true;
+			} catch (err) {
+				// Windows: 1602 is User cancelling installation/update - not unexpected so don't display
+				if (!(err instanceof ExitCodeError) || err.code !== 1602) {
+					vscode.window.showWarningMessage(loc.updateError(err));
+					Logger.log(loc.updateError(err));
+				}
+			}
+		} else {
+			vscode.window.showWarningMessage(loc.missingRequiredVersion(MIN_AZDATA_VERSION.raw));
+		}
+	} else {
+		let response: string | undefined = loc.yes;
+		const config = <AzdataDeployOption>getConfig(azdataUpdateKey);
+		if (userRequested) {
+			Logger.show();
+			Logger.log(loc.userRequestedUpdate);
+		}
+		if (config === AzdataDeployOption.dontPrompt && !userRequested) {
+			Logger.log(loc.skipUpdate(config));
+			return false;
+		}
+		const responses = userRequested
+			? [loc.yes, loc.no]
+			: [loc.yes, loc.askLater, loc.doNotAskAgain];
+		if (config === AzdataDeployOption.prompt) {
+			Logger.log(loc.promptForAzdataUpdateLog(newVersion));
+			response = await vscode.window.showInformationMessage(loc.promptForAzdataUpdate(newVersion), ...responses);
+			Logger.log(loc.userResponseToUpdatePrompt(response));
+		}
+		if (response === loc.doNotAskAgain) {
+			await setConfig(azdataUpdateKey, AzdataDeployOption.dontPrompt);
+		} else if (response === loc.yes) {
+			try {
+				await updateAzdata();
+				vscode.window.showInformationMessage(loc.azdataUpdated(newVersion));
+				Logger.log(loc.azdataUpdated(newVersion));
+				return true;
+			} catch (err) {
+				// Windows: 1602 is User cancelling installation/update - not unexpected so don't display
+				if (!(err instanceof ExitCodeError) || err.code !== 1602) {
+					vscode.window.showWarningMessage(loc.updateError(err));
+					Logger.log(loc.updateError(err));
+				}
 			}
 		}
 	}
