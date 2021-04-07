@@ -70,9 +70,18 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		this.baseDestroy();
 	}
 
+	public headerCheckboxVisible(colIdx: number): boolean {
+		return this.columns[colIdx].showCheckAll && this.isCheckBox(colIdx);
+	}
+
 	public isHeaderChecked(colIdx: number): boolean {
-		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
-		return column.isChecked;
+		for (const row of this.data) {
+			const cellData = row[colIdx];
+			if (cellData.value === false && cellData.enabled !== false) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public isCheckBox(colIdx: number): boolean {
@@ -80,9 +89,10 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		return column.valueType === DeclarativeDataType.boolean;
 	}
 
-	public isControlEnabled(colIdx: number): boolean {
-		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
-		return !column.isReadOnly;
+	public isControlEnabled(rowIdx: number, colIdx: number): boolean {
+		const cellData = this.data[rowIdx][colIdx];
+		const column: azdata.DeclarativeTableColumn = this.columns[colIdx];
+		return !column.isReadOnly && cellData.enabled !== false;
 	}
 
 	private isLabel(colIdx: number): boolean {
@@ -108,22 +118,14 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		this.onCellDataChanged(e, rowIdx, colIdx);
 		// If all of the rows in that column are now checked, let's update the header.
 		if (this.columns[colIdx].showCheckAll) {
-			if (e) {
-				for (let rowIdx = 0; rowIdx < this.data.length; rowIdx++) {
-					if (this.data[rowIdx][colIdx].value === false) {
-						return;
-					}
-				}
-			}
-			this.columns[colIdx].isChecked = e;
 			this._changeRef.detectChanges();
 		}
 	}
 
 	public onHeaderCheckBoxChanged(e: boolean, colIdx: number): void {
-		this.columns[colIdx].isChecked = e;
 		this.data.forEach((row, rowIdx) => {
-			if (row[colIdx].value !== e) {
+			const cellData = row[colIdx];
+			if (cellData.value !== e && cellData.enabled !== false) {
 				this.onCellDataChanged(e, rowIdx, colIdx);
 			}
 		});
