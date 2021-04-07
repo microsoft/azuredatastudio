@@ -775,11 +775,14 @@ export class SqlDatabaseTree {
 			this._model._assessmentResults.databaseAssessments.sort((db1, db2) => {
 				return db2.issues.length - db1.issues.length;
 			});
+			// Reset the dbName list so that it is in sync with the table
+			this._dbNames = this._model._assessmentResults.databaseAssessments.map(da => da.name);
 			this._model._assessmentResults.databaseAssessments.forEach((db) => {
 				databaseTableValues.push(
 					[
 						{
 							value: selectedDbs.includes(db.name),
+							enabled: db.issues.length === 0,
 							style: styleLeft
 						},
 						{
