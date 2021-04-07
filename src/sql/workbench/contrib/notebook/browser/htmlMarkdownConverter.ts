@@ -134,7 +134,7 @@ export class HTMLMarkdownConverter {
 			replacement: (content, node) => {
 				let href = node.href;
 				let notebookLink: URI = undefined;
-				const isAnchorLink = node.attributes.href?.nodeValue.startsWith('#') || href.includes('#');
+				const isAnchorLink = (node.attributes.href?.nodeValue.startsWith('#') || href.includes('#')) && href.startsWith('file://');
 				if (isAnchorLink) {
 					notebookLink = getUriAnchorLink(node, this.notebookUri);
 				} else {
