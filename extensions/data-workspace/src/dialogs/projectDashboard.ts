@@ -207,7 +207,7 @@ export class ProjectDashboard {
 			if (info.data.length === 0) {
 				const noDataText = constants.noPreviousData(info.name.toLocaleLowerCase());
 				const noDataLabel = this.modelView!.modelBuilder.text()
-					.withProperties<azdata.TextComponentProperties>({ value: noDataText })//, CSSStyles: { 'margin-block-start': '30px', 'margin-block-end': '0px' } })
+					.withProperties<azdata.TextComponentProperties>({ value: noDataText })
 					.component();
 				tableContainer.addItem(noDataLabel, { CSSStyles: { 'padding-left': '25px', 'padding-bottom': '20px' } });
 			} else {
