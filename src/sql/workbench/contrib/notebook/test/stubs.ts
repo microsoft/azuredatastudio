@@ -21,7 +21,7 @@ import { IEditorPane } from 'vs/workbench/common/editor';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 
 export class NotebookModelStub implements INotebookModel {
-	constructor(private _languageInfo?: nb.ILanguageInfo, private _cells?: ICellModel[]) {
+	constructor(private _languageInfo?: nb.ILanguageInfo, private _cells?: ICellModel[], private _testContents?: nb.INotebookContents) {
 	}
 	trustedMode: boolean;
 	language: string;
@@ -136,7 +136,7 @@ export class NotebookModelStub implements INotebookModel {
 		throw new Error('method not implemented.');
 	}
 	toJSON(): nb.INotebookContents {
-		throw new Error('Method not implemented.');
+		return this._testContents;
 	}
 	serializationStateChanged(changeType: NotebookChangeType, cell?: ICellModel): void {
 		throw new Error('Method not implemented.');
