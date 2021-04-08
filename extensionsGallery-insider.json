@@ -3096,14 +3096,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.3.0",
-							"lastUpdated": "6/27/2020",
+							"version": "0.7.0",
+							"lastUpdated": "4/08/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/R0tenur/visualization/releases/tag/v0.3.0"
+									"source": "https://github.com/R0tenur/visualization/releases/tag/v0.7.0"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3739,14 +3739,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.5.1",
-							"lastUpdated": "03/12/2021",
+							"version": "0.5.2",
+							"lastUpdated": "04/02/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/kusto/kusto-0.5.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/kusto/kusto-0.5.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3780,7 +3780,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.27.0"
+									"value": ">=1.28.0"
 								}
 							]
 						}
