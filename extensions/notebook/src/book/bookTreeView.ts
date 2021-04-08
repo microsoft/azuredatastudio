@@ -445,7 +445,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (bookItem) {
 				return bookItem;
 			}
-			// Walk up to the parent folders one level at each iteration
+			// Walk down from the top level parent folder one level at each iteration
 			// and keep expanding until we reach the target notebook leaf
 			let parentBookPath: string = notebookFolders.slice(0, notebookFolders.length - depthOfNotebookInBook).join('/');
 			let bookItemToExpand = parentBook.bookItems.find(b => b.tooltip.indexOf(parentBookPath) > -1) ??

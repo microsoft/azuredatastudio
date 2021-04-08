@@ -33,14 +33,14 @@ export interface IExpectedBookItem {
 	nextUri?: string | undefined;
 }
 
-export function equalBookItems(book: BookTreeItem | undefined, expectedBook: IExpectedBookItem, errorMsg?: string): void {
-	should(book?.title).equal(expectedBook?.title, `Book titles do not match, expected ${expectedBook?.title} and got ${book?.title}`);
-	if (expectedBook?.file) {
-		should(path.posix.parse(book?.uri)).deepEqual(path.posix.parse(expectedBook.file));
+export function equalBookItems(book: BookTreeItem, expectedBook: IExpectedBookItem, errorMsg?: string): void {
+	should(book.title).equal(expectedBook.title, `Book titles do not match, expected ${expectedBook?.title} and got ${book?.title}`);
+	if (expectedBook.file) {
+		should(path.posix.parse(book.uri)).deepEqual(path.posix.parse(expectedBook.file));
 	} else {
-		should(path.posix.parse(book?.uri)).deepEqual(path.posix.parse(expectedBook.url));
+		should(path.posix.parse(book.uri)).deepEqual(path.posix.parse(expectedBook.url));
 	}
-	if (expectedBook?.previousUri || expectedBook?.nextUri) {
+	if (expectedBook.previousUri || expectedBook.nextUri) {
 		let prevUri = book.previousUri ? book.previousUri.toLocaleLowerCase() : undefined;
 		let expectedPrevUri = expectedBook.previousUri ? expectedBook.previousUri.replace(/\\/g, '/') : undefined;
 		should(prevUri).equal(expectedPrevUri, errorMsg ?? `PreviousUri\'s do not match, expected ${expectedPrevUri} and got ${prevUri}`);
@@ -245,6 +245,7 @@ describe('BooksTreeViewTests', function () {
 			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb').replace(/\\/g, '/');
 				let currentSelection = await bookTreeViewProvider.findAndExpandParentNode(notebook1Path);
+				should(currentSelection).not.be.undefined();
 				equalBookItems(currentSelection, expectedNotebook1);
 			});
 
@@ -329,6 +330,7 @@ describe('BooksTreeViewTests', function () {
 			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb').replace(/\\/g, '/');
 				let currentSelection = await providedbookTreeViewProvider.findAndExpandParentNode(notebook1Path);
+				should(currentSelection).not.be.undefined();
 				equalBookItems(currentSelection, expectedNotebook1);
 			});
 
