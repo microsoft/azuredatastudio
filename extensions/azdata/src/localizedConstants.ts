@@ -42,7 +42,7 @@ export const promptForRequiredAzdataUpdate = (requiredVersion: string, latestVer
 export const requiredVersionNotAvailable = (requiredVersion: string, currentVersion: string): string => localize('azdata.requiredVersionNotAvailable', "This extension requires Azure Data CLI >= {0} to be installed, but the current version available is only {1}. Install the correct version manually from [here](https://docs.microsoft.com/sql/azdata/install/deploy-install-azdata) and then restart Azure Data Studio.", requiredVersion, currentVersion);
 export const promptForAzdataUpdateLog = (version: string): string => promptLog(promptForAzdataUpdate(version));
 export const promptForRequiredAzdataUpdateLog = (requiredVersion: string, latestVersion: string): string => promptLog(promptForRequiredAzdataUpdate(requiredVersion, latestVersion));
-export const missingRequiredVersion = (requiredVersion: string): string => localize('azdata.missingRequiredVersion', "Azure Data CLI >= {0} is required for this extension to function, some features may not work correctly until that version or higher is installed.", requiredVersion);
+export const missingRequiredVersion = (requiredVersion: string): string => localize('azdata.missingRequiredVersion', "Azure Data CLI >= {0} is required for this feature. Run the 'Azure Data CLI: Check for Update' command to install this and then try again.", requiredVersion);
 export const downloadError = localize('azdata.downloadError', "Error while downloading");
 export const installError = (err: any): string => localize('azdata.installError', "Error installing Azure Data CLI: {0}", err.message ?? err);
 export const updateError = (err: any): string => localize('azdata.updateError', "Error updating Azure Data CLI: {0}", err.message ?? err);
