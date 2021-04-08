@@ -44,7 +44,7 @@ export class ProjectDashboard {
 		await this.dashboard!.open();
 	}
 
-	private async createDashboard(title: string, location: string): Promise<void> {
+	private async createDashboard(title: string, projectFilePath: string): Promise<void> {
 		this.dashboard = azdata.window.createModelViewDashboard(title, 'ProjectDashboard', { alwaysShowTabs: false });
 		this.dashboard.registerTabs(async (modelView: azdata.ModelView) => {
 			this.modelView = modelView;
@@ -52,8 +52,8 @@ export class ProjectDashboard {
 			this.overviewTab = {
 				title: '',
 				id: 'overview-tab',
-				content: this.createContainer(title, location),
-				toolbar: this.createToolbarContainer()
+				content: this.createContainer(title, projectFilePath),
+				toolbar: this.createToolbarContainer(projectFilePath)
 			};
 			return [
 				this.overviewTab
@@ -61,7 +61,7 @@ export class ProjectDashboard {
 		});
 	}
 
-	private createToolbarContainer(): azdata.ToolbarContainer {
+	private createToolbarContainer(projectFilePath: string): azdata.ToolbarContainer {
 		const projectActions: (IProjectAction | IProjectActionGroup)[] = this.projectProvider!.projectActions;
 
 		// Add actions as buttons
@@ -92,7 +92,7 @@ export class ProjectDashboard {
 
 		refreshButton.onDidClick(() => {
 			this.rootContainer?.removeItem(this.tableContainer!);
-			this.tableContainer = this.createTables();
+			this.tableContainer = this.createTables(projectFilePath);
 			this.rootContainer?.addItem(this.tableContainer);
 		});
 
@@ -123,7 +123,7 @@ export class ProjectDashboard {
 		return button;
 	}
 
-	private createContainer(title: string, location: string): azdata.FlexContainer {
+	private createContainer(title: string, projectFilePath: string): azdata.FlexContainer {
 		this.rootContainer = this.modelView!.modelBuilder.flexContainer().withLayout(
 			{
 				flexFlow: 'column',
@@ -131,8 +131,8 @@ export class ProjectDashboard {
 				height: '100%'
 			}).component();
 
-		const headerContainer = this.createHeader(title, location);
-		this.tableContainer = this.createTables();
+		const headerContainer = this.createHeader(title, projectFilePath);
+		this.tableContainer = this.createTables(projectFilePath);
 
 		this.rootContainer.addItem(headerContainer);
 		this.rootContainer.addItem(this.tableContainer);
@@ -188,8 +188,8 @@ export class ProjectDashboard {
 	/**
 	 * Adds all the tables to the container
 	 */
-	private createTables(): azdata.Component {
-		const dashboardData: IDashboardTable[] = this.projectProvider!.dashboardComponents;
+	private createTables(projectFile: string): azdata.Component {
+		const dashboardData: IDashboardTable[] = this.projectProvider!.getDashboardComponents(projectFile);
 
 		const tableContainer = this.modelView!.modelBuilder.flexContainer().withLayout(
 			{

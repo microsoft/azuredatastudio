@@ -128,7 +128,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	/**
 	 * Gets the data to be displayed in the project dashboard
 	 */
-	get dashboardComponents(): dataworkspace.IDashboardTable[] {
+	getDashboardComponents(projectFile: string): dataworkspace.IDashboardTable[] {
 		const deployInfo: dataworkspace.IDashboardTable = {
 			name: constants.Deployments,
 			columns: [{ displayName: constants.ID, width: 100 },
@@ -136,7 +136,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 			{ displayName: constants.Target, width: 250 },
 			{ displayName: constants.Time, width: 250 },
 			{ displayName: constants.Date, width: 250 }],
-			data: this.projectController.dashboardDeployData
+			data: this.projectController.getDashboardDeployData(projectFile)
 		};
 
 		const buildInfo: dataworkspace.IDashboardTable = {
@@ -146,7 +146,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 			{ displayName: constants.Target, width: 250 },
 			{ displayName: constants.Time, width: 250 },
 			{ displayName: constants.Date, width: 250 }],
-			data: this.projectController.dashboardBuildData
+			data: this.projectController.getDashboardBuildData(projectFile)
 		};
 
 		return [deployInfo, buildInfo];
