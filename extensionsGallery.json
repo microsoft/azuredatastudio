@@ -3504,7 +3504,7 @@
 					"versions": [
 						{
 							"version": "0.8.1",
-							"lastUpdated": "4/7/2021",
+							"lastUpdated": "4/8/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -3536,7 +3536,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.27.0"
+									"value": ">=1.28.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
