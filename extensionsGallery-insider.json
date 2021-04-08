@@ -3945,7 +3945,7 @@
 					"extensionId": "80",
 					"extensionName": "sql-data-inspector",
 					"displayName": "SQL Data Inspector",
-					"shortDescription": "This extension simplify the inspection of data stored in tables and columns to just few clicks.",
+					"shortDescription": "This extension makes it easy to inspect data with just a few clicks.",
 					"publisher": {
 						"displayName": "Ernesto Cianciotta",
 						"publisherId": "ernstc",
@@ -3953,14 +3953,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.1",
-							"lastUpdated": "04/02/2021",
+							"version": "0.1.2",
+							"lastUpdated": "04/08/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/ernstc/SqlDataInspector/releases/tag/0.1.1"
+									"source": "https://github.com/ernstc/SqlDataInspector/releases/tag/0.1.2"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
