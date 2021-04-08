@@ -5,7 +5,7 @@
 
 import * as nls from 'vscode-nls';
 import { getErrorMessage } from './common/utils';
-import { azdataConfigSection, azdataInstallKey, azdataUpdateKey } from './constants';
+import { azdataConfigSection, azdataInstallKey, azdataUpdateKey, azdataUpdateRequiredKey } from './constants';
 const localize = nls.loadMessageBundle();
 
 export const azdata = localize('azdata.azdata', "Azure Data CLI");
@@ -53,6 +53,7 @@ export const noAzdata = localize('azdata.noAzdata', "No Azure Data CLI is availa
 export const noAzdataWithLink = localize('azdata.noAzdataWithLink', "No Azure Data CLI is available, [install the Azure Data CLI](command:azdata.install) to enable the features that require it.");
 export const skipInstall = (config: string): string => localize('azdata.skipInstall', "Skipping installation of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}", azdataConfigSection, azdataInstallKey, config);
 export const skipUpdate = (config: string): string => localize('azdata.skipUpdate', "Skipping update of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}", azdataConfigSection, azdataUpdateKey, config);
+export const skipRequiredUpdate = (config: string): string => localize('azdata.skipRequiredUpdate', "Skipping required update of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}", azdataConfigSection, azdataUpdateRequiredKey, config);
 export const noReleaseVersion = (platform: string, releaseInfo: string): string => localize('azdata.noReleaseVersion', "No release version available for platform '{0}'\nRelease info: ${1}", platform, releaseInfo);
 export const noDownloadLink = (platform: string, releaseInfo: string): string => localize('azdata.noDownloadLink', "No download link available for platform '{0}'\nRelease info: ${1}", platform, releaseInfo);
 export const failedToParseReleaseInfo = (url: string, fileContents: string, err: any): string => localize('azdata.failedToParseReleaseInfo', "Failed to parse the JSON of contents at: {0}.\nFile contents:\n{1}\nError: {2}", url, fileContents, getErrorMessage(err));
