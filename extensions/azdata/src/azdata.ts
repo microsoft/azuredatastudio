@@ -14,7 +14,7 @@ import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
 import { getErrorMessage, NoAzdataError, searchForCmd } from './common/utils';
-import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataInstallKey, azdataUpdateKey, azdataUpdateRequiredKey, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
+import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataInstallKey, azdataUpdateKey, azdatarequiredUpdateKey, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
 
 /**
@@ -465,7 +465,7 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
 async function promptToUpdateAzdata(newVersion: string, userRequested: boolean = false, required = false): Promise<boolean> {
 	if (required) {
 		let response: string | undefined = loc.yes;
-		const config = <AzdataDeployOption>getConfig(azdataUpdateRequiredKey);
+		const config = <AzdataDeployOption>getConfig(azdatarequiredUpdateKey);
 		if (userRequested) {
 			Logger.show();
 			Logger.log(loc.userRequestedUpdate);
@@ -481,7 +481,7 @@ async function promptToUpdateAzdata(newVersion: string, userRequested: boolean =
 		response = await vscode.window.showInformationMessage(loc.promptForRequiredAzdataUpdate(MIN_AZDATA_VERSION.raw, newVersion), ...responses);
 		Logger.log(loc.userResponseToUpdatePrompt(response));
 		if (response === loc.doNotAskAgain) {
-			await setConfig(azdataUpdateRequiredKey, AzdataDeployOption.dontPrompt);
+			await setConfig(azdatarequiredUpdateKey, AzdataDeployOption.dontPrompt);
 		} else if (response === loc.yes) {
 			return updateAzdata(newVersion);
 		} else {
