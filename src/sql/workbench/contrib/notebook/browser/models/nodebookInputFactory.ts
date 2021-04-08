@@ -13,6 +13,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { ILanguageAssociation } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { NotebookLanguage } from 'sql/workbench/common/constants';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { DiffNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/diffNotebookInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -20,7 +21,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorInputExtensions.EditorInputFactories);
 
 export class NotebookEditorInputAssociation implements ILanguageAssociation {
-	static readonly languages = ['notebook', 'ipynb'];
+	static readonly languages = [NotebookLanguage.Notebook, NotebookLanguage.Ipynb];
 
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService, @IConfigurationService private readonly configurationService: IConfigurationService) { }
 
