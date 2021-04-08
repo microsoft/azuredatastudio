@@ -233,7 +233,7 @@ describe('BooksTreeViewTests', function () {
 
 			});
 
-			it.skip('getParent should return when element is a valid child notebook', async () => {
+			it('getParent should return when element is a valid child notebook', async () => {
 				let parent = await bookTreeViewProvider.getParent();
 				should(parent).be.undefined();
 
@@ -243,8 +243,9 @@ describe('BooksTreeViewTests', function () {
 			});
 
 			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
-				let notebook1Path = vscode.Uri.file(path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb')).fsPath;
+				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb').replace(/\\/g, '/');
 				let currentSelection = await bookTreeViewProvider.findAndExpandParentNode(notebook1Path);
+				should(currentSelection).not.be.undefined();
 				equalBookItems(currentSelection, expectedNotebook1);
 			});
 
@@ -327,8 +328,9 @@ describe('BooksTreeViewTests', function () {
 			});
 
 			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
-				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
+				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb').replace(/\\/g, '/');
 				let currentSelection = await providedbookTreeViewProvider.findAndExpandParentNode(notebook1Path);
+				should(currentSelection).not.be.undefined();
 				equalBookItems(currentSelection, expectedNotebook1);
 			});
 
