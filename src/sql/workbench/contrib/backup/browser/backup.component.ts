@@ -740,7 +740,8 @@ export class BackupComponent extends AngularDisposable {
 	}
 
 	private setDefaultBackupName(): void {
-		if (this.backupNameBox && (!this.backupNameBox.value || this.backupNameBox.value.trim().length === 0)) {
+		const suggestedNamePrefix = this.databaseName + '-' + this.getSelectedBackupType();
+		if (this.backupNameBox && (!this.backupNameBox.value || this.backupNameBox.value.trim().length === 0 || !this.backupNameBox.value.startsWith(suggestedNamePrefix))) {
 			let utc = new Date().toJSON().slice(0, 19);
 			this.backupNameBox.value = this.databaseName + '-' + this.getSelectedBackupType() + '-' + utc;
 		}

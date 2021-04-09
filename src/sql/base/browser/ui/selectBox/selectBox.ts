@@ -216,6 +216,7 @@ export class SelectBox extends vsSelectBox {
 		let selectOptions: SelectOptionItemSQL[] = SelectBox.createOptions(options);
 		this.populateOptionsDictionary(selectOptions);
 		super.setOptions(selectOptions, selected);
+		this.select(selected);
 	}
 
 	public get value(): string {
