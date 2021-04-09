@@ -44,6 +44,96 @@
     <trans-unit id="bdc.ignoreSslVerification.desc">
       <source xml:lang="en">Ignore SSL verification errors against SQL Server Big Data Cluster endpoints such as HDFS, Spark, and Controller if true</source>
     </trans-unit>
+    <trans-unit id="resource-type-sql-bdc-display-name">
+      <source xml:lang="en">SQL Server Big Data Cluster</source>
+    </trans-unit>
+    <trans-unit id="resource-type-sql-bdc-description">
+      <source xml:lang="en">SQL Server Big Data Cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes</source>
+    </trans-unit>
+    <trans-unit id="version-display-name">
+      <source xml:lang="en">Version</source>
+    </trans-unit>
+    <trans-unit id="bdc-2019-display-name">
+      <source xml:lang="en">SQL Server 2019</source>
+    </trans-unit>
+    <trans-unit id="bdc-deployment-target">
+      <source xml:lang="en">Deployment target</source>
+    </trans-unit>
+    <trans-unit id="bdc-deployment-target-new-aks">
+      <source xml:lang="en">New Azure Kubernetes Service Cluster</source>
+    </trans-unit>
+    <trans-unit id="bdc-deployment-target-existing-aks">
+      <source xml:lang="en">Existing Azure Kubernetes Service Cluster</source>
+    </trans-unit>
+    <trans-unit id="bdc-deployment-target-existing-kubeadm">
+      <source xml:lang="en">Existing Kubernetes Cluster (kubeadm)</source>
+    </trans-unit>
+    <trans-unit id="bdc-deployment-target-existing-aro">
+      <source xml:lang="en">Existing Azure Red Hat OpenShift cluster</source>
+    </trans-unit>
+    <trans-unit id="bdc-deployment-target-existing-openshift">
+      <source xml:lang="en">Existing OpenShift cluster</source>
+    </trans-unit>
+    <trans-unit id="bdc-cluster-settings-section-title">
+      <source xml:lang="en">SQL Server Big Data Cluster settings</source>
+    </trans-unit>
+    <trans-unit id="bdc-cluster-name-field">
+      <source xml:lang="en">Cluster name</source>
+    </trans-unit>
+    <trans-unit id="bdc-controller-username-field">
+      <source xml:lang="en">Controller username</source>
+    </trans-unit>
+    <trans-unit id="bdc-password-field">
+      <source xml:lang="en">Password</source>
+    </trans-unit>
+    <trans-unit id="bdc-confirm-password-field">
+      <source xml:lang="en">Confirm password</source>
+    </trans-unit>
+    <trans-unit id="bdc-azure-settings-section-title">
+      <source xml:lang="en">Azure settings</source>
+    </trans-unit>
+    <trans-unit id="bdc-azure-subscription-id-field">
+      <source xml:lang="en">Subscription id</source>
+    </trans-unit>
+    <trans-unit id="bdc-azure-subscription-id-placeholder">
+      <source xml:lang="en">Use my default Azure subscription</source>
+    </trans-unit>
+    <trans-unit id="bdc-azure-resource-group-field">
+      <source xml:lang="en">Resource group name</source>
+    </trans-unit>
+    <trans-unit id="bdc-azure-region-field">
+      <source xml:lang="en">Region</source>
+    </trans-unit>
+    <trans-unit id="bdc-azure-aks-name-field">
+      <source xml:lang="en">AKS cluster name</source>
+    </trans-unit>
+    <trans-unit id="bdc-azure-vm-size-field">
+      <source xml:lang="en">VM size</source>
+    </trans-unit>
+    <trans-unit id="bdc-azure-vm-count-field">
+      <source xml:lang="en">VM count</source>
+    </trans-unit>
+    <trans-unit id="bdc-storage-class-field">
+      <source xml:lang="en">Storage class name</source>
+    </trans-unit>
+    <trans-unit id="bdc-data-size-field">
+      <source xml:lang="en">Capacity for data (GB)</source>
+    </trans-unit>
+    <trans-unit id="bdc-log-size-field">
+      <source xml:lang="en">Capacity for logs (GB)</source>
+    </trans-unit>
+    <trans-unit id="bdc-agreement">
+      <source xml:lang="en">I accept {0}, {1} and {2}.</source>
+    </trans-unit>
+    <trans-unit id="microsoft-privacy-statement">
+      <source xml:lang="en">Microsoft Privacy Statement</source>
+    </trans-unit>
+    <trans-unit id="bdc-agreement-azdata-eula">
+      <source xml:lang="en">azdata License Terms</source>
+    </trans-unit>
+    <trans-unit id="bdc-agreement-bdc-eula">
+      <source xml:lang="en">SQL Server License Terms</source>
+    </trans-unit>
   </body></file>
   <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" datatype="plaintext"><body>
     <trans-unit id="state.creating">

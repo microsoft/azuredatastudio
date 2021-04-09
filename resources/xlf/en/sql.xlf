@@ -5,18 +5,6 @@
       <source xml:lang="en">Copying images is not supported</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/update/electron-browser/releaseNotes" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="gettingStarted">
-      <source xml:lang="en">Get Started</source>
-    </trans-unit>
-    <trans-unit id="showReleaseNotes">
-      <source xml:lang="en">Show Getting Started</source>
-    </trans-unit>
-    <trans-unit id="miGettingStarted">
-      <source xml:lang="en">Getting &amp;&amp;Started</source>
-      <note>&amp;&amp; denotes a mnemonic</note>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory" source-language="en" datatype="plaintext"><body>
     <trans-unit id="queryHistoryConfigurationTitle">
       <source xml:lang="en">QueryHistory</source>
@@ -33,6 +21,29 @@
     </trans-unit>
     <trans-unit id="queryHistory">
       <source xml:lang="en">Query History</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/update/electron-browser/releaseNotes" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="gettingStarted">
+      <source xml:lang="en">Get Started</source>
+    </trans-unit>
+    <trans-unit id="showReleaseNotes">
+      <source xml:lang="en">Show Getting Started</source>
+    </trans-unit>
+    <trans-unit id="miGettingStarted">
+      <source xml:lang="en">Getting &amp;&amp;Started</source>
+      <note>&amp;&amp; denotes a mnemonic</note>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/services/tasks/common/tasksService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="InProgressWarning">
+      <source xml:lang="en">1 or more tasks are in progress. Are you sure you want to quit?</source>
+    </trans-unit>
+    <trans-unit id="taskService.yes">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
+    <trans-unit id="taskService.no">
+      <source xml:lang="en">No</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/commandLine/electron-browser/commandLine" source-language="en" datatype="plaintext"><body>
@@ -62,31 +73,6 @@
     </trans-unit>
     <trans-unit id="connectingQueryLabel">
       <source xml:lang="en">Connecting query file</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/services/tasks/common/tasksService" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="InProgressWarning">
-      <source xml:lang="en">1 or more tasks are in progress. Are you sure you want to quit?</source>
-    </trans-unit>
-    <trans-unit id="taskService.yes">
-      <source xml:lang="en">Yes</source>
-    </trans-unit>
-    <trans-unit id="taskService.no">
-      <source xml:lang="en">No</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/welcome/gettingStarted/browser/abstractEnablePreviewFeatures" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="enablePreviewFeatures.notice">
-      <source xml:lang="en">Preview features enhance your experience in Azure Data Studio by giving you full access to new features and improvements. You can learn more about preview features [here]({0}). Would you like to enable preview features?</source>
-    </trans-unit>
-    <trans-unit id="enablePreviewFeatures.yes">
-      <source xml:lang="en">Yes (recommended)</source>
-    </trans-unit>
-    <trans-unit id="enablePreviewFeatures.no">
-      <source xml:lang="en">No</source>
-    </trans-unit>
-    <trans-unit id="enablePreviewFeatures.never">
-      <source xml:lang="en">No, don't show again</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions" source-language="en" datatype="plaintext"><body>
@@ -122,6 +108,20 @@
     <trans-unit id="queryHistory.regTreeAriaLabel">
       <source xml:lang="en">Query History</source>
       <note>QueryHistory</note>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/welcome/gettingStarted/browser/abstractEnablePreviewFeatures" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="enablePreviewFeatures.notice">
+      <source xml:lang="en">Preview features enhance your experience in Azure Data Studio by giving you full access to new features and improvements. You can learn more about preview features [here]({0}). Would you like to enable preview features?</source>
+    </trans-unit>
+    <trans-unit id="enablePreviewFeatures.yes">
+      <source xml:lang="en">Yes (recommended)</source>
+    </trans-unit>
+    <trans-unit id="enablePreviewFeatures.no">
+      <source xml:lang="en">No</source>
+    </trans-unit>
+    <trans-unit id="enablePreviewFeatures.never">
+      <source xml:lang="en">No, don't show again</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/services/errorMessage/browser/errorMessageService" source-language="en" datatype="plaintext"><body>
@@ -170,6 +170,26 @@
       <source xml:lang="en">No Handler Registered</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="dataExplorer.view">
+      <source xml:lang="en">View</source>
+    </trans-unit>
+    <trans-unit id="databaseConnections">
+      <source xml:lang="en">Database Connections</source>
+    </trans-unit>
+    <trans-unit id="datasource.connections">
+      <source xml:lang="en">data source connections</source>
+    </trans-unit>
+    <trans-unit id="datasource.connectionGroups">
+      <source xml:lang="en">data source groups</source>
+    </trans-unit>
+    <trans-unit id="startupConfig">
+      <source xml:lang="en">Startup Configuration</source>
+    </trans-unit>
+    <trans-unit id="startup.alwaysShowServersView">
+      <source xml:lang="en">True for the Servers view to be shown on launch of Azure Data Studio default; false if the last opened view should be shown</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/contrib/query/common/resultsGrid.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="resultsGridConfigurationTitle">
       <source xml:lang="en">Results Grid and Messages</source>
@@ -199,32 +219,27 @@
       <source xml:lang="en">The maximum width in pixels for auto-sized columns</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="dataExplorer.view">
-      <source xml:lang="en">View</source>
-    </trans-unit>
-    <trans-unit id="databaseConnections">
-      <source xml:lang="en">Database Connections</source>
-    </trans-unit>
-    <trans-unit id="datasource.connections">
-      <source xml:lang="en">data source connections</source>
-    </trans-unit>
-    <trans-unit id="datasource.connectionGroups">
-      <source xml:lang="en">data source groups</source>
-    </trans-unit>
-    <trans-unit id="startupConfig">
-      <source xml:lang="en">Startup Configuration</source>
-    </trans-unit>
-    <trans-unit id="startup.alwaysShowServersView">
-      <source xml:lang="en">True for the Servers view to be shown on launch of Azure Data Studio default; false if the last opened view should be shown</source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="disconnect">
       <source xml:lang="en">Disconnect</source>
     </trans-unit>
     <trans-unit id="refresh">
       <source xml:lang="en">Refresh</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/tasks/browser/tasks.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="inProgressTasksChangesBadge">
+      <source xml:lang="en">{0} in progress tasks</source>
+    </trans-unit>
+    <trans-unit id="viewCategory">
+      <source xml:lang="en">View</source>
+    </trans-unit>
+    <trans-unit id="tasks">
+      <source xml:lang="en">Tasks</source>
+    </trans-unit>
+    <trans-unit id="miViewTasks">
+      <source xml:lang="en">&amp;&amp;Tasks</source>
+      <note>&amp;&amp; denotes a mnemonic</note>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/browser/actions.contribution" source-language="en" datatype="plaintext"><body>
@@ -242,26 +257,6 @@
     </trans-unit>
     <trans-unit id="enableObsoleteApiUsageNotification">
       <source xml:lang="en">Enable/disable obsolete API usage notification</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/accounts/browser/accounts.contribution" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="status.problems">
-      <source xml:lang="en">Problems</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/tasks/browser/tasks.contribution" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="inProgressTasksChangesBadge">
-      <source xml:lang="en">{0} in progress tasks</source>
-    </trans-unit>
-    <trans-unit id="viewCategory">
-      <source xml:lang="en">View</source>
-    </trans-unit>
-    <trans-unit id="tasks">
-      <source xml:lang="en">Tasks</source>
-    </trans-unit>
-    <trans-unit id="miViewTasks">
-      <source xml:lang="en">&amp;&amp;Tasks</source>
-      <note>&amp;&amp; denotes a mnemonic</note>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/connection/browser/connection.contribution" source-language="en" datatype="plaintext"><body>
@@ -286,6 +281,11 @@
       <source xml:lang="en">(Preview) Use the new async server tree for the Servers view and Connection Dialog with support for new features such as dynamic node filtering.</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/contrib/editData/browser/editData.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="showEditDataSqlPaneOnStartup">
+      <source xml:lang="en">Show Edit Data SQL pane on startup</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/contrib/accounts/browser/accountManagement.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="carbon.extension.contributes.account.id">
       <source xml:lang="en">Identifier of the account type</source>
@@ -303,9 +303,9 @@
       <source xml:lang="en">Contributes icons to account provider.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/editData/browser/editData.contribution" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="showEditDataSqlPaneOnStartup">
-      <source xml:lang="en">Show Edit Data SQL pane on startup</source>
+  <file original="src/sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="resourceViewer">
+      <source xml:lang="en">Resource Viewer</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/barChart.contribution" source-language="en" datatype="plaintext"><body>
@@ -328,11 +328,6 @@
       <source xml:lang="en">Label for the x axis</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="resourceViewer">
-      <source xml:lang="en">Resource Viewer</source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/lineChart.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="dataTypeDescription">
       <source xml:lang="en">Indicates data property of a data set for a chart.</source>
@@ -341,11 +336,6 @@
   <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/views/countInsight.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="countInsightDescription">
       <source xml:lang="en">For each column in a resultset, displays the value in row 0 as a count followed by the column name. Supports '1 Healthy', '3 Unhealthy' for example, where 'Healthy' is the column name and 1 is the value in row 1 cell 1</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/views/tableInsight.contribution" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="tableInsightDescription">
-      <source xml:lang="en">Displays the results in a simple table</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/views/imageInsight.contribution" source-language="en" datatype="plaintext"><body>
@@ -367,9 +357,9 @@
       <source xml:lang="en">Dashboard</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/dashboard/browser/containers/dashboardWebviewContainer.contribution" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="dashboard.container.webview">
-      <source xml:lang="en">The webview that will be displayed in this tab.</source>
+  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/views/tableInsight.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableInsightDescription">
+      <source xml:lang="en">Displays the results in a simple table</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/containers/dashboardControlHostContainer.contribution" source-language="en" datatype="plaintext"><body>
@@ -377,12 +367,9 @@
       <source xml:lang="en">The controlhost that will be displayed in this tab.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/dashboard/browser/containers/dashboardWidgetContainer.contribution" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="dashboard.container.widgets">
-      <source xml:lang="en">The list of widgets that will be displayed in this tab.</source>
-    </trans-unit>
-    <trans-unit id="widgetContainer.invalidInputs">
-      <source xml:lang="en">The list of widgets is expected inside widgets-container for extension.</source>
+  <file original="src/sql/workbench/contrib/dashboard/browser/containers/dashboardWebviewContainer.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.webview">
+      <source xml:lang="en">The webview that will be displayed in this tab.</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/containers/dashboardGridContainer.contribution" source-language="en" datatype="plaintext"><body>
@@ -393,27 +380,12 @@
       <source xml:lang="en">widgets or webviews are expected inside widgets-container for extension.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/dashboard/browser/containers/dashboardContainer.contribution" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="azdata.extension.contributes.dashboard.container.id">
-      <source xml:lang="en">Unique identifier for this container.</source>
+  <file original="src/sql/workbench/contrib/dashboard/browser/containers/dashboardWidgetContainer.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.widgets">
+      <source xml:lang="en">The list of widgets that will be displayed in this tab.</source>
     </trans-unit>
-    <trans-unit id="azdata.extension.contributes.dashboard.container.container">
-      <source xml:lang="en">The container that will be displayed in the tab.</source>
-    </trans-unit>
-    <trans-unit id="azdata.extension.contributes.containers">
-      <source xml:lang="en">Contributes a single or multiple dashboard containers for users to add to their dashboard.</source>
-    </trans-unit>
-    <trans-unit id="dashboardContainer.contribution.noIdError">
-      <source xml:lang="en">No id in dashboard container specified for extension.</source>
-    </trans-unit>
-    <trans-unit id="dashboardContainer.contribution.noContainerError">
-      <source xml:lang="en">No container in dashboard container specified for extension.</source>
-    </trans-unit>
-    <trans-unit id="dashboardContainer.contribution.moreThanOneDashboardContainersError">
-      <source xml:lang="en">Exactly 1 dashboard container must be defined per space.</source>
-    </trans-unit>
-    <trans-unit id="dashboardTab.contribution.unKnownContainerType">
-      <source xml:lang="en">Unknown container type defines in dashboard container for extension.</source>
+    <trans-unit id="widgetContainer.invalidInputs">
+      <source xml:lang="en">The list of widgets is expected inside widgets-container for extension.</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution" source-language="en" datatype="plaintext"><body>
@@ -451,6 +423,29 @@
       <source xml:lang="en">NAV_SECTION within NAV_SECTION is an invalid container for extension.</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/containers/dashboardContainer.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azdata.extension.contributes.dashboard.container.id">
+      <source xml:lang="en">Unique identifier for this container.</source>
+    </trans-unit>
+    <trans-unit id="azdata.extension.contributes.dashboard.container.container">
+      <source xml:lang="en">The container that will be displayed in the tab.</source>
+    </trans-unit>
+    <trans-unit id="azdata.extension.contributes.containers">
+      <source xml:lang="en">Contributes a single or multiple dashboard containers for users to add to their dashboard.</source>
+    </trans-unit>
+    <trans-unit id="dashboardContainer.contribution.noIdError">
+      <source xml:lang="en">No id in dashboard container specified for extension.</source>
+    </trans-unit>
+    <trans-unit id="dashboardContainer.contribution.noContainerError">
+      <source xml:lang="en">No container in dashboard container specified for extension.</source>
+    </trans-unit>
+    <trans-unit id="dashboardContainer.contribution.moreThanOneDashboardContainersError">
+      <source xml:lang="en">Exactly 1 dashboard container must be defined per space.</source>
+    </trans-unit>
+    <trans-unit id="dashboardTab.contribution.unKnownContainerType">
+      <source xml:lang="en">Unknown container type defines in dashboard container for extension.</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/containers/dashboardModelViewContainer.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="dashboard.container.modelview">
       <source xml:lang="en">The model-backed view that will be displayed in this tab.</source>
@@ -467,6 +462,25 @@
     </trans-unit>
     <trans-unit id="backup">
       <source xml:lang="en">Restore</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/extensions/browser/extensions.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="workbench.extensions.getExtensionFromGallery.description">
+      <source xml:lang="en">Gets extension information from the gallery</source>
+    </trans-unit>
+    <trans-unit id="workbench.extensions.getExtensionFromGallery.arg.name">
+      <source xml:lang="en">Extension id</source>
+    </trans-unit>
+    <trans-unit id="notFound">
+      <source xml:lang="en">Extension '{0}' not found.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/charts/browser/charts.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="builtinChartsConfigurationTitle">
+      <source xml:lang="en">Built-in Charts</source>
+    </trans-unit>
+    <trans-unit id="builtinCharts.maxRowCountDescription">
+      <source xml:lang="en">The maximum number of rows for charts to display. Warning: increasing this may impact performance.</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/azure/browser/azure.contribution" source-language="en" datatype="plaintext"><body>
@@ -694,6 +708,9 @@
     <trans-unit id="queryEditor.results.optimizedTable">
       <source xml:lang="en">(Experimental) Use a optimized table in the results out. Some functionality might be missing and in the works.</source>
     </trans-unit>
+    <trans-unit id="queryEditor.inMemoryDataProcessingThreshold">
+      <source xml:lang="en">Controls the max number of rows allowed to do filtering and sorting in memory. If the number is exceeded, sorting and filtering will be disabled.</source>
+    </trans-unit>
     <trans-unit id="queryEditor.messages.showBatchTime">
       <source xml:lang="en">Should execution time be shown for individual batches</source>
     </trans-unit>
@@ -722,7 +739,7 @@
       <source xml:lang="en">Prompt to save generated SQL files</source>
     </trans-unit>
     <trans-unit id="queryShortcutDescription">
-      <source xml:lang="en">Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call. Any selected text in the query editor will be passed as a parameter</source>
+      <source xml:lang="en">Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call or query execution. Any selected text in the query editor will be passed as a parameter at the end of your query, or you can reference it with {arg}</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/profiler/browser/profiler.contribution" source-language="en" datatype="plaintext"><body>
@@ -797,14 +814,6 @@
       <source xml:lang="en">Update cell failed: </source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/services/notebook/browser/notebookServiceImpl" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="notebookUriNotDefined">
-      <source xml:lang="en">No URI was passed when creating a notebook manager</source>
-    </trans-unit>
-    <trans-unit id="notebookServiceNoProvider">
-      <source xml:lang="en">Notebook provider does not exist</source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/notebook.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="notebookEditor.name">
       <source xml:lang="en">Notebook Editor</source>
@@ -838,6 +847,9 @@
     </trans-unit>
     <trans-unit id="notebook.markdownPreviewLineHeight">
       <source xml:lang="en">Controls the line height used in the notebook markdown preview. This number is relative to the font size.</source>
+    </trans-unit>
+    <trans-unit id="notebook.showRenderedNotebookinDiffEditor">
+      <source xml:lang="en">(Preview) Show rendered notebook in diff editor.</source>
     </trans-unit>
     <trans-unit id="notebookExplorer.view">
       <source xml:lang="en">View</source>
@@ -1038,9 +1050,12 @@
       <source xml:lang="en">Edit server group</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/common/editor/query/queryResultsInput" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="extensionsInputName">
-      <source xml:lang="en">Extension</source>
+  <file original="src/sql/workbench/services/resourceProvider/browser/firewallRuleDialogController" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="firewallDialog.addAccountErrorTitle">
+      <source xml:lang="en">Error adding account</source>
+    </trans-unit>
+    <trans-unit id="firewallRuleError">
+      <source xml:lang="en">Firewall rule error</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/objectExplorerService" source-language="en" datatype="plaintext"><body>
@@ -1051,12 +1066,17 @@
       <source xml:lang="en">Multiple errors:</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/services/resourceProvider/browser/firewallRuleDialogController" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="firewallDialog.addAccountErrorTitle">
-      <source xml:lang="en">Error adding account</source>
+  <file original="src/sql/workbench/common/editor/query/queryResultsInput" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="extensionsInputName">
+      <source xml:lang="en">Extension</source>
     </trans-unit>
-    <trans-unit id="firewallRuleError">
-      <source xml:lang="en">Firewall rule error</source>
+  </body></file>
+  <file original="src/sql/workbench/services/notebook/browser/notebookServiceImpl" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="notebookUriNotDefined">
+      <source xml:lang="en">No URI was passed when creating a notebook manager</source>
+    </trans-unit>
+    <trans-unit id="notebookServiceNoProvider">
+      <source xml:lang="en">Notebook provider does not exist</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/api/browser/mainThreadExtensionManagement" source-language="en" datatype="plaintext"><body>
@@ -1110,6 +1130,11 @@
       <source xml:lang="en">{0} was replaced with {1} in your workspace settings.</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/contrib/tasks/browser/tasksActions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="toggleTasks">
+      <source xml:lang="en">Toggle Tasks</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/browser/actions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="manage">
       <source xml:lang="en">Manage</source>
@@ -1124,11 +1149,6 @@
       <source xml:lang="en">Clear all saved accounts</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/tasks/browser/tasksActions" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="toggleTasks">
-      <source xml:lang="en">Toggle Tasks</source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/workbench/contrib/connection/browser/connectionStatus" source-language="en" datatype="plaintext"><body>
     <trans-unit id="status.connection.status">
       <source xml:lang="en">Connection Status</source>
@@ -1140,34 +1160,6 @@
     </trans-unit>
     <trans-unit id="connectionTreeProvider.schema.id">
       <source xml:lang="en">Id for the provider, must be the same as when registering the tree data provider and must start with `connectionDialog/`</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/chartInsight.contribution" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="chartInsightDescription">
-      <source xml:lang="en">Displays results of a query as a chart on the dashboard</source>
-    </trans-unit>
-    <trans-unit id="colorMapDescription">
-      <source xml:lang="en">Maps 'column name' -&gt; color. for example add 'column1': red to ensure this column uses a red color </source>
-    </trans-unit>
-    <trans-unit id="legendDescription">
-      <source xml:lang="en">Indicates preferred position and visibility of the chart legend. These are the column names from your query, and map to the label of each chart entry</source>
-    </trans-unit>
-    <trans-unit id="labelFirstColumnDescription">
-      <source xml:lang="en">If dataDirection is horizontal, setting this to true uses the first columns value for the legend.</source>
-    </trans-unit>
-    <trans-unit id="columnsAsLabels">
-      <source xml:lang="en">If dataDirection is vertical, setting this to true will use the columns names for the legend.</source>
-    </trans-unit>
-    <trans-unit id="dataDirectionDescription">
-      <source xml:lang="en">Defines whether the data is read from a column (vertical) or a row (horizontal). For time series this is ignored as direction must be vertical.</source>
-    </trans-unit>
-    <trans-unit id="showTopNData">
-      <source xml:lang="en">If showTopNData is set, showing only top N data in the chart.</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/platform/dashboard/browser/insightRegistry" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="schema.dashboardWidgets.InsightsRegistry">
-      <source xml:lang="en">Widget used in the dashboards</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/browser/editor/resourceViewer/resourceViewerInput" source-language="en" datatype="plaintext"><body>
@@ -1203,15 +1195,32 @@
       <source xml:lang="en">Resource Viewer Tree</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/platform/dashboard/browser/widgetRegistry" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="schema.dashboardWidgets.all">
+  <file original="src/sql/platform/dashboard/browser/insightRegistry" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="schema.dashboardWidgets.InsightsRegistry">
       <source xml:lang="en">Widget used in the dashboards</source>
     </trans-unit>
-    <trans-unit id="schema.dashboardWidgets.database">
-      <source xml:lang="en">Widget used in the dashboards</source>
+  </body></file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/chartInsight.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="chartInsightDescription">
+      <source xml:lang="en">Displays results of a query as a chart on the dashboard</source>
     </trans-unit>
-    <trans-unit id="schema.dashboardWidgets.server">
-      <source xml:lang="en">Widget used in the dashboards</source>
+    <trans-unit id="colorMapDescription">
+      <source xml:lang="en">Maps 'column name' -&gt; color. for example add 'column1': red to ensure this column uses a red color </source>
+    </trans-unit>
+    <trans-unit id="legendDescription">
+      <source xml:lang="en">Indicates preferred position and visibility of the chart legend. These are the column names from your query, and map to the label of each chart entry</source>
+    </trans-unit>
+    <trans-unit id="labelFirstColumnDescription">
+      <source xml:lang="en">If dataDirection is horizontal, setting this to true uses the first columns value for the legend.</source>
+    </trans-unit>
+    <trans-unit id="columnsAsLabels">
+      <source xml:lang="en">If dataDirection is vertical, setting this to true will use the columns names for the legend.</source>
+    </trans-unit>
+    <trans-unit id="dataDirectionDescription">
+      <source xml:lang="en">Defines whether the data is read from a column (vertical) or a row (horizontal). For time series this is ignored as direction must be vertical.</source>
+    </trans-unit>
+    <trans-unit id="showTopNData">
+      <source xml:lang="en">If showTopNData is set, showing only top N data in the chart.</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution" source-language="en" datatype="plaintext"><body>
@@ -1284,49 +1293,20 @@
       <source xml:lang="en">Customizes the database dashboard tabs</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="dashboardServerProperties">
-      <source xml:lang="en">Enable or disable the properties widget</source>
-    </trans-unit>
-    <trans-unit id="dashboard.serverproperties">
-      <source xml:lang="en">Property values to show</source>
-    </trans-unit>
-    <trans-unit id="dashboard.serverproperties.displayName">
-      <source xml:lang="en">Display name of the property</source>
-    </trans-unit>
-    <trans-unit id="dashboard.serverproperties.value">
-      <source xml:lang="en">Value in the Server Info Object</source>
-    </trans-unit>
-    <trans-unit id="version">
-      <source xml:lang="en">Version</source>
-    </trans-unit>
-    <trans-unit id="edition">
-      <source xml:lang="en">Edition</source>
-    </trans-unit>
-    <trans-unit id="computerName">
-      <source xml:lang="en">Computer Name</source>
-    </trans-unit>
-    <trans-unit id="osVersion">
-      <source xml:lang="en">OS Version</source>
-    </trans-unit>
-    <trans-unit id="explorerWidgetsTitle">
-      <source xml:lang="en">Search</source>
-    </trans-unit>
-    <trans-unit id="dashboardServer">
-      <source xml:lang="en">Customizes the server dashboard page</source>
-    </trans-unit>
-    <trans-unit id="dashboardServerTabs">
-      <source xml:lang="en">Customizes the Server dashboard tabs</source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/dashboardActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="ManageAction">
       <source xml:lang="en">Manage</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/dashboard/browser/dashboardIconUtil" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="opticon">
-      <source xml:lang="en">property `icon` can be omitted or must be either a string or a literal like `{dark, light}`</source>
+  <file original="src/sql/platform/dashboard/browser/widgetRegistry" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="schema.dashboardWidgets.all">
+      <source xml:lang="en">Widget used in the dashboards</source>
+    </trans-unit>
+    <trans-unit id="schema.dashboardWidgets.database">
+      <source xml:lang="en">Widget used in the dashboards</source>
+    </trans-unit>
+    <trans-unit id="schema.dashboardWidgets.server">
+      <source xml:lang="en">Widget used in the dashboards</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/insightsWidgetSchemas" source-language="en" datatype="plaintext"><body>
@@ -1364,29 +1344,58 @@
       <source xml:lang="en">Contributes insights to the dashboard palette.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/backup/browser/backupActions" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="backupAction.backup">
-      <source xml:lang="en">Backup</source>
+  <file original="src/sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="dashboardServerProperties">
+      <source xml:lang="en">Enable or disable the properties widget</source>
     </trans-unit>
+    <trans-unit id="dashboard.serverproperties">
+      <source xml:lang="en">Property values to show</source>
+    </trans-unit>
+    <trans-unit id="dashboard.serverproperties.displayName">
+      <source xml:lang="en">Display name of the property</source>
+    </trans-unit>
+    <trans-unit id="dashboard.serverproperties.value">
+      <source xml:lang="en">Value in the Server Info Object</source>
+    </trans-unit>
+    <trans-unit id="version">
+      <source xml:lang="en">Version</source>
+    </trans-unit>
+    <trans-unit id="edition">
+      <source xml:lang="en">Edition</source>
+    </trans-unit>
+    <trans-unit id="computerName">
+      <source xml:lang="en">Computer Name</source>
+    </trans-unit>
+    <trans-unit id="osVersion">
+      <source xml:lang="en">OS Version</source>
+    </trans-unit>
+    <trans-unit id="explorerWidgetsTitle">
+      <source xml:lang="en">Search</source>
+    </trans-unit>
+    <trans-unit id="dashboardServer">
+      <source xml:lang="en">Customizes the server dashboard page</source>
+    </trans-unit>
+    <trans-unit id="dashboardServerTabs">
+      <source xml:lang="en">Customizes the Server dashboard tabs</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/dashboardIconUtil" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="opticon">
+      <source xml:lang="en">property `icon` can be omitted or must be either a string or a literal like `{dark, light}`</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/backup/browser/backupActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="backup.isPreviewFeature">
       <source xml:lang="en">You must enable preview features in order to use backup</source>
+    </trans-unit>
+    <trans-unit id="backup.commandNotSupportedForServer">
+      <source xml:lang="en">Backup command is not supported outside of a database context. Please select a database and try again.</source>
     </trans-unit>
     <trans-unit id="backup.commandNotSupported">
       <source xml:lang="en">Backup command is not supported for Azure SQL databases.</source>
     </trans-unit>
-    <trans-unit id="backup.commandNotSupportedForServer">
-      <source xml:lang="en">Backup command is not supported in Server Context. Please select a Database and try again.</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/restore/browser/restoreActions" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="restoreAction.restore">
-      <source xml:lang="en">Restore</source>
-    </trans-unit>
-    <trans-unit id="restore.isPreviewFeature">
-      <source xml:lang="en">You must enable preview features in order to use restore</source>
-    </trans-unit>
-    <trans-unit id="restore.commandNotSupported">
-      <source xml:lang="en">Restore command is not supported for Azure SQL databases.</source>
+    <trans-unit id="backupAction.backup">
+      <source xml:lang="en">Backup</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/extensions/browser/extensionsActions" source-language="en" datatype="plaintext"><body>
@@ -1398,6 +1407,20 @@
     </trans-unit>
     <trans-unit id="openExtensionAuthoringDocs">
       <source xml:lang="en">Author an Extension...</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/restore/browser/restoreActions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="restore.isPreviewFeature">
+      <source xml:lang="en">You must enable preview features in order to use restore</source>
+    </trans-unit>
+    <trans-unit id="restore.commandNotSupportedOutsideContext">
+      <source xml:lang="en">Restore command is not supported outside of a server context. Please select a server or database and try again.</source>
+    </trans-unit>
+    <trans-unit id="restore.commandNotSupported">
+      <source xml:lang="en">Restore command is not supported for Azure SQL databases.</source>
+    </trans-unit>
+    <trans-unit id="restoreAction.restore">
+      <source xml:lang="en">Restore</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/browser/editData/editDataInput" source-language="en" datatype="plaintext"><body>
@@ -1441,6 +1464,14 @@
       <source xml:lang="en">Discard</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/services/accountManagement/browser/accountPickerImpl" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azureAccount">
+      <source xml:lang="en">Azure account</source>
+    </trans-unit>
+    <trans-unit id="azureTenant">
+      <source xml:lang="en">Azure tenant</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/services/insights/browser/insightsDialogController" source-language="en" datatype="plaintext"><body>
     <trans-unit id="insightsInputError">
       <source xml:lang="en">No Connection Profile was passed to insights flyout</source>
@@ -1453,14 +1484,6 @@
     </trans-unit>
     <trans-unit id="insightsConfigError">
       <source xml:lang="en">There was an error parsing the insight config; could not find query array/string or queryfile</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/services/accountManagement/browser/accountPickerImpl" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="azureAccount">
-      <source xml:lang="en">Azure account</source>
-    </trans-unit>
-    <trans-unit id="azureTenant">
-      <source xml:lang="en">Azure tenant</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet" source-language="en" datatype="plaintext"><body>
@@ -1598,6 +1621,11 @@
       <source xml:lang="en">Loading completed</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/api/common/extHostModelViewTree" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="treeView.notRegistered">
+      <source xml:lang="en">No tree view with id '{0}' registered.</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/services/serverGroup/browser/serverGroupDialog" source-language="en" datatype="plaintext"><body>
     <trans-unit id="ServerGroupsDialogTitle">
       <source xml:lang="en">Server Groups</source>
@@ -1619,11 +1647,6 @@
     </trans-unit>
     <trans-unit id="groupColor">
       <source xml:lang="en">Group color</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/services/accountManagement/browser/accountDialogController" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="accountDialog.addAccountErrorTitle">
-      <source xml:lang="en">Error adding account</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/services/insights/browser/insightsDialogView" source-language="en" datatype="plaintext"><body>
@@ -1655,6 +1678,11 @@
   <file original="src/sql/workbench/services/accountManagement/browser/autoOAuthDialogController" source-language="en" datatype="plaintext"><body>
     <trans-unit id="oauthFlyoutIsAlreadyOpen">
       <source xml:lang="en">Cannot start auto OAuth. An auto OAuth is already in progress.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/services/accountManagement/browser/accountDialogController" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="accountDialog.addAccountErrorTitle">
+      <source xml:lang="en">Error adding account</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/services/profiler/browser/profilerColumnEditorDialog" source-language="en" datatype="plaintext"><body>
@@ -1803,20 +1831,20 @@
       <source xml:lang="en">Property values to show on dashboard</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/browser/modelComponents/inputbox.component" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="invalidValueError">
-      <source xml:lang="en">Invalid value</source>
-    </trans-unit>
-    <trans-unit id="period">
-      <source xml:lang="en">{0}. {1}</source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/workbench/browser/modelComponents/dropdown.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="loadingMessage">
       <source xml:lang="en">Loading</source>
     </trans-unit>
     <trans-unit id="loadingCompletedMessage">
       <source xml:lang="en">Loading completed</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/browser/modelComponents/inputbox.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="invalidValueError">
+      <source xml:lang="en">Invalid value</source>
+    </trans-unit>
+    <trans-unit id="period">
+      <source xml:lang="en">{0}. {1}</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/browser/modelComponents/declarativeTable.component" source-language="en" datatype="plaintext"><body>
@@ -1827,43 +1855,34 @@
       <source xml:lang="en">check all checkboxes in column: {0}</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/api/common/extHostModelViewTree" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="treeView.notRegistered">
-      <source xml:lang="en">No tree view with id '{0}' registered.</source>
+  <file original="src/sql/workbench/api/common/extHostNotebook" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="providerRequired">
+      <source xml:lang="en">A NotebookProvider with valid providerId must be passed to this method</source>
+    </trans-unit>
+    <trans-unit id="errNoProvider">
+      <source xml:lang="en">no notebook provider found</source>
+    </trans-unit>
+    <trans-unit id="errNoManager">
+      <source xml:lang="en">No Manager found</source>
+    </trans-unit>
+    <trans-unit id="noServerManager">
+      <source xml:lang="en">Notebook Manager for notebook {0} does not have a server manager. Cannot perform operations on it</source>
+    </trans-unit>
+    <trans-unit id="noContentManager">
+      <source xml:lang="en">Notebook Manager for notebook {0} does not have a content manager. Cannot perform operations on it</source>
+    </trans-unit>
+    <trans-unit id="noSessionManager">
+      <source xml:lang="en">Notebook Manager for notebook {0} does not have a session manager. Cannot perform operations on it</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/api/common/extHostNotebookDocumentsAndEditors" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="providerRequired">
+      <source xml:lang="en">A NotebookProvider with valid providerId must be passed to this method</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/services/editData/common/editQueryRunner" source-language="en" datatype="plaintext"><body>
     <trans-unit id="query.initEditExecutionFailed">
       <source xml:lang="en">Initialize edit data session failed: </source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/services/notebook/common/notebookRegistry" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="carbon.extension.contributes.notebook.provider">
-      <source xml:lang="en">Identifier of the notebook provider.</source>
-    </trans-unit>
-    <trans-unit id="carbon.extension.contributes.notebook.fileExtensions">
-      <source xml:lang="en">What file extensions should be registered to this notebook provider</source>
-    </trans-unit>
-    <trans-unit id="carbon.extension.contributes.notebook.standardKernels">
-      <source xml:lang="en">What kernels should be standard with this notebook provider</source>
-    </trans-unit>
-    <trans-unit id="vscode.extension.contributes.notebook.providers">
-      <source xml:lang="en">Contributes notebook providers.</source>
-    </trans-unit>
-    <trans-unit id="carbon.extension.contributes.notebook.magic">
-      <source xml:lang="en">Name of the cell magic, such as '%%sql'.</source>
-    </trans-unit>
-    <trans-unit id="carbon.extension.contributes.notebook.language">
-      <source xml:lang="en">The cell language to be used if this cell magic is included in the cell</source>
-    </trans-unit>
-    <trans-unit id="carbon.extension.contributes.notebook.executionTarget">
-      <source xml:lang="en">Optional execution target this magic indicates, for example Spark vs SQL</source>
-    </trans-unit>
-    <trans-unit id="carbon.extension.contributes.notebook.kernels">
-      <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, pyspark, sql</source>
-    </trans-unit>
-    <trans-unit id="vscode.extension.contributes.notebook.languagemagics">
-      <source xml:lang="en">Contributes notebook language.</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/api/browser/mainThreadNotebookDocumentsAndEditors" source-language="en" datatype="plaintext"><body>
@@ -1872,42 +1891,6 @@
     </trans-unit>
     <trans-unit id="clearResultActiveCell">
       <source xml:lang="en">Clear result requires a code cell to be selected. Please select a code cell to run.</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/services/notebook/browser/interfaces" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="sqlKernel">
-      <source xml:lang="en">SQL</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/editData/browser/editDataEditor" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="maxRowTaskbar">
-      <source xml:lang="en">Max Rows:</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/profiler/browser/profilerEditor" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="profiler.viewSelectAccessibleName">
-      <source xml:lang="en">Select View</source>
-    </trans-unit>
-    <trans-unit id="profiler.sessionSelectAccessibleName">
-      <source xml:lang="en">Select Session</source>
-    </trans-unit>
-    <trans-unit id="profiler.sessionSelectLabel">
-      <source xml:lang="en">Select Session:</source>
-    </trans-unit>
-    <trans-unit id="profiler.viewSelectLabel">
-      <source xml:lang="en">Select View:</source>
-    </trans-unit>
-    <trans-unit id="text">
-      <source xml:lang="en">Text</source>
-    </trans-unit>
-    <trans-unit id="label">
-      <source xml:lang="en">Label</source>
-    </trans-unit>
-    <trans-unit id="profilerEditor.value">
-      <source xml:lang="en">Value</source>
-    </trans-unit>
-    <trans-unit id="details">
-      <source xml:lang="en">Details</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/query/browser/statusBarItems" source-language="en" datatype="plaintext"><body>
@@ -1956,6 +1939,37 @@
       <source xml:lang="en">Select Language Provider</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/contrib/editData/browser/editDataEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="maxRowTaskbar">
+      <source xml:lang="en">Max Rows:</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/profiler/browser/profilerEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="profiler.viewSelectAccessibleName">
+      <source xml:lang="en">Select View</source>
+    </trans-unit>
+    <trans-unit id="profiler.sessionSelectAccessibleName">
+      <source xml:lang="en">Select Session</source>
+    </trans-unit>
+    <trans-unit id="profiler.sessionSelectLabel">
+      <source xml:lang="en">Select Session:</source>
+    </trans-unit>
+    <trans-unit id="profiler.viewSelectLabel">
+      <source xml:lang="en">Select View:</source>
+    </trans-unit>
+    <trans-unit id="text">
+      <source xml:lang="en">Text</source>
+    </trans-unit>
+    <trans-unit id="label">
+      <source xml:lang="en">Label</source>
+    </trans-unit>
+    <trans-unit id="profilerEditor.value">
+      <source xml:lang="en">Value</source>
+    </trans-unit>
+    <trans-unit id="details">
+      <source xml:lang="en">Details</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/plotlyOutput.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="plotlyError">
       <source xml:lang="en">Error displaying Plotly graph: {0}</source>
@@ -1992,31 +2006,6 @@
       <source xml:lang="en">Script as Drop</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/api/common/extHostNotebookDocumentsAndEditors" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="providerRequired">
-      <source xml:lang="en">A NotebookProvider with valid providerId must be passed to this method</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/api/common/extHostNotebook" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="providerRequired">
-      <source xml:lang="en">A NotebookProvider with valid providerId must be passed to this method</source>
-    </trans-unit>
-    <trans-unit id="errNoProvider">
-      <source xml:lang="en">no notebook provider found</source>
-    </trans-unit>
-    <trans-unit id="errNoManager">
-      <source xml:lang="en">No Manager found</source>
-    </trans-unit>
-    <trans-unit id="noServerManager">
-      <source xml:lang="en">Notebook Manager for notebook {0} does not have a server manager. Cannot perform operations on it</source>
-    </trans-unit>
-    <trans-unit id="noContentManager">
-      <source xml:lang="en">Notebook Manager for notebook {0} does not have a content manager. Cannot perform operations on it</source>
-    </trans-unit>
-    <trans-unit id="noSessionManager">
-      <source xml:lang="en">Notebook Manager for notebook {0} does not have a session manager. Cannot perform operations on it</source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/workbench/services/connection/browser/connectionManagementService" source-language="en" datatype="plaintext"><body>
     <trans-unit id="connection.noAzureAccount">
       <source xml:lang="en">Failed to get Azure account token for connection</source>
@@ -2034,12 +2023,235 @@
       <source xml:lang="en">Are you sure you want to cancel this connection?</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/services/notebook/browser/interfaces" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="sqlKernel">
+      <source xml:lang="en">SQL</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/services/notebook/common/notebookRegistry" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="carbon.extension.contributes.notebook.provider">
+      <source xml:lang="en">Identifier of the notebook provider.</source>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.notebook.fileExtensions">
+      <source xml:lang="en">What file extensions should be registered to this notebook provider</source>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.notebook.standardKernels">
+      <source xml:lang="en">What kernels should be standard with this notebook provider</source>
+    </trans-unit>
+    <trans-unit id="vscode.extension.contributes.notebook.providers">
+      <source xml:lang="en">Contributes notebook providers.</source>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.notebook.magic">
+      <source xml:lang="en">Name of the cell magic, such as '%%sql'.</source>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.notebook.language">
+      <source xml:lang="en">The cell language to be used if this cell magic is included in the cell</source>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.notebook.executionTarget">
+      <source xml:lang="en">Optional execution target this magic indicates, for example Spark vs SQL</source>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.notebook.kernels">
+      <source xml:lang="en">Optional set of kernels this is valid for, e.g. python3, pyspark, sql</source>
+    </trans-unit>
+    <trans-unit id="vscode.extension.contributes.notebook.languagemagics">
+      <source xml:lang="en">Contributes notebook language.</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/contrib/webview/browser/webViewDialog" source-language="en" datatype="plaintext"><body>
     <trans-unit id="webViewDialog.ok">
       <source xml:lang="en">OK</source>
     </trans-unit>
     <trans-unit id="webViewDialog.close">
       <source xml:lang="en">Close</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/queryPlan/browser/queryPlan" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="queryPlanTitle">
+      <source xml:lang="en">Query Plan</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/resourceViewer/browser/resourceViewerActions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="resourceViewer.refresh">
+      <source xml:lang="en">Refresh</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/services/dialog/browser/dialogPane" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="wizardPageNumberDisplayText">
+      <source xml:lang="en">Step {0}</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/selectBox/selectBox" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="alertErrorMessage">
+      <source xml:lang="en">Error: {0}</source>
+    </trans-unit>
+    <trans-unit id="alertWarningMessage">
+      <source xml:lang="en">Warning: {0}</source>
+    </trans-unit>
+    <trans-unit id="alertInfoMessage">
+      <source xml:lang="en">Info: {0}</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/parts/editableDropdown/browser/dropdown" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="editableDropdown.errorValidate">
+      <source xml:lang="en">Must be an option from the list</source>
+    </trans-unit>
+    <trans-unit id="selectBox">
+      <source xml:lang="en">Select Box</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/api/common/extHostModelViewDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="dialogDoneLabel">
+      <source xml:lang="en">Done</source>
+    </trans-unit>
+    <trans-unit id="dialogCancelLabel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="generateScriptLabel">
+      <source xml:lang="en">Generate script</source>
+    </trans-unit>
+    <trans-unit id="dialogNextLabel">
+      <source xml:lang="en">Next</source>
+    </trans-unit>
+    <trans-unit id="dialogPreviousLabel">
+      <source xml:lang="en">Previous</source>
+    </trans-unit>
+    <trans-unit id="dashboardNotInitialized">
+      <source xml:lang="en">Tabs are not initialized</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/services/connection/browser/connectionDialogWidget" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="connection">
+      <source xml:lang="en">Connection</source>
+    </trans-unit>
+    <trans-unit id="connecting">
+      <source xml:lang="en">Connecting</source>
+    </trans-unit>
+    <trans-unit id="connectType">
+      <source xml:lang="en">Connection type</source>
+    </trans-unit>
+    <trans-unit id="recentConnectionTitle">
+      <source xml:lang="en">Recent Connections</source>
+    </trans-unit>
+    <trans-unit id="savedConnectionTitle">
+      <source xml:lang="en">Saved Connections</source>
+    </trans-unit>
+    <trans-unit id="connectionDetailsTitle">
+      <source xml:lang="en">Connection Details</source>
+    </trans-unit>
+    <trans-unit id="connectionDialog.connect">
+      <source xml:lang="en">Connect</source>
+    </trans-unit>
+    <trans-unit id="connectionDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="connectionDialog.recentConnections">
+      <source xml:lang="en">Recent Connections</source>
+    </trans-unit>
+    <trans-unit id="noRecentConnections">
+      <source xml:lang="en">No recent connection</source>
+    </trans-unit>
+    <trans-unit id="connectionDialog.savedConnections">
+      <source xml:lang="en">Saved Connections</source>
+    </trans-unit>
+    <trans-unit id="noSavedConnections">
+      <source xml:lang="en">No saved connection</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="from">
+      <source xml:lang="en">From</source>
+    </trans-unit>
+    <trans-unit id="to">
+      <source xml:lang="en">To</source>
+    </trans-unit>
+    <trans-unit id="createNewFirewallRule">
+      <source xml:lang="en">Create new firewall rule</source>
+    </trans-unit>
+    <trans-unit id="firewall.ok">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="firewall.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="firewallRuleDialogDescription">
+      <source xml:lang="en">Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.</source>
+    </trans-unit>
+    <trans-unit id="firewallRuleHelpDescription">
+      <source xml:lang="en">Learn more about firewall settings</source>
+    </trans-unit>
+    <trans-unit id="filewallRule">
+      <source xml:lang="en">Firewall rule</source>
+    </trans-unit>
+    <trans-unit id="addIPAddressLabel">
+      <source xml:lang="en">Add my client IP </source>
+    </trans-unit>
+    <trans-unit id="addIpRangeLabel">
+      <source xml:lang="en">Add my subnet IP range</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/services/fileBrowser/browser/fileBrowserTreeView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="fileBrowser.regTreeAriaLabel">
+      <source xml:lang="en">File browser tree</source>
+      <note>FileBrowserTree</note>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/services/fileBrowser/common/fileBrowserViewModel" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="allFiles">
+      <source xml:lang="en">All files</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/platform/accounts/common/accountActions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="addAccount">
+      <source xml:lang="en">Add an account</source>
+    </trans-unit>
+    <trans-unit id="removeAccount">
+      <source xml:lang="en">Remove account</source>
+    </trans-unit>
+    <trans-unit id="confirmRemoveUserAccountMessage">
+      <source xml:lang="en">Are you sure you want to remove '{0}'?</source>
+    </trans-unit>
+    <trans-unit id="accountActions.yes">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
+    <trans-unit id="accountActions.no">
+      <source xml:lang="en">No</source>
+    </trans-unit>
+    <trans-unit id="removeAccountFailed">
+      <source xml:lang="en">Failed to remove account</source>
+    </trans-unit>
+    <trans-unit id="applyFilters">
+      <source xml:lang="en">Apply Filters</source>
+    </trans-unit>
+    <trans-unit id="refreshAccount">
+      <source xml:lang="en">Reenter your credentials</source>
+    </trans-unit>
+    <trans-unit id="NoAccountToRefresh">
+      <source xml:lang="en">There is no account to refresh</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/services/accountManagement/browser/accountListRenderer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="refreshCredentials">
+      <source xml:lang="en">You need to refresh the credentials for this account.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/services/insights/common/insightsUtils" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="insightsDidNotFindResolvedFile">
+      <source xml:lang="en">Could not find query file at any of the following paths :
+ {0}</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="showNotebookExplorer">
+      <source xml:lang="en">Show Notebooks</source>
+    </trans-unit>
+    <trans-unit id="notebookExplorer.searchResults">
+      <source xml:lang="en">Search Results</source>
+    </trans-unit>
+    <trans-unit id="searchPathNotFoundError">
+      <source xml:lang="en">Search path not found: {0}</source>
+    </trans-unit>
+    <trans-unit id="notebookExplorer.name">
+      <source xml:lang="en">Notebooks</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/notebookActions" source-language="en" datatype="plaintext"><body>
@@ -2085,6 +2297,12 @@
     <trans-unit id="expandAllCells">
       <source xml:lang="en">Expand Cells</source>
     </trans-unit>
+    <trans-unit id="runParameters">
+      <source xml:lang="en">Run with Parameters</source>
+    </trans-unit>
+    <trans-unit id="noParametersCell">
+      <source xml:lang="en">This notebook cannot run with parameters until a parameter cell is added. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).</source>
+    </trans-unit>
     <trans-unit id="noContextAvailable">
       <source xml:lang="en">None</source>
     </trans-unit>
@@ -2096,175 +2314,6 @@
     </trans-unit>
     <trans-unit id="notebook.findPrevious">
       <source xml:lang="en">Find Previous String</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/queryPlan/browser/queryPlan" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="queryPlanTitle">
-      <source xml:lang="en">Query Plan</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/resourceViewer/browser/resourceViewerActions" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="resourceViewer.refresh">
-      <source xml:lang="en">Refresh</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/services/dialog/browser/dialogPane" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="wizardPageNumberDisplayText">
-      <source xml:lang="en">Step {0}</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/base/parts/editableDropdown/browser/dropdown" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="editableDropdown.errorValidate">
-      <source xml:lang="en">Must be an option from the list</source>
-    </trans-unit>
-    <trans-unit id="selectBox">
-      <source xml:lang="en">Select Box</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/base/browser/ui/selectBox/selectBox" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="alertErrorMessage">
-      <source xml:lang="en">Error: {0}</source>
-    </trans-unit>
-    <trans-unit id="alertWarningMessage">
-      <source xml:lang="en">Warning: {0}</source>
-    </trans-unit>
-    <trans-unit id="alertInfoMessage">
-      <source xml:lang="en">Info: {0}</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/services/connection/browser/connectionDialogWidget" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="connection">
-      <source xml:lang="en">Connection</source>
-    </trans-unit>
-    <trans-unit id="connecting">
-      <source xml:lang="en">Connecting</source>
-    </trans-unit>
-    <trans-unit id="connectType">
-      <source xml:lang="en">Connection type</source>
-    </trans-unit>
-    <trans-unit id="recentConnectionTitle">
-      <source xml:lang="en">Recent Connections</source>
-    </trans-unit>
-    <trans-unit id="savedConnectionTitle">
-      <source xml:lang="en">Saved Connections</source>
-    </trans-unit>
-    <trans-unit id="connectionDetailsTitle">
-      <source xml:lang="en">Connection Details</source>
-    </trans-unit>
-    <trans-unit id="connectionDialog.connect">
-      <source xml:lang="en">Connect</source>
-    </trans-unit>
-    <trans-unit id="connectionDialog.cancel">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
-    <trans-unit id="connectionDialog.recentConnections">
-      <source xml:lang="en">Recent Connections</source>
-    </trans-unit>
-    <trans-unit id="noRecentConnections">
-      <source xml:lang="en">No recent connection</source>
-    </trans-unit>
-    <trans-unit id="connectionDialog.savedConnections">
-      <source xml:lang="en">Saved Connections</source>
-    </trans-unit>
-    <trans-unit id="noSavedConnections">
-      <source xml:lang="en">No saved connection</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/services/fileBrowser/browser/fileBrowserTreeView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="fileBrowser.regTreeAriaLabel">
-      <source xml:lang="en">File browser tree</source>
-      <note>FileBrowserTree</note>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/services/resourceProvider/browser/firewallRuleDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="from">
-      <source xml:lang="en">From</source>
-    </trans-unit>
-    <trans-unit id="to">
-      <source xml:lang="en">To</source>
-    </trans-unit>
-    <trans-unit id="createNewFirewallRule">
-      <source xml:lang="en">Create new firewall rule</source>
-    </trans-unit>
-    <trans-unit id="firewall.ok">
-      <source xml:lang="en">OK</source>
-    </trans-unit>
-    <trans-unit id="firewall.cancel">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
-    <trans-unit id="firewallRuleDialogDescription">
-      <source xml:lang="en">Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.</source>
-    </trans-unit>
-    <trans-unit id="firewallRuleHelpDescription">
-      <source xml:lang="en">Learn more about firewall settings</source>
-    </trans-unit>
-    <trans-unit id="filewallRule">
-      <source xml:lang="en">Firewall rule</source>
-    </trans-unit>
-    <trans-unit id="addIPAddressLabel">
-      <source xml:lang="en">Add my client IP </source>
-    </trans-unit>
-    <trans-unit id="addIpRangeLabel">
-      <source xml:lang="en">Add my subnet IP range</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/services/fileBrowser/common/fileBrowserViewModel" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="allFiles">
-      <source xml:lang="en">All files</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/services/insights/common/insightsUtils" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="insightsDidNotFindResolvedFile">
-      <source xml:lang="en">Could not find query file at any of the following paths :
- {0}</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/services/accountManagement/browser/accountListRenderer" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="refreshCredentials">
-      <source xml:lang="en">You need to refresh the credentials for this account.</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/platform/accounts/common/accountActions" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="addAccount">
-      <source xml:lang="en">Add an account</source>
-    </trans-unit>
-    <trans-unit id="removeAccount">
-      <source xml:lang="en">Remove account</source>
-    </trans-unit>
-    <trans-unit id="confirmRemoveUserAccountMessage">
-      <source xml:lang="en">Are you sure you want to remove '{0}'?</source>
-    </trans-unit>
-    <trans-unit id="accountActions.yes">
-      <source xml:lang="en">Yes</source>
-    </trans-unit>
-    <trans-unit id="accountActions.no">
-      <source xml:lang="en">No</source>
-    </trans-unit>
-    <trans-unit id="removeAccountFailed">
-      <source xml:lang="en">Failed to remove account</source>
-    </trans-unit>
-    <trans-unit id="applyFilters">
-      <source xml:lang="en">Apply Filters</source>
-    </trans-unit>
-    <trans-unit id="refreshAccount">
-      <source xml:lang="en">Reenter your credentials</source>
-    </trans-unit>
-    <trans-unit id="NoAccountToRefresh">
-      <source xml:lang="en">There is no account to refresh</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="showNotebookExplorer">
-      <source xml:lang="en">Show Notebooks</source>
-    </trans-unit>
-    <trans-unit id="notebookExplorer.searchResults">
-      <source xml:lang="en">Search Results</source>
-    </trans-unit>
-    <trans-unit id="searchPathNotFoundError">
-      <source xml:lang="en">Search path not found: {0}</source>
-    </trans-unit>
-    <trans-unit id="notebookExplorer.name">
-      <source xml:lang="en">Notebooks</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/query/browser/keyboardQueryActions" source-language="en" datatype="plaintext"><body>
@@ -2334,11 +2383,6 @@
       <source xml:lang="en">canceling</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/chartInsight.component" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="chartErrorMessage">
-      <source xml:lang="en">Chart cannot be displayed with the given data</source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/workbench/contrib/resourceViewer/browser/resourceViewerTable" source-language="en" datatype="plaintext"><body>
     <trans-unit id="resourceViewerTable.openError">
       <source xml:lang="en">Error opening link : {0}</source>
@@ -2347,15 +2391,9 @@
       <source xml:lang="en">Error executing command '{0}' : {1}</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="copyFailed">
-      <source xml:lang="en">Copy failed with error {0}</source>
-    </trans-unit>
-    <trans-unit id="notebook.showChart">
-      <source xml:lang="en">Show chart</source>
-    </trans-unit>
-    <trans-unit id="notebook.showTable">
-      <source xml:lang="en">Show table</source>
+  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/chartInsight.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="chartErrorMessage">
+      <source xml:lang="en">Chart cannot be displayed with the given data</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/textCell.component" source-language="en" datatype="plaintext"><body>
@@ -2369,26 +2407,6 @@
   <file original="src/sql/workbench/contrib/scripting/browser/scriptingActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="refreshError">
       <source xml:lang="en">An error occurred refreshing node '{0}': {1}</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/api/common/extHostModelViewDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="dialogDoneLabel">
-      <source xml:lang="en">Done</source>
-    </trans-unit>
-    <trans-unit id="dialogCancelLabel">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
-    <trans-unit id="generateScriptLabel">
-      <source xml:lang="en">Generate script</source>
-    </trans-unit>
-    <trans-unit id="dialogNextLabel">
-      <source xml:lang="en">Next</source>
-    </trans-unit>
-    <trans-unit id="dialogPreviousLabel">
-      <source xml:lang="en">Previous</source>
-    </trans-unit>
-    <trans-unit id="dashboardNotInitialized">
-      <source xml:lang="en">Tabs are not initialized</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/browser/modal/optionsDialogHelper" source-language="en" datatype="plaintext"><body>
@@ -2496,14 +2514,6 @@
       <source xml:lang="en">Copy Cell</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/services/dialog/common/dialogTypes" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="dialogModalDoneButtonLabel">
-      <source xml:lang="en">Done</source>
-    </trans-unit>
-    <trans-unit id="dialogModalCancelButtonLabel">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/workbench/services/accountManagement/browser/autoOAuthDialog" source-language="en" datatype="plaintext"><body>
     <trans-unit id="copyAndOpen">
       <source xml:lang="en">Copy &amp; Open</source>
@@ -2518,14 +2528,28 @@
       <source xml:lang="en">Website</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/services/dialog/common/dialogTypes" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="dialogModalDoneButtonLabel">
+      <source xml:lang="en">Done</source>
+    </trans-unit>
+    <trans-unit id="dialogModalCancelButtonLabel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/browser/modelComponents/componentBase" source-language="en" datatype="plaintext"><body>
     <trans-unit id="invalidIndex">
       <source xml:lang="en">The index {0} is invalid.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/services/connection/browser/cmsConnectionWidget" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="serverDescription">
-      <source xml:lang="en">Server Description (optional)</source>
+  <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="copyFailed">
+      <source xml:lang="en">Copy failed with error {0}</source>
+    </trans-unit>
+    <trans-unit id="notebook.showChart">
+      <source xml:lang="en">Show chart</source>
+    </trans-unit>
+    <trans-unit id="notebook.showTable">
+      <source xml:lang="en">Show table</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/services/connection/browser/advancedPropertiesController" source-language="en" datatype="plaintext"><body>
@@ -2534,6 +2558,11 @@
     </trans-unit>
     <trans-unit id="advancedProperties.discard">
       <source xml:lang="en">Discard</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/services/connection/browser/cmsConnectionWidget" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="serverDescription">
+      <source xml:lang="en">Server Description (optional)</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/services/notebook/common/localContentManager" source-language="en" datatype="plaintext"><body>
@@ -2568,6 +2597,18 @@
     </trans-unit>
     <trans-unit id="welcomePage.adminPackDescription">
       <source xml:lang="en">Admin Pack for SQL Server is a collection of popular database administration extensions to help you manage SQL Server</source>
+    </trans-unit>
+    <trans-unit id="welcomePage.sqlServerAgent">
+      <source xml:lang="en">SQL Server Agent</source>
+    </trans-unit>
+    <trans-unit id="welcomePage.sqlServerProfiler">
+      <source xml:lang="en">SQL Server Profiler</source>
+    </trans-unit>
+    <trans-unit id="welcomePage.sqlServerImport">
+      <source xml:lang="en">SQL Server Import</source>
+    </trans-unit>
+    <trans-unit id="welcomePage.sqlServerDacpac">
+      <source xml:lang="en">SQL Server Dacpac</source>
     </trans-unit>
     <trans-unit id="welcomePage.powershell">
       <source xml:lang="en">Powershell</source>
@@ -2669,11 +2710,6 @@
       <source xml:lang="en">Background color for the Welcome page.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/profiler/browser/profilerResourceEditor" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="profilerTextEditorAriaLabel">
-      <source xml:lang="en">Profiler editor for event text. Readonly</source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/workbench/services/query/common/resultSerializer" source-language="en" datatype="plaintext"><body>
     <trans-unit id="msgSaveFailed">
       <source xml:lang="en">Failed to save results. </source>
@@ -2706,17 +2742,22 @@
       <source xml:lang="en">Open file</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/contrib/profiler/browser/profilerResourceEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="profilerTextEditorAriaLabel">
+      <source xml:lang="en">Profiler editor for event text. Readonly</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/browser/modelComponents/queryTextEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="queryTextEditorAriaLabel">
+      <source xml:lang="en">modelview code editor for view model.</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/base/browser/ui/panel/panel.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="hideTextLabel">
       <source xml:lang="en">Hide text labels</source>
     </trans-unit>
     <trans-unit id="showTextLabel">
       <source xml:lang="en">Show text labels</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/browser/modelComponents/queryTextEditor" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="queryTextEditorAriaLabel">
-      <source xml:lang="en">modelview code editor for view model.</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/browser/modal/modal" source-language="en" datatype="plaintext"><body>
@@ -2889,6 +2930,30 @@
       <source xml:lang="en">Keep up to date with how the community is using Azure Data Studio and to talk directly with the engineers.</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/contrib/query/browser/queryResultsView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="resultsTabTitle">
+      <source xml:lang="en">Results</source>
+    </trans-unit>
+    <trans-unit id="messagesTabTitle">
+      <source xml:lang="en">Messages</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/table/formatters" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableCell.NoDataAvailable">
+      <source xml:lang="en">no data available</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/profiler/browser/profilerTableEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="ProfilerTableEditor.eventCountFiltered">
+      <source xml:lang="en">Events (Filtered): {0}/{1}</source>
+    </trans-unit>
+    <trans-unit id="ProfilerTableEditor.eventCount">
+      <source xml:lang="en">Events: {0}</source>
+    </trans-unit>
+    <trans-unit id="status.eventCount">
+      <source xml:lang="en">Event Count</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/contrib/profiler/browser/profilerActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="profilerAction.connect">
       <source xml:lang="en">Connect</source>
@@ -2952,30 +3017,6 @@
     </trans-unit>
     <trans-unit id="profiler.clearFilterPrompt">
       <source xml:lang="en">Are you sure you want to clear the filters?</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/profiler/browser/profilerTableEditor" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="ProfilerTableEditor.eventCountFiltered">
-      <source xml:lang="en">Events (Filtered): {0}/{1}</source>
-    </trans-unit>
-    <trans-unit id="ProfilerTableEditor.eventCount">
-      <source xml:lang="en">Events: {0}</source>
-    </trans-unit>
-    <trans-unit id="status.eventCount">
-      <source xml:lang="en">Event Count</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/base/browser/ui/table/formatters" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="tableCell.NoDataAvailable">
-      <source xml:lang="en">no data available</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/query/browser/queryResultsView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="resultsTabTitle">
-      <source xml:lang="en">Results</source>
-    </trans-unit>
-    <trans-unit id="messagesTabTitle">
-      <source xml:lang="en">Messages</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/browser/scriptingUtils" source-language="en" datatype="plaintext"><body>
@@ -3049,119 +3090,6 @@
     </trans-unit>
     <trans-unit id="resultsErrorColor">
       <source xml:lang="en">Results messages error color.</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/backup/browser/backup.component" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="backup.backupName">
-      <source xml:lang="en">Backup name</source>
-    </trans-unit>
-    <trans-unit id="backup.recoveryModel">
-      <source xml:lang="en">Recovery model</source>
-    </trans-unit>
-    <trans-unit id="backup.backupType">
-      <source xml:lang="en">Backup type</source>
-    </trans-unit>
-    <trans-unit id="backup.backupDevice">
-      <source xml:lang="en">Backup files</source>
-    </trans-unit>
-    <trans-unit id="backup.algorithm">
-      <source xml:lang="en">Algorithm</source>
-    </trans-unit>
-    <trans-unit id="backup.certificateOrAsymmetricKey">
-      <source xml:lang="en">Certificate or Asymmetric key</source>
-    </trans-unit>
-    <trans-unit id="backup.media">
-      <source xml:lang="en">Media</source>
-    </trans-unit>
-    <trans-unit id="backup.mediaOption">
-      <source xml:lang="en">Backup to the existing media set</source>
-    </trans-unit>
-    <trans-unit id="backup.mediaOptionFormat">
-      <source xml:lang="en">Backup to a new media set</source>
-    </trans-unit>
-    <trans-unit id="backup.existingMediaAppend">
-      <source xml:lang="en">Append to the existing backup set</source>
-    </trans-unit>
-    <trans-unit id="backup.existingMediaOverwrite">
-      <source xml:lang="en">Overwrite all existing backup sets</source>
-    </trans-unit>
-    <trans-unit id="backup.newMediaSetName">
-      <source xml:lang="en">New media set name</source>
-    </trans-unit>
-    <trans-unit id="backup.newMediaSetDescription">
-      <source xml:lang="en">New media set description</source>
-    </trans-unit>
-    <trans-unit id="backup.checksumContainer">
-      <source xml:lang="en">Perform checksum before writing to media</source>
-    </trans-unit>
-    <trans-unit id="backup.verifyContainer">
-      <source xml:lang="en">Verify backup when finished</source>
-    </trans-unit>
-    <trans-unit id="backup.continueOnErrorContainer">
-      <source xml:lang="en">Continue on error</source>
-    </trans-unit>
-    <trans-unit id="backup.expiration">
-      <source xml:lang="en">Expiration</source>
-    </trans-unit>
-    <trans-unit id="backup.setBackupRetainDays">
-      <source xml:lang="en">Set backup retain days</source>
-    </trans-unit>
-    <trans-unit id="backup.copyOnly">
-      <source xml:lang="en">Copy-only backup</source>
-    </trans-unit>
-    <trans-unit id="backup.advancedConfiguration">
-      <source xml:lang="en">Advanced Configuration</source>
-    </trans-unit>
-    <trans-unit id="backup.compression">
-      <source xml:lang="en">Compression</source>
-    </trans-unit>
-    <trans-unit id="backup.setBackupCompression">
-      <source xml:lang="en">Set backup compression</source>
-    </trans-unit>
-    <trans-unit id="backup.encryption">
-      <source xml:lang="en">Encryption</source>
-    </trans-unit>
-    <trans-unit id="backup.transactionLog">
-      <source xml:lang="en">Transaction log</source>
-    </trans-unit>
-    <trans-unit id="backup.truncateTransactionLog">
-      <source xml:lang="en">Truncate the transaction log</source>
-    </trans-unit>
-    <trans-unit id="backup.backupTail">
-      <source xml:lang="en">Backup the tail of the log</source>
-    </trans-unit>
-    <trans-unit id="backup.reliability">
-      <source xml:lang="en">Reliability</source>
-    </trans-unit>
-    <trans-unit id="backup.mediaNameRequired">
-      <source xml:lang="en">Media name is required</source>
-    </trans-unit>
-    <trans-unit id="backup.noEncryptorWarning">
-      <source xml:lang="en">No certificate or asymmetric key is available</source>
-    </trans-unit>
-    <trans-unit id="addFile">
-      <source xml:lang="en">Add a file</source>
-    </trans-unit>
-    <trans-unit id="removeFile">
-      <source xml:lang="en">Remove files</source>
-    </trans-unit>
-    <trans-unit id="backupComponent.invalidInput">
-      <source xml:lang="en">Invalid input. Value must be greater than or equal 0.</source>
-    </trans-unit>
-    <trans-unit id="backupComponent.script">
-      <source xml:lang="en">Script</source>
-    </trans-unit>
-    <trans-unit id="backupComponent.backup">
-      <source xml:lang="en">Backup</source>
-    </trans-unit>
-    <trans-unit id="backupComponent.cancel">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
-    <trans-unit id="backup.containsBackupToUrlError">
-      <source xml:lang="en">Only backup to file is supported</source>
-    </trans-unit>
-    <trans-unit id="backup.backupFileRequired">
-      <source xml:lang="en">Backup file path is required</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/platform/theme/common/colorRegistry" source-language="en" datatype="plaintext"><body>
@@ -3304,6 +3232,130 @@
       <source xml:lang="en">Callout dialog box shadow color.</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/contrib/backup/browser/backup.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="backup.backupName">
+      <source xml:lang="en">Backup name</source>
+    </trans-unit>
+    <trans-unit id="backup.recoveryModel">
+      <source xml:lang="en">Recovery model</source>
+    </trans-unit>
+    <trans-unit id="backup.backupType">
+      <source xml:lang="en">Backup type</source>
+    </trans-unit>
+    <trans-unit id="backup.backupDevice">
+      <source xml:lang="en">Backup files</source>
+    </trans-unit>
+    <trans-unit id="backup.algorithm">
+      <source xml:lang="en">Algorithm</source>
+    </trans-unit>
+    <trans-unit id="backup.certificateOrAsymmetricKey">
+      <source xml:lang="en">Certificate or Asymmetric key</source>
+    </trans-unit>
+    <trans-unit id="backup.media">
+      <source xml:lang="en">Media</source>
+    </trans-unit>
+    <trans-unit id="backup.mediaOption">
+      <source xml:lang="en">Backup to the existing media set</source>
+    </trans-unit>
+    <trans-unit id="backup.mediaOptionFormat">
+      <source xml:lang="en">Backup to a new media set</source>
+    </trans-unit>
+    <trans-unit id="backup.existingMediaAppend">
+      <source xml:lang="en">Append to the existing backup set</source>
+    </trans-unit>
+    <trans-unit id="backup.existingMediaOverwrite">
+      <source xml:lang="en">Overwrite all existing backup sets</source>
+    </trans-unit>
+    <trans-unit id="backup.newMediaSetName">
+      <source xml:lang="en">New media set name</source>
+    </trans-unit>
+    <trans-unit id="backup.newMediaSetDescription">
+      <source xml:lang="en">New media set description</source>
+    </trans-unit>
+    <trans-unit id="backup.checksumContainer">
+      <source xml:lang="en">Perform checksum before writing to media</source>
+    </trans-unit>
+    <trans-unit id="backup.verifyContainer">
+      <source xml:lang="en">Verify backup when finished</source>
+    </trans-unit>
+    <trans-unit id="backup.continueOnErrorContainer">
+      <source xml:lang="en">Continue on error</source>
+    </trans-unit>
+    <trans-unit id="backup.expiration">
+      <source xml:lang="en">Expiration</source>
+    </trans-unit>
+    <trans-unit id="backup.setBackupRetainDays">
+      <source xml:lang="en">Set backup retain days</source>
+    </trans-unit>
+    <trans-unit id="backup.copyOnly">
+      <source xml:lang="en">Copy-only backup</source>
+    </trans-unit>
+    <trans-unit id="backup.advancedConfiguration">
+      <source xml:lang="en">Advanced Configuration</source>
+    </trans-unit>
+    <trans-unit id="backup.compression">
+      <source xml:lang="en">Compression</source>
+    </trans-unit>
+    <trans-unit id="backup.setBackupCompression">
+      <source xml:lang="en">Set backup compression</source>
+    </trans-unit>
+    <trans-unit id="backup.encryption">
+      <source xml:lang="en">Encryption</source>
+    </trans-unit>
+    <trans-unit id="backup.transactionLog">
+      <source xml:lang="en">Transaction log</source>
+    </trans-unit>
+    <trans-unit id="backup.truncateTransactionLog">
+      <source xml:lang="en">Truncate the transaction log</source>
+    </trans-unit>
+    <trans-unit id="backup.backupTail">
+      <source xml:lang="en">Backup the tail of the log</source>
+    </trans-unit>
+    <trans-unit id="backup.reliability">
+      <source xml:lang="en">Reliability</source>
+    </trans-unit>
+    <trans-unit id="backup.mediaNameRequired">
+      <source xml:lang="en">Media name is required</source>
+    </trans-unit>
+    <trans-unit id="backup.noEncryptorWarning">
+      <source xml:lang="en">No certificate or asymmetric key is available</source>
+    </trans-unit>
+    <trans-unit id="addFile">
+      <source xml:lang="en">Add a file</source>
+    </trans-unit>
+    <trans-unit id="removeFile">
+      <source xml:lang="en">Remove files</source>
+    </trans-unit>
+    <trans-unit id="backupComponent.invalidInput">
+      <source xml:lang="en">Invalid input. Value must be greater than or equal 0.</source>
+    </trans-unit>
+    <trans-unit id="backupComponent.script">
+      <source xml:lang="en">Script</source>
+    </trans-unit>
+    <trans-unit id="backupComponent.backup">
+      <source xml:lang="en">Backup</source>
+    </trans-unit>
+    <trans-unit id="backupComponent.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="backup.containsBackupToUrlError">
+      <source xml:lang="en">Only backup to file is supported</source>
+    </trans-unit>
+    <trans-unit id="backup.backupFileRequired">
+      <source xml:lang="en">Backup file path is required</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/tasks/common/tasksAction" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="cancelTask.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="errorMsgFromCancelTask">
+      <source xml:lang="en">The task is failed to cancel.</source>
+    </trans-unit>
+    <trans-unit id="taskAction.script">
+      <source xml:lang="en">Script</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/contrib/views/browser/treeView" source-language="en" datatype="plaintext"><body>
     <trans-unit id="no-dataprovider">
       <source xml:lang="en">There is no data provider registered that can provide view data.</source>
@@ -3316,31 +3368,6 @@
     </trans-unit>
     <trans-unit id="command-error">
       <source xml:lang="en">Error running command {1}: {0}. This is likely caused by the extension that contributes {1}.</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/notebook/browser/cellViews/codeActions" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="notebook.failed">
-      <source xml:lang="en">Please select active cell and try again</source>
-    </trans-unit>
-    <trans-unit id="runCell">
-      <source xml:lang="en">Run cell</source>
-    </trans-unit>
-    <trans-unit id="stopCell">
-      <source xml:lang="en">Cancel execution</source>
-    </trans-unit>
-    <trans-unit id="errorRunCell">
-      <source xml:lang="en">Error on last run. Click to run again</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/tasks/common/tasksAction" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="cancelTask.cancel">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
-    <trans-unit id="errorMsgFromCancelTask">
-      <source xml:lang="en">The task is failed to cancel.</source>
-    </trans-unit>
-    <trans-unit id="taskAction.script">
-      <source xml:lang="en">Script</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/base/browser/ui/taskbar/overflowActionbar" source-language="en" datatype="plaintext"><body>
@@ -3395,18 +3422,15 @@
       <source xml:lang="en">Select/Deselect All</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/base/browser/ui/table/plugins/headerFilter.plugin" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="headerFilter.showFilter">
-      <source xml:lang="en">Show Filter</source>
+  <file original="src/sql/workbench/api/common/extHostModelView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="unknownComponentType">
+      <source xml:lang="en">Unknown component type. Must use ModelBuilder to create objects</source>
     </trans-unit>
-    <trans-unit id="headerFilter.ok">
-      <source xml:lang="en">OK</source>
+    <trans-unit id="invalidIndex">
+      <source xml:lang="en">The index {0} is invalid.</source>
     </trans-unit>
-    <trans-unit id="headerFilter.clear">
-      <source xml:lang="en">Clear</source>
-    </trans-unit>
-    <trans-unit id="headerFilter.cancel">
-      <source xml:lang="en">Cancel</source>
+    <trans-unit id="unknownConfig">
+      <source xml:lang="en">Unkown component configuration, must use ModelBuilder to create a configuration object</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/treeCreationUtils" source-language="en" datatype="plaintext"><body>
@@ -3434,6 +3458,20 @@
     </trans-unit>
     <trans-unit id="search.placeHolder">
       <source xml:lang="en">Search</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/notebook/browser/cellViews/codeActions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="notebook.failed">
+      <source xml:lang="en">Please select active cell and try again</source>
+    </trans-unit>
+    <trans-unit id="runCell">
+      <source xml:lang="en">Run cell</source>
+    </trans-unit>
+    <trans-unit id="stopCell">
+      <source xml:lang="en">Cancel execution</source>
+    </trans-unit>
+    <trans-unit id="errorRunCell">
+      <source xml:lang="en">Error on last run. Click to run again</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/services/dashboardServiceInterface.service" source-language="en" datatype="plaintext"><body>
@@ -3483,32 +3521,6 @@
       <source xml:lang="en">Enabled</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerWidget.component" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="loadingObjects">
-      <source xml:lang="en">loading objects</source>
-    </trans-unit>
-    <trans-unit id="loadingDatabases">
-      <source xml:lang="en">loading databases</source>
-    </trans-unit>
-    <trans-unit id="loadingObjectsCompleted">
-      <source xml:lang="en">loading objects completed.</source>
-    </trans-unit>
-    <trans-unit id="loadingDatabasesCompleted">
-      <source xml:lang="en">loading databases completed.</source>
-    </trans-unit>
-    <trans-unit id="seachObjects">
-      <source xml:lang="en">Search by name of type (t:, v:, f:, or sp:)</source>
-    </trans-unit>
-    <trans-unit id="searchDatabases">
-      <source xml:lang="en">Search databases</source>
-    </trans-unit>
-    <trans-unit id="dashboard.explorer.objectError">
-      <source xml:lang="en">Unable to load objects</source>
-    </trans-unit>
-    <trans-unit id="dashboard.explorer.databaseError">
-      <source xml:lang="en">Unable to load databases</source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/widgets/properties/propertiesWidget.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="loadingProperties">
       <source xml:lang="en">Loading properties</source>
@@ -3540,6 +3552,97 @@
   <file original="src/sql/workbench/contrib/jobManagement/browser/jobStepsView.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="agent.steps">
       <source xml:lang="en">Steps</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerWidget.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="loadingObjects">
+      <source xml:lang="en">loading objects</source>
+    </trans-unit>
+    <trans-unit id="loadingDatabases">
+      <source xml:lang="en">loading databases</source>
+    </trans-unit>
+    <trans-unit id="loadingObjectsCompleted">
+      <source xml:lang="en">loading objects completed.</source>
+    </trans-unit>
+    <trans-unit id="loadingDatabasesCompleted">
+      <source xml:lang="en">loading databases completed.</source>
+    </trans-unit>
+    <trans-unit id="seachObjects">
+      <source xml:lang="en">Search by name of type (t:, v:, f:, or sp:)</source>
+    </trans-unit>
+    <trans-unit id="searchDatabases">
+      <source xml:lang="en">Search databases</source>
+    </trans-unit>
+    <trans-unit id="dashboard.explorer.objectError">
+      <source xml:lang="en">Unable to load objects</source>
+    </trans-unit>
+    <trans-unit id="dashboard.explorer.databaseError">
+      <source xml:lang="en">Unable to load databases</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/table/plugins/headerFilter.plugin" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="headerFilter.showFilter">
+      <source xml:lang="en">Show Filter</source>
+    </trans-unit>
+    <trans-unit id="table.sortAscending">
+      <source xml:lang="en">Sort Ascending</source>
+    </trans-unit>
+    <trans-unit id="table.sortDescending">
+      <source xml:lang="en">Sort Descending</source>
+    </trans-unit>
+    <trans-unit id="headerFilter.ok">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="headerFilter.clear">
+      <source xml:lang="en">Clear</source>
+    </trans-unit>
+    <trans-unit id="headerFilter.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/charts/browser/utils" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="charts.maxAllowedRowsExceeded">
+      <source xml:lang="en">Maximum row count for built-in charts has been exceeded, only the first {0} rows are used. To configure the value, you can open user settings and search for: 'builtinCharts.maxRowCount'.</source>
+    </trans-unit>
+    <trans-unit id="charts.neverShowAgain">
+      <source xml:lang="en">Don't Show Again</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/jobManagement/browser/jobHistory.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="stepRow.stepID">
+      <source xml:lang="en">Step ID</source>
+    </trans-unit>
+    <trans-unit id="stepRow.stepName">
+      <source xml:lang="en">Step Name</source>
+    </trans-unit>
+    <trans-unit id="stepRow.message">
+      <source xml:lang="en">Message</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/notebook/browser/find/notebookFindWidget" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="label.find">
+      <source xml:lang="en">Find</source>
+    </trans-unit>
+    <trans-unit id="placeholder.find">
+      <source xml:lang="en">Find</source>
+    </trans-unit>
+    <trans-unit id="label.previousMatchButton">
+      <source xml:lang="en">Previous match</source>
+    </trans-unit>
+    <trans-unit id="label.nextMatchButton">
+      <source xml:lang="en">Next match</source>
+    </trans-unit>
+    <trans-unit id="label.closeButton">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="title.matchesCountLimit">
+      <source xml:lang="en">Your search returned a large number of results, only the first 999 matches will be highlighted.</source>
+    </trans-unit>
+    <trans-unit id="label.matchesLocation">
+      <source xml:lang="en">{0} of {1}</source>
+    </trans-unit>
+    <trans-unit id="label.noResults">
+      <source xml:lang="en">No Results</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/query/browser/actions" source-language="en" datatype="plaintext"><body>
@@ -3581,92 +3684,6 @@
     </trans-unit>
     <trans-unit id="visualizer">
       <source xml:lang="en">Visualizer</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/api/common/extHostModelView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="unknownComponentType">
-      <source xml:lang="en">Unknown component type. Must use ModelBuilder to create objects</source>
-    </trans-unit>
-    <trans-unit id="invalidIndex">
-      <source xml:lang="en">The index {0} is invalid.</source>
-    </trans-unit>
-    <trans-unit id="unknownConfig">
-      <source xml:lang="en">Unkown component configuration, must use ModelBuilder to create a configuration object</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/jobManagement/browser/jobHistory.component" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="stepRow.stepID">
-      <source xml:lang="en">Step ID</source>
-    </trans-unit>
-    <trans-unit id="stepRow.stepName">
-      <source xml:lang="en">Step Name</source>
-    </trans-unit>
-    <trans-unit id="stepRow.message">
-      <source xml:lang="en">Message</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/notebook/browser/find/notebookFindWidget" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="label.find">
-      <source xml:lang="en">Find</source>
-    </trans-unit>
-    <trans-unit id="placeholder.find">
-      <source xml:lang="en">Find</source>
-    </trans-unit>
-    <trans-unit id="label.previousMatchButton">
-      <source xml:lang="en">Previous match</source>
-    </trans-unit>
-    <trans-unit id="label.nextMatchButton">
-      <source xml:lang="en">Next match</source>
-    </trans-unit>
-    <trans-unit id="label.closeButton">
-      <source xml:lang="en">Close</source>
-    </trans-unit>
-    <trans-unit id="title.matchesCountLimit">
-      <source xml:lang="en">Your search returned a large number of results, only the first 999 matches will be highlighted.</source>
-    </trans-unit>
-    <trans-unit id="label.matchesLocation">
-      <source xml:lang="en">{0} of {1}</source>
-    </trans-unit>
-    <trans-unit id="label.noResults">
-      <source xml:lang="en">No Results</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/charts/browser/chartView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="horizontalBarAltName">
-      <source xml:lang="en">Horizontal Bar</source>
-    </trans-unit>
-    <trans-unit id="barAltName">
-      <source xml:lang="en">Bar</source>
-    </trans-unit>
-    <trans-unit id="lineAltName">
-      <source xml:lang="en">Line</source>
-    </trans-unit>
-    <trans-unit id="pieAltName">
-      <source xml:lang="en">Pie</source>
-    </trans-unit>
-    <trans-unit id="scatterAltName">
-      <source xml:lang="en">Scatter</source>
-    </trans-unit>
-    <trans-unit id="timeSeriesAltName">
-      <source xml:lang="en">Time Series</source>
-    </trans-unit>
-    <trans-unit id="imageAltName">
-      <source xml:lang="en">Image</source>
-    </trans-unit>
-    <trans-unit id="countAltName">
-      <source xml:lang="en">Count</source>
-    </trans-unit>
-    <trans-unit id="tableAltName">
-      <source xml:lang="en">Table</source>
-    </trans-unit>
-    <trans-unit id="doughnutAltName">
-      <source xml:lang="en">Doughnut</source>
-    </trans-unit>
-    <trans-unit id="charting.failedToGetRows">
-      <source xml:lang="en">Failed to get rows for the dataset to chart.</source>
-    </trans-unit>
-    <trans-unit id="charting.unsupportedType">
-      <source xml:lang="en">Chart type '{0}' is not supported.</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/code.component" source-language="en" datatype="plaintext"><body>
@@ -3717,11 +3734,6 @@
       <source xml:lang="en">Connection Browser Tree</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/extensions/browser/staticRecommendations" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="defaultRecommendations">
-      <source xml:lang="en">This extension is recommended by Azure Data Studio.</source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/workbench/contrib/extensions/browser/scenarioRecommendations" source-language="en" datatype="plaintext"><body>
     <trans-unit id="neverShowAgain">
       <source xml:lang="en">Don't Show Again</source>
@@ -3741,6 +3753,11 @@ Once installed, you can select the Visualizer icon to visualize your query resul
     </trans-unit>
     <trans-unit id="scenarioTypeUndefined">
       <source xml:lang="en">The scenario type for extension recommendations must be provided.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/extensions/browser/staticRecommendations" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="defaultRecommendations">
+      <source xml:lang="en">This extension is recommended by Azure Data Studio.</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page" source-language="en" datatype="plaintext"><body>
@@ -3807,6 +3824,9 @@ Once installed, you can select the Visualizer icon to visualize your query resul
     <trans-unit id="welcomePage.documentationBody">
       <source xml:lang="en">Visit the documentation center for quickstarts, how-to guides, and references for PowerShell, APIs, etc.</source>
     </trans-unit>
+    <trans-unit id="welcomePage.videos">
+      <source xml:lang="en">Videos</source>
+    </trans-unit>
     <trans-unit id="welcomePage.videoDescriptionOverview">
       <source xml:lang="en">Overview of Azure Data Studio</source>
     </trans-unit>
@@ -3821,46 +3841,6 @@ Once installed, you can select the Visualizer icon to visualize your query resul
     </trans-unit>
     <trans-unit id="welcomePage.learnMore">
       <source xml:lang="en">Learn more </source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/jobManagement/browser/notebookHistory.component" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="notebookHistory.dateCreatedTooltip">
-      <source xml:lang="en">Date Created: </source>
-    </trans-unit>
-    <trans-unit id="notebookHistory.notebookErrorTooltip">
-      <source xml:lang="en">Notebook Error: </source>
-    </trans-unit>
-    <trans-unit id="notebookHistory.ErrorTooltip">
-      <source xml:lang="en">Job Error: </source>
-    </trans-unit>
-    <trans-unit id="notebookHistory.pinnedTitle">
-      <source xml:lang="en">Pinned</source>
-    </trans-unit>
-    <trans-unit id="notebookHistory.recentRunsTitle">
-      <source xml:lang="en">Recent Runs</source>
-    </trans-unit>
-    <trans-unit id="notebookHistory.pastRunsTitle">
-      <source xml:lang="en">Past Runs</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/assessment/browser/asmtResultsView.component" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="asmt.NoResultsInitial">
-      <source xml:lang="en">Nothing to show. Invoke assessment to get results</source>
-    </trans-unit>
-    <trans-unit id="asmt.column.displayName">
-      <source xml:lang="en">Display Name</source>
-    </trans-unit>
-    <trans-unit id="asmt.column.target">
-      <source xml:lang="en">Target</source>
-    </trans-unit>
-    <trans-unit id="asmt.column.severity">
-      <source xml:lang="en">Severity</source>
-    </trans-unit>
-    <trans-unit id="asmt.TargetInstanceComplient">
-      <source xml:lang="en">Instance {0} is totally compliant with the best practices. Good job!</source>
-    </trans-unit>
-    <trans-unit id="asmt.TargetDatabaseComplient">
-      <source xml:lang="en">Database {0} is totally compliant with the best practices. Good job!</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/charts/browser/chartTab" source-language="en" datatype="plaintext"><body>
@@ -3918,12 +3898,90 @@ Once installed, you can select the Visualizer icon to visualize your query resul
       <source xml:lang="en">Top Operations</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/contrib/jobManagement/browser/notebookHistory.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="notebookHistory.dateCreatedTooltip">
+      <source xml:lang="en">Date Created: </source>
+    </trans-unit>
+    <trans-unit id="notebookHistory.notebookErrorTooltip">
+      <source xml:lang="en">Notebook Error: </source>
+    </trans-unit>
+    <trans-unit id="notebookHistory.ErrorTooltip">
+      <source xml:lang="en">Job Error: </source>
+    </trans-unit>
+    <trans-unit id="notebookHistory.pinnedTitle">
+      <source xml:lang="en">Pinned</source>
+    </trans-unit>
+    <trans-unit id="notebookHistory.recentRunsTitle">
+      <source xml:lang="en">Recent Runs</source>
+    </trans-unit>
+    <trans-unit id="notebookHistory.pastRunsTitle">
+      <source xml:lang="en">Past Runs</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/assessment/browser/asmtResultsView.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="asmt.NoResultsInitial">
+      <source xml:lang="en">Nothing to show. Invoke assessment to get results</source>
+    </trans-unit>
+    <trans-unit id="asmt.column.displayName">
+      <source xml:lang="en">Display Name</source>
+    </trans-unit>
+    <trans-unit id="asmt.column.target">
+      <source xml:lang="en">Target</source>
+    </trans-unit>
+    <trans-unit id="asmt.column.severity">
+      <source xml:lang="en">Severity</source>
+    </trans-unit>
+    <trans-unit id="asmt.TargetInstanceComplient">
+      <source xml:lang="en">Instance {0} is totally compliant with the best practices. Good job!</source>
+    </trans-unit>
+    <trans-unit id="asmt.TargetDatabaseComplient">
+      <source xml:lang="en">Database {0} is totally compliant with the best practices. Good job!</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/contrib/objectExplorer/browser/serverTreeView" source-language="en" datatype="plaintext"><body>
     <trans-unit id="servers.noConnections">
       <source xml:lang="en">No connections found.</source>
     </trans-unit>
     <trans-unit id="serverTree.addConnection">
       <source xml:lang="en">Add Connection</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/charts/browser/chartView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="horizontalBarAltName">
+      <source xml:lang="en">Horizontal Bar</source>
+    </trans-unit>
+    <trans-unit id="barAltName">
+      <source xml:lang="en">Bar</source>
+    </trans-unit>
+    <trans-unit id="lineAltName">
+      <source xml:lang="en">Line</source>
+    </trans-unit>
+    <trans-unit id="pieAltName">
+      <source xml:lang="en">Pie</source>
+    </trans-unit>
+    <trans-unit id="scatterAltName">
+      <source xml:lang="en">Scatter</source>
+    </trans-unit>
+    <trans-unit id="timeSeriesAltName">
+      <source xml:lang="en">Time Series</source>
+    </trans-unit>
+    <trans-unit id="imageAltName">
+      <source xml:lang="en">Image</source>
+    </trans-unit>
+    <trans-unit id="countAltName">
+      <source xml:lang="en">Count</source>
+    </trans-unit>
+    <trans-unit id="tableAltName">
+      <source xml:lang="en">Table</source>
+    </trans-unit>
+    <trans-unit id="doughnutAltName">
+      <source xml:lang="en">Doughnut</source>
+    </trans-unit>
+    <trans-unit id="charting.failedToGetRows">
+      <source xml:lang="en">Failed to get rows for the dataset to chart.</source>
+    </trans-unit>
+    <trans-unit id="charting.unsupportedType">
+      <source xml:lang="en">Chart type '{0}' is not supported.</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/services/connection/browser/connectionWidget" source-language="en" datatype="plaintext"><body>
@@ -4135,6 +4193,17 @@ Once installed, you can select the Visualizer icon to visualize your query resul
       <source xml:lang="en">Help</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/contrib/query/browser/messagePanel" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="messagePanel">
+      <source xml:lang="en">Message Panel</source>
+    </trans-unit>
+    <trans-unit id="copy">
+      <source xml:lang="en">Copy</source>
+    </trans-unit>
+    <trans-unit id="copyAll">
+      <source xml:lang="en">Copy All</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/contrib/editData/browser/editDataGridActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="deleteRow">
       <source xml:lang="en">Delete Row</source>
@@ -4205,17 +4274,6 @@ Once installed, you can select the Visualizer icon to visualize your query resul
       <source xml:lang="en">{0}: {1} item(s)</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/query/browser/messagePanel" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="messagePanel">
-      <source xml:lang="en">Message Panel</source>
-    </trans-unit>
-    <trans-unit id="copy">
-      <source xml:lang="en">Copy</source>
-    </trans-unit>
-    <trans-unit id="copyAll">
-      <source xml:lang="en">Copy All</source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="loadingMessage">
       <source xml:lang="en">Loading</source>
@@ -4254,14 +4312,6 @@ Once installed, you can select the Visualizer icon to visualize your query resul
       <source xml:lang="en">Collapse code cell contents</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/query/browser/gridPanel" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="xmlShowplan">
-      <source xml:lang="en">XML Showplan</source>
-    </trans-unit>
-    <trans-unit id="resultsGrid">
-      <source xml:lang="en">Results grid</source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="buttonAdd">
       <source xml:lang="en">Add cell</source>
@@ -4291,15 +4341,35 @@ Once installed, you can select the Visualizer icon to visualize your query resul
       <source xml:lang="en">Text cell</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/services/notebook/browser/sql/sqlSessionManager" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="sqlKernelError">
-      <source xml:lang="en">SQL kernel error</source>
+  <file original="src/sql/workbench/contrib/profiler/browser/profilerFindWidget" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="label.find">
+      <source xml:lang="en">Find</source>
     </trans-unit>
-    <trans-unit id="connectionRequired">
-      <source xml:lang="en">A connection must be chosen to run notebook cells</source>
+    <trans-unit id="placeholder.find">
+      <source xml:lang="en">Find</source>
     </trans-unit>
-    <trans-unit id="sqlMaxRowsDisplayed">
-      <source xml:lang="en">Displaying Top {0} rows.</source>
+    <trans-unit id="label.previousMatchButton">
+      <source xml:lang="en">Previous match</source>
+    </trans-unit>
+    <trans-unit id="label.nextMatchButton">
+      <source xml:lang="en">Next match</source>
+    </trans-unit>
+    <trans-unit id="label.closeButton">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="title.matchesCountLimit">
+      <source xml:lang="en">Your search returned a large number of results, only the first 999 matches will be highlighted.</source>
+    </trans-unit>
+    <trans-unit id="label.matchesLocation">
+      <source xml:lang="en">{0} of {1}</source>
+    </trans-unit>
+    <trans-unit id="label.noResults">
+      <source xml:lang="en">No Results</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/browser/modelComponents/viewBase" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="componentTypeNotRegistered">
+      <source xml:lang="en">Could not find component for type {0}</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/jobManagement/browser/jobsView.component" source-language="en" datatype="plaintext"><body>
@@ -4340,35 +4410,9 @@ Once installed, you can select the Visualizer icon to visualize your query resul
       <source xml:lang="en">Error: </source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/browser/modelComponents/viewBase" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="componentTypeNotRegistered">
-      <source xml:lang="en">Could not find component for type {0}</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/profiler/browser/profilerFindWidget" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="label.find">
-      <source xml:lang="en">Find</source>
-    </trans-unit>
-    <trans-unit id="placeholder.find">
-      <source xml:lang="en">Find</source>
-    </trans-unit>
-    <trans-unit id="label.previousMatchButton">
-      <source xml:lang="en">Previous match</source>
-    </trans-unit>
-    <trans-unit id="label.nextMatchButton">
-      <source xml:lang="en">Next match</source>
-    </trans-unit>
-    <trans-unit id="label.closeButton">
-      <source xml:lang="en">Close</source>
-    </trans-unit>
-    <trans-unit id="title.matchesCountLimit">
-      <source xml:lang="en">Your search returned a large number of results, only the first 999 matches will be highlighted.</source>
-    </trans-unit>
-    <trans-unit id="label.matchesLocation">
-      <source xml:lang="en">{0} of {1}</source>
-    </trans-unit>
-    <trans-unit id="label.noResults">
-      <source xml:lang="en">No Results</source>
+  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/actions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="insights.runQuery">
+      <source xml:lang="en">Run Query</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerView" source-language="en" datatype="plaintext"><body>
@@ -4380,11 +4424,6 @@ Once installed, you can select the Visualizer icon to visualize your query resul
     </trans-unit>
     <trans-unit id="dashboard.explorer.objectTypeDisplayValue">
       <source xml:lang="en">Type</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/actions" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="insights.runQuery">
-      <source xml:lang="en">Run Query</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/output.component" source-language="en" datatype="plaintext"><body>
@@ -4401,6 +4440,14 @@ Once installed, you can select the Visualizer icon to visualize your query resul
       <source xml:lang="en">Error rendering component: {0}</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/contrib/query/browser/gridPanel" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="xmlShowplan">
+      <source xml:lang="en">XML Showplan</source>
+    </trans-unit>
+    <trans-unit id="resultsGrid">
+      <source xml:lang="en">Results grid</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/serverTreeRenderer" source-language="en" datatype="plaintext"><body>
     <trans-unit id="loading">
       <source xml:lang="en">Loading...</source>
@@ -4409,6 +4456,17 @@ Once installed, you can select the Visualizer icon to visualize your query resul
   <file original="src/sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer" source-language="en" datatype="plaintext"><body>
     <trans-unit id="loading">
       <source xml:lang="en">Loading...</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/services/notebook/browser/sql/sqlSessionManager" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="sqlKernelError">
+      <source xml:lang="en">SQL kernel error</source>
+    </trans-unit>
+    <trans-unit id="connectionRequired">
+      <source xml:lang="en">A connection must be chosen to run notebook cells</source>
+    </trans-unit>
+    <trans-unit id="sqlMaxRowsDisplayed">
+      <source xml:lang="en">Displaying Top {0} rows.</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/dashboard/browser/core/actions" source-language="en" datatype="plaintext"><body>
@@ -4448,55 +4506,9 @@ Once installed, you can select the Visualizer icon to visualize your query resul
       <source xml:lang="en">{0} is an unknown container.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/jobManagement/browser/notebooksView.component" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="notebookColumns.name">
-      <source xml:lang="en">Name</source>
-    </trans-unit>
-    <trans-unit id="notebookColumns.targetDatbase">
-      <source xml:lang="en">Target Database</source>
-    </trans-unit>
-    <trans-unit id="notebookColumns.lastRun">
-      <source xml:lang="en">Last Run</source>
-    </trans-unit>
-    <trans-unit id="notebookColumns.nextRun">
-      <source xml:lang="en">Next Run</source>
-    </trans-unit>
-    <trans-unit id="notebookColumns.status">
-      <source xml:lang="en">Status</source>
-    </trans-unit>
-    <trans-unit id="notebookColumns.lastRunOutcome">
-      <source xml:lang="en">Last Run Outcome</source>
-    </trans-unit>
-    <trans-unit id="notebookColumns.previousRuns">
-      <source xml:lang="en">Previous Runs</source>
-    </trans-unit>
-    <trans-unit id="notebooksView.noSteps">
-      <source xml:lang="en">No Steps available for this job.</source>
-    </trans-unit>
-    <trans-unit id="notebooksView.error">
-      <source xml:lang="en">Error: </source>
-    </trans-unit>
-    <trans-unit id="notebooksView.notebookError">
-      <source xml:lang="en">Notebook Error: </source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/base/browser/ui/table/plugins/rowDetailView" source-language="en" datatype="plaintext"><body>
     <trans-unit id="rowDetailView.loadError">
       <source xml:lang="en">Loading Error...</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTable" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="dashboard.explorer.actions">
-      <source xml:lang="en">Show Actions</source>
-    </trans-unit>
-    <trans-unit id="explorerSearchNoMatchResultMessage">
-      <source xml:lang="en">No matching item found</source>
-    </trans-unit>
-    <trans-unit id="explorerSearchSingleMatchResultMessage">
-      <source xml:lang="en">Filtered search list to 1 item</source>
-    </trans-unit>
-    <trans-unit id="explorerSearchMatchResultMessage">
-      <source xml:lang="en">Filtered search list to {0} items</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/services/jobManagement/browser/jobManagementUtilities" source-language="en" datatype="plaintext"><body>
@@ -4547,6 +4559,52 @@ Once installed, you can select the Visualizer icon to visualize your query resul
     </trans-unit>
     <trans-unit id="agentUtilities.neverRun">
       <source xml:lang="en">Never Run</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/jobManagement/browser/notebooksView.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="notebookColumns.name">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="notebookColumns.targetDatbase">
+      <source xml:lang="en">Target Database</source>
+    </trans-unit>
+    <trans-unit id="notebookColumns.lastRun">
+      <source xml:lang="en">Last Run</source>
+    </trans-unit>
+    <trans-unit id="notebookColumns.nextRun">
+      <source xml:lang="en">Next Run</source>
+    </trans-unit>
+    <trans-unit id="notebookColumns.status">
+      <source xml:lang="en">Status</source>
+    </trans-unit>
+    <trans-unit id="notebookColumns.lastRunOutcome">
+      <source xml:lang="en">Last Run Outcome</source>
+    </trans-unit>
+    <trans-unit id="notebookColumns.previousRuns">
+      <source xml:lang="en">Previous Runs</source>
+    </trans-unit>
+    <trans-unit id="notebooksView.noSteps">
+      <source xml:lang="en">No Steps available for this job.</source>
+    </trans-unit>
+    <trans-unit id="notebooksView.error">
+      <source xml:lang="en">Error: </source>
+    </trans-unit>
+    <trans-unit id="notebooksView.notebookError">
+      <source xml:lang="en">Notebook Error: </source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTable" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="dashboard.explorer.actions">
+      <source xml:lang="en">Show Actions</source>
+    </trans-unit>
+    <trans-unit id="explorerSearchNoMatchResultMessage">
+      <source xml:lang="en">No matching item found</source>
+    </trans-unit>
+    <trans-unit id="explorerSearchSingleMatchResultMessage">
+      <source xml:lang="en">Filtered search list to 1 item</source>
+    </trans-unit>
+    <trans-unit id="explorerSearchMatchResultMessage">
+      <source xml:lang="en">Filtered search list to {0} items</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component" source-language="en" datatype="plaintext"><body>
@@ -4611,6 +4669,27 @@ Once installed, you can select the Visualizer icon to visualize your query resul
       <source xml:lang="en">Markdown View</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/base/browser/ui/panel/tabActions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="closeTab">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/platform/connection/common/connectionConfig" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="invalidServerName">
+      <source xml:lang="en">A server group with the same name already exists.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/core/dashboardPage.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="home">
+      <source xml:lang="en">Home</source>
+    </trans-unit>
+    <trans-unit id="missingConnectionInfo">
+      <source xml:lang="en">No connection information could be found for this dashboard</source>
+    </trans-unit>
+    <trans-unit id="dashboard.generalTabGroupHeader">
+      <source xml:lang="en">General</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/contrib/charts/browser/chartOptions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="dataDirectionLabel">
       <source xml:lang="en">Data Direction</source>
@@ -4673,56 +4752,6 @@ Once installed, you can select the Visualizer icon to visualize your query resul
       <source xml:lang="en">Image Format</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/base/browser/ui/panel/tabActions" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="closeTab">
-      <source xml:lang="en">Close</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/platform/connection/common/connectionConfig" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="invalidServerName">
-      <source xml:lang="en">A server group with the same name already exists.</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/dashboard/browser/core/dashboardPage.component" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="home">
-      <source xml:lang="en">Home</source>
-    </trans-unit>
-    <trans-unit id="missingConnectionInfo">
-      <source xml:lang="en">No connection information could be found for this dashboard</source>
-    </trans-unit>
-    <trans-unit id="dashboard.generalTabGroupHeader">
-      <source xml:lang="en">General</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/charts/browser/actions" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="createInsightLabel">
-      <source xml:lang="en">Create Insight</source>
-    </trans-unit>
-    <trans-unit id="createInsightNoEditor">
-      <source xml:lang="en">Cannot create insight as the active editor is not a SQL Editor</source>
-    </trans-unit>
-    <trans-unit id="myWidgetName">
-      <source xml:lang="en">My-Widget</source>
-    </trans-unit>
-    <trans-unit id="configureChartLabel">
-      <source xml:lang="en">Configure Chart</source>
-    </trans-unit>
-    <trans-unit id="copyChartLabel">
-      <source xml:lang="en">Copy as image</source>
-    </trans-unit>
-    <trans-unit id="chartNotFound">
-      <source xml:lang="en">Could not find chart to save</source>
-    </trans-unit>
-    <trans-unit id="saveImageLabel">
-      <source xml:lang="en">Save as image</source>
-    </trans-unit>
-    <trans-unit id="resultsSerializer.saveAsFileExtensionPNGTitle">
-      <source xml:lang="en">PNG</source>
-    </trans-unit>
-    <trans-unit id="chartSaved">
-      <source xml:lang="en">Saved Chart to path: {0}</source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/notebook.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="addCodeLabel">
       <source xml:lang="en">Add code</source>
@@ -4771,6 +4800,67 @@ Once installed, you can select the Visualizer icon to visualize your query resul
     </trans-unit>
     <trans-unit id="cellRunFailed">
       <source xml:lang="en">Run Cells failed - See error in output of the currently selected cell for more information.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/charts/browser/actions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="createInsightLabel">
+      <source xml:lang="en">Create Insight</source>
+    </trans-unit>
+    <trans-unit id="createInsightNoEditor">
+      <source xml:lang="en">Cannot create insight as the active editor is not a SQL Editor</source>
+    </trans-unit>
+    <trans-unit id="myWidgetName">
+      <source xml:lang="en">My-Widget</source>
+    </trans-unit>
+    <trans-unit id="configureChartLabel">
+      <source xml:lang="en">Configure Chart</source>
+    </trans-unit>
+    <trans-unit id="copyChartLabel">
+      <source xml:lang="en">Copy as image</source>
+    </trans-unit>
+    <trans-unit id="chartNotFound">
+      <source xml:lang="en">Could not find chart to save</source>
+    </trans-unit>
+    <trans-unit id="saveImageLabel">
+      <source xml:lang="en">Save as image</source>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionPNGTitle">
+      <source xml:lang="en">PNG</source>
+    </trans-unit>
+    <trans-unit id="chartSaved">
+      <source xml:lang="en">Saved Chart to path: {0}</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/assessment/browser/asmtActions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="asmtaction.server.getitems">
+      <source xml:lang="en">View applicable rules</source>
+    </trans-unit>
+    <trans-unit id="asmtaction.database.getitems">
+      <source xml:lang="en">View applicable rules for {0}</source>
+    </trans-unit>
+    <trans-unit id="asmtaction.server.invokeitems">
+      <source xml:lang="en">Invoke Assessment</source>
+    </trans-unit>
+    <trans-unit id="asmtaction.database.invokeitems">
+      <source xml:lang="en">Invoke Assessment for {0}</source>
+    </trans-unit>
+    <trans-unit id="asmtaction.exportasscript">
+      <source xml:lang="en">Export As Script</source>
+    </trans-unit>
+    <trans-unit id="asmtaction.showsamples">
+      <source xml:lang="en">View all rules and learn more on GitHub</source>
+    </trans-unit>
+    <trans-unit id="asmtaction.generatehtmlreport">
+      <source xml:lang="en">Create HTML Report</source>
+    </trans-unit>
+    <trans-unit id="asmtaction.openReport">
+      <source xml:lang="en">Report has been saved. Do you want to open it?</source>
+    </trans-unit>
+    <trans-unit id="asmtaction.label.open">
+      <source xml:lang="en">Open</source>
+    </trans-unit>
+    <trans-unit id="asmtaction.label.cancel">
+      <source xml:lang="en">Cancel</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/jobManagement/browser/jobActions" source-language="en" datatype="plaintext"><body>
@@ -4931,38 +5021,6 @@ Error: {1}</source>
       <source xml:lang="en">Open Latest Run</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/assessment/browser/asmtActions" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="asmtaction.server.getitems">
-      <source xml:lang="en">View applicable rules</source>
-    </trans-unit>
-    <trans-unit id="asmtaction.database.getitems">
-      <source xml:lang="en">View applicable rules for {0}</source>
-    </trans-unit>
-    <trans-unit id="asmtaction.server.invokeitems">
-      <source xml:lang="en">Invoke Assessment</source>
-    </trans-unit>
-    <trans-unit id="asmtaction.database.invokeitems">
-      <source xml:lang="en">Invoke Assessment for {0}</source>
-    </trans-unit>
-    <trans-unit id="asmtaction.exportasscript">
-      <source xml:lang="en">Export As Script</source>
-    </trans-unit>
-    <trans-unit id="asmtaction.showsamples">
-      <source xml:lang="en">View all rules and learn more on GitHub</source>
-    </trans-unit>
-    <trans-unit id="asmtaction.generatehtmlreport">
-      <source xml:lang="en">Create HTML Report</source>
-    </trans-unit>
-    <trans-unit id="asmtaction.openReport">
-      <source xml:lang="en">Report has been saved. Do you want to open it?</source>
-    </trans-unit>
-    <trans-unit id="asmtaction.label.open">
-      <source xml:lang="en">Open</source>
-    </trans-unit>
-    <trans-unit id="asmtaction.label.cancel">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
-  </body></file>
   <file original="src/sql/workbench/contrib/preferences/browser/sqlSettingsLayout" source-language="en" datatype="plaintext"><body>
     <trans-unit id="data">
       <source xml:lang="en">Data</source>
@@ -4981,6 +5039,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="profiler">
       <source xml:lang="en">Profiler</source>
+    </trans-unit>
+    <trans-unit id="builtinCharts">
+      <source xml:lang="en">Built-in Charts</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/extensions/browser/contributionRenders" source-language="en" datatype="plaintext"><body>
@@ -5007,11 +5068,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="insight condition">
       <source xml:lang="en">When</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/charts/browser/imageInsight" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="invalidImage">
-      <source xml:lang="en">Table does not contain a valid image</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellToolbarActions" source-language="en" datatype="plaintext"><body>
@@ -5072,14 +5128,9 @@ Error: {1}</source>
       <source xml:lang="en">Kernel {0} was not found. The default kernel will be used instead.</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/contrib/charts/browser/graphInsight" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="series">
-      <source xml:lang="en">Series {0}</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/contrib/charts/browser/configureChartDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="configureChartDialog.close">
-      <source xml:lang="en">Close</source>
+  <file original="src/sql/workbench/contrib/charts/browser/imageInsight" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="invalidImage">
+      <source xml:lang="en">Table does not contain a valid image</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/services/notebook/browser/models/notebookModel" source-language="en" datatype="plaintext"><body>
@@ -5110,6 +5161,36 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="ProviderNoManager">
       <source xml:lang="en">Can't find notebook manager for provider {0}</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/charts/browser/graphInsight" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="series">
+      <source xml:lang="en">Series {0}</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/charts/browser/configureChartDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="configureChartDialog.close">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/services/notebook/browser/models/cell" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="runCellCancelled">
+      <source xml:lang="en">Cell execution cancelled</source>
+    </trans-unit>
+    <trans-unit id="executionCanceled">
+      <source xml:lang="en">Query execution was canceled</source>
+    </trans-unit>
+    <trans-unit id="notebookNotReady">
+      <source xml:lang="en">The session for this notebook is not yet ready</source>
+    </trans-unit>
+    <trans-unit id="sessionNotReady">
+      <source xml:lang="en">The session for this notebook will start momentarily</source>
+    </trans-unit>
+    <trans-unit id="noDefaultKernel">
+      <source xml:lang="en">No kernel is available for this notebook</source>
+    </trans-unit>
+    <trans-unit id="commandSuccessful">
+      <source xml:lang="en">Command executed successfully</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/calloutDialog/common/constants" source-language="en" datatype="plaintext"><body>
@@ -5160,26 +5241,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="linkCallout.linkAddressPlaceholder">
       <source xml:lang="en">Link to an existing file or web page</source>
-    </trans-unit>
-  </body></file>
-  <file original="src/sql/workbench/services/notebook/browser/models/cell" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="runCellCancelled">
-      <source xml:lang="en">Cell execution cancelled</source>
-    </trans-unit>
-    <trans-unit id="executionCanceled">
-      <source xml:lang="en">Query execution was canceled</source>
-    </trans-unit>
-    <trans-unit id="notebookNotReady">
-      <source xml:lang="en">The session for this notebook is not yet ready</source>
-    </trans-unit>
-    <trans-unit id="sessionNotReady">
-      <source xml:lang="en">The session for this notebook will start momentarily</source>
-    </trans-unit>
-    <trans-unit id="noDefaultKernel">
-      <source xml:lang="en">No kernel is available for this notebook</source>
-    </trans-unit>
-    <trans-unit id="commandSuccessful">
-      <source xml:lang="en">Command executed successfully</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/services/notebook/browser/models/notebookContexts" source-language="en" datatype="plaintext"><body>

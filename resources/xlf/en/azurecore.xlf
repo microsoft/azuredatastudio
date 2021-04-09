@@ -93,6 +93,9 @@
     <trans-unit id="azure.accounts.getResourceGroups.queryError">
       <source xml:lang="en">Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}</source>
     </trans-unit>
+    <trans-unit id="azure.accounts.getLocations.queryError">
+      <source xml:lang="en">Error fetching locations for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}</source>
+    </trans-unit>
     <trans-unit id="azure.accounts.runResourceQuery.errors.invalidQuery">
       <source xml:lang="en">Invalid query</source>
     </trans-unit>
@@ -305,13 +308,13 @@
       <source xml:lang="en">Unidentified error with azure authentication</source>
     </trans-unit>
     <trans-unit id="azure.tenantNotFound">
-      <source xml:lang="en">Specifed tenant with ID '{0}' not found.</source>
+      <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
     </trans-unit>
     <trans-unit id="azure.noBaseToken">
       <source xml:lang="en">Something failed with the authentication, or your tokens have been deleted from the system. Please try adding your account to Azure Data Studio again.</source>
     </trans-unit>
     <trans-unit id="azure.responseError">
-      <source xml:lang="en">Token retrival failed with an error. Open developer tools to view the error</source>
+      <source xml:lang="en">Token retrieval failed with an error. Open developer tools to view the error</source>
     </trans-unit>
     <trans-unit id="azure.accessTokenEmpty">
       <source xml:lang="en">No access token returned from Microsoft OAuth</source>

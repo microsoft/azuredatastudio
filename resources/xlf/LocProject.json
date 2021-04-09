@@ -15,6 +15,24 @@
           "CopyOption": "LangIDOnName",
           "OutputPath": "resources\\xlf\\Localized"
         },
+    {
+          "SourceFile": "resources\\xlf\\en\\arc.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\arc.xlf.lcl",
+          "CopyOption": "LangIDOnName",
+          "OutputPath": "resources\\xlf\\Localized"
+        },
+    {
+          "SourceFile": "resources\\xlf\\en\\asde-deployment.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\asde-deployment.xlf.lcl",
+          "CopyOption": "LangIDOnName",
+          "OutputPath": "resources\\xlf\\Localized"
+        },
+    {
+          "SourceFile": "resources\\xlf\\en\\azdata.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\azdata.xlf.lcl",
+          "CopyOption": "LangIDOnName",
+          "OutputPath": "resources\\xlf\\Localized"
+        },
 		{
           "SourceFile": "resources\\xlf\\en\\azurecore.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\azurecore.xlf.lcl",
@@ -51,6 +69,18 @@
           "CopyOption": "LangIDOnName",
           "OutputPath": "resources\\xlf\\Localized"
         },
+    {
+          "SourceFile": "resources\\xlf\\en\\kusto.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\kusto.xlf.lcl",
+          "CopyOption": "LangIDOnName",
+          "OutputPath": "resources\\xlf\\Localized"
+        },
+    {
+          "SourceFile": "resources\\xlf\\en\\machine-learning.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\machine-learning.xlf.lcl",
+          "CopyOption": "LangIDOnName",
+          "OutputPath": "resources\\xlf\\Localized"
+        },
 		{
           "SourceFile": "resources\\xlf\\en\\Microsoft.sqlservernotebook.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\Microsoft.sqlservernotebook.xlf.lcl",
@@ -75,6 +105,12 @@
           "CopyOption": "LangIDOnName",
           "OutputPath": "resources\\xlf\\Localized"
         },
+    {
+          "SourceFile": "resources\\xlf\\en\\query-history.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\query-history.xlf.lcl",
+          "CopyOption": "LangIDOnName",
+          "OutputPath": "resources\\xlf\\Localized"
+        },
 		{
           "SourceFile": "resources\\xlf\\en\\resource-deployment.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\resource-deployment.xlf.lcl",
@@ -84,6 +120,24 @@
 		{
           "SourceFile": "resources\\xlf\\en\\schema-compare.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\schema-compare.xlf.lcl",
+          "CopyOption": "LangIDOnName",
+          "OutputPath": "resources\\xlf\\Localized"
+        },
+    {
+          "SourceFile": "resources\\xlf\\en\\sql-assessment.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\sql-assessment.xlf.lcl",
+          "CopyOption": "LangIDOnName",
+          "OutputPath": "resources\\xlf\\Localized"
+        },
+    {
+          "SourceFile": "resources\\xlf\\en\\sql-database-projects.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\sql-database-projects.xlf.lcl",
+          "CopyOption": "LangIDOnName",
+          "OutputPath": "resources\\xlf\\Localized"
+        },
+    {
+          "SourceFile": "resources\\xlf\\en\\sql-migration.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\sql-migration.xlf.lcl",
           "CopyOption": "LangIDOnName",
           "OutputPath": "resources\\xlf\\Localized"
         },
