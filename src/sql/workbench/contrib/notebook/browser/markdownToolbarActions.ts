@@ -571,15 +571,18 @@ function getColumnOffsetForSelection(type: MarkdownButtonType, nothingSelected: 
  */
 export async function insertFormattedMarkdown(markdownToInsert: string, editorControl?: IEditor): Promise<void> {
 	if (editorControl) {
-		let selections = editorControl.getSelections();
-		let selection = selections[0];
-		let startRange: IRange = {
-			startColumn: selection.startColumn,
-			endColumn: selection.startColumn,
-			startLineNumber: selection.startLineNumber,
-			endLineNumber: selection.startLineNumber
-		};
+		let selections = editorControl.getSelections() || [];
+		let selection: Selection;
+		let startRange: IRange;
+		// Default case when no there are no selections
+		if (selections.length) {
+			selection = selections[0];
+		} else {
+			selection = new Selection(1, 1, 1, 1);
+			selections.push(selection);
+		}
 
+		// Editor Model is null for default case as well
 		let editorModel = editorControl.getModel() as TextModel;
 
 		startRange = {
