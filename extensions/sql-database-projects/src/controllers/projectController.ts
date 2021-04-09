@@ -319,11 +319,7 @@ export class ProjectsController {
 		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
 
 		const currentDeployIndex = this.deployInfo.findIndex(d => d.startDate === currentDeployTimeInfo);
-		if (result.success === true) {
-			this.deployInfo[currentDeployIndex].status = Status.success;
-		} else {
-			this.deployInfo[currentDeployIndex].status = Status.failed;
-		}
+		this.deployInfo[currentDeployIndex].status = result.success ? Status.success : Status.failed;
 		this.deployInfo[currentDeployIndex].timeToCompleteAction = utils.timeConversion(timeToDeploy);
 
 		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
