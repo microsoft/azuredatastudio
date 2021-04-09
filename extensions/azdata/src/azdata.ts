@@ -14,7 +14,7 @@ import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
 import { getErrorMessage, NoAzdataError, searchForCmd } from './common/utils';
-import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataInstallKey, azdataUpdateKey, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
+import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, azdataInstallKey, azdataUpdateKey, azdatarequiredUpdateKey, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
 import * as loc from './localizedConstants';
 
 /**
@@ -320,31 +320,43 @@ export async function installAzdata(): Promise<void> {
 /**
  * Updates the azdata using os appropriate method
  */
-export async function updateAzdata(): Promise<void> {
-	Logger.show();
-	Logger.log(loc.updatingAzdata);
-	await vscode.window.withProgress(
-		{
-			location: vscode.ProgressLocation.Notification,
-			title: loc.updatingAzdata,
-			cancellable: false
-		},
-		async (_progress, _token): Promise<void> => {
-			switch (process.platform) {
-				case 'win32':
-					await downloadAndInstallAzdataWin32();
-					break;
-				case 'darwin':
-					await updateAzdataDarwin();
-					break;
-				case 'linux':
-					await installAzdataLinux();
-					break;
-				default:
-					throw new Error(loc.platformUnsupported(process.platform));
+async function updateAzdata(version: string): Promise<boolean> {
+	try {
+		Logger.show();
+		Logger.log(loc.updatingAzdata);
+		await vscode.window.withProgress(
+			{
+				location: vscode.ProgressLocation.Notification,
+				title: loc.updatingAzdata,
+				cancellable: false
+			},
+			async (_progress, _token): Promise<void> => {
+				switch (process.platform) {
+					case 'win32':
+						await downloadAndInstallAzdataWin32();
+						break;
+					case 'darwin':
+						await updateAzdataDarwin();
+						break;
+					case 'linux':
+						await installAzdataLinux();
+						break;
+					default:
+						throw new Error(loc.platformUnsupported(process.platform));
+				}
 			}
+		);
+		vscode.window.showInformationMessage(loc.azdataUpdated(version));
+		Logger.log(loc.azdataUpdated(version));
+		return true;
+	} catch (err) {
+		// Windows: 1602 is User cancelling installation/update - not unexpected so don't display
+		if (!(err instanceof ExitCodeError) || err.code !== 1602) {
+			vscode.window.showWarningMessage(loc.updateError(err));
+			Logger.log(loc.updateError(err));
 		}
-	);
+	}
+	return false;
 }
 
 /**
@@ -453,24 +465,25 @@ async function promptToInstallAzdata(userRequested: boolean = false): Promise<bo
 async function promptToUpdateAzdata(newVersion: string, userRequested: boolean = false, required = false): Promise<boolean> {
 	if (required) {
 		let response: string | undefined = loc.yes;
-
-		const responses = [loc.yes, loc.no];
+		const config = <AzdataDeployOption>getConfig(azdatarequiredUpdateKey);
+		if (userRequested) {
+			Logger.show();
+			Logger.log(loc.userRequestedUpdate);
+		}
+		if (config === AzdataDeployOption.dontPrompt && !userRequested) {
+			Logger.log(loc.skipRequiredUpdate(config));
+			return false;
+		}
+		const responses = userRequested
+			? [loc.yes, loc.no]
+			: [loc.yes, loc.askLater, loc.doNotAskAgain];
 		Logger.log(loc.promptForRequiredAzdataUpdateLog(MIN_AZDATA_VERSION.raw, newVersion));
 		response = await vscode.window.showInformationMessage(loc.promptForRequiredAzdataUpdate(MIN_AZDATA_VERSION.raw, newVersion), ...responses);
 		Logger.log(loc.userResponseToUpdatePrompt(response));
-		if (response === loc.yes) {
-			try {
-				await updateAzdata();
-				vscode.window.showInformationMessage(loc.azdataUpdated(newVersion));
-				Logger.log(loc.azdataUpdated(newVersion));
-				return true;
-			} catch (err) {
-				// Windows: 1602 is User cancelling installation/update - not unexpected so don't display
-				if (!(err instanceof ExitCodeError) || err.code !== 1602) {
-					vscode.window.showWarningMessage(loc.updateError(err));
-					Logger.log(loc.updateError(err));
-				}
-			}
+		if (response === loc.doNotAskAgain) {
+			await setConfig(azdatarequiredUpdateKey, AzdataDeployOption.dontPrompt);
+		} else if (response === loc.yes) {
+			return updateAzdata(newVersion);
 		} else {
 			vscode.window.showWarningMessage(loc.missingRequiredVersion(MIN_AZDATA_VERSION.raw));
 		}
@@ -496,24 +509,11 @@ async function promptToUpdateAzdata(newVersion: string, userRequested: boolean =
 		if (response === loc.doNotAskAgain) {
 			await setConfig(azdataUpdateKey, AzdataDeployOption.dontPrompt);
 		} else if (response === loc.yes) {
-			try {
-				await updateAzdata();
-				vscode.window.showInformationMessage(loc.azdataUpdated(newVersion));
-				Logger.log(loc.azdataUpdated(newVersion));
-				return true;
-			} catch (err) {
-				// Windows: 1602 is User cancelling installation/update - not unexpected so don't display
-				if (!(err instanceof ExitCodeError) || err.code !== 1602) {
-					vscode.window.showWarningMessage(loc.updateError(err));
-					Logger.log(loc.updateError(err));
-				}
-			}
+			return updateAzdata(newVersion);
 		}
 	}
 	return false;
 }
-
-
 
 /**
  *	Returns true if Eula has been accepted.
