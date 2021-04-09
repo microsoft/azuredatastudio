@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/notebook/package" source-language="en" datatype="plaintext" target-language="zh-HANS">
+  <file original="extensions/notebook/package" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="displayName">
         <source xml:lang="en">Notebook Core Extensions</source>
@@ -30,9 +30,25 @@
         <source xml:lang="en">Maximum number of rows returned per table in the Notebook editor</source>
         <target state="translated">笔记本编辑器中每个表返回的最大行数</target>
       </trans-unit>
+      <trans-unit id="notebook.trustedBooks.description">
+        <source xml:lang="en">Notebooks contained in these books will automatically be trusted.</source>
+        <target state="translated">包含在这些工作簿中的笔记本将自动受信任。</target>
+      </trans-unit>
       <trans-unit id="notebook.maxBookSearchDepth.description">
         <source xml:lang="en">Maximum depth of subdirectories to search for Books (Enter 0 for infinite)</source>
         <target state="translated">要搜索书籍的子目录的最大深度(输入 0 表示“无限”)</target>
+      </trans-unit>
+      <trans-unit id="notebook.collapseBookItems.description">
+        <source xml:lang="en">Collapse Book items at root level in the Notebooks Viewlet</source>
+        <target state="translated">在笔记本 Viewlet 的根级别折叠工作簿项</target>
+      </trans-unit>
+      <trans-unit id="notebook.remoteBookDownloadTimeout.description">
+        <source xml:lang="en">Download timeout in milliseconds for GitHub books</source>
+        <target state="translated">GitHub 工作簿下载超时时间(毫秒)</target>
+      </trans-unit>
+      <trans-unit id="notebook.pinnedNotebooks.description">
+        <source xml:lang="en">Notebooks that are pinned by the user for the current workspace</source>
+        <target state="translated">用户为当前工作区固定的笔记本</target>
       </trans-unit>
       <trans-unit id="notebook.command.new">
         <source xml:lang="en">New Notebook</source>
@@ -126,33 +142,97 @@
         <source xml:lang="en">Save Book</source>
         <target state="translated">保存书籍</target>
       </trans-unit>
+      <trans-unit id="title.trustBook">
+        <source xml:lang="en">Trust Book</source>
+        <target state="translated">信任工作簿</target>
+      </trans-unit>
       <trans-unit id="title.searchJupyterBook">
         <source xml:lang="en">Search Book</source>
         <target state="translated">搜索书籍</target>
       </trans-unit>
       <trans-unit id="title.SavedBooks">
-        <source xml:lang="en">Saved Books</source>
-        <target state="translated">已保存的书籍</target>
+        <source xml:lang="en">Notebooks</source>
+        <target state="translated">笔记本</target>
       </trans-unit>
-      <trans-unit id="title.UntitledBooks">
-        <source xml:lang="en">Untitled Books</source>
-        <target state="translated">无标题书籍</target>
+      <trans-unit id="title.ProvidedBooks">
+        <source xml:lang="en">Provided Books</source>
+        <target state="translated">提供的工作簿</target>
+      </trans-unit>
+      <trans-unit id="title.PinnedBooks">
+        <source xml:lang="en">Pinned notebooks</source>
+        <target state="translated">固定的笔记本</target>
+      </trans-unit>
+      <trans-unit id="title.PreviewLocalizedBook">
+        <source xml:lang="en">Get localized SQL Server 2019 guide</source>
+        <target state="translated">获取本地化 SQL Server 2019 指南</target>
+      </trans-unit>
+      <trans-unit id="title.openJupyterBook">
+        <source xml:lang="en">Open Jupyter Book</source>
+        <target state="translated">打开 Jupyter Book</target>
+      </trans-unit>
+      <trans-unit id="title.closeJupyterBook">
+        <source xml:lang="en">Close Jupyter Book</source>
+        <target state="translated">关闭 Jupyter Book</target>
+      </trans-unit>
+      <trans-unit id="title.closeJupyterNotebook">
+        <source xml:lang="en">Close Jupyter Notebook</source>
+        <target state="translated">关闭 Jupyter Notebook</target>
+      </trans-unit>
+      <trans-unit id="title.revealInBooksViewlet">
+        <source xml:lang="en">Reveal in Books</source>
+        <target state="translated">在工作簿中展示</target>
+      </trans-unit>
+      <trans-unit id="title.createJupyterBook">
+        <source xml:lang="en">Create Book (Preview)</source>
+        <target state="translated">创建工作簿(预览)</target>
+      </trans-unit>
+      <trans-unit id="title.openNotebookFolder">
+        <source xml:lang="en">Open Notebooks in Folder</source>
+        <target state="translated">在文件夹中打开笔记本</target>
+      </trans-unit>
+      <trans-unit id="title.openRemoteJupyterBook">
+        <source xml:lang="en">Add Remote Jupyter Book</source>
+        <target state="translated">添加远程 Jupyter Book</target>
+      </trans-unit>
+      <trans-unit id="title.pinNotebook">
+        <source xml:lang="en">Pin Notebook</source>
+        <target state="translated">固定笔记本</target>
+      </trans-unit>
+      <trans-unit id="title.unpinNotebook">
+        <source xml:lang="en">Unpin Notebook</source>
+        <target state="translated">取消固定笔记本</target>
+      </trans-unit>
+      <trans-unit id="title.moveTo">
+        <source xml:lang="en">Move to ...</source>
+        <target state="translated">移到...</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/common/utils" source-language="en" datatype="plaintext" target-language="zh-HANS">
+  <file original="extensions/notebook/dist/common/utils" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="mkdirOutputMsg">
-        <source xml:lang="en">... Creating {0}</source>
-        <target state="translated">…正在创建 {0}</target>
+      <trans-unit id="ensureDirOutputMsg">
+        <source xml:lang="en">... Ensuring {0} exists</source>
+        <target state="translated">...确保 {0} 存在</target>
       </trans-unit>
       <trans-unit id="executeCommandProcessExited">
-        <source xml:lang="en">Process exited with code {0}</source>
-        <target state="translated">已退出进程，代码为 {0}</target>
+        <source xml:lang="en">Process exited with error code: {0}. StdErr Output: {1}</source>
+        <target state="translated">进程已退出，错误代码为: {0}。StdErr 输出: {1}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/common/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-HANS">
+  <file original="extensions/notebook/dist/common/constants" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="managePackages.localhost">
+        <source xml:lang="en">localhost</source>
+        <target state="translated">localhost</target>
+      </trans-unit>
+      <trans-unit id="managePackages.packageNotFound">
+        <source xml:lang="en">Could not find the specified package</source>
+        <target state="translated">未找到指定的包</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/common/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="msgYes">
         <source xml:lang="en">Yes</source>
@@ -166,9 +246,299 @@
         <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
         <target state="translated">此示例代码将文件加载到数据帧中，并显示前 10 个结果。</target>
       </trans-unit>
+      <trans-unit id="noBDCConnectionError">
+        <source xml:lang="en">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</source>
+        <target state="translated">Spark 内核需要连接到 SQL Server 大数据群集主实例。</target>
+      </trans-unit>
+      <trans-unit id="providerNotValidError">
+        <source xml:lang="en">Non-MSSQL providers are not supported for spark kernels.</source>
+        <target state="translated">Spark 内核不支持非 MSSQL 提供程序。</target>
+      </trans-unit>
+      <trans-unit id="allFiles">
+        <source xml:lang="en">All Files</source>
+        <target state="translated">所有文件</target>
+      </trans-unit>
+      <trans-unit id="labelSelectFolder">
+        <source xml:lang="en">Select Folder</source>
+        <target state="translated">选择文件夹</target>
+      </trans-unit>
+      <trans-unit id="labelBookFolder">
+        <source xml:lang="en">Select Book</source>
+        <target state="translated">选择工作簿</target>
+      </trans-unit>
+      <trans-unit id="confirmReplace">
+        <source xml:lang="en">Folder already exists. Are you sure you want to delete and replace this folder?</source>
+        <target state="translated">文件夹已存在。确定要删除并替换此文件夹吗?</target>
+      </trans-unit>
+      <trans-unit id="openNotebookCommand">
+        <source xml:lang="en">Open Notebook</source>
+        <target state="translated">打开笔记本</target>
+      </trans-unit>
+      <trans-unit id="openMarkdownCommand">
+        <source xml:lang="en">Open Markdown</source>
+        <target state="translated">打开 Markdown</target>
+      </trans-unit>
+      <trans-unit id="openExternalLinkCommand">
+        <source xml:lang="en">Open External Link</source>
+        <target state="translated">打开外部链接</target>
+      </trans-unit>
+      <trans-unit id="msgBookTrusted">
+        <source xml:lang="en">Book is now trusted in the workspace.</source>
+        <target state="translated">工作簿现在在工作区中受信任。</target>
+      </trans-unit>
+      <trans-unit id="msgBookAlreadyTrusted">
+        <source xml:lang="en">Book is already trusted in this workspace.</source>
+        <target state="translated">此工作区中的工作簿受信任。</target>
+      </trans-unit>
+      <trans-unit id="msgBookUntrusted">
+        <source xml:lang="en">Book is no longer trusted in this workspace</source>
+        <target state="translated">此工作区中的工作簿不再受信任</target>
+      </trans-unit>
+      <trans-unit id="msgBookAlreadyUntrusted">
+        <source xml:lang="en">Book is already untrusted in this workspace.</source>
+        <target state="translated">此工作区中的工作簿不受信任。</target>
+      </trans-unit>
+      <trans-unit id="msgBookPinned">
+        <source xml:lang="en">Book {0} is now pinned in the workspace.</source>
+        <target state="translated">现已在工作区中固定工作簿 {0}。</target>
+      </trans-unit>
+      <trans-unit id="msgBookUnpinned">
+        <source xml:lang="en">Book {0} is no longer pinned in this workspace</source>
+        <target state="translated">工作簿 {0} 不再固定在此工作区中</target>
+      </trans-unit>
+      <trans-unit id="bookInitializeFailed">
+        <source xml:lang="en">Failed to find a Table of Contents file in the specified book.</source>
+        <target state="translated">未能在指定的工作簿中找到目录文件。</target>
+      </trans-unit>
+      <trans-unit id="noBooksSelected">
+        <source xml:lang="en">No books are currently selected in the viewlet.</source>
+        <target state="translated">当前未在 Viewlet 中选择任何工作簿。</target>
+      </trans-unit>
+      <trans-unit id="labelBookSection">
+        <source xml:lang="en">Select Book Section</source>
+        <target state="translated">选择工作簿部分</target>
+      </trans-unit>
+      <trans-unit id="labelAddToLevel">
+        <source xml:lang="en">Add to this level</source>
+        <target state="translated">添加到此级别</target>
+      </trans-unit>
+      <trans-unit id="missingFileError">
+        <source xml:lang="en">Missing file : {0} from {1}</source>
+        <target state="translated">缺少文件: {1} 中的 {0}</target>
+      </trans-unit>
+      <trans-unit id="InvalidError.tocFile">
+        <source xml:lang="en">Invalid toc file</source>
+        <target state="translated">toc 文件无效</target>
+      </trans-unit>
+      <trans-unit id="Invalid toc.yml">
+        <source xml:lang="en">Error: {0} has an incorrect toc.yml file</source>
+        <target state="translated">错误: {0} 包含不正确的 toc.yml 文件</target>
+      </trans-unit>
+      <trans-unit id="configFileError">
+        <source xml:lang="en">Configuration file missing</source>
+        <target state="translated">缺少配置文件</target>
+      </trans-unit>
+      <trans-unit id="openBookError">
+        <source xml:lang="en">Open book {0} failed: {1}</source>
+        <target state="translated">打开书籍 {0} 失败: {1}</target>
+      </trans-unit>
+      <trans-unit id="readBookError">
+        <source xml:lang="en">Failed to read book {0}: {1}</source>
+        <target state="translated">未能读取工作簿 {0}: {1}</target>
+      </trans-unit>
+      <trans-unit id="openNotebookError">
+        <source xml:lang="en">Open notebook {0} failed: {1}</source>
+        <target state="translated">打开笔记本 {0} 失败: {1}</target>
+      </trans-unit>
+      <trans-unit id="openMarkdownError">
+        <source xml:lang="en">Open markdown {0} failed: {1}</source>
+        <target state="translated">打开 markdown {0} 失败: {1}</target>
+      </trans-unit>
+      <trans-unit id="openUntitledNotebookError">
+        <source xml:lang="en">Open untitled notebook {0} as untitled failed: {1}</source>
+        <target state="translated">以无标题形式打开无标题笔记本 {0} 失败: {1}</target>
+      </trans-unit>
+      <trans-unit id="openExternalLinkError">
+        <source xml:lang="en">Open link {0} failed: {1}</source>
+        <target state="translated">打开链接 {0} 失败: {1}</target>
+      </trans-unit>
+      <trans-unit id="closeBookError">
+        <source xml:lang="en">Close book {0} failed: {1}</source>
+        <target state="translated">关闭工作簿 {0} 失败: {1}</target>
+      </trans-unit>
+      <trans-unit id="duplicateFileError">
+        <source xml:lang="en">File {0} already exists in the destination folder {1} 
+ The file has been renamed to {2} to prevent data loss.</source>
+        <target state="translated">文件 {0} 已在目标文件夹 {1} 中
+ 此文件已重命名为 {2}，以防数据丢失。</target>
+      </trans-unit>
+      <trans-unit id="editBookError">
+        <source xml:lang="en">Error while editing book {0}: {1}</source>
+        <target state="translated">编辑工作簿 {0} 时出错: {1}</target>
+      </trans-unit>
+      <trans-unit id="selectBookError">
+        <source xml:lang="en">Error while selecting a book or a section to edit: {0}</source>
+        <target state="translated">选择要编辑的工作簿或部分时出错: {0}</target>
+      </trans-unit>
+      <trans-unit id="url">
+        <source xml:lang="en">URL</source>
+        <target state="translated">URL</target>
+      </trans-unit>
+      <trans-unit id="repoUrl">
+        <source xml:lang="en">Repository URL</source>
+        <target state="translated">存储库 URL</target>
+      </trans-unit>
+      <trans-unit id="location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">位置</target>
+      </trans-unit>
+      <trans-unit id="addRemoteBook">
+        <source xml:lang="en">Add Remote Book</source>
+        <target state="translated">添加远程工作簿</target>
+      </trans-unit>
+      <trans-unit id="onGitHub">
+        <source xml:lang="en">GitHub</source>
+        <target state="translated">GitHub</target>
+      </trans-unit>
+      <trans-unit id="onsharedFile">
+        <source xml:lang="en">Shared File</source>
+        <target state="translated">共享文件</target>
+      </trans-unit>
+      <trans-unit id="releases">
+        <source xml:lang="en">Releases</source>
+        <target state="translated">版本</target>
+      </trans-unit>
+      <trans-unit id="book">
+        <source xml:lang="en">Book</source>
+        <target state="translated">工作簿</target>
+      </trans-unit>
+      <trans-unit id="version">
+        <source xml:lang="en">Version</source>
+        <target state="translated">版本</target>
+      </trans-unit>
+      <trans-unit id="language">
+        <source xml:lang="en">Language</source>
+        <target state="translated">语言</target>
+      </trans-unit>
+      <trans-unit id="booksNotFound">
+        <source xml:lang="en">No books are currently available on the provided link</source>
+        <target state="translated">提供的链接当前没有工作簿可用</target>
+      </trans-unit>
+      <trans-unit id="urlGithubError">
+        <source xml:lang="en">The url provided is not a Github release url</source>
+        <target state="translated">提供的 URL 不是 Github 发布 URL</target>
+      </trans-unit>
+      <trans-unit id="search">
+        <source xml:lang="en">Search</source>
+        <target state="translated">搜索</target>
+      </trans-unit>
+      <trans-unit id="add">
+        <source xml:lang="en">Add</source>
+        <target state="translated">添加</target>
+      </trans-unit>
+      <trans-unit id="close">
+        <source xml:lang="en">Close</source>
+        <target state="translated">关闭</target>
+      </trans-unit>
+      <trans-unit id="invalidTextPlaceholder">
+        <source xml:lang="en">-</source>
+        <target state="translated">-</target>
+      </trans-unit>
+      <trans-unit id="msgRemoteBookDownloadProgress">
+        <source xml:lang="en">Remote Book download is in progress</source>
+        <target state="translated">正在下载远程工作簿</target>
+      </trans-unit>
+      <trans-unit id="msgRemoteBookDownloadComplete">
+        <source xml:lang="en">Remote Book download is complete</source>
+        <target state="translated">远程工作簿下载已完成</target>
+      </trans-unit>
+      <trans-unit id="msgRemoteBookDownloadError">
+        <source xml:lang="en">Error while downloading remote Book</source>
+        <target state="translated">下载远程工作簿时出错</target>
+      </trans-unit>
+      <trans-unit id="msgRemoteBookUnpackingError">
+        <source xml:lang="en">Error while decompressing remote Book</source>
+        <target state="translated">解压缩远程工作簿时出错</target>
+      </trans-unit>
+      <trans-unit id="msgRemoteBookDirectoryError">
+        <source xml:lang="en">Error while creating remote Book directory</source>
+        <target state="translated">创建远程工作簿目录时出错</target>
+      </trans-unit>
+      <trans-unit id="msgTaskName">
+        <source xml:lang="en">Downloading Remote Book</source>
+        <target state="translated">正在下载远程工作簿</target>
+      </trans-unit>
+      <trans-unit id="msgResourceNotFound">
+        <source xml:lang="en">Resource not Found</source>
+        <target state="translated">找不到资源</target>
+      </trans-unit>
+      <trans-unit id="msgBookNotFound">
+        <source xml:lang="en">Books not Found</source>
+        <target state="translated">找不到工作簿</target>
+      </trans-unit>
+      <trans-unit id="msgReleaseNotFound">
+        <source xml:lang="en">Releases not Found</source>
+        <target state="translated">找不到版本</target>
+      </trans-unit>
+      <trans-unit id="msgUndefinedAssetError">
+        <source xml:lang="en">The selected book is not valid</source>
+        <target state="translated">所选工作簿无效</target>
+      </trans-unit>
+      <trans-unit id="httpRequestError">
+        <source xml:lang="en">Http Request failed with error: {0} {1}</source>
+        <target state="translated">HTTP 请求失败，出现错误: {0} {1}</target>
+      </trans-unit>
+      <trans-unit id="msgDownloadLocation">
+        <source xml:lang="en">Downloading to {0}</source>
+        <target state="translated">正在下载到 {0}</target>
+      </trans-unit>
+      <trans-unit id="newGroup">
+        <source xml:lang="en">New Group</source>
+        <target state="translated">新建组</target>
+      </trans-unit>
+      <trans-unit id="groupDescription">
+        <source xml:lang="en">Groups are used to organize Notebooks.</source>
+        <target state="translated">分组用于整理笔记本。</target>
+      </trans-unit>
+      <trans-unit id="locationBrowser">
+        <source xml:lang="en">Browse locations...</source>
+        <target state="translated">浏览位置...</target>
+      </trans-unit>
+      <trans-unit id="selectContentFolder">
+        <source xml:lang="en">Select content folder</source>
+        <target state="translated">选择内容文件夹</target>
+      </trans-unit>
+      <trans-unit id="browse">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">浏览</target>
+      </trans-unit>
+      <trans-unit id="create">
+        <source xml:lang="en">Create</source>
+        <target state="translated">创建</target>
+      </trans-unit>
+      <trans-unit id="name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名称</target>
+      </trans-unit>
+      <trans-unit id="saveLocation">
+        <source xml:lang="en">Save location</source>
+        <target state="translated">保存位置</target>
+      </trans-unit>
+      <trans-unit id="contentFolder">
+        <source xml:lang="en">Content folder (Optional)</source>
+        <target state="translated">内容文件夹(可选)</target>
+      </trans-unit>
+      <trans-unit id="msgContentFolderError">
+        <source xml:lang="en">Content folder path does not exist</source>
+        <target state="translated">内容文件夹路径不存在</target>
+      </trans-unit>
+      <trans-unit id="msgSaveFolderError">
+        <source xml:lang="en">Save location path does not exist</source>
+        <target state="translated">保存位置路径不存在</target>
+      </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterServerInstallation" source-language="en" datatype="plaintext" target-language="zh-HANS">
+  <file original="extensions/notebook/dist/jupyter/jupyterServerInstallation" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="msgInstallPkgProgress">
         <source xml:lang="en">Notebook dependencies installation is in progress</source>
@@ -214,10 +584,6 @@
         <source xml:lang="en">Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.</source>
         <target state="translated">在 Python 运行时无法覆盖现有 Python 安装。请关闭所有活动笔记本，再继续操作。</target>
       </trans-unit>
-      <trans-unit id="msgSkipPythonInstall">
-        <source xml:lang="en">Python already exists at the specific location. Skipping install.</source>
-        <target state="translated">该位置已存在 Python。即将跳过安装。</target>
-      </trans-unit>
       <trans-unit id="msgWaitingForInstall">
         <source xml:lang="en">Another Python installation is currently in progress. Waiting for it to complete.</source>
         <target state="translated">另一个 Python 安装正在进行中。请等待它完成。</target>
@@ -230,90 +596,54 @@
         <source xml:lang="en">Downloading local python for platform: {0} to {1}</source>
         <target state="translated">正在将平台 {0} 的本地 python 下载到 {1}</target>
       </trans-unit>
-      <trans-unit id="confirmPackageUpgrade">
-        <source xml:lang="en">Some installed python packages need to be upgraded. Would you like to upgrade them now?</source>
-        <target state="translated">某些已安装的 python 包需要升级。是否立即升级它们?</target>
+      <trans-unit id="msgPackageRetrievalFailed">
+        <source xml:lang="en">Encountered an error when trying to retrieve list of installed packages: {0}</source>
+        <target state="translated">尝试检索已安装的包列表时遇到错误: {0}</target>
       </trans-unit>
-      <trans-unit id="upgradePackages.pipInstall">
-        <source xml:lang="en">Installing {0}</source>
-        <target state="translated">正在安装 {0}</target>
-      </trans-unit>
-      <trans-unit id="msgInstallStart">
-        <source xml:lang="en">Installing required packages to run Notebooks...</source>
-        <target state="translated">正在安装运行笔记本所需的包…</target>
-      </trans-unit>
-      <trans-unit id="msgJupyterInstallDone">
-        <source xml:lang="en">... Jupyter installation complete.</source>
-        <target state="translated">…Jupyter 安装完毕。</target>
+      <trans-unit id="msgGetPythonUserDirFailed">
+        <source xml:lang="en">Encountered an error when getting Python user path: {0}</source>
+        <target state="translated">获取 Python 用户路径时遇到错误: {0}</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/dialog/configurePythonDialog" source-language="en" datatype="plaintext" target-language="zh-HANS">
+  <file original="extensions/notebook/dist/dialog/configurePython/configurePythonWizard" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="configurePython.dialogName">
-        <source xml:lang="en">Configure Python for Notebooks</source>
-        <target state="translated">为笔记本配置 Python</target>
-      </trans-unit>
       <trans-unit id="configurePython.okButtonText">
         <source xml:lang="en">Install</source>
         <target state="translated">安装</target>
-      </trans-unit>
-      <trans-unit id="configurePython.cancelButtonText">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">取消</target>
-      </trans-unit>
-      <trans-unit id="configurePython.browseButtonText">
-        <source xml:lang="en">Browse</source>
-        <target state="translated">浏览</target>
-      </trans-unit>
-      <trans-unit id="configurePython.locationTextBoxText">
-        <source xml:lang="en">Python Install Location</source>
-        <target state="translated">Python 安装位置</target>
-      </trans-unit>
-      <trans-unit id="configurePython.selectFileLabel">
-        <source xml:lang="en">Select</source>
-        <target state="translated">选择</target>
-      </trans-unit>
-      <trans-unit id="configurePython.installNote">
-        <source xml:lang="en">This installation will take some time. It is recommended to not close the application until the installation is complete.</source>
-        <target state="translated">此安装需要一些时间。建议在安装完成之前不要关闭应用程序。</target>
       </trans-unit>
       <trans-unit id="configurePython.invalidLocationMsg">
         <source xml:lang="en">The specified install location is invalid.</source>
         <target state="translated">指定的安装位置无效。</target>
       </trans-unit>
       <trans-unit id="configurePython.pythonNotFoundMsg">
-        <source xml:lang="en">No python installation was found at the specified location.</source>
-        <target state="translated">在指定位置未找到 python 安装。</target>
+        <source xml:lang="en">No Python installation was found at the specified location.</source>
+        <target state="translated">在指定位置找不到 Python 安装。</target>
+      </trans-unit>
+      <trans-unit id="configurePython.wizardNameWithKernel">
+        <source xml:lang="en">Configure Python to run {0} kernel</source>
+        <target state="translated">配置 Python 以运行 {0} 内核</target>
+      </trans-unit>
+      <trans-unit id="configurePython.wizardNameWithoutKernel">
+        <source xml:lang="en">Configure Python to run kernels</source>
+        <target state="translated">配置 Python 以运行内核</target>
+      </trans-unit>
+      <trans-unit id="configurePython.page0Name">
+        <source xml:lang="en">Configure Python Runtime</source>
+        <target state="translated">配置 Python 运行时</target>
+      </trans-unit>
+      <trans-unit id="configurePython.page1Name">
+        <source xml:lang="en">Install Dependencies</source>
+        <target state="translated">安装依赖项</target>
       </trans-unit>
       <trans-unit id="configurePython.pythonInstallDeclined">
         <source xml:lang="en">Python installation was declined.</source>
         <target state="translated">Python 安装被拒绝。</target>
       </trans-unit>
-      <trans-unit id="configurePython.installationType">
-        <source xml:lang="en">Installation Type</source>
-        <target state="translated">安装类型</target>
-      </trans-unit>
-      <trans-unit id="configurePython.newInstall">
-        <source xml:lang="en">New Python installation</source>
-        <target state="translated">新 Python 安装</target>
-      </trans-unit>
-      <trans-unit id="configurePython.existingInstall">
-        <source xml:lang="en">Use existing Python installation</source>
-        <target state="translated">使用现有 Python 安装</target>
-      </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/extension" source-language="en" datatype="plaintext" target-language="zh-HANS">
+  <file original="extensions/notebook/dist/extension" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="msgSampleCodeDataFrame">
-        <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-        <target state="translated">此示例代码将文件加载到数据帧中，并显示前 10 个结果。</target>
-      </trans-unit>
-      <trans-unit id="noNotebookVisible">
-        <source xml:lang="en">No notebook editor is active</source>
-        <target state="translated">没有笔记本编辑器处于活动状态</target>
-      </trans-unit>
       <trans-unit id="codeCellName">
         <source xml:lang="en">Code</source>
         <target state="translated">代码</target>
@@ -326,13 +656,9 @@
         <source xml:lang="en">What type of cell do you want to add?</source>
         <target state="translated">要添加哪种类型的单元格?</target>
       </trans-unit>
-      <trans-unit id="notebookFiles">
-        <source xml:lang="en">Notebooks</source>
-        <target state="translated">笔记本</target>
-      </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterController" source-language="en" datatype="plaintext" target-language="zh-HANS">
+  <file original="extensions/notebook/dist/jupyter/jupyterController" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="notebookFileType">
         <source xml:lang="en">Notebooks</source>
@@ -348,7 +674,91 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterServerManager" source-language="en" datatype="plaintext" target-language="zh-HANS">
+  <file original="extensions/notebook/dist/dialog/configurePython/configurePathPage" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="configurePython.browseButtonText">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">浏览</target>
+      </trans-unit>
+      <trans-unit id="configurePython.selectFileLabel">
+        <source xml:lang="en">Select</source>
+        <target state="translated">选择</target>
+      </trans-unit>
+      <trans-unit id="configurePython.descriptionWithKernel">
+        <source xml:lang="en">The {0} kernel requires a Python runtime to be configured and dependencies to be installed.</source>
+        <target state="translated">{0} 内核要求配置 Python 运行时并安装依赖项。</target>
+      </trans-unit>
+      <trans-unit id="configurePython.descriptionWithoutKernel">
+        <source xml:lang="en">Notebook kernels require a Python runtime to be configured and dependencies to be installed.</source>
+        <target state="translated">笔记本内核要求配置 Python 运行时并安装依赖项。</target>
+      </trans-unit>
+      <trans-unit id="configurePython.installationType">
+        <source xml:lang="en">Installation Type</source>
+        <target state="translated">安装类型</target>
+      </trans-unit>
+      <trans-unit id="configurePython.locationTextBoxText">
+        <source xml:lang="en">Python Install Location</source>
+        <target state="translated">Python 安装位置</target>
+      </trans-unit>
+      <trans-unit id="configurePython.pythonConfigured">
+        <source xml:lang="en">Python runtime configured!</source>
+        <target state="translated">Python 运行时已配置!</target>
+      </trans-unit>
+      <trans-unit id="configurePythyon.dropdownPathLabel">
+        <source xml:lang="en">{0} (Python {1})</source>
+        <target state="translated">{0} (Python {1})</target>
+      </trans-unit>
+      <trans-unit id="configurePythyon.noVersionsFound">
+        <source xml:lang="en">No supported Python versions found.</source>
+        <target state="translated">找不到支持的 Python 版本。</target>
+      </trans-unit>
+      <trans-unit id="configurePythyon.defaultPathLabel">
+        <source xml:lang="en">{0} (Default)</source>
+        <target state="translated">{0} (默认)</target>
+      </trans-unit>
+      <trans-unit id="configurePython.newInstall">
+        <source xml:lang="en">New Python installation</source>
+        <target state="translated">新 Python 安装</target>
+      </trans-unit>
+      <trans-unit id="configurePython.existingInstall">
+        <source xml:lang="en">Use existing Python installation</source>
+        <target state="translated">使用现有 Python 安装</target>
+      </trans-unit>
+      <trans-unit id="configurePythyon.customPathLabel">
+        <source xml:lang="en">{0} (Custom)</source>
+        <target state="translated">{0} (自定义)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/dialog/configurePython/pickPackagesPage" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="configurePython.pkgNameColumn">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名称</target>
+      </trans-unit>
+      <trans-unit id="configurePython.existingVersionColumn">
+        <source xml:lang="en">Existing Version</source>
+        <target state="translated">现有版本</target>
+      </trans-unit>
+      <trans-unit id="configurePython.requiredVersionColumn">
+        <source xml:lang="en">Required Version</source>
+        <target state="translated">所需版本</target>
+      </trans-unit>
+      <trans-unit id="configurePython.kernelLabel">
+        <source xml:lang="en">Kernel</source>
+        <target state="translated">内核</target>
+      </trans-unit>
+      <trans-unit id="configurePython.requiredDependencies">
+        <source xml:lang="en">Install required kernel dependencies</source>
+        <target state="translated">安装所需的内核依赖项</target>
+      </trans-unit>
+      <trans-unit id="msgUnsupportedKernel">
+        <source xml:lang="en">Could not retrieve packages for kernel {0}</source>
+        <target state="translated">无法检索内核 {0} 的包</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/jupyter/jupyterServerManager" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="shutdownError">
         <source xml:lang="en">Shutdown of Notebook server failed: {0}</source>
@@ -356,15 +766,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/serverInstance" source-language="en" datatype="plaintext" target-language="zh-HANS">
+  <file original="extensions/notebook/dist/jupyter/serverInstance" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="serverStopError">
         <source xml:lang="en">Error stopping Notebook Server: {0}</source>
         <target state="translated">停止笔记本服务器时出错: {0}</target>
       </trans-unit>
       <trans-unit id="notebookStartProcessExitPremature">
-        <source xml:lang="en">Notebook process exited prematurely with error: {0}, StdErr Output: {1}</source>
-        <target state="translated">笔记本进程过早退出，出现错误: {0}，StdErr 输出: {1}</target>
+        <source xml:lang="en">Notebook process exited prematurely with error code: {0}. StdErr Output: {1}</source>
+        <target state="translated">笔记本进程过早退出，错误代码为: {0}。StdErr 输出: {1}</target>
       </trans-unit>
       <trans-unit id="jupyterError">
         <source xml:lang="en">Error sent from Jupyter: {0}</source>
@@ -380,7 +790,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterNotebookProvider" source-language="en" datatype="plaintext" target-language="zh-HANS">
+  <file original="extensions/notebook/dist/jupyter/jupyterNotebookProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="errNotebookUriMissing">
         <source xml:lang="en">A notebook path is required</source>
@@ -388,19 +798,35 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterSessionManager" source-language="en" datatype="plaintext" target-language="zh-HANS">
+  <file original="extensions/notebook/dist/jupyter/jupyterSessionManager" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="errorStartBeforeReady">
         <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
         <target state="translated">无法启动会话，管理器尚未初始化</target>
       </trans-unit>
-      <trans-unit id="connectionNotValid">
-        <source xml:lang="en">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</source>
-        <target state="translated">Spark 内核需要连接到 SQL Server 大数据群集主实例。</target>
+      <trans-unit id="notebook.couldNotFindKnoxGateway">
+        <source xml:lang="en">Could not find Knox gateway endpoint</source>
+        <target state="translated">找不到 KNOX 网关终结点</target>
+      </trans-unit>
+      <trans-unit id="promptBDCUsername">
+        <source xml:lang="en">{0}Please provide the username to connect to the BDC Controller:</source>
+        <target state="translated">{0}请提供用户名以连接到 BDC 控制器:</target>
+      </trans-unit>
+      <trans-unit id="promptBDCPassword">
+        <source xml:lang="en">Please provide the password to connect to the BDC Controller</source>
+        <target state="translated">请提供密码以连接到 BDC 控制器</target>
+      </trans-unit>
+      <trans-unit id="bdcConnectError">
+        <source xml:lang="en">Error: {0}. </source>
+        <target state="translated">错误: {0}。</target>
+      </trans-unit>
+      <trans-unit id="clusterControllerConnectionRequired">
+        <source xml:lang="en">A connection to the cluster controller is required to run Spark jobs</source>
+        <target state="translated">需要与群集控制器建立连接才能运行 Spark 作业</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/dialog/managePackages/managePackagesDialog" source-language="en" datatype="plaintext" target-language="zh-HANS">
+  <file original="extensions/notebook/dist/dialog/managePackages/managePackagesDialog" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="managePackages.dialogName">
         <source xml:lang="en">Manage Packages</source>
@@ -412,7 +838,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/dialog/managePackages/installedPackagesTab" source-language="en" datatype="plaintext" target-language="zh-HANS">
+  <file original="extensions/notebook/dist/dialog/managePackages/installedPackagesTab" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="managePackages.installedTabTitle">
         <source xml:lang="en">Installed</source>
@@ -426,6 +852,10 @@
         <source xml:lang="en">Version</source>
         <target state="translated">版本</target>
       </trans-unit>
+      <trans-unit id="managePackages.deleteColumn">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">删除</target>
+      </trans-unit>
       <trans-unit id="managePackages.uninstallButtonText">
         <source xml:lang="en">Uninstall selected packages</source>
         <target state="translated">卸载选定的包</target>
@@ -433,6 +863,10 @@
       <trans-unit id="managePackages.packageType">
         <source xml:lang="en">Package Type</source>
         <target state="translated">包类型</target>
+      </trans-unit>
+      <trans-unit id="managePackages.location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">位置</target>
       </trans-unit>
       <trans-unit id="managePackages.packageCount">
         <source xml:lang="en">{0} {1} packages found</source>
@@ -456,15 +890,11 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/dialog/managePackages/addNewPackageTab" source-language="en" datatype="plaintext" target-language="zh-HANS">
+  <file original="extensions/notebook/dist/dialog/managePackages/addNewPackageTab" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="managePackages.invalidTextPlaceholder">
         <source xml:lang="en">N/A</source>
         <target state="translated">不适用</target>
-      </trans-unit>
-      <trans-unit id="managePackages.packageNotFound">
-        <source xml:lang="en">Could not find the specified package</source>
-        <target state="translated">未找到指定的包</target>
       </trans-unit>
       <trans-unit id="managePackages.searchBarPlaceholder">
         <source xml:lang="en">Search {0} packages</source>
@@ -498,10 +928,6 @@
         <source xml:lang="en">Could not find any valid versions for the specified package</source>
         <target state="translated">未找到指定包的任何有效版本</target>
       </trans-unit>
-      <trans-unit id="managePackages.packageRequestError">
-        <source xml:lang="en">Package info request failed with error: {0} {1}</source>
-        <target state="translated">包信息请求失败，出现错误: {0} {1}</target>
-      </trans-unit>
       <trans-unit id="managePackages.backgroundInstallStarted">
         <source xml:lang="en">Installing {0} {1}</source>
         <target state="translated">正在安装 {0} {1}</target>
@@ -516,7 +942,31 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/protocol/notebookUriHandler" source-language="en" datatype="plaintext" target-language="zh-HANS">
+  <file original="extensions/notebook/dist/jupyter/pypiClient" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="managePackages.packageRequestError">
+        <source xml:lang="en">Package info request failed with error: {0} {1}</source>
+        <target state="translated">包信息请求失败，出现错误: {0} {1}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/common/notebookUtils" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="msgSampleCodeDataFrame">
+        <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
+        <target state="translated">此示例代码将文件加载到数据帧中，并显示前 10 个结果。</target>
+      </trans-unit>
+      <trans-unit id="noNotebookVisible">
+        <source xml:lang="en">No notebook editor is active</source>
+        <target state="translated">没有笔记本编辑器处于活动状态</target>
+      </trans-unit>
+      <trans-unit id="notebookFiles">
+        <source xml:lang="en">Notebooks</source>
+        <target state="translated">笔记本</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/notebook/dist/protocol/notebookUriHandler" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="notebook.unsupportedAction">
         <source xml:lang="en">Action {0} is not supported for this handler</source>
@@ -537,74 +987,6 @@
       <trans-unit id="notebook.fileDownloadError">
         <source xml:lang="en">File open request failed with error: {0} {1}</source>
         <target state="translated">文件打开请求失败，出现错误: {0} {1}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/dist/book/bookTreeView" source-language="en" datatype="plaintext" target-language="zh-HANS">
-    <body>
-      <trans-unit id="openBookError">
-        <source xml:lang="en">Open book {0} failed: {1}</source>
-        <target state="translated">打开书籍 {0} 失败: {1}</target>
-      </trans-unit>
-      <trans-unit id="openNotebookError">
-        <source xml:lang="en">Open notebook {0} failed: {1}</source>
-        <target state="translated">打开笔记本 {0} 失败: {1}</target>
-      </trans-unit>
-      <trans-unit id="openMarkdownError">
-        <source xml:lang="en">Open markdown {0} failed: {1}</source>
-        <target state="translated">打开 markdown {0} 失败: {1}</target>
-      </trans-unit>
-      <trans-unit id="openUntitledNotebookError">
-        <source xml:lang="en">Open untitled notebook {0} as untitled failed: {1}</source>
-        <target state="translated">以无标题形式打开无标题笔记本 {0} 失败: {1}</target>
-      </trans-unit>
-      <trans-unit id="allFiles">
-        <source xml:lang="en">All Files</source>
-        <target state="translated">所有文件</target>
-      </trans-unit>
-      <trans-unit id="labelPickFolder">
-        <source xml:lang="en">Pick Folder</source>
-        <target state="translated">选取文件夹</target>
-      </trans-unit>
-      <trans-unit id="openExternalLinkError">
-        <source xml:lang="en">Open link {0} failed: {1}</source>
-        <target state="translated">打开链接 {0} 失败: {1}</target>
-      </trans-unit>
-      <trans-unit id="confirmReplace">
-        <source xml:lang="en">Folder already exists. Are you sure you want to delete and replace this folder?</source>
-        <target state="translated">文件夹已存在。确定要删除并替换此文件夹吗?</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/dist/book/bookModel" source-language="en" datatype="plaintext" target-language="zh-HANS">
-    <body>
-      <trans-unit id="missingFileError">
-        <source xml:lang="en">Missing file : {0}</source>
-        <target state="translated">缺少文件: {0}</target>
-      </trans-unit>
-      <trans-unit id="InvalidError.tocFile">
-        <source xml:lang="en">{0}</source>
-        <target state="translated">{0}</target>
-      </trans-unit>
-      <trans-unit id="Invalid toc.yml">
-        <source xml:lang="en">Error: {0} has an incorrect toc.yml file</source>
-        <target state="translated">错误: {0} 包含不正确的 toc.yml 文件</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/dist/book/bookTreeItem" source-language="en" datatype="plaintext" target-language="zh-HANS">
-    <body>
-      <trans-unit id="openNotebookCommand">
-        <source xml:lang="en">Open Notebook</source>
-        <target state="translated">打开笔记本</target>
-      </trans-unit>
-      <trans-unit id="openMarkdownCommand">
-        <source xml:lang="en">Open Markdown</source>
-        <target state="translated">打开 Markdown</target>
-      </trans-unit>
-      <trans-unit id="openExternalLinkCommand">
-        <source xml:lang="en">Open External Link</source>
-        <target state="translated">打开外部链接</target>
       </trans-unit>
     </body>
   </file>

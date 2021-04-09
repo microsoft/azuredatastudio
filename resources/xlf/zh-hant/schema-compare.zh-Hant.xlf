@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/schema-compare/package" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/schema-compare/package" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="displayName">
         <source xml:lang="en">SQL Server Schema Compare</source>
@@ -16,7 +16,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="SchemaCompareOptionsDialog.Ok">
         <source xml:lang="en">Ok</source>
@@ -928,7 +928,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/schema-compare/out/dialogs/schemaCompareDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/schema-compare/out/dialogs/schemaCompareDialog" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="schemaCompareDialog.ok">
         <source xml:lang="en">Ok</source>
@@ -1008,7 +1008,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/schema-compare/out/schemaCompareMainWindow" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/schema-compare/out/schemaCompareMainWindow" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="schemaCompare.CompareDetailsTitle">
         <source xml:lang="en">Compare Details</source>
