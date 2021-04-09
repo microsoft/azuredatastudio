@@ -21,6 +21,12 @@
           "CopyOption": "LangIDOnName",
           "OutputPath": "resources\\xlf\\Localized"
         },
+    {
+          "SourceFile": "resources\\xlf\\en\\azurehybridtoolkit.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\azurehybridtoolkit.xlf.lcl",
+          "CopyOption": "LangIDOnName",
+          "OutputPath": "resources\\xlf\\Localized"
+        },
 		{
           "SourceFile": "resources\\xlf\\en\\big-data-cluster.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\big-data-cluster.xlf.lcl",
