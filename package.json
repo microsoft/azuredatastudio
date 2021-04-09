@@ -27,7 +27,6 @@
     "watch-extensions": "gulp watch-extensions --max_old_space_size=4095",
     "watch-extensionsd": "deemon yarn watch-extensions",
     "kill-watch-extensionsd": "deemon --kill yarn watch-extensions",
-    "watch-smoke": "cd test && ",
     "mocha": "mocha test/unit/node/all.js --delay",
     "precommit": "node build/hygiene.js",
     "gulp": "gulp --max_old_space_size=8192",
