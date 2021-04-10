@@ -569,7 +569,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			// Check if the book notebook belongs to a book that's trusted.
 			let trustedBookDirectories: string[] = this._configurationService?.getValue(trustedBooksConfigKey) ?? [];
 			if (trustedBookDirectories.find(b => notebookUri.fsPath.indexOf(b) > -1)) {
-				this.setTrusted(notebookUri, true);
+				return true;
 			} else {
 				// This notebook was never trusted
 				return false;
