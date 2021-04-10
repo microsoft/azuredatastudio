@@ -51,6 +51,7 @@ import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { NotebookLanguage } from 'sql/workbench/common/constants';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -140,7 +141,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IProductService private readonly productService: IProductService,
 		@IEditorService private _editorService: IEditorService,
 		@IUntitledTextEditorService private _untitledEditorService: IUntitledTextEditorService,
-		@IEditorGroupsService private _editorGroupService: IEditorGroupsService
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super();
 		this._providersMemento = new Memento('notebookProviders', this._storageService);
@@ -560,11 +562,18 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (notebookUri.scheme === Schemas.untitled) {
 			return true;
 		}
+		const trustedBooksConfigKey = 'notebook.trustedBooks';
 
 		let cacheInfo = this.trustedNotebooksMemento.trustedNotebooksCache[notebookUri.toString()];
 		if (!cacheInfo) {
-			// This notebook was never trusted
-			return false;
+			// Check if the book notebook belongs to a book that's trusted.
+			let trustedBookDirectories: string[] = this._configurationService?.getValue(trustedBooksConfigKey) ?? [];
+			if (trustedBookDirectories.find(b => notebookUri.fsPath.indexOf(b) > -1)) {
+				this.setTrusted(notebookUri, true);
+			} else {
+				// This notebook was never trusted
+				return false;
+			}
 		}
 		// This was trusted. If it's not dirty (e.g. if we're not working on our cached copy)
 		// then should verify it's not been modified on disk since that invalidates trust relationship
