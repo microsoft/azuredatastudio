@@ -139,12 +139,12 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.appendTo($item);
 	}
 
-	private addMenuInput(menu: JQuery<HTMLElement>, columnDef: Slick.Column<T>) {
+	private addMenuInput(menu: JQuery<HTMLElement>, columnDef: Slick.Column<T>): void {
 		const self = this;
 		jQuery('<input class="input" placeholder="Search" style="margin-top: 5px; width: 206px">')
 			.data('column', columnDef)
-			.bind('keyup', (e) => {
-				const filterVals = this.getFilterValuesByInput(jQuery(e.target));
+			.bind('keyup', async (e) => {
+				const filterVals = await this.getFilterValuesByInput(jQuery(e.target));
 				self.updateFilterInputs(menu, columnDef, filterVals);
 			})
 			.appendTo(menu);
@@ -375,14 +375,20 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		return Array.from(seen);
 	}
 
-	private getFilterValuesByInput($input: JQuery<HTMLElement>): Array<string> {
+	private async getFilterValuesByInput($input: JQuery<HTMLElement>): Promise<Array<string>> {
 		const column = $input.data('column'),
 			filter = $input.val() as string,
-			dataView = this.grid.getData() as Slick.DataProvider<T>,
+			dataView = this.grid.getData() as IDisposableDataProvider<T>,
 			seen: Set<any> = new Set();
 
-		dataView.getItems().forEach(item => {
-			const value = item[column.field];
+		let columnValues: any[];
+		if (dataView.getColumnValues) {
+			columnValues = await dataView.getColumnValues(this.columnDef);
+		} else {
+			columnValues = dataView.getItems().map(item => item[column.field]);
+		}
+
+		columnValues.forEach(value => {
 			const valueArr = value instanceof Array ? value : [(!value ? '' : value)];
 			if (filter.length > 0) {
 				const lowercaseFilter = filter.toString().toLowerCase();
@@ -399,7 +405,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		return Array.from(seen).sort((v) => { return v; });
 	}
 
-	private getAllFilterValues(data: Array<Slick.SlickData>, column: Slick.Column<T>) {
+	private getAllFilterValues(data: Array<T>, column: Slick.Column<T>) {
 		const seen: Set<any> = new Set();
 
 		data.forEach(items => {
