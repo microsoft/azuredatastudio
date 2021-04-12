@@ -176,6 +176,11 @@ const usNatAzureSettings: ProviderSettings = {
 				endpoint: 'https://vault.cloudapi.eaglex.ic.gov',
 				azureResourceId: AzureResource.AzureKeyVault
 			},
+			azureLogAnalyticsResource: {
+				id: SettingIds.ala,
+				endpoint: 'https://api.loganalytics.io',
+				azureResourceId: AzureResource.AzureLogAnalytics,
+			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
@@ -215,6 +220,11 @@ const germanyAzureSettings: ProviderSettings = {
 				endpoint: 'https://vault.microsoftazure.de',
 				azureResourceId: AzureResource.AzureKeyVault
 			},
+			azureLogAnalyticsResource: {
+				id: SettingIds.ala,
+				endpoint: 'https://api.loganalytics.io',
+				azureResourceId: AzureResource.AzureLogAnalytics,
+			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/'
 		}
 	}
@@ -247,6 +257,11 @@ const chinaAzureSettings: ProviderSettings = {
 				id: SettingIds.vault,
 				endpoint: 'https://vault.azure.cn',
 				azureResourceId: AzureResource.AzureKeyVault
+			},
+			azureLogAnalyticsResource: {
+				id: SettingIds.ala,
+				endpoint: 'https://api.loganalytics.io',
+				azureResourceId: AzureResource.AzureLogAnalytics,
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/'
 
