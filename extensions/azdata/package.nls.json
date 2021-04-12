@@ -18,7 +18,8 @@
 	"azdata.install.prompt.description": "The user will be prompted for installation of the Azure Data CLI",
 	"azdata.install.dontPrompt.description": "The user will not be prompted for installation of the Azure Data CLI",
 
-	"azdata.update.description": "Choose how update of Azure Data CLI tool is done",
+	"azdata.update.description": "Choose whether you will be prompted when an update of the Azure Data CLI is available.",
+	"azdata.requiredUpdate.description": "Choose whether you will be prompted when a required update of the Azure Data CLI is available.",
 	"azdata.update.prompt.description": "The user will be prompted for update of the Azure Data CLI",
 	"azdata.update.dontPrompt.description": "The user will not be prompted for update of the Azure Data CLI"
 }

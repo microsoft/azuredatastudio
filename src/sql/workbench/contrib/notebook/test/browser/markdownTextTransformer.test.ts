@@ -67,7 +67,10 @@ suite('MarkdownTextTransformer', () => {
 			undefined,
 			undefined,
 			new MockContextKeyService(),
-			instantiationService.get(IProductService)
+			instantiationService.get(IProductService),
+			undefined,
+			undefined,
+			undefined,
 		);
 		mockNotebookService = TypeMoq.Mock.ofInstance(notebookService);
 

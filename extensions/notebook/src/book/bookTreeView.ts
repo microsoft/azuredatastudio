@@ -56,6 +56,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this.bookTocManager = new BookTocManager();
 		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 		this._bookViewer.onDidChangeVisibility(async e => {
+			await this.initialized;
 			// Whenever the viewer changes visibility then try and reveal the currently active document
 			// in the tree view
 			let openDocument = azdata.nb.activeNotebookEditor;
@@ -397,10 +398,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (!uri) {
 			let openDocument = azdata.nb.activeNotebookEditor;
 			if (openDocument) {
-				notebookPath = openDocument.document.uri.fsPath.replace(/\\/g, '/');
+				notebookPath = openDocument.document.uri.fsPath;
 			}
 		} else if (uri.fsPath) {
-			notebookPath = uri.fsPath.replace(/\\/g, '/');
+			notebookPath = uri.fsPath;
 		}
 
 		if (shouldReveal || this._bookViewer?.visible) {
@@ -415,6 +416,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async findAndExpandParentNode(notebookPath: string): Promise<BookTreeItem | undefined> {
+		notebookPath = notebookPath.replace(/\\/g, '/');
 		const parentBook = this.books.find(b => notebookPath.indexOf(b.bookPath) > -1);
 		if (!parentBook) {
 			// No parent book, likely because the Notebook is at the top level and not under a Notebook.
@@ -431,23 +433,23 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		// the top we'll expand nodes until we find the parent of the Notebook we're looking for
 		// get the children of root node and expand the nodes to the notebook level.
 		await this.getChildren(parentBook.rootNode);
-		// The path to the parent of the Notebook we're looking for (this is the node we're looking to expand)
-		const parentPath = notebookPath.substring(0, notebookPath.lastIndexOf(path.posix.sep));
+		// The path to the Notebook we're looking for (these are the nodes we're looking to expand)
+		const notebookFolders = notebookPath.split('/');
 		// Find number of directories between the Notebook path and the root of the book it's contained in
 		// so we know how many parent nodes to expand
 		let depthOfNotebookInBook: number = path.relative(notebookPath, parentBook.bookPath).split(path.sep).length;
 		// Walk the tree, expanding parent nodes as needed to load the child nodes until
 		// we find the one for our Notebook
-		while (depthOfNotebookInBook > 0) {
+		while (depthOfNotebookInBook > -1) {
 			// check if the notebook is available in already expanded levels.
 			bookItem = parentBook.bookItems.find(b => b.tooltip === notebookPath);
 			if (bookItem) {
 				return bookItem;
 			}
-			// Search for the parent item
-			// notebook can be inside the same folder as parent and can be in a different folder as well
-			// so check for both scenarios.
-			let bookItemToExpand = parentBook.bookItems.find(b => b.tooltip.indexOf(parentPath) > -1) ??
+			// Walk down from the top level parent folder one level at each iteration
+			// and keep expanding until we reach the target notebook leaf
+			let parentBookPath: string = notebookFolders.slice(0, notebookFolders.length - depthOfNotebookInBook).join('/');
+			let bookItemToExpand = parentBook.bookItems.find(b => b.tooltip.indexOf(parentBookPath) > -1) ??
 				parentBook.bookItems.find(b => path.relative(notebookPath, b.tooltip)?.split(path.sep)?.length === depthOfNotebookInBook);
 			if (!bookItemToExpand) {
 				break;
@@ -457,7 +459,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				// continue expanding and search its children
 				await this.getChildren(bookItemToExpand);
 			}
-			await this._bookViewer.reveal(bookItemToExpand, { select: false, focus: true, expand: 3 });
+			try {
+				// TO DO: Check why the reveal fails during initial load with 'TreeError [bookTreeView] Tree element not found'
+				await this._bookViewer.reveal(bookItemToExpand, { select: false, focus: true, expand: true });
+			}
+			catch (e) {
+				console.error(e);
+			}
 			depthOfNotebookInBook--;
 		}
 		return bookItem;
