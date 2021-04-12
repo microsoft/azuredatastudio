@@ -846,8 +846,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					}
 				}
 				const tenantId = connection.azureTenantId;
-				const laToken = await this._accountManagementService.getAccountSecurityToken(account, tenantId, 8);
-				this._logService.debug(laToken.token);
 				const token = await this._accountManagementService.getAccountSecurityToken(account, tenantId, azureResource);
 				this._logService.debug(`Got token for tenant ${token}`);
 				if (!token) {
