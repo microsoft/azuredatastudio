@@ -68,6 +68,11 @@ declare module 'dataworkspace' {
 		createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
 
 		/**
+		 * Gets the project data corresponding to the project file, to be placed in the dashboard container
+		 */
+		getDashboardComponents(projectFile: string): IDashboardTable[];
+
+		/**
 		 * Gets the supported project types
 		 */
 		readonly supportedProjectTypes: IProjectType[];
@@ -76,11 +81,6 @@ declare module 'dataworkspace' {
 		 * Gets the project actions to be placed on the dashboard toolbar
 		 */
 		readonly projectActions: (IProjectAction | IProjectActionGroup)[];
-
-		/**
-		 * Gets the project data to be placed in the dashboard container
-		 */
-		readonly dashboardComponents: IDashboardTable[];
 
 		/**
 		 * Gets the project image to be used as background in dashboard container

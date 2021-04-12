@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as path from 'vs/base/common/path';
 
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
@@ -361,14 +362,14 @@ export class RunParametersAction extends TooltipFromLabelAction {
 	 * (showNotebookDocument to be utilized in Notebook Service)
 	**/
 	public async openParameterizedNotebook(uri: URI): Promise<void> {
-		// const editor = this._notebookService.findNotebookEditor(uri);
-		// let modelContents = editor.model.toJSON();
-		// let basename = path.basename(uri.fsPath);
-		// let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: basename });
-		// this._notebookService.showNotebookDocument(untitledUri, {
-		// 	initialContent: modelContents,
-		// 	preserveFocus: true
-		// });
+		const editor = this._notebookService.findNotebookEditor(uri);
+		let modelContents = JSON.stringify(editor.model.toJSON());
+		let basename = path.basename(uri.fsPath);
+		let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: basename });
+		this._notebookService.openNotebook(untitledUri, {
+			initialContent: modelContents,
+			preserveFocus: true
+		});
 	}
 }
 

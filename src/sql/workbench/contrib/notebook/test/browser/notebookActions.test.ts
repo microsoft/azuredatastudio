@@ -13,19 +13,20 @@ import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testComm
 import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
-import { CellType } from 'sql/workbench/services/notebook/common/contracts';
+import { CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import * as TypeMoq from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
 import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IConfigurationChangeEvent, IConfigurationOverrides, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { INotificationService } from 'vs/platform/notification/common/notification';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { MockQuickInputService } from 'sql/workbench/contrib/notebook/test/common/quickInputServiceMock';
+import { localize } from 'vs/nls';
 
 class TestClientSession extends ClientSessionStub {
 	private _errorState: boolean = false;
@@ -259,22 +260,91 @@ suite('Notebook Actions', function (): void {
 		assert.strictEqual(actualCmdId, NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID);
 	});
 
-	test.skip('Run with Parameters Action', async function (): Promise<void> {
+	test('Run with Parameters Action', async function (): Promise<void> {
+		const testContents: azdata.nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: ['x=2.0\n', 'y=5.0'],
+				metadata: { language: 'python' },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python',
+					language: 'python',
+					display_name: 'Python 3'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+
 		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
 		mockNotification.setup(n => n.notify(TypeMoq.It.isAny()));
 		let quickInputService = new MockQuickInputService;
+		let mockNotebookModel = new NotebookModelStub(undefined, undefined, testContents);
 
 		let action = new RunParametersAction('TestId', true, testUri, quickInputService, mockNotebookService.object, mockNotification.object);
 
-		// Normal use case
 		const testCells = [<ICellModel>{
 			isParameter: true,
 			source: ['x=2.0\n', 'y=5.0']
 		}];
-
+		mockNotebookEditor.setup(x => x.model).returns(() => mockNotebookModel);
 		mockNotebookEditor.setup(x => x.cells).returns(() => testCells);
 
-		assert.doesNotThrow(() => action.run(testUri));
+		// Run Parameters Action
+		await action.run(testUri);
+		let testShowOptions = {
+			initialContent: JSON.stringify(mockNotebookModel.toJSON()),
+			preserveFocus: true
+		};
+		assert.call(mockNotebookService.object.openNotebook(testUri, testShowOptions), 'Should Open Parameterized Notebook');
+	});
+
+	test('Run with Parameters Action with no parameters in notebook', async function (): Promise<void> {
+		const testContents: azdata.nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: [''],
+				metadata: { language: 'python' },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python',
+					language: 'python',
+					display_name: 'Python 3'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		let expectedMsg: string = localize('noParametersCell', "This notebook cannot run with parameters until a parameter cell is added. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
+		let notification = {
+			severity: Severity.Info,
+			message: expectedMsg,
+		};
+
+		let actualMsg: string;
+		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
+		mockNotification.setup(n => n.notify(TypeMoq.It.isAny())).returns(notification => {
+			actualMsg = notification.message;
+			return undefined;
+		});
+		let quickInputService = new MockQuickInputService;
+		let mockNotebookModel = new NotebookModelStub(undefined, undefined, testContents);
+
+		let action = new RunParametersAction('TestId', true, testUri, quickInputService, mockNotebookService.object, mockNotification.object);
+
+		mockNotebookEditor.setup(x => x.model).returns(() => mockNotebookModel);
+
+		// Run Parameters Action
+		await action.run(testUri);
+
+		assert.ok(actualMsg !== undefined, 'Should have received a notification');
+		assert.call(mockNotification.object.notify(notification), 'Should notify user there is no parameter cell');
+		assert.strictEqual(actualMsg, expectedMsg);
 	});
 
 	suite('Kernels dropdown', async () => {

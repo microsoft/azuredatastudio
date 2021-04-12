@@ -52,8 +52,8 @@ export class Checkbox extends Widget {
 		this._label.setAttribute('for', id);
 
 		this.label = opts.label;
-		this.enabled = opts.enabled || true;
-		this.checked = opts.checked || false;
+		this.enabled = opts.enabled ?? true;
+		this.checked = opts.checked ?? false;
 
 		if (opts.onChange) {
 			this.onChange(opts.onChange);

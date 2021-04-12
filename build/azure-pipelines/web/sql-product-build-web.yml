@@ -1,25 +1,5 @@
+
 steps:
-- script: |
-    mkdir -p .build
-    echo -n $BUILD_SOURCEVERSION > .build/commit
-    echo -n $VSCODE_QUALITY > .build/quality
-  displayName: Prepare cache flag
-
-- task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
-  displayName: Restore Cache - Compiled Files
-  inputs:
-    keyfile: 'build/.cachesalt, .build/commit, .build/quality'
-    targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
-    vstsFeed: 'BuildCache'
-    platformIndependent: true
-    alias: 'Compilation'
-
-- script: |
-    set -e
-    exit 1
-  displayName: Check RestoreCache
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
-
 - task: NodeTool@0
   inputs:
     versionSpec: "12.13.0"
@@ -34,6 +14,17 @@ steps:
     azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
     KeyVaultName: ado-secrets
     SecretsFilter: 'github-distro-mixin-password'
+
+- task: DownloadPipelineArtifact@2
+  inputs:
+    artifact: Compilation
+    path: $(Build.ArtifactStagingDirectory)
+  displayName: Download compilation output
+
+- script: |
+    set -e
+    tar -xzf $(Build.ArtifactStagingDirectory)/compilation.tar.gz
+  displayName: Extract compilation output
 
 - script: |
     set -e
