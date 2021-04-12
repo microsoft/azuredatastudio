@@ -716,6 +716,9 @@ class ComponentWrapper implements azdata.Component {
 			}
 			return true;
 		});
+		if (items.length === 0) {
+			return;
+		}
 		const itemConfigs = items.map(item => {
 			return {
 				itemConfig: this.createAndAddItemConfig(item, itemLayout).toIItemConfig()
