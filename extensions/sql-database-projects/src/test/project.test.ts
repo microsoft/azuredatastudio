@@ -573,19 +573,22 @@ describe('Project: sqlproj content operations', function (): void {
 	it('Should not allow adding duplicate file/folder entries in sqlproj', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project: Project = await Project.openProject(projFilePath);
-
 		const fileList = await testUtils.createListOfFiles(path.dirname(projFilePath));
 
 		// verify first entry in list is a folder
-		const folderUri = fileList[0];
-		await project.addToProject([folderUri]);
-		const folderRelativePath = trimChars(trimUri(Uri.file(projFilePath), folderUri), '/');
-		testUtils.shouldThrowSpecificError(async () => await project.addToProject([folderUri]), constants.folderAlreadyAddedToProject(folderRelativePath));
+		const existingFolderUri = fileList[0];
+		const folderStats =  await fs.stat(existingFolderUri.fsPath);
+		should(folderStats.isDirectory()).equal(true, 'First entry in fileList should be a folder');
+		await project.addToProject([existingFolderUri]);
+		const folderRelativePath = trimChars(trimUri(Uri.file(projFilePath), existingFolderUri), '');
+		testUtils.shouldThrowSpecificError(async () => await project.addToProject([existingFolderUri]), constants.folderAlreadyAddedToProject(folderRelativePath));
 
-		// verify second entry in list is a sql file
-		const fileUri = fileList[1];
-		const fileRelativePath = trimChars(trimUri(Uri.file(projFilePath), fileUri), '/');
-		testUtils.shouldThrowSpecificError(async () => await project.addToProject([fileUri]), constants.fileAlreadyAddedToProject(fileRelativePath));
+		// verify duplicate file can't be added
+		const existingFileUri = fileList[1];
+		const fileStats = await fs.stat(existingFileUri.fsPath);
+		should(fileStats.isFile()).equal(true, 'Second entry in fileList should be a file');
+		const fileRelativePath = trimChars(trimUri(Uri.file(projFilePath), existingFileUri), '/');
+		testUtils.shouldThrowSpecificError(async () => await project.addToProject([existingFileUri]), constants.fileAlreadyAddedToProject(fileRelativePath));
 	});
 });
 
