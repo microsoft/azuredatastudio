@@ -461,7 +461,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 			try {
 				// TO DO: Check why the reveal fails during initial load with 'TreeError [bookTreeView] Tree element not found'
-				await this._bookViewer.reveal(bookItemToExpand, { select: false, focus: true, expand: 3 });
+				await this._bookViewer.reveal(bookItemToExpand, { select: false, focus: true, expand: true });
 			}
 			catch (e) {
 				console.error(e);
