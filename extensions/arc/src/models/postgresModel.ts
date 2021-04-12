@@ -53,10 +53,7 @@ export class PostgresModel extends ResourceModel {
 
 	/** Returns the major version of Postgres */
 	public get engineVersion(): string | undefined {
-		const kind = this._config?.kind;
-		return kind
-			? kind.substring(kind.lastIndexOf('-') + 1)
-			: undefined;
+		return this._config?.spec.engine.version;
 	}
 
 	/** Returns the IP address and port of Postgres */
@@ -121,10 +118,8 @@ export class PostgresModel extends ResourceModel {
 			return this._refreshPromise.promise;
 		}
 		this._refreshPromise = new Deferred();
-		let session: azdataExt.AzdataSession | undefined = undefined;
 		try {
-			session = await this.controllerModel.acquireAzdataSession();
-			this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name, this.controllerModel.azdataAdditionalEnvVars, session)).result;
+			this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name, this.controllerModel.azdataAdditionalEnvVars, this.controllerModel.controllerContext)).result;
 			this.configLastUpdated = new Date();
 			this._onConfigUpdated.fire(this._config);
 			this._refreshPromise.resolve();
@@ -132,7 +127,6 @@ export class PostgresModel extends ResourceModel {
 			this._refreshPromise.reject(err);
 			throw err;
 		} finally {
-			session?.dispose();
 			this._refreshPromise = undefined;
 		}
 	}

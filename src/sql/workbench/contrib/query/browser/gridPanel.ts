@@ -383,7 +383,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		@IInstantiationService protected readonly instantiationService: IInstantiationService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IUntitledTextEditorService private readonly untitledEditorService: IUntitledTextEditorService,
-		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IConfigurationService protected readonly configurationService: IConfigurationService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IThemeService private readonly themeService: IThemeService
 	) {
@@ -430,6 +430,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.renderGridDataRowsRange(startIndex, count);
 		});
 		this.dataProvider.dataRows = collection;
+		this.setFilterState();
 		this.table.updateRowCount();
 		await this.setupState();
 	}
@@ -525,7 +526,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			};
 			this.table.rerenderGrid();
 		}));
-		if (this.configurationService.getValue<boolean>('workbench')['enablePreviewFeatures']) {
+		if (this.enableFilteringFeature) {
 			this.filterPlugin = new HeaderFilter();
 			attachButtonStyler(this.filterPlugin, this.themeService);
 			this.table.registerPlugin(this.filterPlugin);
@@ -686,13 +687,23 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	public updateResult(resultSet: ResultSetSummary) {
 		this._resultSet = resultSet;
 		if (this.table && this.visible) {
-			if (this.configurationService.getValue<boolean>('workbench')['enablePreviewFeatures'] && this.options.inMemoryDataProcessing && this.options.inMemoryDataCountThreshold < resultSet.rowCount) {
-				this.filterPlugin.enabled = false;
-			}
 			this.dataProvider.length = resultSet.rowCount;
+			this.setFilterState();
 			this.table.updateRowCount();
 		}
 		this._onDidChange.fire(undefined);
+	}
+
+	private get enableFilteringFeature(): boolean {
+		return this.configurationService.getValue<boolean>('workbench')['enablePreviewFeatures'];
+	}
+
+	private setFilterState(): void {
+		if (this.enableFilteringFeature) {
+			const rowCount = this.table.getData().getLength();
+			this.filterPlugin.enabled = this.options.inMemoryDataProcessing
+				&& (this.options.inMemoryDataCountThreshold === undefined || this.options.inMemoryDataCountThreshold >= rowCount);
+		}
 	}
 
 	private generateContext(cell?: Slick.Cell): IGridActionContext {

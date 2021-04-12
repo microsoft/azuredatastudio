@@ -34,10 +34,12 @@ export interface BookTreeItemFormat {
 	treeItemCollapsibleState: number;
 	isUntitled: boolean;
 	version?: BookVersion;
+	parent?: BookTreeItem;
+	children?: BookTreeItem[];
 }
 
 export class BookTreeItem extends vscode.TreeItem {
-	private _sections: JupyterBookSection[];
+	private _sections: JupyterBookSection[] | undefined;
 	private _uri: string | undefined;
 	private _previousUri: string;
 	private _nextUri: string;
@@ -202,6 +204,22 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	public set tableOfContentsPath(tocPath: string) {
 		this._tableOfContentsPath = tocPath;
+	}
+
+	public get children(): BookTreeItem[] | undefined {
+		return this.book.children;
+	}
+
+	public set children(children: BookTreeItem[] | undefined) {
+		this.book.children = children;
+	}
+
+	public get parent(): BookTreeItem {
+		return this.book.parent;
+	}
+
+	public set parent(parent: BookTreeItem) {
+		this.book.parent = parent;
 	}
 
 	/**

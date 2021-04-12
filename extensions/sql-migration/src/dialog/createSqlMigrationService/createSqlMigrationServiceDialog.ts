@@ -218,7 +218,7 @@ export class CreateSqlMigrationServiceDialog {
 		if (!location) {
 			errors.push(constants.INVALID_REGION_ERROR);
 		}
-		if (!migrationServiceName || migrationServiceName.length === 0) {
+		if (!migrationServiceName || migrationServiceName.length < 3 || migrationServiceName.length > 63 || !/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/.test(migrationServiceName)) {
 			errors.push(constants.INVALID_SERVICE_NAME_ERROR);
 		}
 		return errors.join(os.EOL);

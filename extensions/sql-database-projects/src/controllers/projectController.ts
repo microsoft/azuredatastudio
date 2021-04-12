@@ -52,61 +52,65 @@ export class ProjectsController {
 		this.buildHelper = new BuildHelper();
 	}
 
-	public get dashboardDeployData(): (string | dataworkspace.IconCellValue)[][] {
+	public getDashboardDeployData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
 		const infoRows: (string | dataworkspace.IconCellValue)[][] = [];
 		let count = 0;
 
 		for (let i = this.deployInfo.length - 1; i >= 0; i--) {
-			let icon: azdata.IconPath;
-			let text: string;
-			if (this.deployInfo[i].status === Status.success) {
-				icon = IconPathHelper.success;
-				text = constants.Success;
-			} else if (this.deployInfo[i].status === Status.failed) {
-				icon = IconPathHelper.error;
-				text = constants.Failed;
-			} else {
-				icon = IconPathHelper.inProgress;
-				text = constants.InProgress;
-			}
+			if (this.deployInfo[i].projectFile === projectFile) {
+				let icon: azdata.IconPath;
+				let text: string;
+				if (this.deployInfo[i].status === Status.success) {
+					icon = IconPathHelper.success;
+					text = constants.Success;
+				} else if (this.deployInfo[i].status === Status.failed) {
+					icon = IconPathHelper.error;
+					text = constants.Failed;
+				} else {
+					icon = IconPathHelper.inProgress;
+					text = constants.InProgress;
+				}
 
-			let infoRow: (string | dataworkspace.IconCellValue)[] = [count.toString(),
-			{ text: text, icon: icon },
-			this.deployInfo[i].target,
-			this.deployInfo[i].timeToCompleteAction,
-			this.deployInfo[i].startDate];
-			infoRows.push(infoRow);
-			count++;
+				let infoRow: (string | dataworkspace.IconCellValue)[] = [count.toString(),
+				{ text: text, icon: icon },
+				this.deployInfo[i].target,
+				this.deployInfo[i].timeToCompleteAction,
+				this.deployInfo[i].startDate];
+				infoRows.push(infoRow);
+				count++;
+			}
 		}
 
 		return infoRows;
 	}
 
-	public get dashboardBuildData(): (string | dataworkspace.IconCellValue)[][] {
+	public getDashboardBuildData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
 		const infoRows: (string | dataworkspace.IconCellValue)[][] = [];
 		let count = 0;
 
 		for (let i = this.buildInfo.length - 1; i >= 0; i--) {
-			let icon: azdata.IconPath;
-			let text: string;
-			if (this.buildInfo[i].status === Status.success) {
-				icon = IconPathHelper.success;
-				text = constants.Success;
-			} else if (this.buildInfo[i].status === Status.failed) {
-				icon = IconPathHelper.error;
-				text = constants.Failed;
-			} else {
-				icon = IconPathHelper.inProgress;
-				text = constants.InProgress;
-			}
+			if (this.buildInfo[i].projectFile === projectFile) {
+				let icon: azdata.IconPath;
+				let text: string;
+				if (this.buildInfo[i].status === Status.success) {
+					icon = IconPathHelper.success;
+					text = constants.Success;
+				} else if (this.buildInfo[i].status === Status.failed) {
+					icon = IconPathHelper.error;
+					text = constants.Failed;
+				} else {
+					icon = IconPathHelper.inProgress;
+					text = constants.InProgress;
+				}
 
-			let infoRow: (string | dataworkspace.IconCellValue)[] = [count.toString(),
-			{ text: text, icon: icon },
-			this.buildInfo[i].target,
-			this.buildInfo[i].timeToCompleteAction,
-			this.buildInfo[i].startDate];
-			infoRows.push(infoRow);
-			count++;
+				let infoRow: (string | dataworkspace.IconCellValue)[] = [count.toString(),
+				{ text: text, icon: icon },
+				this.buildInfo[i].target,
+				this.buildInfo[i].timeToCompleteAction,
+				this.buildInfo[i].startDate];
+				infoRows.push(infoRow);
+				count++;
+			}
 		}
 
 		return infoRows;
@@ -176,7 +180,7 @@ export class ProjectsController {
 		const startTime = new Date();
 		const currentBuildTimeInfo = `${startTime.toLocaleDateString()} ${constants.at} ${startTime.toLocaleTimeString()}`;
 
-		let buildInfoNew = new DashboardData(Status.inProgress, project.getProjectTargetVersion(), currentBuildTimeInfo);
+		let buildInfoNew = new DashboardData(project.projectFilePath, Status.inProgress, project.getProjectTargetVersion(), currentBuildTimeInfo);
 		this.buildInfo.push(buildInfoNew);
 
 		if (this.buildInfo.length - 1 === maxTableLength) {
@@ -276,7 +280,7 @@ export class ProjectsController {
 		const actionStartTime = currentDate.getTime();
 		const currentDeployTimeInfo = `${currentDate.toLocaleDateString()} ${constants.at} ${currentDate.toLocaleTimeString()}`;
 
-		let deployInfoNew = new DashboardData(Status.inProgress, project.getProjectTargetVersion(), currentDeployTimeInfo);
+		let deployInfoNew = new DashboardData(project.projectFilePath, Status.inProgress, project.getProjectTargetVersion(), currentDeployTimeInfo);
 		this.deployInfo.push(deployInfoNew);
 
 		if (this.deployInfo.length - 1 === maxTableLength) {
@@ -315,7 +319,7 @@ export class ProjectsController {
 		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
 
 		const currentDeployIndex = this.deployInfo.findIndex(d => d.startDate === currentDeployTimeInfo);
-		this.deployInfo[currentDeployIndex].status = Status.success;
+		this.deployInfo[currentDeployIndex].status = result.success ? Status.success : Status.failed;
 		this.deployInfo[currentDeployIndex].timeToCompleteAction = utils.timeConversion(timeToDeploy);
 
 		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)

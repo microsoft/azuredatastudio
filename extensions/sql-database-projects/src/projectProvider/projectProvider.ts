@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { ThemedIconPath } from 'azdata';
 import * as dataworkspace from 'dataworkspace';
 import * as sqldbproj from 'sqldbproj';
 import * as vscode from 'vscode';
@@ -127,27 +128,31 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	/**
 	 * Gets the data to be displayed in the project dashboard
 	 */
-	get dashboardComponents(): dataworkspace.IDashboardTable[] {
+	getDashboardComponents(projectFile: string): dataworkspace.IDashboardTable[] {
 		const deployInfo: dataworkspace.IDashboardTable = {
 			name: constants.Deployments,
-			columns: [{ displayName: constants.ID, width: 75 },
-			{ displayName: constants.Status, width: 180, type: 'icon' },
-			{ displayName: constants.Target, width: 180 },
-			{ displayName: constants.Time, width: 180 },
-			{ displayName: constants.Date, width: 180 }],
-			data: this.projectController.dashboardDeployData
+			columns: [{ displayName: constants.ID, width: 100 },
+			{ displayName: constants.Status, width: 250, type: 'icon' },
+			{ displayName: constants.Target, width: 250 },
+			{ displayName: constants.Time, width: 250 },
+			{ displayName: constants.Date, width: 250 }],
+			data: this.projectController.getDashboardDeployData(projectFile)
 		};
 
 		const buildInfo: dataworkspace.IDashboardTable = {
 			name: constants.Builds,
-			columns: [{ displayName: constants.ID, width: 75 },
-			{ displayName: constants.Status, width: 180, type: 'icon' },
-			{ displayName: constants.Target, width: 180 },
-			{ displayName: constants.Time, width: 180 },
-			{ displayName: constants.Date, width: 180 }],
-			data: this.projectController.dashboardBuildData
+			columns: [{ displayName: constants.ID, width: 100 },
+			{ displayName: constants.Status, width: 250, type: 'icon' },
+			{ displayName: constants.Target, width: 250 },
+			{ displayName: constants.Time, width: 250 },
+			{ displayName: constants.Date, width: 250 }],
+			data: this.projectController.getDashboardBuildData(projectFile)
 		};
 
 		return [deployInfo, buildInfo];
+	}
+
+	get image(): ThemedIconPath {
+		return IconPathHelper.dashboardSqlProj;
 	}
 }

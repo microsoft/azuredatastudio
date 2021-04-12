@@ -20,6 +20,6 @@ export class ModelFactory implements IModelFactory {
 	}
 
 	public createClientSession(options: IClientSessionOptions): IClientSession {
-		return new ClientSession(options);
+		return this.instantiationService.createInstance(ClientSession, options);
 	}
 }

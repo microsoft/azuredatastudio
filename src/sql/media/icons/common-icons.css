@@ -442,6 +442,15 @@ Includes non-masked style declarations. */
 	mask-image: url("clear.svg");
 }
 
+.codicon:not(.masked-icon).icon-run-with-parameters {
+	background-image: url("run-with-parameters.svg");
+}
+
+.codicon.masked-icon.icon-run-with-parameters:before {
+	-webkit-mask-image: url("run-with-parameters.svg");
+	mask-image: url("run-with-parameters.svg");
+}
+
 .codicon:not(.masked-icon).icon-shield {
 	background-image: url("shield.svg");
 }

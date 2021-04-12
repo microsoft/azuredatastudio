@@ -27,6 +27,7 @@ export class MigrationCutoverDialog {
 	private _serverName!: azdata.TextComponent;
 	private _serverVersion!: azdata.TextComponent;
 	private _sourceDatabase!: azdata.TextComponent;
+	private _targetDatabase!: azdata.TextComponent;
 	private _targetServer!: azdata.TextComponent;
 	private _targetVersion!: azdata.TextComponent;
 	private _migrationStatus!: azdata.TextComponent;
@@ -78,9 +79,11 @@ export class MigrationCutoverDialog {
 				}
 			});
 
+			const targetDatabase = this.createInfoField(loc.TARGET_DATABASE_NAME, '');
 			const targetServer = this.createInfoField(loc.TARGET_SERVER, '');
 			const targetVersion = this.createInfoField(loc.TARGET_VERSION, '');
 
+			this._targetDatabase = targetDatabase.text;
 			this._targetServer = targetServer.text;
 			this._targetVersion = targetVersion.text;
 
@@ -88,6 +91,11 @@ export class MigrationCutoverDialog {
 				flexFlow: 'column'
 			}).component();
 
+			flexTarget.addItem(targetDatabase.flexContainer, {
+				CSSStyles: {
+					'width': '230px'
+				}
+			});
 			flexTarget.addItem(targetServer.flexContainer, {
 				CSSStyles: {
 					'width': '230px'
@@ -198,7 +206,7 @@ export class MigrationCutoverDialog {
 					{
 						value: loc.ACTIVE_BACKUP_FILES,
 						width: 280,
-						type: azdata.ColumnType.text
+						type: azdata.ColumnType.text,
 					},
 					{
 						value: loc.TYPE,
@@ -226,7 +234,7 @@ export class MigrationCutoverDialog {
 				],
 				data: [],
 				width: '800px',
-				height: '600px',
+				height: '300px',
 			}).component();
 
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
@@ -307,7 +315,7 @@ export class MigrationCutoverDialog {
 		});
 
 		this._cancelButton = this._view.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.discard,
+			iconPath: IconPathHelper.cancel,
 			iconHeight: '16px',
 			iconWidth: '16px',
 			label: loc.CANCEL_MIGRATION,
@@ -383,7 +391,10 @@ export class MigrationCutoverDialog {
 		}).component();
 
 		header.addItem(this._refreshLoader, {
-			flex: '0'
+			flex: '0',
+			CSSStyles: {
+				'margin-top': '15px'
+			}
 		});
 
 		return header;
@@ -397,19 +408,20 @@ export class MigrationCutoverDialog {
 			this._cancelButton.enabled = false;
 			await this._model.fetchStatus();
 			const errors = [];
-			errors.push(this._model.migrationOpStatus.error.message);
+			errors.push(this._model.migrationOpStatus.error?.message);
 			errors.push(this._model.migrationStatus.properties.migrationFailureError?.message);
 			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
 			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.restoreBlockingReason);
 			this._dialogObject.message = {
 				text: errors.filter(e => e !== undefined).join(EOL),
-				level: this._model.migrationStatus.properties.migrationStatus === MigrationStatus.InProgress ? azdata.window.MessageLevel.Warning : azdata.window.MessageLevel.Error
+				level: (this._model.migrationStatus.properties.migrationStatus === MigrationStatus.InProgress || this._model.migrationStatus.properties.migrationStatus === 'Completing') ? azdata.window.MessageLevel.Warning : azdata.window.MessageLevel.Error
 			};
 			const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
 			const sqlServerName = this._model._migration.sourceConnectionProfile.serverName;
 			const sourceDatabaseName = this._model._migration.migrationContext.properties.sourceDatabaseName;
 			const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
 			const sqlServerVersion = versionName ? versionName : sqlServerInfo.serverVersion;
+			const targetDatabaseName = this._model._migration.migrationContext.name;
 			const targetServerName = this._model._migration.targetManagedInstance.name;
 			let targetServerVersion;
 			if (this._model.migrationStatus.id.includes('managedInstances')) {
@@ -452,6 +464,7 @@ export class MigrationCutoverDialog {
 			this._serverVersion.value = `${sqlServerVersion}
 			${sqlServerInfo.serverVersion}`;
 
+			this._targetDatabase.value = targetDatabaseName;
 			this._targetServer.value = targetServerName;
 			this._targetVersion.value = targetServerVersion;
 

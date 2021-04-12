@@ -5,7 +5,7 @@
 
 import { nb } from 'azdata';
 import { localize } from 'vs/nls';
-import { URI } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
@@ -36,6 +36,23 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IProductService } from 'vs/platform/product/common/productService';
+import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
+import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { Extensions as LanguageAssociationExtensions, ILanguageAssociationRegistry } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
+
+import * as path from 'vs/base/common/path';
+
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+
+import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
+import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
+import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { NotebookLanguage } from 'sql/workbench/common/constants';
+
+const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -120,7 +137,10 @@ export class NotebookService extends Disposable implements INotebookService {
 		@ILogService private readonly _logService: ILogService,
 		@IQueryManagementService private readonly _queryManagementService: IQueryManagementService,
 		@IContextKeyService private contextKeyService: IContextKeyService,
-		@IProductService private readonly productService: IProductService
+		@IProductService private readonly productService: IProductService,
+		@IEditorService private _editorService: IEditorService,
+		@IUntitledTextEditorService private _untitledEditorService: IUntitledTextEditorService,
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService
 	) {
 		super();
 		this._providersMemento = new Memento('notebookProviders', this._storageService);
@@ -163,8 +183,45 @@ export class NotebookService extends Disposable implements INotebookService {
 		lifecycleService.onWillShutdown(() => this.shutdown());
 	}
 
-	public dispose(): void {
-		super.dispose();
+	public async openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined> {
+		const uri = URI.revive(resource);
+
+		const editorOptions: ITextEditorOptions = {
+			preserveFocus: options.preserveFocus,
+			pinned: !options.preview
+		};
+		let isUntitled: boolean = uri.scheme === Schemas.untitled;
+
+		let fileInput: IEditorInput;
+		if (isUntitled && path.isAbsolute(uri.fsPath)) {
+			const model = this._untitledEditorService.create({ associatedResource: uri, mode: 'notebook', initialValue: options.initialContent });
+			fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
+		} else {
+			if (isUntitled) {
+				const model = this._untitledEditorService.create({ untitledResource: uri, mode: 'notebook', initialValue: options.initialContent });
+				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
+			} else {
+				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: 'notebook' });
+			}
+		}
+		// We only need to get the Notebook language association as such we only need to use ipynb
+		const inputCreator = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
+		if (inputCreator) {
+			fileInput = await inputCreator.convertInput(fileInput);
+			if (isINotebookInput(fileInput)) {
+				fileInput.defaultKernel = options.defaultKernel;
+				fileInput.connectionProfile = options.connectionProfile;
+
+				if (isUntitled) {
+					let untitledModel = await fileInput.resolve();
+					await untitledModel.load();
+					if (options.initialDirtyState === false) {
+						fileInput.setDirty(false);
+					}
+				}
+			}
+		}
+		return await this._editorService.openEditor(fileInput, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
 	}
 
 	private updateSQLRegistrationWithConnectionProviders() {
@@ -350,7 +407,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (!notebookUri) {
 			return undefined;
 		}
-		let uriString = notebookUri.toString();
+		// The NotebookEditor will not be found if there is query or fragments attached to the URI
+		let uriString = notebookUri.with({ query: '', fragment: '' }).toString();
 		let editor = this.listNotebookEditors().find(n => n.id === uriString);
 		return editor;
 	}

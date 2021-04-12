@@ -1,25 +1,4 @@
 steps:
-  - powershell: |
-      mkdir .build -ea 0
-      "$env:BUILD_SOURCEVERSION" | Out-File -Encoding ascii -NoNewLine .build\commit
-      "$env:VSCODE_QUALITY" | Out-File -Encoding ascii -NoNewLine .build\quality
-    displayName: Prepare cache flag
-
-  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
-    displayName: Restore Cache - Compiled Files
-    inputs:
-      keyfile: 'build/.cachesalt, .build/commit, .build/quality'
-      targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
-      vstsFeed: 'BuildCache'
-      platformIndependent: true
-      alias: 'Compilation'
-
-  - powershell: |
-      $ErrorActionPreference = "Stop"
-      exit 1
-    displayName: Check RestoreCache
-    condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
-
   - task: NodeTool@0
     inputs:
       versionSpec: "12.13.0"
@@ -34,11 +13,23 @@ steps:
       addToPath: true
 
   - task: AzureKeyVault@1
-    displayName: 'Azure Key Vault: Get Secrets'
     inputs:
       azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
       KeyVaultName: ado-secrets
       SecretsFilter: 'github-distro-mixin-password'
+    displayName: 'Azure Key Vault: Get Secrets'
+
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      artifact: Compilation
+      path: $(Build.ArtifactStagingDirectory)
+    displayName: Download compilation output
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { tar --force-local -xzf $(Build.ArtifactStagingDirectory)/compilation.tar.gz }
+    displayName: Extract compilation output
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
@@ -55,37 +46,51 @@ steps:
       git merge $(node -p "require('./package.json').distro")
     displayName: Merge distro
 
-  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
-    displayName: Restore Cache - Node Modules
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js > .build/yarnlockhash }
+    displayName: Prepare yarn cache key
+
+  - task: Cache@2
     inputs:
-      keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
-      targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
-      vstsFeed: 'BuildCache'
+      key: 'nodeModules | $(Agent.OS) | .build/yarnlockhash'
+      path: .build/node_modules_cache
+      cacheHitVar: NODE_MODULES_RESTORED
+    displayName: Restore Cache - Node Modules
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { 7z.exe x .build/node_modules_cache/cache.7z -aos }
+    condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
+    displayName: Extract node_modules archive
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       $env:CHILD_CONCURRENCY="1"
       exec { yarn --frozen-lockfile }
-    displayName: Install dependencies
     env:
       GITHUB_TOKEN: $(github-distro-mixin-password)
-    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+    condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+    displayName: Install dependencies
 
-  - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
-    displayName: Save Cache - Node Modules
-    inputs:
-      keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
-      targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
-      vstsFeed: 'BuildCache'
-    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { node build/azure-pipelines/common/listNodeModules.js .build/node_modules_list.txt }
+      exec { mkdir -Force .build/node_modules_cache }
+      exec { 7z.exe a .build/node_modules_cache/cache.7z -mx3 `@.build/node_modules_list.txt }
+    condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+    displayName: Create node_modules archive
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { yarn postinstall }
     displayName: Run postinstall scripts
-    condition: and(succeeded(), eq(variables['CacheRestored'], 'true'))
+    condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
@@ -151,7 +156,7 @@ steps:
     inputs:
       ConnectedServiceName: 'Code Signing'
       FolderPath: '$(agent.builddirectory)/azuredatastudio-win32-x64'
-      Pattern: '*.exe,*.node,resources/app/node_modules.asar.unpacked/*.dll,swiftshader/*.dll,d3dcompiler_47.dll,libGLESv2.dll,ffmpeg.dll,libEGL.dll,Microsoft.SqlTools.Hosting.dll,Microsoft.SqlTools.ResourceProvider.Core.dll,Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll,MicrosoftSqlToolsCredentials.dll,MicrosoftSqlToolsServiceLayer.dll,Newtonsoft.Json.dll,SqlSerializationService.dll,SqlToolsResourceProviderService.dll,Microsoft.SqlServer.*.dll,Microsoft.Data.Tools.Sql.BatchParser.dll'
+      Pattern: '*.exe,*.node,resources/app/node_modules.asar.unpacked/*.dll,swiftshader/*.dll,d3dcompiler_47.dll,vulkan-1.dll,libGLESv2.dll,ffmpeg.dll,libEGL.dll,Microsoft.SqlTools.Hosting.dll,Microsoft.SqlTools.ResourceProvider.Core.dll,Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll,MicrosoftSqlToolsCredentials.dll,MicrosoftSqlToolsServiceLayer.dll,Newtonsoft.Json.dll,SqlSerializationService.dll,SqlToolsResourceProviderService.dll,Microsoft.SqlServer.*.dll,Microsoft.Data.Tools.Sql.BatchParser.dll'
       signConfigType: inlineSignParams
       inlineOperation: |
         [

@@ -68,6 +68,11 @@ declare module 'dataworkspace' {
 		createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
 
 		/**
+		 * Gets the project data corresponding to the project file, to be placed in the dashboard container
+		 */
+		getDashboardComponents(projectFile: string): IDashboardTable[];
+
+		/**
 		 * Gets the supported project types
 		 */
 		readonly supportedProjectTypes: IProjectType[];
@@ -78,9 +83,9 @@ declare module 'dataworkspace' {
 		readonly projectActions: (IProjectAction | IProjectActionGroup)[];
 
 		/**
-		 * Gets the project data to be placed in the dashboard container
+		 * Gets the project image to be used as background in dashboard container
 		 */
-		readonly dashboardComponents: IDashboardTable[];
+		 readonly image?: azdata.ThemedIconPath;
 	}
 
 	/**
@@ -110,7 +115,7 @@ declare module 'dataworkspace' {
 		/**
 		 * Gets the icon path of the project type
 		 */
-		readonly icon: string | vscode.Uri | { light: string | vscode.Uri, dark: string | vscode.Uri }
+		readonly icon: azdata.IconPath
 	}
 
 	/**
@@ -178,7 +183,7 @@ declare module 'dataworkspace' {
 	 */
 	export interface IDashboardColumnInfo {
 		displayName: string;
-		width: number;
+		width: number | string;
 		type?: IDashboardColumnType;
 	}
 

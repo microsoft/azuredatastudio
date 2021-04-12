@@ -236,11 +236,14 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				needsTransform = false;
 			} else {
 				let linkUrl = linkCalloutResult.insertUnescapedLinkUrl;
-				const isFile = URI.parse(linkUrl).scheme === 'file';
-				if (isFile && !path.isAbsolute(linkUrl)) {
-					const notebookDirName = path.dirname(this.cellModel?.notebookModel?.notebookUri.fsPath);
-					const relativePath = (linkUrl).replace(/\\/g, path.posix.sep);
-					linkUrl = path.resolve(notebookDirName, relativePath);
+				const isAnchorLink = linkUrl.startsWith('#');
+				if (!isAnchorLink) {
+					const isFile = URI.parse(linkUrl).scheme === 'file';
+					if (isFile && !path.isAbsolute(linkUrl)) {
+						const notebookDirName = path.dirname(this.cellModel?.notebookModel?.notebookUri.fsPath);
+						const relativePath = (linkUrl).replace(/\\/g, path.posix.sep);
+						linkUrl = path.resolve(notebookDirName, relativePath);
+					}
 				}
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
@@ -296,7 +299,8 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
 			const defaultLabel = this.getCurrentSelectionText();
-			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogPosition, dialogProperties, defaultLabel);
+			const defaultLinkUrl = this.getCurrentLinkUrl();
+			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogPosition, dialogProperties, defaultLabel, defaultLinkUrl);
 			this._linkCallout.render();
 			calloutOptions = await this._linkCallout.open();
 		}
@@ -315,6 +319,14 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				return value || '';
 			}
 			return '';
+		}
+	}
+
+	private getCurrentLinkUrl(): string {
+		if (document.getSelection().anchorNode.parentNode['protocol'] === 'file:') {
+			return document.getSelection().anchorNode.parentNode['pathname'] || '';
+		} else {
+			return document.getSelection().anchorNode.parentNode['href'] || '';
 		}
 	}
 

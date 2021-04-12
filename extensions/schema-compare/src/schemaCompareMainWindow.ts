@@ -91,9 +91,14 @@ export class SchemaCompareMainWindow {
 		let sourceDacpac = context as string;
 		if (profile) {
 			let ownerUri = await azdata.connection.getUriForConnection((profile.id));
+			let usr = profile.userName;
+			if (!usr) {
+				usr = loc.defaultText;
+			}
+
 			this.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
-				serverDisplayName: `${profile.serverName} ${profile.userName}`,
+				serverDisplayName: `${profile.serverName} (${usr})`,
 				serverName: profile.serverName,
 				databaseName: profile.databaseName,
 				ownerUri: ownerUri,
