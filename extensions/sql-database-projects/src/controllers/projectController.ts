@@ -54,9 +54,8 @@ export class ProjectsController {
 
 	public getDashboardDeployData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
 		const infoRows: (string | dataworkspace.IconCellValue)[][] = [];
-		let count = 0;
 
-		for (let i = this.deployInfo.length - 1; i >= 0; i--) {
+		for (let i = 0; i < this.deployInfo.length; i++) {
 			if (this.deployInfo[i].projectFile === projectFile) {
 				let icon: azdata.IconPath;
 				let text: string;
@@ -71,13 +70,12 @@ export class ProjectsController {
 					text = constants.InProgress;
 				}
 
-				let infoRow: (string | dataworkspace.IconCellValue)[] = [count.toString(),
+				let infoRow: (string | dataworkspace.IconCellValue)[] = [infoRows.length.toString(),
 				{ text: text, icon: icon },
 				this.deployInfo[i].target,
 				this.deployInfo[i].timeToCompleteAction,
 				this.deployInfo[i].startDate];
-				infoRows.push(infoRow);
-				count++;
+				infoRows.unshift(infoRow);
 			}
 		}
 
@@ -86,9 +84,8 @@ export class ProjectsController {
 
 	public getDashboardBuildData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
 		const infoRows: (string | dataworkspace.IconCellValue)[][] = [];
-		let count = 0;
 
-		for (let i = this.buildInfo.length - 1; i >= 0; i--) {
+		for (let i = 0; i < this.buildInfo.length; i++) {
 			if (this.buildInfo[i].projectFile === projectFile) {
 				let icon: azdata.IconPath;
 				let text: string;
@@ -103,13 +100,12 @@ export class ProjectsController {
 					text = constants.InProgress;
 				}
 
-				let infoRow: (string | dataworkspace.IconCellValue)[] = [count.toString(),
+				let infoRow: (string | dataworkspace.IconCellValue)[] = [infoRows.length.toString(),
 				{ text: text, icon: icon },
 				this.buildInfo[i].target,
 				this.buildInfo[i].timeToCompleteAction,
 				this.buildInfo[i].startDate];
-				infoRows.push(infoRow);
-				count++;
+				infoRows.unshift(infoRow);
 			}
 		}
 
