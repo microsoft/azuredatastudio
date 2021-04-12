@@ -272,6 +272,14 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	slider(): azdata.ComponentBuilder<azdata.SliderComponent, azdata.SliderComponentProperties> {
+		const id = this.getNextComponentId();
+		const builder: ComponentBuilderImpl<azdata.SliderComponent, azdata.SliderComponentProperties> = this.getComponentBuilder(new SliderComponentWrapper(this._proxy, this._handle, id), id);
+
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	getComponentBuilder<T extends azdata.Component, TPropertyBag extends azdata.ComponentProperties>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T, TPropertyBag> {
 		let componentBuilder: ComponentBuilderImpl<T, TPropertyBag> = new ComponentBuilderImpl<T, TPropertyBag>(component);
 		this._componentBuilders.set(id, componentBuilder);
@@ -1555,12 +1563,12 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		return this._proxy.$setProperties(this._handle, this._id, this.getPropertiesForMainThread());
 	}
 
-	public get selectEffect(): boolean | undefined {
-		return this.properties['selectEffect'];
+	public get enableRowSelection(): boolean | undefined {
+		return this.properties['enableRowSelection'];
 	}
 
-	public set selectEffect(v: boolean | undefined) {
-		this.setProperty('selectEffect', v);
+	public set enableRowSelection(v: boolean | undefined) {
+		this.setProperty('enableRowSelection', v);
 	}
 
 	public setFilter(rowIndexes: number[]): void {
@@ -2019,6 +2027,65 @@ class InfoBoxComponentWrapper extends ComponentWrapper implements azdata.InfoBox
 
 	public set announceText(v: boolean) {
 		this.setProperty('announceText', v);
+	}
+}
+
+class SliderComponentWrapper extends ComponentWrapper implements azdata.SliderComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Slider, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<number>());
+		this._emitterMap.set(ComponentEventType.onInput, new Emitter<number>());
+	}
+
+	public get min(): number | undefined {
+		return this.properties['min'];
+	}
+
+	public set min(v: number | undefined) {
+		this.setProperty('min', v);
+	}
+
+	public get max(): number | undefined {
+		return this.properties['max'];
+	}
+
+	public set max(v: number | undefined) {
+		this.setProperty('max', v);
+	}
+
+	public get step(): number | undefined {
+		return this.properties['step'];
+	}
+
+	public set step(v: number | undefined) {
+		this.setProperty('step', v);
+	}
+
+	public get value(): number | undefined {
+		return this.properties['value'];
+	}
+
+	public set value(v: number | undefined) {
+		this.setProperty('value', v);
+	}
+
+	public get showTicks(): boolean | undefined {
+		return this.properties['showTicks'];
+	}
+
+	public set showTicks(v: boolean | undefined) {
+		this.setProperty('showTicks', v);
+	}
+
+	public get onChanged(): vscode.Event<number> {
+		const emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter!.event;
+	}
+
+	public get onInput(): vscode.Event<number> {
+		const emitter = this._emitterMap.get(ComponentEventType.onInput);
+		return emitter!.event;
 	}
 }
 

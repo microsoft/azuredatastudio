@@ -2,14 +2,14 @@
   "name": "sql-migration",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.0.2",
+  "version": "0.0.8",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
   "engines": {
-    "vscode": "^1.25.0",
-    "azdata": ">=1.19.0"
+    "vscode": "*",
+    "azdata": ">=1.27.0"
   },
   "activationEvents": [
     "onDashboardOpen",
@@ -28,13 +28,14 @@
     "commands": [
       {
         "command": "sqlmigration.start",
-        "title": "SQL Migration Start",
-        "category": "SQL Migration"
+        "title": "%start-migration-command%",
+        "category": "%migration-command-category%",
+        "icon": "./images/migration.svg"
       },
       {
         "command": "sqlmigration.openNotebooks",
         "title": "%migration-notebook-command-title%",
-        "category": "SQL Migration"
+        "category": "%migration-command-category%"
       }
     ],
     "dashboard.tabs": [
@@ -50,6 +51,16 @@
         "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
         "container": {
           "grid-container": [
+            {
+              "name": "",
+              "row": 0,
+              "col": 0,
+              "widget": {
+                "tasks-widget": [
+                  "sqlmigration.start"
+                ]
+              }
+            },
             {
               "name": "",
               "row": 0,

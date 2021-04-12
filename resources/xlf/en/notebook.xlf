@@ -22,8 +22,20 @@
     <trans-unit id="notebook.maxTableRows.description">
       <source xml:lang="en">Maximum number of rows returned per table in the Notebook editor</source>
     </trans-unit>
+    <trans-unit id="notebook.trustedBooks.description">
+      <source xml:lang="en">Notebooks contained in these books will automatically be trusted.</source>
+    </trans-unit>
     <trans-unit id="notebook.maxBookSearchDepth.description">
       <source xml:lang="en">Maximum depth of subdirectories to search for Books (Enter 0 for infinite)</source>
+    </trans-unit>
+    <trans-unit id="notebook.collapseBookItems.description">
+      <source xml:lang="en">Collapse Book items at root level in the Notebooks Viewlet</source>
+    </trans-unit>
+    <trans-unit id="notebook.remoteBookDownloadTimeout.description">
+      <source xml:lang="en">Download timeout in milliseconds for GitHub books</source>
+    </trans-unit>
+    <trans-unit id="notebook.pinnedNotebooks.description">
+      <source xml:lang="en">Notebooks that are pinned by the user for the current workspace</source>
     </trans-unit>
     <trans-unit id="notebook.command.new">
       <source xml:lang="en">New Notebook</source>
@@ -94,22 +106,69 @@
     <trans-unit id="title.saveJupyterBook">
       <source xml:lang="en">Save Book</source>
     </trans-unit>
+    <trans-unit id="title.trustBook">
+      <source xml:lang="en">Trust Book</source>
+    </trans-unit>
     <trans-unit id="title.searchJupyterBook">
       <source xml:lang="en">Search Book</source>
     </trans-unit>
     <trans-unit id="title.SavedBooks">
-      <source xml:lang="en">Saved Books</source>
+      <source xml:lang="en">Notebooks</source>
     </trans-unit>
-    <trans-unit id="title.UntitledBooks">
-      <source xml:lang="en">Untitled Books</source>
+    <trans-unit id="title.ProvidedBooks">
+      <source xml:lang="en">Provided Books</source>
+    </trans-unit>
+    <trans-unit id="title.PinnedBooks">
+      <source xml:lang="en">Pinned notebooks</source>
+    </trans-unit>
+    <trans-unit id="title.PreviewLocalizedBook">
+      <source xml:lang="en">Get localized SQL Server 2019 guide</source>
+    </trans-unit>
+    <trans-unit id="title.openJupyterBook">
+      <source xml:lang="en">Open Jupyter Book</source>
+    </trans-unit>
+    <trans-unit id="title.closeJupyterBook">
+      <source xml:lang="en">Close Jupyter Book</source>
+    </trans-unit>
+    <trans-unit id="title.closeJupyterNotebook">
+      <source xml:lang="en">Close Jupyter Notebook</source>
+    </trans-unit>
+    <trans-unit id="title.revealInBooksViewlet">
+      <source xml:lang="en">Reveal in Books</source>
+    </trans-unit>
+    <trans-unit id="title.createJupyterBook">
+      <source xml:lang="en">Create Book (Preview)</source>
+    </trans-unit>
+    <trans-unit id="title.openNotebookFolder">
+      <source xml:lang="en">Open Notebooks in Folder</source>
+    </trans-unit>
+    <trans-unit id="title.openRemoteJupyterBook">
+      <source xml:lang="en">Add Remote Jupyter Book</source>
+    </trans-unit>
+    <trans-unit id="title.pinNotebook">
+      <source xml:lang="en">Pin Notebook</source>
+    </trans-unit>
+    <trans-unit id="title.unpinNotebook">
+      <source xml:lang="en">Unpin Notebook</source>
+    </trans-unit>
+    <trans-unit id="title.moveTo">
+      <source xml:lang="en">Move to ...</source>
     </trans-unit>
   </body></file>
   <file original="extensions/notebook/dist/common/utils" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="mkdirOutputMsg">
-      <source xml:lang="en">... Creating {0}</source>
+    <trans-unit id="ensureDirOutputMsg">
+      <source xml:lang="en">... Ensuring {0} exists</source>
     </trans-unit>
     <trans-unit id="executeCommandProcessExited">
-      <source xml:lang="en">Process exited with code {0}</source>
+      <source xml:lang="en">Process exited with error code: {0}. StdErr Output: {1}</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/notebook/dist/common/constants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="managePackages.localhost">
+      <source xml:lang="en">localhost</source>
+    </trans-unit>
+    <trans-unit id="managePackages.packageNotFound">
+      <source xml:lang="en">Could not find the specified package</source>
     </trans-unit>
   </body></file>
   <file original="extensions/notebook/dist/common/localizedConstants" source-language="en" datatype="plaintext"><body>
@@ -121,6 +180,223 @@
     </trans-unit>
     <trans-unit id="msgSampleCodeDataFrame">
       <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
+    </trans-unit>
+    <trans-unit id="noBDCConnectionError">
+      <source xml:lang="en">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</source>
+    </trans-unit>
+    <trans-unit id="providerNotValidError">
+      <source xml:lang="en">Non-MSSQL providers are not supported for spark kernels.</source>
+    </trans-unit>
+    <trans-unit id="allFiles">
+      <source xml:lang="en">All Files</source>
+    </trans-unit>
+    <trans-unit id="labelSelectFolder">
+      <source xml:lang="en">Select Folder</source>
+    </trans-unit>
+    <trans-unit id="labelBookFolder">
+      <source xml:lang="en">Select Book</source>
+    </trans-unit>
+    <trans-unit id="confirmReplace">
+      <source xml:lang="en">Folder already exists. Are you sure you want to delete and replace this folder?</source>
+    </trans-unit>
+    <trans-unit id="openNotebookCommand">
+      <source xml:lang="en">Open Notebook</source>
+    </trans-unit>
+    <trans-unit id="openMarkdownCommand">
+      <source xml:lang="en">Open Markdown</source>
+    </trans-unit>
+    <trans-unit id="openExternalLinkCommand">
+      <source xml:lang="en">Open External Link</source>
+    </trans-unit>
+    <trans-unit id="msgBookTrusted">
+      <source xml:lang="en">Book is now trusted in the workspace.</source>
+    </trans-unit>
+    <trans-unit id="msgBookAlreadyTrusted">
+      <source xml:lang="en">Book is already trusted in this workspace.</source>
+    </trans-unit>
+    <trans-unit id="msgBookUntrusted">
+      <source xml:lang="en">Book is no longer trusted in this workspace</source>
+    </trans-unit>
+    <trans-unit id="msgBookAlreadyUntrusted">
+      <source xml:lang="en">Book is already untrusted in this workspace.</source>
+    </trans-unit>
+    <trans-unit id="msgBookPinned">
+      <source xml:lang="en">Book {0} is now pinned in the workspace.</source>
+    </trans-unit>
+    <trans-unit id="msgBookUnpinned">
+      <source xml:lang="en">Book {0} is no longer pinned in this workspace</source>
+    </trans-unit>
+    <trans-unit id="bookInitializeFailed">
+      <source xml:lang="en">Failed to find a Table of Contents file in the specified book.</source>
+    </trans-unit>
+    <trans-unit id="noBooksSelected">
+      <source xml:lang="en">No books are currently selected in the viewlet.</source>
+    </trans-unit>
+    <trans-unit id="labelBookSection">
+      <source xml:lang="en">Select Book Section</source>
+    </trans-unit>
+    <trans-unit id="labelAddToLevel">
+      <source xml:lang="en">Add to this level</source>
+    </trans-unit>
+    <trans-unit id="missingFileError">
+      <source xml:lang="en">Missing file : {0} from {1}</source>
+    </trans-unit>
+    <trans-unit id="InvalidError.tocFile">
+      <source xml:lang="en">Invalid toc file</source>
+    </trans-unit>
+    <trans-unit id="Invalid toc.yml">
+      <source xml:lang="en">Error: {0} has an incorrect toc.yml file</source>
+    </trans-unit>
+    <trans-unit id="configFileError">
+      <source xml:lang="en">Configuration file missing</source>
+    </trans-unit>
+    <trans-unit id="openBookError">
+      <source xml:lang="en">Open book {0} failed: {1}</source>
+    </trans-unit>
+    <trans-unit id="readBookError">
+      <source xml:lang="en">Failed to read book {0}: {1}</source>
+    </trans-unit>
+    <trans-unit id="openNotebookError">
+      <source xml:lang="en">Open notebook {0} failed: {1}</source>
+    </trans-unit>
+    <trans-unit id="openMarkdownError">
+      <source xml:lang="en">Open markdown {0} failed: {1}</source>
+    </trans-unit>
+    <trans-unit id="openUntitledNotebookError">
+      <source xml:lang="en">Open untitled notebook {0} as untitled failed: {1}</source>
+    </trans-unit>
+    <trans-unit id="openExternalLinkError">
+      <source xml:lang="en">Open link {0} failed: {1}</source>
+    </trans-unit>
+    <trans-unit id="closeBookError">
+      <source xml:lang="en">Close book {0} failed: {1}</source>
+    </trans-unit>
+    <trans-unit id="duplicateFileError">
+      <source xml:lang="en">File {0} already exists in the destination folder {1} 
+ The file has been renamed to {2} to prevent data loss.</source>
+    </trans-unit>
+    <trans-unit id="editBookError">
+      <source xml:lang="en">Error while editing book {0}: {1}</source>
+    </trans-unit>
+    <trans-unit id="selectBookError">
+      <source xml:lang="en">Error while selecting a book or a section to edit: {0}</source>
+    </trans-unit>
+    <trans-unit id="url">
+      <source xml:lang="en">URL</source>
+    </trans-unit>
+    <trans-unit id="repoUrl">
+      <source xml:lang="en">Repository URL</source>
+    </trans-unit>
+    <trans-unit id="location">
+      <source xml:lang="en">Location</source>
+    </trans-unit>
+    <trans-unit id="addRemoteBook">
+      <source xml:lang="en">Add Remote Book</source>
+    </trans-unit>
+    <trans-unit id="onGitHub">
+      <source xml:lang="en">GitHub</source>
+    </trans-unit>
+    <trans-unit id="onsharedFile">
+      <source xml:lang="en">Shared File</source>
+    </trans-unit>
+    <trans-unit id="releases">
+      <source xml:lang="en">Releases</source>
+    </trans-unit>
+    <trans-unit id="book">
+      <source xml:lang="en">Book</source>
+    </trans-unit>
+    <trans-unit id="version">
+      <source xml:lang="en">Version</source>
+    </trans-unit>
+    <trans-unit id="language">
+      <source xml:lang="en">Language</source>
+    </trans-unit>
+    <trans-unit id="booksNotFound">
+      <source xml:lang="en">No books are currently available on the provided link</source>
+    </trans-unit>
+    <trans-unit id="urlGithubError">
+      <source xml:lang="en">The url provided is not a Github release url</source>
+    </trans-unit>
+    <trans-unit id="search">
+      <source xml:lang="en">Search</source>
+    </trans-unit>
+    <trans-unit id="add">
+      <source xml:lang="en">Add</source>
+    </trans-unit>
+    <trans-unit id="close">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="invalidTextPlaceholder">
+      <source xml:lang="en">-</source>
+    </trans-unit>
+    <trans-unit id="msgRemoteBookDownloadProgress">
+      <source xml:lang="en">Remote Book download is in progress</source>
+    </trans-unit>
+    <trans-unit id="msgRemoteBookDownloadComplete">
+      <source xml:lang="en">Remote Book download is complete</source>
+    </trans-unit>
+    <trans-unit id="msgRemoteBookDownloadError">
+      <source xml:lang="en">Error while downloading remote Book</source>
+    </trans-unit>
+    <trans-unit id="msgRemoteBookUnpackingError">
+      <source xml:lang="en">Error while decompressing remote Book</source>
+    </trans-unit>
+    <trans-unit id="msgRemoteBookDirectoryError">
+      <source xml:lang="en">Error while creating remote Book directory</source>
+    </trans-unit>
+    <trans-unit id="msgTaskName">
+      <source xml:lang="en">Downloading Remote Book</source>
+    </trans-unit>
+    <trans-unit id="msgResourceNotFound">
+      <source xml:lang="en">Resource not Found</source>
+    </trans-unit>
+    <trans-unit id="msgBookNotFound">
+      <source xml:lang="en">Books not Found</source>
+    </trans-unit>
+    <trans-unit id="msgReleaseNotFound">
+      <source xml:lang="en">Releases not Found</source>
+    </trans-unit>
+    <trans-unit id="msgUndefinedAssetError">
+      <source xml:lang="en">The selected book is not valid</source>
+    </trans-unit>
+    <trans-unit id="httpRequestError">
+      <source xml:lang="en">Http Request failed with error: {0} {1}</source>
+    </trans-unit>
+    <trans-unit id="msgDownloadLocation">
+      <source xml:lang="en">Downloading to {0}</source>
+    </trans-unit>
+    <trans-unit id="newGroup">
+      <source xml:lang="en">New Group</source>
+    </trans-unit>
+    <trans-unit id="groupDescription">
+      <source xml:lang="en">Groups are used to organize Notebooks.</source>
+    </trans-unit>
+    <trans-unit id="locationBrowser">
+      <source xml:lang="en">Browse locations...</source>
+    </trans-unit>
+    <trans-unit id="selectContentFolder">
+      <source xml:lang="en">Select content folder</source>
+    </trans-unit>
+    <trans-unit id="browse">
+      <source xml:lang="en">Browse</source>
+    </trans-unit>
+    <trans-unit id="create">
+      <source xml:lang="en">Create</source>
+    </trans-unit>
+    <trans-unit id="name">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="saveLocation">
+      <source xml:lang="en">Save location</source>
+    </trans-unit>
+    <trans-unit id="contentFolder">
+      <source xml:lang="en">Content folder (Optional)</source>
+    </trans-unit>
+    <trans-unit id="msgContentFolderError">
+      <source xml:lang="en">Content folder path does not exist</source>
+    </trans-unit>
+    <trans-unit id="msgSaveFolderError">
+      <source xml:lang="en">Save location path does not exist</source>
     </trans-unit>
   </body></file>
   <file original="extensions/notebook/dist/jupyter/jupyterServerInstallation" source-language="en" datatype="plaintext"><body>
@@ -157,9 +433,6 @@
     <trans-unit id="msgPythonRunningError">
       <source xml:lang="en">Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.</source>
     </trans-unit>
-    <trans-unit id="msgSkipPythonInstall">
-      <source xml:lang="en">Python already exists at the specific location. Skipping install.</source>
-    </trans-unit>
     <trans-unit id="msgWaitingForInstall">
       <source xml:lang="en">Another Python installation is currently in progress. Waiting for it to complete.</source>
     </trans-unit>
@@ -169,67 +442,40 @@
     <trans-unit id="msgDownloadPython">
       <source xml:lang="en">Downloading local python for platform: {0} to {1}</source>
     </trans-unit>
-    <trans-unit id="confirmPackageUpgrade">
-      <source xml:lang="en">Some installed python packages need to be upgraded. Would you like to upgrade them now?</source>
+    <trans-unit id="msgPackageRetrievalFailed">
+      <source xml:lang="en">Encountered an error when trying to retrieve list of installed packages: {0}</source>
     </trans-unit>
-    <trans-unit id="upgradePackages.pipInstall">
-      <source xml:lang="en">Installing {0}</source>
-    </trans-unit>
-    <trans-unit id="msgInstallStart">
-      <source xml:lang="en">Installing required packages to run Notebooks...</source>
-    </trans-unit>
-    <trans-unit id="msgJupyterInstallDone">
-      <source xml:lang="en">... Jupyter installation complete.</source>
+    <trans-unit id="msgGetPythonUserDirFailed">
+      <source xml:lang="en">Encountered an error when getting Python user path: {0}</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/notebook/dist/dialog/configurePythonDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="configurePython.dialogName">
-      <source xml:lang="en">Configure Python for Notebooks</source>
-    </trans-unit>
+  <file original="extensions/notebook/dist/dialog/configurePython/configurePythonWizard" source-language="en" datatype="plaintext"><body>
     <trans-unit id="configurePython.okButtonText">
       <source xml:lang="en">Install</source>
-    </trans-unit>
-    <trans-unit id="configurePython.cancelButtonText">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
-    <trans-unit id="configurePython.browseButtonText">
-      <source xml:lang="en">Browse</source>
-    </trans-unit>
-    <trans-unit id="configurePython.locationTextBoxText">
-      <source xml:lang="en">Python Install Location</source>
-    </trans-unit>
-    <trans-unit id="configurePython.selectFileLabel">
-      <source xml:lang="en">Select</source>
-    </trans-unit>
-    <trans-unit id="configurePython.installNote">
-      <source xml:lang="en">This installation will take some time. It is recommended to not close the application until the installation is complete.</source>
     </trans-unit>
     <trans-unit id="configurePython.invalidLocationMsg">
       <source xml:lang="en">The specified install location is invalid.</source>
     </trans-unit>
     <trans-unit id="configurePython.pythonNotFoundMsg">
-      <source xml:lang="en">No python installation was found at the specified location.</source>
+      <source xml:lang="en">No Python installation was found at the specified location.</source>
+    </trans-unit>
+    <trans-unit id="configurePython.wizardNameWithKernel">
+      <source xml:lang="en">Configure Python to run {0} kernel</source>
+    </trans-unit>
+    <trans-unit id="configurePython.wizardNameWithoutKernel">
+      <source xml:lang="en">Configure Python to run kernels</source>
+    </trans-unit>
+    <trans-unit id="configurePython.page0Name">
+      <source xml:lang="en">Configure Python Runtime</source>
+    </trans-unit>
+    <trans-unit id="configurePython.page1Name">
+      <source xml:lang="en">Install Dependencies</source>
     </trans-unit>
     <trans-unit id="configurePython.pythonInstallDeclined">
       <source xml:lang="en">Python installation was declined.</source>
     </trans-unit>
-    <trans-unit id="configurePython.installationType">
-      <source xml:lang="en">Installation Type</source>
-    </trans-unit>
-    <trans-unit id="configurePython.newInstall">
-      <source xml:lang="en">New Python installation</source>
-    </trans-unit>
-    <trans-unit id="configurePython.existingInstall">
-      <source xml:lang="en">Use existing Python installation</source>
-    </trans-unit>
   </body></file>
   <file original="extensions/notebook/dist/extension" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="msgSampleCodeDataFrame">
-      <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-    </trans-unit>
-    <trans-unit id="noNotebookVisible">
-      <source xml:lang="en">No notebook editor is active</source>
-    </trans-unit>
     <trans-unit id="codeCellName">
       <source xml:lang="en">Code</source>
     </trans-unit>
@@ -238,9 +484,6 @@
     </trans-unit>
     <trans-unit id="selectCellType">
       <source xml:lang="en">What type of cell do you want to add?</source>
-    </trans-unit>
-    <trans-unit id="notebookFiles">
-      <source xml:lang="en">Notebooks</source>
     </trans-unit>
   </body></file>
   <file original="extensions/notebook/dist/jupyter/jupyterController" source-language="en" datatype="plaintext"><body>
@@ -254,6 +497,67 @@
       <source xml:lang="en">Are you sure you want to reinstall?</source>
     </trans-unit>
   </body></file>
+  <file original="extensions/notebook/dist/dialog/configurePython/configurePathPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="configurePython.browseButtonText">
+      <source xml:lang="en">Browse</source>
+    </trans-unit>
+    <trans-unit id="configurePython.selectFileLabel">
+      <source xml:lang="en">Select</source>
+    </trans-unit>
+    <trans-unit id="configurePython.descriptionWithKernel">
+      <source xml:lang="en">The {0} kernel requires a Python runtime to be configured and dependencies to be installed.</source>
+    </trans-unit>
+    <trans-unit id="configurePython.descriptionWithoutKernel">
+      <source xml:lang="en">Notebook kernels require a Python runtime to be configured and dependencies to be installed.</source>
+    </trans-unit>
+    <trans-unit id="configurePython.installationType">
+      <source xml:lang="en">Installation Type</source>
+    </trans-unit>
+    <trans-unit id="configurePython.locationTextBoxText">
+      <source xml:lang="en">Python Install Location</source>
+    </trans-unit>
+    <trans-unit id="configurePython.pythonConfigured">
+      <source xml:lang="en">Python runtime configured!</source>
+    </trans-unit>
+    <trans-unit id="configurePythyon.dropdownPathLabel">
+      <source xml:lang="en">{0} (Python {1})</source>
+    </trans-unit>
+    <trans-unit id="configurePythyon.noVersionsFound">
+      <source xml:lang="en">No supported Python versions found.</source>
+    </trans-unit>
+    <trans-unit id="configurePythyon.defaultPathLabel">
+      <source xml:lang="en">{0} (Default)</source>
+    </trans-unit>
+    <trans-unit id="configurePython.newInstall">
+      <source xml:lang="en">New Python installation</source>
+    </trans-unit>
+    <trans-unit id="configurePython.existingInstall">
+      <source xml:lang="en">Use existing Python installation</source>
+    </trans-unit>
+    <trans-unit id="configurePythyon.customPathLabel">
+      <source xml:lang="en">{0} (Custom)</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/notebook/dist/dialog/configurePython/pickPackagesPage" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="configurePython.pkgNameColumn">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="configurePython.existingVersionColumn">
+      <source xml:lang="en">Existing Version</source>
+    </trans-unit>
+    <trans-unit id="configurePython.requiredVersionColumn">
+      <source xml:lang="en">Required Version</source>
+    </trans-unit>
+    <trans-unit id="configurePython.kernelLabel">
+      <source xml:lang="en">Kernel</source>
+    </trans-unit>
+    <trans-unit id="configurePython.requiredDependencies">
+      <source xml:lang="en">Install required kernel dependencies</source>
+    </trans-unit>
+    <trans-unit id="msgUnsupportedKernel">
+      <source xml:lang="en">Could not retrieve packages for kernel {0}</source>
+    </trans-unit>
+  </body></file>
   <file original="extensions/notebook/dist/jupyter/jupyterServerManager" source-language="en" datatype="plaintext"><body>
     <trans-unit id="shutdownError">
       <source xml:lang="en">Shutdown of Notebook server failed: {0}</source>
@@ -264,7 +568,7 @@
       <source xml:lang="en">Error stopping Notebook Server: {0}</source>
     </trans-unit>
     <trans-unit id="notebookStartProcessExitPremature">
-      <source xml:lang="en">Notebook process exited prematurely with error: {0}, StdErr Output: {1}</source>
+      <source xml:lang="en">Notebook process exited prematurely with error code: {0}. StdErr Output: {1}</source>
     </trans-unit>
     <trans-unit id="jupyterError">
       <source xml:lang="en">Error sent from Jupyter: {0}</source>
@@ -285,8 +589,20 @@
     <trans-unit id="errorStartBeforeReady">
       <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
     </trans-unit>
-    <trans-unit id="connectionNotValid">
-      <source xml:lang="en">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</source>
+    <trans-unit id="notebook.couldNotFindKnoxGateway">
+      <source xml:lang="en">Could not find Knox gateway endpoint</source>
+    </trans-unit>
+    <trans-unit id="promptBDCUsername">
+      <source xml:lang="en">{0}Please provide the username to connect to the BDC Controller:</source>
+    </trans-unit>
+    <trans-unit id="promptBDCPassword">
+      <source xml:lang="en">Please provide the password to connect to the BDC Controller</source>
+    </trans-unit>
+    <trans-unit id="bdcConnectError">
+      <source xml:lang="en">Error: {0}. </source>
+    </trans-unit>
+    <trans-unit id="clusterControllerConnectionRequired">
+      <source xml:lang="en">A connection to the cluster controller is required to run Spark jobs</source>
     </trans-unit>
   </body></file>
   <file original="extensions/notebook/dist/dialog/managePackages/managePackagesDialog" source-language="en" datatype="plaintext"><body>
@@ -307,11 +623,17 @@
     <trans-unit id="managePackages.newPkgVersionColumn">
       <source xml:lang="en">Version</source>
     </trans-unit>
+    <trans-unit id="managePackages.deleteColumn">
+      <source xml:lang="en">Delete</source>
+    </trans-unit>
     <trans-unit id="managePackages.uninstallButtonText">
       <source xml:lang="en">Uninstall selected packages</source>
     </trans-unit>
     <trans-unit id="managePackages.packageType">
       <source xml:lang="en">Package Type</source>
+    </trans-unit>
+    <trans-unit id="managePackages.location">
+      <source xml:lang="en">Location</source>
     </trans-unit>
     <trans-unit id="managePackages.packageCount">
       <source xml:lang="en">{0} {1} packages found</source>
@@ -332,9 +654,6 @@
   <file original="extensions/notebook/dist/dialog/managePackages/addNewPackageTab" source-language="en" datatype="plaintext"><body>
     <trans-unit id="managePackages.invalidTextPlaceholder">
       <source xml:lang="en">N/A</source>
-    </trans-unit>
-    <trans-unit id="managePackages.packageNotFound">
-      <source xml:lang="en">Could not find the specified package</source>
     </trans-unit>
     <trans-unit id="managePackages.searchBarPlaceholder">
       <source xml:lang="en">Search {0} packages</source>
@@ -360,9 +679,6 @@
     <trans-unit id="managePackages.noVersionsFound">
       <source xml:lang="en">Could not find any valid versions for the specified package</source>
     </trans-unit>
-    <trans-unit id="managePackages.packageRequestError">
-      <source xml:lang="en">Package info request failed with error: {0} {1}</source>
-    </trans-unit>
     <trans-unit id="managePackages.backgroundInstallStarted">
       <source xml:lang="en">Installing {0} {1}</source>
     </trans-unit>
@@ -371,6 +687,22 @@
     </trans-unit>
     <trans-unit id="managePackages.backgroundInstallFailed">
       <source xml:lang="en">Failed to install {0} {1}. Error: {2}</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/notebook/dist/jupyter/pypiClient" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="managePackages.packageRequestError">
+      <source xml:lang="en">Package info request failed with error: {0} {1}</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/notebook/dist/common/notebookUtils" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="msgSampleCodeDataFrame">
+      <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
+    </trans-unit>
+    <trans-unit id="noNotebookVisible">
+      <source xml:lang="en">No notebook editor is active</source>
+    </trans-unit>
+    <trans-unit id="notebookFiles">
+      <source xml:lang="en">Notebooks</source>
     </trans-unit>
   </body></file>
   <file original="extensions/notebook/dist/protocol/notebookUriHandler" source-language="en" datatype="plaintext"><body>
@@ -388,54 +720,6 @@
     </trans-unit>
     <trans-unit id="notebook.fileDownloadError">
       <source xml:lang="en">File open request failed with error: {0} {1}</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/notebook/dist/book/bookTreeView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="openBookError">
-      <source xml:lang="en">Open book {0} failed: {1}</source>
-    </trans-unit>
-    <trans-unit id="openNotebookError">
-      <source xml:lang="en">Open notebook {0} failed: {1}</source>
-    </trans-unit>
-    <trans-unit id="openMarkdownError">
-      <source xml:lang="en">Open markdown {0} failed: {1}</source>
-    </trans-unit>
-    <trans-unit id="openUntitledNotebookError">
-      <source xml:lang="en">Open untitled notebook {0} as untitled failed: {1}</source>
-    </trans-unit>
-    <trans-unit id="allFiles">
-      <source xml:lang="en">All Files</source>
-    </trans-unit>
-    <trans-unit id="labelPickFolder">
-      <source xml:lang="en">Pick Folder</source>
-    </trans-unit>
-    <trans-unit id="openExternalLinkError">
-      <source xml:lang="en">Open link {0} failed: {1}</source>
-    </trans-unit>
-    <trans-unit id="confirmReplace">
-      <source xml:lang="en">Folder already exists. Are you sure you want to delete and replace this folder?</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/notebook/dist/book/bookModel" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="missingFileError">
-      <source xml:lang="en">Missing file : {0}</source>
-    </trans-unit>
-    <trans-unit id="InvalidError.tocFile">
-      <source xml:lang="en">{0}</source>
-    </trans-unit>
-    <trans-unit id="Invalid toc.yml">
-      <source xml:lang="en">Error: {0} has an incorrect toc.yml file</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/notebook/dist/book/bookTreeItem" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="openNotebookCommand">
-      <source xml:lang="en">Open Notebook</source>
-    </trans-unit>
-    <trans-unit id="openMarkdownCommand">
-      <source xml:lang="en">Open Markdown</source>
-    </trans-unit>
-    <trans-unit id="openExternalLinkCommand">
-      <source xml:lang="en">Open External Link</source>
     </trans-unit>
   </body></file>
 </xliff>

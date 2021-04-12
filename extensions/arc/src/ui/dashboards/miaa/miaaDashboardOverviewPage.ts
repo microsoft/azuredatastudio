@@ -48,8 +48,8 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		vCores: ''
 	};
 
-	constructor(modelView: azdata.ModelView, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
-		super(modelView);
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
+		super(modelView, dashboard);
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 		this._azurecoreApi = vscode.extensions.getExtension(azurecore.extension.name)?.exports;
 
@@ -244,17 +244,18 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token) => {
-								const session = await this._controllerModel.acquireAzdataSession();
-								try {
-									return await this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name, this._controllerModel.azdataAdditionalEnvVars, session);
-								} finally {
-									session.dispose();
-								}
-
+								return await this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name, this._controllerModel.azdataAdditionalEnvVars, this._controllerModel.controllerContext);
 							}
 						);
 						await this._controllerModel.refreshTreeNode();
 						vscode.window.showInformationMessage(loc.instanceDeleted(this._miaaModel.info.name));
+						try {
+							await this.dashboard.close();
+						} catch (err) {
+							// Failures closing the dashboard aren't something we need to show users
+							console.log('Error closing MIAA dashboard ', err);
+						}
+
 					}
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceDeletionFailed(this._miaaModel.info.name, error));

@@ -6,20 +6,28 @@
 import * as azdata from 'azdata';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationContext } from '../../models/migrationLocalStorage';
-import { MigrationCutoverDialogModel } from './migrationCutoverDialogModel';
+import { MigrationCutoverDialogModel, MigrationStatus } from './migrationCutoverDialogModel';
 import * as loc from '../../constants/strings';
+import { getSqlServerName } from '../../api/utils';
+import { EOL } from 'os';
+import * as vscode from 'vscode';
+
 export class MigrationCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
 	private _model: MigrationCutoverDialogModel;
 
 	private _databaseTitleName!: azdata.TextComponent;
-	private _databaseCutoverButton!: azdata.ButtonComponent;
-	private _refresh!: azdata.ButtonComponent;
-	private _cancel!: azdata.ButtonComponent;
+	private _cutoverButton!: azdata.ButtonComponent;
+	private _refreshButton!: azdata.ButtonComponent;
+	private _cancelButton!: azdata.ButtonComponent;
+	private _refreshLoader!: azdata.LoadingComponent;
+	private _copyDatabaseMigrationDetails!: azdata.ButtonComponent;
 
 	private _serverName!: azdata.TextComponent;
 	private _serverVersion!: azdata.TextComponent;
+	private _sourceDatabase!: azdata.TextComponent;
+	private _targetDatabase!: azdata.TextComponent;
 	private _targetServer!: azdata.TextComponent;
 	private _targetVersion!: azdata.TextComponent;
 	private _migrationStatus!: azdata.TextComponent;
@@ -43,9 +51,11 @@ export class MigrationCutoverDialog {
 		let tab = azdata.window.createTab('');
 		tab.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
-			const sourceDetails = this.createInfoField(loc.SOURCE_VERSION, '');
+			const sourceDatabase = this.createInfoField(loc.SOURCE_DATABASE, '');
+			const sourceDetails = this.createInfoField(loc.SOURCE_SERVER, '');
 			const sourceVersion = this.createInfoField(loc.SOURCE_VERSION, '');
 
+			this._sourceDatabase = sourceDatabase.text;
 			this._serverName = sourceDetails.text;
 			this._serverVersion = sourceVersion.text;
 
@@ -53,6 +63,11 @@ export class MigrationCutoverDialog {
 				flexFlow: 'column'
 			}).component();
 
+			flexServer.addItem(sourceDatabase.flexContainer, {
+				CSSStyles: {
+					'width': '150px'
+				}
+			});
 			flexServer.addItem(sourceDetails.flexContainer, {
 				CSSStyles: {
 					'width': '150px'
@@ -64,9 +79,11 @@ export class MigrationCutoverDialog {
 				}
 			});
 
+			const targetDatabase = this.createInfoField(loc.TARGET_DATABASE_NAME, '');
 			const targetServer = this.createInfoField(loc.TARGET_SERVER, '');
 			const targetVersion = this.createInfoField(loc.TARGET_VERSION, '');
 
+			this._targetDatabase = targetDatabase.text;
 			this._targetServer = targetServer.text;
 			this._targetVersion = targetVersion.text;
 
@@ -74,6 +91,11 @@ export class MigrationCutoverDialog {
 				flexFlow: 'column'
 			}).component();
 
+			flexTarget.addItem(targetDatabase.flexContainer, {
+				CSSStyles: {
+					'width': '230px'
+				}
+			});
 			flexTarget.addItem(targetServer.flexContainer, {
 				CSSStyles: {
 					'width': '230px'
@@ -183,36 +205,36 @@ export class MigrationCutoverDialog {
 				columns: [
 					{
 						value: loc.ACTIVE_BACKUP_FILES,
-						width: 150,
-						type: azdata.ColumnType.text
+						width: 280,
+						type: azdata.ColumnType.text,
 					},
 					{
 						value: loc.TYPE,
-						width: 100,
+						width: 90,
 						type: azdata.ColumnType.text
 					},
 					{
 						value: loc.STATUS,
-						width: 100,
+						width: 60,
 						type: azdata.ColumnType.text
 					},
 					{
 						value: loc.BACKUP_START_TIME,
-						width: 150,
+						width: 130,
 						type: azdata.ColumnType.text
 					}, {
 						value: loc.FIRST_LSN,
-						width: 150,
+						width: 120,
 						type: azdata.ColumnType.text
 					}, {
 						value: loc.LAST_LSN,
-						width: 150,
+						width: 120,
 						type: azdata.ColumnType.text
 					}
 				],
 				data: [],
 				width: '800px',
-				height: '600px',
+				height: '300px',
 			}).component();
 
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
@@ -235,11 +257,12 @@ export class MigrationCutoverDialog {
 				}
 			);
 			const form = formBuilder.withLayout({ width: '100%' }).component();
-			return view.initializeModel(form);
+			return view.initializeModel(form).then((value) => {
+				this.refreshStatus();
+			});
 		});
 		this._dialogObject.content = [tab];
 		azdata.window.openDialog(this._dialogObject);
-		this.refreshStatus();
 	}
 
 
@@ -262,7 +285,7 @@ export class MigrationCutoverDialog {
 			}
 		});
 
-		this._databaseCutoverButton = this._view.modelBuilder.button().withProps({
+		this._cutoverButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.cutover,
 			iconHeight: '14px',
 			iconWidth: '12px',
@@ -272,7 +295,7 @@ export class MigrationCutoverDialog {
 			enabled: false
 		}).component();
 
-		this._databaseCutoverButton.onDidClick(async (e) => {
+		this._cutoverButton.onDidClick(async (e) => {
 			if (this._startCutover) {
 				await this._model.startCutover();
 				this.refreshStatus();
@@ -284,15 +307,15 @@ export class MigrationCutoverDialog {
 			}
 		});
 
-		header.addItem(this._databaseCutoverButton, {
+		header.addItem(this._cutoverButton, {
 			flex: '0',
 			CSSStyles: {
 				'width': '100px'
 			}
 		});
 
-		this._cancel = this._view.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.discard,
+		this._cancelButton = this._view.modelBuilder.button().withProps({
+			iconPath: IconPathHelper.cancel,
 			iconHeight: '16px',
 			iconWidth: '16px',
 			label: loc.CANCEL_MIGRATION,
@@ -300,11 +323,11 @@ export class MigrationCutoverDialog {
 			width: '130px'
 		}).component();
 
-		this._cancel.onDidClick((e) => {
+		this._cancelButton.onDidClick((e) => {
 			this.cancelMigration();
 		});
 
-		header.addItem(this._cancel, {
+		header.addItem(this._cancelButton, {
 			flex: '0',
 			CSSStyles: {
 				'width': '130px'
@@ -312,7 +335,7 @@ export class MigrationCutoverDialog {
 		});
 
 
-		this._refresh = this._view.modelBuilder.button().withProps({
+		this._refreshButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.refresh,
 			iconHeight: '16px',
 			iconWidth: '16px',
@@ -321,14 +344,56 @@ export class MigrationCutoverDialog {
 			width: '100px'
 		}).component();
 
-		this._refresh.onDidClick((e) => {
+		this._refreshButton.onDidClick((e) => {
 			this.refreshStatus();
 		});
 
-		header.addItem(this._refresh, {
+		header.addItem(this._refreshButton, {
 			flex: '0',
 			CSSStyles: {
 				'width': '100px'
+			}
+		});
+
+		this._copyDatabaseMigrationDetails = this._view.modelBuilder.button().withProps({
+			iconPath: IconPathHelper.copy,
+			iconHeight: '16px',
+			iconWidth: '16px',
+			label: loc.COPY_MIGRATION_DETAILS,
+			height: '55px',
+			width: '100px'
+		}).component();
+
+		this._copyDatabaseMigrationDetails.onDidClick(async (e) => {
+			await this.refreshStatus();
+			if (this._model.migrationOpStatus) {
+				vscode.env.clipboard.writeText(JSON.stringify({
+					'async-operation-details': this._model.migrationOpStatus,
+					'details': this._model.migrationStatus
+				}, undefined, 2));
+			} else {
+				vscode.env.clipboard.writeText(JSON.stringify(this._model.migrationStatus, undefined, 2));
+			}
+
+			vscode.window.showInformationMessage(loc.DETAILS_COPIED);
+		});
+
+		header.addItem(this._copyDatabaseMigrationDetails, {
+			flex: '0',
+			CSSStyles: {
+				'width': '100px'
+			}
+		});
+
+		this._refreshLoader = this._view.modelBuilder.loadingComponent().withProps({
+			loading: false,
+			height: '55px'
+		}).component();
+
+		header.addItem(this._refreshLoader, {
+			flex: '0',
+			CSSStyles: {
+				'margin-top': '15px'
 			}
 		});
 
@@ -338,11 +403,25 @@ export class MigrationCutoverDialog {
 
 	private async refreshStatus(): Promise<void> {
 		try {
+			this._refreshLoader.loading = true;
+			this._cutoverButton.enabled = false;
+			this._cancelButton.enabled = false;
 			await this._model.fetchStatus();
-			const sqlServerInfo = await azdata.connection.getServerInfo(this._model._migration.sourceConnectionProfile.connectionId);
+			const errors = [];
+			errors.push(this._model.migrationOpStatus.error?.message);
+			errors.push(this._model.migrationStatus.properties.migrationFailureError?.message);
+			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
+			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.restoreBlockingReason);
+			this._dialogObject.message = {
+				text: errors.filter(e => e !== undefined).join(EOL),
+				level: (this._model.migrationStatus.properties.migrationStatus === MigrationStatus.InProgress || this._model.migrationStatus.properties.migrationStatus === 'Completing') ? azdata.window.MessageLevel.Warning : azdata.window.MessageLevel.Error
+			};
+			const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
 			const sqlServerName = this._model._migration.sourceConnectionProfile.serverName;
-			const sqlServerVersion = sqlServerInfo.serverVersion;
-			const sqlServerEdition = sqlServerInfo.serverEdition;
+			const sourceDatabaseName = this._model._migration.migrationContext.properties.sourceDatabaseName;
+			const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
+			const sqlServerVersion = versionName ? versionName : sqlServerInfo.serverVersion;
+			const targetDatabaseName = this._model._migration.migrationContext.name;
 			const targetServerName = this._model._migration.targetManagedInstance.name;
 			let targetServerVersion;
 			if (this._model.migrationStatus.id.includes('managedInstances')) {
@@ -351,7 +430,7 @@ export class MigrationCutoverDialog {
 				targetServerVersion = loc.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
 			}
 
-			const migrationStatusTextValue = this._model.migrationStatus.properties.migrationStatus;
+			const migrationStatusTextValue = this._model.migrationStatus.properties.migrationStatus ? this._model.migrationStatus.properties.migrationStatus : this._model.migrationStatus.properties.provisioningState;
 
 			let fullBackupFileName: string;
 			let lastAppliedSSN: string;
@@ -380,10 +459,12 @@ export class MigrationCutoverDialog {
 				}
 			});
 
+			this._sourceDatabase.value = sourceDatabaseName;
 			this._serverName.value = sqlServerName;
 			this._serverVersion.value = `${sqlServerVersion}
-			${sqlServerEdition}`;
+			${sqlServerInfo.serverVersion}`;
 
+			this._targetDatabase.value = targetDatabaseName;
 			this._targetServer.value = targetServerName;
 			this._targetVersion.value = targetServerVersion;
 
@@ -392,9 +473,12 @@ export class MigrationCutoverDialog {
 
 			this._lastAppliedLSN.value = lastAppliedSSN!;
 			this._lastAppliedBackupFile.value = this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename;
-			this._lastAppliedBackupTakenOn.value = new Date(lastAppliedBackupFileTakenOn!).toLocaleString();
+			this._lastAppliedBackupTakenOn.value = lastAppliedBackupFileTakenOn! ? new Date(lastAppliedBackupFileTakenOn).toLocaleString() : '';
 
 			this._fileCount.value = loc.ACTIVE_BACKUP_FILES_ITEMS(tableData.length);
+
+			//Sorting files in descending order of backupStartTime
+			tableData.sort((file1, file2) => new Date(file1.backupStartTime) > new Date(file2.backupStartTime) ? - 1 : 1);
 
 			this.fileTable.data = tableData.map((row) => {
 				return [
@@ -410,15 +494,18 @@ export class MigrationCutoverDialog {
 				this._startCutover = true;
 			}
 
-			if (migrationStatusTextValue === 'InProgress') {
-				this._databaseCutoverButton.enabled = true;
+			if (migrationStatusTextValue === MigrationStatus.InProgress) {
+				const fileNotRestored = await tableData.some(file => file.status !== 'Restored');
+				this._cutoverButton.enabled = !fileNotRestored;
+				this._cancelButton.enabled = true;
 			} else {
-				this._databaseCutoverButton.enabled = false;
-				this._cancel.enabled = false;
+				this._cutoverButton.enabled = false;
+				this._cancelButton.enabled = false;
 			}
 		} catch (e) {
 			console.log(e);
 		}
+		this._refreshLoader.loading = false;
 	}
 
 	private createInfoField(label: string, value: string): {

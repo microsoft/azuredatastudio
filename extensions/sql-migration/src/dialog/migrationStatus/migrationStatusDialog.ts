@@ -6,11 +6,10 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { MigrationContext } from '../../models/migrationLocalStorage';
+import { MigrationContext, MigrationLocalStorage } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
 import { MigrationCategory, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
-import { getDatabaseMigration } from '../../api/azure';
 export class MigrationStatusDialog {
 	private _model: MigrationStatusDialogModel;
 	private _dialogObject!: azdata.window.Dialog;
@@ -19,6 +18,7 @@ export class MigrationStatusDialog {
 	private _refresh!: azdata.ButtonComponent;
 	private _statusDropdown!: azdata.DropDownComponent;
 	private _statusTable!: azdata.DeclarativeTableComponent;
+	private _refreshLoader!: azdata.LoadingComponent;
 
 	constructor(migrations: MigrationContext[], private _filter: MigrationCategory) {
 		this._model = new MigrationStatusDialogModel(migrations);
@@ -80,7 +80,7 @@ export class MigrationStatusDialog {
 				dark: IconPathHelper.refresh.dark
 			},
 			iconHeight: '16px',
-			iconWidth: '16px',
+			iconWidth: '20px',
 			height: '30px',
 			label: 'Refresh',
 		}).component();
@@ -89,7 +89,11 @@ export class MigrationStatusDialog {
 			this.refreshTable();
 		});
 
-		const flexContainer = this._view.modelBuilder.flexContainer().component();
+		const flexContainer = this._view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'justify-content': 'left'
+			}
+		}).component();
 
 		flexContainer.addItem(this._searchBox, {
 			flex: '0'
@@ -102,11 +106,22 @@ export class MigrationStatusDialog {
 			}
 		});
 
+		this._refreshLoader = this._view.modelBuilder.loadingComponent().withProps({
+			loading: false,
+			height: '55px'
+		}).component();
+
+		flexContainer.addItem(this._refreshLoader, {
+			flex: '0 0 auto',
+			CSSStyles: {
+				'margin-left': '20px'
+			}
+		});
+
 		return flexContainer;
 	}
 
 	private populateMigrationTable(): void {
-
 		try {
 			const migrations = this._model.filterMigration(
 				this._searchBox.value!,
@@ -115,7 +130,11 @@ export class MigrationStatusDialog {
 
 			const data: azdata.DeclarativeTableCellValue[][] = [];
 
-			migrations.forEach((migration) => {
+			migrations.sort((m1, m2) => {
+				return new Date(m1.migrationContext.properties.startedOn) > new Date(m2.migrationContext.properties.startedOn) ? -1 : 1;
+			});
+
+			migrations.forEach((migration, index) => {
 				const migrationRow: azdata.DeclarativeTableCellValue[] = [];
 
 				const databaseHyperLink = this._view.modelBuilder.hyperlink().withProps({
@@ -129,12 +148,8 @@ export class MigrationStatusDialog {
 					value: databaseHyperLink,
 				});
 
-				migrationRow.push({
-					value: migration.migrationContext.properties.migrationStatus
-				});
-
-				const sqlMigrationIcon = this._view.modelBuilder.image().withProps({
-					iconPath: IconPathHelper.sqlMigrationLogo,
+				const targetMigrationIcon = this._view.modelBuilder.image().withProps({
+					iconPath: (migration.targetManagedInstance.type === 'microsoft.sql/managedinstances') ? IconPathHelper.sqlMiLogo : IconPathHelper.sqlVmLogo,
 					iconWidth: '16px',
 					iconHeight: '16px',
 					width: '32px',
@@ -145,15 +160,15 @@ export class MigrationStatusDialog {
 					url: ''
 				}).component();
 				sqlMigrationName.onDidClick((e) => {
-					vscode.window.showInformationMessage('Feature coming soon');
+					vscode.window.showInformationMessage(loc.COMING_SOON);
 				});
 
 				const sqlMigrationContainer = this._view.modelBuilder.flexContainer().withProps({
 					CSSStyles: {
-						'justify-content': 'center'
+						'justify-content': 'left'
 					}
 				}).component();
-				sqlMigrationContainer.addItem(sqlMigrationIcon, {
+				sqlMigrationContainer.addItem(targetMigrationIcon, {
 					flex: '0',
 					CSSStyles: {
 						'width': '32px'
@@ -173,11 +188,32 @@ export class MigrationStatusDialog {
 					value: loc.ONLINE
 				});
 
+				let migrationStatus = migration.migrationContext.properties.migrationStatus ? migration.migrationContext.properties.migrationStatus : migration.migrationContext.properties.provisioningState;
+
+				let warningCount = 0;
+
+				if (migration.asyncOperationResult?.error?.message) {
+					warningCount++;
+				}
+				if (migration.migrationContext.properties.migrationFailureError?.message) {
+					warningCount++;
+				}
+				if (migration.migrationContext.properties.migrationStatusDetails?.fileUploadBlockingErrors) {
+					warningCount += migration.migrationContext.properties.migrationStatusDetails?.fileUploadBlockingErrors.length;
+				}
+				if (migration.migrationContext.properties.migrationStatusDetails?.restoreBlockingReason) {
+					warningCount++;
+				}
+
 				migrationRow.push({
-					value: '---'
+					value: loc.STATUS_WARNING_COUNT(migrationStatus, warningCount)
+				});
+
+				migrationRow.push({
+					value: (migration.migrationContext.properties.startedOn) ? new Date(migration.migrationContext.properties.startedOn).toLocaleString() : '---'
 				});
 				migrationRow.push({
-					value: '---'
+					value: (migration.migrationContext.properties.endedOn) ? new Date(migration.migrationContext.properties.endedOn).toLocaleString() : '---'
 				});
 
 				data.push(migrationRow);
@@ -189,20 +225,28 @@ export class MigrationStatusDialog {
 		}
 	}
 
-	private refreshTable(): void {
-		this._model._migrations.forEach(async (migration) => {
-			migration.migrationContext = await getDatabaseMigration(
-				migration.azureAccount,
-				migration.subscription,
-				migration.targetManagedInstance.location,
-				migration.migrationContext.id
-			);
-		});
-
+	private async refreshTable(): Promise<void> {
+		this._refreshLoader.loading = true;
+		const currentConnection = await azdata.connection.getCurrentConnection();
+		this._model._migrations = await MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection, true);
 		this.populateMigrationTable();
+		this._refreshLoader.loading = false;
 	}
 
 	private createStatusTable(): azdata.DeclarativeTableComponent {
+		const rowCssStyle: azdata.CssStyles = {
+			'border': 'none',
+			'text-align': 'left',
+			'border-bottom': '1px solid'
+		};
+
+		const headerCssStyles: azdata.CssStyles = {
+			'border': 'none',
+			'text-align': 'left',
+			'border-bottom': '1px solid',
+			'font-weight': 'bold'
+		};
+
 		this._statusTable = this._view.modelBuilder.declarativeTable().withProps({
 			columns: [
 				{
@@ -210,54 +254,48 @@ export class MigrationStatusDialog {
 					valueType: azdata.DeclarativeDataType.component,
 					width: '100px',
 					isReadOnly: true,
-					rowCssStyles: {
-						'text-align': 'center'
-					}
+					rowCssStyles: rowCssStyle,
+					headerCssStyles: headerCssStyles
+				},
+				{
+					displayName: loc.TARGET_AZURE_SQL_INSTANCE_NAME,
+					valueType: azdata.DeclarativeDataType.component,
+					width: '170px',
+					isReadOnly: true,
+					rowCssStyles: rowCssStyle,
+					headerCssStyles: headerCssStyles
+				},
+				{
+					displayName: loc.MIGRATION_MODE,
+					valueType: azdata.DeclarativeDataType.string,
+					width: '100px',
+					isReadOnly: true,
+					rowCssStyles: rowCssStyle,
+					headerCssStyles: headerCssStyles
 				},
 				{
 					displayName: loc.MIGRATION_STATUS,
 					valueType: azdata.DeclarativeDataType.string,
 					width: '150px',
 					isReadOnly: true,
-					rowCssStyles: {
-						'text-align': 'center'
-					}
-				},
-				{
-					displayName: loc.TARGET_AZURE_SQL_INSTANCE_NAME,
-					valueType: azdata.DeclarativeDataType.component,
-					width: '300px',
-					isReadOnly: true,
-					rowCssStyles: {
-						'text-align': 'center'
-					}
-				},
-				{
-					displayName: loc.CUTOVER_TYPE,
-					valueType: azdata.DeclarativeDataType.string,
-					width: '100px',
-					isReadOnly: true,
-					rowCssStyles: {
-						'text-align': 'center'
-					}
+					rowCssStyles: rowCssStyle,
+					headerCssStyles: headerCssStyles
 				},
 				{
 					displayName: loc.START_TIME,
 					valueType: azdata.DeclarativeDataType.string,
-					width: '150px',
+					width: '120px',
 					isReadOnly: true,
-					rowCssStyles: {
-						'text-align': 'center'
-					}
+					rowCssStyles: rowCssStyle,
+					headerCssStyles: headerCssStyles
 				},
 				{
 					displayName: loc.FINISH_TIME,
 					valueType: azdata.DeclarativeDataType.string,
-					width: '150px',
+					width: '120px',
 					isReadOnly: true,
-					rowCssStyles: {
-						'text-align': 'center'
-					}
+					rowCssStyles: rowCssStyle,
+					headerCssStyles: headerCssStyles
 				}
 			]
 		}).component();

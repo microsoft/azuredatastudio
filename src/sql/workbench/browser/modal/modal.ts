@@ -2,30 +2,32 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./media/modal';
+
 import 'vs/css!./media/calloutDialog';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
-import { Color } from 'vs/base/common/color';
-import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
-import { mixin } from 'vs/base/common/objects';
-import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
+import 'vs/css!./media/modal';
+import { getFocusableElements } from 'sql/base/browser/dom';
+import { Button } from 'sql/base/browser/ui/button/button';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { generateUuid } from 'vs/base/common/uuid';
-import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { Button } from 'sql/base/browser/ui/button/button';
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { localize } from 'vs/nls';
-import { isUndefinedOrNull } from 'vs/base/common/types';
-import { ILogService } from 'vs/platform/log/common/log';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { URI } from 'vs/base/common/uri';
-import { Schemas } from 'vs/base/common/network';
-import { IThemable } from 'vs/base/common/styler';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { alert } from 'vs/base/browser/ui/aria/aria';
+import { Color } from 'vs/base/common/color';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { Schemas } from 'vs/base/common/network';
+import { mixin } from 'vs/base/common/objects';
+import { IThemable } from 'vs/base/common/styler';
+import { isUndefinedOrNull } from 'vs/base/common/types';
+import { URI } from 'vs/base/common/uri';
+import { generateUuid } from 'vs/base/common/uuid';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { localize } from 'vs/nls';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { ILogService } from 'vs/platform/log/common/log';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 export enum MessageLevel {
@@ -96,8 +98,6 @@ const defaultOptions: IModalOptions = {
 	renderFooter: true,
 	dialogProperties: undefined
 };
-
-const tabbableElementsQuerySelector = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]';
 
 export type HideReason = 'close' | 'cancel' | 'ok';
 
@@ -400,7 +400,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Figures out the first and last elements which the user can tab to in the dialog
 	 */
 	public setFirstLastTabbableElement() {
-		const tabbableElements = this._bodyContainer!.querySelectorAll(tabbableElementsQuerySelector);
+		const tabbableElements = getFocusableElements(this._bodyContainer!);
 		if (tabbableElements && tabbableElements.length > 0) {
 			this._firstTabbableElement = <HTMLElement>tabbableElements[0];
 			this._lastTabbableElement = <HTMLElement>tabbableElements[tabbableElements.length - 1];
@@ -413,15 +413,12 @@ export abstract class Modal extends Disposable implements IThemable {
 	public setInitialFocusedElement() {
 		// Try to find focusable element in dialog pane rather than overall container. _modalBodySection contains items in the pane for a wizard.
 		// This ensures that we are setting the focus on a useful element in the form when possible.
-		const focusableElements = this._modalBodySection ?
-			this._modalBodySection.querySelectorAll(tabbableElementsQuerySelector) :
-			this._bodyContainer!.querySelectorAll(tabbableElementsQuerySelector);
+		const focusableElements = getFocusableElements(this._modalBodySection ?? this._bodyContainer!);
 
 		if (focusableElements && focusableElements.length > 0) {
 			(<HTMLElement>focusableElements[0]).focus();
 		}
 	}
-
 
 	/**
 	 * Tasks to perform before callout dialog is shown
@@ -468,8 +465,9 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	/**
 	 * Shows the modal and attaches key listeners
+	 * @param source Where the modal was opened from for telemetry (ex: command palette, context menu)
 	 */
-	protected show() {
+	protected show(source?: string) {
 		if (this._modalOptions.dialogStyle === 'callout') {
 			this.positionCalloutDialog();
 		}
@@ -499,7 +497,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		}));
 
 		this.layout(DOM.getTotalHeight(this._modalBodySection!));
-		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.ModalDialogOpened)
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.ModalDialogOpened, undefined, source)
 			.withAdditionalProperties({ name: this._name })
 			.send();
 	}

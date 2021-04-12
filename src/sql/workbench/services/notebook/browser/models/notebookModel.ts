@@ -434,7 +434,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					});
 				}
 				// Only add new parameter cell if notebookUri Parameters are found
-				if (notebookUriParams) {
+				if (notebookUriParams && this.notebookUri?.scheme !== 'git') {
 					this.addUriParameterCell(notebookUriParams, hasParameterCell, parameterCellIndex, hasInjectedCell);
 				}
 			}
@@ -741,6 +741,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
+	public async restartSession(): Promise<void> {
+		if (this._activeClientSession) {
+			// Old active client sessions have already been shutdown by RESTART_JUPYTER_NOTEBOOK_SESSIONS command
+			this._activeClientSession = undefined;
+			await this.startSession(this.notebookManager, this._selectedKernelDisplayName, true);
+		}
+	}
+
 	// When changing kernel, update the active session
 	private updateActiveClientSession(clientSession: IClientSession) {
 		this._activeClientSession = clientSession;
@@ -963,6 +971,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (kernel.info) {
 			this.updateLanguageInfo(kernel.info.language_info);
 		}
+		this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.KernelChanged)
+			.withAdditionalProperties({
+				name: kernel.name,
+				alias: kernelAlias || ''
+			})
+			.send();
 		this._kernelChangedEmitter.fire({
 			newValue: kernel,
 			oldValue: undefined,
@@ -1110,11 +1124,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 			await this.shutdownActiveSession();
 		} catch (err) {
-			this.logService.error('An error occurred when closing the notebook: {0}', getErrorMessage(err));
+			this.logService.error('An error occurred when closing the notebook: ', getErrorMessage(err));
 		}
 	}
 
-	private async shutdownActiveSession() {
+	private async shutdownActiveSession(): Promise<void> {
 		if (this._activeClientSession) {
 			try {
 				await this._activeClientSession.ready;

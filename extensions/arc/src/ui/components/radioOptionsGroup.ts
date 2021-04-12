@@ -17,6 +17,9 @@ export class RadioOptionsGroup {
 	private _loadingBuilder: azdata.LoadingComponentBuilder;
 	private _currentRadioOption!: azdata.RadioButtonComponent;
 
+	private _onRadioOptionChanged: vscode.EventEmitter<string | undefined> = new vscode.EventEmitter<string | undefined>();
+	public onRadioOptionChanged: vscode.Event<string | undefined> = this._onRadioOptionChanged.event;
+
 	constructor(private _modelBuilder: azdata.ModelBuilder, private _onNewDisposableCreated: (disposable: vscode.Disposable) => void, private _groupName: string = `RadioOptionsGroup${RadioOptionsGroup.id++}`) {
 		this._divContainer = this._modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
 		this._loadingBuilder = this._modelBuilder.loadingComponent().withItem(this._divContainer);
@@ -26,7 +29,7 @@ export class RadioOptionsGroup {
 		return this._loadingBuilder.component();
 	}
 
-	async load(optionsInfoGetter: () => Promise<RadioOptionsInfo>): Promise<void> {
+	async load(optionsInfoGetter: () => RadioOptionsInfo | Promise<RadioOptionsInfo>): Promise<void> {
 		this.component().loading = true;
 		this._divContainer.clearItems();
 		try {
@@ -51,6 +54,7 @@ export class RadioOptionsGroup {
 						// it is just better to keep things clean.
 						this._currentRadioOption.checked = false;
 						this._currentRadioOption = radioOption;
+						this._onRadioOptionChanged.fire(this.value);
 					}
 				}));
 				this._divContainer.addItem(radioOption);

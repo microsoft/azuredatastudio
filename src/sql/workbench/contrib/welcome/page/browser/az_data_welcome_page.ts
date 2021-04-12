@@ -16,7 +16,7 @@ export default () => `
 				<div class="content-container">
 					<div class="ads-homepage-section tool-tip">
 						<div class="tool-tip-container" id="tool-tip-container-wide">
-							<a role="img" tabindex=0 class="ads-welcome-page-link" aria-label="${previewImgDescription}" title="${previewImgDescription}" id="preview-link-wide" class="preview-link" tabindex="0" name="preview"><p>${escape(localize('welcomePage.preview', "Preview"))}</p><i class="icon-info themed-icon"></i></a>
+							<a role="img" tabindex=0 class="ads-welcome-page-link preview-link" aria-label="${previewImgDescription}" title="${previewImgDescription}" id="preview-link-wide" tabindex="0" name="preview"><p>${escape(localize('welcomePage.preview', "Preview"))}</p><i class="icon-info themed-icon"></i></a>
 						</div>
 					</div>
 					<div class="ads-homepage-section section header hero">
@@ -111,37 +111,34 @@ export default () => `
 					<div class="links">
 						<h2>${escape(localize('welcomePage.usefuLinks', "Useful Links"))}</h2>
 						<div class="link-header">
-							<a class="link ads-welcome-page-link"
-								href="https://aka.ms/get-started-azdata">${escape(localize('welcomePage.gettingStarted',
-	"Getting Started"))}<span class="icon-link themed-icon-alt"></a>
+							<a class="link ads-welcome-page-link" href="https://aka.ms/get-started-azdata">
+								${escape(localize('welcomePage.gettingStarted', "Getting Started"))}<span class="icon-link themed-icon-alt"></span>
+							</a>
 						</div>
 						<p>
-						${escape(localize('welcomePage.gettingStartedBody',
-		"Discover the capabilities offered by Azure Data Studio and learn how to make the most of them."))}
+							${escape(localize('welcomePage.gettingStartedBody', "Discover the capabilities offered by Azure Data Studio and learn how to make the most of them."))}
 						</p>
 						<div class="link-header">
-							<a class="link ads-welcome-page-link"
-								href="command:workbench.action.openDocumentationUrl">${escape(localize('welcomePage.documentation',
-			"Documentation"))}<span class="icon-link themed-icon-alt"</a></a>
+							<a class="link ads-welcome-page-link" href="command:workbench.action.openDocumentationUrl">
+								${escape(localize('welcomePage.documentation', "Documentation"))}<span class="icon-link themed-icon-alt"></span>
+							</a>
 						</div>
-						<p>${escape(localize('welcomePage.documentationBody',
-				"Visit the documentation center for quickstarts, how-to guides, and references for PowerShell, APIs, etc."))}
+						<p>
+							${escape(localize('welcomePage.documentationBody', "Visit the documentation center for quickstarts, how-to guides, and references for PowerShell, APIs, etc."))}
 						</p>
 						<div class="videos-container row">
-							<h2>Videos</h2>
+							<h2>${escape(localize('welcomePage.videos', "Videos"))}</h2>
 							<div class="flex flex-container-video">
 								<div class="videos-container-video">
 									<a href="https://www.youtube.com/watch?v=Orv7fptVoUA" class="video overview ads-welcome-page-link">
-									<img src="${require.toUrl('./../../media/video_overview.png')}" class="video-overview" id="video-overview" />
-										<h4>${escape(localize('welcomePage.videoDescriptionOverview',
-					"Overview of Azure Data Studio"))}</h4>
+										<img src="${require.toUrl('./../../media/video_overview.png')}" class="video-overview" id="video-overview" />
+										<h4>${escape(localize('welcomePage.videoDescriptionOverview', "Overview of Azure Data Studio"))}</h4>
 									</a>
 								</div>
 								<div class="videos-container-video">
 									<a href="https://www.youtube.com/watch?v=Nt4kIHQ0IOc" class="video overview ads-welcome-page-link">
-									<img src="${require.toUrl('./../../media/video_introduction.png')}" class="video-introduction" id="video-introduction" />
-										<h4>${escape(localize('welcomePage.videoDescriptionIntroduction',
-						"Introduction to Azure Data Studio Notebooks | Data Exposed"))}</h4>
+										<img src="${require.toUrl('./../../media/video_introduction.png')}" class="video-introduction" id="video-introduction" />
+										<h4>${escape(localize('welcomePage.videoDescriptionIntroduction', "Introduction to Azure Data Studio Notebooks | Data Exposed"))}</h4>
 									</a>
 								</div>
 							</div>
@@ -152,26 +149,29 @@ export default () => `
 			<div class="ads-homepage-section content extensions content-container">
 				<div class="flex flex-j-between">
 					<h2>${escape(localize('welcomePage.extensions', "Extensions"))}</h2>
-					<a role="button" class="link-show-all flex ads-welcome-page-link" href="command:workbench.view.extensions">${escape(localize('welcomePage.showAll', "Show All"))} <span class="icon-arrow-right"></span></a>
+					<a role="button" class="link-show-all flex ads-welcome-page-link" href="command:workbench.view.extensions">
+						${escape(localize('welcomePage.showAll', "Show All"))}<span class="icon-arrow-right"></span>
+					</a>
 				</div>
 				<div class="row ads-grid grip-gap-50">
-					<div
-						class="ads-grid tile no-hover extension-pack">
+					<div class="ads-grid tile no-hover extension-pack">
 						<div class="extension-pack-description">
 							<h3 class="extension-pack-header"></h3>
 							<p class="extension-pack-body"></p>
 						</div>
 						<div class="extension-pack-extensions flex flex-d-column flex-j-evenly flex-a-start">
 							<div class="extension-pack-extension-list flex flex-d-column flex-j-evenly flex-a-start"></div>
-							<div class="flex flex-j-end extension-pack-btn-container flex flex-j-between flex-a-center"">
-							<div class="extensionPack" href="#"></div>
-							<a role="button" class="a-self-end link-learn-more flex flex-a-center ads-welcome-page-link" href="command:azdata.extension.open?%7B%22id%22%3A%22microsoft.admin-pack%22%7D">${escape(localize('welcomePage.learnMore',
-							"Learn more "))}<span class="icon-arrow-right"></span></a>
+							<div class="flex flex-j-end extension-pack-btn-container flex flex-j-between flex-a-center">
+								<div class="extensionPack"></div>
+								<a role="button" class="a-self-end link-learn-more flex flex-a-center ads-welcome-page-link" href="command:azdata.extension.open?%7B%22id%22%3A%22microsoft.admin-pack%22%7D">
+									${escape(localize('welcomePage.learnMore', "Learn more "))}<span class="icon-arrow-right"></span>
+								</a>
+							</div>
 						</div>
 					</div>
-				</div>
-				<div class="extension-list flex flex-d-column">
-					<!-- Dynamically populated -->
+					<div class="extension-list flex flex-d-column">
+						<!-- Dynamically populated -->
+					</div>
 				</div>
 				<br /><br /><br />
 			</div>
@@ -179,3 +179,4 @@ export default () => `
 	</div>
 </div>
 `;
+
