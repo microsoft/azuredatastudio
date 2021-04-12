@@ -9,8 +9,8 @@ import { IContentManager } from 'sql/workbench/services/notebook/browser/models/
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 
 export interface INotebookInput {
-	defaultKernel: azdata.nb.IKernelSpec,
-	connectionProfile: azdata.IConnectionProfile,
+	defaultKernel?: azdata.nb.IKernelSpec,
+	connectionProfile?: azdata.IConnectionProfile,
 	isDirty(): boolean;
 	setDirty(boolean);
 	readonly notebookUri: URI;
@@ -22,12 +22,13 @@ export interface INotebookInput {
 }
 
 export function isINotebookInput(value: any): value is INotebookInput {
-	if (typeof value.defaultKernel === 'object' &&
-		typeof value.connectionProfile === 'object' &&
-		typeof value.isDirty === 'boolean' &&
-		value.notebookUri instanceof URI &&
+	if (
+		(typeof value.defaultKernel === 'object' || value.defaultKernel === undefined) &&
+		(typeof value.connectionProfile === 'object' || value.connectionProfile === undefined) &&
+		value.isDirty() === true &&
+		// URI.isUri(value.notebookUri)  &&
+		typeof value.layoutChanged === 'function' &&
 		typeof value.editorOpenedTimestamp === 'number' &&
-		typeof value.layoutChanged === 'object' &&
 		typeof value.contentManager === 'object' &&
 		typeof value.standardKernels === 'object') {
 		return true;
