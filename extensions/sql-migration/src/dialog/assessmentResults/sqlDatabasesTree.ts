@@ -54,6 +54,7 @@ export class SqlDatabaseTree {
 	private _recommendation!: azdata.TextComponent;
 	private _dbName!: azdata.TextComponent;
 	private _recommendationText!: azdata.TextComponent;
+	private _recommendationTitle!: azdata.TextComponent;
 	private _descriptionText!: azdata.TextComponent;
 	private _impactedObjects!: SqlMigrationImpactedObjectInfo[];
 	private _objectDetailsType!: azdata.TextComponent;
@@ -61,6 +62,7 @@ export class SqlDatabaseTree {
 	private _objectDetailsSample!: azdata.TextComponent;
 	private _moreInfo!: azdata.HyperlinkComponent;
 	private _assessmentTitle!: azdata.TextComponent;
+	private _databaseTableValues!: azdata.DeclarativeTableCellValue[][];
 
 	private _activeIssues!: SqlMigrationAssessmentResultItem[];
 	private _selectedIssue!: SqlMigrationAssessmentResultItem;
@@ -68,6 +70,7 @@ export class SqlDatabaseTree {
 
 	private _serverName!: string;
 	private _dbNames!: string[];
+	private _databaseCount!: azdata.TextComponent;
 
 
 	constructor(
@@ -107,8 +110,21 @@ export class SqlDatabaseTree {
 
 		component.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		component.addItem(this.createInstanceComponent(), { flex: '0 0 auto' });
+		component.addItem(this.createDatabaseCount(), { flex: '0 0 auto' });
 		component.addItem(this.createDatabaseComponent(dbs), { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'auto' } });
 		return component;
+	}
+
+	private createDatabaseCount(): azdata.TextComponent {
+		this._databaseCount = this._view.modelBuilder.text().withProps({
+			CSSStyles: {
+				'font-size': '11px',
+				'font-weight': 'bold',
+				'margin': '0px 8px 0px 36px'
+			},
+			value: constants.DATABASES(this.selectedDbs.length, this._model._serverDatabases.length)
+		}).component();
+		return this._databaseCount;
 	}
 
 	private createDatabaseComponent(dbs: string[]): azdata.DivContainer {
@@ -130,7 +146,7 @@ export class SqlDatabaseTree {
 						headerCssStyles: headerLeft,
 					},
 					{
-						displayName: constants.DATABASES,
+						displayName: constants.DATABASE,
 						valueType: azdata.DeclarativeDataType.component,
 						width: 100,
 						isReadOnly: true,
@@ -146,12 +162,19 @@ export class SqlDatabaseTree {
 				]
 			}
 		).component();
-
+		this._databaseTable.onDataChanged(() => {
+			this._databaseCount.updateProperties({
+				'value': constants.DATABASES(this.selectedDbs().length, this._model._serverDatabases.length)
+			});
+		});
 		this._databaseTable.onRowSelected(({ row }) => {
+
 			this._databaseTable.focus();
 			this._activeIssues = this._model._assessmentResults?.databaseAssessments[row].issues;
 			this._selectedIssue = this._model._assessmentResults?.databaseAssessments[row].issues[0];
 			this._dbName.value = this._dbNames[row];
+			this._recommendationTitle.value = constants.ISSUES_COUNT(this._activeIssues.length);
+			this._recommendation.value = constants.ISSUES_DETAILS;
 			this._resultComponent.updateCssStyles({
 				'display': 'block'
 			});
@@ -227,7 +250,8 @@ export class SqlDatabaseTree {
 			this._dbMessageContainer.updateCssStyles({
 				'display': 'none'
 			});
-
+			this._recommendation.value = constants.WARNINGS_DETAILS;
+			this._recommendationTitle.value = constants.WARNINGS_COUNT(this._activeIssues.length);
 			if (this._model._targetType === MigrationTargetType.SQLMI) {
 				this.refreshResults();
 			}
@@ -578,7 +602,7 @@ export class SqlDatabaseTree {
 	}
 
 	private createAssessmentResultsTitle(): azdata.TextComponent {
-		this._recommendation = this._view.modelBuilder.text().withProps({
+		this._recommendationTitle = this._view.modelBuilder.text().withProps({
 			value: constants.WARNINGS,
 			CSSStyles: {
 				'font-size': '13px',
@@ -589,7 +613,7 @@ export class SqlDatabaseTree {
 			}
 		}).component();
 
-		return this._recommendation;
+		return this._recommendationTitle;
 	}
 
 	private createAssessmentDetailsTitle(): azdata.TextComponent {
@@ -681,7 +705,7 @@ export class SqlDatabaseTree {
 			this._assessmentTitle.value = this._selectedIssue.checkId;
 			this._descriptionText.value = this._selectedIssue.description;
 			this._moreInfo.url = this._selectedIssue.helpLink;
-			this._moreInfo.label = this._selectedIssue.helpLink;
+			this._moreInfo.label = this._selectedIssue.message;
 			this._impactedObjects = this._selectedIssue.impactedObjects;
 			this._recommendationText.value = this._selectedIssue.message; //TODO: Expose correct property for recommendation.
 			this._impactedObjectsTable.dataValues = this._selectedIssue.impactedObjects.map((object) => {
@@ -722,7 +746,7 @@ export class SqlDatabaseTree {
 
 	public async initialize(): Promise<void> {
 		let instanceTableValues: azdata.DeclarativeTableCellValue[][] = [];
-		let databaseTableValues: azdata.DeclarativeTableCellValue[][] = [];
+		this._databaseTableValues = [];
 		const excludedDatabases = ['master', 'msdb', 'tempdb', 'model'];
 		this._dbNames = (await azdata.connection.listDatabases(this._model.sourceConnectionId)).filter(db => !excludedDatabases.includes(db));
 		const selectedDbs = (this._targetType === MigrationTargetType.SQLVM) ? this._model._vmDbs : this._model._miDbs;
@@ -742,7 +766,7 @@ export class SqlDatabaseTree {
 				]
 			];
 			this._dbNames.forEach((db) => {
-				databaseTableValues.push(
+				this._databaseTableValues.push(
 					[
 						{
 							value: selectedDbs.includes(db),
@@ -772,11 +796,17 @@ export class SqlDatabaseTree {
 					}
 				]
 			];
+			this._model._assessmentResults.databaseAssessments.sort((db1, db2) => {
+				return db2.issues.length - db1.issues.length;
+			});
+			// Reset the dbName list so that it is in sync with the table
+			this._dbNames = this._model._assessmentResults.databaseAssessments.map(da => da.name);
 			this._model._assessmentResults.databaseAssessments.forEach((db) => {
-				databaseTableValues.push(
+				this._databaseTableValues.push(
 					[
 						{
 							value: selectedDbs.includes(db.name),
+							enabled: db.issues.length === 0,
 							style: styleLeft
 						},
 						{
@@ -792,7 +822,7 @@ export class SqlDatabaseTree {
 			});
 		}
 		this._instanceTable.dataValues = instanceTableValues;
-		this._databaseTable.dataValues = databaseTableValues;
+		this._databaseTable.dataValues = this._databaseTableValues;
 	}
 
 	private createIconTextCell(icon: IconPath, text: string): azdata.FlexContainer {

@@ -8,6 +8,7 @@ export const azdataConfigSection: string = 'azdata';
 export const azdataAcceptEulaKey: string = 'acceptEula';
 export const azdataInstallKey: string = 'install';
 export const azdataUpdateKey: string = 'update';
+export const azdatarequiredUpdateKey: string = 'requiredUpdate';
 export const debugConfigKey = 'logDebugInfo';
 
 

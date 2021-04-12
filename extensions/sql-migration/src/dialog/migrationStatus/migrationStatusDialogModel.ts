@@ -7,7 +7,6 @@ import * as azdata from 'azdata';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 
 export class MigrationStatusDialogModel {
-
 	public statusDropdownValues: azdata.CategoryValue[] = [
 		{
 			displayName: 'Status: All',

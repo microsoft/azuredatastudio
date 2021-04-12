@@ -63,13 +63,20 @@ export class CreateBookDialog {
 	}
 
 	public async createDialog(): Promise<void> {
-		this.dialog = azdata.window.createModelViewDialog(loc.newGroup);
+		this.dialog = azdata.window.createModelViewDialog(loc.newBook);
 		this.dialog.registerContent(async view => {
 			this.view = view;
 
-			const groupLabel = this.view.modelBuilder.text()
+			const jupyterBookDocumentation = this.view.modelBuilder.hyperlink()
+				.withProperties<azdata.HyperlinkComponentProperties>({
+					label: loc.learnMore,
+					url: 'https://jupyterbook.org/intro.html',
+					CSSStyles: { 'margin-bottom': '0px', 'margin-top': '0px', 'font-size': 'small' }
+				}).component();
+
+			const bookLabel = this.view.modelBuilder.text()
 				.withProperties({
-					value: loc.groupDescription,
+					value: loc.bookDescription,
 					CSSStyles: { 'margin-bottom': '0px', 'margin-top': '0px', 'font-size': 'small' }
 				}).component();
 
@@ -120,8 +127,8 @@ export class CreateBookDialog {
 				.withFormItems([{
 					components: [
 						{
-							component: groupLabel,
-							required: false
+							required: false,
+							component: this.createHorizontalContainer(view, [bookLabel, jupyterBookDocumentation])
 						},
 						{
 							component: this.bookNameInputBox,
