@@ -12,6 +12,7 @@ import * as os from 'os';
 import * as templates from '../templates/templates';
 
 import { Uri, window } from 'vscode';
+import { IFileProjectEntry, IProject } from 'sqldbproj';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
@@ -20,7 +21,7 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 /**
  * Class representing a Project, and providing functions for operating on it
  */
-export class Project {
+export class Project implements IProject {
 	private _projectFilePath: string;
 	private _projectFileName: string;
 	private _projectGuid: string | undefined;
@@ -41,47 +42,47 @@ export class Project {
 		return Uri.file(path.dirname(this._projectFilePath)).fsPath;
 	}
 
-	public get projectFilePath() {
+	public get projectFilePath(): string {
 		return this._projectFilePath;
 	}
 
-	public get projectFileName() {
+	public get projectFileName(): string {
 		return this._projectFileName;
 	}
 
-	public get projectGuid() {
+	public get projectGuid(): string | undefined {
 		return this._projectGuid;
 	}
 
-	public get files() {
+	public get files(): FileProjectEntry[] {
 		return this._files;
 	}
 
-	public get dataSources() {
+	public get dataSources(): DataSource[] {
 		return this._dataSources;
 	}
 
-	public get importedTargets() {
+	public get importedTargets(): string[] {
 		return this._importedTargets;
 	}
 
-	public get databaseReferences() {
+	public get databaseReferences(): IDatabaseReferenceProjectEntry[] {
 		return this._databaseReferences;
 	}
 
-	public get sqlCmdVariables() {
+	public get sqlCmdVariables(): Record<string, string> {
 		return this._sqlCmdVariables;
 	}
 
-	public get preDeployScripts() {
+	public get preDeployScripts(): FileProjectEntry[] {
 		return this._preDeployScripts;
 	}
 
-	public get postDeployScripts() {
+	public get postDeployScripts(): FileProjectEntry[] {
 		return this._postDeployScripts;
 	}
 
-	public get noneDeployScripts() {
+	public get noneDeployScripts(): FileProjectEntry[] {
 		return this._noneDeployScripts;
 	}
 
@@ -1008,7 +1009,7 @@ export abstract class ProjectEntry {
 	}
 }
 
-export class FileProjectEntry extends ProjectEntry {
+export class FileProjectEntry extends ProjectEntry implements IFileProjectEntry {
 	/**
 	 * Absolute file system URI
 	 */

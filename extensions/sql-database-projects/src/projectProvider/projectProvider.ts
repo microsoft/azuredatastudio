@@ -78,6 +78,13 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	}
 
 	/**
+	 * Opens and loads a .sqlproj file
+	 */
+	openProject(projectFilePath: string): Promise<sqldbproj.IProject> {
+		return Project.openProject(projectFilePath);
+	}
+
+	/**
 	 * Gets the supported project types
 	 */
 	get projectActions(): (dataworkspace.IProjectAction | dataworkspace.IProjectActionGroup)[] {
@@ -114,15 +121,6 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 		let group: dataworkspace.IProjectActionGroup = { actions: [addItemAction, schemaCompareAction, buildAction, publishAction] };
 
 		return [group, changeTargetPlatformAction];
-	}
-
-	/** Adds the list of files and directories to the project, and saves the project file
-	* @param projectFile The Uri of the project file
-	* @param list list of uris of files and folders to add. Files and folders must already exist. Files and folders must already exist. No files or folders will be added if any do not exist.
-	*/
-	async addToProject(projectFile: vscode.Uri, list: vscode.Uri[]): Promise<void> {
-		const project = await Project.openProject(projectFile.fsPath);
-		await project.addToProject(list);
 	}
 
 	/**
