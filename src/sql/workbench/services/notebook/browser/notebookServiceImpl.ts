@@ -407,7 +407,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (!notebookUri) {
 			return undefined;
 		}
-		let uriString = notebookUri.toString();
+		let uriString = getNotebookUri(notebookUri);
 		let editor = this.listNotebookEditors().find(n => n.id === uriString);
 		return editor;
 	}
@@ -705,4 +705,21 @@ export class NotebookService extends Disposable implements INotebookService {
 	notifyCellExecutionStarted(): void {
 		this._onCodeCellExecutionStart.fire();
 	}
+}
+
+/**
+ * @param notebookUri of the notebook
+ * @returns uriString that contains the formatted notebookUri
+ * If the notebookUri is untitled then we keep the query to ensure parameterized notebooks open properly
+ * otherwise we strip the query and fragment from the notebookUri for all other file schemes
+ */
+export function getNotebookUri(notebookUri: URI): string {
+	// if its untitled keep query
+	let uriString: string = '';
+	if (notebookUri.scheme === 'untitled') {
+		uriString = notebookUri.toString();
+	} else {
+		uriString = notebookUri.with({ query: '', fragment: '' }).toString();
+	}
+	return uriString;
 }
