@@ -708,18 +708,14 @@ export class NotebookService extends Disposable implements INotebookService {
 }
 
 /**
+ * Untitled notebookUri's need to have the query in order to get the NotebookEditor to run other actions (Run All Cells for example) on parameterized notebooks
+ * otherwise we strip the query and fragment from the notebookUri for all other file schemes
  * @param notebookUri of the notebook
  * @returns uriString that contains the formatted notebookUri
- * If the notebookUri is untitled then we keep the query to ensure parameterized notebooks open properly
- * otherwise we strip the query and fragment from the notebookUri for all other file schemes
  */
 export function getNotebookUri(notebookUri: URI): string {
-	// if its untitled keep query
-	let uriString: string = '';
 	if (notebookUri.scheme === 'untitled') {
-		uriString = notebookUri.toString();
-	} else {
-		uriString = notebookUri.with({ query: '', fragment: '' }).toString();
+		return notebookUri.toString();
 	}
-	return uriString;
+	return notebookUri.with({ query: '', fragment: '' }).toString();
 }
