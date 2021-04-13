@@ -43,4 +43,29 @@ suite('Editable dropdown tests', () => {
 		dropdown.value = options.values[1];
 		assert(count === 2, 'onValueChange event was not fired for setting a new value of the dropdown');
 	});
+
+	test('changing value through input text fires onValue Change event', () => {
+		const dropdown = new Dropdown(container, undefined, options);
+		let count = 0;
+		dropdown.onValueChange((e) => {
+			count++;
+		});
+
+		dropdown.fireOnTextChange = true;
+		dropdown.setDropdownVisibility(true);
+		dropdown.input.value = options.values[0];
+		assert(count === 1, 'onValueChange event was not fired for an option from the dropdown list');
+		dropdown.input.value = 'foo';
+		assert(count === 2, 'onValueChange event was not fired for a value not in dropdown list');
+		assert(dropdown.selectList.length === 4, 'list does not have all the values that are matching the input box text');
+		assert(dropdown.value = 'foo');
+		dropdown.input.value = 'foobar';
+		assert(count === 3, 'onValueChange event was fired for a value not in dropdown list');
+		assert(dropdown.selectList.length === 2, 'list does not have all the values that are matching the input box text');
+		assert(dropdown.value = 'foobar');
+
+		dropdown.fireOnTextChange = false;
+		dropdown.input.value = options.values[0];
+		assert(count === 3, 'onValueChange event was fired with input box value change even after setting the fireOnTextChange to false');
+	});
 });

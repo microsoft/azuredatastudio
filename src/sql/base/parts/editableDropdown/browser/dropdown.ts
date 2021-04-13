@@ -253,7 +253,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		return this._selectListContainer.classList.contains('visible');
 	}
 
-	private _setDropdownVisibility(visible: boolean): void {
+	public setDropdownVisibility(visible: boolean): void {
 		if (visible) {
 			this._selectListContainer.classList.add('visible');
 		} else {
@@ -276,12 +276,12 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 			this.contextViewService.showContextView({
 				getAnchor: () => this._inputContainer,
 				render: container => {
-					this._setDropdownVisibility(true);
+					this.setDropdownVisibility(true);
 					DOM.append(container, this._selectListContainer);
 					this._updateDropDownList();
 					return {
 						dispose: () => {
-							this._setDropdownVisibility(false);
+							this.setDropdownVisibility(false);
 						}
 					};
 				}
@@ -386,5 +386,13 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 
 	public set ariaLabel(val: string) {
 		this._input.setAriaLabel(val);
+	}
+
+	public get input(): InputBox {
+		return this._input;
+	}
+
+	public get selectList(): List<IDropdownListItem> {
+		return this._selectList;
 	}
 }
