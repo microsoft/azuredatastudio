@@ -11,7 +11,7 @@ export function setup() {
 		it('Opening import wizard without connection opens connection dialog', async function () {
 			const app = this.app as Application;
 			await app.workbench.quickaccess.runCommand('Flat File Import: Import Wizard');
-			// Wait for the service to be downloaded and installed
+			// Wait for the service to be downloaded and installed. This can take a while so set timeout to 5min (retryInterval default is 100ms)
 			await app.workbench.statusbar.waitForStatusbarText('', 'Flat File Import Service Started', 5 * 60 * 10);
 			await app.workbench.connectionDialog.waitForConnectionDialog();
 		});
