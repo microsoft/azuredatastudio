@@ -963,14 +963,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private async updateKernelInfoOnKernelChange(kernel: nb.IKernel, kernelAlias?: string) {
 		await this.updateKernelInfo(kernel);
-		let aliasLanguageInfo: nb.ILanguageInfo;
-		this.kernelAliases.forEach(kernel => {
-			if (this._defaultLanguageInfo?.name === kernel.toLowerCase()) {
-				kernelAlias = kernel;
-			}
-		});
+		kernelAlias = this.kernelAliases.find(kernel => this._defaultLanguageInfo?.name === kernel.toLowerCase()) ?? kernelAlias;
 		if (kernelAlias) {
-			aliasLanguageInfo = {
+			let aliasLanguageInfo: nb.ILanguageInfo = {
 				name: kernelAlias.toLowerCase(),
 				version: ''
 			};
