@@ -82,14 +82,29 @@ declare module 'sqldbproj' {
 		 */
 		readonly dacpacOutputPath: string;
 
+		/**
+		 * Path to folder containing the project file
+		 */
 		readonly projectFolderPath: string;
 
+		/**
+		 * Project file path
+		 */
 		readonly projectFilePath: string;
 
+		/**
+		 * Project file name
+		 */
 		readonly projectFileName: string;
 
+		/**
+		 * Files and folders that are included in the project
+		 */
 		readonly files: IFileProjectEntry[];
 
+		/**
+		 * SqlCmd variables and their values
+		 */
 		readonly sqlCmdVariables: Record<string, string>;
 	}
 
