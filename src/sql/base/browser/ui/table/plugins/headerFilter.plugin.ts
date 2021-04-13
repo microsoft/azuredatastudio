@@ -175,7 +175,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		this.contextViewProvider.showContextView({
 			getAnchor: () => filterButton,
 			render: (container: HTMLElement) => {
-				this.renderFilter(filterButton, container).then(undefined, onUnexpectedError);
+				this.renderFilter(filterButton, container).catch(onUnexpectedError);
 				return {
 					dispose: () => {
 						if (this.$menu) {
