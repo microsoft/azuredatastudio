@@ -608,7 +608,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private editWorkerCores(): void {
 		//Cores Request
-		this.currentConfiguration.coresRequest.w = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
+		this.currentConfiguration.coresRequest.w = this._postgresModel.config?.spec.scheduling?.roles?.workers?.resources?.requests?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
 		if (!this.currentConfiguration.coresRequest.w) {
 			this.currentConfiguration.coresRequest.w = '';
 		}
@@ -618,7 +618,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.saveArgs.coresRequest.w = undefined;
 
 		// Cores Limit
-		this.currentConfiguration.coresLimit.w = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
+		this.currentConfiguration.coresLimit.w = this._postgresModel.config?.spec.scheduling?.roles?.workers?.resources?.limits?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
 		if (!this.currentConfiguration.coresLimit.w) {
 			this.currentConfiguration.coresLimit.w = '';
 		}
@@ -630,7 +630,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private editWorkerMemory(): void {
 		//Memory Request
-		let currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
+		let currentMemorySize = this._postgresModel.config?.spec.scheduling?.roles?.workers?.resources?.requests?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
 		if (!currentMemorySize) {
 			this.currentConfiguration.memoryRequest.w = '';
 		} else {
@@ -642,7 +642,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.saveArgs.memoryRequest.w = undefined;
 
 		//Memory Limit
-		currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
+		currentMemorySize = this._postgresModel.config?.spec.scheduling?.roles?.workers?.resources?.limits?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
 		if (!currentMemorySize) {
 			this.currentConfiguration.memoryLimit.w = '';
 		} else {
@@ -656,7 +656,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private editCoordinatorCores(): void {
 		// TODO get current cpu size for coordinator
-		this.currentConfiguration.coresRequest.c = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
+		this.currentConfiguration.coresRequest.c = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.requests?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
 		if (!this.currentConfiguration.coresRequest.c) {
 			this.currentConfiguration.coresRequest.c = '';
 		}
@@ -666,7 +666,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.saveArgs.coresRequest.c = undefined;
 
 		// TODO get current cpu size for coordinator
-		this.currentConfiguration.coresLimit.c = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
+		this.currentConfiguration.coresLimit.c = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.limits?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
 		if (!this.currentConfiguration.coresLimit.c) {
 			this.currentConfiguration.coresLimit.c = '';
 		}
@@ -678,7 +678,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private editCoordinatorMemory(): void {
 		// TODO get current memory size for coordinator
-		let currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
+		let currentMemorySize = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.requests?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
 		if (!currentMemorySize) {
 			this.currentConfiguration.coresRequest.c = '';
 		} else {
@@ -690,7 +690,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.saveArgs.memoryRequest.c = undefined;
 
 		// TODO get current memory size for coordinator
-		currentMemorySize = this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
+		currentMemorySize = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.limits?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
 		if (!currentMemorySize) {
 			this.currentConfiguration.coresLimit.c = '';
 		} else {
@@ -706,7 +706,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.editWorkerNodeCount();
 		this.editWorkerCores();
 		this.editWorkerMemory();
-		/* TODO perform once Coordinator section is in view*/
 		this.editCoordinatorCores();
 		this.editCoordinatorMemory();
 	}

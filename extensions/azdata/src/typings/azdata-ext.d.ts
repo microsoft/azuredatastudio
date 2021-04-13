@@ -184,7 +184,7 @@ declare module 'azdata-ext' {
 				shards: number, // 1 (shards was renamed to workers, kept here for backwards compatibility)
 				workers: number // 1
 			},
-			scheduling: {
+			scheduling: { // If no roles are specified, settings will apply to all nodes of the PostgreSQL Hyperscale server group.
 				default: {
 					resources: {
 						requests: {
@@ -194,6 +194,32 @@ declare module 'azdata-ext' {
 						limits: {
 							cpu: string, // "1.5"
 							memory: string // "256Mi"
+						}
+					}
+				},
+				roles: {
+					coordinator: {
+						resources: {
+							requests: {
+								cpu: string, // "1.5"
+								memory: string // "256Mi"
+							},
+							limits: {
+								cpu: string, // "1.5"
+								memory: string // "256Mi"
+							}
+						}
+					},
+					workers: {
+						resources: {
+							requests: {
+								cpu: string, // "1.5"
+								memory: string // "256Mi"
+							},
+							limits: {
+								cpu: string, // "1.5"
+								memory: string // "256Mi"
+							}
 						}
 					}
 				}
