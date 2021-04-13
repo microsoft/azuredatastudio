@@ -28,12 +28,6 @@ export interface StatusPipeArgs {
 	type: 'status';
 }
 
-export interface RunCommandPipeArgs {
-	type: 'command';
-	command: string;
-	args: any[];
-}
-
 export class CLIServer {
 
 	private _server: http.Server;
@@ -69,17 +63,13 @@ export class CLIServer {
 		req.setEncoding('utf8');
 		req.on('data', (d: string) => chunks.push(d));
 		req.on('end', () => {
-			const data: OpenCommandPipeArgs | StatusPipeArgs | RunCommandPipeArgs | any = JSON.parse(chunks.join(''));
+			const data: OpenCommandPipeArgs | StatusPipeArgs | any = JSON.parse(chunks.join(''));
 			switch (data.type) {
 				case 'open':
 					this.open(data, res);
 					break;
 				case 'status':
 					this.getStatus(data, res);
-					break;
-				case 'command':
-					this.runCommand(data, res)
-						.catch(this.logService.error);
 					break;
 				default:
 					res.writeHead(404);
@@ -123,7 +113,7 @@ export class CLIServer {
 			const waitMarkerFileURI = waitMarkerFilePath ? URI.file(waitMarkerFilePath) : undefined;
 			const preferNewWindow = !forceReuseWindow && !waitMarkerFileURI && !addMode;
 			const windowOpenArgs: IOpenWindowOptions = { forceNewWindow, diffMode, addMode, gotoLineMode, forceReuseWindow, preferNewWindow, waitMarkerFileURI };
-			this._commands.executeCommand('_files.windowOpen', urisToOpen, windowOpenArgs);
+			this._commands.executeCommand('_remoteCLI.windowOpen', urisToOpen, windowOpenArgs);
 		}
 		res.writeHead(200);
 		res.end();
@@ -131,31 +121,9 @@ export class CLIServer {
 
 	private async getStatus(data: StatusPipeArgs, res: http.ServerResponse) {
 		try {
-			const status = await this._commands.executeCommand('_issues.getSystemStatus');
+			const status = await this._commands.executeCommand('_remoteCLI.getSystemStatus');
 			res.writeHead(200);
 			res.write(status);
-			res.end();
-		} catch (err) {
-			res.writeHead(500);
-			res.write(String(err), err => {
-				if (err) {
-					this.logService.error(err);
-				}
-			});
-			res.end();
-		}
-	}
-
-	private async runCommand(data: RunCommandPipeArgs, res: http.ServerResponse) {
-		try {
-			const { command, args } = data;
-			const result = await this._commands.executeCommand(command, ...args);
-			res.writeHead(200);
-			res.write(JSON.stringify(result), err => {
-				if (err) {
-					this.logService.error(err);
-				}
-			});
 			res.end();
 		} catch (err) {
 			res.writeHead(500);
