@@ -68,12 +68,12 @@ const opts = minimist(args, {
 
 const testRepoUrl = 'https://github.com/kburtram/azuredatastudio-smoke-test-repo.git';
 const workspacePath = path.join(testDataPath, 'azuredatastudio-smoke-test-repo');
+// {{SQL CARBON EDIT}} Let callers control extensions dir for non-packaged extensions
 let extensionsPath = opts.extensionsDir;
 if (!extensionsPath) {
 	extensionsPath = path.join(testDataPath, 'extensions-dir');
 	mkdirp.sync(extensionsPath);
 }
-
 console.log(`Using extensions dir : ${extensionsPath}`);
 
 

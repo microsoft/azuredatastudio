@@ -35,6 +35,7 @@ export class StatusBar {
 		return this.code.waitForTextContent(this.getSelector(StatusBarElement.EOL_STATUS), eol);
 	}
 
+	// {{SQL CARBON EDIT}} Add retryCount
 	async waitForStatusbarText(title: string, text: string, retryCount?: number): Promise<void> {
 		await this.code.waitForTextContent(`${this.mainSelector} .statusbar-item[title="${title}"]`, text, undefined, retryCount);
 	}
