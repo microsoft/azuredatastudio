@@ -22,7 +22,7 @@ export type ConfigurationSpecModel = {
 
 export class PostgresComputeAndStoragePage extends DashboardPage {
 	private workerContainer!: azdata.DivContainer;
-	private coordinatorContainer!: azdata.DivContainer;
+	//private coordinatorContainer!: azdata.DivContainer;
 
 	private workerBox!: azdata.InputBoxComponent;
 	private workerCoresLimitBox!: azdata.InputBoxComponent;
@@ -143,14 +143,14 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		// Worker nodes section
 		this.workerContainer = this.modelView.modelBuilder.divContainer().component();
-		this.workerContainer.addItem(this.modelView.modelBuilder.text().withProps({
+		/* this.workerContainer.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.workerNodes,
 			CSSStyles: { ...cssStyles.title, 'margin-top': '25px' }
-		}).component());
+		}).component()); */
 		this.workerContainer.addItems(this.createUserInputWorkerSection(), { CSSStyles: { 'min-height': '30px' } });
 		content.addItem(this.workerContainer, { CSSStyles: { 'min-height': '30px' } });
 
-		// Coordinator node section
+		/* // Coordinator node section
 		this.coordinatorContainer = this.modelView.modelBuilder.divContainer().component();
 		this.coordinatorContainer.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.coordinatorNode,
@@ -158,8 +158,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}).component());
 		this.coordinatorContainer.addItems(this.createUserInputCoordinatorSection(), { CSSStyles: { 'min-height': '30px' } });
 
-		// TODO unhide once once ready to make azdata calls
-		content.addItem(this.coordinatorContainer, { CSSStyles: { 'min-height': '30px' } });
+		content.addItem(this.coordinatorContainer, { CSSStyles: { 'min-height': '30px' } }); */
 
 		this.initialized = true;
 
@@ -240,6 +239,10 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 					this.workerCoresLimitBox.value = this.currentConfiguration.coresLimit.w;
 					this.workerMemoryRequestBox.value = this.currentConfiguration.memoryRequest.w;
 					this.workerMemoryLimitBox.value = this.currentConfiguration.memoryLimit.w;
+					this.coordinatorCoresRequestBox.value = this.currentConfiguration.coresRequest.c;
+					this.coordinatorCoresLimitBox.value = this.currentConfiguration.coresLimit.c;
+					this.coordinatorMemoryRequestBox.value = this.currentConfiguration.memoryRequest.c;
+					this.coordinatorMemoryLimitBox.value = this.currentConfiguration.memoryLimit.c;
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
@@ -255,7 +258,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private schedulingParamsToEdit(worker: string | undefined, coordinator: string | undefined): string | undefined {
 		if (worker && coordinator) {
-			return `${worker},${coordinator}`;
+			return `"${worker},${coordinator}"`;
 		} else {
 			return worker ?? coordinator ?? undefined;
 		}
@@ -446,16 +449,30 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.editWorkerNodeCount();
 			this.editWorkerCores();
 			this.editWorkerMemory();
+			this.editCoordinatorCores();
+			this.editCoordinatorMemory();
 		}
 
 		return [
+			this.modelView.modelBuilder.text().withProps({
+				value: loc.workerNodes,
+				CSSStyles: { ...cssStyles.title, 'margin-top': '25px' }
+			}).component(),
 			this.createWorkerNodesSectionContainer(),
-			this.createCoresMemorySection(loc.configurationPerNode, loc.postgresConfigurationInformation),	// use loc.workerNodesConfigurationInformation when coordinator section is included
+			this.createCoresMemorySection(loc.configurationPerNode, loc.workerNodesConfigurationInformation),
 			this.createConfigurationSectionContainer(loc.coresRequest, this.workerCoresRequestBox),
 			this.createConfigurationSectionContainer(loc.coresLimit, this.workerCoresLimitBox),
 			this.createConfigurationSectionContainer(loc.memoryRequest, this.workerMemoryRequestBox),
-			this.createConfigurationSectionContainer(loc.memoryLimit, this.workerMemoryLimitBox)
-
+			this.createConfigurationSectionContainer(loc.memoryLimit, this.workerMemoryLimitBox),
+			this.modelView.modelBuilder.text().withProps({
+				value: loc.coordinatorNode,
+				CSSStyles: { ...cssStyles.title, 'margin-top': '25px' }
+			}).component(),
+			this.createCoresMemorySection(loc.configuration, loc.coordinatorNodeConfigurationInformation),
+			this.createConfigurationSectionContainer(loc.coresRequest, this.coordinatorCoresRequestBox),
+			this.createConfigurationSectionContainer(loc.coresLimit, this.coordinatorCoresLimitBox),
+			this.createConfigurationSectionContainer(loc.memoryRequest, this.coordinatorMemoryRequestBox),
+			this.createConfigurationSectionContainer(loc.memoryLimit, this.coordinatorMemoryLimitBox)
 		];
 	}
 
@@ -495,7 +512,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		return flexContainer;
 	}
 
-	private createUserInputCoordinatorSection(): azdata.Component[] {
+	/* private createUserInputCoordinatorSection(): azdata.Component[] {
 		if (this._postgresModel.configLastUpdated) {
 			this.editCoordinatorCores();
 			this.editCoordinatorMemory();
@@ -509,7 +526,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.createConfigurationSectionContainer(loc.memoryLimit, this.coordinatorMemoryLimitBox)
 
 		];
-	}
+	} */
 
 	private createConfigurationSectionContainer(key: string, input: azdata.Component): azdata.FlexContainer {
 		const inputFlex = { flex: '0 1 150px' };
@@ -655,7 +672,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private editCoordinatorCores(): void {
-		// TODO get current cpu size for coordinator
 		this.currentConfiguration.coresRequest.c = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.requests?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
 		if (!this.currentConfiguration.coresRequest.c) {
 			this.currentConfiguration.coresRequest.c = '';
@@ -665,7 +681,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.coordinatorCoresRequestBox.value = this.currentConfiguration.coresRequest.c;
 		this.saveArgs.coresRequest.c = undefined;
 
-		// TODO get current cpu size for coordinator
 		this.currentConfiguration.coresLimit.c = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.limits?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
 		if (!this.currentConfiguration.coresLimit.c) {
 			this.currentConfiguration.coresLimit.c = '';
@@ -677,24 +692,22 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private editCoordinatorMemory(): void {
-		// TODO get current memory size for coordinator
 		let currentMemorySize = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.requests?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
 		if (!currentMemorySize) {
-			this.currentConfiguration.coresRequest.c = '';
+			this.currentConfiguration.memoryRequest.c = '';
 		} else {
-			this.currentConfiguration.coresRequest.c = convertToGibibyteString(currentMemorySize);
+			this.currentConfiguration.memoryRequest.c = convertToGibibyteString(currentMemorySize);
 		}
 
 		this.coordinatorMemoryRequestBox.placeHolder = '';
 		this.coordinatorMemoryRequestBox.value = this.currentConfiguration.memoryRequest.c;
 		this.saveArgs.memoryRequest.c = undefined;
 
-		// TODO get current memory size for coordinator
 		currentMemorySize = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.limits?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
 		if (!currentMemorySize) {
-			this.currentConfiguration.coresLimit.c = '';
+			this.currentConfiguration.memoryLimit.c = '';
 		} else {
-			this.currentConfiguration.coresLimit.c = convertToGibibyteString(currentMemorySize);
+			this.currentConfiguration.memoryLimit.c = convertToGibibyteString(currentMemorySize);
 		}
 
 		this.coordinatorMemoryLimitBox.placeHolder = '';
