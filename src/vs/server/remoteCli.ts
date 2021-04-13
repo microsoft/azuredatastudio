@@ -11,7 +11,7 @@ import { dirname, extname, resolve } from 'vs/base/common/path';
 import { parseArgs, buildHelpMessage, buildVersionMessage, OPTIONS, OptionDescriptions } from 'vs/platform/environment/node/argv';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 import { createWaitMarkerFile } from 'vs/platform/environment/node/waitMarkerFile';
-import { OpenCommandPipeArgs, RunCommandPipeArgs, StatusPipeArgs } from 'vs/workbench/api/node/extHostCLIServer';
+import { OpenCommandPipeArgs, StatusPipeArgs } from 'vs/workbench/api/node/extHostCLIServer';
 import { hasStdinWithoutTty, getStdinFilePath, readFromStdin } from 'vs/platform/environment/node/stdin';
 
 interface ProductDescription {
@@ -295,7 +295,7 @@ async function sendGetCredential(command: 'fill' | 'approve' | 'reject', stdin: 
 	}
 }
 
-type Args = OpenCommandPipeArgs | StatusPipeArgs | RunCommandPipeArgs;
+type Args = OpenCommandPipeArgs | StatusPipeArgs;
 
 function sendToPipe(args: Args): Promise<any> {
 	return new Promise<string>(resolve => {
