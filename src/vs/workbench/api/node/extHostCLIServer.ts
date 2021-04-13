@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { generateRandomPipeName } from 'vs/base/parts/ipc/node/ipc.net';
+import { createRandomIPCHandle } from 'vs/base/parts/ipc/node/ipc.net';
 import * as http from 'http';
 import * as fs from 'fs';
 import { IExtHostCommands } from 'vs/workbench/api/common/extHostCommands';
@@ -15,7 +15,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 export interface OpenCommandPipeArgs {
 	type: 'open';
 	fileURIs?: string[];
-	folderURIs: string[];
+	folderURIs?: string[];
 	forceNewWindow?: boolean;
 	diffMode?: boolean;
 	addMode?: boolean;
@@ -24,16 +24,30 @@ export interface OpenCommandPipeArgs {
 	waitMarkerFilePath?: string;
 }
 
+export interface OpenExternalCommandPipeArgs {
+	type: 'openExternal';
+	uris: string[];
+}
+
 export interface StatusPipeArgs {
 	type: 'status';
 }
 
-export class CLIServer {
 
-	private _server: http.Server;
-	private _ipcHandlePath: string | undefined;
+export type PipeCommand = OpenCommandPipeArgs | StatusPipeArgs | OpenExternalCommandPipeArgs;
 
-	constructor(@IExtHostCommands private _commands: IExtHostCommands, @ILogService private logService: ILogService) {
+export interface ICommandsExecuter {
+	executeCommand<T>(id: string, ...args: any[]): Promise<T>;
+}
+
+export class CLIServerBase {
+	private readonly _server: http.Server;
+
+	constructor(
+		private readonly _commands: ICommandsExecuter,
+		private readonly logService: ILogService,
+		private readonly _ipcHandlePath: string,
+	) {
 		this._server = http.createServer((req, res) => this.onRequest(req, res));
 		this.setup().catch(err => {
 			logService.error(err);
@@ -46,8 +60,6 @@ export class CLIServer {
 	}
 
 	private async setup(): Promise<string> {
-		this._ipcHandlePath = generateRandomPipeName();
-
 		try {
 			this._server.listen(this.ipcHandlePath);
 			this._server.on('error', err => this.logService.error(err));
@@ -63,10 +75,13 @@ export class CLIServer {
 		req.setEncoding('utf8');
 		req.on('data', (d: string) => chunks.push(d));
 		req.on('end', () => {
-			const data: OpenCommandPipeArgs | StatusPipeArgs | any = JSON.parse(chunks.join(''));
+			const data: PipeCommand | any = JSON.parse(chunks.join(''));
 			switch (data.type) {
 				case 'open':
 					this.open(data, res);
+					break;
+				case 'openExternal':
+					this.openExternal(data, res);
 					break;
 				case 'status':
 					this.getStatus(data, res);
@@ -119,6 +134,14 @@ export class CLIServer {
 		res.end();
 	}
 
+	private openExternal(data: OpenExternalCommandPipeArgs, res: http.ServerResponse) {
+		for (const uri of data.uris) {
+			this._commands.executeCommand('_workbench.openExternal', URI.parse(uri), { allowTunneling: true });
+		}
+		res.writeHead(200);
+		res.end();
+	}
+
 	private async getStatus(data: StatusPipeArgs, res: http.ServerResponse) {
 		try {
 			const status = await this._commands.executeCommand('_remoteCLI.getSystemStatus');
@@ -142,5 +165,14 @@ export class CLIServer {
 		if (this._ipcHandlePath && process.platform !== 'win32' && fs.existsSync(this._ipcHandlePath)) {
 			fs.unlinkSync(this._ipcHandlePath);
 		}
+	}
+}
+
+export class CLIServer extends CLIServerBase {
+	constructor(
+		@IExtHostCommands commands: IExtHostCommands,
+		@ILogService logService: ILogService
+	) {
+		super(commands, logService, createRandomIPCHandle());
 	}
 }
