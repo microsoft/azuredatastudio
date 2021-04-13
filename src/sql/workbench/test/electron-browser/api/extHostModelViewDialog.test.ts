@@ -141,13 +141,14 @@ suite('ExtHostModelViewDialog Tests', () => {
 	});
 
 	test('Opening a wizard updates its pages and buttons on the main thread', () => {
-		mockProxy.setup(x => x.$openWizard(It.isAny()));
+		mockProxy.setup(x => x.$openWizard(It.isAny(), It.isAny()));
 		mockProxy.setup(x => x.$setWizardDetails(It.isAny(), It.isAny()));
 		mockProxy.setup(x => x.$setWizardPageDetails(It.isAny(), It.isAny()));
 		mockProxy.setup(x => x.$setButtonDetails(It.isAny(), It.isAny()));
 
 		// Create a wizard with 2 pages and 2 custom buttons
 		let wizardTitle = 'wizard_title';
+		let source = 'command palette';
 		let wizard = extHostModelViewDialog.createWizard(wizardTitle);
 		let page1Title = 'page_1';
 		let page1 = extHostModelViewDialog.createWizardPage(page1Title);
@@ -162,7 +163,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		wizard.customButtons = [button1, button2];
 
 		// Open the wizard and verify that the correct main thread methods were called
-		extHostModelViewDialog.openWizard(wizard);
+		extHostModelViewDialog.openWizard(wizard, source);
 		mockProxy.verify(x => x.$setButtonDetails(It.isAny(), It.is(details => {
 			return details.enabled === false && details.label === button1Label;
 		})), Times.atLeastOnce());
@@ -179,7 +180,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 			return details.title === wizardTitle && details.pages.length === 2 && details.customButtons.length === 2 &&
 				details.displayPageTitles === true;
 		})), Times.atLeastOnce());
-		mockProxy.verify(x => x.$openWizard(It.isAny()), Times.once());
+		mockProxy.verify(x => x.$openWizard(It.isAny(), It.isAny()), Times.once());
 	});
 
 	test('Wizard page changed events are handled correctly', () => {
