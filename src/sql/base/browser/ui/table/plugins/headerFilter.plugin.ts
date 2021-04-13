@@ -12,6 +12,7 @@ import { DisposableStore } from 'vs/base/common/lifecycle';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export type HeaderFilterCommands = 'sort-asc' | 'sort-desc';
 export interface CommandEventArgs<T extends Slick.SlickData> {
@@ -174,7 +175,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		this.contextViewProvider.showContextView({
 			getAnchor: () => filterButton,
 			render: (container: HTMLElement) => {
-				this.renderFilter(filterButton, container);
+				this.renderFilter(filterButton, container).then(undefined, onUnexpectedError);
 				return {
 					dispose: () => {
 						if (this.$menu) {
