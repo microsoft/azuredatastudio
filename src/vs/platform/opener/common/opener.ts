@@ -36,7 +36,11 @@ type OpenInternalOptions = {
 	readonly allowCommands?: boolean;
 };
 
-type OpenExternalOptions = { readonly openExternal?: boolean; readonly allowTunneling?: boolean };
+export type OpenExternalOptions = {
+	readonly openExternal?: boolean;
+	readonly allowTunneling?: boolean;
+	readonly allowContributedOpeners?: boolean | string;
+};
 
 export type OpenOptions = OpenInternalOptions & OpenExternalOptions;
 
