@@ -373,6 +373,9 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 			this._register(cell.onCellModeChanged((state) => {
 				this._onFindStateChange(changeEvent).catch(onUnexpectedError);
 			}));
+			this._register(cell.onCellMarkdownModeChanged(e => {
+				this._onFindStateChange(changeEvent).catch(onUnexpectedError);
+			}));
 		});
 		this._register(this._notebookModel.contentChanged(e => {
 			this._onFindStateChange(changeEvent).catch(onUnexpectedError);

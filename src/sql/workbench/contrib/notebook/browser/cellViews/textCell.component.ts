@@ -381,16 +381,18 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 						markAllOccurances.mark(searchString, {
 							className: findHighlightClass
 						});
-						elementContainingText.scrollIntoView({ behavior: 'smooth' });
 					}
 				}
 				markCurrent.markRanges([{
 					start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
 					length: range.endColumn - range.startColumn
 				}], {
-					className: findRangeSpecificClass
+					className: findRangeSpecificClass,
+					each: function (node, range) {
+						// node is the marked DOM element
+						node.scrollIntoView({ behavior: 'smooth' });
+					}
 				});
-				elementContainingText.scrollIntoView({ behavior: 'smooth' });
 			}
 		}
 	}
