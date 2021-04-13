@@ -29,7 +29,7 @@ suite('Editable dropdown tests', () => {
 		assert(dropdown.value === '');
 	});
 
-	test('changing value through code fires onValue Change event', () => {
+	test('changing value through code fires onValueChange event', () => {
 		const dropdown = new Dropdown(container, undefined, options);
 		let count = 0;
 		dropdown.onValueChange((e) => {
