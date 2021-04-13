@@ -267,7 +267,7 @@ export class Project {
 		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
 
 		// check if folder already has been added to sqlproj
-		if (this.files.find(f => f.relativePath === relativeFolderPath)) {
+		if (this.files.find(f => f.relativePath.toLowerCase() === relativeFolderPath.toLowerCase())) {
 			throw new Error(constants.folderAlreadyAddedToProject((relativeFolderPath)));
 		}
 
@@ -298,7 +298,7 @@ export class Project {
 		}
 
 		// check if file already has been added to sqlproj
-		if (this.files.find(f => f.relativePath === relativeFilePath)) {
+		if (this.files.find(f => f.relativePath.toLowerCase() === relativeFilePath.toLowerCase())) {
 			throw new Error(constants.fileAlreadyAddedToProject((relativeFilePath)));
 		}
 
