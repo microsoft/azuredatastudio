@@ -6,7 +6,7 @@
 import 'vs/css!./media/resourceViewerTable';
 import * as azdata from 'azdata';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { attachTableFilterStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -24,7 +24,6 @@ import { ColumnDefinition } from 'sql/workbench/browser/editor/resourceViewer/re
 import { Emitter } from 'vs/base/common/event';
 import { ContextMenuAnchor } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerEditor';
 import { LoadingSpinnerPlugin } from 'sql/base/browser/ui/table/plugins/loadingSpinner.plugin';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 
 export class ResourceViewerTable extends Disposable {
@@ -57,7 +56,7 @@ export class ResourceViewerTable extends Disposable {
 
 		this._resourceViewerTable.setSelectionModel(new RowSelectionModel());
 		let filterPlugin = new HeaderFilter<azdata.DataGridItem>(this._contextViewService);
-		this._register(attachButtonStyler(filterPlugin, this._themeService));
+		this._register(attachTableFilterStyler(filterPlugin, this._themeService));
 		this._register(attachTableStyler(this._resourceViewerTable, this._themeService));
 		this._register(this._resourceViewerTable.onClick(this.onTableClick, this));
 		this._register(this._resourceViewerTable.onContextMenu((e: ITableMouseEvent) => {

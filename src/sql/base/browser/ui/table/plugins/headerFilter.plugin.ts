@@ -13,13 +13,17 @@ import { withNullAsUndefined } from 'vs/base/common/types';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 
 export type HeaderFilterCommands = 'sort-asc' | 'sort-desc';
+
 export interface CommandEventArgs<T extends Slick.SlickData> {
 	grid: Slick.Grid<T>,
 	column: Slick.Column<T>,
 	command: HeaderFilterCommands
 }
+
+export interface ITableFilterStyle extends IButtonStyles, IInputBoxStyles { }
 
 const ShowFilterText: string = localize('headerFilter.showFilter', "Show Filter");
 
@@ -35,9 +39,12 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private okButton?: Button;
 	private clearButton?: Button;
 	private cancelButton?: Button;
+	private sortAscButton?: Button;
+	private sortDescButton?: Button;
+	private searchInputBox?: InputBox;
 	private workingFilters!: Array<string>;
 	private columnDef!: FilterableColumn<T>;
-	private buttonStyles?: IButtonStyles;
+	private filterStyles?: ITableFilterStyle;
 	private disposableStore = new DisposableStore();
 	private _enabled: boolean = true;
 
@@ -117,36 +124,31 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.remove();
 	}
 
-	private addMenuItem(menu: JQuery<HTMLElement>, columnDef: Slick.Column<T>, title: string, command: HeaderFilterCommands) {
-		const $item = jQuery('<div class="slick-header-menuitem">')
-			.data('command', command)
-			.data('column', columnDef)
-			.bind('click', async (e) => await this.handleMenuItemClick(e, command, columnDef))
-			.appendTo(menu);
-
-		const $icon = jQuery('<div class="slick-header-menuicon">')
-			.appendTo($item);
-
-		if (title === 'Sort Ascending') {
-			$icon.get(0).className += ' ascending';
-		} else if (title === 'Sort Descending') {
-			$icon.get(0).className += ' descending';
-		}
-
-		jQuery('<span class="slick-header-menucontent">')
-			.text(title)
-			.appendTo($item);
+	private createButtonMenuItem(menu: HTMLElement, columnDef: Slick.Column<T>, title: string, command: HeaderFilterCommands, iconClass: string): Button {
+		const buttonContainer = document.createElement('div');
+		menu.appendChild(buttonContainer);
+		const button = new Button(buttonContainer);
+		button.icon = { classNames: `slick-header-menuicon ${iconClass}` };
+		button.label = title;
+		button.onDidClick(async () => {
+			await this.handleMenuItemClick(command, columnDef);
+		});
+		return button;
 	}
 
-	private addMenuInput(menu: JQuery<HTMLElement>, columnDef: Slick.Column<T>): void {
-		const self = this;
-		jQuery('<input class="input" placeholder="Search" style="margin-top: 5px; width: 206px">')
-			.data('column', columnDef)
-			.bind('keyup', async (e) => {
-				const filterVals = await this.getFilterValuesByInput(jQuery(e.target));
-				self.updateFilterInputs(menu, columnDef, filterVals);
-			})
-			.appendTo(menu);
+	private createSearchInput(menu: JQuery<HTMLElement>, columnDef: Slick.Column<T>): InputBox {
+		const inputContainer = document.createElement('div');
+		inputContainer.style.width = '206px';
+		inputContainer.style.marginTop = '5px';
+		menu[0].appendChild(inputContainer);
+		const input = new InputBox(inputContainer, this.contextViewProvider, {
+			placeholder: localize('table.searchPlaceHolder', "Search")
+		});
+		input.onDidChange(async (newString) => {
+			const filterVals = await this.getFilterValuesByInput(columnDef, newString);
+			this.updateFilterInputs(menu, columnDef, filterVals);
+		});
+		return input;
 	}
 
 	private updateFilterInputs(menu: JQuery<HTMLElement>, columnDef: FilterableColumn<T>, filterItems: Array<string>) {
@@ -172,8 +174,20 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	}
 
 	private showFilter(filterButton: HTMLElement): void {
+		const offset = jQuery(filterButton).offset();
+		let menuleft = offset.left - 226 /* filter width*/ + jQuery(filterButton).width() - 8;
+		let menutop = offset.top + jQuery(filterButton).height();
+		if (menutop + offset.top > jQuery(window).height()) {
+			menutop -= (387 /* filter height */ + jQuery(filterButton).height() + 8);
+		}
+		menuleft = menuleft > 0 ? menuleft : 0;
 		this.contextViewProvider.showContextView({
-			getAnchor: () => filterButton,
+			getAnchor: () => {
+				return {
+					x: menuleft,
+					y: menutop
+				};
+			},
 			render: (container: HTMLElement) => {
 				this.renderFilter(filterButton, container).catch(onUnexpectedError);
 				return {
@@ -184,6 +198,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 						}
 					}
 				};
+			},
+			focus: () => {
+				this.okButton.focus();
 			}
 		});
 	}
@@ -225,11 +242,11 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 		this.$menu.empty();
 
-		this.addMenuItem(this.$menu, this.columnDef, localize('table.sortAscending', "Sort Ascending"), 'sort-asc');
-		this.addMenuItem(this.$menu, this.columnDef, localize('table.sortDescending', "Sort Descending"), 'sort-desc');
-		this.addMenuInput(this.$menu, this.columnDef);
+		this.sortAscButton = this.createButtonMenuItem(this.$menu[0], this.columnDef, localize('table.sortAscending', "Sort Ascending"), 'sort-asc', 'ascending');
+		this.sortDescButton = this.createButtonMenuItem(this.$menu[0], this.columnDef, localize('table.sortDescending', "Sort Descending"), 'sort-desc', 'descending');
+		this.searchInputBox = this.createSearchInput(this.$menu, this.columnDef);
 
-		let filterOptions = '<label><input type="checkbox" value="-1" />(Select All)</label>';
+		let filterOptions = '<label class="filter-option"><input type="checkbox" value="-1" />(Select All)</label>';
 
 		for (let i = 0; i < filterItems.length; i++) {
 			const filtered = this.workingFilters.some(x => x === filterItems[i]);
@@ -251,58 +268,50 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		this.okButton.label = localize('headerFilter.ok', "OK");
 		this.okButton.title = localize('headerFilter.ok', "OK");
 		this.okButton.element.id = 'filter-ok-button';
-		const okElement = jQuery('#filter-ok-button');
-		okElement.bind('click', (ev) => {
+		this.okButton.onDidClick(() => {
 			this.columnDef.filterValues = this.workingFilters.splice(0);
 			this.setButtonImage($menuButton, this.columnDef.filterValues.length > 0);
-			this.handleApply(ev, this.columnDef);
+			this.handleApply(this.columnDef);
 		});
 
 		this.clearButton = new Button($clearButtonDiv.get(0), { secondary: true });
 		this.clearButton.label = localize('headerFilter.clear', "Clear");
 		this.clearButton.title = localize('headerFilter.clear', "Clear");
 		this.clearButton.element.id = 'filter-clear-button';
-		const clearElement = jQuery('#filter-clear-button');
-		clearElement.bind('click', (ev) => {
+		this.okButton.onDidClick(() => {
 			this.columnDef.filterValues!.length = 0;
 			this.setButtonImage($menuButton, false);
-			this.handleApply(ev, this.columnDef);
+			this.handleApply(this.columnDef);
 		});
 
 		this.cancelButton = new Button($cancelButtonDiv.get(0), { secondary: true });
 		this.cancelButton.label = localize('headerFilter.cancel', "Cancel");
 		this.cancelButton.title = localize('headerFilter.cancel', "Cancel");
 		this.cancelButton.element.id = 'filter-cancel-button';
-		const cancelElement = jQuery('#filter-cancel-button');
-		cancelElement.bind('click', () => this.hideMenu());
+		this.cancelButton.onDidClick(() => {
+			this.hideMenu();
+		});
 
 		this.applyStyles();
 
 		jQuery(':checkbox', $filter).bind('click', (e) => {
 			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(e.target));
 		});
-		this.okButton.focus();
 	}
 
-	public style(styles: IButtonStyles): void {
-		this.buttonStyles = styles;
+	public style(styles: ITableFilterStyle): void {
+		this.filterStyles = styles;
 		this.applyStyles();
 	}
 
 	private applyStyles() {
-		if (this.buttonStyles) {
-			const styles = this.buttonStyles;
-			if (this.okButton) {
-				this.okButton.style(styles);
-			}
-
-			if (this.clearButton) {
-				this.clearButton.style(styles);
-			}
-
-			if (this.cancelButton) {
-				this.cancelButton.style(styles);
-			}
+		if (this.filterStyles) {
+			this.okButton?.style(this.filterStyles);
+			this.cancelButton?.style(this.filterStyles);
+			this.clearButton?.style(this.filterStyles);
+			this.sortAscButton?.style(this.filterStyles);
+			this.sortDescButton?.style(this.filterStyles);
+			this.searchInputBox?.style(this.filterStyles);
 		}
 	}
 
@@ -355,7 +364,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		}
 	}
 
-	private handleApply(e: JQuery.Event<HTMLElement, null>, columnDef: Slick.Column<T>) {
+	private handleApply(columnDef: Slick.Column<T>) {
 		this.hideMenu();
 		const provider = this.grid.getData() as IDisposableDataProvider<T>;
 
@@ -365,9 +374,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			this.grid.updateRowCount();
 			this.grid.render();
 		}
-		this.onFilterApplied.notify({ grid: this.grid, column: columnDef }, e, self);
-		e.preventDefault();
-		e.stopPropagation();
+		this.onFilterApplied.notify({ grid: this.grid, column: columnDef });
 	}
 
 	private getFilterValues(dataView: Slick.DataProvider<T>, column: Slick.Column<T>): Array<any> {
@@ -381,10 +388,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		return Array.from(seen);
 	}
 
-	private async getFilterValuesByInput($input: JQuery<HTMLElement>): Promise<Array<string>> {
-		const column = $input.data('column'),
-			filter = $input.val() as string,
-			dataView = this.grid.getData() as IDisposableDataProvider<T>,
+	private async getFilterValuesByInput(column: Slick.Column<T>, filter: string): Promise<Array<string>> {
+		const dataView = this.grid.getData() as IDisposableDataProvider<T>,
 			seen: Set<any> = new Set();
 
 		let columnValues: any[];
@@ -423,7 +428,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		return Array.from(seen).sort((v) => { return v; });
 	}
 
-	private async handleMenuItemClick(e: JQuery.Event<HTMLElement, null>, command: HeaderFilterCommands, columnDef: Slick.Column<T>) {
+	private async handleMenuItemClick(command: HeaderFilterCommands, columnDef: Slick.Column<T>) {
 		this.hideMenu();
 		const provider = this.grid.getData() as IDisposableDataProvider<T>;
 
@@ -442,10 +447,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			grid: this.grid,
 			column: columnDef,
 			command: command
-		}, e, self);
-
-		e.preventDefault();
-		e.stopPropagation();
+		});
 	}
 
 	public get enabled(): boolean {
