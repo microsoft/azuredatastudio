@@ -26,6 +26,7 @@ export function isINotebookInput(value: any): value is INotebookInput {
 		(typeof value.defaultKernel === 'object' || value.defaultKernel === undefined) &&
 		(typeof value.connectionProfile === 'object' || value.connectionProfile === undefined) &&
 		typeof value.notebookUri === 'object' &&
+		typeof value.isDirty === 'function' &&
 		typeof value.layoutChanged === 'function' &&
 		typeof value.editorOpenedTimestamp === 'number' &&
 		typeof value.contentManager === 'object' &&
