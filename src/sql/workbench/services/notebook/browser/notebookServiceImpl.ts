@@ -407,8 +407,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (!notebookUri) {
 			return undefined;
 		}
-		// The NotebookEditor will not be found if there is query or fragments attached to the URI
-		let uriString = notebookUri.with({ query: '', fragment: '' }).toString();
+		let uriString = notebookUri.toString();
 		let editor = this.listNotebookEditors().find(n => n.id === uriString);
 		return editor;
 	}

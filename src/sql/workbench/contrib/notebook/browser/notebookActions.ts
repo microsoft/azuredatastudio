@@ -351,8 +351,7 @@ export class RunParametersAction extends TooltipFromLabelAction {
 				}
 			}
 			let stringParams = unescape(uriParams.toString());
-			context = context.with({ query: stringParams });
-			return this.openParameterizedNotebook(context);
+			return this.openParameterizedNotebook(context, stringParams);
 		}
 	}
 
@@ -361,11 +360,11 @@ export class RunParametersAction extends TooltipFromLabelAction {
 	 * TODO - Call Extensibility API for ShowNotebook
 	 * (showNotebookDocument to be utilized in Notebook Service)
 	**/
-	public async openParameterizedNotebook(uri: URI): Promise<void> {
+	public async openParameterizedNotebook(uri: URI, uriParams: string): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(uri);
 		let modelContents = JSON.stringify(editor.model.toJSON());
 		let basename = path.basename(uri.fsPath);
-		let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: basename });
+		let untitledUri = uri.with({ query: uriParams, authority: '', scheme: 'untitled', path: basename });
 		this._notebookService.openNotebook(untitledUri, {
 			initialContent: modelContents,
 			preserveFocus: true
