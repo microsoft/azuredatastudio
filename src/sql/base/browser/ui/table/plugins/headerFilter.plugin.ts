@@ -12,7 +12,6 @@ import { DisposableStore } from 'vs/base/common/lifecycle';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
-import { onUnexpectedError } from 'vs/base/common/errors';
 import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 
 export type HeaderFilterCommands = 'sort-asc' | 'sort-desc';
@@ -173,14 +172,23 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		});
 	}
 
-	private showFilter(filterButton: HTMLElement): void {
+	private async showFilter(filterButton: HTMLElement): Promise<void> {
+		await this.createFilterMenu(filterButton);
+		const menuElement = this.$menu[0];
+		// Get the absolute coordinates of the filter button
 		const offset = jQuery(filterButton).offset();
-		let menuleft = offset.left - 226 /* filter width*/ + jQuery(filterButton).width() - 8;
-		let menutop = offset.top + jQuery(filterButton).height();
-		if (menutop + offset.top > jQuery(window).height()) {
-			menutop -= (387 /* filter height */ + jQuery(filterButton).height() + 8);
+		// Calculate the position of menu item
+		let menuleft = offset.left - menuElement.offsetWidth + filterButton.offsetWidth;
+		let menutop = offset.top + filterButton.offsetHeight;
+		// Make sure the entire menu is on screen.
+		// If there is not enough vertical space under the filter button, we will move up the menu.
+		// If the left of the menu is off screen (negative value), we will show the menu next to the left edge of window.
+		// We don't really consider the case when there is not enough space to show the entire menu since in that case the application is not usable already.
+		if (menutop + menuElement.offsetHeight > window.innerHeight) {
+			menutop = window.innerHeight - menuElement.offsetHeight;
 		}
 		menuleft = menuleft > 0 ? menuleft : 0;
+
 		this.contextViewProvider.showContextView({
 			getAnchor: () => {
 				return {
@@ -189,7 +197,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 				};
 			},
 			render: (container: HTMLElement) => {
-				this.renderFilter(filterButton, container).catch(onUnexpectedError);
+				container.appendChild(menuElement);
 				return {
 					dispose: () => {
 						if (this.$menu) {
@@ -205,7 +213,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		});
 	}
 
-	private async renderFilter(filterButton: HTMLElement, container: HTMLElement) {
+	private async createFilterMenu(filterButton: HTMLElement) {
 		const target = withNullAsUndefined(filterButton);
 		const $menuButton = jQuery(target);
 		this.columnDef = $menuButton.data('column');
@@ -237,7 +245,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		}
 
 		if (!this.$menu) {
-			this.$menu = jQuery('<div class="slick-header-menu">').appendTo(container);
+			// first add it to the document so that we can get the actual size of the menu
+			// later, it will be added to the correct container
+			this.$menu = jQuery('<div class="slick-header-menu">').appendTo(document.body);
 		}
 
 		this.$menu.empty();
