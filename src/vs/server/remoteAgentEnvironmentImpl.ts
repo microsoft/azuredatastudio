@@ -331,7 +331,8 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 			globalStorageHome: this.environmentService.globalStorageHome,
 			workspaceStorageHome: this.environmentService.workspaceStorageHome,
 			userHome: this.environmentService.userHome,
-			os: platform.OS
+			os: platform.OS,
+			useHostProxy: false
 		};
 	}
 
