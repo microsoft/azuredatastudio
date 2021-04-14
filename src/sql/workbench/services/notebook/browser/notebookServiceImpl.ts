@@ -407,8 +407,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (!notebookUri) {
 			return undefined;
 		}
-		// The NotebookEditor will not be found if there is query or fragments attached to the URI
-		let uriString = notebookUri.with({ query: '', fragment: '' }).toString();
+		let uriString = getNotebookUri(notebookUri);
 		let editor = this.listNotebookEditors().find(n => n.id === uriString);
 		return editor;
 	}
@@ -706,4 +705,17 @@ export class NotebookService extends Disposable implements INotebookService {
 	notifyCellExecutionStarted(): void {
 		this._onCodeCellExecutionStart.fire();
 	}
+}
+
+/**
+ * Untitled notebookUri's need to have the query in order to get the NotebookEditor to run other actions (Run All Cells for example) on parameterized notebooks
+ * otherwise we strip the query and fragment from the notebookUri for all other file schemes
+ * @param notebookUri of the notebook
+ * @returns uriString that contains the formatted notebookUri
+ */
+export function getNotebookUri(notebookUri: URI): string {
+	if (notebookUri.scheme === 'untitled') {
+		return notebookUri.toString();
+	}
+	return notebookUri.with({ query: '', fragment: '' }).toString();
 }
