@@ -60,7 +60,7 @@ suite('Editable dropdown tests', () => {
 		assert(dropdown.selectList.length === 4, 'list does not have all the values that are matching the input box text');
 		assert(dropdown.value = 'foo');
 		dropdown.input.value = 'foobar';
-		assert(count === 3, 'onValueChange event was fired for a value not in dropdown list');
+		assert(count === 3, 'onValueChange event was not fired for a value not in dropdown list');
 		assert(dropdown.selectList.length === 2, 'list does not have all the values that are matching the input box text');
 		assert(dropdown.value = 'foobar');
 
