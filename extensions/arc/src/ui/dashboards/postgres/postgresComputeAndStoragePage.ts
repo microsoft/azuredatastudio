@@ -243,10 +243,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private schedulingParamsToEdit(arg: RoleSpecifier): string | undefined {
 		// A comma-separated list of roles with values can be specified in format <role>=<value>.
-		if (arg.workers && arg.coordinator) {
+		if (!arg) {
+			return undefined;
+		} else if (arg.workers && arg.coordinator) {
 			return `"${arg.workers},${arg.coordinator}"`;
 		} else {
-			return arg.workers ?? arg.coordinator ?? undefined;
+			return arg.workers ?? arg.coordinator;
 		}
 	}
 
@@ -433,10 +435,10 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	private createUserInputWorkerSection(): azdata.Component[] {
 		if (this._postgresModel.configLastUpdated) {
 			this.editWorkerNodeCount();
-			this.editWorkerCores();
-			this.editWorkerMemory();
-			this.editCoordinatorCores();
-			this.editCoordinatorMemory();
+			this.refreshCoresRequest();
+			this.refreshCoresLimit();
+			this.refreshMemoryRequest();
+			this.refreshMemoryLimit();
 		}
 
 		return [
@@ -593,107 +595,133 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		return configurationSection;
 	}
 
-	private editWorkerCores(): void {
-		// Cores Request
-		this.currentConfiguration.coresRequest.workers = this._postgresModel.config?.spec.scheduling?.roles?.workers?.resources?.requests?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
-		if (!this.currentConfiguration.coresRequest.workers) {
-			this.currentConfiguration.coresRequest.workers = '';
+	private refreshCoresRequest(): void {
+		// Workers
+		let workersCR = this._postgresModel.config?.spec.scheduling?.roles?.workers?.resources?.requests?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
+		if (!workersCR) {
+			workersCR = '';
 		}
 
 		this.workerCoresRequestBox.placeHolder = '';
-		this.workerCoresRequestBox.value = this.currentConfiguration.coresRequest.workers;
-		this.saveArgs.coresRequest.workers = undefined;
+		this.workerCoresRequestBox.value = workersCR;
 
-		// Cores Limit
-		this.currentConfiguration.coresLimit.workers = this._postgresModel.config?.spec.scheduling?.roles?.workers?.resources?.limits?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
-		if (!this.currentConfiguration.coresLimit.workers) {
-			this.currentConfiguration.coresLimit.workers = '';
-		}
-
-		this.workerCoresLimitBox.placeHolder = '';
-		this.workerCoresLimitBox.value = this.currentConfiguration.coresLimit.workers;
-		this.saveArgs.coresLimit.workers = undefined;
-	}
-
-	private editWorkerMemory(): void {
-		// Memory Request
-		let currentMemorySize = this._postgresModel.config?.spec.scheduling?.roles?.workers?.resources?.requests?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
-		if (!currentMemorySize) {
-			this.currentConfiguration.memoryRequest.workers = '';
-		} else {
-			this.currentConfiguration.memoryRequest.workers = convertToGibibyteString(currentMemorySize);
-		}
-
-		this.workerMemoryRequestBox.placeHolder = '';
-		this.workerMemoryRequestBox.value = this.currentConfiguration.memoryRequest.workers;
-		this.saveArgs.memoryRequest.workers = undefined;
-
-		// Memory Limit
-		currentMemorySize = this._postgresModel.config?.spec.scheduling?.roles?.workers?.resources?.limits?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
-		if (!currentMemorySize) {
-			this.currentConfiguration.memoryLimit.workers = '';
-		} else {
-			this.currentConfiguration.memoryLimit.workers = convertToGibibyteString(currentMemorySize);
-		}
-
-		this.workerMemoryLimitBox.placeHolder = '';
-		this.workerMemoryLimitBox.value = this.currentConfiguration.memoryLimit.workers;
-		this.saveArgs.memoryLimit.workers = undefined;
-	}
-
-	private editCoordinatorCores(): void {
-		// Cores Request
-		this.currentConfiguration.coresRequest.coordinator = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.requests?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
-		if (!this.currentConfiguration.coresRequest.coordinator) {
-			this.currentConfiguration.coresRequest.coordinator = '';
+		// Coordinator
+		let coordinatorCR = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.requests?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
+		if (!coordinatorCR) {
+			coordinatorCR = '';
 		}
 
 		this.coordinatorCoresRequestBox.placeHolder = '';
-		this.coordinatorCoresRequestBox.value = this.currentConfiguration.coresRequest.coordinator;
-		this.saveArgs.coresRequest.coordinator = undefined;
+		this.coordinatorCoresRequestBox.value = coordinatorCR;
 
-		// Cores Limit
-		this.currentConfiguration.coresLimit.coordinator = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.limits?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
-		if (!this.currentConfiguration.coresLimit.coordinator) {
-			this.currentConfiguration.coresLimit.coordinator = '';
+		// Update saved current configuration
+		this.currentConfiguration.coresRequest = {
+			workers: workersCR,
+			coordinator: coordinatorCR
+		};
+
+		// Discard argument changes
+		this.saveArgs.coresRequest = {};
+	}
+
+	private refreshCoresLimit(): void {
+		// Workers
+		let workersCL = this._postgresModel.config?.spec.scheduling?.roles?.workers?.resources?.limits?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
+		if (!workersCL) {
+			workersCL = '';
+		}
+
+		this.workerCoresLimitBox.placeHolder = '';
+		this.workerCoresLimitBox.value = workersCL;
+
+		// Coordinator
+		let coordinatorCL = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.limits?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
+		if (!coordinatorCL) {
+			coordinatorCL = '';
 		}
 
 		this.coordinatorCoresLimitBox.placeHolder = '';
-		this.coordinatorCoresLimitBox.value = this.currentConfiguration.coresLimit.coordinator;
-		this.saveArgs.coresLimit.coordinator = undefined;
+		this.coordinatorCoresLimitBox.value = coordinatorCL;
+
+		// Update saved current configuration
+		this.currentConfiguration.coresLimit = {
+			workers: workersCL,
+			coordinator: coordinatorCL
+		};
+
+		// Discard argument changes
+		this.saveArgs.coresLimit = {};
 	}
 
-	private editCoordinatorMemory(): void {
-		// Memory Request
-		let currentMemorySize = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.requests?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
-		if (!currentMemorySize) {
-			this.currentConfiguration.memoryRequest.coordinator = '';
-		} else {
-			this.currentConfiguration.memoryRequest.coordinator = convertToGibibyteString(currentMemorySize);
+	private refreshMemoryRequest(): void {
+		// Workers
+		let currentWorkersMemoryRequest = this._postgresModel.config?.spec.scheduling?.roles?.workers?.resources?.requests?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
+		let workersMR = '';
+		if (currentWorkersMemoryRequest) {
+			workersMR = convertToGibibyteString(currentWorkersMemoryRequest);
+		}
+
+		this.workerMemoryRequestBox.placeHolder = '';
+		this.workerMemoryRequestBox.value = workersMR;
+
+		// Coordinator
+		let currentCoordinatorMemoryRequest = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.requests?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
+		let coordinatorMR = '';
+		if (currentCoordinatorMemoryRequest) {
+			coordinatorMR = convertToGibibyteString(currentCoordinatorMemoryRequest);
 		}
 
 		this.coordinatorMemoryRequestBox.placeHolder = '';
-		this.coordinatorMemoryRequestBox.value = this.currentConfiguration.memoryRequest.coordinator;
-		this.saveArgs.memoryRequest.coordinator = undefined;
+		this.coordinatorMemoryRequestBox.value = coordinatorMR;
 
-		// Memory Limit
-		currentMemorySize = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.limits?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
-		if (!currentMemorySize) {
-			this.currentConfiguration.memoryLimit.coordinator = '';
-		} else {
-			this.currentConfiguration.memoryLimit.coordinator = convertToGibibyteString(currentMemorySize);
+		// Update saved current configuration
+		this.currentConfiguration.memoryRequest = {
+			workers: workersMR,
+			coordinator: coordinatorMR
+		};
+
+		// Discard argument changes
+		this.saveArgs.memoryRequest = {};
+	}
+
+
+
+	private refreshMemoryLimit(): void {
+		// Workers
+		let currentWorkersMemoryLimit = this._postgresModel.config?.spec.scheduling?.roles?.workers?.resources?.limits?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
+		let workersML = '';
+		if (currentWorkersMemoryLimit) {
+			workersML = convertToGibibyteString(currentWorkersMemoryLimit);
+		}
+
+		this.workerMemoryLimitBox.placeHolder = '';
+		this.workerMemoryLimitBox.value = workersML;
+
+		// Coordinator
+		let currentCoordinatorMemoryLimit = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.limits?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
+		let coordinatorML = '';
+		if (currentCoordinatorMemoryLimit) {
+			coordinatorML = convertToGibibyteString(currentCoordinatorMemoryLimit);
 		}
 
 		this.coordinatorMemoryLimitBox.placeHolder = '';
-		this.coordinatorMemoryLimitBox.value = this.currentConfiguration.memoryLimit.coordinator;
-		this.saveArgs.memoryLimit.coordinator = undefined;
+		this.coordinatorMemoryLimitBox.value = coordinatorML;
+
+		// Update saved current configuration
+		this.currentConfiguration.memoryLimit = {
+			workers: workersML,
+			coordinator: coordinatorML
+		};
+
+		// Discard argument changes
+		this.saveArgs.memoryLimit = {};
 	}
 
 	private handleServiceUpdated(): void {
 		this.editWorkerNodeCount();
-		this.editWorkerCores();
-		this.editWorkerMemory();
-		this.editCoordinatorCores();
-		this.editCoordinatorMemory();
+		this.refreshCoresRequest();
+		this.refreshCoresLimit();
+		this.refreshMemoryRequest();
+		this.refreshMemoryLimit();
 	}
 }
