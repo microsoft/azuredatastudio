@@ -13,6 +13,7 @@ import { withNullAsUndefined } from 'vs/base/common/types';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
+import { trapKeyboardNavigation } from 'sql/base/browser/dom';
 
 export type HeaderFilterCommands = 'sort-asc' | 'sort-desc';
 
@@ -307,6 +308,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		jQuery(':checkbox', $filter).bind('click', (e) => {
 			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(e.target));
 		});
+
+		// No need to add this to disposable store, it will be disposed when the menu is closed.
+		trapKeyboardNavigation(this.$menu[0]);
 	}
 
 	public style(styles: ITableFilterStyle): void {
