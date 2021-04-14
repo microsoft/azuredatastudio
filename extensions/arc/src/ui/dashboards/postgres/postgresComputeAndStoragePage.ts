@@ -672,8 +672,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		this.saveArgs.memoryRequest = {};
 	}
 
-
-
 	private refreshMemoryLimit(): void {
 		// Workers
 		let currentWorkersMemoryLimit = this._postgresModel.config?.spec.scheduling?.roles?.worker?.resources?.limits?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
