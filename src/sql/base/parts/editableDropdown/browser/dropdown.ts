@@ -75,6 +75,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	private _options: IDropdownOptions;
 	private _dataSource = new DropdownDataSource();
 	public fireOnTextChange?: boolean;
+	private _previousValue: string;
 
 	private _onBlur = this._register(new Emitter<void>());
 	public onBlur: Event<void> = this._onBlur.event;
@@ -228,7 +229,6 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 			}
 			if (this.fireOnTextChange) {
 				this.value = e;
-				this._onValueChange.fire(e);
 			}
 		});
 
@@ -253,7 +253,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		return this._selectListContainer.classList.contains('visible');
 	}
 
-	private _setDropdownVisibility(visible: boolean): void {
+	public setDropdownVisibility(visible: boolean): void {
 		if (visible) {
 			this._selectListContainer.classList.add('visible');
 		} else {
@@ -264,7 +264,6 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 
 	private _updateSelection(newValue: string): void {
 		this.value = newValue;
-		this._onValueChange.fire(newValue);
 		this._input.focus();
 		this._hideList();
 	}
@@ -277,12 +276,12 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 			this.contextViewService.showContextView({
 				getAnchor: () => this._inputContainer,
 				render: container => {
-					this._setDropdownVisibility(true);
+					this.setDropdownVisibility(true);
 					DOM.append(container, this._selectListContainer);
 					this._updateDropDownList();
 					return {
 						dispose: () => {
-							this._setDropdownVisibility(false);
+							this.setDropdownVisibility(false);
 						}
 					};
 				}
@@ -332,7 +331,11 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	}
 
 	public set value(val: string) {
-		this._input.value = val;
+		if (this._previousValue !== val) {
+			this._input.value = val;
+			this._previousValue = val;
+			this._onValueChange.fire(val);
+		}
 	}
 
 	public get inputElement(): HTMLInputElement {
@@ -383,5 +386,13 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 
 	public set ariaLabel(val: string) {
 		this._input.setAriaLabel(val);
+	}
+
+	public get input(): InputBox {
+		return this._input;
+	}
+
+	public get selectList(): List<IDropdownListItem> {
+		return this._selectList;
 	}
 }

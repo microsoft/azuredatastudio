@@ -98,11 +98,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
 		this._managedInstanceSubscriptionDropdown = view.modelBuilder.dropDown().withProps({
-			width: WIZARD_INPUT_COMPONENT_WIDTH
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			editable: true
 		}).component();
 		this._managedInstanceSubscriptionDropdown.onValueChanged((e) => {
-			if (e.selected) {
-				this.migrationStateModel._targetSubscription = this.migrationStateModel.getSubscription(e.index);
+			if (e) {
+				const selectedIndex = (<azdata.CategoryValue[]>this._managedInstanceSubscriptionDropdown.values)?.findIndex(v => v.displayName === e);
+				this.migrationStateModel._targetSubscription = this.migrationStateModel.getSubscription(selectedIndex);
 				this.migrationStateModel._targetServerInstance = undefined!;
 				this.migrationStateModel._sqlMigrationService = undefined!;
 				this.populateLocationAndResourceGroupDropdown();
@@ -393,6 +395,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this._resourceDropdown.loading = true;
 			try {
 				this._managedInstanceSubscriptionDropdown.values = await this.migrationStateModel.getSubscriptionsDropdownValues();
+				this._managedInstanceSubscriptionDropdown.value = this._managedInstanceSubscriptionDropdown.values[0];
 			} catch (e) {
 				console.log(e);
 			} finally {
