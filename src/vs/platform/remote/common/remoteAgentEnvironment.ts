@@ -18,6 +18,7 @@ export interface IRemoteAgentEnvironment {
 	workspaceStorageHome: URI;
 	userHome: URI;
 	os: OperatingSystem;
+	useHostProxy: boolean;
 }
 
 export interface RemoteAgentConnectionContext {
