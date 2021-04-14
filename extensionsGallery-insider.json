@@ -3739,14 +3739,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.5.2",
-							"lastUpdated": "04/02/2021",
+							"version": "0.5.3",
+							"lastUpdated": "04/14/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/kusto/kusto-0.5.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/kusto/kusto-0.5.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
