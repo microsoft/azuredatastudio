@@ -25,7 +25,7 @@ import { IFindNotebookController } from 'sql/workbench/contrib/notebook/browser/
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
-import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { URI } from 'vs/base/common/uri';
@@ -364,37 +364,13 @@ export class RunParametersAction extends TooltipFromLabelAction {
 	public async openParameterizedNotebook(uri: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(uri);
 		let modelContents = JSON.stringify(editor.model.toJSON());
-		let listNotebookEditors: INotebookEditor[] = this._notebookService.listNotebookEditors();
-		let untitledUriPath = getUntitledUriPath(path.basename(uri.fsPath), listNotebookEditors);
+		let untitledUriPath = this._notebookService.getUntitledUriPath(path.basename(uri.fsPath));
 		let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: untitledUriPath });
 		this._notebookService.openNotebook(untitledUri, {
 			initialContent: modelContents,
 			preserveFocus: true
 		});
 	}
-}
-
-/**
- * Will iterate the title of the parameterized notebook since the original notebook is still open
- * @param originalTitle is the title of the original notebook that we run parameterized action from
- * @param listNotebookEditors is the list of notebooks editors currently open
- * @returns the title of the parameterized notebook
- */
-export function getUntitledUriPath(originalTitle: string, listNotebookEditors: INotebookEditor[]): string {
-	let title = originalTitle;
-	let nextVal = 0;
-	let ext = path.extname(title);
-	while (listNotebookEditors.findIndex(doc => path.basename(doc.notebookParams.notebookUri.fsPath) === title) > -1) {
-		if (ext) {
-			// Need it to be `Readme-0.txt` not `Readme.txt-0`
-			let titleStart = originalTitle.slice(0, originalTitle.length - ext.length);
-			title = `${titleStart}-${nextVal}${ext}`;
-		} else {
-			title = `${originalTitle}-${nextVal}`;
-		}
-		nextVal++;
-	}
-	return title;
 }
 
 const showAllKernelsConfigName = 'notebook.showAllKernels';
