@@ -224,6 +224,28 @@ export class NotebookService extends Disposable implements INotebookService {
 		return await this._editorService.openEditor(fileInput, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
 	}
 
+	/**
+	 * Will iterate the title of the parameterized notebook since the original notebook is still open
+	 * @param originalTitle is the title of the original notebook that we run parameterized action from
+	 * @returns the title of the parameterized notebook
+	 */
+	public getUntitledUriPath(originalTitle: string): string {
+		let title = originalTitle;
+		let nextVal = 0;
+		let ext = path.extname(title);
+		while (this.listNotebookEditors().findIndex(doc => path.basename(doc.notebookParams.notebookUri.fsPath) === title) > -1) {
+			if (ext) {
+				// Need it to be `Readme-0.txt` not `Readme.txt-0`
+				let titleStart = originalTitle.slice(0, originalTitle.length - ext.length);
+				title = `${titleStart}-${nextVal}${ext}`;
+			} else {
+				title = `${originalTitle}-${nextVal}`;
+			}
+			nextVal++;
+		}
+		return title;
+	}
+
 	private updateSQLRegistrationWithConnectionProviders() {
 		// Update the SQL extension
 		let sqlNotebookKernels = this._providerToStandardKernels.get(notebookConstants.SQL);
