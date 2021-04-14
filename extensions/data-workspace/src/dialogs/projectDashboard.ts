@@ -8,6 +8,7 @@ import { IDashboardColumnInfo, IDashboardTable, IProjectAction, IProjectActionGr
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
+import { IconPathHelper } from '../common/iconHelper';
 import { IWorkspaceService } from '../common/interfaces';
 import { fileExist } from '../common/utils';
 
@@ -17,6 +18,8 @@ export class ProjectDashboard {
 	private modelView: azdata.ModelView | undefined;
 	private projectProvider: IProjectProvider | undefined;
 	private overviewTab: azdata.DashboardTab | undefined;
+	private rootContainer: azdata.FlexContainer | undefined;
+	private tableContainer: azdata.Component | undefined;
 
 	constructor(private _workspaceService: IWorkspaceService, private _treeItem: WorkspaceTreeItem) {
 	}
@@ -41,7 +44,7 @@ export class ProjectDashboard {
 		await this.dashboard!.open();
 	}
 
-	private async createDashboard(title: string, location: string): Promise<void> {
+	private async createDashboard(title: string, projectFilePath: string): Promise<void> {
 		this.dashboard = azdata.window.createModelViewDashboard(title, 'ProjectDashboard', { alwaysShowTabs: false });
 		this.dashboard.registerTabs(async (modelView: azdata.ModelView) => {
 			this.modelView = modelView;
@@ -49,8 +52,8 @@ export class ProjectDashboard {
 			this.overviewTab = {
 				title: '',
 				id: 'overview-tab',
-				content: this.createContainer(title, location),
-				toolbar: this.createToolbarContainer()
+				content: this.createContainer(title, projectFilePath),
+				toolbar: this.createToolbarContainer(projectFilePath)
 			};
 			return [
 				this.overviewTab
@@ -58,7 +61,7 @@ export class ProjectDashboard {
 		});
 	}
 
-	private createToolbarContainer(): azdata.ToolbarContainer {
+	private createToolbarContainer(projectFilePath: string): azdata.ToolbarContainer {
 		const projectActions: (IProjectAction | IProjectActionGroup)[] = this.projectProvider!.projectActions;
 
 		// Add actions as buttons
@@ -69,16 +72,31 @@ export class ProjectDashboard {
 		projectActions.forEach((action, actionIndex) => {
 			if (this.isProjectAction(action)) {
 				const button = this.createButton(action);
-				buttons.push({ component: button });
+				buttons.push({ component: button, toolbarSeparatorAfter: (projectActionsLength - 1 === actionIndex) });
 			} else {
 				const groupLength = action.actions.length;
 
 				action.actions.forEach((groupAction, index) => {
 					const button = this.createButton(groupAction);
-					buttons.push({ component: button, toolbarSeparatorAfter: ((groupLength - 1 === index) && (projectActionsLength - 1 !== actionIndex)) });	// Add toolbar separator at the end of the group, if the group is not the last in the list
+					buttons.push({ component: button, toolbarSeparatorAfter: ((groupLength - 1 === index) || (projectActionsLength - 1 === actionIndex)) });	// Add toolbar separator at the end of the group
 				});
 			}
 		});
+
+		const refreshButton = this.modelView!.modelBuilder.button()
+			.withProperties<azdata.ButtonProperties>({
+				label: constants.Refresh,
+				iconPath: IconPathHelper.refresh,
+				height: '20px'
+			}).component();
+
+		refreshButton.onDidClick(() => {
+			this.rootContainer?.removeItem(this.tableContainer!);
+			this.tableContainer = this.createTables(projectFilePath);
+			this.rootContainer?.addItem(this.tableContainer);
+		});
+
+		buttons.push({ component: refreshButton });
 
 		return this.modelView!.modelBuilder.toolbarContainer()
 			.withToolbarItems(
@@ -105,21 +123,21 @@ export class ProjectDashboard {
 		return button;
 	}
 
-	private createContainer(title: string, location: string): azdata.FlexContainer {
-		const rootContainer = this.modelView!.modelBuilder.flexContainer().withLayout(
+	private createContainer(title: string, projectFilePath: string): azdata.FlexContainer {
+		this.rootContainer = this.modelView!.modelBuilder.flexContainer().withLayout(
 			{
 				flexFlow: 'column',
 				width: '100%',
 				height: '100%'
 			}).component();
 
-		const headerContainer = this.createHeader(title, location);
-		const tableContainer = this.createTables();
+		const headerContainer = this.createHeader(title, projectFilePath);
+		this.tableContainer = this.createTables(projectFilePath);
 
-		rootContainer.addItem(headerContainer);
-		rootContainer.addItem(tableContainer);
+		this.rootContainer.addItem(headerContainer);
+		this.rootContainer.addItem(this.tableContainer);
 
-		return rootContainer;
+		return this.rootContainer;
 	}
 
 	/**
@@ -170,8 +188,8 @@ export class ProjectDashboard {
 	/**
 	 * Adds all the tables to the container
 	 */
-	private createTables(): azdata.Component {
-		const dashboardData: IDashboardTable[] = this.projectProvider!.dashboardComponents;
+	private createTables(projectFile: string): azdata.Component {
+		const dashboardData: IDashboardTable[] = this.projectProvider!.getDashboardComponents(projectFile);
 
 		const tableContainer = this.modelView!.modelBuilder.flexContainer().withLayout(
 			{
@@ -186,54 +204,62 @@ export class ProjectDashboard {
 				.component();
 			tableContainer.addItem(tableNameLabel, { CSSStyles: { 'padding-left': '25px', 'padding-bottom': '20px', ...constants.cssStyles.title } });
 
-			const columns: azdata.DeclarativeTableColumn[] = [];
-			info.columns.forEach((column: IDashboardColumnInfo) => {
-				let col = {
-					displayName: column.displayName,
-					valueType: column.type === 'icon' ? azdata.DeclarativeDataType.component : azdata.DeclarativeDataType.string,
-					isReadOnly: true,
-					width: column.width,
-					headerCssStyles: {
-						'border': 'none',
-						...constants.cssStyles.tableHeader
-					},
-					rowCssStyles: {
-						...constants.cssStyles.tableRow
-					},
-				};
-				columns.push(col);
-			});
-
-			const data: azdata.DeclarativeTableCellValue[][] = [];
-			info.data.forEach(values => {
-				const columnValue: azdata.DeclarativeTableCellValue[] = [];
-				values.forEach(val => {
-					if (typeof val === 'string') {
-						columnValue.push({ value: val });
-					} else {
-						const iconComponent = this.modelView!.modelBuilder.image().withProperties<azdata.ImageComponentProperties>({
-							iconPath: val.icon,
-							width: '15px',
-							height: '15px',
-							iconHeight: '15px',
-							iconWidth: '15px'
-						}).component();
-						const stringComponent = this.modelView!.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-							value: val.text,
-							CSSStyles: { 'margin-block-start': 'auto', 'block-size': 'auto', 'margin-block-end': '0px' }
-						}).component();
-
-						const columnData = this.modelView!.modelBuilder.flexContainer().withItems([iconComponent, stringComponent], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row' }).component();
-						columnValue.push({ value: columnData });
-					}
+			if (info.data.length === 0) {
+				const noDataText = constants.noPreviousData(info.name.toLocaleLowerCase());
+				const noDataLabel = this.modelView!.modelBuilder.text()
+					.withProperties<azdata.TextComponentProperties>({ value: noDataText })
+					.component();
+				tableContainer.addItem(noDataLabel, { CSSStyles: { 'padding-left': '25px', 'padding-bottom': '20px' } });
+			} else {
+				const columns: azdata.DeclarativeTableColumn[] = [];
+				info.columns.forEach((column: IDashboardColumnInfo) => {
+					let col = {
+						displayName: column.displayName,
+						valueType: column.type === 'icon' ? azdata.DeclarativeDataType.component : azdata.DeclarativeDataType.string,
+						isReadOnly: true,
+						width: column.width,
+						headerCssStyles: {
+							'border': 'none',
+							...constants.cssStyles.tableHeader
+						},
+						rowCssStyles: {
+							...constants.cssStyles.tableRow
+						},
+					};
+					columns.push(col);
 				});
-				data.push(columnValue);
-			});
 
-			const table = this.modelView!.modelBuilder.declarativeTable()
-				.withProperties<azdata.DeclarativeTableProperties>({ columns: columns, dataValues: data, ariaLabel: info.name, CSSStyles: { 'margin-left': '30px' } }).component();
+				const data: azdata.DeclarativeTableCellValue[][] = [];
+				info.data.forEach(values => {
+					const columnValue: azdata.DeclarativeTableCellValue[] = [];
+					values.forEach(val => {
+						if (typeof val === 'string') {
+							columnValue.push({ value: val });
+						} else {
+							const iconComponent = this.modelView!.modelBuilder.image().withProperties<azdata.ImageComponentProperties>({
+								iconPath: val.icon,
+								width: '15px',
+								height: '15px',
+								iconHeight: '15px',
+								iconWidth: '15px'
+							}).component();
+							const stringComponent = this.modelView!.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+								value: val.text,
+								CSSStyles: { 'margin-block-start': 'auto', 'block-size': 'auto', 'margin-block-end': '0px' }
+							}).component();
 
-			tableContainer.addItem(table);
+							const columnData = this.modelView!.modelBuilder.flexContainer().withItems([iconComponent, stringComponent], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row' }).component();
+							columnValue.push({ value: columnData });
+						}
+					});
+					data.push(columnValue);
+				});
+
+				const table = this.modelView!.modelBuilder.declarativeTable()
+					.withProperties<azdata.DeclarativeTableProperties>({ columns: columns, dataValues: data, ariaLabel: info.name, CSSStyles: { 'margin-left': '30px' } }).component();
+
+				tableContainer.addItem(table);
+			}
 		});
 		return tableContainer;
 	}

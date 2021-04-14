@@ -6,7 +6,7 @@
 					[ngStyle]="column.headerCssStyles"
 					[attr.aria-label]="getHeaderAriaLabel(c)">
 					{{column.displayName}}
-					<checkbox *ngIf="isCheckBox(c)" [checked]="isHeaderChecked(c)"
+					<checkbox *ngIf="headerCheckboxVisible(c)" [checked]="isHeaderChecked(c)"
 					[aria-label]="getCheckAllColumnAriaLabel(c)" (onChange)="onHeaderCheckBoxChanged($event,c)"
 						label=""></checkbox>
 				</th>
@@ -23,7 +23,7 @@
 							[ngStyle]="mergeCss(columns[c].rowCssStyles, cellData.style)"
 							role="gridcell">
 							<checkbox *ngIf="isCheckBox(c)" label="" (onChange)="onCheckBoxChanged($event,r,c)"
-								[enabled]="isControlEnabled(c)" [checked]="isChecked(r,c)"
+								[enabled]="isControlEnabled(r, c)" [checked]="isChecked(r,c)"
 								[ngStyle]="mergeCss(columns[c].rowCssStyles, cellData.style)">
 							</checkbox>
 							<select-box *ngIf="isSelectBox(c)" [options]="getOptions(c)"

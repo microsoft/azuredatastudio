@@ -5,7 +5,7 @@
 
 import * as nls from 'vscode-nls';
 import { getErrorMessage } from './common/utils';
-import { azdataConfigSection, azdataInstallKey, azdataUpdateKey } from './constants';
+import { azdataConfigSection, azdataInstallKey, azdataUpdateKey, azdatarequiredUpdateKey } from './constants';
 const localize = nls.loadMessageBundle();
 
 export const azdata = localize('azdata.azdata', "Azure Data CLI");
@@ -38,8 +38,11 @@ export const promptLog = (logEntry: string) => localize('azdata.promptLog', "Pro
 export const promptForAzdataInstall = localize('azdata.couldNotFindAzdataWithPrompt', "Could not find Azure Data CLI, install it now? If not then some features will not be able to function.");
 export const promptForAzdataInstallLog = promptLog(promptForAzdataInstall);
 export const promptForAzdataUpdate = (version: string): string => localize('azdata.promptForAzdataUpdate', "A new version of Azure Data CLI ( {0} ) is available, do you wish to update to it now?", version);
+export const promptForRequiredAzdataUpdate = (requiredVersion: string, latestVersion: string): string => localize('azdata.promptForRequiredAzdataUpdate', "This extension requires Azure Data CLI >= {0} to be installed, do you wish to update to the latest version ({1}) now? If you do not then some functionality may not work.", requiredVersion, latestVersion);
+export const requiredVersionNotAvailable = (requiredVersion: string, currentVersion: string): string => localize('azdata.requiredVersionNotAvailable', "This extension requires Azure Data CLI >= {0} to be installed, but the current version available is only {1}. Install the correct version manually from [here](https://docs.microsoft.com/sql/azdata/install/deploy-install-azdata) and then restart Azure Data Studio.", requiredVersion, currentVersion);
 export const promptForAzdataUpdateLog = (version: string): string => promptLog(promptForAzdataUpdate(version));
-
+export const promptForRequiredAzdataUpdateLog = (requiredVersion: string, latestVersion: string): string => promptLog(promptForRequiredAzdataUpdate(requiredVersion, latestVersion));
+export const missingRequiredVersion = (requiredVersion: string): string => localize('azdata.missingRequiredVersion', "Azure Data CLI >= {0} is required for this feature. Run the 'Azure Data CLI: Check for Update' command to install this and then try again.", requiredVersion);
 export const downloadError = localize('azdata.downloadError', "Error while downloading");
 export const installError = (err: any): string => localize('azdata.installError', "Error installing Azure Data CLI: {0}", err.message ?? err);
 export const updateError = (err: any): string => localize('azdata.updateError', "Error updating Azure Data CLI: {0}", err.message ?? err);
@@ -50,6 +53,7 @@ export const noAzdata = localize('azdata.noAzdata', "No Azure Data CLI is availa
 export const noAzdataWithLink = localize('azdata.noAzdataWithLink', "No Azure Data CLI is available, [install the Azure Data CLI](command:azdata.install) to enable the features that require it.");
 export const skipInstall = (config: string): string => localize('azdata.skipInstall', "Skipping installation of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}", azdataConfigSection, azdataInstallKey, config);
 export const skipUpdate = (config: string): string => localize('azdata.skipUpdate', "Skipping update of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}", azdataConfigSection, azdataUpdateKey, config);
+export const skipRequiredUpdate = (config: string): string => localize('azdata.skipRequiredUpdate', "Skipping required update of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}", azdataConfigSection, azdatarequiredUpdateKey, config);
 export const noReleaseVersion = (platform: string, releaseInfo: string): string => localize('azdata.noReleaseVersion', "No release version available for platform '{0}'\nRelease info: ${1}", platform, releaseInfo);
 export const noDownloadLink = (platform: string, releaseInfo: string): string => localize('azdata.noDownloadLink', "No download link available for platform '{0}'\nRelease info: ${1}", platform, releaseInfo);
 export const failedToParseReleaseInfo = (url: string, fileContents: string, err: any): string => localize('azdata.failedToParseReleaseInfo', "Failed to parse the JSON of contents at: {0}.\nFile contents:\n{1}\nError: {2}", url, fileContents, getErrorMessage(err));
@@ -66,3 +70,4 @@ export const promptForEula = (privacyStatementUrl: string, eulaUrl: string) => l
 export const promptForEulaLog = (privacyStatementUrl: string, eulaUrl: string) => promptLog(promptForEula(privacyStatementUrl, eulaUrl));
 export const userResponseToEulaPrompt = (response: string | undefined) => localize('azdata.promptForEulaResponse', "User response to EULA prompt: {0}", response);
 export const eulaAcceptedStateOnStartup = (eulaAccepted: boolean) => localize('azdata.eulaAcceptedStateOnStartup', "'EULA Accepted' state on startup: {0}", eulaAccepted);
+export const endpointOrNamespaceRequired = localize('azdata.endpointOrNamespaceRequired', "Either an endpoint or a namespace must be specified");

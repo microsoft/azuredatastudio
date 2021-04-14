@@ -23,6 +23,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	private _view!: azdata.ModelView;
 	private _igComponent!: azdata.TextComponent;
+	private _assessmentStatusIcon!: azdata.ImageComponent;
 	private _detailsComponent!: azdata.TextComponent;
 	private _chooseTargetComponent!: azdata.DivContainer;
 	private _azureSubscriptionText!: azdata.TextComponent;
@@ -63,7 +64,31 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	protected async registerContent(view: azdata.ModelView) {
 		this._view = view;
 		this._igComponent = this.createStatusComponent(view); // The first component giving basic information
+		this._assessmentStatusIcon = this._view.modelBuilder.image().withProps({
+			iconPath: IconPathHelper.completedMigration,
+			iconHeight: 17,
+			iconWidth: 17,
+			width: 17,
+			height: 20
+		}).component();
+		const igContainer = this._view.modelBuilder.flexContainer().component();
+		igContainer.addItem(this._assessmentStatusIcon, {
+			flex: '0 0 auto'
+		});
+		igContainer.addItem(this._igComponent, {
+			flex: '0 0 auto'
+		});
+
 		this._detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
+
+		const statusContainer = this._view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column'
+		}).withItems(
+			[
+				igContainer,
+				this._detailsComponent
+			]
+		).component();
 		this._chooseTargetComponent = await this.createChooseTargetComponent(view);
 		this._azureSubscriptionText = this.createAzureSubscriptionText(view);
 
@@ -166,11 +191,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			[
 				{
 					title: '',
-					component: this._igComponent
-				},
-				{
-					title: '',
-					component: this._detailsComponent
+					component: statusContainer
 				},
 				{
 					title: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
@@ -214,14 +235,20 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private createStatusComponent(view: azdata.ModelView): azdata.TextComponent {
 		const component = view.modelBuilder.text().withProps({
 			CSSStyles: {
-				'font-size': '14px'
+				'font-size': '14px',
+				'margin': '0 0 0 8px',
+				'line-height': '20px'
 			}
 		}).component();
 		return component;
 	}
 
 	private createDetailsComponent(view: azdata.ModelView): azdata.TextComponent {
-		const component = view.modelBuilder.text().component();
+		const component = view.modelBuilder.text().withProps({
+			CSSStyles: {
+				'font-size': '13px'
+			}
+		}).component();
 		return component;
 	}
 

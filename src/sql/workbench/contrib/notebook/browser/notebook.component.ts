@@ -28,7 +28,7 @@ import { INotebookService, INotebookParams, INotebookEditor, INotebookSection, I
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { Deferred } from 'sql/base/common/promise';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction, RunParametersAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
@@ -129,7 +129,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.notebookService.removeNotebookEditor(this);
 		}
 	}
-
 	public get model(): NotebookModel | null {
 		return this._model;
 	}
@@ -387,6 +386,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', true);
 			this._trustedAction.enabled = false;
 
+			let runParametersAction = this.instantiationService.createInstance(RunParametersAction, 'notebook.runParameters', true, this._notebookParams.notebookUri);
+
 			let taskbar = <HTMLElement>this.toolbar.nativeElement;
 			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 			this._actionBar.context = this._notebookParams.notebookUri;
@@ -418,6 +419,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ action: collapseCellsAction },
 				{ action: clearResultsButton },
 				{ action: this._trustedAction },
+				{ action: runParametersAction },
 			]);
 		} else {
 			let kernelContainer = document.createElement('div');
@@ -458,10 +460,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ action: this._trustedAction },
 				{ action: this._runAllCellsAction },
 				{ action: clearResultsButton },
-				{ action: collapseCellsAction }
+				{ action: collapseCellsAction },
 			]);
 		}
-
 	}
 
 	protected initNavSection(): void {

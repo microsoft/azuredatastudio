@@ -20,6 +20,9 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { IExtensionRecommendationsService } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
 import { IEncodingSupport } from 'vs/workbench/common/editor';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { getChartMaxRowCount, notifyMaxRowCountExceeded } from 'sql/workbench/contrib/charts/browser/utils';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -167,7 +170,11 @@ export class ChartDataAction extends Action {
 
 	constructor(
 		@IEditorService private editorService: IEditorService,
-		@IExtensionRecommendationsService private readonly extensionTipsService: IExtensionRecommendationsService
+		@IExtensionRecommendationsService private readonly extensionTipsService: IExtensionRecommendationsService,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IStorageService private readonly storageService: IStorageService,
+		@INotificationService private readonly notificationService: INotificationService,
+		@IAdsTelemetryService private readonly adsTelemetryService: IAdsTelemetryService
 	) {
 		super(ChartDataAction.ID, ChartDataAction.LABEL, ChartDataAction.ICON);
 	}
@@ -175,7 +182,15 @@ export class ChartDataAction extends Action {
 	public run(context: IGridActionContext): Promise<boolean> {
 		// show the visualizer extension recommendation notification
 		this.extensionTipsService.promptRecommendedExtensionsByScenario(Constants.visualizerExtensions);
-
+		const maxRowCount = getChartMaxRowCount(this.configurationService);
+		const rowCount = context.table.getData().getLength();
+		const maxRowCountExceeded = rowCount > maxRowCount;
+		if (maxRowCountExceeded) {
+			notifyMaxRowCountExceeded(this.storageService, this.notificationService, this.configurationService);
+		}
+		this.adsTelemetryService.createActionEvent(TelemetryKeys.TelemetryView.ResultsPanel, TelemetryKeys.TelemetryAction.ShowChart).withAdditionalProperties(
+			{ [TelemetryKeys.TelemetryPropertyName.ChartMaxRowCountExceeded]: maxRowCountExceeded }
+		).send();
 		const activeEditor = this.editorService.activeEditorPane as QueryEditor;
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
 		return Promise.resolve(true);
