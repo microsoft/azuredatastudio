@@ -210,7 +210,7 @@ declare module 'azdata-ext' {
 							}
 						}
 					},
-					workers: {
+					worker: {
 						resources: {
 							requests: {
 								cpu: string, // "1.5"
