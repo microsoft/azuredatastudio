@@ -113,9 +113,9 @@ const indentationFilter = [
 	'!extensions/sql-database-projects/BuildDirectory/SystemDacpacs/**',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
 	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
+	'!resources/linux/snap/electron-launch',
 	'!extensions/markdown-language-features/media/*.js',
 	'!extensions/simple-browser/media/*.js',
-	'!resources/linux/snap/electron-launch',
 	'!resources/xlf/LocProject.json', // {{SQL CARBON EDIT}}
 	'!build/**/*' // {{SQL CARBON EDIT}}
 ];
