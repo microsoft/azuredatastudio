@@ -562,7 +562,7 @@ suite.skip('NotebookService:', function (): void {
 
 	});
 
-	test('verify getUntitledUriPath gets the proper next title', async () => {
+	test('verify getUntitledUriPath gets the proper next title', () => {
 		let getUntitledUriPathSpy = sinon.spy(notebookService, 'getUntitledUriPath');
 		notebookService.getUntitledUriPath('title.ipynb');
 		sinon.assert.calledOnce(getUntitledUriPathSpy);
