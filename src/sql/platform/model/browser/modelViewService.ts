@@ -33,7 +33,12 @@ export interface IModelViewEventArgs extends IComponentEventArgs {
 export interface IModelView extends IView {
 	initializeModel(rootComponent: IComponentShape, validationCallback?: (componentId: string) => Thenable<boolean>): void;
 	clearContainer(componentId: string): void;
-	addToContainer(containerId: string, item: IItemConfig, index?: number): void;
+	/**
+	 * Adds the specified items as children of the specified parent container
+	 * @param containerId The ID of the container component to add the items to
+	 * @param items The list of items to add to the container
+	 */
+	addToContainer(containerId: string, items: { itemConfig: IItemConfig, index?: number }[]): void;
 	removeFromContainer(containerId: string, item: IItemConfig): void;
 	setLayout(componentId: string, layout: any, initial?: boolean): void;
 	setItemLayout(componentId: string, item: IItemConfig): void;

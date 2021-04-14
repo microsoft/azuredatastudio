@@ -24,6 +24,10 @@ export function showRestore(accessor: ServicesAccessor, connection: IConnectionP
 }
 
 export const RestoreFeatureName = 'restore';
+export const restoreIsPreviewFeature = localize('restore.isPreviewFeature', "You must enable preview features in order to use restore");
+export const restoreNotSupportedOutOfContext = localize('restore.commandNotSupportedOutsideContext', "Restore command is not supported outside of a server context. Please select a server or database and try again.");
+export const restoreNotSupportedForAzure = localize('restore.commandNotSupported', "Restore command is not supported for Azure SQL databases.");
+
 
 export class RestoreAction extends Task {
 	public static readonly ID = RestoreFeatureName;
@@ -44,7 +48,7 @@ export class RestoreAction extends Task {
 		const configurationService = accessor.get<IConfigurationService>(IConfigurationService);
 		const previewFeaturesEnabled: boolean = configurationService.getValue<{ enablePreviewFeatures: boolean }>('workbench').enablePreviewFeatures;
 		if (!previewFeaturesEnabled) {
-			return accessor.get<INotificationService>(INotificationService).info(localize('restore.isPreviewFeature', "You must enable preview features in order to use restore"));
+			return accessor.get<INotificationService>(INotificationService).info(restoreIsPreviewFeature);
 		}
 
 		let connectionManagementService = accessor.get<IConnectionManagementService>(IConnectionManagementService);
@@ -56,13 +60,16 @@ export class RestoreAction extends Task {
 		if (profile) {
 			const serverInfo = connectionManagementService.getServerInfo(profile.id);
 			if (serverInfo && serverInfo.isCloud && profile.providerName === mssqlProviderName) {
-				return accessor.get<INotificationService>(INotificationService).info(localize('restore.commandNotSupported', "Restore command is not supported for Azure SQL databases."));
+				return accessor.get<INotificationService>(INotificationService).info(restoreNotSupportedForAzure);
 			}
 		}
 
 		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const instantiationService = accessor.get(IInstantiationService);
 		profile = profile ? profile : new ConnectionProfile(capabilitiesService, profile);
+		if (!profile.serverName) {
+			return accessor.get<INotificationService>(INotificationService).info(restoreNotSupportedOutOfContext);
+		}
 		return instantiationService.invokeFunction(showRestore, profile);
 	}
 }

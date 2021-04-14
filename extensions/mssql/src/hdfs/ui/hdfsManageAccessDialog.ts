@@ -211,7 +211,11 @@ export class ManageAccessDialog {
 			this.hdfsModel.createAndAddAclEntry(value, this.addUserOrGroupSelectedType);
 			this.addUserOrGroupInput.value = '';
 		});
-		const addUserOrGroupButton = this.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: loc.addLabel, width: 75 }).component();
+		const addUserOrGroupButton = this.modelBuilder.button().withProps({
+			label: loc.addLabel,
+			width: 75,
+			secondary: true
+		}).component();
 		addUserOrGroupButton.onDidClick(() => {
 			this.hdfsModel.createAndAddAclEntry(this.addUserOrGroupInput.value, this.addUserOrGroupSelectedType);
 			this.addUserOrGroupInput.value = '';

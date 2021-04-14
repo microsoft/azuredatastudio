@@ -11,6 +11,7 @@ export const outputChannelName = 'MSSQL';
 export const capabilitiesOptions = 'OPTIONS_METADATA';
 
 export const mssqlProviderName = 'MSSQL';
+export const pgsqlProviderName = 'PGSQL';
 export const anyProviderName = '*';
 export const connectionProviderContextKey = 'connectionProvider';
 
@@ -25,6 +26,7 @@ export const sqlLogin = 'SqlLogin';
 export const integrated = 'Integrated';
 export const azureMFA = 'AzureMFA';
 export const azureMFAAndUser = 'AzureMFAAndUser';
+export const dstsAuth = 'dstsAuth';
 
 /* CMS constants */
 export const cmsProviderName = 'MSSQL-CMS';

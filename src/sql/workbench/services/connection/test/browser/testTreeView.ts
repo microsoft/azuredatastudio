@@ -100,6 +100,9 @@ export class TreeView extends Disposable implements ITreeView {
 	private readonly _onDidChangeTitle: Emitter<string> = this._register(new Emitter<string>());
 	readonly onDidChangeTitle: Event<string> = this._onDidChangeTitle.event;
 
+	private readonly _onDidChangeDescription: Emitter<string | undefined> = this._register(new Emitter<string | undefined>());
+	readonly onDidChangeDescription: Event<string | undefined> = this._onDidChangeDescription.event;
+
 	private readonly _onDidCompleteRefresh: Emitter<void> = this._register(new Emitter<void>());
 
 	constructor(
@@ -208,6 +211,16 @@ export class TreeView extends Disposable implements ITreeView {
 		this._message = message;
 		this.updateMessage();
 		this._onDidChangeWelcomeState.fire();
+	}
+
+	private _description: string | undefined;
+	get description(): string | undefined {
+		return this._description;
+	}
+
+	set description(_description: string | undefined) {
+		this._description = _description;
+		this._onDidChangeDescription.fire(this._description);
 	}
 
 	get title(): string {
@@ -976,8 +989,7 @@ class TreeMenus extends Disposable implements IDisposable {
 	constructor(
 		private id: string,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
-		@IMenuService private readonly menuService: IMenuService,
-		@IContextMenuService private readonly contextMenuService: IContextMenuService
+		@IMenuService private readonly menuService: IMenuService
 	) {
 		super();
 	}
@@ -999,7 +1011,7 @@ class TreeMenus extends Disposable implements IDisposable {
 		const primary: IAction[] = [];
 		const secondary: IAction[] = [];
 		const result = { primary, secondary };
-		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, this.contextMenuService, g => /^inline/.test(g));
+		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, g => /^inline/.test(g));
 
 		menu.dispose();
 

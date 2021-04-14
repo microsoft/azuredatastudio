@@ -14,7 +14,7 @@ export interface IWindowChainElement {
 	/**
 	 * The iframe element inside the window.parent corresponding to window
 	 */
-	iframeElement: HTMLIFrameElement | null;
+	iframeElement: Element | null;
 }
 
 let hasDifferentOriginAncestorFlag: boolean = false;
@@ -29,9 +29,11 @@ function getParentWindowIfSameOrigin(w: Window): Window | null {
 	try {
 		let location = w.location;
 		let parentLocation = w.parent.location;
-		if (location.protocol !== parentLocation.protocol || location.hostname !== parentLocation.hostname || location.port !== parentLocation.port) {
-			hasDifferentOriginAncestorFlag = true;
-			return null;
+		if (location.origin !== 'null' && parentLocation.origin !== 'null') {
+			if (location.protocol !== parentLocation.protocol || location.hostname !== parentLocation.hostname || location.port !== parentLocation.port) {
+				hasDifferentOriginAncestorFlag = true;
+				return null;
+			}
 		}
 	} catch (e) {
 		hasDifferentOriginAncestorFlag = true;
@@ -112,6 +114,9 @@ export class IframeUtils {
 		let windowChain = this.getSameOriginWindowChain();
 
 		for (const windowChainEl of windowChain) {
+
+			top += windowChainEl.window.scrollY;
+			left += windowChainEl.window.scrollX;
 
 			if (windowChainEl.window === ancestorWindow) {
 				break;

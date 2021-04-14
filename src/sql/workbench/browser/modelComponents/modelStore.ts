@@ -113,7 +113,7 @@ export class ModelStore implements IModelStore {
 		let promiseTracker = this._componentActions[componentId];
 		if (promiseTracker) {
 			// Run initial actions first to ensure they're done before later actions (and thus don't overwrite following actions)
-			new Promise(resolve => {
+			new Promise<void>(resolve => {
 				promiseTracker.initial.forEach(action => action(component));
 				resolve();
 			}).then(() => {

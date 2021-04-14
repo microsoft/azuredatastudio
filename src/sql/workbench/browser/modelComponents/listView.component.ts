@@ -92,10 +92,6 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 		return this.getProperties().height ?? undefined;
 	}
 
-	public get styles(): azdata.CssStyles | undefined {
-		return this.getProperties().CSSStyles ?? undefined;
-	}
-
 	public get title(): azdata.ListViewTitle {
 		return this.getProperties().title ?? undefined;
 	}
@@ -142,6 +138,13 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 			const focusElement = (this._selectedElementIdx === undefined) ? 0 : this._selectedElementIdx;
 			this._optionsList.setFocus([focusElement]);
 		}
+	}
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth(),
+			'height': this.getHeight()
+		});
 	}
 }
 

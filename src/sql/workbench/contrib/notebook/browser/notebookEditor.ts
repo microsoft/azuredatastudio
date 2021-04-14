@@ -210,6 +210,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 		}
 	}
 
+
 	private async setFindInput(parentElement: HTMLElement): Promise<void> {
 		parentElement.appendChild(this._overlay);
 		await this.setNotebookModel();
@@ -396,6 +397,23 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 		}, false);
 		if (this._findState.isRevealed) {
 			this._finder.focusFindInput();
+		}
+	}
+
+	public async launchFind(searchTerm: string): Promise<void> {
+		this._findState.change({
+			isRevealed: true,
+			searchString: searchTerm
+		}, false);
+		if (!this._notebookModel) {
+			await this.setNotebookModel();
+		}
+		if (this._notebookModel) {
+			this._finder.setFindInput(searchTerm);
+			this._findState.change({
+				searchString: searchTerm
+			}, false);
+			this._triggerInputChange();
 		}
 	}
 

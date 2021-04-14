@@ -5,18 +5,20 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { getErrorMessage } from '../../common/utils';
-import { IReadOnly } from '../dialogs/connectControllerDialog';
 
 export interface RadioOptionsInfo {
 	values?: string[],
 	defaultValue: string
 }
 
-export class RadioOptionsGroup implements IReadOnly {
+export class RadioOptionsGroup {
 	static id: number = 1;
 	private _divContainer!: azdata.DivContainer;
 	private _loadingBuilder: azdata.LoadingComponentBuilder;
 	private _currentRadioOption!: azdata.RadioButtonComponent;
+
+	private _onRadioOptionChanged: vscode.EventEmitter<string | undefined> = new vscode.EventEmitter<string | undefined>();
+	public onRadioOptionChanged: vscode.Event<string | undefined> = this._onRadioOptionChanged.event;
 
 	constructor(private _modelBuilder: azdata.ModelBuilder, private _onNewDisposableCreated: (disposable: vscode.Disposable) => void, private _groupName: string = `RadioOptionsGroup${RadioOptionsGroup.id++}`) {
 		this._divContainer = this._modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
@@ -27,7 +29,7 @@ export class RadioOptionsGroup implements IReadOnly {
 		return this._loadingBuilder.component();
 	}
 
-	async load(optionsInfoGetter: () => Promise<RadioOptionsInfo>): Promise<void> {
+	async load(optionsInfoGetter: () => RadioOptionsInfo | Promise<RadioOptionsInfo>): Promise<void> {
 		this.component().loading = true;
 		this._divContainer.clearItems();
 		try {
@@ -52,6 +54,7 @@ export class RadioOptionsGroup implements IReadOnly {
 						// it is just better to keep things clean.
 						this._currentRadioOption.checked = false;
 						this._currentRadioOption = radioOption;
+						this._onRadioOptionChanged.fire(this.value);
 					}
 				}));
 				this._divContainer.addItem(radioOption);
@@ -66,23 +69,6 @@ export class RadioOptionsGroup implements IReadOnly {
 
 	get value(): string | undefined {
 		return this._currentRadioOption?.value;
-	}
-
-	get readOnly(): boolean {
-		return this.enabled;
-	}
-
-	set readOnly(value: boolean) {
-		this.enabled = value;
-	}
-
-	get enabled(): boolean {
-		return !!this._divContainer.enabled && this._divContainer.items.every(r => r.enabled);
-	}
-
-	set enabled(value: boolean) {
-		this._divContainer.items.forEach(r => r.enabled = value);
-		this._divContainer.enabled = value;
 	}
 
 	get items(): azdata.Component[] {

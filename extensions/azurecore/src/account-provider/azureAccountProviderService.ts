@@ -10,7 +10,8 @@ import * as vscode from 'vscode';
 import { SimpleTokenCache } from './simpleTokenCache';
 import providerSettings from './providerSettings';
 import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider';
-import { AzureAccountProviderMetadata, ProviderSettings } from './interfaces';
+import { AzureAccountProviderMetadata } from 'azurecore';
+import { ProviderSettings } from './interfaces';
 import * as loc from '../localizedConstants';
 
 let localize = nls.loadMessageBundle();

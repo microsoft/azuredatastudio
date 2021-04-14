@@ -321,7 +321,7 @@ class TestComponentBase implements azdata.Component {
 	updateProperty(key: string, value: any): Thenable<void> {
 		throw new Error('Method not implemented');
 	}
-	updateCssStyles(cssStyles: { [key: string]: string; }): Thenable<void> {
+	updateCssStyles(cssStyles: azdata.CssStyles): Thenable<void> {
 		throw new Error('Method not implemented');
 	}
 	onValidityChanged: vscode.Event<boolean> = undefined;
@@ -347,6 +347,7 @@ class TestDeclarativeTableComponent extends TestComponentBase implements azdata.
 	}
 	onDataChanged: vscode.Event<any> = this.onClick.event;
 	onRowSelected: vscode.Event<any> = this.onClick.event;
+	setFilter: undefined;
 	data: any[][];
 	columns: azdata.DeclarativeTableColumn[];
 }

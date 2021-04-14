@@ -8,7 +8,7 @@ import { NavigationBarLayout, PanelComponent } from 'sql/base/browser/ui/panel/p
 import { TabType } from 'sql/base/browser/ui/panel/tab.component';
 import { ContainerBase, ItemDescriptor } from 'sql/workbench/browser/modelComponents/componentBase';
 import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
-import { IUserFriendlyIcon, createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
+import { IconPath, createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { TabbedPanelLayout } from 'azdata';
@@ -18,7 +18,7 @@ export interface TabConfig {
 	title: string;
 	id?: string;
 	group: string;
-	icon?: IUserFriendlyIcon;
+	icon?: IconPath;
 }
 
 interface Tab {
@@ -83,7 +83,7 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 
 	get tabs(): Tab[] {
 		if (this.items.length > this._itemIndexToProcess) {
-			let currentGroup: string | undefined = this.items.length === 1 ? undefined : this.items[this._itemIndexToProcess - 1].config.group;
+			let currentGroup: string | undefined = this.items.length === 1 ? undefined : this.items[this._itemIndexToProcess - 1]?.config.group;
 			for (let i = this._itemIndexToProcess; i < this.items.length; i++) {
 				const item = this.items[i];
 				if (item.config.group !== currentGroup) {

@@ -14,6 +14,7 @@ import { cssStyles } from '../common/uiConstants';
 import { IconPathHelper } from '../common/iconHelper';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Deferred } from '../common/promise';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 export enum ReferenceType {
 	project,
@@ -51,8 +52,29 @@ export class AddDatabaseReferenceDialog {
 	public addReference: ((proj: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings) => any) | undefined;
 
 	constructor(private project: Project) {
-		this.dialog = azdata.window.createModelViewDialog(constants.addDatabaseReferenceDialogName);
+		this.dialog = azdata.window.createModelViewDialog(constants.addDatabaseReferenceDialogName, 'addDatabaseReferencesDialog');
 		this.addDatabaseReferenceTab = azdata.window.createTab(constants.addDatabaseReferenceDialogName);
+		this.dialog.registerCloseValidator(async () => {
+			return this.validate();
+		});
+	}
+
+	validate(): boolean {
+		// only support adding dacpacs that are on the same drive as the sqlproj
+		if (this.currentReferenceType === ReferenceType.dacpac) {
+			const projectDrive = path.parse(this.project.projectFilePath).root;
+			const dacpacDrive = path.parse(this.dacpacTextbox!.value!).root;
+
+			if (projectDrive !== dacpacDrive) {
+				this.dialog.message = {
+					text: constants.dacpacNotOnSameDrive(this.project.projectFilePath),
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public async openDialog(): Promise<void> {
@@ -156,6 +178,10 @@ export class AddDatabaseReferenceDialog {
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 		}
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addDatabaseReference)
+			.withAdditionalProperties({ referenceType: this.currentReferenceType!.toString() })
+			.send();
 
 		await this.addReference!(this.project, referenceSettings);
 
@@ -441,19 +467,19 @@ export class AddDatabaseReferenceDialog {
 
 	private createVariableSection(): azdata.FormComponent {
 		// database name row
-		this.databaseNameTextbox = this.createInputBox(constants.databaseName, true);
+		this.databaseNameTextbox = this.createInputBox(constants.databaseName, true, true);
 		const databaseNameRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.databaseName, true), this.databaseNameTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		// database variable row
-		this.databaseVariableTextbox = this.createInputBox(constants.databaseVariable, false);
+		this.databaseVariableTextbox = this.createInputBox(constants.databaseVariable, false, false);
 		const databaseVariableRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.databaseVariable), this.databaseVariableTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		// server name row
-		this.serverNameTextbox = this.createInputBox(constants.serverName, false);
+		this.serverNameTextbox = this.createInputBox(constants.serverName, false, true);
 		const serverNameRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.serverName, true), this.serverNameTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		// server variable row
-		this.serverVariableTextbox = this.createInputBox(constants.serverVariable, false);
+		this.serverVariableTextbox = this.createInputBox(constants.serverVariable, false, true);
 		const serverVariableRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.serverVariable, true), this.serverVariableTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		const variableSection = this.view!.modelBuilder.flexContainer().withItems([databaseNameRow, databaseVariableRow, serverNameRow, serverVariableRow]).withLayout({ flexFlow: 'column' }).withProperties({ CSSStyles: { 'margin-bottom': '25px' } }).component();
@@ -475,11 +501,12 @@ export class AddDatabaseReferenceDialog {
 		return label;
 	}
 
-	private createInputBox(ariaLabel: string, enabled: boolean): azdata.InputBoxComponent {
+	private createInputBox(ariaLabel: string, enabled: boolean, required: boolean): azdata.InputBoxComponent {
 		const inputBox = this.view!.modelBuilder.inputBox().withProperties({
 			ariaLabel: ariaLabel,
 			enabled: enabled,
-			width: cssStyles.addDatabaseReferenceInputboxWidth
+			width: cssStyles.addDatabaseReferenceInputboxWidth,
+			required: required
 		}).component();
 
 		inputBox.onTextChanged(() => {

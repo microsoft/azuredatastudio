@@ -12,10 +12,16 @@ import { NewProjectDialog } from './dialogs/newProjectDialog';
 import { OpenExistingDialog } from './dialogs/openExistingDialog';
 import { IWorkspaceService } from './common/interfaces';
 import { IconPathHelper } from './common/iconHelper';
+import { ProjectDashboard } from './dialogs/projectDashboard';
 
 export function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const workspaceService = new WorkspaceService(context);
 	workspaceService.loadTempProjects();
+	workspaceService.checkForProjectsNotAddedToWorkspace();
+	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => {
+		workspaceService.checkForProjectsNotAddedToWorkspace();
+	}));
+
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
 	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
@@ -45,6 +51,10 @@ export function activate(context: vscode.ExtensionContext): Promise<IExtension> 
 
 	context.subscriptions.push(vscode.commands.registerCommand('projects.removeProject', async (treeItem: WorkspaceTreeItem) => {
 		await workspaceService.removeProject(vscode.Uri.file(treeItem.element.project.projectFilePath));
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand('projects.manageProject', async (treeItem: WorkspaceTreeItem) => {
+		const dashboard = new ProjectDashboard(workspaceService, treeItem);
+		await dashboard.showDashboard();
 	}));
 
 	IconPathHelper.setExtensionContext(context);

@@ -70,9 +70,10 @@ export class ProsePreviewPage extends ImportPage {
 			columns: undefined,
 			forceFitColumns: azdata.ColumnSizingMode.DataFit
 		}).component();
-		this.refresh = this.view.modelBuilder.button().withProperties({
+		this.refresh = this.view.modelBuilder.button().withProps({
 			label: constants.refreshText,
-			isFile: false
+			isFile: false,
+			secondary: true
 		}).component();
 
 		this.refresh.onDidClick(async () => {

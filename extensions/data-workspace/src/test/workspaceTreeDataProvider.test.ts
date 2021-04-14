@@ -3,19 +3,23 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IDashboardTable, IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import 'mocha';
-import * as sinon from 'sinon';
-import * as vscode from 'vscode';
 import * as should from 'should';
+import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
+import * as vscode from 'vscode';
 import { WorkspaceTreeDataProvider } from '../common/workspaceTreeDataProvider';
 import { WorkspaceService } from '../services/workspaceService';
-import { IProjectProvider, WorkspaceTreeItem } from 'dataworkspace';
 import { MockTreeDataProvider } from './projectProviderRegistry.test';
+
+interface ExtensionGlobalMemento extends vscode.Memento {
+	setKeysForSync(keys: string[]): void;
+}
 
 suite('workspaceTreeDataProvider Tests', function (): void {
 	const mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-	const mockGlobalState = TypeMoq.Mock.ofType<vscode.Memento>();
+	const mockGlobalState = TypeMoq.Mock.ofType<ExtensionGlobalMemento>();
 	mockGlobalState.setup(x => x.update(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
 	mockExtensionContext.setup(x => x.globalState).returns(() => mockGlobalState.object);
 
@@ -78,7 +82,6 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 				displayName: 'sql project',
 				description: ''
 			}],
-			providerExtensionId: 'testProvider',
 			RemoveProject: (projectFile: vscode.Uri): Promise<void> => {
 				return Promise.resolve();
 			},
@@ -87,8 +90,39 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 			},
 			createProject: (name: string, location: vscode.Uri): Promise<vscode.Uri> => {
 				return Promise.resolve(location);
-			}
-		};
+			},
+			projectActions: [{
+				id: 'Add',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Schema Compare',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Build',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Publish',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Target Version',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}],
+			getDashboardComponents: (projectFile: string): IDashboardTable[] => {
+				return [{
+				name: 'Deployments',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			},
+			{
+				name: 'Builds',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			}];
+		}};
 		const getProjectProviderStub = sinon.stub(workspaceService, 'getProjectProvider');
 		getProjectProviderStub.onFirstCall().resolves(undefined);
 		getProjectProviderStub.onSecondCall().resolves(projectProvider);

@@ -11,15 +11,18 @@ import { IDataComponent } from '../../interfaces';
 import { PredictColumn, DatabaseTable, TableColumn } from '../../../prediction/interfaces';
 import { ModelParameter, ModelParameters } from '../../../modelManagement/interfaces';
 
+const WarningButtonDimensions = {
+	height: 16,
+	width: 16
+};
+
 /**
  * View to render azure models in a table
  */
 export class ColumnsTable extends ModelViewBase implements IDataComponent<PredictColumn[]> {
-
 	private _table: azdata.DeclarativeTableComponent | undefined;
 	private _parameters: PredictColumn[] = [];
 	private _loader: azdata.LoadingComponent;
-
 
 	/**
 	 * Creates a view to render azure models in a table
@@ -205,8 +208,15 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				width: this.componentMaxLength + 20,
 				justifyContent: 'flex-start'
 			}).component();
-			const warningButton = this.createWarningButton(constants.outputColumnDataTypeNotSupportedWarning);
+			const warningButton = this.createWarningButton();
 			warningButton.onDidClick(() => {
+				let warningButtonProperties = {
+					xPos: 0,
+					yPos: 0,
+					width: WarningButtonDimensions.width,
+					height: WarningButtonDimensions.height
+				};
+				this.openWarningCalloutDialog(constants.columnDataTypeMismatchWarningHeading, 'output-table-row-dialog', constants.outputColumnDataTypeNotSupportedWarning, constants.learnMoreLink, constants.mlExtDocLink, warningButtonProperties);
 			});
 			const css = {
 				'padding-top': '5px',
@@ -298,8 +308,15 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				width: this.componentMaxLength + 20,
 				justifyContent: 'flex-start'
 			}).component();
-			const warningButton = this.createWarningButton(constants.columnDataTypeMismatchWarning);
+			const warningButton = this.createWarningButton();
 			warningButton.onDidClick(() => {
+				let warningButtonProperties = {
+					xPos: 0,
+					yPos: 0,
+					width: WarningButtonDimensions.width,
+					height: WarningButtonDimensions.height
+				};
+				this.openWarningCalloutDialog(constants.columnDataTypeMismatchWarningHeading, 'input-table-row-dialog', constants.columnDataTypeMismatchWarning, constants.learnMoreLink, constants.mlExtDocLink, warningButtonProperties);
 			});
 
 			const css = {
@@ -341,7 +358,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			inputContainer.addItem(label, {
 				CSSStyles: {
 					'padding': '0px',
-					'padding-right': '5px',
+					'padding-right': '10px',
 					'margin': '0px'
 				}
 			});
@@ -367,20 +384,57 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 		return [];
 	}
 
-	private createWarningButton(message: string): azdata.ButtonComponent {
+	private createWarningButton(): azdata.ButtonComponent {
 		const warningButton = this._modelBuilder.button().withProperties({
-			width: '16px',
-			height: '16px',
-			title: message,
+			width: `${WarningButtonDimensions.width}px`,
+			height: `${WarningButtonDimensions.height}px`,
+			title: constants.columnDataTypeMismatchWarningHelper,
 			iconPath: {
 				dark: this.asAbsolutePath('images/warning.svg'),
 				light: this.asAbsolutePath('images/warning.svg'),
 			},
-			iconHeight: '16px',
-			iconWidth: '16px'
+			iconHeight: `${WarningButtonDimensions.height}px`,
+			iconWidth: `${WarningButtonDimensions.width}px`
 		}).component();
 
 		return warningButton;
+	}
+
+	public openWarningCalloutDialog(dialogHeading: string, dialogName?: string, calloutMessageText?: string, calloutMessageLinkText?: string, calloutMessageLinkUrl?: string, dialogProperties?: azdata.window.IDialogProperties): void {
+		/**
+		 * Here a specific value is assigned to dialogWidth. This meets design guidelines.
+		 */
+		const dialog = azdata.window.createModelViewDialog(dialogHeading, dialogName, 288, 'callout', 'left', true, false, dialogProperties);
+		const warningTab: azdata.window.DialogTab = azdata.window.createTab('warning');
+		warningTab.registerContent(async view => {
+			const warningContentContainer = view.modelBuilder.divContainer().withProperties({}).component();
+			const messageTextComponent = view.modelBuilder.text().withProperties({
+				value: calloutMessageText,
+				CSSStyles: {
+					'font-size': '12px',
+					'line-height': '16px',
+					'margin': '0 0 12px 0'
+				}
+			}).component();
+			warningContentContainer.addItem(messageTextComponent);
+
+			if (calloutMessageLinkText && calloutMessageLinkUrl) {
+				const messageLinkComponent = view.modelBuilder.hyperlink().withProperties({
+					label: calloutMessageLinkText,
+					url: calloutMessageLinkUrl,
+					CSSStyles: {
+						'font-size': '13px',
+						'margin': '0px'
+					}
+				}).component();
+				warningContentContainer.addItem(messageLinkComponent);
+			}
+			view.initializeModel(warningContentContainer);
+		});
+		// set tab as content
+		dialog.content = [warningTab];
+
+		azdata.window.openDialog(dialog);
 	}
 
 	/**

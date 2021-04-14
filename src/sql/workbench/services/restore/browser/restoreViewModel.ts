@@ -245,13 +245,13 @@ export class RestoreViewModel {
 	/**
 	* Reset restore options to the default value
 	*/
-	public resetRestoreOptions(databaseName: string): void {
+	public resetRestoreOptions(databaseName: string, databaseList: string[] = []): void {
 		this.sourceDatabaseName = databaseName ? databaseName : '';
 		this.updateTargetDatabaseName(databaseName);
-		this.updateSourceDatabaseNames([], this.sourceDatabaseName);
+		this.databaseList = databaseList;
+		this.updateSourceDatabaseNames(this.databaseList, this.sourceDatabaseName);
 		this.updateFilePath('');
 		this.updateLastBackupTaken('');
-		this.databaseList = [];
 		this.selectedBackupSets = undefined;
 		for (let key in this._optionsMap) {
 			this._optionsMap[key].defaultValue = this.getDisplayValue(this._optionsMap[key].optionMetadata, this._optionsMap[key].optionMetadata.defaultValue);

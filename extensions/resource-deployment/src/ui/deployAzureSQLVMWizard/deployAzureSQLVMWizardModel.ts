@@ -80,10 +80,6 @@ export class DeployAzureSQLVMWizardModel extends ResourceTypeModel {
 		await this.scriptToNotebook();
 	}
 
-	onCancel(): void {
-		throw new Error('Method not implemented.');
-	}
-
 	private getPages(): ResourceTypePage[] {
 		const pages: ResourceTypePage[] = [];
 		pages.push(new AzureSettingsPage(this));

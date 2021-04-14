@@ -20,11 +20,29 @@ import { MiaaTreeNode } from '../../../ui/tree/miaaTreeNode';
 import { FakeControllerModel } from '../../mocks/fakeControllerModel';
 import { FakeAzdataApi } from '../../mocks/fakeAzdataApi';
 
+interface ExtensionGlobalMemento extends vscode.Memento {
+	setKeysForSync(keys: string[]): void;
+}
+
+function getDefaultControllerInfo(): ControllerInfo {
+	return {
+		id: uuid(),
+		endpoint: '127.0.0.1',
+		kubeConfigFilePath: '/path/to/.kube/config',
+		kubeClusterContext: 'currentCluster',
+		username: 'sa',
+		name: 'my-arc',
+		namespace: 'arc-ns',
+		rememberPassword: true,
+		resources: []
+	};
+}
+
 describe('AzureArcTreeDataProvider tests', function (): void {
 	let treeDataProvider: AzureArcTreeDataProvider;
 	beforeEach(function (): void {
 		const mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		const mockGlobalState = TypeMoq.Mock.ofType<vscode.Memento>();
+		const mockGlobalState = TypeMoq.Mock.ofType<ExtensionGlobalMemento>();
 		mockGlobalState.setup(x => x.update(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		mockExtensionContext.setup(x => x.globalState).returns(() => mockGlobalState.object);
 		//treeDataProviderMock = TypeMoq.Mock.ofType<AzureArcTreeDataProvider>();
@@ -54,7 +72,7 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 			treeDataProvider['_loading'] = false;
 			let children = await treeDataProvider.getChildren();
 			should(children.length).equal(0, 'There initially shouldn\'t be any children');
-			const controllerModel = new ControllerModel(treeDataProvider, { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] });
+			const controllerModel = new ControllerModel(treeDataProvider, getDefaultControllerInfo());
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			should(children.length).equal(1, 'Controller node should be added correctly');
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
@@ -65,12 +83,12 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 			treeDataProvider['_loading'] = false;
 			let children = await treeDataProvider.getChildren();
 			should(children.length).equal(0, 'There initially shouldn\'t be any children');
-			const originalInfo: ControllerInfo = { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] };
+			const originalInfo: ControllerInfo = getDefaultControllerInfo();
 			const controllerModel = new ControllerModel(treeDataProvider, originalInfo);
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			should(children.length).equal(1, 'Controller node should be added correctly');
 			should((<ControllerTreeNode>children[0]).model.info).deepEqual(originalInfo);
-			const newInfo = { id: originalInfo.id, url: '1.1.1.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', name: 'new-name', username: 'admin', rememberPassword: false, resources: [] };
+			const newInfo: ControllerInfo = { id: originalInfo.id, endpoint: '1.1.1.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', name: 'new-name', namespace: 'new-namespace', username: 'admin', rememberPassword: false, resources: [] };
 			const controllerModel2 = new ControllerModel(treeDataProvider, newInfo);
 			await treeDataProvider.addOrUpdateController(controllerModel2, '');
 			should(children.length).equal(1, 'Shouldn\'t add duplicate controller node');
@@ -98,18 +116,20 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 				return mockArcApi.object;
 			});
 			const fakeAzdataApi = new FakeAzdataApi();
-			fakeAzdataApi.postgresInstances = [{ name: 'pg1', state: '', workers: 0 }];
-			fakeAzdataApi.miaaInstances = [{ name: 'miaa1', state: '', replicas: '', serverEndpoint: '' }];
+			const pgInstances = [{ name: 'pg1', state: '', workers: 0 }];
+			const miaaInstances = [{ name: 'miaa1', state: '', replicas: '', serverEndpoint: '' }];
+			fakeAzdataApi.postgresInstances = pgInstances;
+			fakeAzdataApi.miaaInstances = miaaInstances;
 			mockArcApi.setup(x => x.azdata).returns(() => fakeAzdataApi);
 
 			sinon.stub(vscode.extensions, 'getExtension').returns(mockArcExtension.object);
-			sinon.stub(kubeUtils, 'getKubeConfigClusterContexts').resolves([{ name: 'currentCluster', isCurrentContext: true }]);
-			const controllerModel = new ControllerModel(treeDataProvider, { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] }, 'mypassword');
+			sinon.stub(kubeUtils, 'getKubeConfigClusterContexts').returns([{ name: 'currentCluster', isCurrentContext: true }]);
+			const controllerModel = new ControllerModel(treeDataProvider, getDefaultControllerInfo(), 'mypassword');
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			const controllerNode = treeDataProvider.getControllerNode(controllerModel);
 			const children = await treeDataProvider.getChildren(controllerNode);
-			should(children.filter(c => c.label === fakeAzdataApi.postgresInstances[0].name).length).equal(1, 'Should have a Postgres child');
-			should(children.filter(c => c.label === fakeAzdataApi.miaaInstances[0].name).length).equal(1, 'Should have a MIAA child');
+			should(children.filter(c => c.label === pgInstances[0].name).length).equal(1, 'Should have a Postgres child');
+			should(children.filter(c => c.label === miaaInstances[0].name).length).equal(1, 'Should have a MIAA child');
 			should(children.length).equal(2, 'Should have exactly 2 children');
 		});
 	});
@@ -117,8 +137,10 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 	describe('removeController', function (): void {
 		it('removing a controller should work as expected', async function (): Promise<void> {
 			treeDataProvider['_loading'] = false;
-			const controllerModel = new ControllerModel(treeDataProvider, { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] });
-			const controllerModel2 = new ControllerModel(treeDataProvider, { id: uuid(), url: '127.0.0.2', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', name: 'my-arc', username: 'cloudsa', rememberPassword: true, resources: [] });
+			const controllerModel = new ControllerModel(treeDataProvider, getDefaultControllerInfo());
+			const info2 = getDefaultControllerInfo();
+			info2.username = 'cloudsa';
+			const controllerModel2 = new ControllerModel(treeDataProvider, info2);
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			await treeDataProvider.addOrUpdateController(controllerModel2, '');
 			const children = <ControllerTreeNode[]>(await treeDataProvider.getChildren());
@@ -135,20 +157,20 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 
 	describe('openResourceDashboard', function (): void {
 		it('Opening dashboard for nonexistent controller node throws', async function (): Promise<void> {
-			const controllerModel = new ControllerModel(treeDataProvider, { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster',  name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] });
+			const controllerModel = new ControllerModel(treeDataProvider, getDefaultControllerInfo());
 			const openDashboardPromise = treeDataProvider.openResourceDashboard(controllerModel, ResourceType.sqlManagedInstances, '');
 			await should(openDashboardPromise).be.rejected();
 		});
 
 		it('Opening dashboard for nonexistent resource throws', async function (): Promise<void> {
-			const controllerModel = new ControllerModel(treeDataProvider, { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] });
+			const controllerModel = new ControllerModel(treeDataProvider, getDefaultControllerInfo());
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			const openDashboardPromise = treeDataProvider.openResourceDashboard(controllerModel, ResourceType.sqlManagedInstances, '');
 			await should(openDashboardPromise).be.rejected();
 		});
 
 		it('Opening dashboard for existing resource node succeeds', async function (): Promise<void> {
-			const controllerModel = new ControllerModel(treeDataProvider, { id: uuid(), url: '127.0.0.1', kubeConfigFilePath: '/path/to/.kube/config', kubeClusterContext: 'currentCluster', name: 'my-arc', username: 'sa', rememberPassword: true, resources: [] });
+			const controllerModel = new ControllerModel(treeDataProvider, getDefaultControllerInfo());
 			const miaaModel = new MiaaModel(controllerModel, { name: 'miaa-1', resourceType: ResourceType.sqlManagedInstances }, undefined!, treeDataProvider);
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			const controllerNode = treeDataProvider.getControllerNode(controllerModel)!;

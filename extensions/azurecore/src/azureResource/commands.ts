@@ -17,7 +17,7 @@ import { AzureResourceTreeProvider } from './tree/treeProvider';
 import { AzureResourceAccountTreeNode } from './tree/accountTreeNode';
 import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService } from '../azureResource/interfaces';
 import { AzureResourceServiceNames } from './constants';
-import { AzureAccount, Tenant } from '../account-provider/interfaces';
+import { AzureAccount, Tenant } from 'azurecore';
 import { FlatAccountTreeNode } from './tree/flatAccountTreeNode';
 import { ConnectionDialogTreeProvider } from './tree/connectionDialogTreeProvider';
 

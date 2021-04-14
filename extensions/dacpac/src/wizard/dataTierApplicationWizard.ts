@@ -85,13 +85,15 @@ export class DataTierApplicationWizard {
 	public model: DacFxDataModel;
 	public pages: Map<string, Page> = new Map<string, Page>();
 	public selectedOperation: Operation;
+	public extensionContextExtensionPath: string;
 
-	constructor(dacfxInputService?: mssql.IDacFxService) {
+	constructor(dacfxInputService?: mssql.IDacFxService, extensionContext?: vscode.ExtensionContext) {
 		this.wizard = azdata.window.createWizard(loc.wizardTitle, 'Data Tier Application Wizard');
 		this.dacfxService = dacfxInputService;
+		this.extensionContextExtensionPath = extensionContext?.extensionPath ?? '';
 	}
 
-	public async start(p: any, ...args: any[]): Promise<boolean> {
+	public async start(p: any): Promise<boolean> {
 		this.model = <DacFxDataModel>{};
 
 		let profile = p ? <azdata.IConnectionProfile>p.connectionProfile : undefined;
@@ -123,7 +125,16 @@ export class DataTierApplicationWizard {
 		this.setPages();
 		this.configureButtons();
 
-		this.wizard.open();
+		// the wizard was started from the context menu of a database or server if the connectionProfile is not undefined
+		// Otherwise it was launched from the command palette
+		let launchedFrom: string;
+		if (profile) {
+			launchedFrom = profile.databaseName ? 'database context menu' : 'server context menu';
+		} else {
+			launchedFrom = 'command palette';
+		}
+
+		this.wizard.open(launchedFrom);
 		return true;
 	}
 
@@ -297,7 +308,7 @@ export class DataTierApplicationWizard {
 	private cancelDataTierApplicationWizard(): void {
 		TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, 'WizardCanceled')
 			.withAdditionalProperties({
-				isPotentialDataLoss: this.model.potentialDataLoss.toString()
+				isPotentialDataLoss: this.model.potentialDataLoss?.toString()
 			}).send();
 	}
 

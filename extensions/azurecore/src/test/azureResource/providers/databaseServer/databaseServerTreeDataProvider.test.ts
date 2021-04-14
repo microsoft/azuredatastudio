@@ -19,7 +19,7 @@ import { IAzureResourceService } from '../../../../azureResource/interfaces';
 let mockDatabaseServerService: TypeMoq.IMock<IAzureResourceService<azureResource.AzureResourceDatabaseServer>>;
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 import settings from '../../../../account-provider/providerSettings';
-import { AzureAccount } from '../../../../account-provider/interfaces';
+import { AzureAccount } from 'azurecore';
 
 // Mock test data
 const mockAccount: AzureAccount = {

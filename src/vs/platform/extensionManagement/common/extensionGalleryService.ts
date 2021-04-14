@@ -20,7 +20,7 @@ import { IExtensionManifest, ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/pl
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { IProductService } from 'vs/platform/product/common/productService';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { getServiceMachineId } from 'vs/platform/serviceMachineId/common/serviceMachineId';
 import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { joinPath } from 'vs/base/common/resources';
@@ -418,6 +418,21 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return !!this.extensionsGalleryUrl;
 	}
 
+	async getExtensions(names: string[], token: CancellationToken): Promise<IGalleryExtension[]> {
+		const result: IGalleryExtension[] = [];
+		let { total, firstPage: pageResult, getPage } = await this.query({ names, pageSize: names.length }, token);
+		result.push(...pageResult);
+		for (let pageIndex = 1; result.length < total; pageIndex++) {
+			pageResult = await getPage(pageIndex, token);
+			if (pageResult.length) {
+				result.push(...pageResult);
+			} else {
+				break;
+			}
+		}
+		return result;
+	}
+
 	async getCompatibleExtension(arg1: IExtensionIdentifier | IGalleryExtension, version?: string): Promise<IGalleryExtension | null> {
 		const extension = await this.getCompatibleExtensionByEngine(arg1, version);
 
@@ -557,7 +572,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			return galleryExtensions.map((e, index) => toExtension(e, e.versions[0], index, nextPageQuery, options.source));
 		};
 
-		// {{ SQL CARBON EDIT }}
+		// {{SQL CARBON EDIT}}
 		return { firstPage: extensions, total, pageSize: extensions.length, getPage } as IPager<IGalleryExtension>;
 	}
 
@@ -592,6 +607,11 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 						return false;
 					});
 				}
+			}
+			// ADS doesn't support extension tags, we need to return empty array to avoid breaking some scenarios. e.g. file extension based recommendations.
+			const tagFilters = query.criteria.filter(x => x.filterType === FilterType.Tag);
+			if (tagFilters?.length > 0) {
+				filteredExtensions = [];
 			}
 			const searchTexts = query.criteria.filter(x => x.filterType === FilterType.SearchText).map(v => v.value ? v.value.toLocaleLowerCase() : undefined);
 			if (searchTexts && searchTexts.length > 0) {
@@ -957,7 +977,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 
 export async function resolveMarketplaceHeaders(version: string, environmentService: IEnvironmentService, fileService: IFileService, storageService: {
 	get: (key: string, scope: StorageScope) => string | undefined,
-	store: (key: string, value: string, scope: StorageScope) => void
+	store: (key: string, value: string, scope: StorageScope, target: StorageTarget) => void
 } | undefined): Promise<{ [key: string]: string; }> {
 	const headers: IHeaders = {
 		'X-Market-Client-Id': `VSCode ${version}`,

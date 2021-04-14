@@ -6,14 +6,14 @@
 import 'vs/css!./media/editorstatus';
 import * as nls from 'vs/nls';
 import { runAtThisOrScheduleAtNextAnimationFrame } from 'vs/base/browser/dom';
-import { format, compare } from 'vs/base/common/strings';
+import { format, compare, splitLines } from 'vs/base/common/strings';
 import { extname, basename, isEqual } from 'vs/base/common/resources';
 import { areFunctions, withNullAsUndefined, withUndefinedAsNull } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { Action } from 'vs/base/common/actions';
 import { Language } from 'vs/base/common/platform';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { IFileEditorInput, EncodingMode, IEncodingSupport, toResource, SideBySideEditorInput, IEditorPane, IEditorInput, SideBySideEditor, IModeSupport } from 'vs/workbench/common/editor';
+import { IFileEditorInput, EncodingMode, IEncodingSupport, EditorResourceAccessor, SideBySideEditorInput, IEditorPane, IEditorInput, SideBySideEditor, IModeSupport } from 'vs/workbench/common/editor';
 import { Disposable, MutableDisposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { EndOfLineSequence } from 'vs/editor/common/model';
@@ -345,16 +345,16 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 		if (!this.screenReaderNotification) {
 			this.screenReaderNotification = this.notificationService.prompt(
 				Severity.Info,
-				nls.localize('screenReaderDetectedExplanation.question', "Are you using a screen reader to operate Azure Data Studio? (Certain features like word wrap are disabled when using a screen reader)"), // {{SQL CARBON EDIT}} change vscode to ads
+				nls.localize('screenReaderDetectedExplanation.question', "Are you using a screen reader to operate Azure Data Studio? (word wrap is disabled when using a screen reader)"), // {{SQL CARBON EDIT}} change vscode to ads
 				[{
 					label: nls.localize('screenReaderDetectedExplanation.answerYes', "Yes"),
 					run: () => {
-						this.configurationService.updateValue('editor.accessibilitySupport', 'on', ConfigurationTarget.USER);
+						this.configurationService.updateValue('editor.accessibilitySupport', 'on');
 					}
 				}, {
 					label: nls.localize('screenReaderDetectedExplanation.answerNo', "No"),
 					run: () => {
-						this.configurationService.updateValue('editor.accessibilitySupport', 'off', ConfigurationTarget.USER);
+						this.configurationService.updateValue('editor.accessibilitySupport', 'off');
 					}
 				}],
 				{ sticky: true }
@@ -870,7 +870,7 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 	private onResourceEncodingChange(resource: URI): void {
 		const activeEditorPane = this.editorService.activeEditorPane;
 		if (activeEditorPane) {
-			const activeResource = toResource(activeEditorPane.input, { supportSideBySide: SideBySideEditor.PRIMARY });
+			const activeResource = EditorResourceAccessor.getCanonicalUri(activeEditorPane.input, { supportSideBySide: SideBySideEditor.PRIMARY });
 			if (activeResource && isEqual(activeResource, resource)) {
 				const activeCodeEditor = withNullAsUndefined(getCodeEditor(activeEditorPane.getControl()));
 
@@ -921,7 +921,7 @@ class ShowCurrentMarkerInStatusbarContribution extends Disposable {
 		this.currentMarker = this.getMarker();
 		if (this.hasToUpdateStatus(previousMarker, this.currentMarker)) {
 			if (this.currentMarker) {
-				const line = this.currentMarker.message.split(/\r\n|\r|\n/g)[0];
+				const line = splitLines(this.currentMarker.message)[0];
 				const text = `${this.getType(this.currentMarker)} ${line}`;
 				if (!this.statusBarEntryAccessor.value) {
 					this.statusBarEntryAccessor.value = this.statusbarService.addEntry({ text: '', ariaLabel: '' }, 'statusbar.currentProblem', nls.localize('currentProblem', "Current Problem"), StatusbarAlignment.LEFT);
@@ -1049,12 +1049,19 @@ export class ChangeModeAction extends Action {
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
 		@IPreferencesService private readonly preferencesService: IPreferencesService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@ITextFileService private readonly textFileService: ITextFileService
+		@ITextFileService private readonly textFileService: ITextFileService,
+		@ICommandService private readonly commandService: ICommandService
 	) {
 		super(actionId, actionLabel);
 	}
 
 	async run(): Promise<void> {
+		const activeEditorPane = this.editorService.activeEditorPane as unknown as { isNotebookEditor?: boolean } | undefined;
+		if (activeEditorPane?.isNotebookEditor) {
+			// it's inside notebook editor
+			return this.commandService.executeCommand('notebook.cell.changeLanguage');
+		}
+
 		const activeTextEditorControl = getCodeEditor(this.editorService.activeTextEditorControl);
 		if (!activeTextEditorControl) {
 			await this.quickInputService.pick([{ label: nls.localize('noEditor', "No text editor active at this time") }]);
@@ -1062,7 +1069,7 @@ export class ChangeModeAction extends Action {
 		}
 
 		const textModel = activeTextEditorControl.getModel();
-		const resource = this.editorService.activeEditor ? toResource(this.editorService.activeEditor, { supportSideBySide: SideBySideEditor.PRIMARY }) : null;
+		const resource = EditorResourceAccessor.getOriginalUri(this.editorService.activeEditor, { supportSideBySide: SideBySideEditor.PRIMARY });
 
 		let hasLanguageSupport = !!resource;
 		if (resource?.scheme === Schemas.untitled && !this.textFileService.untitled.get(resource)?.hasAssociatedFilePath) {
@@ -1146,7 +1153,7 @@ export class ChangeModeAction extends Action {
 
 		// User decided to configure settings for current language
 		if (pick === configureModeSettings) {
-			this.preferencesService.openGlobalSettings(true, { editSetting: `[${withUndefinedAsNull(currentModeId)}]` });
+			this.preferencesService.openGlobalSettings(true, { revealSetting: { key: `[${withUndefinedAsNull(currentModeId)}]`, edit: true } });
 			return;
 		}
 
@@ -1160,7 +1167,7 @@ export class ChangeModeAction extends Action {
 				let languageSelection: ILanguageSelection | undefined;
 				if (pick === autoDetectMode) {
 					if (textModel) {
-						const resource = toResource(activeEditor, { supportSideBySide: SideBySideEditor.PRIMARY });
+						const resource = EditorResourceAccessor.getOriginalUri(activeEditor, { supportSideBySide: SideBySideEditor.PRIMARY });
 						if (resource) {
 							languageSelection = this.modeService.createByFilepathOrFirstLine(resource, textModel.getLineContent(1));
 						}
@@ -1339,14 +1346,14 @@ export class ChangeEncodingAction extends Action {
 
 		await timeout(50); // quick input is sensitive to being opened so soon after another
 
-		const resource = toResource(activeEditorPane.input, { supportSideBySide: SideBySideEditor.PRIMARY });
+		const resource = EditorResourceAccessor.getOriginalUri(activeEditorPane.input, { supportSideBySide: SideBySideEditor.PRIMARY });
 		if (!resource || (!this.fileService.canHandleResource(resource) && resource.scheme !== Schemas.untitled)) {
 			return; // encoding detection only possible for resources the file service can handle or that are untitled
 		}
 
 		let guessedEncoding: string | undefined = undefined;
 		if (this.fileService.canHandleResource(resource)) {
-			const content = await this.textFileService.read(resource, { autoGuessEncoding: true });
+			const content = await this.textFileService.readStream(resource, { autoGuessEncoding: true });
 			guessedEncoding = content.encoding;
 		}
 

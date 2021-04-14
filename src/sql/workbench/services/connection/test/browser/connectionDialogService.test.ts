@@ -90,8 +90,6 @@ suite('ConnectionDialogService tests', () => {
 		let errorMessageService = getMockErrorMessageService();
 		let capabilitiesService = new TestCapabilitiesService();
 		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
-			undefined, // connection store
-			undefined, // connection status manager
 			undefined, // connection dialog service
 			testInstantiationService, // instantiation service
 			undefined, // editor service

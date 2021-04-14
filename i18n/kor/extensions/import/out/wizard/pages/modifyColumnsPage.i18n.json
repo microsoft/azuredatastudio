@@ -9,7 +9,7 @@
 	"flatFileImport.importData": "데이터 가져오기",
 	"flatFileImport.next": "다음",
 	"flatFileImport.columnName": "열 이름",
-	"flatFileImport.dataType": "데이터 타입",
+	"flatFileImport.dataType": "데이터 형식",
 	"flatFileImport.primaryKey": "기본 키",
-	"flatFileImport.allowNulls": "NULL 허용"
+	"flatFileImport.allowNulls": "Null 허용"
 }

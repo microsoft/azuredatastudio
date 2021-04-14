@@ -9,7 +9,7 @@ import {
 	ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
-import { GroupLayout, GroupContainerProperties } from 'azdata';
+import { GroupLayout, GroupContainerProperties, CssStyles } from 'azdata';
 
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { endsWith } from 'vs/base/common/strings';
@@ -25,7 +25,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 		<div *ngIf="hasHeader()" [class]="getHeaderClass()" (click)="changeState()" (keydown)="onKeyDown($event)" [tabindex]="isCollapsible()? 0 : -1" [attr.role]="isCollapsible() ? 'button' : null" [attr.aria-expanded]="isCollapsible() ? !collapsed : null">
 				{{_containerLayout.header}}
 		</div>
-		<div #container *ngIf="items" class="modelview-group-container" [style.width]="getContainerWidth()" [style.display]="getContainerDisplayStyle()">
+		<div #container *ngIf="items" class="modelview-group-container" [ngStyle]="CSSStyles">
 			<ng-container *ngFor="let item of items">
 			<div class="modelview-group-row" >
 				<div  class="modelview-group-cell">
@@ -131,5 +131,12 @@ export default class GroupContainer extends ContainerBase<GroupLayout, GroupCont
 			this.collapsed = !this.collapsed;
 			this._changeRef.detectChanges();
 		}
+	}
+
+	public get CSSStyles(): CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'display': this.getContainerDisplayStyle(),
+			'width': this.getContainerWidth(),
+		});
 	}
 }

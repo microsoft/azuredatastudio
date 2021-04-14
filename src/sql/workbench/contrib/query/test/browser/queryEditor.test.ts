@@ -93,8 +93,6 @@ suite('SQL QueryEditor Tests', () => {
 		let testinstantiationService = new TestInstantiationService();
 		testinstantiationService.stub(IStorageService, new TestStorageService());
 		connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose,
-			undefined, // connection store
-			undefined, // connection status manager
 			undefined, // connection dialog service
 			testinstantiationService, // instantiation service
 			undefined, // editor service
@@ -267,8 +265,6 @@ suite('SQL QueryEditor Tests', () => {
 			let testinstantiationService = new TestInstantiationService();
 			testinstantiationService.stub(IStorageService, new TestStorageService());
 			connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose,
-				undefined, // connection store
-				undefined, // connection status manager
 				undefined, // connection dialog service
 				testinstantiationService, // instantiation service
 				undefined, // editor service

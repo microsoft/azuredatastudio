@@ -20,7 +20,8 @@ export enum ComponentEventType {
 	onSelectedRowChanged,
 	onComponentCreated,
 	onCellAction,
-	onEnterKeyPressed
+	onEnterKeyPressed,
+	onInput
 }
 
 /**
@@ -28,7 +29,8 @@ export enum ComponentEventType {
  */
 export enum ModelViewAction {
 	SelectTab = 'selectTab',
-	AppendData = 'appendData'
+	AppendData = 'appendData',
+	Filter = 'filter'
 }
 
 /**
@@ -91,7 +93,12 @@ export interface IComponent extends IDisposable {
 	layout(): void;
 	registerEventHandler(handler: (event: IComponentEventArgs) => void): IDisposable;
 	clearContainer?: () => void;
-	addToContainer?: (componentDescriptor: IComponentDescriptor, config: any, index?: number) => void;
+	/**
+	 * Called when child components are added to this component
+	 * @param items The list of items to add. Each item consists of a descriptor for identifying the component,
+	 * the config defined and an optional index to insert it at
+	 */
+	addToContainer?: (items: { componentDescriptor: IComponentDescriptor, config: any, index?: number }[]) => void;
 	removeFromContainer?: (componentDescriptor: IComponentDescriptor) => void;
 	setLayout?: (layout: any) => void;
 	setItemLayout?: (componentDescriptor: IComponentDescriptor, config: any) => void;
@@ -132,7 +139,6 @@ export enum ModelComponentTypes {
 	FileBrowserTree,
 	Editor,
 	DiffEditor,
-	Dom,
 	Hyperlink,
 	Image,
 	RadioCardGroup,
@@ -140,5 +146,6 @@ export enum ModelComponentTypes {
 	TabbedPanel,
 	Separator,
 	PropertiesContainer,
-	InfoBox
+	InfoBox,
+	Slider
 }

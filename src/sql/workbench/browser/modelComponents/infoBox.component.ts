@@ -18,7 +18,7 @@ import { attachInfoBoxStyler } from 'sql/platform/theme/common/styler';
 @Component({
 	selector: 'modelview-infobox',
 	template: `
-		<div #container>
+		<div #container [ngStyle]="CSSStyles">
 		</div>`
 })
 export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxComponentProperties> implements IComponent, OnDestroy, AfterViewInit {

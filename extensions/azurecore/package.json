@@ -317,6 +317,11 @@
         }
       ]
     },
+    "resourceDeploymentValueProviders": [
+      {
+        "id": "subscription-id-to-tenant-id"
+      }
+    ],
     "hasAzureResourceProviders": true
   },
   "dependencies": {

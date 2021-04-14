@@ -19,8 +19,8 @@
 	"azure.resource.connectsqlserver.title": "Connecter",
 	"azure.resource.connectsqldb.title": "Ajouter aux serveurs",
 	"accounts.clearTokenCache": "Effacer le cache de jetons du compte Azure",
-	"config.enablePublicCloudDescription": "Indique si l'intégration du cloud Azure public doit être activée",
-	"config.enableUsGovCloudDescription": "Indique si l'intégration du cloud Azure US Government (Fairfax) doit être activée",
-	"config.enableChinaCloudDescription": "Indique si l'intégration d'Azure Chine doit être activée",
-	"config.enableGermanyCloudDescription": "Indique si l'intégration d'Azure Allemagne doit être activée"
+	"config.enablePublicCloudDescription": "Spécifie si l'intégration du cloud Azure public doit être activée",
+	"config.enableUsGovCloudDescription": "Spécifie si l'intégration du cloud Azure US Government (Fairfax) doit être activée",
+	"config.enableChinaCloudDescription": "Spécifie si l'intégration d'Azure Chine doit être activée",
+	"config.enableGermanyCloudDescription": "Spécifie si l'intégration d'Azure Allemagne doit être activée"
 }

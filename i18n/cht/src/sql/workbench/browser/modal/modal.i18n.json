@@ -10,8 +10,8 @@
 	"warningAltText": "警告",
 	"errorAltText": "錯誤",
 	"showMessageDetails": "顯示詳細資訊",
-	"hideMessageDetails": "隱藏詳細資料",
 	"copyMessage": "複製",
 	"closeMessage": "關閉",
-	"modalBack": "上一頁"
+	"modal.back": "返回",
+	"hideMessageDetails": "隱藏詳細資料"
 }

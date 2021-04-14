@@ -24,7 +24,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IExtHostApiDeprecationService } from 'vs/workbench/api/common/extHostApiDeprecationService';
 
 export class ExtHostTask extends ExtHostTaskBase {
-	// private _variableResolver: ExtHostVariableResolverService | undefined; {{ SQL CARBON EDIT }}
+	// private _variableResolver: ExtHostVariableResolverService | undefined; {{SQL CARBON EDIT}}
 
 	constructor(
 		@IExtHostRpcService extHostRpc: IExtHostRpcService,
@@ -48,6 +48,10 @@ export class ExtHostTask extends ExtHostTaskBase {
 	}
 
 	public async executeTask(extension: IExtensionDescription, task: vscode.Task): Promise<vscode.TaskExecution> {
+		if (!task.execution) {
+			throw new Error('Tasks to execute must include an execution');
+		}
+
 		const tTask = (task as types.Task);
 		// We have a preserved ID. So the task didn't change.
 		if (tTask._id !== undefined) {
@@ -118,7 +122,7 @@ export class ExtHostTask extends ExtHostTaskBase {
 	// 		this._variableResolver = new ExtHostVariableResolverService(workspaceFolders, this._editorService, configProvider, process.env as IProcessEnvironment);
 	// 	}
 	// 	return this._variableResolver;
-	// } {{ SQL CARBON EDIT }}
+	// } {{SQL CARBON EDIT}}
 
 	public async $resolveVariables(uriComponents: UriComponents, toResolve: { process?: { name: string; cwd?: string; path?: string }, variables: string[] }): Promise<{ process?: string, variables: { [key: string]: string; } }> {
 		/*const uri: URI = URI.revive(uriComponents);
@@ -157,7 +161,7 @@ export class ExtHostTask extends ExtHostTaskBase {
 				paths
 			);
 		}
-		return result;*/ // {{ SQL CARBON EDIT }}
+		return result;*/ // {{SQL CARBON EDIT}}
 		return undefined;
 	}
 

@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DeploymentProvider, instanceOfAzureSQLDBDeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWizardDeploymentProvider, ResourceType, ResourceTypeOptionValue } from '../interfaces';
+import { DeploymentProvider, InitialVariableValues, instanceOfAzureSQLDBDeploymentProvider, instanceOfAzureSQLVMDeploymentProvider, instanceOfNotebookWizardDeploymentProvider, instanceOfWizardDeploymentProvider, ResourceType, ResourceTypeOptionValue } from '../interfaces';
 import { DeployClusterWizardModel } from './deployClusterWizard/deployClusterWizardModel';
 import { DeployAzureSQLVMWizardModel } from './deployAzureSQLVMWizard/deployAzureSQLVMWizardModel';
 import { WizardPageInfo } from './wizardPageInfo';
@@ -19,8 +19,9 @@ import { ResourceTypePage } from './resourceTypePage';
 import { NotebookWizardModel } from './notebookWizard/notebookWizardModel';
 import { DeployAzureSQLDBWizardModel } from './deployAzureSQLDBWizard/deployAzureSQLDBWizardModel';
 import { ToolsAndEulaPage } from './toolsAndEulaSettingsPage';
-import { ResourceTypeService } from '../services/resourceTypeService';
+import { OptionValuesFilter, ResourceTypeService } from '../services/resourceTypeService';
 import { PageLessDeploymentModel } from './pageLessDeploymentModel';
+import { deepClone } from '../common/utils';
 
 export class ResourceTypeWizard {
 	private customButtons: azdata.window.Button[] = [];
@@ -58,13 +59,25 @@ export class ResourceTypeWizard {
 		public notebookService: INotebookService,
 		public toolsService: IToolsService,
 		public platformService: IPlatformService,
-		public resourceTypeService: ResourceTypeService) {
+		public resourceTypeService: ResourceTypeService,
+		private _optionValuesFilter?: OptionValuesFilter,
+		private _initialVariableValues?: InitialVariableValues) {
 		/**
 		 * Setting the first provider from the first value of the dropdowns.
 		 * If there are no options (dropdowns) then the resource type has only one provider which is set as default here.
 		 */
+		let filteredOptions = deepClone(resourceType.options);
+		const optionsFilter = this._optionValuesFilter?.[this.resourceType.name];
+		if (optionsFilter) {
+			filteredOptions.forEach(option => {
+				const optionValuesFilter = optionsFilter[option.name];
+				if (optionValuesFilter) {
+					option.values = option.values.filter(optionValue => optionValuesFilter.includes(optionValue.name));
+				}
+			});
+		}
 		if (resourceType.options) {
-			this.provider = this.resourceType.getProvider(resourceType.options.map(option => { return { option: option.name, value: option.values[0].name }; }))!;
+			this.provider = this.resourceType.getProvider(filteredOptions.map(option => { return { option: option.name, value: option.values[0].name }; }))!;
 		} else {
 			this.provider = this.resourceType.providers[0];
 		}
@@ -93,6 +106,7 @@ export class ResourceTypeWizard {
 		}));
 
 		this.toDispose.push(this.wizardObject.doneButton.onClick(async () => {
+			// TODO - Don't close this when the button is clicked, set up a page validator instead
 			await this._model.onOk();
 			this.dispose();
 		}));
@@ -144,7 +158,7 @@ export class ResourceTypeWizard {
 	}
 
 	public setPages(pages: ResourceTypePage[]) {
-		pages.unshift(new ToolsAndEulaPage(this));
+		pages.unshift(new ToolsAndEulaPage(this, this._optionValuesFilter));
 		this.wizardObject!.pages = pages.map(p => p.pageObject);
 		this.pages = pages;
 		this.pages.forEach((page) => {
@@ -152,7 +166,7 @@ export class ResourceTypeWizard {
 				// generateScriptButton is enabled only when the page is valid.
 				this.wizardObject.generateScriptButton.enabled = isValid;
 			});
-			page.initialize();
+			page.initialize(this._initialVariableValues);
 		});
 	}
 

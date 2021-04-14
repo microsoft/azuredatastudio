@@ -91,9 +91,14 @@ export class SchemaCompareMainWindow {
 		let sourceDacpac = context as string;
 		if (profile) {
 			let ownerUri = await azdata.connection.getUriForConnection((profile.id));
+			let usr = profile.userName;
+			if (!usr) {
+				usr = loc.defaultText;
+			}
+
 			this.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
-				serverDisplayName: `${profile.serverName} ${profile.userName}`,
+				serverDisplayName: `${profile.serverName} (${usr})`,
 				serverName: profile.serverName,
 				databaseName: profile.databaseName,
 				ownerUri: ownerUri,
@@ -888,7 +893,8 @@ export class SchemaCompareMainWindow {
 		this.selectSourceButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
 			title: loc.selectSource,
-			ariaLabel: loc.selectSource
+			ariaLabel: loc.selectSource,
+			secondary: true
 		}).component();
 
 		this.selectSourceButton.onDidClick(async () => {
@@ -901,7 +907,8 @@ export class SchemaCompareMainWindow {
 		this.selectTargetButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
 			title: loc.selectTarget,
-			ariaLabel: loc.selectTarget
+			ariaLabel: loc.selectTarget,
+			secondary: true
 		}).component();
 
 		this.selectTargetButton.onDidClick(async () => {

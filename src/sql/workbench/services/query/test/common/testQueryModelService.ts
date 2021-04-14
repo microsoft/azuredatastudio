@@ -14,6 +14,10 @@ import { IRange } from 'vs/editor/common/core/range';
 export class TestQueryModelService implements IQueryModelService {
 	_serviceBrand: any;
 	onRunQueryUpdate: Event<string>;
+	onCellSelectionChanged: Event<string[]>;
+	notifyCellSelectionChanged(selectedValues: string[]): void {
+		throw new Error('Method not implemented.');
+	}
 	getQueryRunner(uri: string): QueryRunner {
 		throw new Error('Method not implemented.');
 	}

@@ -13,9 +13,9 @@
 	"dacfx.operationColumn": "Opération",
 	"dacfx.operationTooltip": "Opération (Créer, Modifier, Supprimer) qui a lieu pendant le déploiement",
 	"dacfx.typeColumn": "Type",
-	"dacfx.typeTooltip": "Type d'objet affecté par le déploiement",
+	"dacfx.typeTooltip": "Type de l'objet affecté par le déploiement",
 	"dacfx.objectColumn": "Objet",
-	"dacfx.objecTooltip": "Nom d'objet affecté par le déploiement",
+	"dacfx.objecTooltip": "Nom de l'objet affecté par le déploiement",
 	"dacfx.dataLossColumn": "Perte de données",
-	"dacfx.dataLossTooltip": "Les opérations pouvant entraîner une perte des données sont marquées avec un signe d'avertissement"
+	"dacfx.dataLossTooltip": "Les opérations pouvant entraîner une perte des données sont marquées d'un signe d'avertissement"
 }

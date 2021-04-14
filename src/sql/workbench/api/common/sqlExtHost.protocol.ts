@@ -22,10 +22,10 @@ import {
 	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, ISingleNotebookEditOperation,
 	NotebookChangeKind
 } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
+import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -759,13 +759,15 @@ export interface ExtHostBackgroundTaskManagementShape {
 }
 
 export interface ExtHostWorkspaceShape {
-	$createWorkspace(folder: vscode.Uri, workspaceFile: vscode.Uri): Promise<void>;
+	$createAndEnterWorkspace(folder: vscode.Uri, workspaceFile: vscode.Uri): Promise<void>;
 	$enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+	$saveAndEnterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 }
 
 export interface MainThreadWorkspaceShape {
-	$createWorkspace(folder: vscode.Uri, workspaceFile: vscode.Uri): Promise<void>;
+	$createAndEnterWorkspace(folder: vscode.Uri, workspaceFile: vscode.Uri): Promise<void>;
 	$enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
+	$saveAndEnterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 }
 
 export interface MainThreadBackgroundTaskManagementShape extends IDisposable {
@@ -777,7 +779,7 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$registerProvider(id: string): void;
 	$initializeModel(handle: number, rootComponent: IComponentShape): Thenable<void>;
 	$clearContainer(handle: number, componentId: string): Thenable<void>;
-	$addToContainer(handle: number, containerId: string, item: IItemConfig, index?: number): Thenable<void>;
+	$addToContainer(handle: number, containerId: string, items: { itemConfig: IItemConfig, index?: number }[]): Thenable<void>;
 	$removeFromContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void>;
 	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;
 	$setItemLayout(handle: number, componentId: string, item: IItemConfig): Thenable<void>;
@@ -818,12 +820,13 @@ export interface ExtHostModelViewDialogShape {
 
 export interface MainThreadModelViewDialogShape extends IDisposable {
 	$openEditor(handle: number, modelViewId: string, title: string, name?: string, options?: azdata.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
+	$closeEditor(handle: number): Thenable<void>;
 	$openDialog(handle: number, dialogName?: string): Thenable<void>;
 	$closeDialog(handle: number): Thenable<void>;
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
 	$setTabDetails(handle: number, details: IModelViewTabDetails): Thenable<void>;
 	$setButtonDetails(handle: number, details: IModelViewButtonDetails): Thenable<void>;
-	$openWizard(handle: number): Thenable<void>;
+	$openWizard(handle: number, source?: string): Thenable<void>;
 	$closeWizard(handle: number): Thenable<void>;
 	$setWizardPageDetails(handle: number, details: IModelViewWizardPageDetails): Thenable<void>;
 	$setWizardDetails(handle: number, details: IModelViewWizardDetails): Thenable<void>;
@@ -867,6 +870,8 @@ export interface ExtHostNotebookShape {
 	$refreshSpecs(managerHandle: number): Thenable<azdata.nb.IAllKernels>;
 	$startNewSession(managerHandle: number, options: azdata.nb.ISessionOptions): Thenable<INotebookSessionDetails>;
 	$shutdownSession(managerHandle: number, sessionId: string): Thenable<void>;
+	$shutdownAll(managerHandle: number): Thenable<void>;
+	$dispose(managerHandle: number): void;
 
 	// Session APIs
 	$changeKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<INotebookKernelDetails>;

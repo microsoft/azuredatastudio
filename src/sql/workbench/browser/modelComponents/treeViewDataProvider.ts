@@ -33,7 +33,7 @@ export class ResolvableTreeComponentItem extends ResolvableTreeItem implements I
 export class TreeViewDataProvider extends vsTreeView.TreeViewDataProvider implements IModelViewTreeViewDataProvider {
 	constructor(handle: number, treeViewId: string,
 		context: IExtHostContext,
-		notificationService?: INotificationService
+		notificationService: INotificationService
 	) {
 		super(`${handle}-${treeViewId}`, context.getProxy(SqlExtHostContext.ExtHostModelViewTreeViews), notificationService);
 	}

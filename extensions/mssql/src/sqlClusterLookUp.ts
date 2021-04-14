@@ -107,6 +107,12 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 		options: {}
 	};
 
+	// We need to populate some extra information here in order to be able to browse the HDFS nodes.
+	// First - if the auth type isn't integrated auth then we need to try and find the username to connect
+	// to the knox endpoint with.
+	// Next we need the knox endpoint - if we didn't get that from the SQL instance (because the user didn't have permissions
+	// to see the full DMV usually) then we need to connect to the controller to fetch the full list of endpoints and get it
+	// that way.
 	let clusterController: bdc.IClusterController | undefined = undefined;
 	let authType = clusterConnInfo.options[constants.authenticationTypePropName] = sqlConnInfo.options[constants.authenticationTypePropName];
 	const controllerEndpoint = endpoints.find(ep => ep.name.toLowerCase() === 'controller');
@@ -129,12 +135,11 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 			console.log(`Unexpected error getting Knox username for SQL Cluster connection: ${err}`);
 			throw err;
 		}
-	} else {
-		clusterController = await getClusterController(controllerEndpoint.endpoint, clusterConnInfo);
 	}
 
 	let hadoopEndpointIndex = endpoints.findIndex(ep => ep.name.toLowerCase() === constants.hadoopEndpointNameGateway.toLowerCase());
 	if (hadoopEndpointIndex < 0) {
+		clusterController = await getClusterController(controllerEndpoint.endpoint, clusterConnInfo);
 		endpoints = (await clusterController.getEndPoints()).endPoints;
 		hadoopEndpointIndex = endpoints.findIndex(ep => ep.name.toLowerCase() === constants.hadoopEndpointNameGateway.toLowerCase());
 	}
@@ -156,7 +161,8 @@ async function getClusterController(controllerEndpoint: string, connInfo: Connec
 		connInfo.options[constants.userPropName],
 		connInfo.options[constants.passwordPropName]);
 	try {
-		await controller.getClusterConfig();
+		// We just want to test the connection - so using getEndpoints since that is available to all users (not just admin)
+		await controller.getEndPoints();
 		return controller;
 	} catch (err) {
 		// Initial username/password failed so prompt user for username password until either user
@@ -187,7 +193,8 @@ async function getClusterController(controllerEndpoint: string, connInfo: Connec
 			}
 			const controller = bdcApi.getClusterController(controllerEndpoint, authType, username, password);
 			try {
-				await controller.getClusterConfig();
+				// We just want to test the connection - so using getEndpoints since that is available to all users (not just admin)
+				await controller.getEndPoints();
 				// Update our connection with the new info
 				connInfo.options[constants.userPropName] = username;
 				connInfo.options[constants.passwordPropName] = password;

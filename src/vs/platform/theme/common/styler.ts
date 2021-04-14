@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
-import { focusBorder, inputBackground, inputForeground, ColorIdentifier, selectForeground, selectBackground, selectListBackground, selectBorder, inputBorder, foreground, editorBackground, contrastBorder, inputActiveOptionBorder, inputActiveOptionBackground, inputActiveOptionForeground, listFocusBackground, listFocusForeground, listActiveSelectionBackground, listActiveSelectionForeground, listInactiveSelectionForeground, listInactiveSelectionBackground, listInactiveFocusBackground, listHoverBackground, listHoverForeground, listDropBackground, pickerGroupBorder, pickerGroupForeground, widgetShadow, inputValidationInfoBorder, inputValidationInfoBackground, inputValidationWarningBorder, inputValidationWarningBackground, inputValidationErrorBorder, inputValidationErrorBackground, activeContrastBorder, buttonForeground, buttonBackground, buttonHoverBackground, ColorFunction, badgeBackground, badgeForeground, progressBarBackground, breadcrumbsForeground, breadcrumbsFocusForeground, breadcrumbsActiveSelectionForeground, breadcrumbsBackground, editorWidgetBorder, inputValidationInfoForeground, inputValidationWarningForeground, inputValidationErrorForeground, menuForeground, menuBackground, menuSelectionForeground, menuSelectionBackground, menuSelectionBorder, menuBorder, menuSeparatorBackground, darken, listFilterWidgetOutline, listFilterWidgetNoMatchesOutline, listFilterWidgetBackground, editorWidgetBackground, treeIndentGuidesStroke, editorWidgetForeground, simpleCheckboxBackground, simpleCheckboxBorder, simpleCheckboxForeground, ColorValue, resolveColorValue, textLinkForeground, problemsWarningIconForeground, problemsErrorIconForeground, problemsInfoIconForeground, buttonSecondaryBackground, buttonSecondaryForeground, buttonSecondaryHoverBackground } from 'vs/platform/theme/common/colorRegistry';
+import { focusBorder, inputBackground, inputForeground, ColorIdentifier, selectForeground, selectBackground, selectListBackground, selectBorder, inputBorder, foreground, editorBackground, contrastBorder, inputActiveOptionBorder, inputActiveOptionBackground, inputActiveOptionForeground, listFocusBackground, listFocusForeground, listActiveSelectionBackground, listActiveSelectionForeground, listInactiveSelectionForeground, listInactiveSelectionBackground, listInactiveFocusBackground, listHoverBackground, listHoverForeground, listDropBackground, pickerGroupBorder, pickerGroupForeground, widgetShadow, inputValidationInfoBorder, inputValidationInfoBackground, inputValidationWarningBorder, inputValidationWarningBackground, inputValidationErrorBorder, inputValidationErrorBackground, activeContrastBorder, buttonForeground, buttonBackground, buttonHoverBackground, ColorFunction, badgeBackground, badgeForeground, progressBarBackground, breadcrumbsForeground, breadcrumbsFocusForeground, breadcrumbsActiveSelectionForeground, breadcrumbsBackground, editorWidgetBorder, inputValidationInfoForeground, inputValidationWarningForeground, inputValidationErrorForeground, menuForeground, menuBackground, menuSelectionForeground, menuSelectionBackground, menuSelectionBorder, menuBorder, menuSeparatorBackground, darken, listFilterWidgetOutline, listFilterWidgetNoMatchesOutline, listFilterWidgetBackground, editorWidgetBackground, treeIndentGuidesStroke, editorWidgetForeground, simpleCheckboxBackground, simpleCheckboxBorder, simpleCheckboxForeground, ColorValue, resolveColorValue, textLinkForeground, problemsWarningIconForeground, problemsErrorIconForeground, problemsInfoIconForeground, buttonSecondaryBackground, buttonSecondaryForeground, buttonSecondaryHoverBackground, buttonBorder, buttonSecondaryBorder, buttonDisabledBorder, buttonDisabledBackground, buttonDisabledForeground } from 'vs/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { Color } from 'vs/base/common/color';
 import { IThemable, styleFn } from 'vs/base/common/styler';
@@ -265,6 +265,12 @@ export interface IButtonStyleOverrides extends IStyleOverrides {
 	buttonSecondaryForeground?: ColorIdentifier;
 	buttonSecondaryBackground?: ColorIdentifier;
 	buttonSecondaryHoverBackground?: ColorIdentifier;
+	// {{SQL CARBON EDIT}}
+	buttonBorder?: ColorIdentifier;
+	buttonSecondaryBorder?: ColorIdentifier;
+	buttonDisabledForeground?: ColorIdentifier;
+	buttonDisabledBackground?: ColorIdentifier;
+	buttonDisabledBorder?: ColorIdentifier;
 }
 
 export function attachButtonStyler(widget: IThemable, themeService: IThemeService, style?: IButtonStyleOverrides): IDisposable {
@@ -275,7 +281,12 @@ export function attachButtonStyler(widget: IThemable, themeService: IThemeServic
 		buttonSecondaryForeground: (style && style.buttonSecondaryForeground) || buttonSecondaryForeground,
 		buttonSecondaryBackground: (style && style.buttonSecondaryBackground) || buttonSecondaryBackground,
 		buttonSecondaryHoverBackground: (style && style.buttonSecondaryHoverBackground) || buttonSecondaryHoverBackground,
-		buttonBorder: contrastBorder
+		// {{SQL CARBON EDIT}}
+		buttonBorder: (style && style.buttonBorder) || buttonBorder,
+		buttonSecondaryBorder: (style && style.buttonSecondaryBorder) || buttonSecondaryBorder,
+		buttonDisabledBorder: (style && style.buttonDisabledBorder) || buttonDisabledBorder,
+		buttonDisabledBackground: (style && style.buttonDisabledBackground) || buttonDisabledBackground,
+		buttonDisabledForeground: (style && style.buttonDisabledForeground) || buttonDisabledForeground
 	} as IButtonStyleOverrides, widget);
 }
 
@@ -360,6 +371,9 @@ export interface IDialogStyleOverrides extends IButtonStyleOverrides {
 	errorIconForeground?: ColorIdentifier;
 	warningIconForeground?: ColorIdentifier;
 	infoIconForeground?: ColorIdentifier;
+	inputBackground?: ColorIdentifier;
+	inputForeground?: ColorIdentifier;
+	inputBorder?: ColorIdentifier;
 }
 
 export const defaultDialogStyles = <IDialogStyleOverrides>{
@@ -376,7 +390,10 @@ export const defaultDialogStyles = <IDialogStyleOverrides>{
 	checkboxForeground: simpleCheckboxForeground,
 	errorIconForeground: problemsErrorIconForeground,
 	warningIconForeground: problemsWarningIconForeground,
-	infoIconForeground: problemsInfoIconForeground
+	infoIconForeground: problemsInfoIconForeground,
+	inputBackground: inputBackground,
+	inputForeground: inputForeground,
+	inputBorder: inputBorder
 };
 
 

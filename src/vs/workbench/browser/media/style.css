@@ -213,6 +213,7 @@ body.web {
 .monaco-workbench input[type="button"]:focus,
 .monaco-workbench input[type="text"]:focus,
 .monaco-workbench textarea:focus,
+.monaco-workbench input[type="radio"]:focus, /* {{SQL CARBON EDIT}} */
 .monaco-workbench input[type="checkbox"]:focus {
 	outline-width: 1px;
 	outline-style: solid;
@@ -220,6 +221,7 @@ body.web {
 	opacity: 1 !important;
 }
 
+.monaco-workbench input[type="radio"]:focus, /* {{SQL CARBON EDIT}} */
 .monaco-workbench input[type="checkbox"]:focus {
 	outline-offset: 2px;
 }
@@ -233,7 +235,7 @@ body.web {
 }
 
 .monaco-workbench.mac select:focus {
-	border-color: transparent; /* outline is a square, but border has a radius, so we avoid this glitch when focused (https://github.com/Microsoft/vscode/issues/26045) */
+	border-color: transparent; /* outline is a square, but border has a radius, so we avoid this glitch when focused (https://github.com/microsoft/vscode/issues/26045) */
 }
 
 .monaco-workbench .monaco-list:not(.element-focused):focus:before {

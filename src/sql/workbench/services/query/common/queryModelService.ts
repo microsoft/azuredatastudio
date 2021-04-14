@@ -62,6 +62,7 @@ export class QueryModelService implements IQueryModelService {
 	private _onRunQueryComplete: Emitter<string>;
 	private _onQueryEvent: Emitter<IQueryEvent>;
 	private _onEditSessionReady: Emitter<azdata.EditSessionReadyParams>;
+	private _onCellSelectionChangedEmitter = new Emitter<string[]>();
 
 	// EVENTS /////////////////////////////////////////////////////////////
 	public get onRunQueryStart(): Event<string> { return this._onRunQueryStart.event; }
@@ -69,6 +70,7 @@ export class QueryModelService implements IQueryModelService {
 	public get onRunQueryComplete(): Event<string> { return this._onRunQueryComplete.event; }
 	public get onQueryEvent(): Event<IQueryEvent> { return this._onQueryEvent.event; }
 	public get onEditSessionReady(): Event<azdata.EditSessionReadyParams> { return this._onEditSessionReady.event; }
+	public get onCellSelectionChanged(): Event<string[]> { return this._onCellSelectionChangedEmitter.event; }
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
@@ -94,6 +96,14 @@ export class QueryModelService implements IQueryModelService {
 		}
 
 		return dataService;
+	}
+
+	/**
+	 * Notify the event subscribers about the new selected cell values
+	 * @param selectedValues current selected cell values
+	 */
+	public notifyCellSelectionChanged(selectedValues: string[]): void {
+		this._onCellSelectionChangedEmitter.fire(selectedValues);
 	}
 
 	/**

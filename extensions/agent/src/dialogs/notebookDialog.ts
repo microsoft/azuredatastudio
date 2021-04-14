@@ -109,7 +109,8 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 					title: '...',
 					width: '20px',
 					isFile: true,
-					fileType: '.ipynb'
+					fileType: '.ipynb',
+					secondary: true
 				}).component();
 			this.openTemplateFileButton.onDidClick(e => {
 				if (e) {
@@ -181,13 +182,15 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 					width: 420
 				}).component();
 
-			this.pickScheduleButton = view.modelBuilder.button().withProperties({
+			this.pickScheduleButton = view.modelBuilder.button().withProps({
 				label: PickScheduleButtonString,
-				width: 110
+				width: 110,
+				secondary: true
 			}).component();
-			this.removeScheduleButton = view.modelBuilder.button().withProperties({
+			this.removeScheduleButton = view.modelBuilder.button().withProps({
 				label: RemoveScheduleButtonString,
-				width: 110
+				width: 110,
+				secondary: true
 			}).component();
 			this.pickScheduleButton.onDidClick(() => {
 				let pickScheduleDialog = new PickScheduleDialog(this.model.ownerUri, this.model.name);

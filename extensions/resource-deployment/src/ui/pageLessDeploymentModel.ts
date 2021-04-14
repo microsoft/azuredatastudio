@@ -51,8 +51,4 @@ export class PageLessDeploymentModel extends ResourceTypeModel {
 			vscode.commands.executeCommand(provider.command);
 		}
 	}
-
-	onCancel(): void {
-	}
-
 }

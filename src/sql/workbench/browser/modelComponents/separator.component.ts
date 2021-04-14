@@ -18,7 +18,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 @Component({
 	selector: `modelview-separator`,
 	template: `
-		<div #separator> </div>
+		<div [ngStyle]="CSSStyles" #separator> </div>
 	`
 })
 export default class SeparatorComponent extends ComponentBase<azdata.SeparatorComponentProperties> implements IComponent, OnDestroy, AfterViewInit {

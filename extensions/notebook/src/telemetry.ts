@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import AdsTelemetryReporter from 'ads-extension-telemetry';
+import AdsTelemetryReporter from '@microsoft/ads-extension-telemetry';
 
 const packageJson = require('../package.json');
 export const TelemetryReporter = new AdsTelemetryReporter(packageJson.name, packageJson.version, packageJson.aiKey);
@@ -19,6 +19,7 @@ export enum NbTelemetryActions {
 	SaveBook = 'BookSaved',
 	CreateBook = 'BookCreated',
 	PinNotebook = 'NotebookPinned',
-	OpenNotebookFromBook = 'NotebookOpenedFromBook'
+	OpenNotebookFromBook = 'NotebookOpenedFromBook',
+	MoveNotebook = 'MoveNotebook',
 }
 

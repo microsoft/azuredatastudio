@@ -56,14 +56,14 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 		});
 	}
 
-	$reveal(treeViewId: string, item: ITreeItem, parentChain: ITreeItem[], options: IRevealOptions): Promise<void> {
-		this.logService.trace('MainThreadTreeViews#$reveal', treeViewId, item, parentChain, options);
+	$reveal(treeViewId: string, itemInfo: { item: ITreeItem, parentChain: ITreeItem[] } | undefined, options: IRevealOptions): Promise<void> {
+		this.logService.trace('MainThreadTreeViews#$reveal', treeViewId, itemInfo?.item, itemInfo?.parentChain, options);
 
 		return this.viewsService.openView(treeViewId, options.focus)
 			.then(() => {
 				const viewer = this.getTreeView(treeViewId);
-				if (viewer) {
-					return this.reveal(viewer, this._dataProviders.get(treeViewId)!, item, parentChain, options);
+				if (viewer && itemInfo) {
+					return this.reveal(viewer, this._dataProviders.get(treeViewId)!, itemInfo.item, itemInfo.parentChain, options);
 				}
 				return undefined;
 			});
@@ -93,12 +93,13 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 		}
 	}
 
-	$setTitle(treeViewId: string, title: string): void {
-		this.logService.trace('MainThreadTreeViews#$setTitle', treeViewId, title);
+	$setTitle(treeViewId: string, title: string, description: string | undefined): void {
+		this.logService.trace('MainThreadTreeViews#$setTitle', treeViewId, title, description);
 
 		const viewer = this.getTreeView(treeViewId);
 		if (viewer) {
 			viewer.title = title;
+			viewer.description = description;
 		}
 	}
 
@@ -227,7 +228,7 @@ export class TreeViewDataProvider implements ITreeViewDataProvider {
 	}
 
 	protected async postGetChildren(elements: ITreeItem[]): Promise<ITreeItem[]> { // {{SQL CARBON EDIT}} For use by Component Tree View
-		const result: ITreeItem[] = []; //{{SQL CARBON EDIT}}
+		const result: ITreeItem[] = []; // {{SQL CARBON EDIT}}
 		const hasResolve = await this.hasResolve;
 		if (elements) {
 			for (const element of elements) {

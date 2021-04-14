@@ -6,7 +6,7 @@
 import 'vs/workbench/contrib/markers/browser/markersFileDecorations';
 import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
-import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
+import { IWorkbenchActionRegistry, Extensions as ActionExtensions, CATEGORIES } from 'vs/workbench/common/actions';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { localize } from 'vs/nls';
@@ -18,9 +18,8 @@ import { ShowProblemsPanelAction } from 'vs/workbench/contrib/markers/browser/ma
 import Constants from 'vs/workbench/contrib/markers/browser/constants';
 import Messages from 'vs/workbench/contrib/markers/browser/messages';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { IMarkersWorkbenchService, MarkersWorkbenchService, ActivityUpdater } from 'vs/workbench/contrib/markers/browser/markers';
-import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
-import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { ActivityUpdater } from 'vs/workbench/contrib/markers/browser/markers';
+import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment, IStatusbarEntry } from 'vs/workbench/services/statusbar/common/statusbar';
@@ -33,8 +32,7 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import type { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { ToggleViewAction } from 'vs/workbench/browser/actions/layoutActions';
 import { Codicon } from 'vs/base/common/codicons';
-
-registerSingleton(IMarkersWorkbenchService, MarkersWorkbenchService, false);
+import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: Constants.MARKER_OPEN_ACTION_ID,
@@ -124,11 +122,13 @@ class ToggleMarkersPanelAction extends ToggleViewAction {
 	}
 }
 
+const markersViewIcon = registerIcon('markers-view-icon', Codicon.warning, localize('markersViewIcon', 'View icon of the markers view.'));
+
 // markers view container
 const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: Constants.MARKERS_CONTAINER_ID,
 	name: Messages.MARKERS_PANEL_TITLE_PROBLEMS,
-	icon: Codicon.warning.classNames,
+	icon: markersViewIcon,
 	hideIfEmpty: true,
 	order: 0,
 	ctorDescriptor: new SyncDescriptor(ViewPaneContainer, [Constants.MARKERS_CONTAINER_ID, { mergeViewWithContainerWhenSingleView: true, donotShowContainerTitleWhenMergedWithContainer: true }]),
@@ -142,7 +142,7 @@ const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewC
 
 Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{
 	id: Constants.MARKERS_VIEW_ID,
-	containerIcon: Codicon.warning.classNames,
+	containerIcon: markersViewIcon,
 	name: Messages.MARKERS_PANEL_TITLE_PROBLEMS,
 	canToggleVisibility: false,
 	canMoveView: true,
@@ -157,8 +157,8 @@ workbenchRegistry.registerWorkbenchContribution(ActivityUpdater, LifecyclePhase.
 const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
 registry.registerWorkbenchAction(SyncActionDescriptor.from(ToggleMarkersPanelAction, {
 	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_M
-}), 'View: Toggle Problems (Errors, Warnings, Infos)', Messages.MARKERS_PANEL_VIEW_CATEGORY);
-registry.registerWorkbenchAction(SyncActionDescriptor.from(ShowProblemsPanelAction), 'View: Focus Problems (Errors, Warnings, Infos)', Messages.MARKERS_PANEL_VIEW_CATEGORY);
+}), 'View: Toggle Problems (Errors, Warnings, Infos)', CATEGORIES.View.value);
+registry.registerWorkbenchAction(SyncActionDescriptor.from(ShowProblemsPanelAction), 'View: Focus Problems (Errors, Warnings, Infos)', CATEGORIES.View.value);
 registerAction2(class extends Action2 {
 	constructor() {
 		super({

@@ -11,6 +11,7 @@ export interface IPublishSettings {
 	upgradeExisting: boolean;
 	sqlCmdVariables?: Record<string, string>;
 	deploymentOptions?: DeploymentOptions;
+	profileUsed?: boolean;
 }
 
 export interface IGenerateScriptSettings {
@@ -18,4 +19,5 @@ export interface IGenerateScriptSettings {
 	connectionUri: string;
 	sqlCmdVariables?: Record<string, string>;
 	deploymentOptions?: DeploymentOptions;
+	profileUsed?: boolean;
 }

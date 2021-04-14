@@ -44,12 +44,32 @@ let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
 		cell_type: CellTypes.Code,
 		source: ['insert into t1 values (c1, c2)'],
-		metadata: { language: 'python' },
+		metadata: { language: 'sql' },
 		execution_count: 1
 	}, {
 		cell_type: CellTypes.Markdown,
 		source: ['I am *markdown*'],
-		metadata: { language: 'python' },
+		execution_count: 1
+	}],
+	metadata: {
+		kernelspec: {
+			name: 'mssql',
+			language: 'sql',
+			display_name: 'SQL'
+		},
+		language_info: {
+			name: 'sql'
+		}
+	},
+	nbformat: 4,
+	nbformat_minor: 5
+};
+
+let expectedNotebookContentOneCell: nb.INotebookContents = {
+	cells: [{
+		cell_type: CellTypes.Code,
+		source: ['insert into t1 values (c1, c2)'],
+		metadata: { language: 'sql' },
 		execution_count: 1
 	}],
 	metadata: {
@@ -63,11 +83,10 @@ let expectedNotebookContent: nb.INotebookContents = {
 	nbformat_minor: 5
 };
 
-let expectedNotebookContentOneCell: nb.INotebookContents = {
+let expectedKernelAliasNotebookContentOneCell: nb.INotebookContents = {
 	cells: [{
 		cell_type: CellTypes.Code,
-		source: ['insert into t1 values (c1, c2)'],
-		metadata: { language: 'python' },
+		source: ['StormEvents | summarize Count = count() by State | sort by Count | limit 10'],
 		execution_count: 1
 	}],
 	metadata: {
@@ -75,6 +94,10 @@ let expectedNotebookContentOneCell: nb.INotebookContents = {
 			name: 'mssql',
 			language: 'sql',
 			display_name: 'SQL'
+		},
+		language_info: {
+			name: 'fake',
+			version: ''
 		}
 	},
 	nbformat: 4,
@@ -130,7 +153,7 @@ suite('notebook model', function (): void {
 		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = new TestCapabilitiesService();
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
-		memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
+		memento.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
 		queryConnectionService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
 		queryConnectionService.callBase = true;
 		let serviceCollection = new ServiceCollection();
@@ -544,6 +567,34 @@ suite('notebook model', function (): void {
 		assert.equal(notebookContentChange.changeType, NotebookChangeType.CellMetadataUpdated, 'notebookContentChange changeType should indicate ');
 	});
 
+	test('Should set cell language correctly after cell type conversion', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		let newCell: ICellModel;
+		model.onCellTypeChanged(c => newCell = c);
+
+		let firstCell = model.cells[0];
+		let secondCell = model.cells[1];
+
+		assert.equal(firstCell.cellType, CellTypes.Code, 'Initial cell type for first cell should be code');
+		assert.equal(firstCell.language, 'sql', 'Initial language should be sql for first cell');
+
+		model.convertCellType(firstCell);
+		assert.equal(firstCell.cellType, CellTypes.Markdown, 'Failed to convert cell type after conversion');
+		assert.equal(firstCell.language, 'markdown', 'Language should be markdown for text cells');
+		assert.deepEqual(newCell, firstCell);
+
+		model.convertCellType(secondCell);
+		assert.equal(secondCell.cellType, CellTypes.Code, 'Failed to convert second cell type');
+		assert.equal(secondCell.language, 'sql', 'Language should be sql again for second cell');
+		assert.deepEqual(newCell, secondCell);
+	});
+
 	test('Should load contents but then go to error state if client session startup fails', async function (): Promise<void> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContentOneCell));
@@ -571,7 +622,7 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should not be in error state if client session initialization succeeds', async function (): Promise<void> {
-		let model = await loadModelAndStartClientSession();
+		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 
 		assert.equal(model.inErrorState, false);
 		assert.equal(model.notebookManagers.length, 1);
@@ -598,7 +649,7 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should close active session when closed', async function () {
-		let model = await loadModelAndStartClientSession();
+		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 		// After client session is started, ensure session is ready
 		assert(model.isSessionReady);
 
@@ -611,7 +662,7 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should disconnect when connection profile created by notebook', async function () {
-		let model = await loadModelAndStartClientSession();
+		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 		// Ensure notebook prefix is present in the connection URI
 		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
 		await changeContextWithConnectionProfile(model);
@@ -627,7 +678,7 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should not disconnect when connection profile not created by notebook', async function () {
-		let model = await loadModelAndStartClientSession();
+		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 		// Ensure notebook prefix isn't present in connection URI
 		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.default}some/path`);
 		await changeContextWithConnectionProfile(model);
@@ -662,7 +713,7 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should connect to Fake (kernel alias) connection and set kernelAlias', async function () {
-		let model = await loadModelAndStartClientSession();
+		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 
 		// Ensure notebook prefix is present in the connection URI
 		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
@@ -687,7 +738,7 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should change kernel when connecting to a Fake (kernel alias) connection', async function () {
-		let model = await loadModelAndStartClientSession();
+		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 		// Ensure notebook prefix is present in the connection URI
 		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
 		await changeContextWithFakeConnectionProfile(model);
@@ -712,7 +763,7 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should change kernel from Fake (kernel alias) to SQL kernel when connecting to SQL connection', async function () {
-		let model = await loadModelAndStartClientSession();
+		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 
 		// Ensure notebook prefix is present in the connection URI
 		queryConnectionService.setup(c => c.getConnectionUri(TypeMoq.It.isAny())).returns(() => `${uriPrefixes.notebook}some/path`);
@@ -799,9 +850,64 @@ suite('notebook model', function (): void {
 		assert.ok(spy.calledWith(connectionName, expectedConnectionProfile));
 	});
 
-	async function loadModelAndStartClientSession(): Promise<NotebookModel> {
+	test('should read and write multi_connection_mode to notebook metadata correctly', async function () {
+		// Given a notebook with multi_connection_mode: true in metadata
+		let notebook: nb.INotebookContents = {
+			cells: [],
+			metadata: {
+				multi_connection_mode: true
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
-		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(notebook));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		// I expect multiConnectionMode to be set to true
+		assert.equal(model.multiConnectionMode, true, 'multi_connection_mode not read correctly from notebook metadata');
+
+		// When I change multiConnectionMode to false
+		model.multiConnectionMode = false;
+
+		// I expect multi_connection_mode to not be in the notebook metadata
+		let output: nb.INotebookContents = model.toJSON();
+		assert.equal(output.metadata['multi_connection_mode'], undefined, 'multi_connection_mode saved in notebook metadata when it should not be');
+
+		// When I change multiConnectionMode to true
+		model.multiConnectionMode = true;
+
+		// I expect multi_connection_mode to be in the notebook metadata
+		output = model.toJSON();
+		assert.equal(output.metadata['multi_connection_mode'], true, 'multi_connection_mode not saved correctly to notebook metadata');
+	});
+
+	test('Should keep kernel alias as language info kernel alias name even if kernel spec is seralized as SQL', async function () {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedKernelAliasNotebookContentOneCell));
+		defaultModelOptions.contentManager = mockContentManager.object;
+
+		queryConnectionService.setup(c => c.getActiveConnections(TypeMoq.It.isAny())).returns(() => null);
+
+		// Given I have a session that fails to start
+		sessionReady.resolve();
+
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		await model.requestModelLoad();
+
+		// Check to see if language info is set to kernel alias
+		assert.equal(model.languageInfo.name, 'fake', 'Notebook language info is not set properly');
+	});
+
+	async function loadModelAndStartClientSession(notebookContent: nb.INotebookContents): Promise<NotebookModel> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(notebookContent));
 		defaultModelOptions.contentManager = mockContentManager.object;
 
 		queryConnectionService.setup(c => c.getActiveConnections(TypeMoq.It.isAny())).returns(() => null);
@@ -814,6 +920,7 @@ suite('notebook model', function (): void {
 		});
 		let model = new NotebookModel(options, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, capabilitiesService);
 		model.onClientSessionReady((session) => actualSession = session);
+
 		await model.requestModelLoad();
 
 		await model.startSession(notebookManagers[0]);

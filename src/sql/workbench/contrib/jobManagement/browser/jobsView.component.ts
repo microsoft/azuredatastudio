@@ -21,7 +21,7 @@ import { IJobManagementService } from 'sql/workbench/services/jobManagement/comm
 import { JobManagementView, JobActionContext } from 'sql/workbench/contrib/jobManagement/browser/jobManagementView';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -29,11 +29,11 @@ import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardServi
 import { escape } from 'sql/base/common/strings';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { tableBackground, cellBackground, cellBorderColor } from 'sql/platform/theme/common/colors';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -107,7 +107,8 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService,
-		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
+		@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService,
+		@Inject(IContextViewService) private _contextViewService: IContextViewService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
@@ -127,7 +128,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._agentViewComponent;
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
-		this._telemetryService.publicLog(TelemetryKeys.JobsView);
+		this._telemetryService.sendViewEvent(TelemetryView.AgentJobs);
 	}
 
 	ngOnDestroy() {
@@ -181,7 +182,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
-		let filterPlugin = new HeaderFilter<IItem>();
+		let filterPlugin = new HeaderFilter<IItem>(this._contextViewService);
 		this._register(attachButtonStyler(filterPlugin, this._themeService));
 		this.filterPlugin = filterPlugin;
 		jQuery(this._gridEl.nativeElement).empty();

@@ -114,6 +114,7 @@ export class CallRenderer implements ITreeRenderer<Call, FuzzyScore, CallRenderi
 		const label = new IconLabel(container, { supportHighlights: true });
 		return new CallRenderingTemplate(icon, label);
 	}
+
 	renderElement(node: ITreeNode<Call, FuzzyScore>, _index: number, template: CallRenderingTemplate): void {
 		const { element, filterData } = node;
 		const deprecated = element.item.tags?.includes(SymbolTag.Deprecated);

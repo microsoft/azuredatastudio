@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@microsoft/ads-extension-telemetry@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-1.1.1.tgz#01eccd1a7126270259212253028deb71713feef9"
-  integrity sha512-wN6wgL+JopB45y0pHgE9KfvCeZ3tDvbcThedMrdorvTHKpTTEiHaFSOQRkFgHtcthMvk999ABdQxvUNBUGhnUg==
+"@microsoft/ads-extension-telemetry@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-1.1.3.tgz#54160eefa21f2a536622b0617f3c3f2018cf9c87"
+  integrity sha512-+h6hM9oOA6Zj/N0nCGPzRgydR0YHiHpNJoNlv6a/ziWXO3RYSbQX+3U/PpT3gEA6+8RwByf6RVICo7uIGBy1LQ==
   dependencies:
     vscode-extension-telemetry "^0.1.6"
 

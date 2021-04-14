@@ -19,7 +19,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 @Component({
 	selector: 'modelview-radioButton',
 	template: `
-		<div #input class="modelview-radiobutton-container">
+		<div #input [ngStyle]="CSSStyles" class="modelview-radiobutton-container">
 
 		</div>
 	`

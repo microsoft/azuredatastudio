@@ -30,6 +30,11 @@ import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialo
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { IconPathHelper } from '../common/iconHelper';
+import { DashboardData, Status } from '../models/dashboardData/dashboardData';
+
+const maxTableLength = 10;
 
 /**
  * Controller for managing lifecycle of projects
@@ -37,13 +42,78 @@ import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDat
 export class ProjectsController {
 	private netCoreTool: NetCoreTool;
 	private buildHelper: BuildHelper;
+	private buildInfo: DashboardData[] = [];
+	private deployInfo: DashboardData[] = [];
 
-	projects: Project[] = [];
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
 	constructor() {
 		this.netCoreTool = new NetCoreTool();
 		this.buildHelper = new BuildHelper();
+	}
+
+	public getDashboardDeployData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
+		const infoRows: (string | dataworkspace.IconCellValue)[][] = [];
+		let count = 0;
+
+		for (let i = this.deployInfo.length - 1; i >= 0; i--) {
+			if (this.deployInfo[i].projectFile === projectFile) {
+				let icon: azdata.IconPath;
+				let text: string;
+				if (this.deployInfo[i].status === Status.success) {
+					icon = IconPathHelper.success;
+					text = constants.Success;
+				} else if (this.deployInfo[i].status === Status.failed) {
+					icon = IconPathHelper.error;
+					text = constants.Failed;
+				} else {
+					icon = IconPathHelper.inProgress;
+					text = constants.InProgress;
+				}
+
+				let infoRow: (string | dataworkspace.IconCellValue)[] = [count.toString(),
+				{ text: text, icon: icon },
+				this.deployInfo[i].target,
+				this.deployInfo[i].timeToCompleteAction,
+				this.deployInfo[i].startDate];
+				infoRows.push(infoRow);
+				count++;
+			}
+		}
+
+		return infoRows;
+	}
+
+	public getDashboardBuildData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
+		const infoRows: (string | dataworkspace.IconCellValue)[][] = [];
+		let count = 0;
+
+		for (let i = this.buildInfo.length - 1; i >= 0; i--) {
+			if (this.buildInfo[i].projectFile === projectFile) {
+				let icon: azdata.IconPath;
+				let text: string;
+				if (this.buildInfo[i].status === Status.success) {
+					icon = IconPathHelper.success;
+					text = constants.Success;
+				} else if (this.buildInfo[i].status === Status.failed) {
+					icon = IconPathHelper.error;
+					text = constants.Failed;
+				} else {
+					icon = IconPathHelper.inProgress;
+					text = constants.InProgress;
+				}
+
+				let infoRow: (string | dataworkspace.IconCellValue)[] = [count.toString(),
+				{ text: text, icon: icon },
+				this.buildInfo[i].target,
+				this.buildInfo[i].timeToCompleteAction,
+				this.buildInfo[i].startDate];
+				infoRows.push(infoRow);
+				count++;
+			}
+		}
+
+		return infoRows;
 	}
 
 	public refreshProjectsTree(workspaceTreeItem: dataworkspace.WorkspaceTreeItem): void {
@@ -57,6 +127,10 @@ export class ProjectsController {
 	 * @param projectGuid
 	 */
 	public async createNewProject(creationParams: NewProjectParams): Promise<string> {
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.createNewProject)
+			.withAdditionalProperties({ template: creationParams.projectTypeId })
+			.send();
+
 		if (creationParams.projectGuid && !UUID.isUUID(creationParams.projectGuid)) {
 			throw new Error(`Specified GUID is invalid: '${creationParams.projectGuid}'`);
 		}
@@ -103,6 +177,16 @@ export class ProjectsController {
 	public async buildProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<string> {
 		const project: Project = this.getProjectFromContext(context);
 
+		const startTime = new Date();
+		const currentBuildTimeInfo = `${startTime.toLocaleDateString()} ${constants.at} ${startTime.toLocaleTimeString()}`;
+
+		let buildInfoNew = new DashboardData(project.projectFilePath, Status.inProgress, project.getProjectTargetVersion(), currentBuildTimeInfo);
+		this.buildInfo.push(buildInfoNew);
+
+		if (this.buildInfo.length - 1 === maxTableLength) {
+			this.buildInfo.shift();		// Remove the first element to maintain the length
+		}
+
 		// Check mssql extension for project dlls (tracking issue #10273)
 		await this.buildHelper.createBuildDirFolder();
 
@@ -111,12 +195,31 @@ export class ProjectsController {
 			workingDirectory: project.projectFolderPath,
 			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath)
 		};
+
 		try {
 			await this.netCoreTool.runDotnetCommand(options);
+			const timeToBuild = new Date().getTime() - startTime.getTime();
+
+			const currentBuildIndex = this.buildInfo.findIndex(b => b.startDate === currentBuildTimeInfo);
+			this.buildInfo[currentBuildIndex].status = Status.success;
+			this.buildInfo[currentBuildIndex].timeToCompleteAction = utils.timeConversion(timeToBuild);
+
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.build)
+				.withAdditionalMeasurements({ duration: timeToBuild })
+				.send();
 
 			return project.dacpacOutputPath;
-		}
-		catch (err) {
+		} catch (err) {
+			const timeToFailureBuild = new Date().getTime() - startTime.getTime();
+
+			const currentBuildIndex = this.buildInfo.findIndex(b => b.startDate === currentBuildTimeInfo);
+			this.buildInfo[currentBuildIndex].status = Status.failed;
+			this.buildInfo[currentBuildIndex].timeToCompleteAction = utils.timeConversion(timeToFailureBuild);
+
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.build)
+				.withAdditionalMeasurements({ duration: timeToFailureBuild })
+				.send();
+
 			vscode.window.showErrorMessage(constants.projBuildFailed(utils.getErrorMessage(err)));
 			return '';
 		}
@@ -146,9 +249,22 @@ export class ProjectsController {
 	}
 
 	public async publishProjectCallback(project: Project, settings: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
+		const telemetryProps: Record<string, string> = {};
+		const telemetryMeasures: Record<string, number> = {};
+		const buildStartTime = new Date().getTime();
+
 		const dacpacPath = await this.buildProject(project);
 
+		const buildEndTime = new Date().getTime();
+		telemetryMeasures.buildDuration = buildEndTime - buildStartTime;
+		telemetryProps.buildSucceeded = (dacpacPath !== '').toString();
+
 		if (!dacpacPath) {
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
+				.withAdditionalProperties(telemetryProps)
+				.withAdditionalMeasurements(telemetryMeasures)
+				.send();
+
 			return undefined; // buildProject() handles displaying the error
 		}
 
@@ -158,12 +274,59 @@ export class ProjectsController {
 
 		const dacFxService = await this.getDaxFxService();
 
-		if ((<IPublishSettings>settings).upgradeExisting) {
-			return await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdata.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
+		let result: mssql.DacFxResult;
+		telemetryProps.profileUsed = (settings.profileUsed ?? false).toString();
+		const currentDate = new Date();
+		const actionStartTime = currentDate.getTime();
+		const currentDeployTimeInfo = `${currentDate.toLocaleDateString()} ${constants.at} ${currentDate.toLocaleTimeString()}`;
+
+		let deployInfoNew = new DashboardData(project.projectFilePath, Status.inProgress, project.getProjectTargetVersion(), currentDeployTimeInfo);
+		this.deployInfo.push(deployInfoNew);
+
+		if (this.deployInfo.length - 1 === maxTableLength) {
+			this.deployInfo.shift();	// Remove the first element to maintain the length
 		}
-		else {
-			return await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdata.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
+
+		try {
+			if ((<IPublishSettings>settings).upgradeExisting) {
+				telemetryProps.publishAction = 'deploy';
+				result = await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdata.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
+			}
+			else {
+				telemetryProps.publishAction = 'generateScript';
+				result = await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdata.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
+			}
+		} catch (err) {
+			const actionEndTime = new Date().getTime();
+			const timeToFailureDeploy = actionEndTime - actionStartTime;
+			telemetryProps.actionDuration = timeToFailureDeploy.toString();
+			telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
+
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
+				.withAdditionalProperties(telemetryProps)
+				.send();
+
+			const currentDeployIndex = this.deployInfo.findIndex(d => d.startDate === currentDeployTimeInfo);
+			this.deployInfo[currentDeployIndex].status = Status.failed;
+			this.deployInfo[currentDeployIndex].timeToCompleteAction = utils.timeConversion(timeToFailureDeploy);
+
+			throw err;
 		}
+
+		const actionEndTime = new Date().getTime();
+		const timeToDeploy = actionEndTime - actionStartTime;
+		telemetryProps.actionDuration = timeToDeploy.toString();
+		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
+
+		const currentDeployIndex = this.deployInfo.findIndex(d => d.startDate === currentDeployTimeInfo);
+		this.deployInfo[currentDeployIndex].status = result.success ? Status.success : Status.failed;
+		this.deployInfo[currentDeployIndex].timeToCompleteAction = utils.timeConversion(timeToDeploy);
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
+			.withAdditionalProperties(telemetryProps)
+			.send();
+
+		return result;
 	}
 
 	public async readPublishProfileCallback(profileUri: vscode.Uri): Promise<PublishProfile> {
@@ -171,27 +334,42 @@ export class ProjectsController {
 			const dacFxService = await this.getDaxFxService();
 			const profile = await load(profileUri, dacFxService);
 			return profile;
-		}
-		catch (e) {
+		} catch (e) {
 			vscode.window.showErrorMessage(constants.profileReadError);
 			throw e;
 		}
 	}
 
 	public async schemaCompare(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
-		// check if schema compare extension is installed
-		if (vscode.extensions.getExtension(constants.schemaCompareExtensionId)) {
-			// build project
-			const dacpacPath = await this.buildProject(treeNode);
+		try {
+			// check if schema compare extension is installed
+			if (vscode.extensions.getExtension(constants.schemaCompareExtensionId)) {
+				// build project
+				const dacpacPath = await this.buildProject(treeNode);
 
-			// check that dacpac exists
-			if (await utils.exists(dacpacPath)) {
-				await vscode.commands.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
+				// check that dacpac exists
+				if (await utils.exists(dacpacPath)) {
+					TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked);
+					await vscode.commands.executeCommand(constants.schemaCompareStartCommand, dacpacPath);
+				} else {
+					throw new Error(constants.buildFailedCannotStartSchemaCompare);
+				}
 			} else {
-				vscode.window.showErrorMessage(constants.buildFailedCannotStartSchemaCompare);
+				throw new Error(constants.schemaCompareNotInstalled);
 			}
-		} else {
-			vscode.window.showErrorMessage(constants.schemaCompareNotInstalled);
+		} catch (err) {
+			const props: Record<string, string> = {};
+			const message = utils.getErrorMessage(err);
+
+			if (message === constants.buildFailedCannotStartSchemaCompare || message === constants.schemaCompareNotInstalled) {
+				props.errorMessage = message;
+			}
+
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.projectSchemaCompareCommandInvoked)
+				.withAdditionalProperties(props)
+				.send();
+
+			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
 
@@ -264,13 +442,32 @@ export class ProjectsController {
 		const newFileText = templates.macroExpansion(itemType.templateScript, { 'OBJECT_NAME': itemObjectName });
 		const relativeFilePath = path.join(relativePath, itemObjectName + constants.sqlFileExtension);
 
+		const telemetryProps: Record<string, string> = { itemType: itemType.type };
+		const telemetryMeasurements: Record<string, number> = {};
+
+		if (itemType.type === templates.preDeployScript) {
+			telemetryMeasurements.numPredeployScripts = project.preDeployScripts.length;
+		} else if (itemType.type === templates.postDeployScript) {
+			telemetryMeasurements.numPostdeployScripts = project.postDeployScripts.length;
+		}
+
 		try {
 			const newEntry = await project.addScriptItem(relativeFilePath, newFileText, itemType.type);
+
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree)
+				.withAdditionalProperties(telemetryProps)
+				.withAdditionalMeasurements(telemetryMeasurements)
+				.send();
 
 			await vscode.commands.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
 			treeDataProvider?.notifyTreeDataChanged();
 		} catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree)
+				.withAdditionalProperties(telemetryProps)
+				.withAdditionalMeasurements(telemetryMeasurements)
+				.send();
 		}
 	}
 
@@ -281,9 +478,11 @@ export class ProjectsController {
 		const fileEntry = this.getFileProjectEntry(project, node);
 
 		if (fileEntry) {
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
 			await project.exclude(fileEntry);
 		} else {
-			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, node.uri.path));
+			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
+			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, node.projectUri.path));
 		}
 
 		this.refreshProjectsTree(context);
@@ -327,9 +526,17 @@ export class ProjectsController {
 		}
 
 		if (success) {
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.deleteObjectFromProject)
+				.withAdditionalProperties({ objectType: node.constructor.name })
+				.send();
+
 			this.refreshProjectsTree(context);
 		} else {
-			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.uri.path));
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.deleteObjectFromProject)
+				.withAdditionalProperties({ objectType: node.constructor.name })
+				.send();
+
+			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.projectUri.path));
 		}
 	}
 
@@ -342,7 +549,7 @@ export class ProjectsController {
 			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts);
 			return allFileEntries.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)));
 		}
-		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.uri, context.uri)));
+		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.projectUri, context.projectUri)));
 	}
 
 	private getDatabaseReference(project: Project, context: BaseProjectTreeItem): IDatabaseReferenceProjectEntry | undefined {
@@ -375,6 +582,9 @@ export class ProjectsController {
 
 		try {
 			await vscode.commands.executeCommand(constants.vscodeOpenCommand, vscode.Uri.file(project.projectFilePath));
+
+			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectTree, TelemetryActions.editProjectFile);
+
 			const projFileWatcher: vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher(project.projectFilePath);
 			this.projFileWatchers.set(project.projectFilePath, projFileWatcher);
 
@@ -458,7 +668,7 @@ export class ProjectsController {
 			if ((<IProjectReferenceSettings>settings).projectName !== undefined) {
 				// get project path and guid
 				const projectReferenceSettings = settings as IProjectReferenceSettings;
-				const workspaceProjects = await utils.getSqlProjectsInWorkspace();
+				const workspaceProjects = utils.getSqlProjectsInWorkspace();
 				const referencedProject = await Project.openProject(workspaceProjects.filter(p => path.parse(p.fsPath).name === projectReferenceSettings.projectName)[0].fsPath);
 				const relativePath = path.relative(project.projectFolderPath, referencedProject?.projectFilePath!);
 				projectReferenceSettings.projectRelativePath = vscode.Uri.file(relativePath);
@@ -478,7 +688,10 @@ export class ProjectsController {
 			} else if ((<ISystemDatabaseReferenceSettings>settings).systemDb !== undefined) {
 				await project.addSystemDatabaseReference(<ISystemDatabaseReferenceSettings>settings);
 			} else {
-				await project.addDatabaseReference(<IDacpacReferenceSettings>settings);
+				// update dacpacFileLocation to relative path to project file
+				const dacpacRefSettings = settings as IDacpacReferenceSettings;
+				dacpacRefSettings.dacpacFileLocation = vscode.Uri.file(path.relative(project.projectFolderPath, dacpacRefSettings.dacpacFileLocation.fsPath));
+				await project.addDatabaseReference(dacpacRefSettings);
 			}
 
 			this.refreshProjectsTree(context);
@@ -496,15 +709,24 @@ export class ProjectsController {
 		const project: Project = this.getProjectFromContext(node);
 
 		let dacpacPath: string = project.dacpacOutputPath;
+		const preExistingDacpac = await utils.exists(dacpacPath);
 
-		if (!await utils.exists(dacpacPath)) {
+		const telemetryProps: Record<string, string> = { preExistingDacpac: preExistingDacpac.toString() };
+
+
+		if (!preExistingDacpac) {
 			dacpacPath = await this.buildProject(project);
 		}
 
 		const streamingJobDefinition: string = (await fs.readFile(node.element.fileSystemUri.fsPath)).toString();
 
 		const dacFxService = await this.getDaxFxService();
+		const actionStartTime = new Date().getTime();
+
 		const result: mssql.ValidateStreamingJobResult = await dacFxService.validateStreamingJob(dacpacPath, streamingJobDefinition);
+
+		const duration = new Date().getTime() - actionStartTime;
+		telemetryProps.success = result.success.toString();
 
 		if (result.success) {
 			vscode.window.showInformationMessage(constants.externalStreamingJobValidationPassed);
@@ -512,6 +734,11 @@ export class ProjectsController {
 		else {
 			vscode.window.showErrorMessage(result.errorMessage);
 		}
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.runStreamingJobValidation)
+			.withAdditionalProperties(telemetryProps)
+			.withAdditionalMeasurements({ duration: duration })
+			.send();
 
 		return result;
 	}
@@ -580,7 +807,7 @@ export class ProjectsController {
 		if (context.root instanceof ProjectRootTreeItem) {
 			return (<ProjectRootTreeItem>context.root).project;
 		} else {
-			throw new Error(constants.unexpectedProjectContext(context.uri.path));
+			throw new Error(constants.unexpectedProjectContext(context.projectUri.path));
 		}
 	}
 
@@ -605,13 +832,14 @@ export class ProjectsController {
 		const itemObjectName = await vscode.window.showInputBox({
 			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
 			value: `${suggestedName}${counter}`,
+			ignoreFocusOut: true,
 		});
 
 		return itemObjectName;
 	}
 
 	private getRelativePath(treeNode: BaseProjectTreeItem): string {
-		return treeNode instanceof FolderNode ? utils.trimUri(treeNode.root.uri, treeNode.uri) : '';
+		return treeNode instanceof FolderNode ? utils.trimUri(treeNode.root.projectUri, treeNode.projectUri) : '';
 	}
 
 	/**
@@ -652,7 +880,7 @@ export class ProjectsController {
 
 				const project = await Project.openProject(newProjFilePath);
 				await this.createProjectFromDatabaseApiCall(model); // Call ExtractAPI in DacFx Service
-				let fileFolderList: string[] = model.extractTarget === mssql.ExtractTarget.file ? [model.filePath] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
+				let fileFolderList: vscode.Uri[] = model.extractTarget === mssql.ExtractTarget.file ? [vscode.Uri.file(model.filePath)] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
 
 				await project.addToProject(fileFolderList); // Add generated file structure to the project
 
@@ -660,8 +888,7 @@ export class ProjectsController {
 				workspaceApi.showProjectsView();
 				await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)], model.newWorkspaceFilePath);
 			}
-		}
-		catch (err) {
+		} catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
@@ -696,8 +923,8 @@ export class ProjectsController {
 	/**
 	 * Generate a flat list of all files and folder under a folder.
 	 */
-	public async generateList(absolutePath: string): Promise<string[]> {
-		let fileFolderList: string[] = [];
+	public async generateList(absolutePath: string): Promise<vscode.Uri[]> {
+		let fileFolderList: vscode.Uri[] = [];
 
 		if (!await utils.exists(absolutePath)) {
 			if (await utils.exists(absolutePath + constants.sqlFileExtension)) {
@@ -716,13 +943,13 @@ export class ProjectsController {
 				const stat = await fs.stat(filepath);
 
 				if (stat.isDirectory()) {
-					fileFolderList.push(filepath);
+					fileFolderList.push(vscode.Uri.file(filepath));
 					(await fs
 						.readdir(filepath))
 						.forEach((f: string) => files.push(path.join(filepath, f)));
 				}
 				else if (stat.isFile()) {
-					fileFolderList.push(filepath);
+					fileFolderList.push(vscode.Uri.file(filepath));
 				}
 			}
 

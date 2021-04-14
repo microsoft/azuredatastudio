@@ -35,7 +35,7 @@ export abstract class ResourceModel {
 	 * Loads the saved connection profile associated with this model. Will prompt for one if
 	 * we don't have one or can't find it (it was deleted)
 	 */
-	protected async getConnectionProfile(): Promise<void> {
+	protected async getConnectionProfile(promptForConnection: boolean = true): Promise<void> {
 		let connectionProfile: azdata.IConnectionProfile | undefined = this.createConnectionProfile();
 
 		// If we have the ID stored then try to retrieve the password from previous connections
@@ -50,7 +50,11 @@ export abstract class ResourceModel {
 					if (connectionProfile.userName) {
 						const result = await azdata.connection.connect(connectionProfile, false, false);
 						if (!result.connected) {
-							await this.promptForConnection(connectionProfile);
+							if (promptForConnection) {
+								await this.promptForConnection(connectionProfile);
+							} else {
+								throw new Error(result.errorMessage);
+							}
 						} else {
 							this.updateConnectionProfile(connectionProfile);
 						}
@@ -63,8 +67,13 @@ export abstract class ResourceModel {
 		}
 
 		if (!connectionProfile?.userName || !connectionProfile?.password) {
-			// Need to prompt user for password since we don't have one stored
-			await this.promptForConnection(connectionProfile);
+			if (promptForConnection) {
+				// Need to prompt user for password since we don't have one stored
+				await this.promptForConnection(connectionProfile);
+			} else {
+				throw new Error('Missing username/password for connection profile');
+			}
+
 		}
 	}
 

@@ -42,9 +42,9 @@ export class DropdownListRenderer implements IListRenderer<IDropdownListItem, ID
 }
 
 export class DropdownDataSource {
-	values: string[];
+	public values: string[] = [];
 
-	filter: string | undefined;
+	public filter: string | undefined = undefined;
 
 	public get filteredValues(): string[] {
 		if (this.filter) {

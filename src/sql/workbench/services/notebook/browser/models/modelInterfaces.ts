@@ -308,6 +308,12 @@ export interface INotebookModel {
 	 * or undefined if none.
 	 */
 	readonly savedConnectionName: string | undefined;
+
+	/**
+	 * The connection mode of the notebook (single vs multiple connections)
+	 */
+	multiConnectionMode: boolean;
+
 	/**
 	 * Event fired on first initialization of the cells and
 	 * on subsequent change events
@@ -356,6 +362,11 @@ export interface INotebookModel {
 	getMetaValue(key: string): any;
 
 	/**
+	 * Restart current active session if it exists
+	 */
+	restartSession(): Promise<void>;
+
+	/**
 	 * Change the current kernel from the Kernel dropdown
 	 * @param displayName kernel name (as displayed in Kernel dropdown)
 	 */
@@ -381,7 +392,6 @@ export interface INotebookModel {
 	 */
 	moveCell(cellModel: ICellModel, direction: MoveDirection): void;
 
-
 	/**
 	 * Deletes a cell
 	 */
@@ -396,7 +406,6 @@ export interface INotebookModel {
 	 * Notifies the notebook of a change in the cell
 	 */
 	onCellChange(cell: ICellModel, change: NotebookChangeType): void;
-
 
 	/**
 	 * Push edit operations, basically editing the model. This is the preferred way of
@@ -524,6 +533,8 @@ export interface ICellModel {
 	sendChangeToNotebook(change: NotebookChangeType): void;
 	cellSourceChanged: boolean;
 	readonly savedConnectionName: string | undefined;
+	readonly attachments: nb.ICellAttachments;
+	readonly currentMode: CellEditModes;
 }
 
 export interface IModelFactory {
@@ -578,4 +589,11 @@ export interface INotebookContentsEditable {
 	metadata: nb.INotebookMetadata;
 	nbformat: number;
 	nbformat_minor: number;
+}
+
+export enum CellEditModes {
+	'CODE',
+	'MARKDOWN',
+	'SPLIT',
+	'WYSIWYG'
 }

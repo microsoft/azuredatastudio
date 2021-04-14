@@ -8,11 +8,12 @@
 	],
 	"displayName": "Extensions principales de notebook",
 	"description": "Définit la contribution de notebook basée sur un protocole de données, et plusieurs commandes et contributions de notebook.",
-	"notebook.configuration.title": "Configuration du notebook",
-	"notebook.pythonPath.description": "Chemin local de l'installation de Python utilisé par Notebooks.",
+	"notebook.configuration.title": "Configuration de notebook",
+	"notebook.pythonPath.description": "Chemin local de l'installation Python utilisé par Notebooks.",
 	"notebook.useExistingPython.description": "Chemin local d'une installation précédente de Python utilisée par Notebooks.",
 	"notebook.overrideEditorTheming.description": "Remplacez les paramètres d'éditeur par défaut dans l'éditeur de notebook. Les paramètres comprennent la couleur d'arrière-plan, la couleur de la ligne actuelle et la bordure",
 	"notebook.maxTableRows.description": "Nombre maximal de lignes retournées par table dans l'éditeur de notebook",
+	"notebook.maxBookSearchDepth.description": "Profondeur maximale des sous-répertoires où rechercher les notebooks (Entrer 0 pour l'infini)",
 	"notebook.command.new": "Nouveau notebook",
 	"notebook.command.open": "Ouvrir le notebook",
 	"notebook.analyzeJupyterNotebook": "Analyser dans le notebook",
@@ -32,5 +33,11 @@
 	"config.jupyter.kernelConfigValuesDescription": "Options de configuration des noyaux Jupyter. Ces options sont gérées automatiquement et leur modification manuelle n'est pas recommandée.",
 	"title.reinstallNotebookDependencies": "Réinstaller les dépendances de notebook",
 	"title.configurePython": "Configurer Python pour Notebooks",
-	"title.managePackages": "Gérer les packages"
+	"title.managePackages": "Gérer les packages",
+	"title.SQL19PreviewBook": "Guide SQL Server 2019",
+	"books-preview-category": "Notebooks Jupyter",
+	"title.saveJupyterBook": "Enregistrer le notebook",
+	"title.searchJupyterBook": "Rechercher dans le notebook",
+	"title.SavedBooks": "Notebooks enregistrés",
+	"title.UntitledBooks": "Notebooks sans titre"
 }

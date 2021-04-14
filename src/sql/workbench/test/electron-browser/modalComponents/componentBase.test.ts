@@ -98,7 +98,7 @@ suite('ComponentBase Tests', () => {
 
 	test('Container validation reflects child component validity', () => {
 		assert.equal(testContainer.valid, true, 'Test container validity did not default to true');
-		testContainer.addToContainer(testComponent.descriptor, undefined);
+		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
 		testComponent.addValidation(() => false);
 		return testComponent.validate().then(() => {
 			return testContainer.validate().then(valid => {
@@ -121,47 +121,47 @@ suite('ComponentBase Tests', () => {
 			}
 		});
 		testComponent.addValidation(() => false);
-		testContainer.addToContainer(testComponent.descriptor, undefined);
+		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
 		testComponent.validate();
 	});
 
 	test('Inserting a component to a container adds the component to the right place', () => {
-		testContainer.addToContainer(testComponent.descriptor, undefined);
+		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
 		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
-		testContainer.addToContainer(testComponent2.descriptor, undefined, 0);
+		testContainer.addToContainer([{ componentDescriptor: testComponent2.descriptor, config: undefined, index: 0 }]);
 		assert.equal(testContainer.TestItems.length, 2, `Unexpected number of items. Expected 2 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		assert.equal(testContainer.TestItems[0].descriptor.id, testComponent2.descriptor.id);
 	});
 
 	test('Inserting a component to a container given negative index fails', () => {
-		testContainer.addToContainer(testComponent.descriptor, undefined);
+		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
 		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
-		assert.throws(() => testContainer.addToContainer(testComponent2.descriptor, undefined, -1));
+		assert.throws(() => testContainer.addToContainer([{ componentDescriptor: testComponent2.descriptor, config: undefined, index: -1 }]));
 	});
 
 	test('Inserting a component to a container given wrong index fails', () => {
-		testContainer.addToContainer(testComponent.descriptor, undefined);
+		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
 		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
-		assert.throws(() => testContainer.addToContainer(testComponent2.descriptor, undefined, 10));
+		assert.throws(() => testContainer.addToContainer([{ componentDescriptor: testComponent2.descriptor, config: undefined, index: 10 }]));
 	});
 
 	test('Inserting a component to a container given end of list succeeds', () => {
-		testContainer.addToContainer(testComponent.descriptor, undefined);
+		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
 		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
-		testContainer.addToContainer(testComponent2.descriptor, undefined, 1);
+		testContainer.addToContainer([{ componentDescriptor: testComponent2.descriptor, config: undefined, index: 1 }]);
 		assert.equal(testContainer.TestItems.length, 2, `Unexpected number of items. Expected 2 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 	});
 
 	test('Removing a component the does not exist does not make change in the items', () => {
-		testContainer.addToContainer(testComponent.descriptor, undefined);
+		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
 		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		testContainer.removeFromContainer(testComponent2.descriptor);
 		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 	});
 
 	test('Removing a component removes it from items', () => {
-		testContainer.addToContainer(testComponent.descriptor, undefined);
-		testContainer.addToContainer(testComponent2.descriptor, undefined);
+		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
+		testContainer.addToContainer([{ componentDescriptor: testComponent2.descriptor, config: undefined }]);
 		assert.equal(testContainer.TestItems.length, 2, `Unexpected number of items. Expected 2 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 		testContainer.removeFromContainer(testComponent.descriptor);
 		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
@@ -169,9 +169,9 @@ suite('ComponentBase Tests', () => {
 	});
 
 	test('Container dost not add same component twice', () => {
-		testContainer.addToContainer(testComponent.descriptor, undefined);
+		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined }]);
 		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
-		testContainer.addToContainer(testComponent.descriptor, 0);
+		testContainer.addToContainer([{ componentDescriptor: testComponent.descriptor, config: undefined, index: 0 }]);
 		assert.equal(testContainer.TestItems.length, 1, `Unexpected number of items. Expected 1 got ${testContainer.TestItems.length} : ${JSON.stringify(testContainer.TestItems)}`);
 	});
 });

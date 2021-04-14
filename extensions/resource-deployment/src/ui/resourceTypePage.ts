@@ -6,6 +6,4 @@
 import { ResourceTypeWizard } from './resourceTypeWizard';
 import { WizardPageBase } from './wizardPageBase';
 
-export abstract class ResourceTypePage extends WizardPageBase<ResourceTypeWizard>{
-	abstract initialize(): void;
-}
+export abstract class ResourceTypePage extends WizardPageBase<ResourceTypeWizard>{ }

@@ -503,7 +503,7 @@ export class ProfilerEditor extends EditorPane {
 				controller.start({
 					forceRevealReplace: false,
 					seedSearchStringFromGlobalClipboard: false,
-					seedSearchStringFromSelection: (controller.getState().searchString.length === 0),
+					seedSearchStringFromSelection: (controller.getState().searchString.length === 0) ? 'single' : 'none',
 					shouldFocus: FindStartFocusAction.FocusFindInput,
 					shouldAnimate: true,
 					updateSearchScope: false,

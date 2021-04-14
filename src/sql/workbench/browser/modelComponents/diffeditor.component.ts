@@ -29,10 +29,12 @@ import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dash
 import { convertSizeToNumber } from 'sql/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ILabelService } from 'vs/platform/label/common/label';
+import { IFileService } from 'vs/platform/files/common/files';
 
 @Component({
 	template: `
-	<div *ngIf="_title">
+	<div [ngStyle]="CSSStyles" *ngIf="_title">
 		<div class="modelview-diff-editor-title modelview-diff-editor-title-background">
 			{{_title}}
 		</div>
@@ -59,7 +61,9 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 		@Inject(IModelService) private _modelService: IModelService,
 		@Inject(IModeService) private _modeService: IModeService,
 		@Inject(ITextModelService) private _textModelService: ITextModelService,
-		@Inject(ILogService) logService: ILogService
+		@Inject(ILogService) logService: ILogService,
+		@Inject(ILabelService) private labelService: ILabelService,
+		@Inject(IFileService) private fileService: IFileService
 	) {
 		super(changeRef, el, logService);
 	}
@@ -94,7 +98,8 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 
 		let editorinput1 = this._instantiationService.createInstance(ResourceEditorInput, uri1, 'source', undefined, undefined);
 		let editorinput2 = this._instantiationService.createInstance(ResourceEditorInput, uri2, 'target', undefined, undefined);
-		this._editorInput = new DiffEditorInput('DiffEditor', undefined, editorinput1, editorinput2, true);
+		this._editorInput = new DiffEditorInput('DiffEditor', undefined, editorinput1, editorinput2, true,
+			this.labelService, this.fileService);
 		this._editor.setInput(this._editorInput, undefined, undefined, cancellationTokenSource.token);
 
 

@@ -35,12 +35,15 @@ import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 export enum AuthenticationType {
 	SqlLogin = 'SqlLogin',
 	Integrated = 'Integrated',
 	AzureMFA = 'AzureMFA',
-	AzureMFAAndUser = 'AzureMFAAndUser'
+	AzureMFAAndUser = 'AzureMFAAndUser',
+	dSTSAuth = 'dstsAuth',
+	None = 'None' // Kusto supports no authentication
 }
 
 export class ConnectionWidget extends lifecycle.Disposable {
@@ -65,6 +68,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private _defaultDatabaseName: string = localize('defaultDatabaseOption', "<Default>");
 	private _loadingDatabaseName: string = localize('loadingDatabaseOption', "Loading...");
 	private _serverGroupDisplayString: string = localize('serverGroup', "Server group");
+	private _token: string;
 	protected _container: HTMLElement;
 	protected _serverGroupSelectBox: SelectBox;
 	protected _authTypeSelectBox: SelectBox;
@@ -75,7 +79,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _databaseNameInputBox: Dropdown;
 	protected _advancedButton: Button;
 	private static readonly _authTypes: AuthenticationType[] =
-		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin];
+		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.dSTSAuth, AuthenticationType.None];
 	private static readonly _osByName = {
 		Windows: OperatingSystem.Windows,
 		Macintosh: OperatingSystem.Macintosh,
@@ -327,7 +331,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let cellContainer = DOM.append(rowContainer, DOM.$('td'));
 		cellContainer.setAttribute('align', 'right');
 		let divContainer = DOM.append(cellContainer, DOM.$('div.advanced-button'));
-		let button = new Button(divContainer);
+		let button = new Button(divContainer, { secondary: true });
 		button.label = title;
 		button.onDidClick(() => {
 			//open advanced page
@@ -349,7 +353,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._register(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
 		this._register(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
 		this._register(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
-		this._register(styler.attachButtonStyler(this._advancedButton, this._themeService));
+		this._register(attachButtonStyler(this._advancedButton, this._themeService));
 		this._register(styler.attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
 		this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 		if (this._serverGroupSelectBox) {
@@ -364,7 +368,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				this._databaseDropdownExpanded = true;
 				if (this.serverName) {
 					this._databaseNameInputBox.values = [this._loadingDatabaseName];
-					this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password, this.azureAccount).then(databases => {
+					this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password, this.authToken).then(databases => {
 						if (databases) {
 							this._databaseNameInputBox.values = databases.sort((a, b) => a.localeCompare(b));
 						} else {
@@ -504,6 +508,30 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._tableContainer.classList.remove('hide-username');
 			this._tableContainer.classList.add('hide-password');
 			this._tableContainer.classList.remove('hide-azure-accounts');
+		} else if (currentAuthType === AuthenticationType.dSTSAuth) {
+			this._accountManagementService.getAccountsForProvider('dstsAuth').then(accounts => {
+				if (accounts && accounts.length > 0) {
+					accounts[0].key.providerArgs = {
+						serverName: this.serverName,
+						databaseName: this.databaseName
+					};
+
+					this._accountManagementService.getAccountSecurityToken(accounts[0], undefined, undefined).then(securityToken => {
+						this._token = securityToken.token;
+					});
+				}
+			});
+			this._tableContainer.classList.add('hide-username');
+			this._tableContainer.classList.add('hide-password');
+			this._tableContainer.classList.add('hide-azure-accounts');
+		} else if (currentAuthType === AuthenticationType.None) {
+			this._azureAccountDropdown.disable();
+			this._azureAccountDropdown.hideMessage();
+			this._azureTenantDropdown.disable();
+			this._azureTenantDropdown.hideMessage();
+			this._tableContainer.classList.add('hide-username');
+			this._tableContainer.classList.add('hide-password');
+			this._tableContainer.classList.add('hide-azure-accounts');
 		} else {
 			this._azureAccountDropdown.disable();
 			this._azureAccountDropdown.hideMessage();
@@ -826,8 +854,14 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		return this._authTypeSelectBox ? this.getAuthTypeName(this._authTypeSelectBox.value) : undefined;
 	}
 
-	public get azureAccount(): string {
-		return this.authenticationType === AuthenticationType.AzureMFAAndUser || this.authenticationType === AuthenticationType.AzureMFA ? this._azureAccountDropdown.value : undefined;
+	public get authToken(): string | undefined {
+		if (this.authenticationType === AuthenticationType.AzureMFAAndUser || this.authenticationType === AuthenticationType.AzureMFA) {
+			return this._azureAccountDropdown.value;
+		}
+		if (this.authenticationType === AuthenticationType.dSTSAuth) {
+			return this._token;
+		}
+		return undefined;
 	}
 
 	private validateAzureAccountSelection(showMessage: boolean = true): boolean {
@@ -883,7 +917,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			model.userName = this.userName;
 			model.password = this.password;
 			model.authenticationType = this.authenticationType;
-			model.azureAccount = this.azureAccount;
+			model.azureAccount = this.authToken;
 			model.savePassword = this._rememberPasswordCheckBox.checked;
 			model.connectionName = this.connectionName;
 			model.databaseName = this.databaseName;

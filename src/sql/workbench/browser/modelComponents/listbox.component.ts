@@ -24,7 +24,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 @Component({
 	selector: 'modelview-listBox',
 	template: `
-		<div #input style="width: 100%"></div>
+		<div #input [ngStyle]="CSSStyles"></div>
 	`
 })
 export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProperties> implements IComponent, OnDestroy, AfterViewInit {
@@ -111,5 +111,12 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 
 	private set selectedRow(newValue: number) {
 		this.setPropertyFromUI<number>((props, value) => props.selectedRow = value, newValue);
+	}
+
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': '100%'
+		});
 	}
 }

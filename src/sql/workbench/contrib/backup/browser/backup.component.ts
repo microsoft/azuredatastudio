@@ -11,7 +11,7 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { attachButtonStyler, attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
+import { attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as BackupConstants from 'sql/workbench/contrib/backup/common/constants';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
@@ -34,6 +34,7 @@ import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { fileFiltersSet } from 'sql/workbench/services/restore/common/constants';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -292,11 +293,11 @@ export class BackupComponent extends AngularDisposable {
 		this.pathListBox.render(this.pathElement!.nativeElement);
 
 		// Set backup path add/remove buttons
-		this.addPathButton = this._register(new Button(this.addPathElement!.nativeElement));
+		this.addPathButton = this._register(new Button(this.addPathElement!.nativeElement, { secondary: true }));
 		this.addPathButton.label = '+';
 		this.addPathButton.title = localize('addFile', "Add a file");
 
-		this.removePathButton = this._register(new Button(this.removePathElement!.nativeElement));
+		this.removePathButton = this._register(new Button(this.removePathElement!.nativeElement, { secondary: true }));
 		this.removePathButton.label = '-';
 		this.removePathButton.title = localize('removeFile', "Remove files");
 
@@ -401,7 +402,7 @@ export class BackupComponent extends AngularDisposable {
 
 	private addFooterButtons(): void {
 		// Set script footer button
-		this.scriptButton = this._register(new Button(this.scriptButtonElement!.nativeElement));
+		this.scriptButton = this._register(new Button(this.scriptButtonElement!.nativeElement, { secondary: true }));
 		this.scriptButton.label = localize('backupComponent.script', "Script");
 		this.scriptButton.onDidClick(() => this.onScript());
 		this._register(attachButtonStyler(this.scriptButton, this.themeService));
@@ -415,7 +416,7 @@ export class BackupComponent extends AngularDisposable {
 		this.backupEnabled = false;
 
 		// Set cancel footer button
-		this.cancelButton = this._register(new Button(this.cancelButtonElement!.nativeElement));
+		this.cancelButton = this._register(new Button(this.cancelButtonElement!.nativeElement, { secondary: true }));
 		this.cancelButton.label = localize('backupComponent.cancel', "Cancel");
 		this.cancelButton.onDidClick(() => this.onCancel());
 		this._register(attachButtonStyler(this.cancelButton, this.themeService));

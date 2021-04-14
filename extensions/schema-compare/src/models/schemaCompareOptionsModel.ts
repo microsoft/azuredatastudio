@@ -110,6 +110,8 @@ export class SchemaCompareOptionsModel {
 		loc.ExtendedProperties,
 		loc.ExternalDataSources,
 		loc.ExternalFileFormats,
+		loc.ExternalStreams,
+		loc.ExternalStreamingJobs,
 		loc.ExternalTables,
 		loc.Filegroups,
 		loc.Files,
@@ -703,6 +705,10 @@ export class SchemaCompareOptionsModel {
 				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ExternalDataSources)) ? false : true;
 			case loc.ExternalFileFormats:
 				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ExternalFileFormats)) ? false : true;
+			case loc.ExternalStreams:
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ExternalStreams)) ? false : true;
+			case loc.ExternalStreamingJobs:
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ExternalStreamingJobs)) ? false : true;
 			case loc.ExternalTables:
 				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ExternalTables)) ? false : true;
 			case loc.Filegroups:
@@ -892,6 +898,16 @@ export class SchemaCompareOptionsModel {
 			case loc.ExternalFileFormats:
 				if (!included) {
 					this.excludedObjectTypes.push(mssql.SchemaObjectType.ExternalFileFormats);
+				}
+				return;
+			case loc.ExternalStreams:
+				if (!included) {
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.ExternalStreams);
+				}
+				return;
+			case loc.ExternalStreamingJobs:
+				if (!included) {
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.ExternalStreamingJobs);
 				}
 				return;
 			case loc.ExternalTables:

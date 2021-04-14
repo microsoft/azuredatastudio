@@ -99,11 +99,11 @@ export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompa
 
 				let userConnection;
 				userConnection = connectionList.find(connection =>
-					(endpoint.connectionDetails['authenticationType'] === 'SqlLogin'
-						&& endpoint.connectionDetails['serverName'] === connection.options.server
-						&& endpoint.connectionDetails['userName'] === connection.options.user
-						&& (endpoint.connectionDetails['databaseName'].toLowerCase() === connection.options.database.toLowerCase()
-							|| connection.options.database.toLowerCase() === 'master')));
+				(endpoint.connectionDetails['authenticationType'] === 'SqlLogin'
+					&& endpoint.connectionDetails['serverName'] === connection.options.server
+					&& endpoint.connectionDetails['userName'] === connection.options.user
+					&& (endpoint.connectionDetails['databaseName'].toLowerCase() === connection.options.database.toLowerCase()
+						|| connection.options.database.toLowerCase() === 'master')));
 
 				if (userConnection === undefined) {
 					const getConnectionString = loc.getConnectionString(caller);

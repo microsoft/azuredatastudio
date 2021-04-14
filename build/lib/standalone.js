@@ -28,6 +28,7 @@ function writeFile(filePath, contents) {
     fs.writeFileSync(filePath, contents);
 }
 function extractEditor(options) {
+    var _a;
     const tsConfig = JSON.parse(fs.readFileSync(path.join(options.sourcesRoot, 'tsconfig.monaco.json')).toString());
     let compilerOptions;
     if (tsConfig.extends) {
@@ -47,6 +48,12 @@ function extractEditor(options) {
     console.log(`Running tree shaker with shakeLevel ${tss.toStringShakeLevel(options.shakeLevel)}`);
     // Take the extra included .d.ts files from `tsconfig.monaco.json`
     options.typings = tsConfig.include.filter(includedFile => /\.d\.ts$/.test(includedFile));
+    // Add extra .d.ts files from `node_modules/@types/`
+    if (Array.isArray((_a = options.compilerOptions) === null || _a === void 0 ? void 0 : _a.types)) {
+        options.compilerOptions.types.forEach((type) => {
+            options.typings.push(`../node_modules/@types/${type}/index.d.ts`);
+        });
+    }
     let result = tss.shake(options);
     for (let fileName in result) {
         if (result.hasOwnProperty(fileName)) {

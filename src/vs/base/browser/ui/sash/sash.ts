@@ -37,11 +37,19 @@ export interface ISashEvent {
 	altKey: boolean;
 }
 
+export enum OrthogonalEdge {
+	North = 'north',
+	South = 'south',
+	East = 'east',
+	West = 'west'
+}
+
 export interface ISashOptions {
 	readonly orientation: Orientation;
 	readonly orthogonalStartSash?: Sash;
 	readonly orthogonalEndSash?: Sash;
 	readonly size?: number;
+	readonly orthogonalEdge?: OrthogonalEdge;
 }
 
 export interface IVerticalSashOptions extends ISashOptions {
@@ -150,6 +158,10 @@ export class Sash extends Disposable {
 
 		this.el = append(container, $('.monaco-sash'));
 
+		if (options.orthogonalEdge) {
+			this.el.classList.add(`orthogonal-edge-${options.orthogonalEdge}`);
+		}
+
 		if (isMacintosh) {
 			this.el.classList.add('mac');
 		}
@@ -241,7 +253,7 @@ export class Sash extends Disposable {
 		this.el.classList.add('active');
 		this._onDidStart.fire(startEvent);
 
-		// fix https://github.com/Microsoft/vscode/issues/21675
+		// fix https://github.com/microsoft/vscode/issues/21675
 		const style = createStyleSheet(this.el);
 		const updateStyle = () => {
 			let cursor = '';

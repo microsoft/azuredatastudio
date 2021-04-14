@@ -19,7 +19,7 @@ import { AzureResourceItemType, AzureResourceServiceNames } from '../constants';
 import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService } from '../../azureResource/interfaces';
-import { AzureAccount } from '../../account-provider/interfaces';
+import { AzureAccount } from 'azurecore';
 import { AzureResourceService } from '../resourceService';
 import { AzureResourceResourceTreeNode } from '../resourceTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';

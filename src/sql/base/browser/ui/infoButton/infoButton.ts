@@ -5,7 +5,7 @@
 
 import 'vs/css!./infoButton';
 import { Button as sqlButton } from 'sql/base/browser/ui/button/button';
-import { IButtonOptions } from 'vs/base/browser/ui/button/button';
+import { IButtonOptions, IButtonStyles } from 'vs/base/browser/ui/button/button';
 
 export interface IInfoButtonOptions extends IButtonOptions {
 	buttonMaxHeight: number,
@@ -33,6 +33,8 @@ export class InfoButton extends sqlButton {
 	private _iconHeight?: number;
 	private _iconWidth?: number;
 	private _title?: string;
+
+	private _styles: IButtonStyles;
 
 	constructor(container: HTMLElement, options?: IInfoButtonOptions) {
 		super(container, options);
@@ -148,5 +150,20 @@ export class InfoButton extends sqlButton {
 		this.iconWidth = options.iconWidth;
 		this.iconClass = options.iconClass;
 		this.title = options.title;
+	}
+
+	style(styles: IButtonStyles): void {
+		this._styles = styles;
+		this.applyStyles();
+	}
+
+	applyStyles(): void {
+		this.element.style.backgroundColor = this._styles?.buttonBackground?.toString();
+		this.element.style.color = this._styles?.buttonForeground?.toString();
+		this.element.style.borderColor = this._styles?.buttonBorder?.toString();
+	}
+
+	setHoverBackground(): void {
+		this.element.style.backgroundColor = this._styles?.buttonHoverBackground?.toString();
 	}
 }

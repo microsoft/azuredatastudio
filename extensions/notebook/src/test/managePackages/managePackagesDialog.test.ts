@@ -184,6 +184,7 @@ describe('Manage Package Dialog', () => {
 		let declarativeTable: () => azdata.DeclarativeTableComponent = () => Object.assign({}, componentBase, {
 			onDataChanged: undefined!,
 			onRowSelected: undefined!,
+			setFilter: undefined!,
 			data: [],
 			columns: []
 		});
@@ -274,7 +275,6 @@ describe('Manage Package Dialog', () => {
 				divContainer: undefined!,
 				flexContainer: () => flexBuilder,
 				splitViewContainer: undefined!,
-				dom: undefined!,
 				card: undefined!,
 				inputBox: () => inputBoxBuilder,
 				checkBox: undefined!,
@@ -301,7 +301,8 @@ describe('Manage Package Dialog', () => {
 				tabbedPanel: undefined!,
 				separator: undefined!,
 				propertiesContainer: undefined!,
-				infoBox: undefined!
+				infoBox: undefined!,
+				slider: undefined!
 			}
 		};
 

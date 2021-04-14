@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IDashboardTable, IProjectAction, IProjectProvider, IProjectType } from 'dataworkspace';
 import 'mocha';
-import * as vscode from 'vscode';
 import * as should from 'should';
+import * as vscode from 'vscode';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
-import { IProjectProvider, IProjectType } from 'dataworkspace';
 
 export class MockTreeDataProvider implements vscode.TreeDataProvider<any>{
 	onDidChangeTreeData?: vscode.Event<any> | undefined;
@@ -19,11 +19,10 @@ export class MockTreeDataProvider implements vscode.TreeDataProvider<any>{
 	}
 }
 
-export function createProjectProvider(projectTypes: IProjectType[]): IProjectProvider {
+export function createProjectProvider(projectTypes: IProjectType[], projectActions: IProjectAction[], dashboardComponents: IDashboardTable[]): IProjectProvider {
 	const treeDataProvider = new MockTreeDataProvider();
 	const projectProvider: IProjectProvider = {
 		supportedProjectTypes: projectTypes,
-		providerExtensionId: 'testProvider',
 		RemoveProject: (projectFile: vscode.Uri): Promise<void> => {
 			return Promise.resolve();
 		},
@@ -32,6 +31,10 @@ export function createProjectProvider(projectTypes: IProjectType[]): IProjectPro
 		},
 		createProject: (name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri> => {
 			return Promise.resolve(location);
+		},
+		projectActions: projectActions,
+		getDashboardComponents: (projectFile: string): IDashboardTable[] => {
+			return dashboardComponents;
 		}
 	};
 	return projectProvider;
@@ -53,7 +56,25 @@ suite('ProjectProviderRegistry Tests', function (): void {
 				displayName: 'test project 1',
 				description: ''
 			}
-		]);
+		],
+			[{
+				id: 'testAction1',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'testAction2',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}],
+			[{
+				name: 'tableInfo1',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			},
+			{
+				name: 'tableInfo2',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			}]);
 		const provider2 = createProjectProvider([
 			{
 				id: 'sp1',
@@ -62,9 +83,39 @@ suite('ProjectProviderRegistry Tests', function (): void {
 				displayName: 'sql project',
 				description: ''
 			}
-		]);
+		],
+			[{
+				id: 'Add',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Schema Compare',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Build',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Publish',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			},
+			{
+				id: 'Target Version',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}],
+			[{
+				name: 'Deployments',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			},
+			{
+				name: 'Builds',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			}]);
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');
-		const disposable1 = ProjectProviderRegistry.registerProvider(provider1);
+		const disposable1 = ProjectProviderRegistry.registerProvider(provider1, 'test.testProvider');
 		let providerResult = ProjectProviderRegistry.getProviderByProjectExtension('testproj');
 		should.equal(providerResult, provider1, 'provider1 should be returned for testproj project type');
 		// make sure the project type is case-insensitive for getProviderByProjectType method
@@ -73,7 +124,7 @@ suite('ProjectProviderRegistry Tests', function (): void {
 		providerResult = ProjectProviderRegistry.getProviderByProjectExtension('testproj1');
 		should.equal(providerResult, provider1, 'provider1 should be returned for testproj1 project type');
 		should.strictEqual(ProjectProviderRegistry.providers.length, 1, 'there should be only one project provider at this time');
-		const disposable2 = ProjectProviderRegistry.registerProvider(provider2);
+		const disposable2 = ProjectProviderRegistry.registerProvider(provider2, 'test.testProvider2');
 		providerResult = ProjectProviderRegistry.getProviderByProjectExtension('sqlproj');
 		should.equal(providerResult, provider2, 'provider2 should be returned for sqlproj project type');
 		should.strictEqual(ProjectProviderRegistry.providers.length, 2, 'there should be 2 project providers at this time');
@@ -105,9 +156,18 @@ suite('ProjectProviderRegistry Tests', function (): void {
 				displayName: 'test project',
 				description: ''
 			}
-		]);
+		],
+			[{
+				id: 'testAction1',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}],
+			[{
+				name: 'tableInfo1',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			}]);
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider at the beginning of the test');
-		ProjectProviderRegistry.registerProvider(provider);
+		ProjectProviderRegistry.registerProvider(provider, 'test.testProvider');
 		should.strictEqual(ProjectProviderRegistry.providers.length, 1, 'there should be only one project provider at this time');
 		ProjectProviderRegistry.clear();
 		should.strictEqual(ProjectProviderRegistry.providers.length, 0, 'there should be no project provider after clearing the registry');

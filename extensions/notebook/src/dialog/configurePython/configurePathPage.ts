@@ -53,9 +53,10 @@ export class ConfigurePathPage extends BasePage {
 			})
 			.component();
 		let browseButton = this.view.modelBuilder.button()
-			.withProperties<azdata.ButtonProperties>({
+			.withProps({
 				label: this.BrowseButtonText,
-				width: '70px'
+				width: '70px',
+				secondary: true
 			}).component();
 		browseButton.onDidClick(() => this.handleBrowse());
 
@@ -88,9 +89,10 @@ export class ConfigurePathPage extends BasePage {
 				enabled: false,
 				width: '400px'
 			}).component();
-			let editPathButton = this.view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			let editPathButton = this.view.modelBuilder.button().withProps({
 				label: 'Edit',
-				width: '70px'
+				width: '70px',
+				secondary: true
 			}).component();
 			let editPathForm = this.view.modelBuilder.formContainer()
 				.withFormItems([{

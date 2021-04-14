@@ -17,7 +17,10 @@ export function subscriptionToDisposable(sub: Subscription): IDisposable {
 }
 
 export class AngularDisposable extends Disposable implements OnDestroy {
+	public isDisposed = false;
+
 	ngOnDestroy() {
 		this.dispose();
+		this.isDisposed = true;
 	}
 }

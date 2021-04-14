@@ -13,7 +13,7 @@ import * as azdata from 'azdata';
 
 import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape, ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { TabOrientation, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { TabOrientation, DialogWidth, DialogStyle, DialogPosition, IDialogProperties } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', "Done");
 const CANCEL_LABEL = nls.localize('dialogCancelLabel', "Cancel");
@@ -23,7 +23,7 @@ const PREVIOUS_LABEL = nls.localize('dialogPreviousLabel', "Previous");
 
 class ModelViewPanelImpl implements azdata.window.ModelViewPanel {
 	private _modelView: azdata.ModelView;
-	private _handle: number;
+	public handle: number;
 	protected _modelViewId: string;
 	protected _valid: boolean = true;
 	protected _onValidityChanged: vscode.Event<boolean>;
@@ -38,17 +38,13 @@ class ModelViewPanelImpl implements azdata.window.ModelViewPanel {
 
 	public registerContent(handler: (view: azdata.ModelView) => Thenable<void>): void {
 		if (!this._modelViewId) {
-			let viewId = this._viewType + this._handle;
+			let viewId = this._viewType + this.handle;
 			this.setModelViewId(viewId);
 			this._extHostModelView.$registerProvider(viewId, modelView => {
 				this._modelView = modelView;
 				handler(modelView);
 			}, this._extension);
 		}
-	}
-
-	public set handle(value: number) {
-		this._handle = value;
 	}
 
 	public setModelViewId(value: string) {
@@ -93,6 +89,10 @@ class ModelViewEditorImpl extends ModelViewPanelImpl implements azdata.workspace
 		return this._proxy.$openEditor(this.handle, this._modelViewId, this._title, this._name, this._options, position);
 	}
 
+	public closeEditor(): Thenable<void> {
+		return this._proxy.$closeEditor(this.handle);
+	}
+
 	public get isDirty(): boolean {
 		return this._isDirty;
 	}
@@ -127,6 +127,11 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 	private _dialogName: string;
 	private _isWide: boolean;
 	private _width: DialogWidth;
+	private _dialogStyle: DialogStyle;
+	private _dialogPosition: DialogPosition;
+	private _renderHeader: boolean;
+	private _renderFooter: boolean;
+	private _dialogProperties: IDialogProperties;
 
 	constructor(extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape,
@@ -134,11 +139,51 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 		extension: IExtensionDescription) {
 		super('modelViewDialog', extHostModelViewDialog, extHostModelView, extension);
 		this.okButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
-		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL);
+		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL, 'right', true);
 		this._operationHandler = new BackgroundOperationHandler('dialog', extHostTaskManagement);
 		this.okButton.onClick(() => {
 			this._operationHandler.createOperation();
 		});
+	}
+
+	public get dialogStyle(): azdata.window.DialogStyle {
+		return this._dialogStyle;
+	}
+
+	public set dialogStyle(value: azdata.window.DialogStyle) {
+		this._dialogStyle = value;
+	}
+
+	public get dialogPosition(): azdata.window.DialogPosition {
+		return this._dialogPosition;
+	}
+
+	public set dialogPosition(value: azdata.window.DialogPosition) {
+		this._dialogPosition = value;
+	}
+
+	public get renderHeader(): boolean {
+		return this._renderHeader;
+	}
+
+	public set renderHeader(value: boolean) {
+		this._renderHeader = value;
+	}
+
+	public get renderFooter(): boolean {
+		return this._renderFooter;
+	}
+
+	public set renderFooter(value: boolean) {
+		this._renderFooter = value;
+	}
+
+	public get dialogProperties(): IDialogProperties {
+		return this._dialogProperties;
+	}
+
+	public set dialogProperties(value: IDialogProperties) {
+		this._dialogProperties = value;
 	}
 
 	public get width(): azdata.window.DialogWidth {
@@ -219,6 +264,7 @@ class ButtonImpl implements azdata.window.Button {
 	private _hidden: boolean;
 	private _focused: boolean;
 	private _position: azdata.window.DialogButtonPosition;
+	private _secondary: boolean;
 
 	private _onClick = new Emitter<void>();
 	public onClick = this._onClick.event;
@@ -262,6 +308,15 @@ class ButtonImpl implements azdata.window.Button {
 
 	public set position(value: azdata.window.DialogButtonPosition) {
 		this._position = value;
+		this._extHostModelViewDialog.updateButton(this);
+	}
+
+	public get secondary(): boolean {
+		return this._secondary;
+	}
+
+	public set secondary(value: boolean) {
+		this._secondary = value;
 		this._extHostModelViewDialog.updateButton(this);
 	}
 
@@ -386,10 +441,10 @@ class WizardImpl implements azdata.window.Wizard {
 
 	constructor(public title: string, public name: string, private _extHostModelViewDialog: ExtHostModelViewDialog, extHostTaskManagement: ExtHostBackgroundTaskManagementShape) {
 		this.doneButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
-		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL);
-		this.generateScriptButton = this._extHostModelViewDialog.createButton(GENERATE_SCRIPT_LABEL);
+		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL, 'right', true);
+		this.generateScriptButton = this._extHostModelViewDialog.createButton(GENERATE_SCRIPT_LABEL, 'right', true);
 		this.nextButton = this._extHostModelViewDialog.createButton(NEXT_LABEL);
-		this.backButton = this._extHostModelViewDialog.createButton(PREVIOUS_LABEL);
+		this.backButton = this._extHostModelViewDialog.createButton(PREVIOUS_LABEL, 'right', true);
 		this._extHostModelViewDialog.registerWizardPageInfoChangedCallback(this, info => this.handlePageInfoChanged(info));
 		this._currentPage = 0;
 		this.onPageChanged(info => this._currentPage = info.newPage);
@@ -447,8 +502,8 @@ class WizardImpl implements azdata.window.Wizard {
 		return this._extHostModelViewDialog.setWizardPage(this, index);
 	}
 
-	public open(): Thenable<void> {
-		return this._extHostModelViewDialog.openWizard(this);
+	public open(source?: string): Thenable<void> {
+		return this._extHostModelViewDialog.openWizard(this, source);
 	}
 
 	public close(): Thenable<void> {
@@ -511,6 +566,10 @@ class ModelViewDashboardImpl implements azdata.window.ModelViewDashboard {
 
 	open(): Thenable<void> {
 		return this._editor.openEditor();
+	}
+
+	close(): Thenable<void> {
+		return this._editor.closeEditor();
 	}
 
 	createTab(tab: azdata.DashboardTab, view: azdata.ModelView): azdata.Tab {
@@ -664,17 +723,49 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	}
 
 	public updateDialogContent(dialog: azdata.window.Dialog): void {
+		let dialogWidth: DialogWidth = 'narrow';
+		let dialogStyle: DialogStyle;
+		let dialogPosition: DialogPosition;
+		let renderHeader: boolean;
+		let renderFooter: boolean;
+		let dialogProperties: IDialogProperties;
 		let handle = this.getHandle(dialog);
 		let tabs = dialog.content;
+
+		if (dialog.dialogStyle) {
+			dialogStyle = dialog.dialogStyle;
+		}
+		if (dialog.dialogPosition) {
+			dialogPosition = dialog.dialogPosition;
+		}
+		if (dialog.renderHeader) {
+			renderHeader = dialog.renderHeader;
+		}
+		if (dialog.renderFooter) {
+			renderFooter = dialog.renderFooter;
+		}
+		if (dialog.dialogProperties) {
+			dialogProperties = dialog.dialogProperties;
+		}
 		if (tabs && typeof tabs !== 'string') {
 			tabs.forEach(tab => this.updateTabContent(tab));
 		}
+
 		if (dialog.customButtons) {
-			dialog.customButtons.forEach(button => this.updateButton(button));
+			dialog.customButtons.forEach(button => {
+				button.secondary = true;
+				this.updateButton(button);
+			});
 		}
-		this.updateButton(dialog.okButton);
-		this.updateButton(dialog.cancelButton);
-		let dialogWidth: DialogWidth = 'narrow';
+
+		/**
+		 * Only peform actions on footer if it is shown.
+		 */
+		if (dialog.renderFooter !== false) {
+			this.updateButton(dialog.okButton);
+			this.updateButton(dialog.cancelButton);
+		}
+
 		if (dialog.isWide !== undefined) {
 			dialogWidth = dialog.isWide ? 'wide' : 'narrow';
 		} else if (dialog.width !== undefined) {
@@ -685,6 +776,11 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._proxy.$setDialogDetails(handle, {
 			title: dialog.title,
 			width: dialogWidth,
+			dialogStyle: dialogStyle,
+			dialogPosition: dialogPosition,
+			renderHeader: renderHeader,
+			renderFooter: renderFooter,
+			dialogProperties: dialogProperties,
 			okButton: this.getHandle(dialog.okButton),
 			cancelButton: this.getHandle(dialog.cancelButton),
 			content: dialog.content && typeof dialog.content !== 'string' ? dialog.content.map(tab => this.getHandle(tab)) : dialog.content as string,
@@ -708,7 +804,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			enabled: button.enabled,
 			hidden: button.hidden,
 			focused: button.focused,
-			position: button.position
+			position: button.position,
+			secondary: button.secondary
 		});
 	}
 
@@ -717,12 +814,27 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._onClickCallbacks.set(handle, callback);
 	}
 
-	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription, width?: azdata.window.DialogWidth): azdata.window.Dialog {
+	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogProperties?: IDialogProperties): azdata.window.Dialog {
+
 		let dialog = new DialogImpl(this, this._extHostModelView, this._extHostTaskManagement, extension);
+
 		if (dialogName) {
 			dialog.dialogName = dialogName;
 		}
-		dialog.title = title;
+		if (dialogStyle) {
+			dialog.dialogStyle = dialogStyle;
+		}
+		if (dialogPosition) {
+			dialog.dialogPosition = dialogPosition;
+		}
+		if (dialogProperties) {
+			dialog.dialogProperties = dialogProperties;
+		}
+		dialog.renderHeader = renderHeader;
+		dialog.renderFooter = renderFooter;
+		if (title) {
+			dialog.title = title;
+		}
 		dialog.width = width ?? 'narrow';
 		dialog.handle = this.getHandle(dialog);
 		return dialog;
@@ -735,12 +847,13 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return tab;
 	}
 
-	public createButton(label: string, position: azdata.window.DialogButtonPosition = 'right'): azdata.window.Button {
+	public createButton(label: string, position: azdata.window.DialogButtonPosition = 'right', secondary: boolean = false): azdata.window.Button {
 		let button = new ButtonImpl(this);
 		this.getHandle(button);
 		this.registerOnClickCallback(button, button.getOnClickCallback());
 		button.label = label;
 		button.position = position;
+		button.secondary = secondary;
 		return button;
 	}
 
@@ -796,7 +909,10 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this.updateButton(wizard.doneButton);
 		this.updateButton(wizard.nextButton);
 		if (wizard.customButtons) {
-			wizard.customButtons.forEach(button => this.updateButton(button));
+			wizard.customButtons.forEach(button => {
+				button.secondary = true;
+				this.updateButton(button);
+			});
 		}
 		return this._proxy.$setWizardDetails(handle, {
 			title: wizard.title,
@@ -827,10 +943,10 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return this._proxy.$setWizardPage(this.getHandle(wizard), pageIndex);
 	}
 
-	public openWizard(wizard: azdata.window.Wizard): Thenable<void> {
+	public openWizard(wizard: azdata.window.Wizard, source?: string): Thenable<void> {
 		let handle = this.getHandle(wizard);
 		this.updateWizard(wizard);
-		return this._proxy.$openWizard(handle);
+		return this._proxy.$openWizard(handle, source);
 	}
 
 	public closeWizard(wizard: azdata.window.Wizard): Thenable<void> {

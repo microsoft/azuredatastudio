@@ -37,7 +37,7 @@ suite('ExtHostModelView Validation Tests', () => {
 			$registerProvider: (id: string) => undefined,
 			$initializeModel: (handle: number, rootComponent: IComponentShape) => undefined,
 			$clearContainer: (handle: number, componentId: string) => undefined,
-			$addToContainer: (handle: number, containerId: string, item: IItemConfig) => undefined,
+			$addToContainer: (handle: number, containerId: string, items: { itemConfig: IItemConfig }[]) => undefined,
 			$removeFromContainer: (handle: number, containerId: string, item: IItemConfig) => undefined,
 			$setLayout: (handle: number, componentId: string, layout: any) => undefined,
 			$setProperties: (handle: number, componentId: string, properties: { [key: string]: any }) => undefined,
@@ -127,7 +127,7 @@ suite('ExtHostModelView Validation Tests', () => {
 		});
 
 		test('Setting a form component as required initializes the model with the component required', () => {
-			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
+			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 
 			// Set up the input component with required initially set to false
 			let inputComponent = modelView.modelBuilder.inputBox().component();
@@ -152,7 +152,7 @@ suite('ExtHostModelView Validation Tests', () => {
 			// Set up the mock proxy to save the component that gets initialized so that it can be verified
 			let rootComponent: IComponentShape;
 			mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => rootComponent = componentShape);
-			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
+			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 
 			// Set up the form with a top level component and a group
 			let topLevelList = modelView.modelBuilder.listBox().component();
@@ -211,8 +211,7 @@ suite('ExtHostModelView Validation Tests', () => {
 
 		test('Inserting and removing components from a container should work correctly', () => {
 			mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny()));
-			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
-			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 			mockProxy.setup(x => x.$removeFromContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 			// Set up the form with a top level component and a group
 			let listBox = modelView.modelBuilder.listBox().component();
@@ -234,8 +233,7 @@ suite('ExtHostModelView Validation Tests', () => {
 
 		test('Inserting component give negative number fails', () => {
 			mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => { });
-			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
-			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 			mockProxy.setup(x => x.$removeFromContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 
 			// Set up the form with a top level component and a group
@@ -253,8 +251,7 @@ suite('ExtHostModelView Validation Tests', () => {
 
 		test('Inserting component give wrong number fails', () => {
 			mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => { });
-			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
-			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 			mockProxy.setup(x => x.$removeFromContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 
 			// Set up the form with a top level component and a group
@@ -272,8 +269,7 @@ suite('ExtHostModelView Validation Tests', () => {
 
 		test('Inserting component give end of the list succeeds', () => {
 			mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => { });
-			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
-			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 			mockProxy.setup(x => x.$removeFromContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 
 			// Set up the form with a top level component and a group
@@ -293,8 +289,7 @@ suite('ExtHostModelView Validation Tests', () => {
 		test('Removing a component that does not exist does not fail', () => {
 			// Set up the mock proxy to save the component that gets initialized so that it can be verified
 			mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny()));
-			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
-			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 
 			// Set up the form with a top level component and a group
 			let listBox = modelView.modelBuilder.listBox().component();
@@ -314,8 +309,7 @@ suite('ExtHostModelView Validation Tests', () => {
 
 		test('Inserting and removing component in a form should work correctly', () => {
 			mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => { });
-			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
-			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 			mockProxy.setup(x => x.$removeFromContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 
 			// Set up the form with a top level component and a group
@@ -367,8 +361,7 @@ suite('ExtHostModelView Validation Tests', () => {
 
 	suite('Declarative table', () => {
 		setup(done => {
-			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
-			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+			mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 			mockProxy.setup(x => x.$removeFromContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 
 			extHostModelView = new ExtHostModelView(mainContext, undefined, undefined);
@@ -439,12 +432,13 @@ suite('ExtHostModelView Validation Tests', () => {
 					rootComponent.properties.data &&
 					rootComponent.properties.data[0][0] === button.id;
 			})), Times.once());
-			mockProxy.verify(x => x.$addToContainer(It.isAny(), It.isAny(), It.is(item => {
+			mockProxy.verify(x => x.$addToContainer(It.isAny(), It.isAny(), It.is(items => {
+				const item = items[0].itemConfig;
 				return item.componentShape.id === declarativeTable.id &&
 					item.componentShape.properties &&
 					item.componentShape.properties.data &&
 					item.componentShape.properties.data[0][0] === button.id;
-			}), undefined), Times.once());
+			})), Times.once());
 		});
 	});
 });
