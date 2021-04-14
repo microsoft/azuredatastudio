@@ -19,10 +19,10 @@ export type RoleSpecifier = {
 
 export type ConfigurationSpecModel = {
 	workers?: number,
-	coresRequest: RoleSpecifier,
-	coresLimit: RoleSpecifier,
-	memoryRequest: RoleSpecifier,
-	memoryLimit: RoleSpecifier
+	coresRequest?: RoleSpecifier,
+	coresLimit?: RoleSpecifier,
+	memoryRequest?: RoleSpecifier,
+	memoryLimit?: RoleSpecifier
 };
 
 export class PostgresComputeAndStoragePage extends DashboardPage {
@@ -39,18 +39,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	private coordinatorMemoryLimitBox!: azdata.InputBoxComponent;
 	private coordinatorMemoryRequestBox!: azdata.InputBoxComponent;
 
-	private currentConfiguration: ConfigurationSpecModel = {
-		coresRequest: {},
-		coresLimit: {},
-		memoryRequest: {},
-		memoryLimit: {}
-	};
-	private saveArgs: ConfigurationSpecModel = {
-		coresRequest: {},
-		coresLimit: {},
-		memoryRequest: {},
-		memoryLimit: {}
-	};
+	private currentConfiguration: ConfigurationSpecModel = {};
+	private saveArgs: ConfigurationSpecModel = {};
 
 	private discardButton!: azdata.ButtonComponent;
 	private saveButton!: azdata.ButtonComponent;
@@ -179,10 +169,10 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 									this._postgresModel.info.name,
 									{
 										workers: this.saveArgs.workers,
-										coresRequest: this.schedulingParamsToEdit(this.saveArgs.coresRequest),
-										coresLimit: this.schedulingParamsToEdit(this.saveArgs.coresLimit),
-										memoryRequest: this.schedulingParamsToEdit(this.saveArgs.memoryRequest),
-										memoryLimit: this.schedulingParamsToEdit(this.saveArgs.memoryLimit)
+										coresRequest: this.schedulingParamsToEdit(this.saveArgs.coresRequest!),
+										coresLimit: this.schedulingParamsToEdit(this.saveArgs.coresLimit!),
+										memoryRequest: this.schedulingParamsToEdit(this.saveArgs.memoryRequest!),
+										memoryLimit: this.schedulingParamsToEdit(this.saveArgs.memoryLimit!)
 									},
 									this._postgresModel.controllerModel.azdataAdditionalEnvVars);
 							} catch (err) {
@@ -220,14 +210,14 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 				this.discardButton.enabled = false;
 				try {
 					this.workerCountBox.value = this.currentConfiguration.workers!.toString();
-					this.workerCoresRequestBox.value = this.currentConfiguration.coresRequest.workers;
-					this.workerCoresLimitBox.value = this.currentConfiguration.coresLimit.workers;
-					this.workerMemoryRequestBox.value = this.currentConfiguration.memoryRequest.workers;
-					this.workerMemoryLimitBox.value = this.currentConfiguration.memoryLimit.workers;
-					this.coordinatorCoresRequestBox.value = this.currentConfiguration.coresRequest.coordinator;
-					this.coordinatorCoresLimitBox.value = this.currentConfiguration.coresLimit.coordinator;
-					this.coordinatorMemoryRequestBox.value = this.currentConfiguration.memoryRequest.coordinator;
-					this.coordinatorMemoryLimitBox.value = this.currentConfiguration.memoryLimit.coordinator;
+					this.workerCoresRequestBox.value = this.currentConfiguration.coresRequest!.workers;
+					this.workerCoresLimitBox.value = this.currentConfiguration.coresLimit!.workers;
+					this.workerMemoryRequestBox.value = this.currentConfiguration.memoryRequest!.workers;
+					this.workerMemoryLimitBox.value = this.currentConfiguration.memoryLimit!.workers;
+					this.coordinatorCoresRequestBox.value = this.currentConfiguration.coresRequest!.coordinator;
+					this.coordinatorCoresLimitBox.value = this.currentConfiguration.coresLimit!.coordinator;
+					this.coordinatorMemoryRequestBox.value = this.currentConfiguration.memoryRequest!.coordinator;
+					this.coordinatorMemoryLimitBox.value = this.currentConfiguration.memoryLimit!.coordinator;
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
@@ -243,12 +233,10 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private schedulingParamsToEdit(arg: RoleSpecifier): string | undefined {
 		// A comma-separated list of roles with values can be specified in format <role>=<value>.
-		if (!arg) {
-			return undefined;
-		} else if (arg.workers && arg.coordinator) {
+		if (arg.workers && arg.coordinator) {
 			return `"${arg.workers},${arg.coordinator}"`;
 		} else {
-			return arg.workers ?? arg.coordinator;
+			return arg.workers ?? arg.coordinator ?? undefined;
 		}
 	}
 
@@ -281,12 +269,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.workerCoresRequestBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.workerCoresRequestBox, this.currentConfiguration.coresRequest.workers!))) {
-					this.saveArgs.coresRequest.workers = undefined;
+				if (!(this.saveValueToEdit(this.workerCoresRequestBox, this.currentConfiguration.coresRequest!.workers!))) {
+					this.saveArgs.coresRequest!.workers = undefined;
 				} else if (this.workerCoresRequestBox.value === '') {
-					this.saveArgs.coresRequest.workers = 'w=""';
+					this.saveArgs.coresRequest!.workers = 'w=';
 				} else {
-					this.saveArgs.coresRequest.workers = `w=${this.workerCoresRequestBox.value}`;
+					this.saveArgs.coresRequest!.workers = `w=${this.workerCoresRequestBox.value}`;
 				}
 			})
 		);
@@ -301,12 +289,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.workerCoresLimitBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.workerCoresLimitBox, this.currentConfiguration.coresLimit.workers!))) {
-					this.saveArgs.coresLimit.workers = undefined;
+				if (!(this.saveValueToEdit(this.workerCoresLimitBox, this.currentConfiguration.coresLimit!.workers!))) {
+					this.saveArgs.coresLimit!.workers = undefined;
 				} else if (this.workerCoresLimitBox.value === '') {
-					this.saveArgs.coresLimit.workers = 'w=""';
+					this.saveArgs.coresLimit!.workers = 'w=';
 				} else {
-					this.saveArgs.coresLimit.workers = `w=${this.workerCoresLimitBox.value}`;
+					this.saveArgs.coresLimit!.workers = `w=${this.workerCoresLimitBox.value}`;
 				}
 			})
 		);
@@ -321,12 +309,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.workerMemoryRequestBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.workerMemoryRequestBox, this.currentConfiguration.memoryRequest.workers!))) {
-					this.saveArgs.memoryRequest.workers = undefined;
+				if (!(this.saveValueToEdit(this.workerMemoryRequestBox, this.currentConfiguration.memoryRequest!.workers!))) {
+					this.saveArgs.memoryRequest!.workers = undefined;
 				} else if (this.workerMemoryRequestBox.value === '') {
-					this.saveArgs.memoryRequest.workers = 'w=""';
+					this.saveArgs.memoryRequest!.workers = 'w=';
 				} else {
-					this.saveArgs.memoryRequest.workers = `w=${this.workerMemoryRequestBox.value}Gi`;
+					this.saveArgs.memoryRequest!.workers = `w=${this.workerMemoryRequestBox.value}Gi`;
 				}
 			})
 		);
@@ -341,12 +329,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.workerMemoryLimitBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.workerMemoryLimitBox, this.currentConfiguration.memoryLimit.workers!))) {
-					this.saveArgs.memoryLimit.workers = undefined;
+				if (!(this.saveValueToEdit(this.workerMemoryLimitBox, this.currentConfiguration.memoryLimit!.workers!))) {
+					this.saveArgs.memoryLimit!.workers = undefined;
 				} else if (this.workerMemoryLimitBox.value === '') {
-					this.saveArgs.memoryLimit.workers = 'w=""';
+					this.saveArgs.memoryLimit!.workers = 'w=';
 				} else {
-					this.saveArgs.memoryLimit.workers = `w=${this.workerMemoryLimitBox.value}Gi`;
+					this.saveArgs.memoryLimit!.workers = `w=${this.workerMemoryLimitBox.value}Gi`;
 				}
 			})
 		);
@@ -361,12 +349,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.coordinatorCoresRequestBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.coordinatorCoresRequestBox, this.currentConfiguration.coresRequest.coordinator!))) {
-					this.saveArgs.coresRequest.coordinator = undefined;
+				if (!(this.saveValueToEdit(this.coordinatorCoresRequestBox, this.currentConfiguration.coresRequest!.coordinator!))) {
+					this.saveArgs.coresRequest!.coordinator = undefined;
 				} else if (this.coordinatorCoresRequestBox.value === '') {
-					this.saveArgs.coresRequest.coordinator = 'c=""';
+					this.saveArgs.coresRequest!.coordinator = 'c=';
 				} else {
-					this.saveArgs.coresRequest.coordinator = `c=${this.coordinatorCoresRequestBox.value}`;
+					this.saveArgs.coresRequest!.coordinator = `c=${this.coordinatorCoresRequestBox.value}`;
 				}
 			})
 		);
@@ -381,12 +369,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.coordinatorCoresLimitBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.coordinatorCoresLimitBox, this.currentConfiguration.coresLimit.coordinator!))) {
-					this.saveArgs.coresLimit.coordinator = undefined;
+				if (!(this.saveValueToEdit(this.coordinatorCoresLimitBox, this.currentConfiguration.coresLimit!.coordinator!))) {
+					this.saveArgs.coresLimit!.coordinator = undefined;
 				} else if (this.coordinatorCoresLimitBox.value === '') {
-					this.saveArgs.coresLimit.coordinator = 'c=""';
+					this.saveArgs.coresLimit!.coordinator = 'c=';
 				} else {
-					this.saveArgs.coresLimit.coordinator = `c=${this.coordinatorCoresLimitBox.value}`;
+					this.saveArgs.coresLimit!.coordinator = `c=${this.coordinatorCoresLimitBox.value}`;
 				}
 			})
 		);
@@ -401,12 +389,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.coordinatorMemoryRequestBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.coordinatorMemoryRequestBox, this.currentConfiguration.memoryRequest.coordinator!))) {
-					this.saveArgs.memoryRequest.coordinator = undefined;
+				if (!(this.saveValueToEdit(this.coordinatorMemoryRequestBox, this.currentConfiguration.memoryRequest!.coordinator!))) {
+					this.saveArgs.memoryRequest!.coordinator = undefined;
 				} else if (this.coordinatorMemoryRequestBox.value === '') {
-					this.saveArgs.memoryRequest.coordinator = 'c=""';
+					this.saveArgs.memoryRequest!.coordinator = 'c=';
 				} else {
-					this.saveArgs.memoryRequest.coordinator = `c=${this.coordinatorMemoryRequestBox.value}Gi`;
+					this.saveArgs.memoryRequest!.coordinator = `c=${this.coordinatorMemoryRequestBox.value}Gi`;
 				}
 			})
 		);
@@ -421,12 +409,12 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		this.disposables.push(
 			this.coordinatorMemoryLimitBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.coordinatorMemoryLimitBox, this.currentConfiguration.memoryLimit.coordinator!))) {
-					this.saveArgs.memoryLimit.coordinator = undefined;
+				if (!(this.saveValueToEdit(this.coordinatorMemoryLimitBox, this.currentConfiguration.memoryLimit!.coordinator!))) {
+					this.saveArgs.memoryLimit!.coordinator = undefined;
 				} else if (this.coordinatorMemoryLimitBox.value === '') {
-					this.saveArgs.memoryLimit.coordinator = 'c=""';
+					this.saveArgs.memoryLimit!.coordinator = 'c=';
 				} else {
-					this.saveArgs.memoryLimit.coordinator = `c=${this.coordinatorMemoryLimitBox.value}Gi`;
+					this.saveArgs.memoryLimit!.coordinator = `c=${this.coordinatorMemoryLimitBox.value}Gi`;
 				}
 			})
 		);
@@ -597,7 +585,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private refreshCoresRequest(): void {
 		// Workers
-		let workersCR = this._postgresModel.config?.spec.scheduling?.roles?.workers?.resources?.requests?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
+		let workersCR = this._postgresModel.config?.spec.scheduling?.roles?.worker?.resources?.requests?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
 		if (!workersCR) {
 			workersCR = '';
 		}
@@ -626,7 +614,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private refreshCoresLimit(): void {
 		// Workers
-		let workersCL = this._postgresModel.config?.spec.scheduling?.roles?.workers?.resources?.limits?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
+		let workersCL = this._postgresModel.config?.spec.scheduling?.roles?.worker?.resources?.limits?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
 		if (!workersCL) {
 			workersCL = '';
 		}
@@ -655,7 +643,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private refreshMemoryRequest(): void {
 		// Workers
-		let currentWorkersMemoryRequest = this._postgresModel.config?.spec.scheduling?.roles?.workers?.resources?.requests?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
+		let currentWorkersMemoryRequest = this._postgresModel.config?.spec.scheduling?.roles?.worker?.resources?.requests?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
 		let workersMR = '';
 		if (currentWorkersMemoryRequest) {
 			workersMR = convertToGibibyteString(currentWorkersMemoryRequest);
@@ -688,7 +676,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private refreshMemoryLimit(): void {
 		// Workers
-		let currentWorkersMemoryLimit = this._postgresModel.config?.spec.scheduling?.roles?.workers?.resources?.limits?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
+		let currentWorkersMemoryLimit = this._postgresModel.config?.spec.scheduling?.roles?.worker?.resources?.limits?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
 		let workersML = '';
 		if (currentWorkersMemoryLimit) {
 			workersML = convertToGibibyteString(currentWorkersMemoryLimit);
