@@ -111,10 +111,10 @@ export function main(desc: ProductDescription, args: string[]): void {
 		console.log(buildVersionMessage(desc.version, desc.commit));
 		return;
 	}
-	if (parsedArgs['gitCredential']) {
-		getCredential(parsedArgs['gitCredential']);
-		return;
-	}
+	// if (parsedArgs['gitCredential']) {
+	// 	getCredential(parsedArgs['gitCredential']);
+	// 	return;
+	// }
 
 	let folderURIs = (parsedArgs['folder-uri'] || []).map(mapFileUri);
 	parsedArgs['folder-uri'] = folderURIs;
@@ -255,45 +255,45 @@ async function waitForFileDeleted(path: string) {
 	}
 }
 
-function getCredential(cmd: string) {
-	const command = ({ get: 'fill', store: 'approve', erase: 'reject' } as { [cmd: string]: 'fill' | 'approve' | 'reject' | undefined })[cmd];
-	if (command === undefined) {
-		console.log('Expected get, store or erase.');
-		return;
-	}
-	let stdin = '';
-	process.stdin.setEncoding('utf8');
-	process.stdin.on('data', chunk => {
-		stdin += chunk;
-		if (stdin === '\n' || stdin.indexOf('\n\n', stdin.length - 2) !== -1) {
-			process.stdin.pause();
-			sendGetCredential(command, stdin)
-				.catch(console.error);
-		}
-	});
-	process.stdin.on('end', () => {
-		sendGetCredential(command, stdin)
-			.catch(console.error);
-	});
-}
+// function getCredential(cmd: string) {
+// 	const command = ({ get: 'fill', store: 'approve', erase: 'reject' } as { [cmd: string]: 'fill' | 'approve' | 'reject' | undefined })[cmd];
+// 	if (command === undefined) {
+// 		console.log('Expected get, store or erase.');
+// 		return;
+// 	}
+// 	let stdin = '';
+// 	process.stdin.setEncoding('utf8');
+// 	process.stdin.on('data', chunk => {
+// 		stdin += chunk;
+// 		if (stdin === '\n' || stdin.indexOf('\n\n', stdin.length - 2) !== -1) {
+// 			process.stdin.pause();
+// 			sendGetCredential(command, stdin)
+// 				.catch(console.error);
+// 		}
+// 	});
+// 	process.stdin.on('end', () => {
+// 		sendGetCredential(command, stdin)
+// 			.catch(console.error);
+// 	});
+// }
 
-async function sendGetCredential(command: 'fill' | 'approve' | 'reject', stdin: string) {
-	const json = await sendToPipe({
-		type: 'command',
-		command: 'git.credential',
-		args: [{ command, stdin }]
-	});
-	const { stdout, stderr, code } = JSON.parse(json);
-	if (stdout) {
-		process.stdout.write(stdout);
-	}
-	if (stderr) {
-		process.stderr.write(stderr);
-	}
-	if (code) {
-		process.exit(code);
-	}
-}
+// async function sendGetCredential(command: 'fill' | 'approve' | 'reject', stdin: string) {
+// 	const json = await sendToPipe({
+// 		type: 'command',
+// 		command: 'git.credential',
+// 		args: [{ command, stdin }]
+// 	});
+// 	const { stdout, stderr, code } = JSON.parse(json);
+// 	if (stdout) {
+// 		process.stdout.write(stdout);
+// 	}
+// 	if (stderr) {
+// 		process.stderr.write(stderr);
+// 	}
+// 	if (code) {
+// 		process.exit(code);
+// 	}
+// }
 
 type Args = OpenCommandPipeArgs | StatusPipeArgs;
 
