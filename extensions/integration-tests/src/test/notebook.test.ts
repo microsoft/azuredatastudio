@@ -55,7 +55,7 @@ suite('Notebook integration test suite', function () {
 		assert(actualOutput2[0] === '1', `Expected result: 1, Actual: '${actualOutput2[0]}'`);
 	});
 
-	test.skip('Sql NB multiple cells test', async function () {
+	test('Sql NB multiple cells test', async function () {
 		let notebook = await openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
 		await runCells(notebook);
 		const expectedOutput0 = '(1 row affected)';
@@ -84,7 +84,7 @@ suite('Notebook integration test suite', function () {
 		}
 	});
 
-	test.skip('Sql NB run cells above and below test', async function () {
+	test('Sql NB run cells above and below test', async function () {
 		let notebook = await openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
 		// When running all cells above a cell, ensure that only cells preceding current cell have output
 		await runCells(notebook, true, undefined, notebook.document.cells[1]);
@@ -101,13 +101,13 @@ suite('Notebook integration test suite', function () {
 		assert(notebook.document.cells[2].contents.outputs.length === 3, `Expected length: '3', Actual: '${notebook.document.cells[2].contents.outputs.length}'`);
 	});
 
-	test.skip('Clear cell output - SQL notebook', async function () {
+	test('Clear cell output - SQL notebook', async function () {
 		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
 		await runCell(notebook);
 		await verifyClearOutputs(notebook);
 	});
 
-	test.skip('Clear all outputs - SQL notebook', async function () {
+	test('Clear all outputs - SQL notebook', async function () {
 		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
 		await runCell(notebook);
 		await verifyClearAllOutputs(notebook);
@@ -128,7 +128,7 @@ suite('Notebook integration test suite', function () {
 		});
 	});
 
-	test.skip('should not be dirty after saving notebook test', async function () {
+	test('should not be dirty after saving notebook test', async function () {
 		// Given a notebook that's been edited (in this case, open notebook runs the 1st cell and adds an output)
 		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title);
 		await runCell(notebook);
