@@ -5,7 +5,7 @@
 import * as azdata from 'azdata';
 import { SqlMigrationAssessmentResultItem, SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
 import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
-import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType, BlockingIssues } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 
 const styleLeft: azdata.CssStyles = {
@@ -802,15 +802,22 @@ export class SqlDatabaseTree {
 			// Reset the dbName list so that it is in sync with the table
 			this._dbNames = this._model._assessmentResults.databaseAssessments.map(da => da.name);
 			this._model._assessmentResults.databaseAssessments.forEach((db) => {
+				let selectable = true;
+				db.issues.forEach((issue) => {
+					const blockers: string[] = Object.values(BlockingIssues);
+					if (blockers.includes(issue.checkId)) {
+						selectable = false;
+					}
+				});
 				this._databaseTableValues.push(
 					[
 						{
 							value: selectedDbs.includes(db.name),
-							enabled: db.issues.length === 0,
-							style: styleLeft
+							style: styleLeft,
+							enabled: selectable
 						},
 						{
-							value: this.createIconTextCell((db.issues.length === 0) ? IconPathHelper.sqlDatabaseLogo : IconPathHelper.sqlDatabaseWarningLogo, db.name),
+							value: this.createIconTextCell((selectable) ? IconPathHelper.sqlDatabaseLogo : IconPathHelper.sqlDatabaseWarningLogo, db.name),
 							style: styleLeft
 						},
 						{
