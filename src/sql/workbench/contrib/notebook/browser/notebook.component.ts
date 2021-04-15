@@ -49,9 +49,10 @@ import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
-import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
+import { focusBorder } from 'vs/platform/theme/common/colorRegistry';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -451,7 +452,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run Cells"), 'icon-run-cells');
 
 			let clearResultsButton = this.instantiationService.createInstance(ClearAllOutputsAction, 'notebook.ClearAllOutputs', false);
-
 			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', false);
 			this._trustedAction.enabled = false;
 
@@ -731,3 +731,35 @@ class NotebookSection implements INotebookSection {
 		return this.headerEl.textContent;
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const overflowBackground = theme.getColor(themeColors.EDITOR_PANE_BACKGROUND);
+	if (overflowBackground) {
+		collector.addRule(`notebookEditor .carbon-taskbar .overflow {
+			background-color: ${overflowBackground};
+		}`);
+	}
+
+	const overflowShadow = theme.getColor(themeColors.TOOLBAR_OVERFLOW_SHADOW);
+	if (overflowShadow) {
+		collector.addRule(`notebookEditor .carbon-taskbar .overflow {
+			box-shadow: 0px 4px 4px ${overflowShadow};
+		}`);
+	}
+
+	const border = theme.getColor(themeColors.DASHBOARD_BORDER);
+	if (border) {
+		collector.addRule(`notebookEditor .carbon-taskbar .overflow {
+			border: 1px solid ${border};
+		}`);
+	}
+
+	const activeOutline = theme.getColor(focusBorder);
+	if (activeOutline) {
+		collector.addRule(`notebookEditor .carbon-taskbar .overflow li.focused {
+			outline: 1px solid;
+			outline-offset: -3px;
+			outline-color: ${activeOutline}
+		}`);
+	}
+});
