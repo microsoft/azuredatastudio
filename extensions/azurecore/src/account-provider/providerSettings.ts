@@ -125,7 +125,7 @@ const usGovAzureSettings: ProviderSettings = {
 			},
 			azureLogAnalyticsResource: {
 				id: SettingIds.ala,
-				endpoint: 'https://api.loganalytics.io',
+				endpoint: 'https://api.loganalytics.us',
 				azureResourceId: AzureResource.AzureLogAnalytics,
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
@@ -178,7 +178,7 @@ const usNatAzureSettings: ProviderSettings = {
 			},
 			azureLogAnalyticsResource: {
 				id: SettingIds.ala,
-				endpoint: 'https://api.loganalytics.io',
+				endpoint: 'https://api.loganalytics.azure.eaglex.ic.gov',
 				azureResourceId: AzureResource.AzureLogAnalytics,
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
@@ -260,7 +260,7 @@ const chinaAzureSettings: ProviderSettings = {
 			},
 			azureLogAnalyticsResource: {
 				id: SettingIds.ala,
-				endpoint: 'https://api.loganalytics.io',
+				endpoint: 'https://api.loganalytics.azure.cn',
 				azureResourceId: AzureResource.AzureLogAnalytics,
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/'
