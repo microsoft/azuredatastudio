@@ -309,24 +309,37 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 
 	private getCurrentSelectionText(): string {
 		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
-			return document.getSelection()?.toString() || '';
+			return document.getSelection()?.anchorNode.nodeValue || '';
 		} else {
 			const editorControl = this.getCellEditorControl();
 			const selection = editorControl?.getSelection();
 			if (selection && !selection.isEmpty()) {
 				const textModel = editorControl?.getModel() as TextModel;
 				const value = textModel?.getValueInRange(selection);
-				return value || '';
+				let linkLabel = value.substring(value.indexOf('[') + 1, value.indexOf(']'));
+				return linkLabel || '';
 			}
 			return '';
 		}
 	}
 
 	private getCurrentLinkUrl(): string {
-		if (document.getSelection().anchorNode.parentNode['protocol'] === 'file:') {
-			return document.getSelection().anchorNode.parentNode['pathname'] || '';
+		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
+			if (document.getSelection().anchorNode.parentNode['protocol'] === 'file:') {
+				return document.getSelection().anchorNode.parentNode['pathname'] || '';
+			} else {
+				return document.getSelection().anchorNode.parentNode['href'] || '';
+			}
 		} else {
-			return document.getSelection().anchorNode.parentNode['href'] || '';
+			const editorControl = this.getCellEditorControl();
+			const selection = editorControl?.getSelection();
+			if (selection && !selection.isEmpty()) {
+				const textModel = editorControl?.getModel() as TextModel;
+				const value = textModel?.getValueInRange(selection);
+				let linkLabel = value.substring(value.indexOf('(') + 1, value.indexOf(')'));
+				return linkLabel || '';
+			}
+			return '';
 		}
 	}
 
