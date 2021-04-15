@@ -38,7 +38,7 @@ steps:
     inputs:
       azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
       KeyVaultName: ado-secrets
-      SecretsFilter: 'github-distro-mixin-password'
+      SecretsFilter: 'github-distro-mixin-password,standalone-extensions-uri'
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
@@ -115,6 +115,20 @@ steps:
       vstsFeed: '2191dd5f-4aec-491b-ac50-568bbc331c8a'
       vstsFeedPackage: '2e355f03-a97e-499a-949b-f02d62b6160c'
       vstsPackageVersion: '*'
+    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'))
+
+  - powershell: |
+      # Install SAW specific extensions
+      $ErrorActionPreference = "Stop"
+      $tempFilePath = (New-TemporaryFile).FullName
+      $zipFilePath = $tempFilePath + ".zip"
+      $extensionUri = "$(standalone-extensions-uri)"
+      $adsExtensionPath = "$(agent.builddirectory)\azuredatastudio-win32-x64\resources\app\extensions"
+
+      Invoke-WebRequest -Uri $extensionUri -OutFile $tempFilePath
+      Move-Item $tempFilePath $zipFilePath
+      Expand-Archive $zipFilePath -DestinationPath $adsExtensionPath
+    displayName: Install SAW Extensions
     condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'))
 
   # - powershell: | @anthonydresser unit tests timeout never existing the node process
