@@ -13,8 +13,7 @@ export const extensionOutputChannelName = 'Notebooks';
 export const notebookCommandNew = 'notebook.command.new';
 
 // JUPYTER CONFIG //////////////////////////////////////////////////////////
-export const pythonBundleVersion = '0.0.1';
-export const pythonVersion = '3.6.6';
+export const pythonVersion = '3.8.8';
 export const pythonPathConfigKey = 'pythonPath';
 export const existingPythonConfigKey = 'useExistingPython';
 export const notebookConfigKey = 'notebook';
@@ -76,9 +75,9 @@ export enum NavigationProviders {
 export const unsavedBooksContextKey = 'unsavedBooks';
 export const showPinnedBooksContextKey = 'showPinnedbooks';
 
-export const pythonWindowsInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2110625';
-export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2128152';
-export const pythonLinuxInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2110524';
+export const pythonWindowsInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2161046';
+export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2161045';
+export const pythonLinuxInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2161044';
 
 export const notebookLanguages = ['notebook', 'ipynb'];
 

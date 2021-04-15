@@ -191,14 +191,13 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			return Promise.resolve();
 		}
 
-		let bundleVersion = constants.pythonBundleVersion;
 		let pythonVersion = constants.pythonVersion;
 		let platformId = utils.getOSPlatformId();
 		let packageName: string;
 		let pythonDownloadUrl: string;
 
 		let extension = process.platform === constants.winPlatform ? 'zip' : 'tar.gz';
-		packageName = `python-${pythonVersion}-${platformId}-${bundleVersion}.${extension}`;
+		packageName = `python-${pythonVersion}-${platformId}.${extension}`;
 
 		switch (process.platform) {
 			case constants.winPlatform:
@@ -257,16 +256,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 					.on('close', async () => {
 						//unpack python zip/tar file
 						outputChannel.appendLine(msgPythonUnpackPending);
-						let pythonSourcePath = path.join(installPath, constants.pythonBundleVersion);
-						if (await utils.exists(pythonSourcePath)) {
-							try {
-								// eslint-disable-next-line no-sync
-								fs.removeSync(pythonSourcePath);
-							} catch (err) {
-								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
-								return reject(err);
-							}
-						}
 						if (process.platform === constants.winPlatform) {
 							try {
 								let zippedFile = new zip(pythonPackagePathLocal);
@@ -319,16 +308,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		delete process.env['PYTHONSTARTUP'];
 		delete process.env['PYTHONHOME'];
 
-		//Python source path up to bundle version
-		let pythonSourcePath = this._usingExistingPython
-			? this._pythonInstallationPath
-			: path.join(this._pythonInstallationPath, constants.pythonBundleVersion);
-
 		// Update python paths and properties to reference user's local python.
 		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
 
 		this._pythonExecutable = JupyterServerInstallation.getPythonExePath(this._pythonInstallationPath, this._usingExistingPython);
-		this.pythonBinPath = path.join(pythonSourcePath, pythonBinPathSuffix);
+		this.pythonBinPath = path.join(this._pythonInstallationPath, pythonBinPathSuffix);
 
 		this._usingConda = this.isCondaInstalled();
 
@@ -338,15 +322,15 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let delimiter = path.delimiter;
 		this.pythonEnvVarPath = this.pythonBinPath + delimiter + this.pythonEnvVarPath;
 		if (process.platform === constants.winPlatform) {
-			let pythonScriptsPath = path.join(pythonSourcePath, 'Scripts');
+			let pythonScriptsPath = path.join(this._pythonInstallationPath, 'Scripts');
 			this.pythonEnvVarPath = pythonScriptsPath + delimiter + this.pythonEnvVarPath;
 
 			if (this._usingConda) {
 				this.pythonEnvVarPath = [
-					path.join(pythonSourcePath, 'Library', 'mingw-w64', 'bin'),
-					path.join(pythonSourcePath, 'Library', 'usr', 'bin'),
-					path.join(pythonSourcePath, 'Library', 'bin'),
-					path.join(pythonSourcePath, 'condabin'),
+					path.join(this._pythonInstallationPath, 'Library', 'mingw-w64', 'bin'),
+					path.join(this._pythonInstallationPath, 'Library', 'usr', 'bin'),
+					path.join(this._pythonInstallationPath, 'Library', 'bin'),
+					path.join(this._pythonInstallationPath, 'condabin'),
 					this.pythonEnvVarPath
 				].join(delimiter);
 			}
@@ -716,7 +700,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	public static getPythonExePath(pythonInstallPath: string, useExistingInstall: boolean): string {
 		return path.join(
 			pythonInstallPath,
-			useExistingInstall ? '' : constants.pythonBundleVersion,
 			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 	}
 
