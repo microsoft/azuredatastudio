@@ -296,7 +296,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 			}
 		}
 
-		if (e.searchString || e.matchCase || e.wholeWord) {
+		if (e.searchString || e.matchCase || e.wholeWord || this.notebookFindModel.findExpression !== this._findState.searchString) {
 			this._findDecorations.clearDecorations();
 			// if the search scope changes remove the prev
 			if (this._notebookModel && this._findState.searchString) {
@@ -371,10 +371,14 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 		};
 		this._notebookModel.cells?.forEach(cell => {
 			this._register(cell.onCellModeChanged((state) => {
-				this._onFindStateChange(changeEvent).catch(onUnexpectedError);
+				if (state) {
+					this._onFindStateChange(changeEvent).catch(onUnexpectedError);
+				}
 			}));
 			this._register(cell.onCellMarkdownModeChanged(e => {
-				this._onFindStateChange(changeEvent).catch(onUnexpectedError);
+				if (e) {
+					this._onFindStateChange(changeEvent).catch(onUnexpectedError);
+				}
 			}));
 		});
 		this._register(this._notebookModel.contentChanged(e => {
@@ -452,9 +456,10 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 
 	private _setCurrentFindMatch(match: NotebookRange): void {
 		if (match) {
-			this._notebookModel.updateActiveCell(match.cell);
+			if (this._notebookModel.activeCell !== match.cell) {
+				this._notebookModel.updateActiveCell(match.cell);
+			}
 			this._findDecorations.setCurrentFindMatch(match);
-			this.setSelection(match);
 		}
 	}
 
