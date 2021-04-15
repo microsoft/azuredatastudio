@@ -684,6 +684,11 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private databaseSelected(dbName: string): void {
+		// If dbName is blank (this can happen for example when setting the box value to empty when disconnecting)
+		// then just no-op, there's nothing we can do.
+		if (!dbName) {
+			return;
+		}
 		if (!this._editor.input) {
 			this.logService.error('editor input was null');
 			return;
