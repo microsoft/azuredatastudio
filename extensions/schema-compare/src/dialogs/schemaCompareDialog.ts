@@ -549,7 +549,11 @@ export class SchemaCompareDialog {
 			count++;
 
 			let usr = c.options.user;
-			let srv = c.options.server;
+			let srv = c.connectionName;
+
+			if (!srv) {
+				srv = c.options.server;
+			}
 
 			if (!usr) {
 				usr = loc.defaultText;
