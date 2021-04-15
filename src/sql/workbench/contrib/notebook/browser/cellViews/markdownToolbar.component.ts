@@ -316,7 +316,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			if (selection && !selection.isEmpty()) {
 				const textModel = editorControl?.getModel() as TextModel;
 				const value = textModel?.getValueInRange(selection);
-				let linkLabel = value.substring(value.indexOf('[') + 1, value.indexOf(']'));
+				let linkLabel = value.substring(value.indexOf('[') + 1, value.lastIndexOf(']'));
 				return linkLabel || '';
 			}
 			return '';
@@ -336,8 +336,8 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			if (selection && !selection.isEmpty()) {
 				const textModel = editorControl?.getModel() as TextModel;
 				const value = textModel?.getValueInRange(selection);
-				let linkLabel = value.substring(value.indexOf('(') + 1, value.indexOf(')'));
-				return linkLabel || '';
+				let linkURI = value.substring(value.lastIndexOf('(') + 1, value.lastIndexOf(')'));
+				return linkURI || '';
 			}
 			return '';
 		}
