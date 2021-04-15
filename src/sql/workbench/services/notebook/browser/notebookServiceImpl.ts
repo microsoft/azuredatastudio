@@ -568,7 +568,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (!cacheInfo) {
 			// Check if the notebook belongs to a book that's trusted
 			// and is not part of untrusted queue.
-
 			let trustedBookDirectories: string[] = !this._unTrustedCacheQueue.find(n => n === notebookUri) ? this._configurationService?.getValue(trustedBooksConfigKey) ?? [] : [];
 			if (trustedBookDirectories.find(b => notebookUri.fsPath.indexOf(b) > -1)) {
 				return true;
