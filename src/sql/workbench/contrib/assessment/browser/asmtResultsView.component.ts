@@ -45,8 +45,8 @@ import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 import { LocalizedStrings } from 'sql/workbench/contrib/assessment/common/strings';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { attachTableFilterStyler } from 'sql/platform/theme/common/styler';
 
 export const ASMTRESULTSVIEW_SELECTOR: string = 'asmt-results-view-component';
 export const ROW_HEIGHT: number = 25;
@@ -319,7 +319,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		columns.unshift(columnDef);
 
 		let filterPlugin = new HeaderFilter<Slick.SlickData>(this._contextViewService);
-		this._register(attachButtonStyler(filterPlugin, this._themeService));
+		this._register(attachTableFilterStyler(filterPlugin, this._themeService));
 		this.filterPlugin = filterPlugin;
 		this.filterPlugin.onFilterApplied.subscribe((e, args) => {
 			let filterValues = args.column.filterValues;
@@ -588,10 +588,8 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		return seen.sort((v) => { return v; });
 	}
 
-	private async getFilterValuesByInput($input: JQuery<HTMLElement>): Promise<Array<string>> {
-		const column = $input.data('column'),
-			filter = $input.val() as string,
-			dataView = this['grid'].getData() as Slick.DataProvider<Slick.SlickData>,
+	private async getFilterValuesByInput(column: Slick.Column<any>, filter: string): Promise<Array<string>> {
+		const dataView = this['grid'].getData() as Slick.DataProvider<Slick.SlickData>,
 			seen: Array<any> = [];
 
 		for (let i = 0; i < dataView.getLength(); i++) {

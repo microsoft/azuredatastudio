@@ -51,6 +51,7 @@ import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { NotebookLanguage } from 'sql/workbench/common/constants';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -140,7 +141,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IProductService private readonly productService: IProductService,
 		@IEditorService private _editorService: IEditorService,
 		@IUntitledTextEditorService private _untitledEditorService: IUntitledTextEditorService,
-		@IEditorGroupsService private _editorGroupService: IEditorGroupsService
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super();
 		this._providersMemento = new Memento('notebookProviders', this._storageService);
@@ -222,6 +224,28 @@ export class NotebookService extends Disposable implements INotebookService {
 			}
 		}
 		return await this._editorService.openEditor(fileInput, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
+	}
+
+	/**
+	 * Will iterate the title of the parameterized notebook since the original notebook is still open
+	 * @param originalTitle is the title of the original notebook that we run parameterized action from
+	 * @returns the title of the parameterized notebook
+	 */
+	public getUntitledUriPath(originalTitle: string): string {
+		let title = originalTitle;
+		let nextVal = 0;
+		let ext = path.extname(title);
+		while (this.listNotebookEditors().findIndex(doc => path.basename(doc.notebookParams.notebookUri.fsPath) === title) > -1) {
+			if (ext) {
+				// Need it to be `Readme-0.txt` not `Readme.txt-0`
+				let titleStart = originalTitle.slice(0, originalTitle.length - ext.length);
+				title = `${titleStart}-${nextVal}${ext}`;
+			} else {
+				title = `${originalTitle}-${nextVal}`;
+			}
+			nextVal++;
+		}
+		return title;
 	}
 
 	private updateSQLRegistrationWithConnectionProviders() {
@@ -559,11 +583,21 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (notebookUri.scheme === Schemas.untitled) {
 			return true;
 		}
+		const trustedBooksConfigKey = 'notebook.trustedBooks';
 
 		let cacheInfo = this.trustedNotebooksMemento.trustedNotebooksCache[notebookUri.toString()];
 		if (!cacheInfo) {
-			// This notebook was never trusted
-			return false;
+			// Check if the notebook belongs to a book that's trusted
+			// and is not part of untrusted queue.
+			let trustedBookDirectories: string[] = !this._unTrustedCacheQueue.find(n => n === notebookUri) ? this._configurationService?.getValue(trustedBooksConfigKey) ?? [] : [];
+			if (trustedBookDirectories.find(b => notebookUri.fsPath.indexOf(b) > -1)) {
+				return true;
+				// note: we're ignoring the dirty check below since that's needed only when
+				// someone trusts notebook after it's loaded and this check is during the load time
+			} else {
+				// This notebook was never trusted
+				return false;
+			}
 		}
 		// This was trusted. If it's not dirty (e.g. if we're not working on our cached copy)
 		// then should verify it's not been modified on disk since that invalidates trust relationship

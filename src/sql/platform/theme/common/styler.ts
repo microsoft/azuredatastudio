@@ -326,3 +326,22 @@ export const defaultInfoButtonStyles: IInfoButtonStyleOverrides = {
 export function attachInfoButtonStyler(widget: IThemable, themeService: IThemeService, style?: IInfoButtonStyleOverrides): IDisposable {
 	return attachStyler(themeService, { ...defaultInfoButtonStyles, ...style }, widget);
 }
+
+export function attachTableFilterStyler(widget: IThemable, themeService: IThemeService): IDisposable {
+	return attachStyler(themeService, {
+		inputBackground: cr.inputBackground,
+		inputForeground: cr.inputForeground,
+		inputBorder: cr.inputBorder,
+		buttonForeground: cr.buttonForeground,
+		buttonBackground: cr.buttonBackground,
+		buttonHoverBackground: cr.buttonHoverBackground,
+		buttonSecondaryForeground: cr.buttonSecondaryForeground,
+		buttonSecondaryBackground: cr.buttonSecondaryBackground,
+		buttonSecondaryHoverBackground: cr.buttonSecondaryHoverBackground,
+		buttonBorder: cr.buttonBorder,
+		buttonSecondaryBorder: cr.buttonSecondaryBorder,
+		buttonDisabledBorder: cr.buttonDisabledBorder,
+		buttonDisabledBackground: cr.buttonDisabledBackground,
+		buttonDisabledForeground: cr.buttonDisabledForeground
+	}, widget);
+}

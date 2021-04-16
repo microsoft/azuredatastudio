@@ -127,6 +127,7 @@ export async function getSqlMigrationService(account: azdata.Account, subscripti
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
+	response.response.data.properties.resourceGroup = getResourceGroupFromId(response.response.data.id);
 	return response.response.data;
 }
 
@@ -138,6 +139,9 @@ export async function getSqlMigrationServices(account: azdata.Account, subscript
 		throw new Error(response.errors.toString());
 	}
 	sortResourceArrayByName(response.response.data.value);
+	response.response.data.value.forEach((sms: SqlMigrationService) => {
+		sms.properties.resourceGroup = getResourceGroupFromId(sms.id);
+	});
 	return response.response.data.value;
 }
 
@@ -285,6 +289,10 @@ function sortResourceArrayByName(resourceArray: SortableAzureResources[]): void 
 		}
 		return 0;
 	});
+}
+
+function getResourceGroupFromId(id: string): string {
+	return id.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '').toLowerCase();
 }
 
 export interface SqlMigrationServiceProperties {
