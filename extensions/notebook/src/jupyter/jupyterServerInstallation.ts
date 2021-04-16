@@ -32,10 +32,14 @@ const msgInstallPkgStart = localize('msgInstallPkgStart', "Installing Notebook d
 const msgInstallPkgFinish = localize('msgInstallPkgFinish', "Notebook dependencies installation is complete");
 const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.");
 const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python installation is currently in progress. Waiting for it to complete.");
+const msgPythonVersionUpgradePrompt = localize('msgPythonVersionUpgradePrompt', "Would you like to upgrade Python to version 3.8.8?");
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 function msgPackageRetrievalFailed(errorMessage: string): string { return localize('msgPackageRetrievalFailed', "Encountered an error when trying to retrieve list of installed packages: {0}", errorMessage); }
 function msgGetPythonUserDirFailed(errorMessage: string): string { return localize('msgGetPythonUserDirFailed', "Encountered an error when getting Python user path: {0}", errorMessage); }
+
+const yes: vscode.MessageItem = { title: localize('yes', "Yes") };
+const no: vscode.MessageItem = { title: localize('no', "No") };
 
 export interface PythonInstallSettings {
 	installPath: string;
@@ -165,16 +169,14 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		try {
 			let pythonExists = await utils.exists(this._pythonExecutable);
-			if (!pythonExists || forceInstall) {
-				// 	let oldPythonExists = this.isOldPythonVersionInstalled();
-				// 	if (oldPythonExists) {
-				// 		let removeOldPython = this.promptForRemoveOldPythonVersion();
-				// 		if (removeOldPython) {
-				// 			this.removeOldPythonVersion();
-				// 		} else {
-				// 			return; // Continue using old Python version
-				// 		}
-				// 	}
+			let upgradePython = false;
+			if (this._installedPythonVersion === '3.6.6' && !this._usingExistingPython) {
+				upgradePython = await this.promptUserForPythonUpgrade() === yes;
+			}
+			if (!pythonExists || forceInstall || upgradePython) {
+				if (upgradePython) {
+					await this.removeOldPythonInstall();
+				}
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
 				// reinstall pip to make sure !pip command works
 				if (!this._usingExistingPython) {
@@ -778,6 +780,14 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let kernelSpec = <IKernelInfo>JSON.parse(fileContents.toString());
 		kernelSpec.argv = kernelSpec.argv?.map(arg => arg.replace('{ADS_PYTHONDIR}', this._pythonInstallationPath));
 		await fs.writeFile(kernelPath, JSON.stringify(kernelSpec, undefined, '\t'));
+	}
+
+	private async promptUserForPythonUpgrade(): Promise<vscode.MessageItem> {
+		return vscode.window.showInformationMessage(msgPythonVersionUpgradePrompt, yes, no);
+	}
+
+	private async removeOldPythonInstall(): Promise<void> {
+		await fs.remove(this._pythonInstallationPath);
 	}
 }
 
