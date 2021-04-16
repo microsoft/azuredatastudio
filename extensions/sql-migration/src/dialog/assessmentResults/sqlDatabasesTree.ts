@@ -745,8 +745,7 @@ export class SqlDatabaseTree {
 				'border-right': 'none'
 			});
 			this._assessmentContainer.updateCssStyles({
-				'display': 'none',
-				'border-right': 'none'
+				'display': 'none'
 			});
 			this._noIssuesContainer.updateCssStyles({
 				'display': 'flex'
