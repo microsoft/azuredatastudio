@@ -166,6 +166,15 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		try {
 			let pythonExists = await utils.exists(this._pythonExecutable);
 			if (!pythonExists || forceInstall) {
+				// 	let oldPythonExists = this.isOldPythonVersionInstalled();
+				// 	if (oldPythonExists) {
+				// 		let removeOldPython = this.promptForRemoveOldPythonVersion();
+				// 		if (removeOldPython) {
+				// 			this.removeOldPythonVersion();
+				// 		} else {
+				// 			return; // Continue using old Python version
+				// 		}
+				// 	}
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
 				// reinstall pip to make sure !pip command works
 				if (!this._usingExistingPython) {
@@ -698,6 +707,13 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public static getPythonExePath(pythonInstallPath: string, useExistingInstall: boolean): string {
+		let oldPythonPath = path.join(
+			pythonInstallPath,
+			'0.0.1',
+			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
+		if (fs.existsSync(oldPythonPath)) {
+			return oldPythonPath;
+		}
 		return path.join(
 			pythonInstallPath,
 			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
