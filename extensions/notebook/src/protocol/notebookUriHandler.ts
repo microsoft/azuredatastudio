@@ -14,6 +14,7 @@ import { IQuestion, QuestionTypes } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { getErrorMessage, isEditorTitleFree } from '../common/utils';
 import * as constants from '../common/constants';
+import { ContentsManager } from '@jupyterlab/services';
 
 
 export class NotebookUriHandler implements vscode.UriHandler {
@@ -81,6 +82,8 @@ export class NotebookUriHandler implements vscode.UriHandler {
 				case 'http':
 				case 'https':
 					break;
+				case 'file':
+					break;
 				default:
 					vscode.window.showErrorMessage(localize('unsupportedScheme', "Cannot open link {0} as only HTTP and HTTPS links are supported", url));
 					return;
@@ -94,21 +97,24 @@ export class NotebookUriHandler implements vscode.UriHandler {
 			if (!doOpen) {
 				return;
 			}
-
-			let contents = await this.download(url);
-			let untitledUriPath = this.getUntitledUriPath(path.basename(uri.fsPath));
-			let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: untitledUriPath });
-			if (path.extname(uri.fsPath) === '.ipynb') {
-				await azdata.nb.showNotebookDocument(untitledUri, {
-					initialContent: contents,
-					preserveFocus: true
-				});
+			if (uri.scheme === 'file') {
+				await azdata.nb.showNotebookDocument(uri);
 			} else {
-				let doc = await vscode.workspace.openTextDocument(untitledUri);
-				let editor = await vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, true);
-				await editor.edit(builder => {
-					builder.insert(new vscode.Position(0, 0), contents);
-				});
+				let contents = await this.download(url);
+				let untitledUriPath = this.getUntitledUriPath(path.basename(uri.fsPath));
+				let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: untitledUriPath });
+				if (path.extname(uri.fsPath) === '.ipynb') {
+					await azdata.nb.showNotebookDocument(untitledUri, {
+						initialContent: contents,
+						preserveFocus: true
+					});
+				} else {
+					let doc = await vscode.workspace.openTextDocument(untitledUri);
+					let editor = await vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, true);
+					await editor.edit(builder => {
+						builder.insert(new vscode.Position(0, 0), contents);
+					});
+				}
 			}
 		} catch (err) {
 			vscode.window.showErrorMessage(getErrorMessage(err));
