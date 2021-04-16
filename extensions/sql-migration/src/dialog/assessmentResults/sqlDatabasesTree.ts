@@ -805,7 +805,7 @@ export class SqlDatabaseTree {
 				let selectable = true;
 				db.issues.forEach((issue) => {
 					const blockers: string[] = Object.values(BlockingIssues);
-					if (blockers.includes(issue.checkId)) {
+					if (blockers.includes(issue.ruleId)) {
 						selectable = false;
 					}
 				});

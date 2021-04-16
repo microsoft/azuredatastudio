@@ -56,9 +56,9 @@ export enum NetworkContainerType {
 }
 
 export enum BlockingIssues {
-	LOG_FILE = 'Azure SQL Managed Instance does not support multiple log files.',
-	FILESTREAM = 'Filestream and Filetable are not supported in Azure SQL Managed Instance.',
-	DBSIZE = 'Azure SQL Managed Instance does not support database size greater than 8 TB.'
+	LOG_FILE = 'MultipleLogFiles',
+	FILESTREAM = 'FileStream',
+	DBSIZE = 'MIDatabaseSize'
 }
 
 export interface NetworkShare {
