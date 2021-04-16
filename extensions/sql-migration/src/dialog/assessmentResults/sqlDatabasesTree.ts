@@ -40,6 +40,12 @@ const headerRight: azdata.CssStyles = {
 	'border-bottom': '1px solid'
 };
 
+const blockingIssues: Array<string> = [
+	'MultipleLogFiles',
+	'FileStream',
+	'MIDatabaseSize'
+];
+
 export class SqlDatabaseTree {
 	private _view!: azdata.ModelView;
 	private _instanceTable!: azdata.DeclarativeTableComponent;
@@ -803,7 +809,7 @@ export class SqlDatabaseTree {
 			this._dbNames = this._model._assessmentResults.databaseAssessments.map(da => da.name);
 			this._model._assessmentResults.databaseAssessments.forEach((db) => {
 				let selectable = true;
-				if (db.issues.find(item => item.ruleId === constants.BLOCKING_ISSUE_LOG_FILES || item.ruleId === constants.BLOCKING_ISSUE_FILESTREAM || item.ruleId === constants.BLOCKING_ISSUE_DBSIZE)) {
+				if (db.issues.find(item => blockingIssues.includes(item.ruleId))) {
 					selectable = false;
 				}
 				this._databaseTableValues.push(
