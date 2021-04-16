@@ -55,12 +55,6 @@ export enum NetworkContainerType {
 	NETWORK_SHARE
 }
 
-export enum BlockingIssues {
-	LOG_FILE = 'MultipleLogFiles',
-	FILESTREAM = 'FileStream',
-	DBSIZE = 'MIDatabaseSize'
-}
-
 export interface NetworkShare {
 	networkShareLocation: string;
 	windowsUser: string;

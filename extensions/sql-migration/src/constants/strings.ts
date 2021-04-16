@@ -356,6 +356,9 @@ export const TARGET_PLATFORM = localize('sql.migration.target.platform', "Target
 export const WARNINGS_DETAILS = localize('sql.migration.warnings.details', "Warnings Details");
 export const ISSUES_DETAILS = localize('sql.migration.issues.details', "Issue Details");
 export const SELECT_DB_PROMPT = localize('sql.migration.select.prompt', "Click on SQL Server Instance or any of the databases on the left to view its details.");
+export const BLOCKING_ISSUE_LOG_FILES = localize('sql.migration.blocking.issue.log', "MultipleLogFiles");
+export const BLOCKING_ISSUE_FILESTREAM = localize('sql.migration.blocking.issue.filestream', "FileStream");
+export const BLOCKING_ISSUE_DBSIZE = localize('sql.migration.blocking.issue.dbsize', "MIDatabaseSize");
 export function IMPACT_OBJECT_TYPE(objectType: string): string {
 	return localize('sql.migration.impact.object.type', "Type: {0}", objectType);
 }

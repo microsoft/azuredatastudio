@@ -5,7 +5,7 @@
 import * as azdata from 'azdata';
 import { SqlMigrationAssessmentResultItem, SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
 import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
-import { MigrationStateModel, MigrationTargetType, BlockingIssues } from '../../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 
 const styleLeft: azdata.CssStyles = {
@@ -803,12 +803,9 @@ export class SqlDatabaseTree {
 			this._dbNames = this._model._assessmentResults.databaseAssessments.map(da => da.name);
 			this._model._assessmentResults.databaseAssessments.forEach((db) => {
 				let selectable = true;
-				db.issues.forEach((issue) => {
-					const blockers: string[] = Object.values(BlockingIssues);
-					if (blockers.includes(issue.ruleId)) {
-						selectable = false;
-					}
-				});
+				if (db.issues.find(item => item.ruleId === constants.BLOCKING_ISSUE_LOG_FILES || item.ruleId === constants.BLOCKING_ISSUE_FILESTREAM || item.ruleId === constants.BLOCKING_ISSUE_DBSIZE)) {
+					selectable = false;
+				}
 				this._databaseTableValues.push(
 					[
 						{
