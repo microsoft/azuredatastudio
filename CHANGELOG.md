@@ -1,5 +1,15 @@
 # Change Log
 
+## Version 1.28.0
+* Release date: April 16, 2021
+* Release status: General Availability
+* New Notebook Features:
+    * Added Add Notebook and Remove Notebook commands
+* Extension Updates:
+    * SQL Database Projects
+    * Schema Compare
+* Bux Fixes
+
 ## Version 1.27.0
 * Release date: March 17, 2021
 * Release status: General Availability
