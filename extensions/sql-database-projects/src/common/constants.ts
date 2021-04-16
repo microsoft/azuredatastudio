@@ -30,6 +30,31 @@ export const edgeSqlDatabaseProjectTypeId = 'SqlDbEdgeProj';
 export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "SQL Edge");
 export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription', "Start with the core pieces to develop and publish schemas for SQL Edge");
 
+// Dashboard
+export const addItemAction = localize('addItemAction', "Add Item");
+export const schemaCompareAction = localize('schemaCompareAction', "Schema Compare");
+export const buildAction = localize('buildAction', "Build");
+export const publishAction = localize('publishAction', "Publish");
+export const changeTargetPlatformAction = localize('changeTargetPlatformAction', "Change Target Platform");
+
+export const ID = localize('ID', "ID");
+export const Status = localize('Status', "Status");
+export const Time = localize('Time', "Time");
+export const Date = localize('Date', "Date");
+export const Builds = localize('Builds', "Builds");
+export const Deployments = localize('Deployments', "Deployments");
+
+export const Success = localize('Success', "Success");
+export const Failed = localize('Failed', "Failed");
+export const InProgress = localize('InProgress', "In progress");
+
+export const hr = localize('hr', "hr");
+export const min = localize('min', "min");
+export const sec = localize('sec', "sec");
+export const msec = localize('msec', "msec");
+
+export const at = localize('at', "at");
+
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';
 export const schemaCompareStartCommand = 'schemaCompare.start';
@@ -111,6 +136,7 @@ export const databaseNameServerNameVariableRequired = localize('databaseNameServ
 export const otherServer = 'OtherServer';
 export const otherSeverVariable = 'OtherServer';
 export const databaseProject = localize('databaseProject', "Database project");
+export const dacpacNotOnSameDrive = (projectLocation: string): string => { return localize('dacpacNotOnSameDrive', "Dacpac references need to be located on the same drive as the project file. The project file is located at {0}", projectLocation); };
 
 // Create Project From Database dialog strings
 
@@ -172,6 +198,8 @@ export function fileOrFolderDoesNotExist(name: string) { return localize('fileOr
 export function cannotResolvePath(path: string) { return localize('cannotResolvePath', "Cannot resolve path {0}", path); }
 export function fileAlreadyExists(filename: string) { return localize('fileAlreadyExists', "A file with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
 export function folderAlreadyExists(filename: string) { return localize('folderAlreadyExists', "A folder with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
+export function fileAlreadyAddedToProject(filepath: string) { return localize('fileAlreadyAddedToProject', "A file with the path '{0}' has already been added to the project", filepath); }
+export function folderAlreadyAddedToProject(folderpath: string) { return localize('folderAlreadyAddedToProject', "A folder with the path '{0}' has already been added to the project", folderpath); }
 export function invalidInput(input: string) { return localize('invalidInput', "Invalid input: {0}", input); }
 export function unableToCreatePublishConnection(input: string) { return localize('unableToCreatePublishConnection', "Unable to construct connection: {0}", input); }
 export function circularProjectReference(project1: string, project2: string) { return localize('cicularProjectReference', "Circular reference from project {0} to project {1}", project1, project2); }

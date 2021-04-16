@@ -5,26 +5,15 @@ steps:
       certSecureFile: 'osx_signing_key.p12'
     condition: eq(variables['signed'], true)
 
-  - script: |
-      mkdir -p .build
-      echo -n $BUILD_SOURCEVERSION > .build/commit
-      echo -n $VSCODE_QUALITY > .build/quality
-    displayName: Prepare cache flag
-
-  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
-    displayName: Restore Cache - Compiled Files
+  - task: DownloadPipelineArtifact@2
     inputs:
-      keyfile: 'build/.cachesalt, .build/commit, .build/quality'
-      targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
-      vstsFeed: 'BuildCache'
-      platformIndependent: true
-      alias: 'Compilation'
+      artifact: Compilation
+    displayName: Download compilation output
 
   - script: |
       set -e
-      exit 1
-    displayName: Check RestoreCache
-    condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
+      tar -xzf $(Pipeline.Workspace)/compilation.tar.gz
+    displayName: Extract compilation output
 
   - task: NodeTool@0
     inputs:
@@ -61,12 +50,23 @@ steps:
       git merge $(node -p "require('./package.json').distro")
     displayName: Merge distro
 
-  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+  - script: |
+      mkdir -p .build
+      node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js > .build/yarnlockhash
+    displayName: Prepare yarn cache key
+
+  - task: Cache@2
     displayName: Restore Cache - Node Modules
     inputs:
-      keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
-      targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
-      vstsFeed: 'BuildCache'
+      key: 'nodeModules | $(Agent.OS) | .build/yarnlockhash'
+      path: .build/node_modules_cache
+      cacheHitVar: NODE_MODULES_RESTORED
+
+  - script: |
+      set -e
+      tar -xzf .build/node_modules_cache/cache.tgz
+    condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
+    displayName: Extract node_modules archive
 
   - script: |
       set -e
@@ -74,21 +74,21 @@ steps:
     displayName: Install dependencies
     env:
       GITHUB_TOKEN: $(github-distro-mixin-password)
-    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+    condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
 
-  - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
-    displayName: Save Cache - Node Modules
-    inputs:
-      keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock, !samples/**/yarn.lock'
-      targetfolder: '**/node_modules, !**/node_modules/**/node_modules, !samples/**/node_modules'
-      vstsFeed: 'BuildCache'
-    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+  - script: |
+      set -e
+      node build/azure-pipelines/common/listNodeModules.js .build/node_modules_list.txt
+      mkdir -p .build/node_modules_cache
+      tar -czf .build/node_modules_cache/cache.tgz --files-from .build/node_modules_list.txt
+    condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+    displayName: Create node_modules archive
 
   - script: |
       set -e
       yarn postinstall
     displayName: Run postinstall scripts
-    condition: and(succeeded(), eq(variables['CacheRestored'], 'true'))
+    condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
 
   - script: |
       set -e
@@ -124,9 +124,14 @@ steps:
 
   - script: |
       set -e
+      yarn gulp compile-extensions
+    displayName: Compile Extensions
+
+  - script: |
+      set -e
       APP_ROOT=$(agent.builddirectory)/azuredatastudio-darwin-x64
       APP_NAME="`ls $APP_ROOT | head -n 1`"
-      yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/darwin/smoke.log"
+      yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/darwin/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions"
     displayName: Run smoke tests (Electron)
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))

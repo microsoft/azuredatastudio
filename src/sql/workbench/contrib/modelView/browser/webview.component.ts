@@ -128,8 +128,10 @@ export default class WebViewComponent extends ComponentBase<WebViewProperties> i
 		if (!link) {
 			return;
 		}
-		if (WebViewComponent.standardSupportedLinkSchemes.indexOf(link.scheme) >= 0 || this.enableCommandUris && link.scheme === 'command') {
+		if (WebViewComponent.standardSupportedLinkSchemes.indexOf(link.scheme) >= 0) {
 			this._openerService.open(link);
+		} else if (this.enableCommandUris && link.scheme === 'command') {
+			this._openerService.open(link, { allowCommands: true });
 		}
 	}
 

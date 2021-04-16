@@ -117,7 +117,11 @@ suite('Notebook Editor Model', function (): void {
 		undefined,
 		undefined,
 		new MockContextKeyService(),
-		testinstantiationService.get(IProductService)
+		testinstantiationService.get(IProductService),
+		undefined,
+		undefined,
+		undefined,
+		undefined,
 	);
 	let mockNotebookService = TypeMoq.Mock.ofInstance(notebookService);
 

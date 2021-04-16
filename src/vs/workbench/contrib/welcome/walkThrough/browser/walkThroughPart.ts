@@ -67,7 +67,6 @@ export class WalkThroughPart extends EditorPane {
 	private lastFocus: HTMLElement | undefined;
 	private size: Dimension | undefined;
 	private editorMemento: IEditorMemento<IWalkThroughEditorViewState>;
-	private tasExperimentService: ITASExperimentService | undefined;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -87,7 +86,6 @@ export class WalkThroughPart extends EditorPane {
 		super(WalkThroughPart.ID, telemetryService, themeService, storageService);
 		this.editorFocus = WALK_THROUGH_FOCUS.bindTo(this.contextKeyService);
 		this.editorMemento = this.getEditorMemento<IWalkThroughEditorViewState>(editorGroupService, WALK_THROUGH_EDITOR_VIEW_STATE_PREFERENCE_KEY);
-		this.tasExperimentService = tasExperimentService;
 	}
 
 	createEditor(container: HTMLElement): void {
@@ -193,16 +191,7 @@ export class WalkThroughPart extends EditorPane {
 			this.notificationService.info(localize('walkThrough.gitNotFound', "It looks like Git is not installed on your system."));
 			return;
 		}
-		if (uri.scheme === 'command' && uri.path === 'workbench.action.files.newUntitledFile') {
-			Promise.all([
-				this.tasExperimentService?.getTreatment<boolean>('newuntitledmode'),
-				this.openerService.open(this.addFrom(uri)),
-			]).then(([newUntitledMode]) => {
-				return newUntitledMode && this.openerService.open(this.addFrom(URI.parse('command:workbench.action.editor.changeLanguageMode')));
-			});
-			return;
-		}
-		this.openerService.open(this.addFrom(uri));
+		this.openerService.open(this.addFrom(uri), { allowCommands: true });
 	}
 
 	private addFrom(uri: URI) {

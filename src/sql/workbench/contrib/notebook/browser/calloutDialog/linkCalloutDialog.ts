@@ -45,6 +45,7 @@ export class LinkCalloutDialog extends Modal {
 		dialogPosition: DialogPosition,
 		dialogProperties: IDialogProperties,
 		private readonly _defaultLabel: string = '',
+		private readonly _defaultLinkUrl: string = '',
 		@IContextViewService private readonly _contextViewService: IContextViewService,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,
@@ -134,6 +135,7 @@ export class LinkCalloutDialog extends Modal {
 				placeholder: constants.linkAddressPlaceholder,
 				ariaLabel: constants.linkAddressLabel
 			});
+		this._linkUrlInputBox.value = this._defaultLinkUrl;
 		DOM.append(linkAddressRow, linkAddressInputContainer);
 	}
 

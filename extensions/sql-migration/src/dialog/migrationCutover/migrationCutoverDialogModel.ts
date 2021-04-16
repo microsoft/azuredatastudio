@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { getMigrationStatus, DatabaseMigration, startMigrationCutover, stopMigration } from '../../api/azure';
+import { getMigrationStatus, DatabaseMigration, startMigrationCutover, stopMigration, getMigrationAsyncOperationDetails, AzureAsyncOperationResource } from '../../api/azure';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 
 export enum MigrationStatus {
@@ -16,11 +16,19 @@ export enum MigrationStatus {
 export class MigrationCutoverDialogModel {
 
 	public migrationStatus!: DatabaseMigration;
+	public migrationOpStatus!: AzureAsyncOperationResource;
 
 	constructor(public _migration: MigrationContext) {
 	}
 
 	public async fetchStatus(): Promise<void> {
+		if (this._migration.asyncUrl) {
+			this.migrationOpStatus = (await getMigrationAsyncOperationDetails(
+				this._migration.azureAccount,
+				this._migration.subscription,
+				this._migration.asyncUrl
+			));
+		}
 		this.migrationStatus = (await getMigrationStatus(
 			this._migration.azureAccount,
 			this._migration.subscription,

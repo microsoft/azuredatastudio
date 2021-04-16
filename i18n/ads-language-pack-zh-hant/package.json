@@ -1,0 +1,226 @@
+{
+	"name": "ads-language-pack-zh-hant",
+	"displayName": "Chinese (Traditional) Language Pack for Azure Data Studio",
+	"description": "Language pack extension for Chinese (Traditional)",
+	"version": "1.26.0",
+	"publisher": "Microsoft",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Microsoft/azuredatastudio"
+	},
+	"license": "SEE SOURCE EULA LICENSE IN LICENSE.txt",
+	"engines": {
+		"vscode": "^1.34.0",
+		"azdata": ">=1.26.0"
+	},
+	"icon": "languagepack.png",
+	"categories": [
+		"Language Packs"
+	],
+	"contributes": {
+		"localizations": [
+			{
+				"languageId": "zh-tw",
+				"languageName": "Chinese Traditional",
+				"localizedLanguageName": "中文(繁體)",
+				"translations": [
+					{
+						"id": "Microsoft.admin-tool-ext-win",
+						"path": "./translations/extensions/admin-tool-ext-win.i18n.json"
+					},
+					{
+						"id": "Microsoft.agent",
+						"path": "./translations/extensions/agent.i18n.json"
+					},
+					{
+						"id": "Microsoft.azurecore",
+						"path": "./translations/extensions/azurecore.i18n.json"
+					},
+					{
+						"id": "Microsoft.big-data-cluster",
+						"path": "./translations/extensions/big-data-cluster.i18n.json"
+					},
+					{
+						"id": "Microsoft.cms",
+						"path": "./translations/extensions/cms.i18n.json"
+					},
+					{
+						"id": "Microsoft.dacpac",
+						"path": "./translations/extensions/dacpac.i18n.json"
+					},
+					{
+						"id": "Microsoft.import",
+						"path": "./translations/extensions/import.i18n.json"
+					},
+					{
+						"id": "Microsoft.mssql",
+						"path": "./translations/extensions/mssql.i18n.json"
+					},
+					{
+						"id": "Microsoft.notebook",
+						"path": "./translations/extensions/notebook.i18n.json"
+					},
+					{
+						"id": "Microsoft.profiler",
+						"path": "./translations/extensions/profiler.i18n.json"
+					},
+					{
+						"id": "Microsoft.resource-deployment",
+						"path": "./translations/extensions/resource-deployment.i18n.json"
+					},
+					{
+						"id": "Microsoft.schema-compare",
+						"path": "./translations/extensions/schema-compare.i18n.json"
+					},
+					{
+						"id": "Microsoft.sqlservernotebook",
+						"path": "./translations/extensions/Microsoft.sqlservernotebook.i18n.json"
+					},
+					{
+						"id": "vscode",
+						"path": "./translations/main.i18n.json"
+					},
+					{
+						"id": "vscode.bat",
+						"path": "./translations/extensions/bat.i18n.json"
+					},
+					{
+						"id": "vscode.configuration-editing",
+						"path": "./translations/extensions/configuration-editing.i18n.json"
+					},
+					{
+						"id": "vscode.docker",
+						"path": "./translations/extensions/docker.i18n.json"
+					},
+					{
+						"id": "vscode.extension-editing",
+						"path": "./translations/extensions/extension-editing.i18n.json"
+					},
+					{
+						"id": "vscode.git-ui",
+						"path": "./translations/extensions/git-ui.i18n.json"
+					},
+					{
+						"id": "vscode.git",
+						"path": "./translations/extensions/git.i18n.json"
+					},
+					{
+						"id": "vscode.github-authentication",
+						"path": "./translations/extensions/github-authentication.i18n.json"
+					},
+					{
+						"id": "vscode.github",
+						"path": "./translations/extensions/github.i18n.json"
+					},
+					{
+						"id": "vscode.image-preview",
+						"path": "./translations/extensions/image-preview.i18n.json"
+					},
+					{
+						"id": "vscode.json-language-features",
+						"path": "./translations/extensions/json-language-features.i18n.json"
+					},
+					{
+						"id": "vscode.json",
+						"path": "./translations/extensions/json.i18n.json"
+					},
+					{
+						"id": "vscode.markdown",
+						"path": "./translations/extensions/markdown-basics.i18n.json"
+					},
+					{
+						"id": "vscode.markdown-language-features",
+						"path": "./translations/extensions/markdown-language-features.i18n.json"
+					},
+					{
+						"id": "vscode.merge-conflict",
+						"path": "./translations/extensions/merge-conflict.i18n.json"
+					},
+					{
+						"id": "vscode.microsoft-authentication",
+						"path": "./translations/extensions/microsoft-authentication.i18n.json"
+					},
+					{
+						"id": "vscode.powershell",
+						"path": "./translations/extensions/powershell.i18n.json"
+					},
+					{
+						"id": "vscode.python",
+						"path": "./translations/extensions/python.i18n.json"
+					},
+					{
+						"id": "vscode.r",
+						"path": "./translations/extensions/r.i18n.json"
+					},
+					{
+						"id": "vscode.search-result",
+						"path": "./translations/extensions/search-result.i18n.json"
+					},
+					{
+						"id": "vscode.sql",
+						"path": "./translations/extensions/sql.i18n.json"
+					},
+					{
+						"id": "vscode.theme-abyss",
+						"path": "./translations/extensions/theme-abyss.i18n.json"
+					},
+					{
+						"id": "vscode.theme-defaults",
+						"path": "./translations/extensions/theme-defaults.i18n.json"
+					},
+					{
+						"id": "vscode.theme-kimbie-dark",
+						"path": "./translations/extensions/theme-kimbie-dark.i18n.json"
+					},
+					{
+						"id": "vscode.theme-monokai-dimmed",
+						"path": "./translations/extensions/theme-monokai-dimmed.i18n.json"
+					},
+					{
+						"id": "vscode.theme-monokai",
+						"path": "./translations/extensions/theme-monokai.i18n.json"
+					},
+					{
+						"id": "vscode.theme-quietlight",
+						"path": "./translations/extensions/theme-quietlight.i18n.json"
+					},
+					{
+						"id": "vscode.theme-red",
+						"path": "./translations/extensions/theme-red.i18n.json"
+					},
+					{
+						"id": "vscode.vscode-theme-seti",
+						"path": "./translations/extensions/theme-seti.i18n.json"
+					},
+					{
+						"id": "vscode.theme-solarized-dark",
+						"path": "./translations/extensions/theme-solarized-dark.i18n.json"
+					},
+					{
+						"id": "vscode.theme-solarized-light",
+						"path": "./translations/extensions/theme-solarized-light.i18n.json"
+					},
+					{
+						"id": "vscode.theme-tomorrow-night-blue",
+						"path": "./translations/extensions/theme-tomorrow-night-blue.i18n.json"
+					},
+					{
+						"id": "vscode.typescript-basics",
+						"path": "./translations/extensions/typescript-basics.i18n.json"
+					},
+					{
+						"id": "vscode.xml",
+						"path": "./translations/extensions/xml.i18n.json"
+					},
+					{
+						"id": "vscode.yaml",
+						"path": "./translations/extensions/yaml.i18n.json"
+					}
+				]
+			}
+		]
+	},
+	"scripts": {
+		"update": "cd ../vscode && npm run update-localization-extension zh-hant"
+	}
+}

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
-import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getDatabaseMigration } from '../api/azure';
+import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus, AzureAsyncOperationResource, getMigrationAsyncOperationDetails } from '../api/azure';
 import * as azdata from 'azdata';
 
 
@@ -27,12 +27,18 @@ export class MigrationLocalStorage {
 			if (migration.sourceConnectionProfile.serverName === connectionProfile.serverName) {
 				if (refreshStatus) {
 					try {
-						migration.migrationContext = await getDatabaseMigration(
+						migration.migrationContext = await getMigrationStatus(
 							migration.azureAccount,
 							migration.subscription,
-							migration.targetManagedInstance.location,
-							migration.migrationContext.id
+							migration.migrationContext
 						);
+						if (migration.asyncUrl) {
+							migration.asyncOperationResult = await getMigrationAsyncOperationDetails(
+								migration.azureAccount,
+								migration.subscription,
+								migration.asyncUrl
+							);
+						}
 					}
 					catch (e) {
 						// Keeping only valid migrations in cache. Clearing all the migrations which return ResourceDoesNotExit error.
@@ -57,16 +63,19 @@ export class MigrationLocalStorage {
 		targetMI: SqlManagedInstance,
 		azureAccount: azdata.Account,
 		subscription: azureResource.AzureResourceSubscription,
-		controller: SqlMigrationService): void {
+		controller: SqlMigrationService,
+		asyncURL: string): void {
 		try {
-			const migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
+			let migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
+			migrationMementos = migrationMementos.filter(m => m.migrationContext.id !== migrationContext.id);
 			migrationMementos.push({
 				sourceConnectionProfile: connectionProfile,
 				migrationContext: migrationContext,
 				targetManagedInstance: targetMI,
 				subscription: subscription,
 				azureAccount: azureAccount,
-				controller: controller
+				controller: controller,
+				asyncUrl: asyncURL
 			});
 			this.context.globalState.update(this.mementoToken, migrationMementos);
 		} catch (e) {
@@ -85,5 +94,7 @@ export interface MigrationContext {
 	targetManagedInstance: SqlManagedInstance,
 	azureAccount: azdata.Account,
 	subscription: azureResource.AzureResourceSubscription,
-	controller: SqlMigrationService
+	controller: SqlMigrationService,
+	asyncUrl: string,
+	asyncOperationResult?: AzureAsyncOperationResource
 }

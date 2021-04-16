@@ -139,7 +139,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			requiredIndicator: true,
 		}).component();
 		this._fileShareSubscription = view.modelBuilder.inputBox().withProps({
-			required: true,
+			required: false,
 			enabled: false
 		}).component();
 
@@ -150,7 +150,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._fileShareStorageAccountDropdown = view.modelBuilder.dropDown()
 			.withProps({
-				required: true
+				required: false
 			}).component();
 		this._fileShareStorageAccountDropdown.onValueChanged(async (value) => {
 			if (value.selected) {
@@ -195,7 +195,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._blobContainerSubscription = view.modelBuilder.inputBox()
 			.withProps({
-				required: true,
+				required: false,
 				enabled: false
 			}).component();
 
@@ -206,7 +206,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._blobContainerStorageAccountDropdown = view.modelBuilder.dropDown()
 			.withProps({
-				required: true
+				required: false
 			}).component();
 		this._blobContainerStorageAccountDropdown.onValueChanged(async (value) => {
 			if (value.selected) {
@@ -271,7 +271,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}).withValidation((component) => {
 			if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
 				if (component.value) {
-					if (!/(?<=\\\\)[^\\]*/.test(component.value)) {
+					if (!/^[\\\/]{2,}[^\\\/]+[\\\/]+[^\\\/]+/.test(component.value)) {
 						return false;
 					}
 				}
@@ -304,7 +304,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withValidation((component) => {
 				if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
 					if (component.value) {
-						if (!/(?<=\\).*$/.test(component.value)) {
+						if (!/^[A-Za-z0-9\\\._-]{7,}$/.test(component.value)) {
 							return false;
 						}
 					}
@@ -335,7 +335,11 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const azureAccountHeader = view.modelBuilder.text()
 			.withProps({
 				value: constants.DATABASE_BACKUP_NETWORK_SHARE_AZURE_ACCOUNT_HEADER,
-				width: WIZARD_INPUT_COMPONENT_WIDTH
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: {
+					'font-size': '14px',
+					'font-weight': 'bold'
+				}
 			}).component();
 
 		const azureAccountHelpText = view.modelBuilder.text()
@@ -429,7 +433,11 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		const networkShareDatabaseConfigHeader = view.modelBuilder.text().withProps({
 			value: constants.ENTER_NETWORK_SHARE_INFORMATION,
-			width: WIZARD_INPUT_COMPONENT_WIDTH
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '14px',
+				'font-weight': 'bold'
+			}
 		}).component();
 		this._networkShareDatabaseConfigContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
@@ -504,10 +512,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						c.validationErrorMessage = constants.DATABASE_ALREADY_EXISTS_MI(this.migrationStateModel._targetServerInstance.name);
 						return false;
 					}
+					if (c.value!.length < 1 || c.value!.length > 128 || !/[^<>*%&:\\\/?]/.test(c.value!)) {
+						c.validationErrorMessage = constants.INVALID_TARGET_NAME_ERROR;
+						return false;
+					}
 					return true;
 				}).component();
 				targetNameNetworkInputBox.onTextChanged((value) => {
-					this.migrationStateModel._targetDatabaseNames[index] = value;
+					this.migrationStateModel._targetDatabaseNames[index] = value.trim();
 				});
 				this._targetDatabaseNames.push(targetNameNetworkInputBox);
 

@@ -697,7 +697,11 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 		instantiationService.get(ILogService),
 		queryManagementService,
 		instantiationService.get(IContextKeyService),
-		instantiationService.get(IProductService)
+		instantiationService.get(IProductService),
+		undefined,
+		undefined,
+		undefined,
+		undefined,
 	);
 
 	instantiationService.stub(INotebookService, notebookService);

@@ -20,6 +20,8 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 		super(modelView, dashboard);
 		this.disposables.push(this._miaaModel.onConfigUpdated(_ =>
 			this.eventuallyRunOnInitialized(() => this.updateConnectionStrings())));
+		this.disposables.push(this._miaaModel.onDatabasesUpdated(_ =>
+			this.eventuallyRunOnInitialized(() => this.updateConnectionStrings())));
 	}
 
 	protected get title(): string {
@@ -77,7 +79,7 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 		}
 
 		const externalEndpoint = parseIpAndPort(config.status.externalEndpoint);
-		const username = this._miaaModel.username;
+		const username = this._miaaModel.username ?? '{your_username_here}';
 
 		return [
 			new InputKeyValue(this.modelView.modelBuilder, 'ADO.NET', `Server=tcp:${externalEndpoint.ip},${externalEndpoint.port};Persist Security Info=False;User ID=${username};Password={your_password_here};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;`),

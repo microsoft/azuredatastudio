@@ -60,6 +60,8 @@ export const DEFAULT_STEP = '1';
 
 export class Slider extends Widget {
 	private _el: HTMLInputElement;
+	private _valueBox: HTMLInputElement;
+
 	private _datalist: HTMLDataListElement | undefined = undefined;
 	private _showTicks: boolean = false;
 
@@ -82,6 +84,13 @@ export class Slider extends Widget {
 
 		this._el = document.createElement('input');
 		this._el.type = 'range';
+
+		this._valueBox = document.createElement('input');
+		this._valueBox.type = 'text';
+		this._valueBox.disabled = true;
+		this._valueBox.style.textAlign = 'center';
+		this._valueBox.style.width = '40px';
+
 		this.width = opts.width?.toString() || '';
 		this.step = opts.step;
 		this.min = opts.min;
@@ -89,18 +98,13 @@ export class Slider extends Widget {
 		this.value = opts.value;
 		this._showTicks = opts.showTicks;
 
+		this._valueBox.value = this.value.toString();
+
 		this.updateTicksDisplay();
 
 		const flexContainer = document.createElement('div');
 		flexContainer.style.display = 'flex';
 		flexContainer.style.flexFlow = 'row';
-
-		const valueBox = document.createElement('input');
-		valueBox.type = 'text';
-		valueBox.disabled = true;
-		valueBox.value = this.value.toString();
-		valueBox.style.textAlign = 'center';
-		valueBox.style.width = '40px';
 
 		if (opts.ariaLabel) {
 			this.ariaLabel = opts.ariaLabel;
@@ -111,7 +115,7 @@ export class Slider extends Widget {
 		});
 
 		this.oninput(this._el, () => {
-			valueBox.value = this.value.toString();
+			this._valueBox.value = this.value.toString();
 			this._onInput.fire(this.value);
 		});
 
@@ -125,7 +129,7 @@ export class Slider extends Widget {
 			this._register(this.onInput(opts.onInput));
 		}
 
-		flexContainer.append(this._el, valueBox);
+		flexContainer.append(this._el, this._valueBox);
 		this._container.appendChild(flexContainer);
 	}
 
@@ -177,6 +181,8 @@ export class Slider extends Widget {
 
 	public set value(val: number | undefined) {
 		this._el.value = val?.toString() || this.min.toString();
+		this._valueBox.value = this._el.value;
+		this._onChange.fire(this.value);
 	}
 
 	public get value(): number {

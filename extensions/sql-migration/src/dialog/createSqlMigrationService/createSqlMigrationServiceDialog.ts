@@ -147,10 +147,6 @@ export class CreateSqlMigrationServiceDialog {
 			value: constants.MIGRATION_SERVICE_DIALOG_DESCRIPTION
 		}).component();
 
-		const formHeading = this._view.modelBuilder.text().withProps({
-			value: constants.CREATE_SERVICE_FORM_HEADING
-		}).component();
-
 		const subscriptionDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION
 		}).component();
@@ -184,9 +180,17 @@ export class CreateSqlMigrationServiceDialog {
 			value: await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._targetServerInstance.location)
 		}).component();
 
+		const targetlabel = this._view.modelBuilder.text().withProps({
+			value: constants.TARGET
+		}).component();
+
+		const targetText = this._view.modelBuilder.inputBox().withProps({
+			enabled: false,
+			value: constants.AZURE_SQL
+		}).component();
+
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems([
 			dialogDescription,
-			formHeading,
 			subscriptionDropdownLabel,
 			this.migrationServiceSubscription,
 			locationDropdownLabel,
@@ -194,7 +198,9 @@ export class CreateSqlMigrationServiceDialog {
 			resourceGroupDropdownLabel,
 			this.migrationServiceResourceGroupDropdown,
 			migrationServiceNameLabel,
-			this.migrationServiceNameText
+			this.migrationServiceNameText,
+			targetlabel,
+			targetText
 		]).withLayout({
 			flexFlow: 'column'
 		}).component();
@@ -212,7 +218,7 @@ export class CreateSqlMigrationServiceDialog {
 		if (!location) {
 			errors.push(constants.INVALID_REGION_ERROR);
 		}
-		if (!migrationServiceName || migrationServiceName.length === 0) {
+		if (!migrationServiceName || migrationServiceName.length < 3 || migrationServiceName.length > 63 || !/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/.test(migrationServiceName)) {
 			errors.push(constants.INVALID_SERVICE_NAME_ERROR);
 		}
 		return errors.join(os.EOL);
@@ -257,8 +263,12 @@ export class CreateSqlMigrationServiceDialog {
 			}
 		}).component();
 
-		const setupIRdescription = this._view.modelBuilder.text().withProps({
-			value: constants.SERVICE_CONTAINER_DESCRIPTION,
+		const setupIRdescription1 = this._view.modelBuilder.text().withProps({
+			value: constants.SERVICE_CONTAINER_DESCRIPTION1,
+		}).component();
+
+		const setupIRdescription2 = this._view.modelBuilder.text().withProps({
+			value: constants.SERVICE_CONTAINER_DESCRIPTION2,
 		}).component();
 
 		const irSetupStep1Text = this._view.modelBuilder.text().withProps({
@@ -353,7 +363,8 @@ export class CreateSqlMigrationServiceDialog {
 		this._setupContainer = this._view.modelBuilder.flexContainer().withItems(
 			[
 				setupIRHeadingText,
-				setupIRdescription,
+				setupIRdescription1,
+				setupIRdescription2,
 				irSetupStep1Text,
 				irSetupStep2Text,
 				this.migrationServiceAuthKeyTable,
