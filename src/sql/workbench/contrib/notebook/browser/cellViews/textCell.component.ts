@@ -390,7 +390,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					className: findRangeSpecificClass,
 					each: function (node, range) {
 						// node is the marked DOM element
-						node.scrollIntoView({ behavior: 'smooth' });
+						node.scrollIntoView({ behavior: 'smooth', block: 'center' });
 					}
 				});
 			}

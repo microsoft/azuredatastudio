@@ -296,7 +296,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 			}
 		}
 
-		if (e.searchString || e.matchCase || e.wholeWord || this.notebookFindModel.findExpression !== this._findState.searchString) {
+		if (e.searchString || e.matchCase || e.wholeWord) {
 			this._findDecorations.clearDecorations();
 			// if the search scope changes remove the prev
 			if (this._notebookModel && this._findState.searchString) {
