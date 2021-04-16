@@ -47,7 +47,7 @@ export class SqlDatabaseTree {
 	private _assessmentResultsTable!: azdata.DeclarativeTableComponent;
 	private _impactedObjectsTable!: azdata.DeclarativeTableComponent;
 	private _assessmentContainer!: azdata.FlexContainer;
-	private _assessmentsTable!: azdata.DeclarativeTableComponent;
+	private _assessmentsTable!: azdata.FlexContainer;
 	private _dbMessageContainer!: azdata.FlexContainer;
 	private _rootContainer!: azdata.FlexContainer;
 	private _resultComponent!: azdata.Component;
@@ -331,7 +331,7 @@ export class SqlDatabaseTree {
 		}).component();
 
 		container.addItem(noIssuesText, { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'auto' } });
-		container.addItem(this._assessmentsTable, { flex: '0 0 auto', CSSStyles: { 'border-right': 'solid 1px', 'overflow-y': 'auto' } });
+		container.addItem(this._assessmentsTable, { flex: '0 0 auto', CSSStyles: { 'overflow-y': 'auto' } });
 		container.addItem(this._assessmentContainer, { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'auto' } });
 		return container;
 	}
@@ -673,7 +673,7 @@ export class SqlDatabaseTree {
 	}
 
 
-	private createImpactedObjectsTable(): azdata.DeclarativeTableComponent {
+	private createImpactedObjectsTable(): azdata.FlexContainer {
 
 		const headerStyle: azdata.CssStyles = {
 			'border': 'none',
@@ -714,7 +714,16 @@ export class SqlDatabaseTree {
 			this.refreshAssessmentDetails();
 		});
 
-		return this._assessmentResultsTable;
+		const container = this._view.modelBuilder.flexContainer().withItems([this._assessmentResultsTable]).withLayout({
+			flexFlow: 'column',
+			height: '100%'
+		}).withProps({
+			CSSStyles: {
+				'border-right': 'solid 1px'
+			}
+		}).component();
+
+		return container;
 	}
 
 	public selectedDbs(): string[] {
@@ -732,10 +741,12 @@ export class SqlDatabaseTree {
 		if (this._activeIssues.length === 0) {
 			/// show no issues here
 			this._assessmentsTable.updateCssStyles({
-				'display': 'none'
+				'display': 'none',
+				'border-right': 'none'
 			});
 			this._assessmentContainer.updateCssStyles({
-				'display': 'none'
+				'display': 'none',
+				'border-right': 'none'
 			});
 			this._noIssuesContainer.updateCssStyles({
 				'display': 'flex'
@@ -745,7 +756,8 @@ export class SqlDatabaseTree {
 				'display': 'flex'
 			});
 			this._assessmentsTable.updateCssStyles({
-				'display': 'flex'
+				'display': 'flex',
+				'border-right': 'solid 1px'
 			});
 			this._noIssuesContainer.updateCssStyles({
 				'display': 'none'
