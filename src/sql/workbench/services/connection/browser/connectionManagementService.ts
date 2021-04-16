@@ -1240,6 +1240,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			if (!providerId) {
 				return Promise.resolve(false);
 			}
+			if (providerId === 'sqlite') {
+				return Promise.resolve(true);
+			}
 
 			return this._providers.get(providerId).onReady.then(provider => {
 				return provider.changeDatabase(connectionUri, databaseName).then(result => {
