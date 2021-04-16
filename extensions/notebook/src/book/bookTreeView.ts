@@ -451,8 +451,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			let parentBookPath: string = notebookFolders.slice(0, notebookFolders.length - depthOfNotebookInBook).join('/');
 			let bookItemToExpand = parentBook.bookItems.find(b => b.tooltip.indexOf(parentBookPath) > -1) ??
 				parentBook.bookItems.find(b => path.relative(notebookPath, b.tooltip)?.split(path.sep)?.length === depthOfNotebookInBook);
+
 			if (!bookItemToExpand) {
-				break;
+				// if the book isn't found, check if the book is in the same level as the parent
+				// since bookItems will not have them yet, check the sections->file property
+				bookItemToExpand = parentBook.bookItems.find(b => b.sections?.find(n => notebookFolders[notebookFolders.length - depthOfNotebookInBook - 1].indexOf(n.file.substring(n.file.lastIndexOf('/') + 1)) > -1));
+				// book isn't found even in the same level, break out and return.
+				if (!bookItemToExpand) {
+					break;
+				}
+				// increment to reset the depth since parent is in the same level
+				depthOfNotebookInBook++;
 			}
 			if (!bookItemToExpand.children) {
 				// We haven't loaded children of this node yet so do that now so we can
