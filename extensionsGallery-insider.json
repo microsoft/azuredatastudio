@@ -4202,10 +4202,6 @@
 									"value": "https://github.com/Microsoft/azuredatastudio"
 								},
 								{
-									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": "*"
-								},
-								{
 									"key": "Microsoft.AzDataEngine",
 									"value": ">=1.28.0"
 								}
