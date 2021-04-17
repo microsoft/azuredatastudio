@@ -25,9 +25,20 @@ export class ConfigurePythonDialog extends Dialog {
 		const newPythonInstallation = '.modal .modal-body input[aria-label="New Python installation"]';
 		await this.code.waitAndClick(newPythonInstallation);
 
+		// Wait a small bit for the dialog to load since otherwise pressing the button may not do anything
+		// (not ideal - should look into finding better thing to wait on)
+		await new Promise<void>(resolve => {
+			setTimeout(() => resolve(), 1000);
+		});
 		const nextButton = '.modal-dialog .modal-content .modal-footer .right-footer .footer-button a[aria-label="Next"][aria-disabled="false"]';
 		await this.code.waitForElement(nextButton);
 		await this.code.dispatchKeybinding('enter');
+
+		// Wait a bit for the dialog to load since otherwise pressing the button may not do anything
+		// (not ideal - should look into finding better thing to wait on)
+		await new Promise<void>(resolve => {
+			setTimeout(() => resolve(), 5000);
+		});
 
 		const installButton = '.modal-dialog .modal-content .modal-footer .right-footer .footer-button a[aria-label="Install"][aria-disabled="false"]';
 		await this.code.waitForElement(installButton);
