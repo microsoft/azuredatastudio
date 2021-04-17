@@ -18,10 +18,11 @@ export enum TelemetryViews {
 	AssesssmentsDialog = 'AssessmentsDialog',
 	MigrationCutoverDialog = 'MigrationCutoverDialog',
 	MigrationStatusDialog = 'MigrationStatusDialog',
+	AssessmentsPage = 'AssessmentsPage'
 }
 
 
-export function sendDacServiceTelemetryEvent(telemetryView: string, telemetryAction: string, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {
+export function sendSqlMigrationTelemetryEvent(telemetryView: string, telemetryAction: string, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {
 	TelemetryReporter.createActionEvent(telemetryView, telemetryAction)
 		.withAdditionalProperties(additionalProps)
 		.withAdditionalMeasurements(additionalMeasurements)

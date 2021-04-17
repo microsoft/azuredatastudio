@@ -13,6 +13,8 @@ import { SKURecommendations } from './externalContract';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
+import { getCurrentTime, getEndTime } from '../api/utils';
+import { sendSqlMigrationTelemetryEvent, TelemetryViews } from '../telemtery';
 const localize = nls.loadMessageBundle();
 
 export enum State {
@@ -166,9 +168,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
 
+		const startTime = getCurrentTime();
 		const assessmentResults = await this.migrationService.getAssessments(
 			ownerUri
 		);
+		const endTime = getEndTime(startTime);
 
 		this._serverDatabases = await (await azdata.connection.listDatabases(this.sourceConnectionId)).filter((name) => !excludeDbs.includes(name));
 		const serverLevelAssessments: mssql.SqlMigrationAssessmentResultItem[] = [];
@@ -194,6 +198,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			issues: serverLevelAssessments,
 			databaseAssessments: databaseLevelAssessments
 		};
+
+		sendSqlMigrationTelemetryEvent(TelemetryViews.AssessmentsPage, 'SqlServerAssessmentTime', {
+			instanceWarnings: this._assessmentResults.issues.length.toString(),
+
+			timeTakenForInstance: endTime.toString()
+		}, {});
 
 		return this._assessmentResults;
 	}

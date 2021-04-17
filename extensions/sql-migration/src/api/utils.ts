@@ -57,3 +57,11 @@ export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
 	}
 	return undefined;
 }
+
+export function getCurrentTime(): [number, number] {
+	return process.hrtime();
+}
+
+export function getEndTime(startTime: [number, number]): [number, number] {
+	return process.hrtime(startTime);
+}
