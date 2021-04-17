@@ -687,6 +687,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					this._targetDatabaseNames[i],
 					requestBody
 				);
+				response.databaseMigration.properties.backupConfiguration = requestBody.properties.backupConfiguration!;
 				if (response.status === 201 || response.status === 200) {
 					MigrationLocalStorage.saveMigration(
 						currentConnection!,
