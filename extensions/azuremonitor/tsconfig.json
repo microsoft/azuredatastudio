@@ -1,0 +1,12 @@
+{
+	"extends": "../shared.tsconfig.json",
+	"compilerOptions": {
+		"outDir": "./out",
+		"strict": true,
+		"noUnusedParameters": false,
+		"noImplicitAny": false
+	},
+	"include": [
+		"src/**/*"
+	]
+}

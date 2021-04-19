@@ -1,0 +1,134 @@
+{
+  "name": "azuremonitor",
+  "version": "0.1.0",
+  "displayName": "Extension for Azure Monitor",
+  "description": "Azure Data Studio extension for Azure Monitor",
+  "publisher": "Microsoft",
+  "license": "MIT",
+  "main": "./out/extension",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "typings": "./src/kusto",
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "engines": {
+    "vscode": "*",
+    "azdata": ">=1.28.0"
+  },
+  "contributes": {
+    "connectionProvider": {
+      "providerId": "LogAnalytics",
+      "languageMode": "kusto",
+      "displayName": "Azure Monitor Logs",
+      "notebookKernelAlias": "Kusto",
+      "azureResource": "AzureLogAnalytics",
+      "connectionOptions": [
+        {
+          "specialValueType": "serverName",
+          "isIdentity": true,
+          "name": "server",
+          "displayName": "%connectionProperties.serverName.displayName%",
+          "description": "%connectionProperties.serverName.description%",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": [],
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "authType",
+          "isIdentity": true,
+          "name": "authenticationType",
+          "displayName": "%connectionProperties.authType.displayName%",
+          "description": "%connectionProperties.authType.description%",
+          "groupName": "Security",
+          "valueType": "category",
+          "defaultValue": "AzureMFA",
+          "objectType": null,
+          "categoryValues": [
+            {
+              "displayName": "%connectionProperties.authType.categoryValues.azureMFA%",
+              "name": "AzureMFA"
+            }
+          ],
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "connectionName",
+          "isIdentity": true,
+          "name": "connectionName",
+          "displayName": "%connectionProperties.connectionName.displayName%",
+          "description": "%connectionProperties.connectionName.description%",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": "userName",
+          "isIdentity": true,
+          "name": "user",
+          "displayName": "%connectionProperties.userName.displayName%",
+          "description": "%connectionProperties.userName.description%",
+          "groupName": "Security",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "password",
+          "isIdentity": true,
+          "name": "password",
+          "displayName": "%connectionProperties.password.displayName%",
+          "description": "%connectionProperties.password.description%",
+          "groupName": "Security",
+          "valueType": "password",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": true,
+          "isArray": false
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "gulp compile-extension:azuremonitor-client",
+    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-kusto ./syntaxes/kusto.tmLanguage"
+  },
+  "dependencies": {
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.2.2",
+    "figures": "^2.0.0",
+    "find-remove": "1.2.1",
+    "service-downloader": "0.2.1",
+    "vscode-extension-telemetry": "0.1.0",
+    "vscode-languageclient": "5.2.1",
+    "vscode-nls": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/kerberos": "^1.1.0",
+    "@types/request": "^2.48.2",
+    "@types/through2": "^2.0.34",
+    "@types/vscode": "^1.51.0"
+  },
+  "__metadata": {
+    "id": "",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
+  }
+}
