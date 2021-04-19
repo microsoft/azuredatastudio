@@ -77,7 +77,7 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 						// is replicating the behavior for the non-Thenable returns where we just let the openEditor
 						// continue on
 						override: isThenable(newInput) ?
-							newInput.then(input => this.editorService.openEditor(input ?? editor, mixin(options, { override: input ? options.override : false }), group)) :
+							newInput.then(input => this.editorService.openEditor(input ?? editor, mixin(options, { override: input ? options?.override : false }), group)) :
 							this.editorService.openEditor(newInput, options, group)
 					};
 				}
@@ -94,7 +94,7 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 						// is replicating the behavior for the non-Thenable returns where we just let the openEditor
 						// continue on
 						override: isThenable(newInput) ?
-							newInput.then(input => this.editorService.openEditor(input ?? editor, mixin(options, { override: input ? options.override : false }), group))
+							newInput.then(input => this.editorService.openEditor(input ?? editor, mixin(options, { override: input ? options?.override : false }), group))
 							: this.editorService.openEditor(newInput, options, group)
 					};
 				}
