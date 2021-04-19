@@ -13,6 +13,7 @@ export function setup() {
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.addCell('code');
 			await app.workbench.sqlNotebook.waitForTypeInEditor('print("Hello world!")');
+			await app.workbench.sqlNotebook.waitForKernel('SQL');
 
 			await app.workbench.sqlNotebook.changeKernel('Python 3');
 			await app.workbench.configurePythonDialog.waitForConfigurePythonDialog();
