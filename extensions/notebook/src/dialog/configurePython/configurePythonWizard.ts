@@ -149,7 +149,7 @@ export class ConfigurePythonWizard {
 			}
 
 			if (useExistingPython) {
-				let exePath = JupyterServerInstallation.getPythonExePath(pythonLocation, true);
+				let exePath = JupyterServerInstallation.getPythonExePath(pythonLocation);
 				let pythonExists = await utils.exists(exePath);
 				if (!pythonExists) {
 					this.showErrorMessage(this.PythonNotFoundMsg);

@@ -176,6 +176,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			if (!pythonExists || forceInstall || upgradePython) {
 				if (upgradePython) {
 					await this.removeOldPythonInstall();
+					// remove '0.0.1' from python executable path
+					this._pythonExecutable = JupyterServerInstallation.getPythonExePath(this._pythonInstallationPath);
 				}
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
 				// reinstall pip to make sure !pip command works
@@ -322,7 +324,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		// Update python paths and properties to reference user's local python.
 		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
 
-		this._pythonExecutable = JupyterServerInstallation.getPythonExePath(this._pythonInstallationPath, this._usingExistingPython);
+		this._pythonExecutable = JupyterServerInstallation.getPythonExePath(this._pythonInstallationPath);
 		this.pythonBinPath = path.join(this._pythonInstallationPath, pythonBinPathSuffix);
 
 		this._usingConda = this.isCondaInstalled();
@@ -400,7 +402,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		// This step is skipped when using an existing installation or when upgrading
 		// packages, since those cases wouldn't overwrite the installation.
 		if (!installSettings.existingPython && !installSettings.packageUpgradeOnly) {
-			let pythonExePath = JupyterServerInstallation.getPythonExePath(installSettings.installPath, false);
+			let pythonExePath = JupyterServerInstallation.getPythonExePath(installSettings.installPath);
 			let isPythonRunning = await this.isPythonRunning(pythonExePath);
 			if (isPythonRunning) {
 				return Promise.reject(msgPythonRunningError);
@@ -671,8 +673,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			return false;
 		}
 
-		let useExistingInstall = JupyterServerInstallation.getExistingPythonSetting();
-		let pythonExe = JupyterServerInstallation.getPythonExePath(pathSetting, useExistingInstall);
+		let pythonExe = JupyterServerInstallation.getPythonExePath(pathSetting);
 		// eslint-disable-next-line no-sync
 		return fs.existsSync(pythonExe);
 	}
@@ -708,7 +709,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		return path;
 	}
 
-	public static getPythonExePath(pythonInstallPath: string, useExistingInstall: boolean): string {
+	public static getPythonExePath(pythonInstallPath: string): string {
 		let oldPythonPath = path.join(
 			pythonInstallPath,
 			'0.0.1',
