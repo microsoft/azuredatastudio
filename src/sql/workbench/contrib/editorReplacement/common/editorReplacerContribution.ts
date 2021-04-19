@@ -19,6 +19,7 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { isThenable } from 'vs/base/common/async';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
+import { mixin } from 'vs/base/common/objects';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
