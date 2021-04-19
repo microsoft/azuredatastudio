@@ -19,9 +19,9 @@ The **Azure SQL Hybrid Toolkit** is a [Jupyter Book](https://jupyterbook.org/int
 
 * [Offline Migration](offline-migration/readme.md) - Notebooks to manage SQL migration tasks to the cloud
 
-* [Glossary](glossary.md) - set of defined terms.
+* [Glossary](glossary.md) - set of defined terms
 
-* [Appendices](Appendices.ipynb) - misc info.
+* [Appendices](Appendices.ipynb) - Additional information
 
 ## Goals and Methodology
 The toolkit better positions a customer with regards to planning, migrating, and thriving in a hybrid cloud environment by:
@@ -29,7 +29,7 @@ The toolkit better positions a customer with regards to planning, migrating, and
 * Providing SQL Azure users with reliable free software and content that is well-written and executable
 * Greatly simplifying the integration of Azure Data services into an existing environment
 * Positioning Azure to be the natural cloud services choice with a low-friction experience
-* Notebooks are executable by a normal user (unless otherwise specificed) on minimal hardware
+* Notebooks are executable by a normal user (unless otherwise specified) on minimal hardware
 * Most notebooks require some configuration. If so, the proper configurations should be clearly located towards the top of the notebook or cell, whichever is most appropriate
 * By design, Notebooks are written to be executed from top-to-bottom. Therefore, each notebook has a specific task to perform and should focus only on that task. It may contain several cells to execute but it will adhere to the one-task per notebook paradigm
 

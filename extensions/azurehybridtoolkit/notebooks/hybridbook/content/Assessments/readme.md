@@ -7,4 +7,4 @@ Preparing for the cloud requires a crawl-walk-run mentality. The first step, or 
 ## Notebooks in this Chapter
 - [SQL Server Best Practices Assessment](sql-server-assessment.ipynb) - demonstrates the use of the [SQL Server Assessment API](https://docs.microsoft.com/en-us/sql/sql-assessment-api/sql-assessment-api-overview), a tool to review the configuration of a SQL Server and Databases for best practices. 
 
-- [Compatibility Assessment](compatibility-assessment.ipynb) - Analzye an on-premises SQL Server instance or database for compatibility for migration to SQL Azure. The assessment will provide guidance on features not currently supported in Azure and remediation actions that can be taken to prepare for migration.
+- [Compatibility Assessment](compatibility-assessment.ipynb) - Analyze an on-premises SQL Server instance or database for compatibility for migration to SQL Azure. The assessment will provide guidance on features not currently supported in Azure and remediation actions that can be taken to prepare for migration.
