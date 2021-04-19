@@ -179,8 +179,12 @@ export class SqlDatabaseTree {
 		this._databaseTable.onRowSelected(({ row }) => {
 
 			this._databaseTable.focus();
-			this._activeIssues = this._model._assessmentResults?.databaseAssessments[row].issues;
-			this._selectedIssue = this._model._assessmentResults?.databaseAssessments[row].issues[0];
+			if (this._targetType === MigrationTargetType.SQLMI) {
+				this._activeIssues = this._model._assessmentResults?.databaseAssessments[row].issues;
+				this._selectedIssue = this._model._assessmentResults?.databaseAssessments[row].issues[0];
+			} else {
+				this._activeIssues = [];
+			}
 			this._dbName.value = this._dbNames[row];
 			this._recommendationTitle.value = constants.ISSUES_COUNT(this._activeIssues.length);
 			this._recommendation.value = constants.ISSUES_DETAILS;
