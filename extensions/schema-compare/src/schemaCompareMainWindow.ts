@@ -99,7 +99,7 @@ export class SchemaCompareMainWindow {
 			this.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
 				serverDisplayName: `${profile.serverName} (${usr})`,
-				serverName: profile.serverName,
+				serverName: profile.options.connectionName ? profile.options.connectionName : `${profile.serverName} (${usr})`,
 				databaseName: profile.databaseName,
 				ownerUri: ownerUri,
 				packageFilePath: '',
