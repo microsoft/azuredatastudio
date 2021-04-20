@@ -494,9 +494,7 @@ export class SchemaCompareDialog {
 
 		selectConnectionButton.onDidClick(async () => {
 			let connection = await azdata.connection.openConnectionDialog();
-			if (!isTarget) {
-				this.connectionId = connection.connectionId;
-			}
+			this.connectionId = connection.connectionId;
 
 			this.populateServerDropdown(isTarget);
 			selectConnectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
