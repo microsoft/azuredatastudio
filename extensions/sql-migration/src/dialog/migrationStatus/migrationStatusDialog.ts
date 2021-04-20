@@ -202,8 +202,15 @@ export class MigrationStatusDialog {
 					value: loc.STATUS_WARNING_COUNT(migrationStatus, warningCount)
 				});
 
+				let duration = 0;
+				if (migration.migrationContext.properties.endedOn) {
+					duration = new Date(migration.migrationContext.properties.endedOn).getTime() - new Date(migration.migrationContext.properties.startedOn).getTime();
+				} else {
+					duration = new Date().getTime() - new Date(migration.migrationContext.properties.startedOn).getTime();
+				}
+
 				migrationRow.push({
-					value: (migration.migrationContext.properties.startedOn) ? convertTimeToDuration(new Date().getTime() - new Date(migration.migrationContext.properties.startedOn).getTime()) : '---'
+					value: (migration.migrationContext.properties.startedOn) ? convertTimeToDuration(duration) : '---'
 				});
 
 				migrationRow.push({
