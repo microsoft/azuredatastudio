@@ -317,7 +317,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			if (selection && !selection.isEmpty()) {
 				const textModel = editorControl?.getModel() as TextModel;
 				const value = textModel?.getValueInRange(selection);
-				let linkMatches = value.match(linksRegex);
+				let linkMatches = value?.match(linksRegex);
 				return linkMatches?.groups.text || value || '';
 			}
 			return '';
@@ -337,7 +337,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			if (selection && !selection.isEmpty()) {
 				const textModel = editorControl?.getModel() as TextModel;
 				const value = textModel?.getValueInRange(selection);
-				let linkMatches = value.match(linksRegex);
+				let linkMatches = value?.match(linksRegex);
 				return linkMatches?.groups.url || '';
 			}
 			return '';
