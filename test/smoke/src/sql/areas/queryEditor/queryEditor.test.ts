@@ -21,22 +21,39 @@ export function setup() {
 			await app.workbench.connectionDialog.connect();
 			await app.workbench.queryEditor.commandBar.run();
 			await app.workbench.queryEditor.waitForResults();
-			await app.workbench.quickaccess.runCommand('workbench.action.closeAllEditors');
 		});
 	});
 }
 
 export function setupWeb() {
-	it('can open, connect and execute file', async function () {
+	afterEach(async function (): Promise<void> {
 		const app = this.app as Application;
-		await app.workbench.quickaccess.openFile('test.sql');
-		await app.workbench.queryEditor.commandBar.connect();
-		await app.workbench.connectionDialog.waitForConnectionDialog();
-		await app.workbench.connectionDialog.setProvider('Sqlite');
-		await app.workbench.connectionDialog.setTarget('File', 'chinook.db');
-		await app.workbench.connectionDialog.connect();
-		await app.workbench.queryEditor.commandBar.run();
-		await app.workbench.queryEditor.waitForResults();
 		await app.workbench.quickaccess.runCommand('workbench.action.closeAllEditors');
 	});
+
+	it('can open, connect and execute file', async function () {
+		const app = this.app as Application;
+		await openAndExecuteFile(app, 'test.sql');
+	});
+
+	it('can open, connect and execute file with spaces', async function () {
+		const app = this.app as Application;
+		await openAndExecuteFile(app, 'testWithSpaces.sql');
+	});
+	it('can open, connect and execute file with escaped spaces', async function () {
+		const app = this.app as Application;
+		await openAndExecuteFile(app, 'testWithEscapedSpaces.sql');
+	});
+}
+
+async function openAndExecuteFile(app: Application, filename: string): Promise<void> {
+	await app.workbench.quickaccess.openFile(filename);
+	await app.workbench.queryEditor.commandBar.connect();
+	await app.workbench.connectionDialog.waitForConnectionDialog();
+	await app.workbench.connectionDialog.setProvider('Sqlite');
+	await app.workbench.connectionDialog.setTarget('File', 'chinook.db');
+	await app.workbench.connectionDialog.connect();
+
+	await app.workbench.queryEditor.commandBar.run();
+	await app.workbench.queryEditor.waitForResults();
 }
