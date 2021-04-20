@@ -24,6 +24,7 @@ import { URI } from 'vs/base/common/uri';
 import { escape } from 'vs/base/common/strings';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
+const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
 
 @Component({
 	selector: MARKDOWN_TOOLBAR_SELECTOR,
@@ -298,7 +299,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		let calloutOptions;
 
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
-			const defaultLabel = this.getCurrentSelectionText();
+			const defaultLabel = this.getCurrentLinkLabel();
 			const defaultLinkUrl = this.getCurrentLinkUrl();
 			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogPosition, dialogProperties, defaultLabel, defaultLinkUrl);
 			this._linkCallout.render();
@@ -307,17 +308,17 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		return calloutOptions;
 	}
 
-	private getCurrentSelectionText(): string {
+	private getCurrentLinkLabel(): string {
 		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
-			return document.getSelection()?.anchorNode.nodeValue || '';
+			return document.getSelection()?.toString() || '';
 		} else {
 			const editorControl = this.getCellEditorControl();
 			const selection = editorControl?.getSelection();
 			if (selection && !selection.isEmpty()) {
 				const textModel = editorControl?.getModel() as TextModel;
 				const value = textModel?.getValueInRange(selection);
-				let linkLabel = value.substring(value.indexOf('[') + 1, value.lastIndexOf(']'));
-				return linkLabel || '';
+				let linkMatches = value.match(linksRegex);
+				return linkMatches?.groups.text || value || '';
 			}
 			return '';
 		}
@@ -336,8 +337,8 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			if (selection && !selection.isEmpty()) {
 				const textModel = editorControl?.getModel() as TextModel;
 				const value = textModel?.getValueInRange(selection);
-				let linkURI = value.substring(value.lastIndexOf('(') + 1, value.lastIndexOf(')'));
-				return linkURI || '';
+				let linkMatches = value.match(linksRegex);
+				return linkMatches?.groups.url || '';
 			}
 			return '';
 		}
