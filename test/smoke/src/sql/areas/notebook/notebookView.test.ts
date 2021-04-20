@@ -30,7 +30,7 @@ export function setup() {
 			// Add sql server guide to Provided Books View
 			await app.workbench.quickaccess.runCommand('Jupyter Books: Azure SQL Hybrid Cloud Toolkit');
 			await app.workbench.sqlNotebook.view.saveProvidedBook();
-			//const results = await app.workbench.sqlNotebook.view.searchInNotebook('log');
+			const results = await app.workbench.sqlNotebook.view.searchInNotebook('log');
 		});
 	});
 }
