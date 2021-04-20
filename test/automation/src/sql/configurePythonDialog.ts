@@ -25,11 +25,14 @@ export class ConfigurePythonDialog extends Dialog {
 		const newPythonInstallation = '.modal .modal-body input[aria-label="New Python installation"]';
 		await this.code.waitAndClick(newPythonInstallation);
 
-		const nextButton = '.modal-dialog .modal-content .modal-footer .right-footer .footer-button a[aria-label="Next"][aria-disabled="false"]';
+		const pythonInstallLocationDropdownValue = `${dialog} select[aria-label="Python Install Location"] option`;
+		await this.code.waitForElement(pythonInstallLocationDropdownValue);
+
+		const nextButton = '.modal-dialog .modal-content .modal-footer .right-footer .footer-button a[aria-label="Next"][aria-disabled="false"]:not(.disabled)';
 		await this.code.waitForElement(nextButton);
 		await this.code.dispatchKeybinding('enter');
 
-		const installButton = '.modal-dialog .modal-content .modal-footer .right-footer .footer-button a[aria-label="Install"][aria-disabled="false"]';
+		const installButton = '.modal-dialog .modal-content .modal-footer .right-footer .footer-button a[aria-label="Install"][aria-disabled="false"]:not(.disabled)';
 		await this.code.waitForElement(installButton);
 		await this.code.dispatchKeybinding('enter');
 
