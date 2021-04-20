@@ -37,6 +37,7 @@ export class SchemaCompareDialog {
 	private targetFileButton: azdata.ButtonComponent;
 	private targetServerComponent: azdata.FormComponent;
 	private targetServerDropdown: azdata.DropDownComponent;
+	private targetConnectionButton: azdata.ButtonComponent;
 	private targetDatabaseComponent: azdata.FormComponent;
 	private targetDatabaseDropdown: azdata.DropDownComponent;
 	private formBuilder: azdata.FormBuilder;
@@ -182,7 +183,7 @@ export class SchemaCompareDialog {
 
 			this.sourceTextBox = this.view.modelBuilder.inputBox().withProperties({
 				value: this.schemaCompareMainWindow.sourceEndpointInfo ? this.schemaCompareMainWindow.sourceEndpointInfo.packageFilePath : '',
-				width: 275,
+				width: 280,
 				ariaLabel: loc.sourceFile
 			}).component();
 
@@ -192,7 +193,7 @@ export class SchemaCompareDialog {
 
 			this.targetTextBox = this.view.modelBuilder.inputBox().withProperties({
 				value: this.schemaCompareMainWindow.targetEndpointInfo ? this.schemaCompareMainWindow.targetEndpointInfo.packageFilePath : '',
-				width: 275,
+				width: 280,
 				ariaLabel: loc.targetFile
 			}).component();
 
@@ -201,8 +202,6 @@ export class SchemaCompareDialog {
 			});
 
 			this.sourceServerComponent = this.createSourceServerDropdown();
-
-			this.sourceConnectionButton = this.createSourceConnectionButton();
 
 			this.sourceDatabaseComponent = this.createSourceDatabaseDropdown();
 
@@ -224,7 +223,6 @@ export class SchemaCompareDialog {
 				sourceComponents = [
 					sourceRadioButtons,
 					this.sourceServerComponent,
-					this.sourceConnectionButton,
 					this.sourceDatabaseComponent
 				];
 			} else {
@@ -351,14 +349,14 @@ export class SchemaCompareDialog {
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
-		// show server and db dropdowns or 'No active connections' text
+		// show server and db dropdowns
 		this.sourceDatabaseRadioButton.onDidClick(async () => {
 			this.sourceIsDacpac = false;
 			this.formBuilder.insertFormItem(this.sourceServerComponent, 2, { horizontal: true, titleFontSize: titleFontSize });
-			this.formBuilder.insertFormItem(this.sourceConnectionButton);
 			this.formBuilder.insertFormItem(this.sourceDatabaseComponent, 3, { horizontal: true, titleFontSize: titleFontSize });
-
 			this.formBuilder.removeFormItem(this.sourceDacpacComponent);
+
+			this.populateServerDropdown(false);
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
@@ -404,12 +402,14 @@ export class SchemaCompareDialog {
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
-		// show server and db dropdowns or 'No active connections' text
+		// show server and db dropdowns
 		databaseRadioButton.onDidClick(async () => {
 			this.targetIsDacpac = false;
 			this.formBuilder.removeFormItem(this.targetDacpacComponent);
 			this.formBuilder.addFormItem(this.targetServerComponent, { horizontal: true, titleFontSize: titleFontSize });
 			this.formBuilder.addFormItem(this.targetDatabaseComponent, { horizontal: true, titleFontSize: titleFontSize });
+
+			this.populateServerDropdown(true);
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
@@ -455,16 +455,21 @@ export class SchemaCompareDialog {
 				editable: false,
 				fireOnTextChange: true,
 				ariaLabel: loc.sourceServer,
+				width: 280
 			}
 		).component();
+
+		this.sourceConnectionButton = this.createConnectionButton(false);
+
 		this.sourceServerDropdown.onValueChanged(async (value) => {
-			if (this.sourceServerDropdown.values.findIndex(x => this.matchesValue(x, value as string)) === -1) {
+			if (this.sourceServerDropdown.values.findIndex(x => this.matchesValue(x, value.selected)) === -1) {
 				await this.sourceDatabaseDropdown.updateProperties({
 					values: [],
 					value: '  '
 				});
 			}
 			else {
+				this.sourceConnectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
 				await this.populateDatabaseDropdown((this.sourceServerDropdown.value as ConnectionDropdownValue).connection, false);
 			}
 		});
@@ -474,37 +479,30 @@ export class SchemaCompareDialog {
 
 		return {
 			component: this.sourceServerDropdown,
-			title: loc.ServerDropdownLabel
+			title: loc.ServerDropdownLabel,
+			actions: [this.sourceConnectionButton]
 		};
 	}
 
-	private createSourceConnectionButton(): azdata.FormComponent {
+	private createConnectionButton(isTarget: boolean): azdata.ButtonComponent {
 		const selectConnectionButton = this.view.modelBuilder.button().withProperties({
 			ariaLabel: loc.selectConnection,
 			iconPath: path.join(this.extensionContext.extensionPath, 'media', 'selectConnection.svg'),
-			height: '16px',
-			width: '16px'
+			height: '20px',
+			width: '20px'
 		}).component();
 
 		selectConnectionButton.onDidClick(async () => {
 			let connection = await azdata.connection.openConnectionDialog();
-			this.connectionId = connection.connectionId;
+			if (!isTarget) {
+				this.connectionId = connection.connectionId;
+			}
 
-			let connectionTextboxValue: string;
-			connectionTextboxValue = getConnectionName(connection);
-			//this.sourceServerDropdown.value as ConnectionDropdownValue
-			await this.populateDatabaseDropdown((this.sourceServerDropdown.value as ConnectionDropdownValue).connection, false);
-
-
-			//await this.updateConnectionComponents(connectionTextboxValue, this.connectionId, connection.options.database);
+			this.populateServerDropdown(isTarget);
+			selectConnectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
 		});
 
-		return {
-			component: selectConnectionButton,
-			title: loc.selectConnection,
-			actions: [selectConnectionButton]
-		};
-		//return selectConnectionButton;
+		return selectConnectionButton;
 	}
 
 	protected createTargetServerDropdown(): azdata.FormComponent {
@@ -512,17 +510,22 @@ export class SchemaCompareDialog {
 			{
 				editable: false,
 				fireOnTextChange: true,
-				ariaLabel: loc.targetServer
+				ariaLabel: loc.targetServer,
+				width: 280
 			}
 		).component();
+
+		this.targetConnectionButton = this.createConnectionButton(true);
+
 		this.targetServerDropdown.onValueChanged(async (value) => {
-			if (this.targetServerDropdown.values.findIndex(x => this.matchesValue(x, value as string)) === -1) {
+			if (this.targetServerDropdown.values.findIndex(x => this.matchesValue(x, value.selected)) === -1) {
 				await this.targetDatabaseDropdown.updateProperties({
 					values: [],
 					value: '  '
 				});
 			}
 			else {
+				this.targetConnectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
 				await this.populateDatabaseDropdown((this.targetServerDropdown.value as ConnectionDropdownValue).connection, true);
 			}
 		});
@@ -532,7 +535,8 @@ export class SchemaCompareDialog {
 
 		return {
 			component: this.targetServerDropdown,
-			title: loc.ServerDropdownLabel
+			title: loc.ServerDropdownLabel,
+			actions: [this.targetConnectionButton]
 		};
 	}
 
@@ -559,6 +563,10 @@ export class SchemaCompareDialog {
 		if (!cons || cons.length === 0) {
 			return undefined;
 		}
+
+		// Update connection icon to "connected" state
+		let connectionButton = isTarget ? this.targetConnectionButton : this.sourceConnectionButton;
+		connectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
 
 		let endpointInfo = isTarget ? this.schemaCompareMainWindow.targetEndpointInfo : this.schemaCompareMainWindow.sourceEndpointInfo;
 		// reverse list so that most recent connections are first
@@ -618,7 +626,8 @@ export class SchemaCompareDialog {
 			{
 				editable: true,
 				fireOnTextChange: true,
-				ariaLabel: loc.sourceDatabase
+				ariaLabel: loc.sourceDatabase,
+				width: 280
 			}
 		).component();
 		this.sourceDatabaseDropdown.onValueChanged(async (value) => {
@@ -637,7 +646,8 @@ export class SchemaCompareDialog {
 			{
 				editable: true,
 				fireOnTextChange: true,
-				ariaLabel: loc.targetDatabase
+				ariaLabel: loc.targetDatabase,
+				width: 280
 			}
 		).component();
 		this.targetDatabaseDropdown.onValueChanged(async (value) => {
@@ -712,18 +722,3 @@ function isNullOrUndefined(val: any): boolean {
 	return val === null || val === undefined;
 }
 
-export function getConnectionName(connection: any): string {
-	let connectionName: string;
-	if (connection.options['connectionName']) {
-		connectionName = connection.options['connectionName'];
-	} else {
-		let user = connection.options['user'];
-		//if (!user) {
-		//user = constants.defaultUser;
-		//}
-
-		connectionName = `${connection.options['server']} (${user})`;
-	}
-
-	return connectionName;
-}
