@@ -602,10 +602,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 
-	public async getSqlMigrationServiceValues(subscription: azureResource.AzureResourceSubscription, managedInstance: SqlManagedInstance): Promise<azdata.CategoryValue[]> {
+	public async getSqlMigrationServiceValues(subscription: azureResource.AzureResourceSubscription, managedInstance: SqlManagedInstance, resourceGroupName: string): Promise<azdata.CategoryValue[]> {
 		let sqlMigrationServiceValues: azdata.CategoryValue[] = [];
 		try {
-			this._sqlMigrationServices = (await getSqlMigrationServices(this._azureAccount, subscription, managedInstance.location)).filter(sms => sms.location.toLowerCase() === this._targetServerInstance.location.toLowerCase());
+			this._sqlMigrationServices = (await getSqlMigrationServices(this._azureAccount, subscription, managedInstance.location)).filter(sms => sms.location.toLowerCase() === this._targetServerInstance.location.toLowerCase() && sms.properties.resourceGroup.toLowerCase() === resourceGroupName?.toLowerCase());
 			this._sqlMigrationServices.forEach((sqlMigrationService) => {
 				sqlMigrationServiceValues.push({
 					name: sqlMigrationService.id,

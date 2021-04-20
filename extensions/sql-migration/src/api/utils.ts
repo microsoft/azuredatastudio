@@ -40,3 +40,22 @@ export function getSqlServerName(majorVersion: number): string | undefined {
 			return undefined;
 	}
 }
+
+export function convertTimeToDuration(time: number): string {
+	let seconds = (time / 1000).toFixed(1);
+	let minutes = (time / (1000 * 60)).toFixed(1);
+	let hours = (time / (1000 * 60 * 60)).toFixed(1);
+	let days = (time / (1000 * 60 * 60 * 24)).toFixed(1);
+	if (time / 1000 < 60) {
+		return seconds + ' Sec';
+	}
+	else if (time / (1000 * 60) < 60) {
+		return minutes + ' Min';
+	}
+	else if (time / (1000 * 60 * 60) < 24) {
+		return hours + ' Hrs';
+	}
+	else {
+		return days + ' Days';
+	}
+}
