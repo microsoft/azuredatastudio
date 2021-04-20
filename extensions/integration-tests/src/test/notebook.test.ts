@@ -24,7 +24,7 @@ suite('Notebook integration test suite', function () {
 
 	teardown(async function () {
 		try {
-			let fileName = getTempFilePath(this.test.title + this.invocationCount++);
+			let fileName = getTempFilePath(this.test.title);
 			if (await promisify(fs.exists)(fileName)) {
 				await fs.promises.unlink(fileName);
 				console.log(`"${fileName}" is deleted.`);
@@ -40,7 +40,7 @@ suite('Notebook integration test suite', function () {
 	});
 
 	test('Sql NB test @UNSTABLE@', async function () {
-		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
+		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title);
 		await runCell(notebook);
 		const expectedOutput0 = '(1 row affected)';
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
@@ -57,15 +57,15 @@ suite('Notebook integration test suite', function () {
 	});
 
 	test('Sql NB multiple cells test', async function () {
-		await multipleCellsTest('sqlNbMultipleCellsTest');
+		await multipleCellsTest(this.test.title);
 	});
 
 	test('Sql NB multiple cells test - Path with spaces', async function () {
-		await multipleCellsTest(path.join('folder with spaces', 'sqlNbMultipleCellsTestWithSpaces'));
+		await multipleCellsTest(path.join('folder with spaces', this.test.title));
 	});
 
 	test('Sql NB multiple cells test - Path with encoded spaces', async function () {
-		await multipleCellsTest(path.join('folder%20with%20encoded%20spaces', 'sqlNbMultipleCellsTestWithEncodedSpaces'));
+		await multipleCellsTest(path.join('folder%20with%20encoded%20spaces', this.test.title));
 	});
 
 	test('Sql NB run cells above and below test', async function () {
@@ -86,20 +86,20 @@ suite('Notebook integration test suite', function () {
 	});
 
 	test('Clear cell output - SQL notebook', async function () {
-		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
+		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title);
 		await runCell(notebook);
 		await verifyClearOutputs(notebook);
 	});
 
 	test('Clear all outputs - SQL notebook', async function () {
-		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
+		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title);
 		await runCell(notebook);
 		await verifyClearAllOutputs(notebook);
 	});
 
 	test('sql language test', async function () {
 		let language = 'sql';
-		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title + this.invocationCount++, language, {
+		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {
 			'kernelspec': {
 				'name': language,
 				'display_name': language.toUpperCase()
@@ -149,7 +149,7 @@ suite('Notebook integration test suite', function () {
 
 	if (process.env['RUN_PYTHON3_TEST'] === '1') {
 		test('Python3 notebook test', async function () {
-			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata, this.test.title + this.invocationCount++);
+			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata, this.test.title);
 			await runCell(notebook);
 			let cellOutputs = notebook.document.cells[0].contents.outputs;
 			console.log('Got cell outputs ---');
@@ -161,14 +161,14 @@ suite('Notebook integration test suite', function () {
 		});
 
 		test('Clear all outputs - Python3 notebook ', async function () {
-			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata, this.test.title + this.invocationCount++);
+			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata, this.test.title);
 			await runCell(notebook);
 			await verifyClearAllOutputs(notebook);
 		});
 
 		test('python language test', async function () {
 			let language = 'python';
-			await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title + this.invocationCount++, language, {
+			await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {
 				'kernelspec': {
 					'name': 'python3',
 					'display_name': 'Python 3'
@@ -229,7 +229,7 @@ suite('Notebook integration test suite', function () {
 
 	if (process.env['RUN_PYSPARK_TEST'] === '1') {
 		test('PySpark notebook test', async function () {
-			let notebook = await openNotebook(pySparkNotebookContent, pySparkKernelMetadata, this.test.title + this.invocationCount++);
+			let notebook = await openNotebook(pySparkNotebookContent, pySparkKernelMetadata, this.test.title);
 			await runCell(notebook);
 			let cellOutputs = notebook.document.cells[0].contents.outputs;
 			let sparkResult = (<azdata.nb.IStreamResult>cellOutputs[3]).text;
@@ -240,7 +240,7 @@ suite('Notebook integration test suite', function () {
 	/* After https://github.com/microsoft/azuredatastudio/issues/5598 is fixed, enable these tests.
 	test('scala language test', async function () {
 		let language = 'scala';
-		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title + this.invocationCount++, language, {
+		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {
 			'kernelspec': {
 				'name': '',
 				'display_name': ''
@@ -255,7 +255,7 @@ suite('Notebook integration test suite', function () {
 
 	test('empty language test', async function () {
 		let language = '';
-		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title + this.invocationCount++, language, {
+		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {
 			'kernelspec': {
 				'name': language,
 				'display_name': ''
@@ -270,7 +270,7 @@ suite('Notebook integration test suite', function () {
 
 	test('cplusplus language test', async function () {
 		let language = 'cplusplus';
-		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title + this.invocationCount++, language, {
+		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {
 			'kernelspec': {
 				'name': '',
 				'display_name': ''
