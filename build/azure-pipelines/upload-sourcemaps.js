@@ -2,15 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 'use strict';
-Object.defineProperty(exports, "__esModule", { value: true });
-const path = require("path");
-const es = require("event-stream");
-const vfs = require("vinyl-fs");
-const util = require("../lib/util");
-// @ts-ignore
-const deps = require("../lib/dependencies");
+
+const path = require('path');
+const es = require('event-stream');
 const azure = require('gulp-azure-storage');
+const vfs = require('vinyl-fs');
+const util = require('../lib/util');
 const root = path.dirname(path.dirname(__dirname));
 const commit = util.getVersion(root);
 
@@ -33,10 +32,6 @@ function main() {
 		const vs = fetch('out-vscode-min'); // client source-maps only
 		sources.push(vs);
 
-        const productionDependenciesSrc = productionDependencies.map(d => path.relative(root, d.path)).map(d => `./${d}/**/*.map`);
-        const nodeModules = vfs.src(productionDependenciesSrc, { base: '.' })
-            .pipe(util.cleanNodeModules(path.join(root, 'build', '.moduleignore')));
-        sources.push(nodeModules);
 		const extensionsOut = vfs.src(['.build/extensions/**/*.js.map', '!**/node_modules/**'], { base: '.build' });
 		sources.push(extensionsOut);
 	}
