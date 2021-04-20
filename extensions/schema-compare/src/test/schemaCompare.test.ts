@@ -634,8 +634,8 @@ describe('SchemaCompareMainWindow: Button clicks', function (): void {
 		//Verify that switch actually happened
 		should.notEqual(result.sourceEndpointInfo, undefined);
 		should.equal(result.sourceEndpointInfo.endpointType, mssql.SchemaCompareEndpointType.Database);
-		should.equal(result.sourceEndpointInfo.serverName, 'My Server');
-		should.equal(result.sourceEndpointInfo.databaseName, 'My Database');
+		should.equal(result.sourceEndpointInfo.serverName, '');
+		should.equal(result.sourceEndpointInfo.databaseName, '');
 		should.notEqual(result.targetEndpointInfo, undefined);
 		should.equal(result.targetEndpointInfo.endpointType, mssql.SchemaCompareEndpointType.Dacpac);
 		should.equal(result.targetEndpointInfo.packageFilePath, 'source.dacpac');
