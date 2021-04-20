@@ -11,7 +11,7 @@ import { dirname, extname, resolve } from 'vs/base/common/path';
 import { parseArgs, buildHelpMessage, buildVersionMessage, OPTIONS, OptionDescriptions } from 'vs/platform/environment/node/argv';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 import { createWaitMarkerFile } from 'vs/platform/environment/node/waitMarkerFile';
-import { OpenCommandPipeArgs, StatusPipeArgs } from 'vs/workbench/api/node/extHostCLIServer';
+import { PipeCommand } from 'vs/workbench/api/node/extHostCLIServer';
 import { hasStdinWithoutTty, getStdinFilePath, readFromStdin } from 'vs/platform/environment/node/stdin';
 
 interface ProductDescription {
@@ -33,7 +33,6 @@ const isSupportedForCmd = (optionId: keyof NativeParsedArgs) => {
 		case 'export-default-configuration':
 		case 'install-source':
 		case 'driver':
-		case 'crash-reporter-directory':
 		case 'extensions-download-dir':
 		case 'builtin-extensions-dir':
 		case 'telemetry':
@@ -67,8 +66,9 @@ const cliPipe = process.env['VSCODE_IPC_HOOK_CLI'] as string;
 const cliCommand = process.env['VSCODE_CLIENT_COMMAND'] as string;
 const cliCommandCwd = process.env['VSCODE_CLIENT_COMMAND_CWD'] as string;
 const remoteAuthority = process.env['VSCODE_CLI_AUTHORITY'] as string;
+const cliStdInFilePath = process.env['VSCODE_STDIN_FILE_PATH'] as string;
 
-interface RemoteParsedArgs extends NativeParsedArgs { 'gitCredential'?: string; }
+interface RemoteParsedArgs extends NativeParsedArgs { 'gitCredential'?: string; 'openExternal'?: boolean; }
 
 export function main(desc: ProductDescription, args: string[]): void {
 	if (!cliPipe && !cliCommand) {
@@ -88,6 +88,7 @@ export function main(desc: ProductDescription, args: string[]): void {
 
 	if (cliPipe) {
 		options['gitCredential'] = { type: 'string' };
+		options['openExternal'] = { type: 'boolean' };
 	}
 
 	const errorReporter = {
@@ -111,10 +112,17 @@ export function main(desc: ProductDescription, args: string[]): void {
 		console.log(buildVersionMessage(desc.version, desc.commit));
 		return;
 	}
-	// if (parsedArgs['gitCredential']) {
-	// 	getCredential(parsedArgs['gitCredential']);
-	// 	return;
-	// }
+	if (cliPipe) {
+		if (parsedArgs['gitCredential']) {
+			getCredential(parsedArgs['gitCredential']);
+			return;
+		}
+		if (parsedArgs['openExternal']) {
+			openInBrowser(parsedArgs['_']);
+			return;
+		}
+	}
+
 
 	let folderURIs = (parsedArgs['folder-uri'] || []).map(mapFileUri);
 	parsedArgs['folder-uri'] = folderURIs;
@@ -135,11 +143,12 @@ export function main(desc: ProductDescription, args: string[]): void {
 	parsedArgs['_'] = [];
 
 	if (hasReadStdinArg && fileURIs.length === 0 && folderURIs.length === 0 && hasStdinWithoutTty()) {
-		const stdinFilePath = getStdinFilePath();
-
-		// returns a file path where stdin input is written into (write in progress).
 		try {
-			readFromStdin(stdinFilePath, !!parsedArgs.verbose); // throws error if file can not be written
+			let stdinFilePath = cliStdInFilePath;
+			if (!stdinFilePath) {
+				stdinFilePath = getStdinFilePath();
+				readFromStdin(stdinFilePath, !!parsedArgs.verbose); // throws error if file can not be written
+			}
 
 			// Make sure to open tmp file
 			translatePath(stdinFilePath, mapFileUri, folderURIs, fileURIs);
@@ -161,6 +170,12 @@ export function main(desc: ProductDescription, args: string[]): void {
 
 	if (parsedArgs.extensionTestsPath) {
 		parsedArgs.extensionTestsPath = mapFileUri(pathToURI(parsedArgs['extensionTestsPath']).href);
+	}
+
+	const crashReporterDirectory = parsedArgs['crash-reporter-directory'];
+	if (crashReporterDirectory !== undefined && !crashReporterDirectory.match(/^([a-zA-Z]:[\\\/]))/)) {
+		console.log(`The crash reporter directory '${crashReporterDirectory}' must be an absolute Windows path (e.g. c:/crashes)`);
+		return;
 	}
 
 	if (remoteAuthority) {
@@ -255,49 +270,69 @@ async function waitForFileDeleted(path: string) {
 	}
 }
 
-// function getCredential(cmd: string) {
-// 	const command = ({ get: 'fill', store: 'approve', erase: 'reject' } as { [cmd: string]: 'fill' | 'approve' | 'reject' | undefined })[cmd];
-// 	if (command === undefined) {
-// 		console.log('Expected get, store or erase.');
-// 		return;
-// 	}
-// 	let stdin = '';
-// 	process.stdin.setEncoding('utf8');
-// 	process.stdin.on('data', chunk => {
-// 		stdin += chunk;
-// 		if (stdin === '\n' || stdin.indexOf('\n\n', stdin.length - 2) !== -1) {
-// 			process.stdin.pause();
-// 			sendGetCredential(command, stdin)
-// 				.catch(console.error);
-// 		}
-// 	});
-// 	process.stdin.on('end', () => {
-// 		sendGetCredential(command, stdin)
-// 			.catch(console.error);
-// 	});
-// }
+function openInBrowser(args: string[]) {
+	let uris: string[] = [];
+	for (let location of args) {
+		try {
+			if (/^(http|https|file):\/\//.test(location)) {
+				uris.push(_url.parse(location).href);
+			} else {
+				uris.push(pathToURI(location).href);
+			}
+		} catch (e) {
+			console.log(`Invalid url: ${location}`);
+		}
+	}
+	if (uris.length) {
+		sendToPipe({
+			type: 'openExternal',
+			uris
+		});
+	}
+}
 
-// async function sendGetCredential(command: 'fill' | 'approve' | 'reject', stdin: string) {
-// 	const json = await sendToPipe({
-// 		type: 'command',
-// 		command: 'git.credential',
-// 		args: [{ command, stdin }]
-// 	});
-// 	const { stdout, stderr, code } = JSON.parse(json);
-// 	if (stdout) {
-// 		process.stdout.write(stdout);
-// 	}
-// 	if (stderr) {
-// 		process.stderr.write(stderr);
-// 	}
-// 	if (code) {
-// 		process.exit(code);
-// 	}
-// }
+function getCredential(cmd: string) {
+	const command = ({ get: 'fill', store: 'approve', erase: 'reject' } as { [cmd: string]: 'fill' | 'approve' | 'reject' | undefined })[cmd];
+	if (command === undefined) {
+		console.log('Expected get, store or erase.');
+		return;
+	}
+	let stdin = '';
+	process.stdin.setEncoding('utf8');
+	process.stdin.on('data', chunk => {
+		stdin += chunk;
+		if (stdin === '\n' || stdin.indexOf('\n\n', stdin.length - 2) !== -1) {
+			process.stdin.pause();
+			sendGetCredential(command, stdin)
+				.catch(console.error);
+		}
+	});
+	process.stdin.on('end', () => {
+		sendGetCredential(command, stdin)
+			.catch(console.error);
+	});
+}
 
-type Args = OpenCommandPipeArgs | StatusPipeArgs;
+async function sendGetCredential(command: 'fill' | 'approve' | 'reject', stdin: string) {
+	// const json = await sendToPipe({
+	// 	type: 'commaopennd',
+	// 	command: 'git.credential',
+	// 	args: [{ command, stdin }]
+	// });
+	// const { stdout, stderr, code } = JSON.parse(json);
+	// if (stdout) {
+	// 	process.stdout.write(stdout);
+	// }
+	// if (stderr) {
+	// 	process.stderr.write(stderr);
+	// }
+	// if (code) {
+	// 	process.exit(code);
+	// }
+}
 
-function sendToPipe(args: Args): Promise<any> {
+
+function sendToPipe(args: PipeCommand): Promise<any> {
 	return new Promise<string>(resolve => {
 		const message = JSON.stringify(args);
 		if (!cliPipe) {

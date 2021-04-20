@@ -16,10 +16,8 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IExtensionGalleryService, IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
 import { ExtensionManagementService } from 'vs/platform/extensionManagement/node/extensionManagementService';
-import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { Emitter, Event } from 'vs/base/common/event';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Main as CliMain } from 'vs/code/node/cliProcessMain';
+import { main as CliMain } from 'vs/code/node/cliProcessMain';
 import { VSBuffer } from 'vs/base/common/buffer';
 import product from 'vs/platform/product/common/product';
 import { DisposableStore } from 'vs/base/common/lifecycle';
@@ -96,7 +94,7 @@ export class ManagementConnection {
 			this._cleanResources();
 		}, this._reconnectionShortGraceTime);
 
-		this.protocol.onClose(() => {
+		this.protocol.onSocketClose(() => {
 			this._log(`The client has disconnected gracefully, so the connection will be disposed.`);
 			this._cleanResources();
 		});
@@ -192,7 +190,7 @@ async function _run(argv: ServerParsedArgs, environmentService: ServerEnvironmen
 	await configurationService.initialize();
 	services.set(IConfigurationService, configurationService);
 
-	const instantiationService: IInstantiationService = new InstantiationService(services);
+	// const instantiationService: IInstantiationService = new InstantiationService(services);
 
 	services.set(IRequestService, new SyncDescriptor(RequestService));
 	services.set(ITelemetryService, NullTelemetryService);
@@ -200,7 +198,8 @@ async function _run(argv: ServerParsedArgs, environmentService: ServerEnvironmen
 	services.set(IExtensionManagementService, new SyncDescriptor(ExtensionManagementService));
 
 	try {
-		await instantiationService.createInstance(CliMain).run(argv);
+		// await instantiationService.createInstance(CliMain, argv).run(argv);
+		CliMain(argv);
 	} finally {
 		disposables.dispose();
 	}
