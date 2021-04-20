@@ -15,6 +15,7 @@ export class Notebook {
 
 	public readonly toolbar: NotebookToolbar;
 	public readonly view: NotebookView;
+	private newNotebookCount: number = 0;
 
 	constructor(private code: Code, private quickAccess: QuickAccess, private quickInput: QuickInput, private editors: Editors) {
 		this.toolbar = new NotebookToolbar(code);
@@ -31,9 +32,12 @@ export class Notebook {
 
 	async newUntitledNotebook(): Promise<void> {
 		await this.code.dispatchKeybinding(winOrCtrl + '+alt+n');
-		await this.editors.waitForActiveTab('Notebook-0');
+		await this.editors.waitForActiveTab(`Notebook-${this.newNotebookCount}`);
 		await this.code.waitForElement('.notebookEditor');
+		this.newNotebookCount++;
 	}
+
+	// Notebook Toolbar Actions
 
 	async addCell(cellType: 'markdown' | 'code'): Promise<void> {
 		if (cellType === 'markdown') {
@@ -79,6 +83,8 @@ export class Notebook {
 		await this.toolbar.waitForNotTrustedIcon();
 	}
 
+	// Cell Actions
+
 	async waitForTypeInEditor(text: string) {
 		const editor = '.notebook-cell.active .monaco-editor';
 		await this.code.waitAndClick(editor);
@@ -94,6 +100,46 @@ export class Notebook {
 		const selector = '.notebook-cell.active .monaco-editor .view-lines';
 		return this.code.waitForTextContent(selector, undefined, c => accept(c.replace(/\u00a0/g, ' ')));
 	}
+
+	private static readonly placeholderSelector = 'div.placeholder-cell-component';
+	async addCellFromPlaceholder(cellType: 'Markdown' | 'Code'): Promise<void> {
+		await this.code.waitAndClick(`${Notebook.placeholderSelector} p a[id="add${cellType}"]`);
+		await this.code.waitForElement('.notebook-cell.active');
+	}
+
+	async waitForPlaceholderGone(): Promise<void> {
+		await this.code.waitForElementGone(Notebook.placeholderSelector);
+	}
+
+	// Text Cell Actions
+
+	private static readonly textCellPreviewSelector = 'div.notebook-preview';
+	private static readonly doubleClickToEditSelector = `${Notebook.textCellPreviewSelector} p i`;
+	async waitForDoubleClickToEdit(): Promise<void> {
+		await this.code.waitForElement(Notebook.doubleClickToEditSelector);
+	}
+
+	async doubleClickTextCell(): Promise<void> {
+		await this.code.waitAndClick(Notebook.textCellPreviewSelector);
+		await this.code.waitAndDoubleClick(`${Notebook.textCellPreviewSelector}.actionselect`);
+	}
+
+	async waitForDoubleClickToEditGone(): Promise<void> {
+		await this.code.waitForElementGone(Notebook.doubleClickToEditSelector);
+	}
+
+	private static readonly textCellToolbar = 'text-cell-component markdown-toolbar-component ul.actions-container';
+	async changeTextCellView(view: 'Rich Text View' | 'Split View' | 'Markdown View'): Promise<void> {
+		const actionSelector = `${Notebook.textCellToolbar} a[title="${view}"]`;
+		await this.code.waitAndClick(actionSelector);
+	}
+
+	async waitForTextCellPreviewContent(text: string, fontType: 'p' | 'h1' | 'h2' | 'h3'): Promise<void> {
+		const textSelector = `${Notebook.textCellPreviewSelector} ${fontType}`;
+		await this.code.waitForElement(textSelector, result => result?.textContent === text);
+	}
+
+	// Cell Output Actions
 
 	async waitForActiveCellResults(): Promise<void> {
 		const outputComponent = '.notebook-cell.active .notebook-output';
