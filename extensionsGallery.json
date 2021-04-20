@@ -1535,14 +1535,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.9.1",
-							"lastUpdated": "2/12/2021",
+							"version": "1.10.0",
+							"lastUpdated": "4/7/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-1.9.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-1.10.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3214,14 +3214,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.8.0",
-							"lastUpdated": "03/10/2021",
+							"version": "0.9.0",
+							"lastUpdated": "04/06/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/machine-learning/machine-learning-0.8.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/machine-learning/machine-learning-0.9.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3385,14 +3385,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.8.0",
-							"lastUpdated": "3/10/2021",
+							"version": "0.9.2",
+							"lastUpdated": "4/6/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arc/arc-0.8.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arc/arc-0.9.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3503,14 +3503,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.7.1",
-							"lastUpdated": "3/9/2021",
+							"version": "0.8.2",
+							"lastUpdated": "4/9/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-0.7.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-0.8.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3536,7 +3536,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.27.0"
+									"value": ">=1.28.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -3682,14 +3682,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.5.2",
-							"lastUpdated": "2/10/2020",
+							"version": "0.6.3",
+							"lastUpdated": "4/7/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azdata/azdata-0.5.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azdata/azdata-0.6.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3739,14 +3739,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.4.0",
-							"lastUpdated": "12/01/2020",
+							"version": "0.5.3",
+							"lastUpdated": "04/14/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/kusto/kusto-0.4.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/kusto/kusto-0.5.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3772,7 +3772,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.22.0"
+									"value": ">=1.28.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
