@@ -59,3 +59,11 @@ export interface IDisposableDataProvider<T> extends Slick.DataProvider<T> {
 	 */
 	readonly isDataInMemory: boolean;
 }
+
+/**
+ * Check whether the object is an instance of IDisposableDataProvider
+ */
+export function instanceOfIDisposableDataProvider<T>(obj: any): obj is IDisposableDataProvider<T> {
+	const provider = obj as IDisposableDataProvider<T>;
+	return obj && provider.dispose && provider.sort && provider.isDataInMemory !== undefined;
+}

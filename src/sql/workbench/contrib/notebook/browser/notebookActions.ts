@@ -364,8 +364,8 @@ export class RunParametersAction extends TooltipFromLabelAction {
 	public async openParameterizedNotebook(uri: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(uri);
 		let modelContents = JSON.stringify(editor.model.toJSON());
-		let basename = path.basename(uri.fsPath);
-		let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: basename });
+		let untitledUriPath = this._notebookService.getUntitledUriPath(path.basename(uri.fsPath));
+		let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: untitledUriPath });
 		this._notebookService.openNotebook(untitledUri, {
 			initialContent: modelContents,
 			preserveFocus: true
