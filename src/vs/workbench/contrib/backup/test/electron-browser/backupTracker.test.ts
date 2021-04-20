@@ -163,7 +163,7 @@ flakySuite('BackupTracker (native)', function () {
 		return { accessor, part, tracker, instantiationService, cleanup };
 	}
 
-	test.skip('Track backups (file)', async function () { // {{SQL CARBON EDIT}} tabcolorfailure
+	test('Track backups (file)', async function () {
 		const { accessor, cleanup } = await createTracker();
 
 		const resource = toResource.call(this, '/path/index.txt');
