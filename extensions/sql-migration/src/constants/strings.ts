@@ -356,6 +356,8 @@ export const TARGET_PLATFORM = localize('sql.migration.target.platform', "Target
 export const WARNINGS_DETAILS = localize('sql.migration.warnings.details', "Warnings Details");
 export const ISSUES_DETAILS = localize('sql.migration.issues.details', "Issue Details");
 export const SELECT_DB_PROMPT = localize('sql.migration.select.prompt', "Click on SQL Server Instance or any of the databases on the left to view its details.");
+export const NO_ISSUES_FOUND_VM = localize('sql.migration.no.issues.vm', "No issues found for migrating to SQL Server on Azure Virtual Machine");
+export const NO_ISSUES_FOUND_MI = localize('sql.migration.no.issues.mi', "No issues found for migrating to SQL Server on Azure SQL Managed Instance");
 export function IMPACT_OBJECT_TYPE(objectType: string): string {
 	return localize('sql.migration.impact.object.type', "Type: {0}", objectType);
 }
