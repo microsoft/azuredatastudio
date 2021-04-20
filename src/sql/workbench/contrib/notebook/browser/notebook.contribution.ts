@@ -46,6 +46,7 @@ import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } fr
 import { NotebookThemingContribution } from 'sql/workbench/contrib/notebook/browser/notebookThemingContribution';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { ToggleTabFocusModeAction } from 'vs/editor/contrib/toggleTabFocusMode/toggleTabFocusMode';
+import { NotebookExplorerViewletViewsContribution } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import 'vs/css!./media/notebook.contribution';
 import { isMacintosh } from 'vs/base/common/platform';
 import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
@@ -435,6 +436,9 @@ registerComponentType({
 	selector: MimeRendererComponent.SELECTOR
 });
 registerCellComponent(TextCellComponent);
+
+const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
+workbenchRegistry.registerWorkbenchContribution(NotebookExplorerViewletViewsContribution, LifecyclePhase.Starting);
 
 // Configuration
 configurationRegistry.registerConfiguration({
