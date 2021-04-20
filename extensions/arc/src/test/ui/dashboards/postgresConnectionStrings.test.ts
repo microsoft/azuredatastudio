@@ -57,6 +57,32 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 							memory: ''
 						}
 					}
+				},
+				roles: {
+					coordinator: {
+						resources: {
+							requests: {
+								cpu: '',
+								memory: ''
+							},
+							limits: {
+								cpu: '',
+								memory: ''
+							}
+						}
+					},
+					worker: {
+						resources: {
+							requests: {
+								cpu: '',
+								memory: ''
+							},
+							limits: {
+								cpu: '',
+								memory: ''
+							}
+						}
+					}
 				}
 			},
 			service: {
