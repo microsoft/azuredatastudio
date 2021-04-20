@@ -37,17 +37,17 @@ describe('utils: Tests to verify getEndpointName @DacFx@', function (): void {
 		let testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
 		testDatabaseEndpoint.connectionDetails = { ...mockConnectionInfo };
 
-		should(getEndpointName(testDatabaseEndpoint)).equal('My Server.My Database');
+		should(getEndpointName(testDatabaseEndpoint)).equal('My Connection.My Database');
 	});
 
 	it('Should get correct endpoint information from SchemaCompareEndpointInfo', () => {
 		let dbName = 'My Database';
-		let serverName = 'My Server';
+		let serverDisplayName = 'My Connection';
 		let testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
 		testDatabaseEndpoint.databaseName = dbName;
-		testDatabaseEndpoint.serverName = serverName;
+		testDatabaseEndpoint.serverName = serverDisplayName;
 
-		should(getEndpointName(testDatabaseEndpoint)).equal('My Server.My Database');
+		should(getEndpointName(testDatabaseEndpoint)).equal('My Connection.My Database');
 	});
 });
 
