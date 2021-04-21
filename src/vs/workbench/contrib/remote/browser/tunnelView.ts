@@ -342,7 +342,7 @@ class TunnelTreeRenderer extends Disposable implements ITreeRenderer<ITunnelGrou
 			inputBox,
 			dom.addStandardDisposableListener(inputBox.inputElement, dom.EventType.KEY_DOWN, (e: IKeyboardEvent) => {
 				if (e.equals(KeyCode.Enter)) {
-					if (inputBox.validate() !== MessageType.ERROR) {
+					if (inputBox.validate()) { // {{SQL CARBON EDIT}}
 						done(true, true);
 					} else {
 						done(false, true);
@@ -352,7 +352,7 @@ class TunnelTreeRenderer extends Disposable implements ITreeRenderer<ITunnelGrou
 				}
 			}),
 			dom.addDisposableListener(inputBox.inputElement, dom.EventType.BLUR, () => {
-				done(inputBox.validate() !== MessageType.ERROR, true);
+				done(inputBox.validate(), true); // {{SQL CARBON EDIT}}
 			}),
 			styler
 		];
