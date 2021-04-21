@@ -12,10 +12,10 @@
     <trans-unit id="dacfx.dataLossTextWithCount">
       <source xml:lang="en">{0} of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
     </trans-unit>
-    <trans-unit id="dacFx.dataLossCheckbox">
+    <trans-unit id="dacFx.proceedDataLoss">
       <source xml:lang="en">Proceed despite possible data loss</source>
     </trans-unit>
-    <trans-unit id="dacfx.noDataLossText">
+    <trans-unit id="dacfx.noDataLoss">
       <source xml:lang="en">No data loss will occur from the listed deploy actions.</source>
     </trans-unit>
     <trans-unit id="dacfx.dataLossText">
@@ -51,13 +51,13 @@
     <trans-unit id="dacfx.fileLocation">
       <source xml:lang="en">File Location</source>
     </trans-unit>
-    <trans-unit id="dacFxExtract.versionText">
+    <trans-unit id="dacFx.versionText">
       <source xml:lang="en">Version (use x.x.x.x where x is a number)</source>
     </trans-unit>
     <trans-unit id="dacFxDeploy.openFile">
       <source xml:lang="en">Open</source>
     </trans-unit>
-    <trans-unit id="dacFx.deployDescrption">
+    <trans-unit id="dacFx.deployDescription">
       <source xml:lang="en">Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]</source>
     </trans-unit>
     <trans-unit id="dacFx.extractDescription">
