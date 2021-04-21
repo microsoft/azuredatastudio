@@ -32,7 +32,7 @@ const msgInstallPkgStart = localize('msgInstallPkgStart', "Installing Notebook d
 const msgInstallPkgFinish = localize('msgInstallPkgFinish', "Notebook dependencies installation is complete");
 const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.");
 const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python installation is currently in progress. Waiting for it to complete.");
-const msgPythonVersionUpdatePrompt = localize('msgPythonVersionUpdatePrompt', "You are currently using Python 3.6.6. Would you like to update Python to version 3.8.8?");
+const msgPythonVersionUpdatePrompt = localize('msgPythonVersionUpdatePrompt', "You are currently using Python 3.6.6. Would you like to update to Python 3.8.8?");
 const msgPythonVersionUpdateWarning = localize('msgPythonVersionUpdateWarning', "This will remove the existing Python 3.6.6 installation and install Python 3.8.8. Some packages may no longer be compatible with the new version. Would you like to continue with the update?");
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
@@ -171,7 +171,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		try {
 			let pythonExists = await utils.exists(this._pythonExecutable);
 			let upgradePython = false;
-			if (this._installedPythonVersion === '3.6.6' && !this._usingExistingPython) {
+			if (pythonExists && await this.getInstalledPythonVersion(this._pythonExecutable) === '3.6.6') {
 				upgradePython = await vscode.window.showInformationMessage(msgPythonVersionUpdateWarning, yes, no) === yes;
 			}
 			if (!pythonExists || forceInstall || upgradePython) {
@@ -465,10 +465,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		// If Python 3.6.6 is installed, prompt user to upgrade to Python 3.8.8
 		if (isPythonInstalled && await this.getInstalledPythonVersion(this._pythonExecutable) === '3.6.6') {
-			let upgradePython = await vscode.window.showInformationMessage(msgPythonVersionUpdatePrompt, yes, no) === yes;
-			if (upgradePython) {
-				vscode.commands.executeCommand(constants.jupyterConfigurePython);
-			}
+			this.promptUserForPythonUpgrade();
 		}
 		let areRequiredPackagesInstalled = await this.areRequiredPackagesInstalled(kernelDisplayName);
 		if (!isPythonInstalled || !areRequiredPackagesInstalled) {
@@ -477,6 +474,13 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			return pythonWizard.setupComplete.then(() => {
 				this._kernelSetupCache.set(kernelDisplayName, true);
 			});
+		}
+	}
+
+	private async promptUserForPythonUpgrade(): Promise<void> {
+		let upgradePython = await vscode.window.showInformationMessage(msgPythonVersionUpdatePrompt, yes, no) === yes;
+		if (upgradePython) {
+			vscode.commands.executeCommand(constants.jupyterConfigurePython);
 		}
 	}
 
