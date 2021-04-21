@@ -176,6 +176,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			}
 			if (!pythonExists || forceInstall || upgradePython) {
 				if (upgradePython) {
+					let shutdownPythonCmd = `"${this._pythonExecutable}" -c "import sys;sys.exit()"`;
+					await this.executeBufferedCommand(shutdownPythonCmd);
 					// remove old Python installation
 					await fs.remove(this._pythonInstallationPath);
 					// remove '0.0.1' from python executable path
