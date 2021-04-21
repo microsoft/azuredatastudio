@@ -347,6 +347,7 @@ export const INSTANCE = localize('sql.migration.instance', "Instance");
 export const WARNINGS = localize('sql.migration.warnings', "Warnings");
 export const IMPACTED_OBJECTS = localize('sql.migration.impacted.objects', "Impacted Objects");
 export const OBJECT_DETAILS = localize('sql.migration.object.details', "Object details");
+export const ASSESSMENT_RESULTS = localize('sql.migration.assessmen.results', "Assessment Results");
 export const TYPES_LABEL = localize('sql.migration.type.label', "Type:");
 export const NAMES_LABEL = localize('sql.migration.name.label', "Names:");
 export const DESCRIPTION = localize('sql.migration.description', "Description");

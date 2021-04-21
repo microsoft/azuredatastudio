@@ -353,7 +353,7 @@ export class SqlDatabaseTree {
 				value: constants.NO_ISSUES_FOUND_VM,
 				CSSStyles: {
 					'font-size': '14px',
-					'width': '400px',
+					'width': '100%',
 					'margin': '10px 0px 0px 0px',
 					'text-align': 'left'
 				}
@@ -363,7 +363,7 @@ export class SqlDatabaseTree {
 				value: constants.NO_ISSUES_FOUND_MI,
 				CSSStyles: {
 					'font-size': '14px',
-					'width': '400px',
+					'width': '100%',
 					'margin': '10px 0px 0px 0px',
 					'text-align': 'left'
 				}
@@ -748,8 +748,32 @@ export class SqlDatabaseTree {
 
 	public refreshResults(): void {
 		const assessmentResults: azdata.DeclarativeTableCellValue[][] = [];
-		if (this._activeIssues.length === 0) {
-			/// show no issues here
+		if (this._model._targetType === MigrationTargetType.SQLMI) {
+			if (this._activeIssues.length === 0) {
+				/// show no issues here
+				this._assessmentsTable.updateCssStyles({
+					'display': 'none',
+					'border-right': 'none'
+				});
+				this._assessmentContainer.updateCssStyles({
+					'display': 'none'
+				});
+				this._noIssuesContainer.updateCssStyles({
+					'display': 'flex'
+				});
+			} else {
+				this._assessmentContainer.updateCssStyles({
+					'display': 'flex'
+				});
+				this._assessmentsTable.updateCssStyles({
+					'display': 'flex',
+					'border-right': 'solid 1px'
+				});
+				this._noIssuesContainer.updateCssStyles({
+					'display': 'none'
+				});
+			}
+		} else {
 			this._assessmentsTable.updateCssStyles({
 				'display': 'none',
 				'border-right': 'none'
@@ -760,17 +784,8 @@ export class SqlDatabaseTree {
 			this._noIssuesContainer.updateCssStyles({
 				'display': 'flex'
 			});
-		} else {
-			this._assessmentContainer.updateCssStyles({
-				'display': 'flex'
-			});
-			this._assessmentsTable.updateCssStyles({
-				'display': 'flex',
-				'border-right': 'solid 1px'
-			});
-			this._noIssuesContainer.updateCssStyles({
-				'display': 'none'
-			});
+			this._recommendationTitle.value = constants.ASSESSMENT_RESULTS;
+			this._recommendation.value = '';
 		}
 		this._activeIssues.forEach((v) => {
 			assessmentResults.push(
