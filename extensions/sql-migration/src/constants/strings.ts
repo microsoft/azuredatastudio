@@ -335,7 +335,19 @@ export function STATUS_WARNING_COUNT(status: string, count: number): string {
 				return localize('sql.migration.status.error.count.multiple', "{0} ({1} Errors)", status, count);
 		}
 	}
+}
 
+export function HRS(hrs: number): string {
+	return hrs > 1 ? localize('sql.migration.hrs', "{0} hrs", hrs) : localize('sql.migration.hr', "{0} hr", hrs);
+}
+export function DAYS(days: number): string {
+	return days > 1 ? localize('sql.migration.days', "{0} days", days) : localize('sql.migration.day', "{0} day", days);
+}
+export function MINUTE(mins: number): string {
+	return mins > 1 ? localize('sql.migration.mins', "{0} mins", mins) : localize('sql.migration.min', "{0} min", mins);
+}
+export function SEC(sec: number): string {
+	return localize('sql.migration.sec', "{0} sec", sec);
 }
 
 //Source Credentials page.

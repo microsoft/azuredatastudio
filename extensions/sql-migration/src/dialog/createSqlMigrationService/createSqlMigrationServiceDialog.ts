@@ -59,7 +59,7 @@ export class CreateSqlMigrationServiceDialog {
 				};
 				this._statusLoadingComponent.loading = true;
 				this.migrationServiceResourceGroupDropdown.loading = false;
-				this.enableForm(false);
+				this.setFormEnabledState(false);
 
 
 				const subscription = this.migrationStateModel._targetSubscription;
@@ -72,7 +72,7 @@ export class CreateSqlMigrationServiceDialog {
 				if (formValidationErrors.length > 0) {
 					this.setDialogMessage(formValidationErrors);
 					this._statusLoadingComponent.loading = false;
-					this.enableForm(true);
+					this.setFormEnabledState(true);
 					return;
 				}
 
@@ -81,7 +81,7 @@ export class CreateSqlMigrationServiceDialog {
 					if (this.createdMigrationService.error) {
 						this.setDialogMessage(`${this.createdMigrationService.error.code} : ${this.createdMigrationService.error.message}`);
 						this._statusLoadingComponent.loading = false;
-						this.enableForm(true);
+						this.setFormEnabledState(true);
 						return;
 					}
 					this._dialogObject.message = {
@@ -95,7 +95,7 @@ export class CreateSqlMigrationServiceDialog {
 					console.log(e);
 					this.setDialogMessage(e.message);
 					this._statusLoadingComponent.loading = false;
-					this.enableForm(true);
+					this.setFormEnabledState(true);
 					return;
 				}
 			});
@@ -547,7 +547,7 @@ export class CreateSqlMigrationServiceDialog {
 		};
 	}
 
-	private enableForm(enable: boolean): void {
+	private setFormEnabledState(enable: boolean): void {
 		this._formSubmitButton.enabled = enable;
 		this.migrationServiceResourceGroupDropdown.enabled = enable;
 		this.migrationServiceNameText.enabled = enable;

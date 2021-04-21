@@ -10,7 +10,7 @@ import { MigrationContext, MigrationLocalStorage } from '../../models/migrationL
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
 import { MigrationCategory, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
-import { convertTimeToDuration } from '../../api/utils';
+import { convertTimeDifferenceToDuration } from '../../api/utils';
 export class MigrationStatusDialog {
 	private _model: MigrationStatusDialogModel;
 	private _dialogObject!: azdata.window.Dialog;
@@ -202,15 +202,15 @@ export class MigrationStatusDialog {
 					value: loc.STATUS_WARNING_COUNT(migrationStatus, warningCount)
 				});
 
-				let duration = 0;
+				let duration;
 				if (migration.migrationContext.properties.endedOn) {
-					duration = new Date(migration.migrationContext.properties.endedOn).getTime() - new Date(migration.migrationContext.properties.startedOn).getTime();
+					duration = convertTimeDifferenceToDuration(new Date(migration.migrationContext.properties.startedOn), new Date(migration.migrationContext.properties.endedOn));
 				} else {
-					duration = new Date().getTime() - new Date(migration.migrationContext.properties.startedOn).getTime();
+					duration = convertTimeDifferenceToDuration(new Date(migration.migrationContext.properties.startedOn), new Date());
 				}
 
 				migrationRow.push({
-					value: (migration.migrationContext.properties.startedOn) ? convertTimeToDuration(duration) : '---'
+					value: (migration.migrationContext.properties.startedOn) ? duration : '---'
 				});
 
 				migrationRow.push({

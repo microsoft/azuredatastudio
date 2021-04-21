@@ -281,8 +281,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			iconPath: IconPathHelper.copy,
 		}).component();
 
-		this._copy1.onDidClick((e) => {
-			vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![0][1].value);
+		this._copy1.onDidClick(async (e) => {
+			await vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![0][1].value);
 			vscode.window.showInformationMessage(constants.SERVICE_KEY_COPIED_HELP);
 		});
 
@@ -290,8 +290,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			iconPath: IconPathHelper.copy
 		}).component();
 
-		this._copy2.onDidClick((e) => {
-			vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![1][1].value);
+		this._copy2.onDidClick(async (e) => {
+			await vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![1][1].value);
 			vscode.window.showInformationMessage(constants.SERVICE_KEY_COPIED_HELP);
 		});
 
@@ -413,7 +413,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				this._dmsDropdown.value = this._dmsDropdown.values[0];
 			}
 		} catch (e) {
-
+			console.log(e);
 		} finally {
 			this._dmsDropdown.loading = false;
 		}
@@ -423,7 +423,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	private async loadMigrationServiceStatus(): Promise<void> {
 		this._statusLoadingComponent.loading = true;
 		try {
-			this.loadStatus();
+			await this.loadStatus();
 		} catch (error) {
 			console.log(error);
 		} finally {
@@ -448,9 +448,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
 					this.migrationStateModel._sqlMigrationService.location,
 					this.migrationStateModel._sqlMigrationService!.name);
-				this.migrationStateModel._nodeNames = migrationServiceMonitoringStatus.nodes.map((node) => {
-					return node.nodeName;
-				});
+				this.migrationStateModel._nodeNames = migrationServiceMonitoringStatus.nodes.map(node => node.nodeName);
 				const migrationServiceAuthKeys = await getSqlMigrationServiceAuthKeys(
 					this.migrationStateModel._azureAccount,
 					this.migrationStateModel._targetSubscription,
@@ -510,7 +508,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				});
 			}
 		} catch (e) {
-
+			console.log(e);
 		} finally {
 			this._connectionStatusLoader.loading = false;
 		}
