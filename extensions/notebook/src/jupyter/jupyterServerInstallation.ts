@@ -176,7 +176,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			}
 			if (!pythonExists || forceInstall || upgradePython) {
 				if (upgradePython) {
-					await this.removeOldPythonInstall();
+					// remove old Python installation
+					await fs.remove(this._pythonInstallationPath);
 					// remove '0.0.1' from python executable path
 					this._pythonExecutable = JupyterServerInstallation.getPythonExePath(this._pythonInstallationPath);
 				}
@@ -794,10 +795,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let kernelSpec = <IKernelInfo>JSON.parse(fileContents.toString());
 		kernelSpec.argv = kernelSpec.argv?.map(arg => arg.replace('{ADS_PYTHONDIR}', this._pythonInstallationPath));
 		await fs.writeFile(kernelPath, JSON.stringify(kernelSpec, undefined, '\t'));
-	}
-
-	private async removeOldPythonInstall(): Promise<void> {
-		await fs.remove(this._pythonInstallationPath);
 	}
 }
 

@@ -8,7 +8,6 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 export const winPlatform = 'win32';
-export const pythonBundleVersion = '0.0.1';
 export const managePackagesCommand = 'jupyter.cmd.managePackages';
 export const pythonLanguageName = 'Python';
 export const rLanguageName = 'R';
@@ -42,7 +41,6 @@ export const pythonEnabledConfigKey = 'enablePython';
 export const rEnabledConfigKey = 'enableR';
 export const registeredModelsTableName = 'registeredModelsTableName';
 export const rPathConfigKey = 'rPath';
-export const adsPythonBundleVersion = '0.0.1';
 
 // TSQL
 //
