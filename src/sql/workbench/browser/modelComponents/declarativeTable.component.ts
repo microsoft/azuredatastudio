@@ -4,20 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/declarativeTable';
-
-import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ElementRef, OnDestroy, AfterViewInit
-} from '@angular/core';
-
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy } from '@angular/core';
 import * as azdata from 'azdata';
-
+import { convertSize } from 'sql/base/browser/dom';
+import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore, ModelViewAction } from 'sql/platform/dashboard/browser/interfaces';
 import { ContainerBase } from 'sql/workbench/browser/modelComponents/componentBase';
+import { EventHelper } from 'vs/base/browser/dom';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { equals as arrayEquals } from 'vs/base/common/arrays';
+import { KeyCode } from 'vs/base/common/keyCodes';
 import { localize } from 'vs/nls';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
-import { convertSize } from 'sql/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
+import * as colorRegistry from 'vs/platform/theme/common/colorRegistry';
+import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
 
 export enum DeclarativeDataType {
 	string = 'string',
@@ -36,15 +36,30 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	@Input() modelStore: IModelStore;
 
 	private _data: azdata.DeclarativeTableCellValue[][] = [];
+	private _filteredRowIndexes: number[] | undefined = undefined;
 	private columns: azdata.DeclarativeTableColumn[] = [];
 	private _selectedRow: number;
+	private _colorTheme: IColorTheme;
+	private _hasFocus: boolean;
+
+	/**
+	 * The flag is set to true when the table gains focus. When a row is selected and the flag is true the row selected event will
+	 * fire regardless whether the row is already selected.
+	 *
+	 */
+	private _rowSelectionFocusFlag: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(ILogService) logService: ILogService
+		@Inject(ILogService) logService: ILogService,
+		@Inject(IThemeService) themeService: IThemeService
 	) {
 		super(changeRef, el, logService);
+		this._colorTheme = themeService.getColorTheme();
+		this._register(themeService.onDidColorThemeChange((colorTheme) => {
+			this._colorTheme = colorTheme;
+		}));
 	}
 
 	ngAfterViewInit(): void {
@@ -55,9 +70,18 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		this.baseDestroy();
 	}
 
+	public headerCheckboxVisible(colIdx: number): boolean {
+		return this.columns[colIdx].showCheckAll && this.isCheckBox(colIdx);
+	}
+
 	public isHeaderChecked(colIdx: number): boolean {
-		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
-		return column.isChecked;
+		for (const row of this.data) {
+			const cellData = row[colIdx];
+			if (cellData.value === false && cellData.enabled !== false) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public isCheckBox(colIdx: number): boolean {
@@ -65,9 +89,10 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		return column.valueType === DeclarativeDataType.boolean;
 	}
 
-	public isControlEnabled(colIdx: number): boolean {
-		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
-		return !column.isReadOnly;
+	public isControlEnabled(rowIdx: number, colIdx: number): boolean {
+		const cellData = this.data[rowIdx][colIdx];
+		const column: azdata.DeclarativeTableColumn = this.columns[colIdx];
+		return !column.isReadOnly && cellData.enabled !== false;
 	}
 
 	private isLabel(colIdx: number): boolean {
@@ -93,22 +118,14 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		this.onCellDataChanged(e, rowIdx, colIdx);
 		// If all of the rows in that column are now checked, let's update the header.
 		if (this.columns[colIdx].showCheckAll) {
-			if (e) {
-				for (let rowIdx = 0; rowIdx < this.data.length; rowIdx++) {
-					if (this.data[rowIdx][colIdx].value === false) {
-						return;
-					}
-				}
-			}
-			this.columns[colIdx].isChecked = e;
 			this._changeRef.detectChanges();
 		}
 	}
 
 	public onHeaderCheckBoxChanged(e: boolean, colIdx: number): void {
-		this.columns[colIdx].isChecked = e;
 		this.data.forEach((row, rowIdx) => {
-			if (row[colIdx].value !== e) {
+			const cellData = row[colIdx];
+			if (cellData.value !== e && cellData.enabled !== false) {
 				this.onCellDataChanged(e, rowIdx, colIdx);
 			}
 		});
@@ -242,7 +259,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	private static ACCEPTABLE_VALUES = new Set<string>(['number', 'string', 'boolean']);
 	public setProperties(properties: azdata.DeclarativeTableProperties): void {
 		const basicData: any[][] = properties.data ?? [];
-		const complexData: azdata.DeclarativeTableCellValue[][] = properties.dataValues;
+		const complexData: azdata.DeclarativeTableCellValue[][] = properties.dataValues ?? [];
 		let finalData: azdata.DeclarativeTableCellValue[][];
 
 		finalData = basicData.map(row => {
@@ -277,25 +294,13 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		if (isDataPropertyChanged) {
 			this.clearContainer();
 			this._data = finalData;
-			this.data?.forEach(row => {
-				for (let i = 0; i < row.length; i++) {
-					if (this.isComponent(i)) {
-						const itemDescriptor = this.getItemDescriptor(row[i].value as string);
-						if (itemDescriptor) {
-							this.addToContainer(itemDescriptor, {});
-						} else {
-							// This should ideally never happen but it's possible for a race condition to happen when adding/removing components quickly where
-							// the child component is unregistered after it is defined because a component is only unregistered when it's destroyed by Angular
-							// which can take a while and we don't wait on that to happen currently.
-							// While this happening isn't desirable it typically doesn't have a huge impact since the component will still be displayed properly in
-							// most cases
-							this.logService.warn(`Could not find ItemDescriptor for component ${row[i].value} when adding to DeclarativeTable ${this.descriptor.id}`);
-						}
-					}
-				}
-			});
 		}
 		super.setProperties(properties);
+	}
+
+	public clearContainer(): void {
+		super.clearContainer();
+		this._selectedRow = -1;
 	}
 
 	public get data(): azdata.DeclarativeTableCellValue[][] {
@@ -303,20 +308,19 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	}
 
 	public isRowSelected(row: number): boolean {
-		// Only react when the user wants you to
-		if (this.getProperties().selectEffect !== true) {
+		if (!this.enableRowSelection) {
 			return false;
 		}
 		return this._selectedRow === row;
 	}
 
-	public onCellClick(row: number) {
-		// Only react when the user wants you to
-		if (this.getProperties().selectEffect !== true) {
+	public onRowSelected(row: number) {
+		if (!this.enableRowSelection) {
 			return;
 		}
-		if (!this.isRowSelected(row)) {
+		if (this._rowSelectionFocusFlag || !this.isRowSelected(row)) {
 			this._selectedRow = row;
+			this._rowSelectionFocusFlag = false;
 			this._changeRef.detectChanges();
 
 			this.fireEvent({
@@ -326,5 +330,70 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 				}
 			});
 		}
+	}
+
+	public onKey(e: KeyboardEvent, row: number) {
+		// Ignore the bubble up events
+		if (e.target !== e.currentTarget) {
+			return;
+		}
+		const event = new StandardKeyboardEvent(e);
+		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
+			this.onRowSelected(row);
+			EventHelper.stop(e, true);
+		}
+	}
+
+	public doAction(action: string, ...args: any[]): void {
+		if (action === ModelViewAction.Filter) {
+			this._filteredRowIndexes = args[0];
+		}
+		this._changeRef.detectChanges();
+	}
+
+	/**
+	 * Checks whether a given row is filtered (not visible)
+	 * @param rowIndex The row to check
+	 */
+	public isFiltered(rowIndex: number): boolean {
+		if (this._filteredRowIndexes === undefined) {
+			return false;
+		}
+		return this._filteredRowIndexes.includes(rowIndex) ? false : true;
+	}
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth(),
+			'height': this.getHeight()
+		});
+	}
+
+	public getRowStyle(rowIndex: number): azdata.CssStyles {
+		if (this.isRowSelected(rowIndex)) {
+			const bgColor = this._hasFocus ? colorRegistry.listActiveSelectionBackground : colorRegistry.listInactiveSelectionBackground;
+			const color = this._hasFocus ? colorRegistry.listActiveSelectionForeground : colorRegistry.listInactiveSelectionForeground;
+			return {
+				'background-color': this._colorTheme.getColor(bgColor)?.toString(),
+				'color': this._colorTheme.getColor(color)?.toString()
+			};
+		} else {
+			return {};
+		}
+	}
+
+	onFocusIn() {
+		this._hasFocus = true;
+		this._rowSelectionFocusFlag = true;
+		this._changeRef.detectChanges();
+	}
+
+	onFocusOut() {
+		this._hasFocus = false;
+		this._changeRef.detectChanges();
+	}
+
+	public get enableRowSelection(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.enableRowSelection, false);
 	}
 }

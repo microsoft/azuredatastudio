@@ -1,2 +1,27 @@
 Needs Logs:
-  comment: "We need more info to debug your particular issue. If you could attach your logs to the issue (ensure no private data is in them), it would help us fix the issue much faster.\n\nTo find your logs:\n\n- Open command palette (Click **View** -> **Command Palette**)\n- Run the command: **`Developer: Open Logs Folder`**\n\nThis will open the log file locally. Please zip up this folder and attach it to the issue."
+  comment: "We need more info to debug your particular issue. If you could attach your logs to the issue (ensure no private data is in them), it would help us fix the issue much faster.
+
+
+There are two types of logs to collect:
+
+
+**Console Logs**
+
+
+- Open Developer Tools (Help -> Toggle Developer Tools)
+
+- Click the **Console** tab
+
+- Click in the log area and select all text (CTRL+A)
+
+- Save this text into a file named console.log and attach it to this issue.
+
+
+**Application Logs**
+
+
+- Open command palette (Click **View** -> **Command Palette**)
+
+- Run the command: **`Developer: Open Logs Folder`**
+
+- This will open the log folder locally. Please zip up this folder and attach it to the issue."

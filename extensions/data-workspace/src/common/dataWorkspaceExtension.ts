@@ -12,8 +12,8 @@ export class DataWorkspaceExtension implements IExtension {
 	constructor(private workspaceService: WorkspaceService) {
 	}
 
-	getProjectsInWorkspace(): vscode.Uri[] {
-		return this.workspaceService.getProjectsInWorkspace();
+	getProjectsInWorkspace(ext?: string): vscode.Uri[] {
+		return this.workspaceService.getProjectsInWorkspace(ext);
 	}
 
 	addProjectsToWorkspace(projectFiles: vscode.Uri[], workspaceFilePath?: vscode.Uri): Promise<void> {
@@ -31,5 +31,4 @@ export class DataWorkspaceExtension implements IExtension {
 	validateWorkspace(): Promise<boolean> {
 		return this.workspaceService.validateWorkspace();
 	}
-
 }

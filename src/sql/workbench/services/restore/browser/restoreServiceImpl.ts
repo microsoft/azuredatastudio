@@ -60,7 +60,7 @@ export class RestoreService implements IRestoreService {
 		return new Promise<azdata.RestoreResponse>((resolve, reject) => {
 			const providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
-				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.RestoreRequested)
+				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.RestoreRequested)
 					.withAdditionalProperties({
 						provider: providerResult.providerName
 					}).send();
@@ -319,8 +319,9 @@ export class RestoreDialogController implements IRestoreDialogController {
 
 					if (this._currentProvider === ConnectionConstants.mssqlProviderName) {
 						let restoreDialog = this._restoreDialogs[this._currentProvider] as RestoreDialog;
-						restoreDialog.viewModel.resetRestoreOptions(connection.databaseName!);
 						this.getMssqlRestoreConfigInfo().then(() => {
+							// database list is filled only after getMssqlRestoreConfigInfo() calling before will always set to empty value
+							restoreDialog.viewModel.resetRestoreOptions(connection.databaseName!, restoreDialog.viewModel.databaseList);
 							restoreDialog.open(connection.serverName, this._ownerUri!);
 							restoreDialog.validateRestore();
 						}, restoreConfigError => {

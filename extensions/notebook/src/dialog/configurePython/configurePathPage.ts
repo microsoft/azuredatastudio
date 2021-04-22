@@ -8,7 +8,6 @@ import * as azdata from 'azdata';
 import { BasePage } from './basePage';
 import * as nls from 'vscode-nls';
 import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
-import { PythonPathInfo } from '../pythonPathLookup';
 import * as utils from '../../common/utils';
 
 const localize = nls.loadMessageBundle();
@@ -54,9 +53,10 @@ export class ConfigurePathPage extends BasePage {
 			})
 			.component();
 		let browseButton = this.view.modelBuilder.button()
-			.withProperties<azdata.ButtonProperties>({
+			.withProps({
 				label: this.BrowseButtonText,
-				width: '70px'
+				width: '70px',
+				secondary: true
 			}).component();
 		browseButton.onDidClick(() => this.handleBrowse());
 
@@ -89,9 +89,10 @@ export class ConfigurePathPage extends BasePage {
 				enabled: false,
 				width: '400px'
 			}).component();
-			let editPathButton = this.view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			let editPathButton = this.view.modelBuilder.button().withProps({
 				label: 'Edit',
-				width: '70px'
+				width: '70px',
+				secondary: true
 			}).component();
 			let editPathForm = this.view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -152,6 +153,9 @@ export class ConfigurePathPage extends BasePage {
 
 			this.model.pythonLocation = pythonLocation;
 			this.model.useExistingPython = !!this.existingInstallButton.checked;
+			this.model.packageUpgradeOnly = false;
+		} else {
+			this.model.packageUpgradeOnly = true;
 		}
 		return true;
 	}
@@ -160,10 +164,9 @@ export class ConfigurePathPage extends BasePage {
 		this.instance.wizard.nextButton.enabled = false;
 		this.pythonDropdownLoader.loading = true;
 		try {
-			let pythonPaths: PythonPathInfo[];
 			let dropdownValues: azdata.CategoryValue[];
 			if (useExistingPython) {
-				pythonPaths = await this.model.pythonPathsPromise;
+				let pythonPaths = await this.model.pythonPathLookup.getSuggestions();
 				if (pythonPaths && pythonPaths.length > 0) {
 					dropdownValues = pythonPaths.map(path => {
 						return {

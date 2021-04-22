@@ -19,7 +19,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 @Component({
 	selector: 'modelview-radioButton',
 	template: `
-		<div #input class="modelview-radiobutton-container">
+		<div #input [ngStyle]="CSSStyles" class="modelview-radiobutton-container">
 
 		</div>
 	`
@@ -48,6 +48,14 @@ export default class RadioButtonComponent extends ComponentBase<azdata.RadioButt
 				this.checked = this._input.checked;
 				this.fireEvent({
 					eventType: ComponentEventType.onDidClick,
+					args: e
+				});
+			}));
+
+			this._register(this._input.onDidChangeCheckedState(e => {
+				this.checked = e;
+				this.fireEvent({
+					eventType: ComponentEventType.onDidChange,
 					args: e
 				});
 			}));

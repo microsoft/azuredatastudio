@@ -76,7 +76,7 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 			{ id: 'icon', type: 'image', field: 'iconPath', name: '', width: 25, sortable: false, filterable: false, resizable: false, tooltip: loc.typeIcon },
 			{ id: 'name', type: 'text', field: 'name', name: loc.name, width: 150 },
 			{ id: 'type', type: 'text', field: 'typeDisplayName', name: loc.resourceType, width: 150 },
-			{ id: 'type', type: 'text', field: 'resourceGroup', name: loc.resourceGroup, width: 150 },
+			{ id: 'resourceGroup', type: 'text', field: 'resourceGroup', name: loc.resourceGroup, width: 150 },
 			{ id: 'location', type: 'text', field: 'locationDisplayName', name: loc.location, width: 150 },
 			{ id: 'subscriptionId', type: 'text', field: 'subscriptionName', name: loc.subscription, width: 150 }
 		];

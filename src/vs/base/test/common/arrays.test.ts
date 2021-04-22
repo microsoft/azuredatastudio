@@ -31,6 +31,24 @@ suite('Arrays', () => {
 		assert.equal(array[idx], 1);
 	});
 
+	test('quickSelect', () => {
+
+		function assertMedian(expexted: number, data: number[], nth: number = Math.floor(data.length / 2)) {
+			const compare = (a: number, b: number) => a - b;
+			let actual1 = arrays.quickSelect(nth, data, compare);
+			assert.equal(actual1, expexted);
+
+			let actual2 = data.slice().sort(compare)[nth];
+			assert.equal(actual2, expexted);
+		}
+
+		assertMedian(5, [9, 1, 0, 2, 3, 4, 6, 8, 7, 10, 5]);
+		assertMedian(8, [9, 1, 0, 2, 3, 4, 6, 8, 7, 10, 5], 8);
+		assertMedian(8, [13, 4, 8]);
+		assertMedian(4, [13, 4, 8, 4, 4]);
+		assertMedian(13, [13, 4, 8], 2);
+	});
+
 	test('stableSort', () => {
 		function fill<T>(num: number, valueFn: () => T, arr: T[] = []): T[] {
 			for (let i = 0; i < num; i++) {
@@ -351,5 +369,46 @@ suite('Arrays', () => {
 		remove();
 		assert.equal(array.length, 0);
 	});
-});
 
+	test('splice', function () {
+		// negative start index, absolute value greater than the length
+		let array = [1, 2, 3, 4, 5];
+		arrays.splice(array, -6, 3, [6, 7]);
+		assert.strictEqual(array.length, 4);
+		assert.strictEqual(array[0], 6);
+		assert.strictEqual(array[1], 7);
+		assert.strictEqual(array[2], 4);
+		assert.strictEqual(array[3], 5);
+
+		// negative start index, absolute value less than the length
+		array = [1, 2, 3, 4, 5];
+		arrays.splice(array, -3, 3, [6, 7]);
+		assert.strictEqual(array.length, 4);
+		assert.strictEqual(array[0], 1);
+		assert.strictEqual(array[1], 2);
+		assert.strictEqual(array[2], 6);
+		assert.strictEqual(array[3], 7);
+
+		// Start index less than the length
+		array = [1, 2, 3, 4, 5];
+		arrays.splice(array, 3, 3, [6, 7]);
+		assert.strictEqual(array.length, 5);
+		assert.strictEqual(array[0], 1);
+		assert.strictEqual(array[1], 2);
+		assert.strictEqual(array[2], 3);
+		assert.strictEqual(array[3], 6);
+		assert.strictEqual(array[4], 7);
+
+		// Start index greater than the length
+		array = [1, 2, 3, 4, 5];
+		arrays.splice(array, 6, 3, [6, 7]);
+		assert.strictEqual(array.length, 7);
+		assert.strictEqual(array[0], 1);
+		assert.strictEqual(array[1], 2);
+		assert.strictEqual(array[2], 3);
+		assert.strictEqual(array[3], 4);
+		assert.strictEqual(array[4], 5);
+		assert.strictEqual(array[5], 6);
+		assert.strictEqual(array[6], 7);
+	});
+});

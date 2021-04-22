@@ -93,8 +93,8 @@ export default class LoadingComponent extends ComponentBase<azdata.LoadingCompon
 		return this.getPropertyOrDefault<string>((props) => props.loadingCompletedText, localize('loadingCompletedMessage', "Loading completed"));
 	}
 
-	public addToContainer(componentDescriptor: IComponentDescriptor): void {
-		this._component = componentDescriptor;
+	public addToContainer(items: { componentDescriptor: IComponentDescriptor }[]): void {
+		this._component = items[0].componentDescriptor;
 		this.layout();
 	}
 

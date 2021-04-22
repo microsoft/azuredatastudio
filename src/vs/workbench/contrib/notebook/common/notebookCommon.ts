@@ -23,7 +23,7 @@ import { IRevertOptions } from 'vs/workbench/common/editor';
 import { NotebookTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookTextModel';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IFileStatWithMetadata } from 'vs/platform/files/common/files';
-import { IRange } from 'vs/editor/common/core/range';
+import { ThemeColor } from 'vs/platform/theme/common/themeService';
 
 export enum CellKind {
 	Markdown = 1,
@@ -58,6 +58,7 @@ export const ACCESSIBLE_NOTEBOOK_DISPLAY_ORDER = [
 ];
 
 export const BUILTIN_RENDERER_ID = '_builtin';
+export const RENDERER_NOT_AVAILABLE = '_notAvailable';
 
 export enum NotebookRunState {
 	Running = 1,
@@ -72,7 +73,8 @@ export const notebookDocumentMetadataDefaults: Required<NotebookDocumentMetadata
 	cellHasExecutionOrder: true,
 	displayOrder: NOTEBOOK_DISPLAY_ORDER,
 	custom: {},
-	runState: NotebookRunState.Idle
+	runState: NotebookRunState.Idle,
+	trusted: true
 };
 
 export interface NotebookDocumentMetadata {
@@ -84,6 +86,7 @@ export interface NotebookDocumentMetadata {
 	displayOrder?: (string | glob.IRelativePattern)[];
 	custom?: { [key: string]: unknown };
 	runState?: NotebookRunState;
+	trusted: boolean;
 }
 
 export enum NotebookCellRunState {
@@ -182,27 +185,15 @@ export enum MimeTypeRendererResolver {
 export interface IOrderedMimeType {
 	mimeType: string;
 	rendererId: string;
+	isTrusted: boolean;
 }
 
-export interface ITransformedDisplayOutputDto {
-	outputKind: CellOutputKind.Rich;
+export interface ITransformedDisplayOutputDto extends IDisplayOutput {
 	outputId: string;
-	data: { [key: string]: unknown; }
-	metadata?: NotebookCellOutputMetadata;
-
-	orderedMimeTypes?: IOrderedMimeType[];
-	pickedMimeTypeIndex?: number;
 }
 
 export function isTransformedDisplayOutput(thing: unknown): thing is ITransformedDisplayOutputDto {
 	return (thing as ITransformedDisplayOutputDto).outputKind === CellOutputKind.Rich && !!(thing as ITransformedDisplayOutputDto).outputId;
-}
-
-export interface IGenericOutput {
-	outputKind: CellOutputKind;
-	pickedMimeType?: string;
-	pickedRenderer?: number;
-	transformedOutput?: { [key: string]: IDisplayOutput };
 }
 
 
@@ -481,18 +472,11 @@ export interface ICellMoveEdit {
 	newIdx: number;
 }
 
-export interface ICellContentEdit {
-	editType: CellEditType.CellContent;
-	index: number;
-	range: IRange | undefined;
-	text: string;
-}
-
 export interface IDocumentUnknownEdit {
 	editType: CellEditType.Unknown;
 }
 
-export type ICellEditOperation = ICellReplaceEdit | ICellOutputEdit | ICellMetadataEdit | ICellLanguageEdit | IDocumentMetadataEdit | ICellOutputsSpliceEdit | ICellMoveEdit | ICellContentEdit | IDocumentUnknownEdit;
+export type ICellEditOperation = ICellReplaceEdit | ICellOutputEdit | ICellMetadataEdit | ICellLanguageEdit | IDocumentMetadataEdit | ICellOutputsSpliceEdit | ICellMoveEdit | IDocumentUnknownEdit;
 
 export interface INotebookEditData {
 	documentVersionId: number;
@@ -553,6 +537,19 @@ export namespace CellUri {
 			})
 		};
 	}
+}
+
+export function mimeTypeIsAlwaysSecure(mimeType: string) {
+	if ([
+		'application/json',
+		'text/markdown',
+		'image/png',
+		'text/plain'
+	].indexOf(mimeType) > -1) {
+		return true;
+	}
+
+	return false;
 }
 
 export function mimeTypeSupportedByCore(mimeType: string) {
@@ -688,6 +685,7 @@ export interface ICellEditorViewState {
 }
 
 export const NOTEBOOK_EDITOR_CURSOR_BOUNDARY = new RawContextKey<'none' | 'top' | 'bottom' | 'both'>('notebookEditorCursorAtBoundary', 'none');
+export const NOTEBOOK_EDITOR_CURSOR_BEGIN_END = new RawContextKey<boolean>('notebookEditorCursorAtEditorBeginEnd', false);
 
 
 export interface INotebookEditorModel extends IEditorModel {
@@ -750,7 +748,6 @@ export interface IEditor extends editorCommon.ICompositeCodeEditor {
 	textModel?: NotebookTextModel;
 	getId(): string;
 	hasFocus(): boolean;
-	hasModel(): boolean;
 }
 
 export enum NotebookEditorPriority {
@@ -777,7 +774,7 @@ export interface INotebookDocumentFilter {
 
 //TODO@rebornix test
 
-function isDocumentExcludePattern(filenamePattern: string | glob.IRelativePattern | INotebookExclusiveDocumentFilter): filenamePattern is { include: string | glob.IRelativePattern; exclude: string | glob.IRelativePattern; } {
+export function isDocumentExcludePattern(filenamePattern: string | glob.IRelativePattern | INotebookExclusiveDocumentFilter): filenamePattern is { include: string | glob.IRelativePattern; exclude: string | glob.IRelativePattern; } {
 	const arg = filenamePattern as INotebookExclusiveDocumentFilter;
 
 	if ((typeof arg.include === 'string' || glob.isRelativePattern(arg.include))
@@ -872,6 +869,7 @@ export interface INotebookCellStatusBarEntry {
 	readonly command: string | Command | undefined;
 	readonly accessibilityInformation?: IAccessibilityInformation;
 	readonly visible: boolean;
+	readonly opacity?: string;
 }
 
 export const DisplayOrderKey = 'notebook.displayOrder';
@@ -883,3 +881,10 @@ export const enum CellStatusbarAlignment {
 	LEFT,
 	RIGHT
 }
+
+export interface INotebookDecorationRenderOptions {
+	backgroundColor?: string | ThemeColor;
+	borderColor?: string | ThemeColor;
+	top?: editorCommon.IContentDecorationRenderOptions;
+}
+

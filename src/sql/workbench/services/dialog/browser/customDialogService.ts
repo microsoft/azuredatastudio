@@ -20,17 +20,23 @@ export class CustomDialogService {
 
 	public showDialog(dialog: Dialog, dialogName?: string, options?: IModalOptions): void {
 		let name = dialogName ? dialogName : 'CustomDialog';
+
+		if (options && (options.dialogStyle === 'callout')) {
+			options.dialogProperties.xPos = document.activeElement.getBoundingClientRect().left;
+			options.dialogProperties.yPos = document.activeElement.getBoundingClientRect().top;
+			options.renderFooter = false;
+		}
 		let dialogModal = this._instantiationService.createInstance(DialogModal, dialog, name, options || DefaultDialogOptions);
 		this._dialogModals.set(dialog, dialogModal);
 		dialogModal.render();
 		dialogModal.open();
 	}
 
-	public showWizard(wizard: Wizard, options?: IModalOptions): void {
+	public showWizard(wizard: Wizard, options?: IModalOptions, source?: string): void {
 		let wizardModal = this._instantiationService.createInstance(WizardModal, wizard, options || DefaultWizardOptions);
 		this._wizardModals.set(wizard, wizardModal);
 		wizardModal.render();
-		wizardModal.open();
+		wizardModal.open(source);
 	}
 
 	public closeDialog(dialog: Dialog): void {
@@ -38,7 +44,7 @@ export class CustomDialogService {
 	}
 
 	public closeWizard(wizard: Wizard): void {
-		this._wizardModals.get(wizard)?.cancel();
+		this._wizardModals.get(wizard)?.close();
 	}
 
 	public getWizardModal(wizard: Wizard): WizardModal | undefined {

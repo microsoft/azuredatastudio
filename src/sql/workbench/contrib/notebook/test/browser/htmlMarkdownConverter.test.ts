@@ -143,15 +143,29 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '[msft](http://www.microsoft.com/images/msft.png)', 'Basic http link test failed');
 		htmlString = 'Test <a href="http://www.microsoft.com/images/msft.png">msft</a>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Test [msft](http://www.microsoft.com/images/msft.png)', 'Basic http link + text test failed');
+		htmlString = '<a href="#hello">hello</a>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '[hello](#hello)', 'Basic link to a section failed');
+		htmlString = '<a href="file.md#hello">hello</a>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `[hello](.${path.sep}file.md#hello)`, 'Basic anchor link to a section failed');
+		htmlString = '<a href="http://www.microsoft.com/images/msft.png#Hello">hello</a>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '[hello](http://www.microsoft.com/images/msft.png#Hello)', 'Http link containing # sign failed');
 	});
 
 	test('Should transform <li> tags', () => {
 		htmlString = '<ul><li>Test</li></ul>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test`, 'Basic unordered list test failed');
+		htmlString = '<ul><li><span>Test</span><br></li><li>Test2</li></ul>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test\n- Test2`, 'Basic unordered list test with span and line break failed');
+		htmlString = '<ul><li><span>Test</span><br><br></li><li>Test2</li></ul>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test  \n      \n    \n- Test2`, 'Basic unordered list test with span and line break failed');
 		htmlString = '<ul><li>Test</li><li>Test2</li></ul>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test\n- Test2`, 'Basic unordered 2 item list test failed');
-		htmlString = '<ul><li>Test<ul><li>Test2</li></ul><li>Test3</li></ul>';
+		htmlString = '<ul><li>Test</li><ul><li>Test2</li></ul><li>Test3</li></ul>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test\n    - Test2\n- Test3`, 'Nested item list test failed');
+		htmlString = '<ul><li>Test</li><ul><li>Test2</li></ul><ul></ul><li>Test3</li></ul>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test\n    - Test2\n- Test3`, 'Nested item list test empty list failed');
+		htmlString = '<ul><li><span>Hello</span><br></li><li><span>Hello</span></li></ul>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Hello\n- Hello`, 'Nested item list test empty list failed');
 		htmlString = '<ol><li>Test</li></ol>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `1. Test`, 'Basic ordered item test failed');
 		htmlString = '<ol><li>Test</li><li>Test2</li></ol>';

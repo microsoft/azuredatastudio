@@ -6,15 +6,15 @@
 import 'vs/css!./media/resourceViewerTable';
 import * as azdata from 'azdata';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { attachTableStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
+import { attachTableFilterStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { HyperlinkCellValue, isHyperlinkCellValue, TextCellValue } from 'sql/base/browser/ui/table/formatters';
-import { HeaderFilter, CommandEventArgs, IExtendedColumn } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
+import { HeaderFilter, CommandEventArgs } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
+import { FilterableColumn, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { isString } from 'vs/base/common/types';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -24,6 +24,7 @@ import { ColumnDefinition } from 'sql/workbench/browser/editor/resourceViewer/re
 import { Emitter } from 'vs/base/common/event';
 import { ContextMenuAnchor } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerEditor';
 import { LoadingSpinnerPlugin } from 'sql/base/browser/ui/table/plugins/loadingSpinner.plugin';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 
 export class ResourceViewerTable extends Disposable {
 
@@ -37,7 +38,8 @@ export class ResourceViewerTable extends Disposable {
 		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
 		@IOpenerService private _openerService: IOpenerService,
 		@ICommandService private _commandService: ICommandService,
-		@INotificationService private _notificationService: INotificationService) {
+		@INotificationService private _notificationService: INotificationService,
+		@IContextViewService private _contextViewService: IContextViewService) {
 		super();
 		let filterFn = (data: Array<azdata.DataGridItem>): Array<azdata.DataGridItem> => {
 			return data.filter(item => this.filter(item));
@@ -53,8 +55,8 @@ export class ResourceViewerTable extends Disposable {
 		}));
 
 		this._resourceViewerTable.setSelectionModel(new RowSelectionModel());
-		let filterPlugin = new HeaderFilter<azdata.DataGridItem>();
-		this._register(attachButtonStyler(filterPlugin, this._themeService));
+		let filterPlugin = new HeaderFilter<azdata.DataGridItem>(this._contextViewService);
+		this._register(attachTableFilterStyler(filterPlugin, this._themeService));
 		this._register(attachTableStyler(this._resourceViewerTable, this._themeService));
 		this._register(this._resourceViewerTable.onClick(this.onTableClick, this));
 		this._register(this._resourceViewerTable.onContextMenu((e: ITableMouseEvent) => {
@@ -126,7 +128,7 @@ export class ResourceViewerTable extends Disposable {
 		const columns = this._resourceViewerTable.grid.getColumns();
 		let value = true;
 		for (let i = 0; i < columns.length; i++) {
-			const col: IExtendedColumn<Slick.SlickData> = columns[i];
+			const col: FilterableColumn<Slick.SlickData> = columns[i];
 			if (!col.field) {
 				continue;
 			}

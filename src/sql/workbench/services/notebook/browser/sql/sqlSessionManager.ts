@@ -70,6 +70,26 @@ export interface NotebookConfig {
 	useExistingPython: boolean;
 }
 
+export interface NotebookConfig {
+	cellToolbarLocation: string;
+	collapseBookItems: boolean;
+	diff: { enablePreview: boolean };
+	displayOrder: Array<string>;
+	kernelProviderAssociations: Array<string>;
+	maxBookSearchDepth: number;
+	maxTableRows: number;
+	overrideEditorTheming: boolean;
+	pinnedNotebooks: Array<string>;
+	pythonPath: string;
+	remoteBookDownloadTimeout: number;
+	showAllKernels: boolean;
+	showCellStatusBar: boolean;
+	showNotebookConvertActions: boolean;
+	sqlStopOnError: boolean;
+	trustedBooks: Array<string>;
+	useExistingPython: boolean;
+}
+
 export class SqlSessionManager implements nb.SessionManager {
 	private static _sessions: nb.ISession[] = [];
 
@@ -112,6 +132,16 @@ export class SqlSessionManager implements nb.SessionManager {
 			}
 		}
 		return Promise.resolve();
+	}
+
+	shutdownAll(): Thenable<void> {
+		return Promise.all(SqlSessionManager._sessions.map(session => {
+			return this.shutdown(session.id);
+		})).then();
+	}
+
+	dispose(): void {
+		// no-op
 	}
 }
 
@@ -301,8 +331,8 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 		} else if (this._currentConnection && this._currentConnectionProfile) {
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionPath);
+			this.addQueryEventListeners(this._queryRunner);
 			this._connectionManagementService.connect(this._currentConnectionProfile, this._connectionPath).then((result) => {
-				this.addQueryEventListeners(this._queryRunner);
 				this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 			}).catch(err => onUnexpectedError(err));
 		} else {

@@ -141,8 +141,13 @@ export class DeployConfigPage extends DacFxConfigPage {
 		}).component();
 
 		//Handle database changes
-		this.databaseDropdown.onValueChanged(async () => {
-			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
+		this.databaseDropdown.onValueChanged(() => {
+			const databaseDropdownValue: string = this.databaseDropdown.value as string;
+			if (!databaseDropdownValue) {
+				return;
+			}
+
+			this.model.database = databaseDropdownValue;
 		});
 
 		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProperties({

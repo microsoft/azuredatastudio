@@ -34,7 +34,7 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 				subscription: element.subscription,
 				tenantId: element.tenantId,
 				treeItem: this.getTreeItemForResource(resource, element.account)
-			}).sort((a, b) => a.treeItem.label.localeCompare(b.treeItem.label));
+			}).sort((a, b) => (<any>a.treeItem.label).localeCompare(b.treeItem.label));
 		} catch (error) {
 			console.log(AzureResourceErrorMessageUtil.getErrorMessage(error));
 			throw error;

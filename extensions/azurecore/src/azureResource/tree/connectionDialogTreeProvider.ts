@@ -53,20 +53,32 @@ export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<Tre
 			return [AzureResourceMessageTreeNode.create(localize('azure.resource.tree.treeProvider.loadingLabel', "Loading ..."), undefined)];
 		}
 
-		try {
-			if (this.accounts && this.accounts.length > 0) {
-				const accountNodes: FlatAccountTreeNode[] = [];
-				for (const account of this.accounts) {
+		if (this.accounts && this.accounts.length > 0) {
+			const accountNodes: FlatAccountTreeNode[] = [];
+			const errorMessages: string[] = [];
+			// We are doing sequential account loading to avoid the Azure request throttling
+			for (const account of this.accounts) {
+				try {
 					const accountNode = new FlatAccountTreeNode(account, this.appContext, this);
 					await accountNode.updateLabel();
 					accountNodes.push(accountNode);
 				}
-				return accountNodes;
-			} else {
-				return [new AzureResourceAccountNotSignedInTreeNode()];
+				catch (error) {
+					errorMessages.push(AzureResourceErrorMessageUtil.getErrorMessage(error));
+				}
 			}
-		} catch (error) {
-			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), undefined)];
+			if (errorMessages.length > 0) {
+				const showAccountsAction = localize('azure.resource.tree.treeProvider.openAccountsDialog', "Show Azure accounts");
+				vscode.window.showErrorMessage(localize('azure.resource.tree.treeProvider.accountLoadError', "Failed to load some Azure accounts. {0}", errorMessages.join(',')), showAccountsAction).then(result => {
+					if (result === showAccountsAction) {
+						vscode.commands.executeCommand('azure.resource.signin');
+					}
+				});
+			}
+
+			return accountNodes;
+		} else {
+			return [new AzureResourceAccountNotSignedInTreeNode()];
 		}
 	}
 

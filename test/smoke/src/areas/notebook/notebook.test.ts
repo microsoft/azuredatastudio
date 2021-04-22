@@ -48,7 +48,7 @@ export function setup() {
 			const app = this.app as Application;
 			await app.workbench.notebook.openNotebook();
 			await app.workbench.notebook.insertNotebookCell('code');
-			await app.workbench.notebook.waitForActiveCellEditorContents(' ');
+			await app.workbench.notebook.waitForActiveCellEditorContents('');
 			await app.workbench.notebook.stopEditingCell();
 			await app.workbench.notebook.deleteActiveCell();
 			await app.workbench.notebook.waitForMarkdownContents('p', 'Markdown Cell');
@@ -67,7 +67,7 @@ export function setup() {
 			const app = this.app as Application;
 			await app.workbench.notebook.openNotebook();
 			await app.workbench.notebook.insertNotebookCell('code');
-			await app.workbench.notebook.executeCellAction('.notebook-editor .monaco-list-row.focused div.monaco-toolbar .codicon-debug');
+			await app.workbench.notebook.executeCellAction('.notebook-editor .monaco-list-row.focused div.monaco-toolbar .codicon-notebook-execute');
 			await app.workbench.notebook.waitForActiveCellEditorContents('test');
 		});
 	});

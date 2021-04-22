@@ -28,6 +28,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IComponentDescriptor, IComponent, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSizeToNumber } from 'sql/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 class Root implements ITreeComponentItem {
 	label = {
@@ -43,7 +44,7 @@ class Root implements ITreeComponentItem {
 @Component({
 	selector: 'modelview-tree',
 	template: `
-		<div #input style="width: 100%;height:100%"></div>
+		<div #input [ngStyle]="CSSStyles"></div>
 	`
 })
 export default class TreeComponent extends ComponentBase<azdata.TreeProperties> implements IComponent, OnDestroy, AfterViewInit {
@@ -59,7 +60,8 @@ export default class TreeComponent extends ComponentBase<azdata.TreeProperties> 
 		@Inject(IThemeService) private themeService: IThemeService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(ILogService) logService: ILogService
+		@Inject(ILogService) logService: ILogService,
+		@Inject(INotificationService) private _notificationService: INotificationService
 	) {
 		super(changeRef, el, logService);
 	}
@@ -76,7 +78,7 @@ export default class TreeComponent extends ComponentBase<azdata.TreeProperties> 
 	}
 
 	public setDataProvider(handle: number, componentId: string, context: any): any {
-		this._dataProvider = new TreeViewDataProvider(handle, componentId, context);
+		this._dataProvider = new TreeViewDataProvider(handle, componentId, context, this._notificationService);
 		this.createTreeControl();
 	}
 
@@ -157,7 +159,9 @@ export default class TreeComponent extends ComponentBase<azdata.TreeProperties> 
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this._treeRenderer.options.withCheckbox = this.withCheckbox;
+		if (this._treeRenderer) {
+			this._treeRenderer.options.withCheckbox = this.withCheckbox;
+		}
 	}
 
 	public get withCheckbox(): boolean {
@@ -166,5 +170,12 @@ export default class TreeComponent extends ComponentBase<azdata.TreeProperties> 
 
 	public set withCheckbox(newValue: boolean) {
 		this.setPropertyFromUI<boolean>((properties, value) => { properties.withCheckbox = value; }, newValue);
+	}
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': '100%',
+			'height': '100%'
+		});
 	}
 }

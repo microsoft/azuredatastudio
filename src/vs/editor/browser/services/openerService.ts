@@ -14,15 +14,21 @@ import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IOpener, IOpenerService, IValidator, IExternalUriResolver, OpenOptions, ResolveExternalUriOptions, IResolvedExternalUri, IExternalOpener, matchesScheme } from 'vs/platform/opener/common/opener';
 import { EditorOpenContext } from 'vs/platform/editor/common/editor';
+import { ResourceMap } from 'vs/base/common/map';
 
 
 class CommandOpener implements IOpener {
 
 	constructor(@ICommandService private readonly _commandService: ICommandService) { }
 
-	async open(target: URI | string) {
+	async open(target: URI | string, options?: OpenOptions): Promise<boolean> {
 		if (!matchesScheme(target, Schemas.command)) {
 			return false;
+		}
+		if (!options?.allowCommands) {
+			// silently ignore commands when command-links are disabled, also
+			// surpress other openers by returning TRUE
+			return true;
 		}
 		// run command or bail out if command isn't known
 		if (typeof target === 'string') {
@@ -70,12 +76,18 @@ class EditorOpener implements IOpener {
 		}
 
 		if (target.scheme === Schemas.file) {
-			target = normalizePath(target); // workaround for non-normalized paths (https://github.com/Microsoft/vscode/issues/12954)
+			target = normalizePath(target); // workaround for non-normalized paths (https://github.com/microsoft/vscode/issues/12954)
 		}
 
 		await this._editorService.openCodeEditor(
-			// {{SQL CARBON EDIT}} - cast target to fix hygine break
-			{ resource: <any>target, options: { selection, context: options?.fromUserGesture ? EditorOpenContext.USER : EditorOpenContext.API } },
+			{
+				resource: <any>target,
+				options: {
+					selection,
+					context: options?.fromUserGesture ? EditorOpenContext.USER : EditorOpenContext.API,
+					...options?.editorOptions
+				}
+			},
 			this._editorService.getFocusedCodeEditor(),
 			options?.openToSide
 		);
@@ -91,6 +103,7 @@ export class OpenerService implements IOpenerService {
 	private readonly _openers = new LinkedList<IOpener>();
 	private readonly _validators = new LinkedList<IValidator>();
 	private readonly _resolvers = new LinkedList<IExternalUriResolver>();
+	private readonly _resolvedUriTargets = new ResourceMap<URI>(uri => uri.with({ path: null, fragment: null, query: null }).toString());
 
 	private _externalOpener: IExternalOpener;
 
@@ -149,16 +162,18 @@ export class OpenerService implements IOpenerService {
 	}
 
 	async open(target: URI | string, options?: OpenOptions): Promise<boolean> {
-
 		// check with contributed validators
-		for (const validator of this._validators.toArray()) {
-			if (!(await validator.shouldOpen(target))) {
+		const targetURI = typeof target === 'string' ? URI.parse(target) : target;
+		// validate against the original URI that this URI resolves to, if one exists
+		const validationTarget = this._resolvedUriTargets.get(targetURI) ?? target;
+		for (const validator of this._validators) {
+			if (!(await validator.shouldOpen(validationTarget))) {
 				return false;
 			}
 		}
 
 		// check with contributed openers
-		for (const opener of this._openers.toArray()) {
+		for (const opener of this._openers) {
 			const handled = await opener.open(target, options);
 			if (handled) {
 				return true;
@@ -169,9 +184,10 @@ export class OpenerService implements IOpenerService {
 	}
 
 	async resolveExternalUri(resource: URI, options?: ResolveExternalUriOptions): Promise<IResolvedExternalUri> {
-		for (const resolver of this._resolvers.toArray()) {
+		for (const resolver of this._resolvers) {
 			const result = await resolver.resolveExternalUri(resource, options);
 			if (result) {
+				this._resolvedUriTargets.set(result.resolved, resource);
 				return result;
 			}
 		}
@@ -181,7 +197,7 @@ export class OpenerService implements IOpenerService {
 
 	private async _doOpenExternal(resource: URI | string, options: OpenOptions | undefined): Promise<boolean> {
 
-		//todo@joh IExternalUriResolver should support `uri: URI | string`
+		//todo@jrieken IExternalUriResolver should support `uri: URI | string`
 		const uri = typeof resource === 'string' ? URI.parse(resource) : resource;
 		const { resolved } = await this.resolveExternalUri(uri, options);
 

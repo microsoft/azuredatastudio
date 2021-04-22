@@ -184,7 +184,10 @@ export class VmSettingsPage extends BasePage {
 		this._vmImageDropdown = view.modelBuilder.dropDown().withProperties({
 		}).component();
 
-		this._vmImageDropdown.onValueChanged((value) => {
+		this._vmImageDropdown.onValueChanged(value => {
+			if (!this._vmImageDropdown.value) {
+				return;
+			}
 			this._model.vmImage = (this._vmImageDropdown.value as azdata.CategoryValue).name;
 			this._vmImageSkuDropdown.loading = true;
 			this._vmImageVersionDropdown.loading = true;
@@ -236,7 +239,10 @@ export class VmSettingsPage extends BasePage {
 		this._vmImageSkuDropdown = view.modelBuilder.dropDown().withProperties({
 		}).component();
 
-		this._vmImageSkuDropdown.onValueChanged((value) => {
+		this._vmImageSkuDropdown.onValueChanged(value => {
+			if (!this._vmImageSkuDropdown.value) {
+				return;
+			}
 			this._model.vmImageSKU = (this._vmImageSkuDropdown.value as azdata.CategoryValue).name;
 			this.populateVmImageVersionDropdown();
 		});
@@ -274,7 +280,10 @@ export class VmSettingsPage extends BasePage {
 		this._vmImageVersionDropdown = view.modelBuilder.dropDown().withProperties({
 		}).component();
 
-		this._vmImageVersionDropdown.onValueChanged((value) => {
+		this._vmImageVersionDropdown.onValueChanged(value => {
+			if (!this._vmImageVersionDropdown.value) {
+				return;
+			}
 			this._model.vmImageVersion = (this._vmImageVersionDropdown.value as azdata.CategoryValue).name;
 		});
 	}

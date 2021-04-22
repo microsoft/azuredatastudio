@@ -15,6 +15,7 @@ import { Uri, window } from 'vscode';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 /**
  * Class representing a Project, and providing functions for operating on it
@@ -195,6 +196,8 @@ export class Project {
 			return;
 		}
 
+		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectForRoundtrip);
+
 		if (!this.importedTargets.includes(constants.NetCoreTargets)) {
 			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
 			if (result === constants.yesString) {
@@ -260,8 +263,13 @@ export class Project {
 	 * Adds a folder to the project, and saves the project file
 	 * @param relativeFolderPath Relative path of the folder
 	 */
-	public async addFolderItem(relativeFolderPath: string): Promise<ProjectEntry> {
+	public async addFolderItem(relativeFolderPath: string): Promise<FileProjectEntry> {
 		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
+
+		// check if folder already has been added to sqlproj
+		if (this.files.find(f => f.relativePath.toLowerCase() === relativeFolderPath.toLowerCase())) {
+			throw new Error(constants.folderAlreadyAddedToProject((relativeFolderPath)));
+		}
 
 		//If folder doesn't exist, create it
 		let exists = await utils.exists(absoluteFolderPath);
@@ -282,20 +290,25 @@ export class Project {
 	 * @param contents Contents to be written to the new file
 	 */
 	public async addScriptItem(relativeFilePath: string, contents?: string, itemType?: string): Promise<FileProjectEntry> {
-		// check if file already exists
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
 
+		// check if file already exists if content was passed to write to a new file
 		if (contents !== undefined && contents !== '' && await utils.exists(absoluteFilePath)) {
 			throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
 		}
 
-		// create the file
+		// check if file already has been added to sqlproj
+		if (this.files.find(f => f.relativePath.toLowerCase() === relativeFilePath.toLowerCase())) {
+			throw new Error(constants.fileAlreadyAddedToProject((relativeFilePath)));
+		}
+
+		// create the file if contents were passed in
 		if (contents) {
 			await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
 			await fs.writeFile(absoluteFilePath, contents);
 		}
 
-		// check that file was successfully created
+		// check that file exists
 		let exists = await utils.exists(absoluteFilePath);
 		if (!exists) {
 			throw new Error(constants.noFileExist(absoluteFilePath));
@@ -344,13 +357,10 @@ export class Project {
 	public async deleteFileFolder(entry: FileProjectEntry): Promise<void> {
 		// compile a list of folder contents to delete; if entry is a file, contents will contain only itself
 		const toDeleteFiles: FileProjectEntry[] = this.files.concat(this.preDeployScripts).concat(this.postDeployScripts).concat(this.noneDeployScripts).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.File);
-		const toDeleteFolders: FileProjectEntry[] = this.files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.Folder).sort(x => -x.relativePath.length);
+		const toDeleteFolders: FileProjectEntry[] = this.files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.Folder);
 
 		await Promise.all(toDeleteFiles.map(x => fs.unlink(x.fsUri.fsPath)));
-
-		for (const folder of toDeleteFolders) {
-			await fs.rmdir(folder.fsUri.fsPath); // TODO: replace .sort() and iteration with rmdir recursive flag once that's unbugged
-		}
+		await Promise.all(toDeleteFolders.map(x => fs.rmdir(x.fsUri.fsPath, { recursive: true })));
 
 		await this.exclude(entry);
 	}
@@ -373,7 +383,7 @@ export class Project {
 			// update any system db references
 			const systemDbReferences = this.databaseReferences.filter(r => r instanceof SystemDatabaseReferenceProjectEntry) as SystemDatabaseReferenceProjectEntry[];
 			if (systemDbReferences.length > 0) {
-				systemDbReferences.forEach((r) => {
+				for (let r of systemDbReferences) {
 					// remove old entry in sqlproj
 					this.removeDatabaseReferenceFromProjFile(r);
 
@@ -382,11 +392,18 @@ export class Project {
 					r.ssdtUri = this.getSystemDacpacSsdtUri(`${r.databaseName}.dacpac`);
 
 					// add updated system db reference to sqlproj
-					this.addDatabaseReferenceToProjFile(r);
-				});
+					await this.addDatabaseReferenceToProjFile(r);
+				}
 			}
 
 			await this.serializeToProjFile(this.projFileXmlDoc);
+
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.changePlatformType)
+				.withAdditionalProperties({
+					from: this.getProjectTargetVersion(),
+					to: compatLevel
+				})
+				.send();
 		}
 	}
 
@@ -730,10 +747,10 @@ export class Project {
 		referenceNode.appendChild(privateElement);
 	}
 
-	public addSqlCmdVariableToProjFile(entry: SqlCmdVariableProjectEntry): void {
+	public async addSqlCmdVariableToProjFile(entry: SqlCmdVariableProjectEntry): Promise<void> {
 		// Remove any entries with the same variable name. It'll be replaced with a new one
 		if (Object.keys(this.sqlCmdVariables).includes(entry.variableName)) {
-			this.removeFromProjFile(entry);
+			await this.removeFromProjFile(entry);
 		}
 
 		const sqlCmdVariableNode = this.projFileXmlDoc.createElement(constants.SqlCmdVariable);
@@ -854,6 +871,10 @@ export class Project {
 				await this.addSystemDatabaseReference({ databaseName: databaseVariableName, systemDb: systemDb, suppressMissingDependenciesErrors: suppressMissingDependences });
 			}
 		}
+
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateSystemDatabaseReferencesInProjFile)
+			.withAdditionalMeasurements({ referencesCount: this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference).length })
+			.send();
 	}
 
 	private async addToProjFile(entry: ProjectEntry, xmlTag?: string, attributes?: Map<string, string>): Promise<void> {
@@ -868,7 +889,7 @@ export class Project {
 				await this.addDatabaseReferenceToProjFile(<IDatabaseReferenceProjectEntry>entry);
 				break;
 			case EntryType.SqlCmdVariable:
-				this.addSqlCmdVariableToProjFile(<SqlCmdVariableProjectEntry>entry);
+				await this.addSqlCmdVariableToProjFile(<SqlCmdVariableProjectEntry>entry);
 				break; // not required but adding so that we dont miss when we add new items
 		}
 
@@ -914,21 +935,27 @@ export class Project {
 
 	/**
 	 * Adds the list of sql files and directories to the project, and saves the project file
-	 * @param absolutePath Absolute path of the folder
+	 * @param list list of files and folder Uris. Files and folders must already exist. No files or folders will be added if any do not exist.
 	 */
-	public async addToProject(list: string[]): Promise<void> {
+	public async addToProject(list: Uri[]): Promise<void> {
+		// verify all files/folders exist. If not all exist, none will be added
+		for (let file of list) {
+			const exists = await utils.exists(file.fsPath);
 
-		for (let i = 0; i < list.length; i++) {
-			let file: string = list[i];
-			const relativePath = utils.trimChars(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(file)), '/');
+			if (!exists) {
+				throw new Error(constants.fileOrFolderDoesNotExist(file.fsPath));
+			}
+		}
+
+		for (let file of list) {
+			const relativePath = utils.trimChars(utils.trimUri(Uri.file(this.projectFilePath), file), '/');
 
 			if (relativePath.length > 0) {
-				let fileStat = await fs.stat(file);
+				const fileStat = await fs.stat(file.fsPath);
 
-				if (fileStat.isFile() && file.toLowerCase().endsWith(constants.sqlFileExtension)) {
+				if (fileStat.isFile() && file.fsPath.toLowerCase().endsWith(constants.sqlFileExtension)) {
 					await this.addScriptItem(relativePath);
-				}
-				else if (fileStat.isDirectory()) {
+				} else if (fileStat.isDirectory()) {
 					await this.addFolderItem(relativePath);
 				}
 			}
@@ -1002,6 +1029,11 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 	 */
 	public get databaseName(): string {
 		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
+	}
+
+	public pathForSqlProj(): string {
+		// need to remove the leading slash from path for build to work
+		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
 	}
 }
 

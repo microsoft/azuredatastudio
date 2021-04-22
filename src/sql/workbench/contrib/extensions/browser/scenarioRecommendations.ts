@@ -3,13 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionRecommendations, ExtensionRecommendation, PromptedExtensionRecommendations } from 'vs/workbench/contrib/extensions/browser/extensionRecommendations';
+import { ExtensionRecommendations, ExtensionRecommendation } from 'vs/workbench/contrib/extensions/browser/extensionRecommendations';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { localize } from 'vs/nls';
 import { IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
@@ -18,7 +16,6 @@ import { visualizerExtensions } from 'sql/workbench/contrib/extensions/common/co
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { InstallRecommendedExtensionsByScenarioAction, ShowRecommendedExtensionsByScenarioAction } from 'sql/workbench/contrib/extensions/browser/extensionsActions';
-import { IStorageKeysSyncRegistryService } from 'vs/platform/userDataSync/common/storageKeys';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 
 const choiceNever = localize('neverShowAgain', "Don't Show Again");
@@ -29,22 +26,16 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 	get recommendations(): ReadonlyArray<ExtensionRecommendation> { return this._recommendations; }
 
 	constructor(
-		promptedExtensionRecommendations: PromptedExtensionRecommendations,
-		@IProductService private readonly productService: IProductService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@INotificationService private readonly notificationService: INotificationService,
-		@ITelemetryService telemetryService: ITelemetryService,
-		@IStorageService private readonly storageService: IStorageService,
-		@IExtensionManagementService protected readonly extensionManagementService: IExtensionManagementService,
-		@IAdsTelemetryService private readonly adsTelemetryService: IAdsTelemetryService,
-		@IExtensionsWorkbenchService protected readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
-		@IStorageKeysSyncRegistryService storageKeysSyncRegistryService: IStorageKeysSyncRegistryService
+		@IProductService private readonly productService?: IProductService,
+		@IInstantiationService private readonly instantiationService?: IInstantiationService,
+		@INotificationService private readonly notificationService?: INotificationService,
+		@IStorageService private readonly storageService?: IStorageService,
+		@IExtensionManagementService protected readonly extensionManagementService?: IExtensionManagementService,
+		@IAdsTelemetryService private readonly adsTelemetryService?: IAdsTelemetryService,
+		@IExtensionsWorkbenchService protected readonly extensionsWorkbenchService?: IExtensionsWorkbenchService
 
 	) {
-		super(promptedExtensionRecommendations);
-
-		// this._recommendations = productService.recommendedExtensionsByScenario.map(r => ({ extensionId: r, reason: { reasonId: ExtensionRecommendationReason.Application, reasonText: localize('defaultRecommendations', "This extension is recommended by Azure Data Studio.") }, source: 'application' }));
+		super();
 	}
 
 	protected async doActivate(): Promise<void> {
@@ -107,7 +98,7 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 								'NeverShowAgainButton',
 								visualizerExtensionNotificationService
 							);
-							this.storageService.store(storageKey, true, StorageScope.GLOBAL);
+							this.storageService.store(storageKey, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
 						}
 					}],
 					{
@@ -130,7 +121,7 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 		if (!scenarioType) {
 			return Promise.reject(new Error(localize('scenarioTypeUndefined', 'The scenario type for extension recommendations must be provided.')));
 		}
-		return this.promptedExtensionRecommendations.filterIgnoredOrNotAllowed(this.productService.recommendedExtensionsByScenario[scenarioType] || [])
+		return (this.productService.recommendedExtensionsByScenario[scenarioType] || [])
 			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] }));
 	}
 }

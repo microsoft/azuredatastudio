@@ -9,9 +9,9 @@ pr:
     include: ['main', 'release/*']
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: "12.14.1"
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "12.14.1"
 
 - task: AzureKeyVault@1
   displayName: 'Azure Key Vault: Get Secrets'
@@ -19,8 +19,8 @@ steps:
     azureSubscription: 'azuredatastudio-adointegration'
     KeyVaultName: ado-secrets
 
-- script: |
-    set -e
+  - script: |
+      set -e
 
     cat << EOF > ~/.netrc
     machine github.com
@@ -28,7 +28,7 @@ steps:
     password $(github-distro-mixin-password)
     EOF
 
-    git config user.email "andresse@microsoft.com"
+    git config user.email "sqltools@service.microsoft.com"
     git config user.name "AzureDataStudio"
 
     git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
@@ -37,9 +37,9 @@ steps:
     # Push main branch into oss/master
     git push distro origin/main:refs/heads/oss/master
 
-    # Push every release branch into oss/release
-    git for-each-ref --format="%(refname:short)" refs/remotes/origin/release/* | sed 's/^origin\/\(.*\)$/\0:refs\/heads\/oss\/\1/' | xargs git push distro
+      # Push every release branch into oss/release
+      git for-each-ref --format="%(refname:short)" refs/remotes/origin/release/* | sed 's/^origin\/\(.*\)$/\0:refs\/heads\/oss\/\1/' | xargs git push distro
 
-    git merge $(node -p "require('./package.json').distro")
+      git merge $(node -p "require('./package.json').distro")
 
-  displayName: Sync & Merge Distro
+    displayName: Sync & Merge Distro

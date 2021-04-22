@@ -11,6 +11,9 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as crypto from 'crypto';
 import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey, AUTHTYPE, INTEGRATED_AUTH, KNOX_ENDPOINT_PORT, KNOX_ENDPOINT_SERVER } from './constants';
+import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
+import { BookTreeItemFormat, BookTreeItemType } from '../book/bookTreeItem';
+import * as loc from './localizedConstants';
 
 const localize = nls.loadMessageBundle();
 
@@ -22,13 +25,13 @@ export function getLivyUrl(serverName: string, port: string): string {
 	return this.getKnoxUrl(serverName, port) + '/default/livy/v1/';
 }
 
-export async function mkDir(dirPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
-	if (!await fs.pathExists(dirPath)) {
-		if (outputChannel) {
-			outputChannel.appendLine(localize('mkdirOutputMsg', "... Creating {0}", dirPath));
-		}
-		await fs.ensureDir(dirPath);
-	}
+export async function ensureDir(dirPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
+	outputChannel?.appendLine(localize('ensureDirOutputMsg', "... Ensuring {0} exists", dirPath));
+	await fs.ensureDir(dirPath);
+}
+export function ensureDirSync(dirPath: string, outputChannel?: vscode.OutputChannel): void {
+	outputChannel?.appendLine(localize('ensureDirOutputMsg', "... Ensuring {0} exists", dirPath));
+	fs.ensureDirSync(dirPath);
 }
 
 export function getErrorMessage(error: Error | string): string {
@@ -151,6 +154,11 @@ export function comparePackageVersions(first: string, second: string): number {
 	}
 
 	for (let i = 0; i < firstVersion.length; ++i) {
+		// Using asterisks means any version number is equivalent, so skip this value
+		if (firstVersion[i] === '*' || secondVersion[i] === '*') {
+			continue;
+		}
+
 		let firstVersionNum: string | number = Number(firstVersion[i]);
 		let secondVersionNum: string | number = Number(secondVersion[i]);
 
@@ -178,6 +186,86 @@ export function sortPackageVersions(versions: string[], ascending: boolean = tru
 			return compareResult * -1;
 		}
 	});
+}
+
+const specifierFirstCharMatch = /[><=!]/;
+
+// Determines if a given package is supported for the provided version of Python
+// using the version constraints from the pypi metadata.
+export function isPackageSupported(pythonVersion: string, packageVersionConstraints: string[]): boolean {
+	if (pythonVersion === '') {
+		return true;
+	}
+
+	// Version constraint strings are formatted like '!=2.7, >=3.5, >=3.6',
+	// with each package release having its own set of version constraints.
+	let supportedVersionFound = true;
+	for (let packageVersionConstraint of packageVersionConstraints) {
+		if (!packageVersionConstraint) {
+			continue;
+		}
+
+		let constraintParts = packageVersionConstraint.split(',');
+		for (let constraint of constraintParts) {
+			constraint = constraint.trim();
+			if (constraint.length === 0) {
+				continue;
+			}
+
+			let splitIndex: number;
+			if (!constraint[0].match(specifierFirstCharMatch)) {
+				splitIndex = -1; // No version specifier is included with this version number
+			} else if ((constraint[0] === '>' || constraint[0] === '<') && constraint[1] !== '=') {
+				splitIndex = 1;
+			} else {
+				splitIndex = 2;
+			}
+
+			let versionSpecifier: string;
+			let version: string;
+			if (splitIndex === -1) {
+				versionSpecifier = '=='; // If there's no version specifier, then we need to match the version exactly
+				version = constraint;
+			} else {
+				versionSpecifier = constraint.slice(0, splitIndex);
+				version = constraint.slice(splitIndex).trim();
+			}
+			let versionComparison = comparePackageVersions(pythonVersion, version);
+			switch (versionSpecifier) {
+				case '>=':
+					supportedVersionFound = versionComparison !== -1;
+					break;
+				case '<=':
+					supportedVersionFound = versionComparison !== 1;
+					break;
+				case '>':
+					supportedVersionFound = versionComparison === 1;
+					break;
+				case '<':
+					supportedVersionFound = versionComparison === -1;
+					break;
+				case '==':
+					supportedVersionFound = versionComparison === 0;
+					break;
+				case '!=':
+					supportedVersionFound = versionComparison !== 0;
+					break;
+				default:
+					// We hit an unexpected version specifier. Rather than throw an error here, we should
+					// let the package be installable so that we're not too restrictive by mistake.
+					// Trying to install the package will still throw its own unsupported version error later.
+					supportedVersionFound = true; // The package is tentatively supported until we find a constraint that fails
+					break;
+			}
+			if (!supportedVersionFound) {
+				break; // Failed at least one version check, so skip checking the other constraints
+			}
+		}
+		if (supportedVersionFound) {
+			break; // All constraints passed for this package, so we don't need to check any of the others
+		}
+	}
+	return supportedVersionFound;
 }
 
 export function isEditorTitleFree(title: string): boolean {
@@ -354,6 +442,15 @@ export function isBookItemPinned(notebookPath: string): boolean {
 	return false;
 }
 
+export function getNotebookType(book: BookTreeItemFormat): BookTreeItemType {
+	if (book.tableOfContents.sections) {
+		return BookTreeItemType.savedBookNotebook;
+	}
+	else {
+		return BookTreeItemType.savedNotebook;
+	}
+}
+
 export function getPinnedNotebooks(): IBookNotebook[] {
 	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
 	let pinnedNotebooks: [] = config.get(pinnedBooksConfigKey);
@@ -389,4 +486,32 @@ export async function setPinnedBookPathsInConfig(pinnedNotebookPaths: IBookNoteb
 export interface IBookNotebook {
 	bookPath?: string;
 	notebookPath: string;
+}
+
+export enum FileExtension {
+	Markdown = '.md',
+	Notebook = '.ipynb'
+}
+
+
+//Confirmation message dialog
+export async function confirmMessageDialog(prompter: IPrompter, msg: string): Promise<boolean> {
+	return await prompter.promptSingle<boolean>(<IQuestion>{
+		type: QuestionTypes.confirm,
+		message: msg,
+		default: false
+	});
+}
+
+export async function selectFolder(): Promise<string | undefined> {
+	let uris = await vscode.window.showOpenDialog({
+		canSelectFiles: false,
+		canSelectMany: false,
+		canSelectFolders: true,
+		openLabel: loc.labelSelectFolder
+	});
+	if (uris?.length > 0) {
+		return uris[0].fsPath;
+	}
+	return undefined;
 }

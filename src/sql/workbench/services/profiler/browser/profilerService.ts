@@ -15,7 +15,7 @@ import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configur
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { Memento } from 'vs/workbench/common/memento';
 import { ProfilerFilterDialog } from 'sql/workbench/services/profiler/browser/profilerFilterDialog';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
@@ -72,7 +72,7 @@ export class ProfilerService implements IProfilerService {
 		@IStorageService private _storageService: IStorageService
 	) {
 		this._context = new Memento('ProfilerEditor', this._storageService);
-		this._memento = this._context.getMemento(StorageScope.GLOBAL);
+		this._memento = this._context.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
 	}
 
 	public registerProvider(providerId: string, provider: azdata.ProfilerProvider): void {

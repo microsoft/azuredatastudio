@@ -142,34 +142,34 @@ export class PerFolderServerInstance implements IServerInstance {
 	}
 
 	private async configureJupyter(): Promise<void> {
-		await this.createInstanceFolders();
+		this.createInstanceFolders();
 		let resourcesFolder = path.join(this.options.install.extensionPath, 'resources', constants.jupyterConfigRootFolder);
-		await this.copyInstanceConfig(resourcesFolder);
-		await this.CopyCustomJs(resourcesFolder);
+		this.copyInstanceConfig(resourcesFolder);
+		this.copyCustomJs(resourcesFolder);
 		await this.copyKernelsToSystemJupyterDirs();
 	}
 
-	private async createInstanceFolders(): Promise<void> {
+	private createInstanceFolders(): void {
 		this.baseDir = path.join(this.getSystemJupyterHomeDir(), 'instances', `${UUID.generateUuid()}`);
 		this.instanceConfigRoot = path.join(this.baseDir, 'config');
 		this.instanceDataRoot = path.join(this.baseDir, 'data');
-		await utils.mkDir(this.baseDir, this.options.install.outputChannel);
-		await utils.mkDir(this.instanceConfigRoot, this.options.install.outputChannel);
-		await utils.mkDir(this.instanceDataRoot, this.options.install.outputChannel);
+		utils.ensureDirSync(this.baseDir, this.options.install.outputChannel);
+		utils.ensureDirSync(this.instanceConfigRoot, this.options.install.outputChannel);
+		utils.ensureDirSync(this.instanceDataRoot, this.options.install.outputChannel);
 	}
 
-	private async copyInstanceConfig(resourcesFolder: string): Promise<void> {
+	private copyInstanceConfig(resourcesFolder: string): void {
 		let configSource = path.join(resourcesFolder, NotebookConfigFilename);
 		let configDest = path.join(this.instanceConfigRoot, NotebookConfigFilename);
-		await fs.copy(configSource, configDest);
+		fs.copySync(configSource, configDest);
 	}
 
-	private async CopyCustomJs(resourcesFolder: string): Promise<void> {
+	private copyCustomJs(resourcesFolder: string): void {
 		let customPath = path.join(this.instanceConfigRoot, 'custom');
-		await utils.mkDir(customPath, this.options.install.outputChannel);
+		utils.ensureDirSync(customPath, this.options.install.outputChannel);
 		let customSource = path.join(resourcesFolder, CustomJsFilename);
 		let customDest = path.join(customPath, CustomJsFilename);
-		await fs.copy(customSource, customDest);
+		fs.copySync(customSource, customDest);
 	}
 
 	private async copyKernelsToSystemJupyterDirs(): Promise<void> {
@@ -180,10 +180,8 @@ export class PerFolderServerInstance implements IServerInstance {
 			kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
 		}
 		this._systemJupyterDir = path.join(this.getSystemJupyterHomeDir(), 'kernels');
-		if (!(await utils.exists(this._systemJupyterDir))) {
-			await utils.mkDir(this._systemJupyterDir, this.options.install.outputChannel);
-		}
-		await fs.copy(kernelsExtensionSource, this._systemJupyterDir);
+		utils.ensureDirSync(this._systemJupyterDir, this.options.install.outputChannel);
+		fs.copySync(kernelsExtensionSource, this._systemJupyterDir);
 		if (this.options.install.runningOnSaw) {
 			await this.options.install.updateKernelSpecPaths(this._systemJupyterDir);
 		}

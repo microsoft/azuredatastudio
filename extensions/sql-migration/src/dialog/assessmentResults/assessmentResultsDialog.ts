@@ -4,12 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { MigrationStateModel } from '../../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import { SqlDatabaseTree } from './sqlDatabasesTree';
-import { SqlAssessmentResultList } from './sqlAssessmentResultsList';
-import { SqlAssessmentResult } from './sqlAssessmentResult';
+import { SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
+import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
 
-
+export type Issues = {
+	description: string,
+	recommendation: string,
+	moreInfo: string,
+	impactedObjects: SqlMigrationImpactedObjectInfo[],
+};
 export class AssessmentResultsDialog {
 
 	private static readonly OkButtonText: string = 'OK';
@@ -17,33 +22,31 @@ export class AssessmentResultsDialog {
 
 	private _isOpen: boolean = false;
 	private dialog: azdata.window.Dialog | undefined;
+	private _model: MigrationStateModel;
 
 	// Dialog Name for Telemetry
 	public dialogName: string | undefined;
 
 	private _tree: SqlDatabaseTree;
-	private _list: SqlAssessmentResultList;
-	private _result: SqlAssessmentResult;
 
-	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string) {
-		this._tree = new SqlDatabaseTree();
-		this._list = new SqlAssessmentResultList();
-		this._result = new SqlAssessmentResult();
+
+	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string, private _skuRecommendationPage: SKURecommendationPage, private _targetType: MigrationTargetType) {
+		this._model = model;
+		this._tree = new SqlDatabaseTree(this._model, this._targetType);
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			dialog.registerContent(async (view) => {
 				try {
-					const treeComponent = await this._tree.createComponent(view);
-					const separator1 = view.modelBuilder.separator().component();
-					const listComponent = await this._list.createComponent(view);
-					const separator2 = view.modelBuilder.separator().component();
-					const resultComponent = await this._result.createComponent(view);
+					const flex = view.modelBuilder.flexContainer().withLayout({
+						flexFlow: 'row',
+						height: '100%',
+						width: '100%'
+					}).component();
+					flex.addItem(await this._tree.createRootContainer(view), { flex: '1 1 auto' });
 
-					const flex = view.modelBuilder.flexContainer().withItems([treeComponent, separator1, listComponent, separator2, resultComponent]);
-
-					view.initializeModel(flex.component());
+					view.initializeModel(flex);
 					resolve();
 				} catch (ex) {
 					reject(ex);
@@ -55,7 +58,7 @@ export class AssessmentResultsDialog {
 	public async openDialog(dialogName?: string) {
 		if (!this._isOpen) {
 			this._isOpen = true;
-			this.dialog = azdata.window.createModelViewDialog(this.title, this.title, true);
+			this.dialog = azdata.window.createModelViewDialog(this.title, this.title, '90%');
 
 			this.dialog.okButton.label = AssessmentResultsDialog.OkButtonText;
 			this.dialog.okButton.onClick(async () => await this.execute());
@@ -66,20 +69,29 @@ export class AssessmentResultsDialog {
 			const dialogSetupPromises: Thenable<void>[] = [];
 
 			dialogSetupPromises.push(this.initializeDialog(this.dialog));
+
 			azdata.window.openDialog(this.dialog);
 
 			await Promise.all(dialogSetupPromises);
+
+			await this._tree.initialize();
 		}
 	}
 
 	protected async execute() {
+		if (this._targetType === MigrationTargetType.SQLVM) {
+			this._model._vmDbs = this._tree.selectedDbs();
+		} else {
+			this._model._miDbs = this._tree.selectedDbs();
+		}
+		this._skuRecommendationPage.refreshCardText();
+		this.model.refreshDatabaseBackupPage = true;
 		this._isOpen = false;
 	}
 
 	protected async cancel() {
 		this._isOpen = false;
 	}
-
 
 	public get isOpen(): boolean {
 		return this._isOpen;

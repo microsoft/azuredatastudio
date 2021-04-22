@@ -14,12 +14,14 @@ import { IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
 import { NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
 import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { URI } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { IContextViewProvider, IDelegate } from 'vs/base/browser/ui/contextview/contextview';
+import { IEditorPane } from 'vs/workbench/common/editor';
+import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 
 export class NotebookModelStub implements INotebookModel {
-	constructor(private _languageInfo?: nb.ILanguageInfo, private _cells?: ICellModel[]) {
+	constructor(private _languageInfo?: nb.ILanguageInfo, private _cells?: ICellModel[], private _testContents?: nb.INotebookContents) {
 	}
 	trustedMode: boolean;
 	language: string;
@@ -76,6 +78,9 @@ export class NotebookModelStub implements INotebookModel {
 	get savedConnectionName(): string {
 		throw new Error('method not implemented.');
 	}
+	get multiConnectionMode(): boolean {
+		throw new Error('method not implemented.');
+	}
 	get providerId(): string {
 		throw new Error('method not implemented.');
 	}
@@ -83,6 +88,9 @@ export class NotebookModelStub implements INotebookModel {
 		throw new Error('method not implemented.');
 	}
 	getStandardKernelFromName(name: string): IStandardKernelWithProvider {
+		throw new Error('Method not implemented.');
+	}
+	restartSession(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 	changeKernel(displayName: string): void {
@@ -128,7 +136,7 @@ export class NotebookModelStub implements INotebookModel {
 		throw new Error('method not implemented.');
 	}
 	toJSON(): nb.INotebookContents {
-		throw new Error('Method not implemented.');
+		return this._testContents;
 	}
 	serializationStateChanged(changeType: NotebookChangeType, cell?: ICellModel): void {
 		throw new Error('Method not implemented.');
@@ -284,6 +292,18 @@ export class NotebookServiceStub implements INotebookService {
 		throw new Error('Method not implemented.');
 	}
 	navigateTo(notebookUri: URI, sectionId: string): void {
+		throw new Error('Method not implemented.');
+	}
+	openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane> {
+		throw new Error('Method not implemented.');
+	}
+	get onCodeCellExecutionStart(): vsEvent.Event<void> {
+		throw new Error('Method not implemented.');
+	}
+	notifyCellExecutionStarted(): void {
+		throw new Error('Method not implemented.');
+	}
+	getUntitledUriPath(originalTitle: string): string {
 		throw new Error('Method not implemented.');
 	}
 }

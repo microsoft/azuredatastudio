@@ -10,9 +10,9 @@
 	"carbon.extension.contributes.notebook.fileExtensions": "應向此筆記本提供者註冊的檔案副檔名",
 	"carbon.extension.contributes.notebook.standardKernels": "應為此筆記本提供者之標準的核心",
 	"vscode.extension.contributes.notebook.providers": "提供筆記本提供者。",
-	"carbon.extension.contributes.notebook.magic": "儲存格 magic 的名稱，例如 \"%%sql\"。",
-	"carbon.extension.contributes.notebook.language": "儲存格中包含此儲存格 magic 時，要使用的儲存格語言",
+	"carbon.extension.contributes.notebook.magic": "資料格 magic 的名稱，例如 '%%sql'。",
+	"carbon.extension.contributes.notebook.language": "資料格中包含此資料格 magic 時，要使用的資料格語言",
 	"carbon.extension.contributes.notebook.executionTarget": "這個 magic 指示的選擇性執行目標，例如 Spark vs SQL",
-	"carbon.extension.contributes.notebook.kernels": "這個項目有效的一組選擇性核心，例如 python3、pyspark3、sql",
-	"vscode.extension.contributes.notebook.languagemagics": "貢獻筆記本語言。"
+	"carbon.extension.contributes.notebook.kernels": "適用於像是 python3、pyspark、sql 等等的選擇性核心集",
+	"vscode.extension.contributes.notebook.languagemagics": "提供筆記本語言。"
 }

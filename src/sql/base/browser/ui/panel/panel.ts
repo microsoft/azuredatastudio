@@ -87,7 +87,6 @@ export class TabbedPanel extends Disposable {
 		this._styleElement = DOM.createStyleSheet(this.parent);
 		container.appendChild(this.parent);
 		this.header = DOM.$('.composite.title');
-		this.header.setAttribute('tabindex', '0');
 		this.tabList = DOM.$('.tabList');
 		this.tabList.setAttribute('role', 'tablist');
 		this.tabList.style.height = this.headersize + 'px';
@@ -104,7 +103,6 @@ export class TabbedPanel extends Disposable {
 		this.body = DOM.$('.tabBody');
 		this.body.setAttribute('role', 'tabpanel');
 		this.parent.appendChild(this.body);
-		this._register(DOM.addDisposableListener(this.header, DOM.EventType.FOCUS, e => this.focusCurrentTab()));
 	}
 
 	public get element(): HTMLElement {
@@ -173,7 +171,7 @@ export class TabbedPanel extends Disposable {
 
 		tab.disposables.add(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
-			if (event.equals(KeyCode.Enter)) {
+			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
 				this.showTab(tab.tab.identifier);
 				invokeTabSelectedHandler();
 				e.stopImmediatePropagation();
@@ -220,6 +218,7 @@ export class TabbedPanel extends Disposable {
 				shownTab.label.classList.remove('active');
 				shownTab.header.classList.remove('active');
 				shownTab.header.setAttribute('aria-selected', 'false');
+				shownTab.header.tabIndex = -1;
 				if (shownTab.body) {
 					shownTab.body.remove();
 					if (shownTab.tab.view.onHide) {
@@ -232,7 +231,7 @@ export class TabbedPanel extends Disposable {
 		this._shownTabId = id;
 		this.tabHistory.push(id);
 		const tab = this._tabMap.get(this._shownTabId)!; // @anthonydresser we know this can't be undefined since we check further up if the map contains the id
-
+		tab.header.tabIndex = 0;
 		if (tab.destroyTabBody && tab.body) {
 			tab.body.remove();
 			tab.body = undefined;
@@ -311,7 +310,7 @@ export class TabbedPanel extends Disposable {
 		}
 	}
 
-	private focusCurrentTab(): void {
+	public focusCurrentTab(): void {
 		if (this._shownTabId) {
 			const tab = this._tabMap.get(this._shownTabId);
 			if (tab) {

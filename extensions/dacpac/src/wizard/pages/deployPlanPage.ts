@@ -77,12 +77,14 @@ export class DeployPlanPage extends DacFxConfigPage {
 		this.formBuilder.addFormItem(this.dataLossComponentGroup, { horizontal: true, componentWidth: 400 });
 		this.dataLossCheckbox.checked = false;
 		this.dataLossCheckbox.enabled = false;
+		this.model.potentialDataLoss = false;
 		this.formBuilder.removeFormItem(this.noDataLossTextComponent);
 
 		this.loader.loading = true;
 		this.table.data = [];
 		await this.populateTable();
 		this.loader.loading = false;
+
 		return true;
 	}
 
@@ -103,6 +105,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 				value: loc.dataLossTextWithCount(result.dataLossAlerts.size)
 			});
 			this.dataLossCheckbox.enabled = true;
+			this.model.potentialDataLoss = true;
 		} else {
 			// check checkbox to enable Next button and remove checkbox because there won't be any possible data loss
 			this.dataLossCheckbox.checked = true;

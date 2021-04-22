@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
-import { directoryExist, fileExist } from '../common/utils';
+import { directoryExist, fileExist, isCurrentWorkspaceUntitled } from '../common/utils';
 
 interface Deferred<T> {
 	resolve: (result: T | Promise<T>) => void;
@@ -17,19 +17,19 @@ interface Deferred<T> {
 
 export abstract class DialogBase {
 	protected _toDispose: vscode.Disposable[] = [];
-	protected _dialogObject: azdata.window.Dialog;
+	public dialogObject: azdata.window.Dialog;
 	protected initDialogComplete: Deferred<void> | undefined;
 	protected initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
 	protected workspaceDescriptionFormComponent: azdata.FormComponent | undefined;
 	public workspaceInputBox: azdata.InputBoxComponent | undefined;
 	protected workspaceInputFormComponent: azdata.FormComponent | undefined;
 
-	constructor(dialogTitle: string, dialogName: string, dialogWidth: azdata.window.DialogWidth = 600) {
-		this._dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, dialogWidth);
-		this._dialogObject.okButton.label = constants.OkButtonText;
-		this.register(this._dialogObject.cancelButton.onClick(() => this.onCancelButtonClicked()));
-		this.register(this._dialogObject.okButton.onClick(() => this.onOkButtonClicked()));
-		this._dialogObject.registerCloseValidator(async () => {
+	constructor(dialogTitle: string, dialogName: string, okButtonText: string, dialogWidth: azdata.window.DialogWidth = 600) {
+		this.dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, dialogWidth);
+		this.dialogObject.okButton.label = okButtonText;
+		this.register(this.dialogObject.cancelButton.onClick(() => this.onCancelButtonClicked()));
+		this.register(this.dialogObject.okButton.onClick(() => this.onOkButtonClicked()));
+		this.dialogObject.registerCloseValidator(async () => {
 			return this.validate();
 		});
 	}
@@ -43,8 +43,8 @@ export abstract class DialogBase {
 		tab.registerContent(async (view: azdata.ModelView) => {
 			return this.initialize(view);
 		});
-		this._dialogObject.content = [tab];
-		azdata.window.openDialog(this._dialogObject);
+		this.dialogObject.content = [tab];
+		azdata.window.openDialog(this.dialogObject);
 		await this.initDialogPromise;
 	}
 
@@ -69,14 +69,14 @@ export abstract class DialogBase {
 	}
 
 	protected showErrorMessage(message: string): void {
-		this._dialogObject.message = {
+		this.dialogObject.message = {
 			text: message,
 			level: azdata.window.MessageLevel.Error
 		};
 	}
 
 	public getErrorMessage(): azdata.window.DialogMessage {
-		return this._dialogObject.message;
+		return this.dialogObject.message;
 	}
 
 	protected createHorizontalContainer(view: azdata.ModelView, items: azdata.Component[]): azdata.FlexContainer {
@@ -94,12 +94,14 @@ export abstract class DialogBase {
 			CSSStyles: { 'margin-top': '3px', 'margin-bottom': '0px' }
 		}).component();
 
+		const initialWorkspaceInputBoxValue = !!vscode.workspace.workspaceFile && !isCurrentWorkspaceUntitled() ? vscode.workspace.workspaceFile.fsPath : '';
+
 		this.workspaceInputBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: constants.WorkspaceLocationTitle,
 			width: constants.DefaultInputWidth,
-			enabled: !vscode.workspace.workspaceFile, // want it editable if no workspace is open
-			value: vscode.workspace.workspaceFile?.fsPath ?? '',
-			title: vscode.workspace.workspaceFile?.fsPath ?? '' // hovertext for if file path is too long to be seen in textbox
+			enabled: !vscode.workspace.workspaceFile || isCurrentWorkspaceUntitled(), // want it editable if no saved workspace is open
+			value: initialWorkspaceInputBoxValue,
+			title: initialWorkspaceInputBoxValue // hovertext for if file path is too long to be seen in textbox
 		}).component();
 
 		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
@@ -129,7 +131,7 @@ export abstract class DialogBase {
 			this.workspaceInputBox!.title = selectedFile;
 		}));
 
-		if (vscode.workspace.workspaceFile) {
+		if (vscode.workspace.workspaceFile && !isCurrentWorkspaceUntitled()) {
 			this.workspaceInputFormComponent = {
 				component: this.workspaceInputBox
 			};
@@ -154,7 +156,7 @@ export abstract class DialogBase {
 	 * @param name
 	 */
 	protected updateWorkspaceInputbox(location: string, name: string): void {
-		if (!vscode.workspace.workspaceFile) {
+		if (!vscode.workspace.workspaceFile || isCurrentWorkspaceUntitled()) {
 			const fileLocation = location && name ? path.join(location, `${name}.code-workspace`) : '';
 			this.workspaceInputBox!.value = fileLocation;
 			this.workspaceInputBox!.title = fileLocation;

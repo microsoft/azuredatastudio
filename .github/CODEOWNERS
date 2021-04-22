@@ -2,12 +2,15 @@
 # Each line is a file pattern followed by one or more owners.
 # Syntax can be found here: https://docs.github.com/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/about-code-owners#codeowners-syntax
 
-/extensions/arc/ @ranasaria
-/extensions/azdata/ @ranasaria
+/extensions/admin-tool-ext-win @Charles-Gagnon
+/extensions/arc/ @Charles-Gagnon
+/extensions/azdata/ @Charles-Gagnon
+/extensions/big-data-cluster/ @Charles-Gagnon
 /extensions/dacpac/ @kisantia
-/extensions/resource-deployment/ @ranasaria
+/extensions/query-history/ @Charles-Gagnon
+/extensions/resource-deployment/ @Charles-Gagnon
 /extensions/schema-compare/ @kisantia
 /extensions/sql-database-projects/ @Benjin @kisantia
 /extensions/mssql/config.json @Charles-Gagnon @alanrenmsft @kburtram
 
-/src/sql/*.d.ts @alanrenmsft @Charles-Gagnon @ranasaria
+/src/sql/*.d.ts @alanrenmsft @Charles-Gagnon

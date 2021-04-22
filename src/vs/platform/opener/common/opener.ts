@@ -7,6 +7,7 @@ import { URI } from 'vs/base/common/uri';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { equalsIgnoreCase, startsWithIgnoreCase } from 'vs/base/common/strings';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
 
 export const IOpenerService = createDecorator<IOpenerService>('openerService');
 
@@ -19,13 +20,27 @@ type OpenInternalOptions = {
 	readonly openToSide?: boolean;
 
 	/**
+	 * Extra editor options to apply in case an editor is used to open.
+	 */
+	readonly editorOptions?: IEditorOptions;
+
+	/**
 	 * Signals that the editor to open was triggered through a user
 	 * action, such as keyboard or mouse usage.
 	 */
 	readonly fromUserGesture?: boolean;
+
+	/**
+	 * Allow command links to be handled.
+	 */
+	readonly allowCommands?: boolean;
 };
 
-type OpenExternalOptions = { readonly openExternal?: boolean; readonly allowTunneling?: boolean };
+export type OpenExternalOptions = {
+	readonly openExternal?: boolean;
+	readonly allowTunneling?: boolean;
+	readonly allowContributedOpeners?: boolean | string;
+};
 
 export type OpenOptions = OpenInternalOptions & OpenExternalOptions;
 

@@ -306,6 +306,32 @@ export class ToggleQueryResultsKeyboardAction extends Action {
 	}
 }
 
+
+
+/**
+ * Toggle the focus between query editor and results pane
+ */
+export class ToggleFocusBetweenQueryEditorAndResultsAction extends Action {
+	public static ID = 'ToggleFocusBetweenQueryEditorAndResultsAction';
+	public static LABEL = nls.localize('ToggleFocusBetweenQueryEditorAndResultsAction', "Toggle Focus Between Query And Results");
+
+	constructor(
+		id: string,
+		label: string,
+		@IEditorService private _editorService: IEditorService
+	) {
+		super(id, label);
+		this.enabled = true;
+	}
+
+	public async run(): Promise<void> {
+		const editor = this._editorService.activeEditorPane;
+		if (editor instanceof QueryEditor) {
+			editor.toggleFocusBetweenQueryEditorAndResults();
+		}
+	}
+}
+
 /**
  * Action class that runs a query in the active SQL text document.
  */
@@ -354,7 +380,12 @@ export class RunQueryShortcutAction extends Action {
 			// otherwise, either run the statement or the script depending on parameter
 			let parameterText: string = editor.getSelectionText();
 			return this.escapeStringParamIfNeeded(editor, shortcutText, parameterText).then((escapedParam) => {
-				let queryString = `${shortcutText} ${escapedParam}`;
+				let queryString = '';
+				if (shortcutText.includes('{arg}')) {
+					queryString = shortcutText.replace(/{arg}/g, escapedParam);
+				} else {
+					queryString = `${shortcutText} ${escapedParam}`;
+				}
 				editor.input.runQueryString(queryString);
 			}).then(success => null, err => {
 				// swallow errors for now

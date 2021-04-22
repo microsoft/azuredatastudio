@@ -38,19 +38,21 @@ export default class AccountStore implements IAccountStore {
 		});
 	}
 
-	public getAccountsByProvider(providerId: string): Promise<azdata.Account[]> {
-		return this.doOperation(() => {
-			return this.readFromMemento()
-				.then(accounts => accounts.filter(account => account.key.providerId === providerId));
+	public async getAccountsByProvider(providerId: string): Promise<azdata.Account[]> {
+		const accounts = await this.doOperation(async () => {
+			await this.cleanupDeprecatedAccounts();
+			const accounts = await this.readFromMemento();
+			return accounts.filter(account => account.key.providerId === providerId);
 		});
+		return accounts ?? [];
 	}
 
-	public getAllAccounts(): Promise<azdata.Account[]> {
-		return this.doOperation(() => {
-			return this.cleanupDeprecatedAccounts().then(() => {
-				return this.readFromMemento();
-			});
+	public async getAllAccounts(): Promise<azdata.Account[]> {
+		const accounts = await this.doOperation(async () => {
+			await this.cleanupDeprecatedAccounts();
+			return this.readFromMemento();
 		});
+		return accounts ?? [];
 	}
 
 	public cleanupDeprecatedAccounts(): Promise<void> {
@@ -114,16 +116,16 @@ export default class AccountStore implements IAccountStore {
 		target.isStale = source.isStale;
 	}
 
-	private doOperation<T>(op: () => Promise<T>) {
+	private doOperation<T>(op: () => Promise<T>): Promise<T | undefined> {
 		// Initialize the active operation to an empty promise if necessary
-		let activeOperation = this._activeOperation || Promise.resolve<any>(null);
+		let activeOperation = this._activeOperation || Promise.resolve();
 
 		// Chain the operation to perform to the end of the existing promise
 		activeOperation = activeOperation.then(op);
 
 		// Add a catch at the end to make sure we can continue after any errors
-		activeOperation = activeOperation.then(undefined, (err) => {
-			// TODO: Log the error
+		activeOperation = activeOperation.then(undefined, err => {
+			this.logService.error(err);
 		});
 
 		// Point the current active operation to this one

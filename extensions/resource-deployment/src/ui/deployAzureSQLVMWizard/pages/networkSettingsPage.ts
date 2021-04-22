@@ -124,7 +124,10 @@ export class NetworkSettingsPage extends BasePage {
 			required: true
 		}).component();
 
-		this._virtualNetworkDropdown.onValueChanged((value) => {
+		this._virtualNetworkDropdown.onValueChanged(value => {
+			if (!this._virtualNetworkDropdown.value) {
+				return;
+			}
 			this._model.virtualNetworkName = (this._virtualNetworkDropdown.value as azdata.CategoryValue).name;
 			this.populateSubnetDropdown();
 		});
@@ -224,7 +227,10 @@ export class NetworkSettingsPage extends BasePage {
 			required: true
 		}).component();
 
-		this._subnetDropdown.onValueChanged((value) => {
+		this._subnetDropdown.onValueChanged(value => {
+			if (!this._subnetDropdown.value) {
+				return;
+			}
 			this._model.subnetName = (this._subnetDropdown.value as azdata.CategoryValue).name;
 		});
 
@@ -307,7 +313,10 @@ export class NetworkSettingsPage extends BasePage {
 			width: constants.standardWidth,
 		}).component();
 
-		this._publicIpDropdown.onValueChanged((value) => {
+		this._publicIpDropdown.onValueChanged(value => {
+			if (!this._publicIpDropdown.value) {
+				return;
+			}
 			this._model.publicIpName = (this._publicIpDropdown.value as azdata.CategoryValue).name;
 		});
 

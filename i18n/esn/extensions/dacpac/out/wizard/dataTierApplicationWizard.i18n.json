@@ -17,11 +17,11 @@
 	"dacFx.extractButton": "Extraer",
 	"dacFx.importButton": "Importar",
 	"dacFx.exportButton": "Exportar",
-	"dacFx.generateScriptButton": "Generar secuencia de comandos",
+	"dacFx.generateScriptButton": "Generar script",
 	"alertData.deployErrorMessage": "No se pudo implementar \"{0}\"",
 	"alertData.extractErrorMessage": "No se pudo extraer \"{0}\"",
 	"alertData.exportErrorMessage": "No se pudo exportar \"{0}\"",
 	"alertData.importErrorMessage": "No se pudo importar \"{0}\"",
-	"dacfx.scriptGeneratingMessage": "Puede ver el estado de la generación de scripts en la vista Tareas una vez que se cierra el asistente. El script generado se abrirá cuando se complete.",
+	"dacfx.scriptGeneratingMessage": "Puede ver el estado de la generación de scripts en la vista de tareas una vez que se cierra el asistente. El script generado se abrirá cuando se complete.",
 	"alertData.deployPlanErrorMessage": "No se pudo generar el plan de implementación, \"{0}\""
 }

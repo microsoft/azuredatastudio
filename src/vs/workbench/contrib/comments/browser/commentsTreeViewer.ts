@@ -127,7 +127,7 @@ export class CommentNodeRenderer implements IListRenderer<ITreeNode<CommentNode>
 			inline: true,
 			actionHandler: {
 				callback: (content) => {
-					this.openerService.open(content).catch(onUnexpectedError);
+					this.openerService.open(content, { allowCommands: node.element.comment.body.isTrusted }).catch(onUnexpectedError);
 				},
 				disposeables: disposables
 			}
@@ -182,7 +182,6 @@ export class CommentsList extends WorkbenchAsyncDataTree<any, any> {
 			dataSource,
 			{
 				accessibilityProvider: options.accessibilityProvider,
-				keyboardSupport: true,
 				identityProvider: {
 					getId: (element: any) => {
 						if (element instanceof CommentsModel) {

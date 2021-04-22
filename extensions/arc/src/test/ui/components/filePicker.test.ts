@@ -9,8 +9,8 @@ import * as sinon from 'sinon';
 import * as vscode from 'vscode';
 import { Deferred } from '../../../common/promise';
 import { FilePicker } from '../../../ui/components/filePicker';
-import { createModelViewMock } from 'azdata-test/out/mocks/modelView/modelViewMock';
-import { StubButton } from 'azdata-test/out/stubs/modelView/stubButton';
+import { createModelViewMock } from '@microsoft/azdata-test/out/mocks/modelView/modelViewMock';
+import { StubButton } from '@microsoft/azdata-test/out/stubs/modelView/stubButton';
 
 let filePicker: FilePicker;
 const initialPath = path.join('path', 'to', '.kube','config');
@@ -42,16 +42,6 @@ describe('filePicker', function (): void {
 	describe('getters and setters', async () => {
 		it('component getter', () => {
 			should(filePicker.component()).not.be.undefined();
-		});
-		[true, false].forEach(testValue => {
-			it(`Test readOnly with testValue: ${testValue}`, () => {
-				filePicker.readOnly = testValue;
-				filePicker.readOnly!.should.equal(testValue);
-			});
-			it(`Test enabled with testValue: ${testValue}`, () => {
-				filePicker.enabled = testValue;
-				filePicker.enabled!.should.equal(testValue);
-			});
 		});
 	});
 });

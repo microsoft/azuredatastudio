@@ -1,24 +1,5 @@
+
 steps:
-- script: |
-    mkdir -p .build
-    echo -n $BUILD_SOURCEVERSION > .build/commit
-    echo -n $VSCODE_QUALITY > .build/quality
-  displayName: Prepare cache flag
-
-- task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
-  inputs:
-    keyfile: 'build/.cachesalt, .build/commit, .build/quality'
-    targetfolder: '.build, out-build, out-vscode-min, out-vscode-reh-min, out-vscode-reh-web-min'
-    vstsFeed: 'BuildCache'
-    platformIndependent: true
-    alias: 'Compilation'
-
-- script: |
-    set -e
-    exit 1
-  displayName: Check RestoreCache
-  condition: and(succeeded(), ne(variables['CacheRestored-Compilation'], 'true'))
-
 - task: NodeTool@0
   inputs:
     versionSpec: "12.13.0"
@@ -34,6 +15,16 @@ steps:
     KeyVaultName: ado-secrets
     SecretsFilter: 'github-distro-mixin-password'
 
+- task: DownloadPipelineArtifact@2
+  inputs:
+    artifact: Compilation
+  displayName: Download compilation output
+
+- script: |
+    set -e
+    tar -xzf $(Pipeline.Workspace)/compilation.tar.gz
+  displayName: Extract compilation output
+
 - script: |
     set -e
     cat << EOF > ~/.netrc
@@ -42,7 +33,7 @@ steps:
     password $(github-distro-mixin-password)
     EOF
 
-    git config user.email "andresse@microsoft.com"
+    git config user.email "sqltools@service.microsoft.com"
     git config user.name "AzureDataStudio"
   displayName: Prepare tooling
 
@@ -54,6 +45,7 @@ steps:
   displayName: Merge distro
 
 # - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+#   displayName: Restore Cache - Node Modules
 #   inputs:
 #     keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
 #     targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
@@ -66,6 +58,7 @@ steps:
   # condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
 # - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
+#   displayName: Save Cache - Node Modules
 #   inputs:
 #     keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
 #     targetfolder: '**/node_modules, !**/node_modules/**/node_modules'

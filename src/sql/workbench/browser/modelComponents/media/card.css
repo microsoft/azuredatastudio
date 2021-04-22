@@ -254,3 +254,9 @@
 	font-size: 100%;
 }
 
+.card-group .link-value:focus {
+	outline-width: 1px;
+	outline-offset: 2px;
+	outline-style: solid;
+}
+

@@ -18,7 +18,7 @@
 	"jobStepDialog.blankStepName": "步驟名稱不能留空",
 	"jobStepDialog.processExitCode": "處理成功命令的結束代碼:",
 	"jobStepDialog.stepNameLabel": "步驟名稱",
-	"jobStepDialog.typeLabel": "型別",
+	"jobStepDialog.typeLabel": "類型",
 	"jobStepDialog.runAsLabel": "執行身分",
 	"jobStepDialog.databaseLabel": "資料庫",
 	"jobStepDialog.commandLabel": "命令",
@@ -51,6 +51,6 @@
 	"jobStepDialog.servicesPackage": "SQL Server 整合服務套件",
 	"jobStepDialog.agentServiceAccount": "SQL Server Agent 服務帳戶",
 	"jobStepDialog.nextStep": "前往下一步",
-	"jobStepDialog.quitJobSuccess": "退出作業報告成功",
+	"jobStepDialog.quitJobSuccess": "結束作業報告成功",
 	"jobStepDialog.quitJobFailure": "結束作業報告失敗"
 }

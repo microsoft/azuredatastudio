@@ -3,66 +3,32 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// Telemetry Event Names
-
-export const DatabaseConnected = 'DatabaseConnected';
-export const DatabaseDisconnected = 'DatabaseDisconnected';
-export const DeleteConnection = 'DeleteConnection';
-export const AddServerGroup = 'AddServerGroup';
-export const MoveServerGroup = 'MoveServerGroup';
-export const MoveServerConnection = 'MoveServerConnection';
-export const DeleteServerGroup = 'DeleteServerGroup';
-export const ModalDialogClosed = 'ModalDialogClosed';
-export const ModalDialogOpened = 'ModalDialogOpened';
-export const BackupCreated = 'BackupCreated';
-export const RestoreRequested = 'RestoreRequested';
-export const ChartCreated = 'ChartCreated';
-export const ObjectExplorerExpand = 'ObjectExplorerExpand';
-export const RunQuery = 'RunQuery';
-export const RunQueryStatement = 'RunQueryStatement';
-export const RunQueryString = 'RunQueryString';
-export const CancelQuery = 'CancelQuery';
-export const NewQuery = 'NewQuery';
-export const FirewallRuleRequested = 'FirewallRuleCreated';
-export const DashboardNavigated = 'DashboardNavigated';
-export const GetDataGridItems = 'GetDataGridItems';
-export const GetDataGridColumns = 'GetDataGridColumns';
-
-// Telemetry Properties
-
-// Modal Dialogs:
-export const ErrorMessage = 'ErrorMessage';
-export const WebView = 'WebView';
-export const ConnectionAdvancedProperties = 'ConnectionAdvancedProperties';
-export const Connection = 'Connection';
-export const Backup = 'Backup';
-export const Restore = 'Restore';
-export const Insights = 'Insights';
-export const Profiler = 'Profiler';
-export const ServerGroups = 'ServerGroups';
-export const Accounts = 'Accounts';
-export const FireWallRule = 'FirewallRule';
-export const AutoOAuth = 'AutoOAuth';
-export const AddNewDashboardTab = 'AddNewDashboardTab';
-export const ProfilerFilter = 'ProfilerFilter';
-
-// SQL Agent Events:
-
-// Views
-export const JobsView = 'JobsViewOpened';
-export const JobHistoryView = 'JobHistoryViewOpened';
-export const JobStepsView = 'JobStepsViewOpened';
-
-// Actions
-export const RunAgentJob = 'RunAgentJob';
-export const StopAgentJob = 'StopAgentJob';
-export const DeleteAgentJob = 'DeleteAgentJob';
-export const DeleteAgentJobStep = 'DeleteAgentJobStep';
-export const DeleteAgentAlert = 'DeleteAgentAlert';
-export const DeleteAgentOperator = 'DeleteAgentOperator';
-export const DeleteAgentProxy = 'DeleteAgentProxy';
+export enum ModalDialogName {
+	ErrorMessage = 'ErrorMessage',
+	WebView = 'WebView',
+	ConnectionAdvancedProperties = 'ConnectionAdvancedProperties',
+	Connection = 'Connection',
+	Backup = 'Backup',
+	FileBrowser = 'FileBrowser',
+	Restore = 'Restore',
+	Insights = 'Insights',
+	Profiler = 'Profiler',
+	ServerGroups = 'ServerGroups',
+	Accounts = 'Accounts',
+	FireWallRule = 'FirewallRule',
+	AutoOAuth = 'AutoOAuth',
+	AddNewDashboardTab = 'AddNewDashboardTab',
+	ProfilerFilter = 'ProfilerFilter',
+	CalloutDialog = 'CalloutDialog'
+}
 
 export enum TelemetryView {
+	Agent = 'Agent',
+	AgentJobs = 'AgentJobs',
+	AgentJobHistory = 'AgentJobHistory',
+	AgentJobSteps = 'AgentJobSteps',
+	AgentNotebookHistory = 'AgentNotebookHistory',
+	AgentNotebooks = 'AgentNotebooks',
 	Shell = 'Shell',
 	ExtensionRecommendationDialog = 'ExtensionRecommendationDialog',
 	ResultsPanel = 'ResultsPanel',
@@ -70,9 +36,59 @@ export enum TelemetryView {
 	SqlAssessment = 'SqlAssessment'
 }
 
+export enum TelemetryError {
+	DatabaseConnectionError = 'DatabaseConnectionError'
+}
+
 export enum TelemetryAction {
+	AddServerGroup = 'AddServerGroup',
+	adsCommandExecuted = 'adsCommandExecuted',
+	BackupCreated = 'BackupCreated',
+	DashboardNavigated = 'DashboardNavigated',
+	DatabaseConnected = 'DatabaseConnected',
+	DatabaseDisconnected = 'DatabaseDisconnected',
+	DeleteAgentJob = 'DeleteAgentJob',
+	DeleteAgentJobStep = 'DeleteAgentJobStep',
+	DeleteAgentAlert = 'DeleteAgentAlert',
+	DeleteAgentOperator = 'DeleteAgentOperator',
+	DeleteAgentProxy = 'DeleteAgentProxy',
+	DeleteConnection = 'DeleteConnection',
+	DeleteServerGroup = 'DeleteServerGroup',
+	CancelQuery = 'CancelQuery',
+	ChartCreated = 'ChartCreated',
 	Click = 'Click',
+	FirewallRuleRequested = 'FirewallRuleCreated',
+	GetDataGridItems = 'GetDataGridItems',
+	GetDataGridColumns = 'GetDataGridColumns',
+	ModelViewDashboardOpened = 'ModelViewDashboardOpened',
+	ModalDialogClosed = 'ModalDialogClosed',
+	ModalDialogOpened = 'ModalDialogOpened',
+	MoveServerConnection = 'MoveServerConnection',
+	MoveServerGroup = 'MoveServerGroup',
+	NewQuery = 'NewQuery',
+	ObjectExplorerExpand = 'ObjectExplorerExpand',
 	Open = 'Open',
-	ModelViewDashboardOpened = 'ModelViewDashboardOpened'
+	RestoreRequested = 'RestoreRequested',
+	RunAgentJob = 'RunAgentJob',
+	RunQuery = 'RunQuery',
+	RunQueryStatement = 'RunQueryStatement',
+	RunQueryString = 'RunQueryString',
+	ShowChart = 'ShowChart',
+	StopAgentJob = 'StopAgentJob',
+	WizardPagesNavigation = 'WizardPagesNavigation',
+	SearchStarted = 'SearchStarted',
+	SearchCompleted = 'SearchCompleted'
+}
+
+export enum NbTelemetryAction {
+	RunCell = 'RunCell',
+	RunAll = 'RunNotebook',
+	AddCell = 'AddCell',
+	KernelChanged = 'KernelChanged',
+	NewNotebookFromConnections = 'NewNotebookWithConnectionProfile'
+}
+
+export enum TelemetryPropertyName {
+	ChartMaxRowCountExceeded = 'chartMaxRowCountExceeded'
 }
 

@@ -5,6 +5,7 @@
 
 declare module 'azdata-ext' {
 	import { SemVer } from 'semver';
+	import * as vscode from 'vscode';
 
 	/**
 	 * Covers defining what the azdata extension exports to other extensions
@@ -16,7 +17,7 @@ declare module 'azdata-ext' {
 		name = 'Microsoft.azdata'
 	}
 
-	export type AdditionalEnvVars = { [key: string]: string};
+	export type AdditionalEnvVars = { [key: string]: string };
 
 	export interface ErrorWithLink extends Error {
 		messageWithLink: string;
@@ -159,7 +160,7 @@ declare module 'azdata-ext' {
 
 	export interface PostgresServerShowResult {
 		apiVersion: string, // "arcdata.microsoft.com/v1alpha1"
-		kind: string, // "postgresql-12"
+		kind: string, // "postgresql"
 		metadata: {
 			creationTimestamp: string, // "2020-08-19T20:25:11Z"
 			generation: number, // 1
@@ -176,7 +177,8 @@ declare module 'azdata-ext' {
 				}[],
 				settings: {
 					default: { [key: string]: string } // { "max_connections": "101", "work_mem": "4MB" }
-				}
+				},
+				version: string // "12"
 			},
 			scale: {
 				shards: number, // 1 (shards was renamed to workers, kept here for backwards compatibility)
@@ -221,6 +223,17 @@ declare module 'azdata-ext' {
 			state: string, // "Ready"
 			logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:pg1'))
 			metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=pg1
+			podsStatus: {
+				conditions: {
+					lastTransitionTime: string, // "2020-08-19T17:05:39Z"
+					message?: string, // "containers with unready status: [fluentbit postgres telegraf]"
+					reason?: string, // "ContainersNotReady"
+					status: string, // "True"
+					type: string // "Ready"
+				}[],
+				name: string, // "pg-instancew-0",
+				role: string // "worker"
+			}[]
 		}
 	}
 
@@ -232,23 +245,27 @@ declare module 'azdata-ext' {
 		code?: number
 	}
 
+	export interface EndpointOrNamespace {
+		endpoint?: string,
+		namespace?: string
+	}
 	export interface IAzdataApi {
 		arc: {
 			dc: {
-				create(namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<void>>,
+				create(namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string, additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<void>>,
 				endpoint: {
-					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<DcEndpointListResult[]>>
+					list(additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<DcEndpointListResult[]>>
 				},
 				config: {
-					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<DcConfigListResult[]>>,
-					show(additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<DcConfigShowResult>>
+					list(additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<DcConfigListResult[]>>,
+					show(additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<DcConfigShowResult>>
 				}
 			},
 			postgres: {
 				server: {
-					delete(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<void>>,
-					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<PostgresServerListResult[]>>,
-					show(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<PostgresServerShowResult>>,
+					delete(name: string, additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<void>>,
+					list(additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<PostgresServerListResult[]>>,
+					show(name: string, additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<PostgresServerShowResult>>,
 					edit(
 						name: string,
 						args: {
@@ -264,16 +281,16 @@ declare module 'azdata-ext' {
 							replaceEngineSettings?: boolean,
 							workers?: number
 						},
-						engineVersion?: string,
-						additionalEnvVars?: AdditionalEnvVars
+						additionalEnvVars?: AdditionalEnvVars,
+						azdataContext?: string
 					): Promise<AzdataOutput<void>>
 				}
 			},
 			sql: {
 				mi: {
-					delete(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<void>>,
-					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<SqlMiListResult[]>>,
-					show(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<SqlMiShowResult>>,
+					delete(name: string, additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<void>>,
+					list(additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<SqlMiListResult[]>>,
+					show(name: string, additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<SqlMiShowResult>>,
 					edit(
 						name: string,
 						args: {
@@ -283,13 +300,14 @@ declare module 'azdata-ext' {
 							memoryRequest?: string,
 							noWait?: boolean,
 						},
-						additionalEnvVars?: AdditionalEnvVars
+						additionalEnvVars?: AdditionalEnvVars,
+						azdataContext?: string
 					): Promise<AzdataOutput<void>>
 				}
 			}
 		},
 		getPath(): Promise<string>,
-		login(endpoint: string, username: string, password: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<any>>,
+		login(endpointOrNamespace: EndpointOrNamespace, username: string, password: string, additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<void>>,
 		/**
 		 * The semVersion corresponding to this installation of azdata. version() method should have been run
 		 * before fetching this value to ensure that correct value is returned. This is almost always correct unless

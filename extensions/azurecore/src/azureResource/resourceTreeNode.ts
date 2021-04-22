@@ -60,7 +60,7 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 		const treeItem = this.resourceNodeWithProviderId.resourceNode.treeItem;
 
 		return {
-			label: treeItem.label,
+			label: <any>treeItem.label,
 			isLeaf: treeItem.collapsibleState === TreeItemCollapsibleState.None ? true : false,
 			errorMessage: undefined,
 			metadata: undefined,

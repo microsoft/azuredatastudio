@@ -29,7 +29,7 @@ export abstract class SqlAssessmentTab implements azdata.Tab, vscode.Disposable 
 		return this;
 	}
 
-	abstract async tabContent(view: azdata.ModelView): Promise<azdata.Component>;
+	abstract tabContent(view: azdata.ModelView): Promise<azdata.Component>;
 }
 
 

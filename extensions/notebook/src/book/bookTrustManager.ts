@@ -6,7 +6,8 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as constants from './../common/constants';
 import { BookTreeItem } from './bookTreeItem';
-import { BookModel, BookVersion } from './bookModel';
+import { BookModel } from './bookModel';
+import { BookVersion } from './bookVersionHandler';
 
 export interface IBookTrustManager {
 	isNotebookTrustedByDefault(notebookUri: string): boolean;
@@ -27,8 +28,8 @@ export class BookTrustManager implements IBookTrustManager {
 		let trustableBookPaths = this.getTrustableBookPaths();
 		let hasTrustedBookPath: boolean = treeBookItems
 			.filter(bookItem => trustableBookPaths.some(trustableBookPath => trustableBookPath === path.join(bookItem.book.root, path.sep)))
-			.some(bookItem => normalizedNotebookUri.startsWith(bookItem.version === BookVersion.v1 ? path.join(bookItem.book.root, 'content', path.sep) : path.join(bookItem.book.root, path.sep)));
-		let isNotebookTrusted = hasTrustedBookPath && this.books.some(bookModel => bookModel.getNotebook(normalizedNotebookUri));
+			.some(bookItem => normalizedNotebookUri.startsWith(bookItem.book.version === BookVersion.v1 ? path.join(bookItem.book.root, 'content', path.sep) : path.join(bookItem.book.root, path.sep)));
+		let isNotebookTrusted = hasTrustedBookPath && this.books.some(bookModel => bookModel.getNotebook(vscode.Uri.file(normalizedNotebookUri).fsPath));
 		return isNotebookTrusted;
 	}
 

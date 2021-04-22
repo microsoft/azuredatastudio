@@ -143,6 +143,31 @@ declare module 'vscode' {
 		* provider
 		*/
 		export function logout(providerId: string, sessionId: string): Thenable<void>;
+
+		/**
+		 * Retrieve a password that was stored with key. Returns undefined if there
+		 * is no password matching that key.
+		 * @param key The key the password was stored under.
+		 */
+		export function getPassword(key: string): Thenable<string | undefined>;
+
+		/**
+		 * Store a password under a given key.
+		 * @param key The key to store the password under
+		 * @param value The password
+		 */
+		export function setPassword(key: string, value: string): Thenable<void>;
+
+		/**
+		 * Remove a password from storage.
+		 * @param key The key the password was stored under.
+		 */
+		export function deletePassword(key: string): Thenable<void>;
+
+		/**
+		 * Fires when a password is set or deleted.
+		 */
+		export const onDidChangePassword: Event<void>;
 	}
 
 	//#endregion
@@ -156,8 +181,9 @@ declare module 'vscode' {
 	export class ResolvedAuthority {
 		readonly host: string;
 		readonly port: number;
+		readonly connectionToken: string | undefined;
 
-		constructor(host: string, port: number);
+		constructor(host: string, port: number, connectionToken?: string);
 	}
 
 	export interface ResolvedOptions {
@@ -197,6 +223,13 @@ declare module 'vscode' {
 
 	}
 
+	export interface TunnelCreationOptions {
+		/**
+		 * True when the local operating system will require elevation to use the requested local port.
+		 */
+		elevationRequired?: boolean;
+	}
+
 	export type ResolverResult = ResolvedAuthority & ResolvedOptions & TunnelInformation;
 
 	export class RemoteAuthorityResolverError extends Error {
@@ -212,8 +245,11 @@ declare module 'vscode' {
 		 * Can be optionally implemented if the extension can forward ports better than the core.
 		 * When not implemented, the core will use its default forwarding logic.
 		 * When implemented, the core will use this to forward ports.
+		 *
+		 * To enable the "Change Local Port" action on forwarded ports, make sure to set the `localAddress` of
+		 * the returned `Tunnel` to a `{ port: number, host: string; }` and not a string.
 		 */
-		tunnelFactory?: (tunnelOptions: TunnelOptions) => Thenable<Tunnel> | undefined;
+		tunnelFactory?: (tunnelOptions: TunnelOptions, tunnelCreationOptions: TunnelCreationOptions) => Thenable<Tunnel> | undefined;
 
 		/**
 		 * Provides filtering for candidate ports.
@@ -715,80 +751,6 @@ declare module 'vscode' {
 
 	//#endregion
 
-	//#region file-decorations: https://github.com/microsoft/vscode/issues/54938
-
-	// TODO@jrieken FileDecoration, FileDecorationProvider etc.
-	// TODO@jrieken Add selector notion to limit decorations to a view.
-	// TODO@jrieken Rename `Decoration.letter` to `short` so that it could be used for coverage et al.
-
-	export class Decoration {
-
-		/**
-		 * A letter that represents this decoration.
-		 */
-		letter?: string;
-
-		/**
-		 * The human-readable title for this decoration.
-		 */
-		title?: string;
-
-		/**
-		 * The color of this decoration.
-		 */
-		color?: ThemeColor;
-
-		/**
-		 * The priority of this decoration.
-		 */
-		priority?: number;
-
-		/**
-		 * A flag expressing that this decoration should be
-		 * propagted to its parents.
-		 */
-		bubble?: boolean;
-
-		/**
-		 * Creates a new decoration.
-		 *
-		 * @param letter A letter that represents the decoration.
-		 * @param title The title of the decoration.
-		 * @param color The color of the decoration.
-		 */
-		constructor(letter?: string, title?: string, color?: ThemeColor);
-	}
-
-	/**
-	 * The decoration provider interfaces defines the contract between extensions and
-	 * file decorations.
-	 */
-	export interface DecorationProvider {
-
-		/**
-		 * An event to signal decorations for one or many files have changed.
-		 *
-		 * @see [EventEmitter](#EventEmitter
-		 */
-		onDidChangeDecorations: Event<undefined | Uri | Uri[]>;
-
-		/**
-		 * Provide decorations for a given uri.
-		 *
-		 *
-		 * @param uri The uri of the file to provide a decoration for.
-		 * @param token A cancellation token.
-		 * @returns A decoration or a thenable that resolves to such.
-		 */
-		provideDecoration(uri: Uri, token: CancellationToken): ProviderResult<Decoration>;
-	}
-
-	export namespace window {
-		export function registerDecorationProvider(provider: DecorationProvider): Disposable;
-	}
-
-	//#endregion
-
 	//#region debug
 
 	/**
@@ -807,46 +769,9 @@ declare module 'vscode' {
 		// Properties: see details [here](https://microsoft.github.io/debug-adapter-protocol/specification#Base_Protocol_Variable).
 	}
 
-	// deprecated debug API
-
-	export interface DebugConfigurationProvider {
-		/**
-		 * Deprecated, use DebugAdapterDescriptorFactory.provideDebugAdapter instead.
-		 * @deprecated Use DebugAdapterDescriptorFactory.createDebugAdapterDescriptor instead
-		 */
-		debugAdapterExecutable?(folder: WorkspaceFolder | undefined, token?: CancellationToken): ProviderResult<DebugAdapterExecutable>;
-	}
-
 	//#endregion
 
-	//#region LogLevel: https://github.com/microsoft/vscode/issues/85992
 
-	/**
-	 * @deprecated DO NOT USE, will be removed
-	 */
-	export enum LogLevel {
-		Trace = 1,
-		Debug = 2,
-		Info = 3,
-		Warning = 4,
-		Error = 5,
-		Critical = 6,
-		Off = 7
-	}
-
-	export namespace env {
-		/**
-		 * @deprecated DO NOT USE, will be removed
-		 */
-		export const logLevel: LogLevel;
-
-		/**
-		 * @deprecated DO NOT USE, will be removed
-		 */
-		export const onDidChangeLogLevel: Event<LogLevel>;
-	}
-
-	//#endregion
 
 	//#region @joaomoreno: SCM validation
 
@@ -976,7 +901,7 @@ declare module 'vscode' {
 	//#region @jrieken -> exclusive document filters
 
 	export interface DocumentFilter {
-		exclusive?: boolean;
+		readonly exclusive?: boolean;
 	}
 
 	//#endregion
@@ -991,45 +916,8 @@ declare module 'vscode' {
 	//#endregion
 
 	//#region Tree View: https://github.com/microsoft/vscode/issues/61313
-	/**
-	 * Label describing the [Tree item](#TreeItem)
-	 */
-	export interface TreeItemLabel {
-
-		/**
-		 * A human-readable string describing the [Tree item](#TreeItem).
-		 */
-		label: string;
-
-		/**
-		 * Ranges in the label to highlight. A range is defined as a tuple of two number where the
-		 * first is the inclusive start index and the second the exclusive end index
-		 */
-		highlights?: [number, number][];
-
-	}
-
-	// https://github.com/microsoft/vscode/issues/100741
-	export interface TreeDataProvider<T> {
-		resolveTreeItem?(element: T, item: TreeItem2): TreeItem2 | Thenable<TreeItem2>;
-	}
-
-	export class TreeItem2 extends TreeItem {
-		/**
-		 * Label describing this item. When `falsy`, it is derived from [resourceUri](#TreeItem.resourceUri).
-		 */
-		label?: string | TreeItemLabel | /* for compilation */ any;
-
-		/**
-		 * Content to be shown when you hover over the tree item.
-		 */
-		tooltip?: string | MarkdownString | /* for compilation */ any;
-
-		/**
-		 * @param label Label describing this item
-		 * @param collapsibleState [TreeItemCollapsibleState](#TreeItemCollapsibleState) of the tree item. Default is [TreeItemCollapsibleState.None](#TreeItemCollapsibleState.None)
-		 */
-		constructor(label: TreeItemLabel, collapsibleState?: TreeItemCollapsibleState);
+	export interface TreeView<T> extends Disposable {
+		reveal(element: T | undefined, options?: { select?: boolean, focus?: boolean, expand?: boolean | number }): Thenable<void>;
 	}
 	//#endregion
 
@@ -1091,45 +979,6 @@ declare module 'vscode' {
 		 * @return A new status bar item.
 		 */
 		export function createStatusBarItem(options?: StatusBarItemOptions): StatusBarItem;
-	}
-
-	//#endregion
-
-	//#region OnTypeRename: https://github.com/microsoft/vscode/issues/88424
-
-	/**
-	 * The rename provider interface defines the contract between extensions and
-	 * the live-rename feature.
-	 */
-	export interface OnTypeRenameProvider {
-		/**
-		 * Provide a list of ranges that can be live renamed together.
-		 *
-		 * @param document The document in which the command was invoked.
-		 * @param position The position at which the command was invoked.
-		 * @param token A cancellation token.
-		 * @return A list of ranges that can be live-renamed togehter. The ranges must have
-		 * identical length and contain identical text content. The ranges cannot overlap. Optional a word pattern
-		 * that overrides the word pattern defined when registering the provider. Live rename stops as soon as the renamed content
-		 * no longer matches the word pattern.
-		 */
-		provideOnTypeRenameRanges(document: TextDocument, position: Position, token: CancellationToken): ProviderResult<{ ranges: Range[]; wordPattern?: RegExp; }>;
-	}
-
-	namespace languages {
-		/**
-		 * Register a rename provider that works on type.
-		 *
-		 * Multiple providers can be registered for a language. In that case providers are sorted
-		 * by their [score](#languages.match) and the best-matching provider is used. Failure
-		 * of the selected provider will cause a failure of the whole operation.
-		 *
-		 * @param selector A selector that defines the documents this provider is applicable to.
-		 * @param provider An on type rename provider.
-		 * @param wordPattern Word pattern for this provider.
-		 * @return A [disposable](#Disposable) that unregisters this provider when being disposed.
-		 */
-		export function registerOnTypeRenameProvider(selector: DocumentSelector, provider: OnTypeRenameProvider, wordPattern?: RegExp): Disposable;
 	}
 
 	//#endregion
@@ -1234,6 +1083,27 @@ declare module 'vscode' {
 	}
 
 	export type CellOutput = CellStreamOutput | CellErrorOutput | CellDisplayOutput;
+
+	export class NotebookCellOutputItem {
+
+		readonly mime: string;
+		readonly value: unknown;
+		readonly metadata?: Record<string, string | number | boolean>;
+
+		constructor(mime: string, value: unknown, metadata?: Record<string, string | number | boolean>);
+	}
+
+	//TODO@jrieken add id?
+	export class NotebookCellOutput {
+
+		readonly outputs: NotebookCellOutputItem[];
+		readonly metadata?: Record<string, string | number | boolean>;
+
+		constructor(outputs: NotebookCellOutputItem[], metadata?: Record<string, string | number | boolean>);
+
+		//TODO@jrieken HACK to workaround dependency issues...
+		toJSON(): any;
+	}
 
 	export enum NotebookCellRunState {
 		Running = 1,
@@ -1365,6 +1235,26 @@ declare module 'vscode' {
 		 * The document's current run state
 		 */
 		runState?: NotebookRunState;
+
+		/**
+		 * Whether the document is trusted, default to true
+		 * When false, insecure outputs like HTML, JavaScript, SVG will not be rendered.
+		 */
+		trusted?: boolean;
+	}
+
+	export interface NotebookDocumentContentOptions {
+		/**
+		 * Controls if outputs change will trigger notebook document content change and if it will be used in the diff editor
+		 * Default to false. If the content provider doesn't persisit the outputs in the file document, this should be set to true.
+		 */
+		transientOutputs: boolean;
+
+		/**
+		 * Controls if a meetadata property change will trigger notebook document content change and if it will be used in the diff editor
+		 * Default to false. If the content provider doesn't persisit a metadata property in the file document, it should be set to true.
+		 */
+		transientMetadata: { [K in keyof NotebookCellMetadata]?: boolean };
 	}
 
 	export interface NotebookDocument {
@@ -1375,6 +1265,7 @@ declare module 'vscode' {
 		readonly isDirty: boolean;
 		readonly isUntitled: boolean;
 		readonly cells: ReadonlyArray<NotebookCell>;
+		readonly contentOptions: NotebookDocumentContentOptions;
 		languages: string[];
 		metadata: NotebookDocumentMetadata;
 	}
@@ -1401,19 +1292,22 @@ declare module 'vscode' {
 	export interface WorkspaceEdit {
 		replaceNotebookMetadata(uri: Uri, value: NotebookDocumentMetadata): void;
 		replaceNotebookCells(uri: Uri, start: number, end: number, cells: NotebookCellData[], metadata?: WorkspaceEditEntryMetadata): void;
-		replaceNotebookCellOutput(uri: Uri, index: number, outputs: CellOutput[], metadata?: WorkspaceEditEntryMetadata): void;
+		replaceNotebookCellOutput(uri: Uri, index: number, outputs: (NotebookCellOutput | CellOutput)[], metadata?: WorkspaceEditEntryMetadata): void;
 		replaceNotebookCellMetadata(uri: Uri, index: number, cellMetadata: NotebookCellMetadata, metadata?: WorkspaceEditEntryMetadata): void;
 	}
 
 	export interface NotebookEditorEdit {
 		replaceMetadata(value: NotebookDocumentMetadata): void;
 		replaceCells(start: number, end: number, cells: NotebookCellData[]): void;
-		replaceCellOutput(index: number, outputs: CellOutput[]): void;
+		replaceCellOutput(index: number, outputs: (NotebookCellOutput | CellOutput)[]): void;
 		replaceCellMetadata(index: number, metadata: NotebookCellMetadata): void;
 	}
 
 	export interface NotebookCellRange {
 		readonly start: number;
+		/**
+		 * exclusive
+		 */
 		readonly end: number;
 	}
 
@@ -1456,16 +1350,6 @@ declare module 'vscode' {
 		readonly viewColumn?: ViewColumn;
 
 		/**
-		 * Whether the panel is active (focused by the user).
-		 */
-		readonly active: boolean;
-
-		/**
-		 * Whether the panel is visible.
-		 */
-		readonly visible: boolean;
-
-		/**
 		 * Fired when the panel is disposed.
 		 */
 		readonly onDidDispose: Event<void>;
@@ -1484,7 +1368,7 @@ declare module 'vscode' {
 		 *
 		 * Messages are only delivered if the editor is live.
 		 *
-		 * @param message Body of the message. This must be a string or other json serilizable object.
+		 * @param message Body of the message. This must be a string or other json serializable object.
 		 */
 		postMessage(message: any): Thenable<boolean>;
 
@@ -1504,6 +1388,8 @@ declare module 'vscode' {
 		 * @return A promise that resolves with a value indicating if the edits could be applied.
 		 */
 		edit(callback: (editBuilder: NotebookEditorEdit) => void): Thenable<boolean>;
+
+		setDecorations(decorationType: NotebookEditorDecorationType, range: NotebookCellRange): void;
 
 		revealRange(range: NotebookCellRange, revealType?: NotebookEditorRevealType): void;
 	}
@@ -1641,7 +1527,7 @@ declare module 'vscode' {
 		/**
 		 * Unique identifier for the backup.
 		 *
-		 * This id is passed back to your extension in `openCustomDocument` when opening a notebook editor from a backup.
+		 * This id is passed back to your extension in `openNotebook` when opening a notebook editor from a backup.
 		 */
 		readonly id: string;
 
@@ -1684,7 +1570,7 @@ declare module 'vscode' {
 		 *
 		 * Messages are only delivered if the editor is live.
 		 *
-		 * @param message Body of the message. This must be a string or other json serilizable object.
+		 * @param message Body of the message. This must be a string or other json serializable object.
 		 */
 		postMessage(message: any): Thenable<boolean>;
 
@@ -1695,6 +1581,10 @@ declare module 'vscode' {
 	}
 
 	export interface NotebookContentProvider {
+		readonly options?: NotebookDocumentContentOptions;
+		readonly onDidChangeNotebookContentOptions?: Event<NotebookDocumentContentOptions>;
+		readonly onDidChangeNotebook: Event<NotebookDocumentContentChangeEvent | NotebookDocumentEditEvent>;
+
 		/**
 		 * Content providers should always use [file system providers](#FileSystemProvider) to
 		 * resolve the raw content for `uri` as the resouce is not necessarily a file on disk.
@@ -1703,7 +1593,6 @@ declare module 'vscode' {
 		resolveNotebook(document: NotebookDocument, webview: NotebookCommunication): Promise<void>;
 		saveNotebook(document: NotebookDocument, cancellation: CancellationToken): Promise<void>;
 		saveNotebookAs(targetResource: Uri, document: NotebookDocument, cancellation: CancellationToken): Promise<void>;
-		readonly onDidChangeNotebook: Event<NotebookDocumentContentChangeEvent | NotebookDocumentEditEvent>;
 		backupNotebook(document: NotebookDocument, context: NotebookDocumentBackupContext, cancellation: CancellationToken): Promise<NotebookDocumentBackup>;
 	}
 
@@ -1720,9 +1609,11 @@ declare module 'vscode' {
 		cancelAllCellsExecution(document: NotebookDocument): void;
 	}
 
+	export type NotebookFilenamePattern = GlobPattern | { include: GlobPattern; exclude: GlobPattern };
+
 	export interface NotebookDocumentFilter {
 		viewType?: string | string[];
-		filenamePattern?: GlobPattern | { include: GlobPattern; exclude: GlobPattern };
+		filenamePattern?: NotebookFilenamePattern;
 	}
 
 	export interface NotebookKernelProvider<T extends NotebookKernel = NotebookKernel> {
@@ -1760,21 +1651,38 @@ declare module 'vscode' {
 		dispose(): void;
 	}
 
+	export interface NotebookDecorationRenderOptions {
+		backgroundColor?: string | ThemeColor;
+		borderColor?: string | ThemeColor;
+		top: ThemableDecorationAttachmentRenderOptions;
+	}
+
+	export interface NotebookEditorDecorationType {
+		readonly key: string;
+		dispose(): void;
+	}
+
+	export interface NotebookDocumentShowOptions {
+		viewColumn?: ViewColumn;
+		preserveFocus?: boolean;
+		preview?: boolean;
+		selection?: NotebookCellRange;
+	}
+
+
 	export namespace notebook {
 		export function registerNotebookContentProvider(
 			notebookType: string,
 			provider: NotebookContentProvider,
-			options?: {
+			options?: NotebookDocumentContentOptions & {
 				/**
-				 * Controls if outputs change will trigger notebook document content change and if it will be used in the diff editor
-				 * Default to false. If the content provider doesn't persisit the outputs in the file document, this should be set to true.
+				 * Not ready for production or development use yet.
 				 */
-				transientOutputs: boolean;
-				/**
-				 * Controls if a meetadata property change will trigger notebook document content change and if it will be used in the diff editor
-				 * Default to false. If the content provider doesn't persisit a metadata property in the file document, it should be set to true.
-				 */
-				transientMetadata: { [K in keyof NotebookCellMetadata]?: boolean }
+				viewOptions?: {
+					displayName: string;
+					filenamePattern: NotebookFilenamePattern[];
+					exclusive?: boolean;
+				};
 			}
 		): Disposable;
 
@@ -1783,6 +1691,8 @@ declare module 'vscode' {
 			provider: NotebookKernelProvider
 		): Disposable;
 
+		export function createNotebookEditorDecorationType(options: NotebookDecorationRenderOptions): NotebookEditorDecorationType;
+		export function openNotebookDocument(uri: Uri, viewType?: string): Promise<NotebookDocument>;
 		export const onDidOpenNotebookDocument: Event<NotebookDocument>;
 		export const onDidCloseNotebookDocument: Event<NotebookDocument>;
 		export const onDidSaveNotebookDocument: Event<NotebookDocument>;
@@ -1791,14 +1701,6 @@ declare module 'vscode' {
 		 * All currently known notebook documents.
 		 */
 		export const notebookDocuments: ReadonlyArray<NotebookDocument>;
-
-		export const visibleNotebookEditors: NotebookEditor[];
-		export const onDidChangeVisibleNotebookEditors: Event<NotebookEditor[]>;
-
-		export const activeNotebookEditor: NotebookEditor | undefined;
-		export const onDidChangeActiveNotebookEditor: Event<NotebookEditor | undefined>;
-		export const onDidChangeNotebookEditorSelection: Event<NotebookEditorSelectionChangeEvent>;
-		export const onDidChangeNotebookEditorVisibleRanges: Event<NotebookEditorVisibleRangesChangeEvent>;
 		export const onDidChangeNotebookDocumentMetadata: Event<NotebookDocumentMetadataChangeEvent>;
 		export const onDidChangeNotebookCells: Event<NotebookCellsChangeEvent>;
 		export const onDidChangeCellOutputs: Event<NotebookCellOutputsChangeEvent>;
@@ -1825,6 +1727,16 @@ declare module 'vscode' {
 		 * @return A new status bar item.
 		 */
 		export function createCellStatusBarItem(cell: NotebookCell, alignment?: NotebookCellStatusBarAlignment, priority?: number): NotebookCellStatusBarItem;
+	}
+
+	export namespace window {
+		export const visibleNotebookEditors: NotebookEditor[];
+		export const onDidChangeVisibleNotebookEditors: Event<NotebookEditor[]>;
+		export const activeNotebookEditor: NotebookEditor | undefined;
+		export const onDidChangeActiveNotebookEditor: Event<NotebookEditor | undefined>;
+		export const onDidChangeNotebookEditorSelection: Event<NotebookEditorSelectionChangeEvent>;
+		export const onDidChangeNotebookEditorVisibleRanges: Event<NotebookEditorVisibleRangesChangeEvent>;
+		export function showNotebookDocument(document: NotebookDocument, options?: NotebookDocumentShowOptions): Promise<NotebookEditor>;
 	}
 
 	//#endregion
@@ -2072,188 +1984,338 @@ declare module 'vscode' {
 	}
 	//#endregion
 
+	//#region https://github.com/microsoft/vscode/issues/107467
+	/*
+		General activation events:
+			- `onLanguage:*` most test extensions will want to activate when their
+				language is opened to provide code lenses.
+			- `onTests:*` new activation event very simiular to `workspaceContains`,
+				but only fired when the user wants to run tests or opens the test explorer.
+	*/
+	export namespace test {
+		/**
+		 * Registers a provider that discovers tests for the given document
+		 * selectors. It is activated when either tests need to be enumerated, or
+		 * a document matching the selector is opened.
+		 */
+		export function registerTestProvider<T extends TestItem>(testProvider: TestProvider<T>): Disposable;
 
-	//#region https://github.com/microsoft/vscode/issues/46585
+		/**
+		 * Runs tests with the given options. If no options are given, then
+		 * all tests are run. Returns the resulting test run.
+		 */
+		export function runTests<T extends TestItem>(options: TestRunOptions<T>): Thenable<void>;
+
+		/**
+		 * Returns an observer that retrieves tests in the given workspace folder.
+		 */
+		export function createWorkspaceTestObserver(workspaceFolder: WorkspaceFolder): TestObserver;
+
+		/**
+		 * Returns an observer that retrieves tests in the given text document.
+		 */
+		export function createDocumentTestObserver(document: TextDocument): TestObserver;
+	}
+
+	export interface TestObserver {
+		/**
+		 * List of tests returned by test provider for files in the workspace.
+		 */
+		readonly tests: ReadonlyArray<TestItem>;
+
+		/**
+		 * An event that fires when an existing test in the collection changes, or
+		 * null if a top-level test was added or removed. When fired, the consumer
+		 * should check the test item and all its children for changes.
+		 */
+		readonly onDidChangeTest: Event<TestChangeEvent>;
+
+		/**
+		 * An event the fires when all test providers have signalled that the tests
+		 * the observer references have been discovered. Providers may continue to
+		 * watch for changes and cause {@link onDidChangeTest} to fire as files
+		 * change, until the observer is disposed.
+		 *
+		 * @todo as below
+		 */
+		readonly onDidDiscoverInitialTests: Event<void>;
+
+		/**
+		 * Dispose of the observer, allowing VS Code to eventually tell test
+		 * providers that they no longer need to update tests.
+		 */
+		dispose(): void;
+	}
+
+	export interface TestChangeEvent {
+		/**
+		 * List of all tests that are newly added.
+		 */
+		readonly added: ReadonlyArray<TestItem>;
+
+		/**
+		 * List of existing tests that have updated.
+		 */
+		readonly updated: ReadonlyArray<TestItem>;
+
+		/**
+		 * List of existing tests that have been removed.
+		 */
+		readonly removed: ReadonlyArray<TestItem>;
+
+		/**
+		 * Highest node in the test tree under which changes were made. This can
+		 * be easily plugged into events like the TreeDataProvider update event.
+		 */
+		readonly commonChangeAncestor: TestItem | null;
+	}
 
 	/**
-	 * A webview based view.
+	 * Tree of tests returned from the provide methods in the {@link TestProvider}.
 	 */
-	export interface WebviewView {
+	export interface TestHierarchy<T extends TestItem> {
 		/**
-		 * Identifies the type of the webview view, such as `'hexEditor.dataView'`.
+		 * Root node for tests. The `testRoot` instance must not be replaced over
+		 * the lifespan of the TestHierarchy, since you will need to reference it
+		 * in `onDidChangeTest` when a test is added or removed.
 		 */
-		readonly viewType: string;
+		readonly root: T;
 
 		/**
-		 * The underlying webview for the view.
-		 */
-		readonly webview: Webview;
-
-		/**
-		 * View title displayed in the UI.
+		 * An event that fires when an existing test under the `root` changes.
+		 * This can be a result of a state change in a test run, a property update,
+		 * or an update to its children. Changes made to tests will not be visible
+		 * to {@link TestObserver} instances until this event is fired.
 		 *
-		 * The view title is initially taken from the extension `package.json` contribution.
+		 * This will signal a change recursively to all children of the given node.
+		 * For example, firing the event with the {@link testRoot} will refresh
+		 * all tests.
 		 */
-		title?: string;
+		readonly onDidChangeTest: Event<T>;
 
 		/**
-		 * Human-readable string which is rendered less prominently in the title.
+		 * An event that should be fired when all tests that are currently defined
+		 * have been discovered. The provider should continue to watch for changes
+		 * and fire `onDidChangeTest` until the hierarchy is disposed.
+		 *
+		 * @todo can this be covered by existing progress apis? Or return a promise
+		 */
+		readonly onDidDiscoverInitialTests: Event<void>;
+
+		/**
+		 * Dispose will be called when there are no longer observers interested
+		 * in the hierarchy.
+		 */
+		dispose(): void;
+	}
+
+	/**
+	 * Discovers and provides tests. It's expected that the TestProvider will
+	 * ambiently listen to {@link vscode.window.onDidChangeVisibleTextEditors} to
+	 * provide test information about the open files for use in code lenses and
+	 * other file-specific UI.
+	 *
+	 * Additionally, the UI may request it to discover tests for the workspace
+	 * via `addWorkspaceTests`.
+	 *
+	 * @todo rename from provider
+	 */
+	export interface TestProvider<T extends TestItem = TestItem> {
+		/**
+		 * Requests that tests be provided for the given workspace. This will
+		 * generally be called when tests need to be enumerated for the
+		 * workspace.
+		 *
+		 * It's guaranteed that this method will not be called again while
+		 * there is a previous undisposed watcher for the given workspace folder.
+		 */
+		createWorkspaceTestHierarchy?(workspace: WorkspaceFolder): TestHierarchy<T>;
+
+		/**
+		 * Requests that tests be provided for the given document. This will
+		 * be called when tests need to be enumerated for a single open file,
+		 * for instance by code lens UI.
+		 */
+		createDocumentTestHierarchy?(document: TextDocument): TestHierarchy<T>;
+
+		/**
+		 * Starts a test run. This should cause {@link onDidChangeTest} to
+		 * fire with update test states during the run.
+		 * @todo this will eventually need to be able to return a summary report, coverage for example.
+		 */
+		runTests?(options: TestRunOptions<T>, cancellationToken: CancellationToken): ProviderResult<void>;
+	}
+
+	/**
+	 * Options given to `TestProvider.runTests`
+	 */
+	export interface TestRunOptions<T extends TestItem = TestItem> {
+		/**
+		 * Array of specific tests to run. The {@link TestProvider.testRoot} may
+		 * be provided as an indication to run all tests.
+		 */
+		tests: T[];
+
+		/**
+		 * Whether or not tests in this run should be debugged.
+		 */
+		debug: boolean;
+	}
+
+	/**
+	 * A test item is an item shown in the "test explorer" view. It encompasses
+	 * both a suite and a test, since they have almost or identical capabilities.
+	 */
+	export interface TestItem {
+		/**
+		 * Display name describing the test case.
+		 */
+		label: string;
+
+		/**
+		 * Optional description that appears next to the label.
 		 */
 		description?: string;
 
 		/**
-		 * Event fired when the view is disposed.
+		 * Whether this test item can be run individually, defaults to `true`
+		 * if not provided.
 		 *
-		 * Views are disposed when they are explicitly hidden by a user (this happens when a user
-		 * right clicks in a view and unchecks the webview view).
-		 *
-		 * Trying to use the view after it has been disposed throws an exception.
+		 * In some cases, like Go's tests, test can have children but these
+		 * children cannot be run independently.
 		 */
-		readonly onDidDispose: Event<void>;
+		runnable?: boolean;
 
 		/**
-		 * Tracks if the webview is currently visible.
-		 *
-		 * Views are visible when they are on the screen and expanded.
+		 * Whether this test item can be debugged. Defaults to `false` if not provided.
 		 */
-		readonly visible: boolean;
+		debuggable?: boolean;
 
 		/**
-		 * Event fired when the visibility of the view changes.
-		 *
-		 * Actions that trigger a visibility change:
-		 *
-		 * - The view is collapsed or expanded.
-		 * - The user switches to a different view group in the sidebar or panel.
-		 *
-		 * Note that hiding a view using the context menu instead disposes of the view and fires `onDidDispose`.
+		 * VS Code location.
 		 */
-		readonly onDidChangeVisibility: Event<void>;
+		location?: Location;
 
 		/**
-		 * Reveal the view in the UI.
-		 *
-		 * If the view is collapsed, this will expand it.
-		 *
-		 * @param preserveFocus When `true` the view will not take focus.
+		 * Optional list of nested tests for this item.
 		 */
-		show(preserveFocus?: boolean): void;
+		children?: TestItem[];
+
+		/**
+		 * Test run state. Will generally be {@link TestRunState.Unset} by
+		 * default.
+		 */
+		state: TestState;
+	}
+
+	export enum TestRunState {
+		// Initial state
+		Unset = 0,
+		// Test is currently running
+		Running = 1,
+		// Test run has passed
+		Passed = 2,
+		// Test run has failed (on an assertion)
+		Failed = 3,
+		// Test run has been skipped
+		Skipped = 4,
+		// Test run failed for some other reason (compilation error, timeout, etc)
+		Errored = 5
 	}
 
 	/**
-	 * Additional information the webview view being resolved.
-	 *
-	 * @param T Type of the webview's state.
+	 * TestState includes a test and its run state. This is included in the
+	 * {@link TestItem} and is immutable; it should be replaced in th TestItem
+	 * in order to update it. This allows consumers to quickly and easily check
+	 * for changes via object identity.
 	 */
-	interface WebviewViewResolveContext<T = unknown> {
+	export class TestState {
 		/**
-		 * Persisted state from the webview content.
-		 *
-		 * To save resources, VS Code normally deallocates webview documents (the iframe content) that are not visible.
-		 * For example, when the user collapse a view or switches to another top level activity in the sidebar, the
-		 * `WebviewView` itself is kept alive but the webview's underlying document is deallocated. It is recreated when
-		 * the view becomes visible again.
-		 *
-		 * You can prevent this behavior by setting `retainContextWhenHidden` in the `WebviewOptions`. However this
-		 * increases resource usage and should be avoided wherever possible. Instead, you can use persisted state to
-		 * save off a webview's state so that it can be quickly recreated as needed.
-		 *
-		 * To save off a persisted state, inside the webview call `acquireVsCodeApi().setState()` with
-		 * any json serializable object. To restore the state again, call `getState()`. For example:
-		 *
-		 * ```js
-		 * // Within the webview
-		 * const vscode = acquireVsCodeApi();
-		 *
-		 * // Get existing state
-		 * const oldState = vscode.getState() || { value: 0 };
-		 *
-		 * // Update state
-		 * setState({ value: oldState.value + 1 })
-		 * ```
-		 *
-		 * VS Code ensures that the persisted state is saved correctly when a webview is hidden and across
-		 * editor restarts.
+		 * Current state of the test.
 		 */
-		readonly state: T | undefined;
+		readonly runState: TestRunState;
+
+		/**
+		 * Optional duration of the test run, in milliseconds.
+		 */
+		readonly duration?: number;
+
+		/**
+		 * Associated test run message. Can, for example, contain assertion
+		 * failure information if the test fails.
+		 */
+		readonly messages: ReadonlyArray<Readonly<TestMessage>>;
+
+		/**
+		 * @param state Run state to hold in the test state
+		 * @param messages List of associated messages for the test
+		 * @param duration Length of time the test run took, if appropriate.
+		 */
+		constructor(runState: TestRunState, messages?: TestMessage[], duration?: number);
 	}
 
 	/**
-	 * Provider for creating `WebviewView` elements.
+	 * Represents the severity of test messages.
 	 */
-	export interface WebviewViewProvider {
-		/**
-		 * Revolves a webview view.
-		 *
-		 * `resolveWebviewView` is called when a view first becomes visible. This may happen when the view is
-		 * first loaded or when the user hides and then shows a view again.
-		 *
-		 * @param webviewView Webview view to restore. The serializer should take ownership of this view. The
-		 *    provider must set the webview's `.html` and hook up all webview events it is interested in.
-		 * @param context Additional metadata about the view being resolved.
-		 * @param token Cancellation token indicating that the view being provided is no longer needed.
-		 *
-		 * @return Optional thenable indicating that the view has been fully resolved.
-		 */
-		resolveWebviewView(webviewView: WebviewView, context: WebviewViewResolveContext, token: CancellationToken): Thenable<void> | void;
+	export enum TestMessageSeverity {
+		Error = 0,
+		Warning = 1,
+		Information = 2,
+		Hint = 3
 	}
 
-	namespace window {
+	/**
+	 * Message associated with the test state. Can be linked to a specific
+	 * source range -- useful for assertion failures, for example.
+	 */
+	export interface TestMessage {
 		/**
-		 * Register a new provider for webview views.
-		 *
-		 * @param viewId Unique id of the view. This should match the `id` from the
-		 *   `views` contribution in the package.json.
-		 * @param provider Provider for the webview views.
-		 *
-		 * @return Disposable that unregisters the provider.
+		 * Human-readable message text to display.
 		 */
-		export function registerWebviewViewProvider(viewId: string, provider: WebviewViewProvider, options?: {
-			/**
-			 * Content settings for the webview created for this view.
-			 */
-			readonly webviewOptions?: {
-				/**
-				 * Controls if the webview element itself (iframe) is kept around even when the view
-				 * is no longer visible.
-				 *
-				 * Normally the webview's html context is created when the view becomes visible
-				 * and destroyed when it is hidden. Extensions that have complex state
-				 * or UI can set the `retainContextWhenHidden` to make VS Code keep the webview
-				 * context around, even when the webview moves to a background tab. When a webview using
-				 * `retainContextWhenHidden` becomes hidden, its scripts and other dynamic content are suspended.
-				 * When the view becomes visible again, the context is automatically restored
-				 * in the exact same state it was in originally. You cannot send messages to a
-				 * hidden webview, even with `retainContextWhenHidden` enabled.
-				 *
-				 * `retainContextWhenHidden` has a high memory overhead and should only be used if
-				 * your view's context cannot be quickly saved and restored.
-				 */
-				readonly retainContextWhenHidden?: boolean;
-			};
-		}): Disposable;
+		message: string | MarkdownString;
+
+		/**
+		 * Message severity. Defaults to "Error", if not provided.
+		 */
+		severity?: TestMessageSeverity;
+
+		/**
+		 * Expected test output. If given with `actual`, a diff view will be shown.
+		 */
+		expectedOutput?: string;
+
+		/**
+		 * Actual test output. If given with `actual`, a diff view will be shown.
+		 */
+		actualOutput?: string;
+
+		/**
+		 * Associated file location.
+		 */
+		location?: Location;
 	}
 	//#endregion
 
-	//#region
+	//#region Statusbar Item Background Color (https://github.com/microsoft/vscode/issues/110214)
 
-	export interface FileSystem {
+	/**
+	 * A status bar item is a status bar contribution that can
+	 * show text and icons and run a command on click.
+	 */
+	export interface StatusBarItem {
+
 		/**
-		 * Check if a given file system supports writing files.
+		 * The background color for this entry.
 		 *
-		 * Keep in mind that just because a file system supports writing, that does
-		 * not mean that writes will always succeed. There may be permissions issues
-		 * or other errors that prevent writing a file.
+		 * Note: the supported colors for background are currently limited to
+		 * `ThemeColors` with id `statusBarItem.errorBackground`. Other `ThemeColors`
+		 * will be ignored.
 		 *
-		 * @param scheme The scheme of the filesystem, for example `file` or `git`.
-		 *
-		 * @return `true` if the file system supports writing, `false` if it does not
-		 * support writing (i.e. it is readonly), and `undefined` if VS Code does not
-		 * know about the filesystem.
+		 * When setting the background color to `statusBarItem.errorBackground`, it is
+		 * recommended to also set `color` to `statusBarItem.errorForeground`.
 		 */
-		isWritableFileSystem(scheme: string): boolean | undefined;
+		backgroundColor: ThemeColor | undefined;
 	}
-
 
 	//#endregion
 }

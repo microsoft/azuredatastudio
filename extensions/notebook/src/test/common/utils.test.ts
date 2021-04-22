@@ -28,10 +28,10 @@ describe('Utils Tests', function () {
 		should(utils.getLivyUrl(host, port)).endWith('/gateway/default/livy/v1/');
 	});
 
-	it('mkDir', async () => {
+	it('ensureDir', async () => {
 		const dirPath = path.join(os.tmpdir(), uuid.v4());
 		await should(fs.stat(dirPath)).be.rejected();
-		await utils.mkDir(dirPath, new MockOutputChannel());
+		await utils.ensureDir(dirPath, new MockOutputChannel());
 		should.exist(await fs.stat(dirPath), `Folder ${dirPath} did not exist after creation`);
 	});
 
@@ -77,6 +77,22 @@ describe('Utils Tests', function () {
 
 		it('correctly compares version with only minor version difference', () => {
 			should(utils.comparePackageVersions(version1Revision, version1)).equal(1);
+		});
+
+		it('equivalent versions with wildcard characters', () => {
+			should(utils.comparePackageVersions('1.*.3', '1.5.3')).equal(0);
+		});
+
+		it('lower version with wildcard characters', () => {
+			should(utils.comparePackageVersions('1.4.*', '1.5.3')).equal(-1);
+		});
+
+		it('higher version with wildcard characters', () => {
+			should(utils.comparePackageVersions('4.5.6', '3.*')).equal(1);
+		});
+
+		it('all wildcard strings should be equal', () => {
+			should(utils.comparePackageVersions('*.*', '*.*.*')).equal(0);
 		});
 	});
 
@@ -136,6 +152,103 @@ describe('Utils Tests', function () {
 			const random = ['1.0.1h', '1.0.0', '42', '1.0.1b', '100.0', '0.1', '1.0.1'];
 			const randomSorted = ['0.1', '1.0.0', '1.0.1', '1.0.1b', '1.0.1h', '42', '100.0'];
 			should(utils.sortPackageVersions(random)).deepEqual(randomSorted);
+		});
+	});
+
+	describe('isPackageSupported', () => {
+		it('Constraints have no version specifier', async function (): Promise<void> {
+			let pythonVersion = '3.6';
+			let versionConstraints = ['3.6.*', '3.*'];
+			let result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.true();
+
+			versionConstraints = ['3.5.*', '3.5'];
+			result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.false();
+		});
+
+		it('Package is valid for version constraints', async function (): Promise<void> {
+			let pythonVersion = '3.6';
+			let versionConstraints = ['>=3.5,!=3.2,!=3.4.*'];
+			let result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.true();
+		});
+
+		it('Version constraints string has lots of spaces', async function (): Promise<void> {
+			let pythonVersion = '3.6';
+			let versionConstraints = ['>= 3.5, != 3.2, != 3.4.*'];
+			let result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.true();
+		});
+
+		it('Strictly greater or less than comparisons', async function (): Promise<void> {
+			let pythonVersion = '3.6';
+			let versionConstraints = ['> 3.5, > 3.4.*', '< 3.8'];
+			let result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.true();
+		});
+
+		it('Strict equality', async function (): Promise<void> {
+			let pythonVersion = '3.6';
+			let versionConstraints = ['== 3.6', '== 3.6.*'];
+			let result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.true();
+		});
+
+		it('Package is valid for first set of constraints, but not the second', async function (): Promise<void> {
+			let pythonVersion = '3.6';
+			let versionConstraints = ['>=3.5, !=3.2, !=3.4.*', '!=3.6, >=3.5'];
+			let result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.true();
+		});
+
+		it('Package is valid for second set of constraints, but not the first', async function (): Promise<void> {
+			let pythonVersion = '3.6';
+			let versionConstraints = ['!=3.6, >=3.5', '>=3.5, !=3.2, !=3.4.*'];
+			let result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.true();
+		});
+
+		it('Package is not valid for constraints', async function (): Promise<void> {
+			let pythonVersion = '3.6';
+			let versionConstraints = ['>=3.4, !=3.6, >=3.5'];
+			let result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.false();
+		});
+
+		it('Package is not valid for several sets of constraints', async function (): Promise<void> {
+			let pythonVersion = '3.6';
+			let versionConstraints = ['>=3.7', '!=3.6, >=3.5', '>=3.8'];
+			let result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.false();
+		});
+
+		it('Constraints are all empty strings', async function (): Promise<void> {
+			let pythonVersion = '3.6';
+			let versionConstraints = ['', '', ''];
+			let result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.true();
+		});
+
+		it('Constraints are all undefined', async function (): Promise<void> {
+			let pythonVersion = '3.6';
+			let versionConstraints: string[] = [undefined, undefined, undefined];
+			let result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.true();
+		});
+
+		it('Constraints are a bunch of commas', async function (): Promise<void> {
+			let pythonVersion = '3.6';
+			let versionConstraints: string[] = [',,,', ',,,,', ', , , , , , ,'];
+			let result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.true();
+		});
+
+		it('Installed python version is an empty string', async function (): Promise<void> {
+			let pythonVersion = '';
+			let versionConstraints = ['>=3.7', '!=3.6, >=3.5', '>=3.8'];
+			let result = await utils.isPackageSupported(pythonVersion, versionConstraints);
+			should(result).be.true();
 		});
 	});
 

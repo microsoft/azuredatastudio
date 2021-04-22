@@ -153,4 +153,8 @@ export class QueryResultsEditor extends EditorPane {
 	public registerQueryModelViewTab(title: string, componentId: string): void {
 		this.resultsView.registerQueryModelViewTab(title, componentId);
 	}
+
+	public focus(): void {
+		this.resultsView.focus();
+	}
 }

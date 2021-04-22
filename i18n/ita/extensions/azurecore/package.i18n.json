@@ -10,7 +10,7 @@
 	"azure.description": "Consente di sfogliare e usare le risorse di Azure",
 	"azure.title": "Azure",
 	"azure.resource.config.title": "Configurazione risorse di Azure",
-	"azure.resource.config.filter.description": "Filtro delle risorse. Ogni elemento è costituito da un ID account, un ID sottoscrizione e un nome delimitati da una barra",
+	"azure.resource.config.filter.description": "Filtro delle risorse. Ogni elemento è costituito da un ID account, un ID sottoscrizione e un nome separati da una barra",
 	"azure.resource.explorer.title": "Azure",
 	"azure.resource.refreshall.title": "Azure: Aggiorna tutti gli account",
 	"azure.resource.refresh.title": "Aggiorna",
@@ -19,8 +19,8 @@
 	"azure.resource.connectsqlserver.title": "Connetti",
 	"azure.resource.connectsqldb.title": "Aggiungi ai server",
 	"accounts.clearTokenCache": "Cancella la cache dei token dell'account Azure",
-	"config.enablePublicCloudDescription": "Indica se l'integrazione del cloud pubblico di Azure deve essere abilitata",
-	"config.enableUsGovCloudDescription": "Indica se l'integrazione del cloud US Government Azure (Fairfax) deve essere abilitata",
-	"config.enableChinaCloudDescription": "Indica se l'integrazione di Azure Cina deve essere abilitata",
-	"config.enableGermanyCloudDescription": "Indica se l'integrazione di Azure Germania deve essere abilitata"
+	"config.enablePublicCloudDescription": "Consente di indicare se l'integrazione del cloud pubblico di Azure deve essere abilitata",
+	"config.enableUsGovCloudDescription": "Consente di indicare se l'integrazione del cloud US Government Azure (Fairfax) deve essere abilitata",
+	"config.enableChinaCloudDescription": "Consente di indicare se l'integrazione di Azure Cina deve essere abilitata",
+	"config.enableGermanyCloudDescription": "Consente di indicare se l'integrazione di Azure Germania deve essere abilitata"
 }

@@ -17,7 +17,7 @@ import { AzdataReleaseInfo } from '../azdataReleaseInfo';
 import * as TypeMoq from 'typemoq';
 import { eulaAccepted } from '../constants';
 
-const oldAzdataMock = new azdata.AzdataTool('/path/to/azdata', '0.0.0');
+const oldAzdataMock = new azdata.AzdataTool('/path/to/azdata', azdata.MIN_AZDATA_VERSION.raw);
 const currentAzdataMock = new azdata.AzdataTool('/path/to/azdata', '9999.999.999');
 
 /**
@@ -170,18 +170,6 @@ describe('azdata', function () {
 					});
 				});
 			});
-			it('login', async function (): Promise<void> {
-				const endpoint = 'myEndpoint';
-				const username = 'myUsername';
-				const password = 'myPassword';
-				await azdataTool.login(endpoint, username, password);
-				verifyExecuteCommandCalledWithArgs(['login', endpoint, username]);
-			});
-			it('version', async function (): Promise<void> {
-				executeCommandStub.resolves({ stdout: '1.0.0', stderr: '' });
-				await azdataTool.version();
-				verifyExecuteCommandCalledWithArgs(['--version']);
-			});
 			it('general error throws', async function (): Promise<void> {
 				const err = new Error();
 				executeCommandStub.throws(err);
@@ -228,12 +216,26 @@ describe('azdata', function () {
 			});
 		});
 
+		it('login', async function (): Promise<void> {
+			const endpoint = 'myEndpoint';
+			const username = 'myUsername';
+			const password = 'myPassword';
+			await azdataTool.login({ endpoint: endpoint }, username, password);
+			verifyExecuteCommandCalledWithArgs(['login', endpoint, username]);
+		});
+
+		it('version', async function (): Promise<void> {
+			executeCommandStub.resolves({ stdout: '1.0.0', stderr: '' });
+			await azdataTool.version();
+			verifyExecuteCommandCalledWithArgs(['--version']);
+		});
+
 		/**
 		 * Verifies that the specified args were included in the call to executeCommand
 		 * @param args The args to check were included in the execute command call
 		 */
-		function verifyExecuteCommandCalledWithArgs(args: string[]): void {
-			const commandArgs = executeCommandStub.args[0][1] as string[];
+		function verifyExecuteCommandCalledWithArgs(args: string[], callIndex = 0): void {
+			const commandArgs = executeCommandStub.args[callIndex][1] as string[];
 			args.forEach(arg => should(commandArgs).containEql(arg));
 		}
 
@@ -359,6 +361,7 @@ describe('azdata', function () {
 		beforeEach(function (): void {
 			showInformationMessageStub = sinon.stub(vscode.window, 'showInformationMessage').returns(Promise.resolve(<any>loc.yes));
 			executeSudoCommandStub = sinon.stub(childProcess, 'executeSudoCommand').returns(Promise.resolve({ stdout: '', stderr: '' }));
+			sinon.stub(HttpClient, 'getTextContent').resolves(JSON.stringify(releaseJson));
 		});
 
 		it('successful update', async function (): Promise<void> {
@@ -463,14 +466,13 @@ describe('azdata', function () {
 
 		describe('discoverLatestAvailableAzdataVersion', function (): void {
 			it('finds latest available version of azdata successfully', async function (): Promise<void> {
-				sinon.stub(HttpClient, 'getTextContent').resolves(JSON.stringify(releaseJson));
 				await azdata.discoverLatestAvailableAzdataVersion();
 			});
 		});
 	});
 
-	describe('promptForEula', function(): void {
-		it('skipped because of config', async function(): Promise<void> {
+	describe('promptForEula', function (): void {
+		it('skipped because of config', async function (): Promise<void> {
 			const configMock = TypeMoq.Mock.ofType<vscode.WorkspaceConfiguration>();
 			configMock.setup(x => x.get(TypeMoq.It.isAny())).returns(() => azdata.AzdataDeployOption.dontPrompt);
 			sinon.stub(vscode.workspace, 'getConfiguration').returns(configMock.object);
@@ -479,7 +481,7 @@ describe('azdata', function () {
 			should(result).be.false();
 		});
 
-		it('always prompt if user requested', async function(): Promise<void> {
+		it('always prompt if user requested', async function (): Promise<void> {
 			const configMock = TypeMoq.Mock.ofType<vscode.WorkspaceConfiguration>();
 			configMock.setup(x => x.get(TypeMoq.It.isAny())).returns(() => azdata.AzdataDeployOption.dontPrompt);
 			sinon.stub(vscode.workspace, 'getConfiguration').returns(configMock.object);
@@ -490,7 +492,7 @@ describe('azdata', function () {
 			should(showInformationMessage.calledOnce).be.true('showInformationMessage should have been called to prompt user');
 		});
 
-		it('prompt if config set to do so', async function(): Promise<void> {
+		it('prompt if config set to do so', async function (): Promise<void> {
 			const configMock = TypeMoq.Mock.ofType<vscode.WorkspaceConfiguration>();
 			configMock.setup(x => x.get(TypeMoq.It.isAny())).returns(() => azdata.AzdataDeployOption.prompt);
 			sinon.stub(vscode.workspace, 'getConfiguration').returns(configMock.object);
@@ -501,7 +503,7 @@ describe('azdata', function () {
 			should(showInformationMessage.calledOnce).be.true('showInformationMessage should have been called to prompt user');
 		});
 
-		it('update config if user chooses not to prompt', async function(): Promise<void> {
+		it('update config if user chooses not to prompt', async function (): Promise<void> {
 			const configMock = TypeMoq.Mock.ofType<vscode.WorkspaceConfiguration>();
 			configMock.setup(x => x.get(TypeMoq.It.isAny())).returns(() => azdata.AzdataDeployOption.prompt);
 			sinon.stub(vscode.workspace, 'getConfiguration').returns(configMock.object);
@@ -513,7 +515,7 @@ describe('azdata', function () {
 			should(showInformationMessage.calledOnce).be.true('showInformationMessage should have been called to prompt user');
 		});
 
-		it('user accepted EULA', async function(): Promise<void> {
+		it('user accepted EULA', async function (): Promise<void> {
 			const configMock = TypeMoq.Mock.ofType<vscode.WorkspaceConfiguration>();
 			configMock.setup(x => x.get(TypeMoq.It.isAny())).returns(() => azdata.AzdataDeployOption.prompt);
 			sinon.stub(vscode.workspace, 'getConfiguration').returns(configMock.object);
@@ -525,7 +527,7 @@ describe('azdata', function () {
 			should(showInformationMessage.calledOnce).be.true('showInformationMessage should have been called to prompt user');
 		});
 
-		it('user accepted EULA - require user action', async function(): Promise<void> {
+		it('user accepted EULA - require user action', async function (): Promise<void> {
 			const configMock = TypeMoq.Mock.ofType<vscode.WorkspaceConfiguration>();
 			configMock.setup(x => x.get(TypeMoq.It.isAny())).returns(() => azdata.AzdataDeployOption.prompt);
 			sinon.stub(vscode.workspace, 'getConfiguration').returns(configMock.object);
@@ -538,7 +540,7 @@ describe('azdata', function () {
 		});
 	});
 
-	describe('isEulaAccepted', function(): void {
+	describe('isEulaAccepted', function (): void {
 		const mementoMock = TypeMoq.Mock.ofType<vscode.Memento>();
 		mementoMock.setup(x => x.get(TypeMoq.It.isAny())).returns(() => true);
 		should(azdata.isEulaAccepted(mementoMock.object)).be.true();
@@ -592,7 +594,6 @@ async function testWin32UnsuccessfulUpdate() {
 }
 
 async function testLinuxSuccessfulUpdate(userRequested = false) {
-	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: '0.0.0', stderr: '' }));
 	executeSudoCommandStub.resolves({ stdout: '0.0.0', stderr: '' });
 	await azdata.checkAndUpdateAzdata(oldAzdataMock, userRequested);
@@ -626,7 +627,6 @@ async function testDarwinSuccessfulUpdate(userRequested = false) {
 
 
 async function testWin32SuccessfulUpdate(userRequested = false) {
-	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
 	await azdata.checkAndUpdateAzdata(oldAzdataMock, userRequested);
 	should(executeSudoCommandStub.calledOnce).be.true('executeSudoCommand should have been called once');
@@ -634,7 +634,6 @@ async function testWin32SuccessfulUpdate(userRequested = false) {
 }
 
 async function testLinuxSkippedUpdate() {
-	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	executeSudoCommandStub.resolves({ stdout: '0.0.0', stderr: '' });
 	await azdata.checkAndUpdateAzdata(currentAzdataMock);
 	should(executeSudoCommandStub.callCount).be.equal(0, 'executeSudoCommand was not expected to be called');
@@ -664,14 +663,12 @@ async function testDarwinSkippedUpdateDontPrompt() {
 }
 
 async function testWin32SkippedUpdateDontPrompt() {
-	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
 	await azdata.checkAndUpdateAzdata(oldAzdataMock);
-	should(executeSudoCommandStub.notCalled).be.true('executeSudoCommand should not have been called');
+	should(executeSudoCommandStub.notCalled).be.true(`executeSudoCommand should not have been called ${executeSudoCommandStub.getCalls().join(os.EOL)}`);
 }
 
 async function testLinuxSkippedUpdateDontPrompt() {
-	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	sinon.stub(childProcess, 'executeCommand').returns(Promise.resolve({ stdout: '0.0.0', stderr: '' }));
 	executeSudoCommandStub.resolves({ stdout: '0.0.0', stderr: '' });
 	await azdata.checkAndUpdateAzdata(oldAzdataMock);
@@ -702,7 +699,6 @@ async function testDarwinSkippedUpdate() {
 }
 
 async function testWin32SkippedUpdate() {
-	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
 	await azdata.checkAndUpdateAzdata(currentAzdataMock);
 	should(executeSudoCommandStub.notCalled).be.true('executeSudoCommand should not have been called');
@@ -735,7 +731,6 @@ async function testLinuxSkippedInstall() {
 }
 
 async function testWin32SkippedInstall() {
-	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
 	sinon.stub(childProcess, 'executeCommand')
 		.onFirstCall()
@@ -749,7 +744,6 @@ async function testWin32SkippedInstall() {
 }
 
 async function testWin32SuccessfulInstall() {
-	sinon.stub(HttpClient, 'getTextContent').returns(Promise.resolve(JSON.stringify(releaseJson)));
 	sinon.stub(HttpClient, 'downloadFile').returns(Promise.resolve(__filename));
 	const executeCommandStub = sinon.stub(childProcess, 'executeCommand')
 		.onFirstCall()

@@ -22,6 +22,6 @@
 	"alertData.extractErrorMessage": "'{0}'을(를) 추출하지 못했습니다.",
 	"alertData.exportErrorMessage": "'{0}'을(를) 내보내지 못했습니다.",
 	"alertData.importErrorMessage": "'{0}'을(를) 가져오지 못했습니다.",
-	"dacfx.scriptGeneratingMessage": "마법사가 닫히면 [작업 보기]에서 스크립트 생성 상태를 볼 수 있습니다. 완료되면 생성된 스크립트가 열립니다.",
-	"alertData.deployPlanErrorMessage": "배포 플랜 생성 실패 '{0}'"
+	"dacfx.scriptGeneratingMessage": "마법사가 닫히면 작업 보기에서 스크립트 생성 상태를 볼 수 있습니다. 완료되면 생성된 스크립트가 열립니다.",
+	"alertData.deployPlanErrorMessage": "배포 플랜 '{0}'을(를) 생성하지 못했습니다."
 }

@@ -7,8 +7,9 @@ import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
+import * as os from 'os';
 import * as constants from '../../common/constants';
-import { promises as fs } from 'fs';
+import * as utils from '../../common/utils';
 import { WorkspaceService } from '../../services/workspaceService';
 import { OpenExistingDialog } from '../../dialogs/openExistingDialog';
 import { createProjectFile, generateUniqueProjectFilePath, generateUniqueWorkspaceFilePath, testProjectType } from '../testUtils';
@@ -25,15 +26,19 @@ suite('Open Existing Dialog', function (): void {
 		const dialog = new OpenExistingDialog(workspaceServiceMock.object, mockExtensionContext.object);
 		await dialog.open();
 
-		dialog._targetTypeRadioCardGroup?.updateProperty( 'selectedCardId', constants.Project);
-		dialog._filePathTextBox!.value = '';
+		dialog.targetTypeRadioCardGroup?.updateProperty( 'selectedCardId', constants.Project);
+		dialog.filePathTextBox!.value = 'nonExistentProjectFile';
 		dialog.workspaceInputBox!.value = 'test.code-workspace';
 
-		should.equal(await dialog.validate(), false, 'Validation fail because project file does not exist');
+		const validateResult = await dialog.validate();
+
+		const msg = constants.FileNotExistError('project', 'nonExistentProjectFile');
+		should.equal(dialog.dialogObject.message.text, msg);
+		should.equal(validateResult, false, 'Validation should fail because project file does not exist, but passed');
 
 		// create a project file
-		dialog._filePathTextBox!.value = await createProjectFile('testproj');
-		should.equal(await dialog.validate(), true, 'Validation pass because project file exists');
+		dialog.filePathTextBox!.value = await createProjectFile('testproj');
+		should.equal(await dialog.validate(), true, `Validation should pass because project file exists, but failed with: ${dialog.dialogObject.message.text}`);
 	});
 
 	test('Should validate workspace file exists', async function (): Promise<void> {
@@ -41,16 +46,42 @@ suite('Open Existing Dialog', function (): void {
 		const dialog = new OpenExistingDialog(workspaceServiceMock.object, mockExtensionContext.object);
 		await dialog.open();
 
-		dialog._targetTypeRadioCardGroup?.updateProperty( 'selectedCardId', constants.Workspace);
-		dialog._filePathTextBox!.value = '';
-		should.equal(await dialog.validate(), false, 'Validation fail because workspace file does not exist');
+		dialog.targetTypeRadioCardGroup?.updateProperty( 'selectedCardId', constants.Workspace);
+		dialog.filePathTextBox!.value = 'nonExistentWorkspaceFile';
+		const fileExistStub = sinon.stub(utils, 'fileExist').resolves(false);
 
-		// create a workspace file
-		dialog._filePathTextBox!.value = generateUniqueWorkspaceFilePath();
-		await fs.writeFile(dialog._filePathTextBox!.value , '');
-		should.equal(await dialog.validate(), true, 'Validation pass because workspace file exists');
+		const validateResult = await dialog.validate();
+		const msg = constants.FileNotExistError('workspace', 'nonExistentWorkspaceFile');
+		should.equal(dialog.dialogObject.message.text, msg);
+		should.equal(validateResult, false, 'Validation should fail because workspace file does not exist, but passed');
+
+		// validation should pass if workspace file exists
+		dialog.filePathTextBox!.value = generateUniqueWorkspaceFilePath();
+		fileExistStub.resolves(true);
+		should.equal(await dialog.validate(), true, `Validation should pass because workspace file exists, but failed with: ${dialog.dialogObject.message.text}`);
 	});
 
+	test('Should validate workspace git clone location', async function (): Promise<void> {
+		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();
+		const dialog = new OpenExistingDialog(workspaceServiceMock.object, mockExtensionContext.object);
+		await dialog.open();
+
+		dialog.targetTypeRadioCardGroup?.updateProperty( 'selectedCardId', constants.Workspace);
+		dialog.localRadioButton!.checked = false;
+		dialog.remoteGitRepoRadioButton!.checked = true;
+		dialog.localClonePathTextBox!.value = 'invalidLocation';
+		const folderExistStub = sinon.stub(utils, 'directoryExist').resolves(false);
+
+		const validateResult = await dialog.validate();
+		const msg = constants.CloneParentDirectoryNotExistError(dialog.localClonePathTextBox!.value);
+		should.equal(dialog.dialogObject.message.text, msg);
+		should.equal(validateResult, false, 'Validation should fail because clone directory does not exist, but passed');
+
+		// validation should pass if directory exists
+		dialog.localClonePathTextBox!.value = os.tmpdir();
+		folderExistStub.resolves(true);
+		should.equal(await dialog.validate(), true, `Validation should pass because clone directory exists, but failed with: ${dialog.dialogObject.message.text}`);
+	});
 
 	test('Should validate workspace in onComplete when opening project', async function (): Promise<void> {
 		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();
@@ -60,7 +91,7 @@ suite('Open Existing Dialog', function (): void {
 		const dialog = new OpenExistingDialog(workspaceServiceMock.object, mockExtensionContext.object);
 		await dialog.open();
 
-		dialog._filePathTextBox!.value = generateUniqueProjectFilePath('testproj');
+		dialog.filePathTextBox!.value = generateUniqueProjectFilePath('testproj');
 		should.doesNotThrow(async () => await dialog.onComplete());
 
 		workspaceServiceMock.setup(x => x.validateWorkspace()).throws(new Error('test error'));
@@ -75,16 +106,16 @@ suite('Open Existing Dialog', function (): void {
 
 		const dialog = new OpenExistingDialog(workspaceServiceMock.object, mockExtensionContext.object);
 		await dialog.open();
-		should.equal(dialog._filePathTextBox!.value, '');
+		should.equal(dialog.filePathTextBox!.value, '');
 		await dialog.workspaceBrowse();
-		should.equal(dialog._filePathTextBox!.value, '', 'Workspace file should not be set when no file is selected');
+		should.equal(dialog.filePathTextBox!.value, '', 'Workspace file should not be set when no file is selected');
 
 		sinon.restore();
 		const workspaceFile = vscode.Uri.file(generateUniqueWorkspaceFilePath());
 		sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([workspaceFile]));
 		await dialog.workspaceBrowse();
-		should.equal(dialog._filePathTextBox!.value, workspaceFile.fsPath, 'Workspace file should get set');
-		should.equal(dialog._filePathTextBox?.value, workspaceFile.fsPath);
+		should.equal(dialog.filePathTextBox!.value, workspaceFile.fsPath, 'Workspace file should get set');
+		should.equal(dialog.filePathTextBox?.value, workspaceFile.fsPath);
 	});
 
 	test('project browse', async function (): Promise<void> {
@@ -94,16 +125,16 @@ suite('Open Existing Dialog', function (): void {
 
 		const dialog = new OpenExistingDialog(workspaceServiceMock.object, mockExtensionContext.object);
 		await dialog.open();
-		should.equal(dialog._filePathTextBox!.value, '');
+		should.equal(dialog.filePathTextBox!.value, '');
 		await dialog.projectBrowse();
-		should.equal(dialog._filePathTextBox!.value, '', 'Project file should not be set when no file is selected');
+		should.equal(dialog.filePathTextBox!.value, '', 'Project file should not be set when no file is selected');
 
 		sinon.restore();
 		const projectFile = vscode.Uri.file(generateUniqueProjectFilePath('testproj'));
 		sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([projectFile]));
 		await dialog.projectBrowse();
-		should.equal(dialog._filePathTextBox!.value, projectFile.fsPath, 'Project file should be set');
-		should.equal(dialog._filePathTextBox?.value, projectFile.fsPath);
+		should.equal(dialog.filePathTextBox!.value, projectFile.fsPath, 'Project file should be set');
+		should.equal(dialog.filePathTextBox?.value, projectFile.fsPath);
 	});
 });
 

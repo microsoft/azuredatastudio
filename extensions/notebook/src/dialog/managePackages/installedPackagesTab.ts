@@ -103,9 +103,10 @@ export class InstalledPackagesTab {
 			}));
 
 			this.uninstallPackageButton = view.modelBuilder.button()
-				.withProperties({
+				.withProps({
 					label: localize('managePackages.uninstallButtonText', "Uninstall selected packages"),
-					width: '200px'
+					width: '200px',
+					secondary: true
 				}).component();
 			this.uninstallPackageButton.onDidClick(() => this.doUninstallPackage(this.installedPackagesTable.selectedRows));
 

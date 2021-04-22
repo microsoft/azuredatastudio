@@ -4,7 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<div class="tabbedpanel-component">
+<div class="tabbedpanel-component" [ngStyle]="CSSStyles">
 	<panel (onTabChange)="handleTabChange($event)">
 		<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize"
 			[identifier]="tab.id" [type]="tab.type" [iconClass]="tab.iconClass">

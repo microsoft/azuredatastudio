@@ -11,7 +11,7 @@ import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IURITransformer } from 'vs/base/common/uriIpc';
-import { URI } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { mapToSerializable } from 'sql/base/common/map';
 
@@ -36,6 +36,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	) {
 		super();
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadDataProtocol);
+	}
+
+	private _getTransformedUri(uri: string, transformMethod: (uri: UriComponents) => UriComponents): string {
+		let encodedUri = URI.parse(encodeURI(uri));
+		return URI.from(transformMethod(encodedUri)).toString(true);
 	}
 
 	private _createDisposable(handle: number): Disposable {
@@ -197,7 +202,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	// Connection Management handlers
 	$connect(handle: number, connectionUri: string, connection: azdata.ConnectionInfo): Thenable<boolean> {
 		if (this.uriTransformer) {
-			connectionUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(connectionUri))).toString(true);
+			connectionUri = this._getTransformedUri(connectionUri, this.uriTransformer.transformIncoming);
 		}
 		return this._resolveProvider<azdata.ConnectionProvider>(handle).connect(connectionUri, connection);
 	}
@@ -237,7 +242,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$onConnectComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
 		if (this.uriTransformer) {
-			connectionInfoSummary.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(connectionInfoSummary.ownerUri))).toString(true);
+			connectionInfoSummary.ownerUri = this._getTransformedUri(connectionInfoSummary.ownerUri, this.uriTransformer.transformOutgoing);
 		}
 		this._proxy.$onConnectionComplete(handle, connectionInfoSummary);
 	}
@@ -263,7 +268,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$runQuery(handle: number, ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> {
 		if (this.uriTransformer) {
-			ownerUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(ownerUri))).toString(true);
+			ownerUri = this._getTransformedUri(ownerUri, this.uriTransformer.transformIncoming);
 		}
 
 		return this._resolveProvider<azdata.QueryProvider>(handle).runQuery(ownerUri, selection, runOptions);
@@ -299,21 +304,21 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$getQueryRows(handle: number, rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> {
 		if (this.uriTransformer) {
-			rowData.ownerUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(rowData.ownerUri))).toString(true);
+			rowData.ownerUri = this._getTransformedUri(rowData.ownerUri, this.uriTransformer.transformIncoming);
 		}
 		return this._resolveProvider<azdata.QueryProvider>(handle).getQueryRows(rowData);
 	}
 
 	$disposeQuery(handle: number, ownerUri: string): Thenable<void> {
 		if (this.uriTransformer) {
-			ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(ownerUri))).toString(true);
+			ownerUri = this._getTransformedUri(ownerUri, this.uriTransformer.transformOutgoing);
 		}
 		return this._resolveProvider<azdata.QueryProvider>(handle).disposeQuery(ownerUri);
 	}
 
 	$onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void {
 		if (this.uriTransformer) {
-			result.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(result.ownerUri))).toString(true);
+			result.ownerUri = this._getTransformedUri(result.ownerUri, this.uriTransformer.transformOutgoing);
 		}
 		// clear messages to maintain the order of things
 		if (this.messageRunner.isScheduled()) {
@@ -324,13 +329,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 	$onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
 		if (this.uriTransformer) {
-			batchInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(batchInfo.ownerUri))).toString(true);
+			batchInfo.ownerUri = this._getTransformedUri(batchInfo.ownerUri, this.uriTransformer.transformOutgoing);
 		}
 		this._proxy.$onBatchStart(handle, batchInfo);
 	}
 	$onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
 		if (this.uriTransformer) {
-			batchInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(batchInfo.ownerUri))).toString(true);
+			batchInfo.ownerUri = this._getTransformedUri(batchInfo.ownerUri, this.uriTransformer.transformOutgoing);
 		}
 		this.messageRunner.cancel(); // clear batch messages before saying we completed the batch
 		this.sendMessages();
@@ -338,19 +343,19 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 	$onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
 		if (this.uriTransformer) {
-			resultSetInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(resultSetInfo.ownerUri))).toString(true);
+			resultSetInfo.ownerUri = this._getTransformedUri(resultSetInfo.ownerUri, this.uriTransformer.transformOutgoing);
 		}
 		this._proxy.$onResultSetAvailable(handle, resultSetInfo);
 	}
 	$onResultSetUpdated(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
 		if (this.uriTransformer) {
-			resultSetInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(resultSetInfo.ownerUri))).toString(true);
+			resultSetInfo.ownerUri = this._getTransformedUri(resultSetInfo.ownerUri, this.uriTransformer.transformOutgoing);
 		}
 		this._proxy.$onResultSetUpdated(handle, resultSetInfo);
 	}
 	$onQueryMessage(message: azdata.QueryExecuteMessageParams): void {
 		if (this.uriTransformer) {
-			message.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(message.ownerUri))).toString(true);
+			message.ownerUri = this._getTransformedUri(message.ownerUri, this.uriTransformer.transformOutgoing);
 		}
 		if (!this.queuedMessages.has(message.ownerUri)) {
 			this.queuedMessages.set(message.ownerUri, []);

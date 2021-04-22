@@ -352,9 +352,10 @@ export class AlertDialog extends AgentDialog<AlertData> {
 				.withProperties({ width: 375 })
 				.component();
 			this.executeJobTextBox.enabled = false;
-			this.newJobButton = view.modelBuilder.button().withProperties({
+			this.newJobButton = view.modelBuilder.button().withProps({
 				label: AlertDialog.NewJobButtonLabel,
-				width: 80
+				width: 80,
+				secondary: true
 			}).component();
 			this.newJobButton.enabled = false;
 			this.newJobButton.onDidClick(() => {
@@ -405,9 +406,10 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					width: 375
 				}).component();
 
-			this.newOperatorButton = view.modelBuilder.button().withProperties({
+			this.newOperatorButton = view.modelBuilder.button().withProps({
 				label: AlertDialog.NewOperatorButtonLabel,
-				width: 80
+				width: 80,
+				secondary: true
 			}).component();
 
 			this.operatorsTable.enabled = false;

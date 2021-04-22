@@ -191,7 +191,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 				const primary: IAction[] = [];
 				const secondary: IAction[] = [];
 				const result = { primary, secondary };
-				createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, this.contextMenuService);
+				createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result);
 
 				this.contextMenuService.showContextMenu({
 					getAnchor: () => e.anchor,
@@ -446,7 +446,7 @@ class ListAccessibilityProvider implements IListAccessibilityProvider<TreeElemen
 		} else if (element instanceof SavedConnectionNode) {
 			return localize('savedConnection', "Saved Connections");
 		} else {
-			return element.element.handle;
+			return element.element.label.label;
 		}
 	}
 

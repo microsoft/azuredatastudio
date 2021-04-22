@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { registerColor } from 'vs/platform/theme/common/colorRegistry';
+import { contrastBorder, registerColor } from 'vs/platform/theme/common/colorRegistry';
 import { Color, RGBA } from 'vs/base/common/color';
 import * as nls from 'vs/nls';
 
@@ -22,14 +22,7 @@ export const tileBorder = registerColor('tileBorder', { light: '#fff', dark: '#8
 export const tileBoxShadow = registerColor('tileBoxShadow', { light: tileBoxShadowColor, dark: tileBoxShadowColor, hc: tileBoxShadowColor }, nls.localize('tileBoxShadow', "The tile box shadow color"));
 
 // -- Buttons
-export const buttonSecondaryBorder = registerColor('button.secondaryBorder', { light: '#8A8886', dark: '#FFF', hc: '#264BD3' }, nls.localize('button.secondaryBorder', "The border color for secondary button"));
-export const buttonSecondaryBackground = registerColor('button.secondaryBackground', { light: null, dark: null, hc: null }, nls.localize('button.secondaryBackground', "The background color for the secondary button"));
-export const buttonSecondary = registerColor('button.secondaryForeground', { light: '#323130', dark: '#fff', hc: '#fff' }, nls.localize('button.secondaryForeground', "The font color for secondary button"));
-export const buttonSecondaryHoverColor = registerColor('button.secondaryHoverForeground', { light: '#0078D4', dark: '#3794ff', hc: '#3794ff' }, nls.localize('button.secondaryHoverForeground', "The hover color for secondary buttons"));
-export const buttonSecondaryHoverBorder = registerColor('button.buttonSecondaryHoverBorder', { light: '#0078D4', dark: '#3794ff', hc: '#3794ff' }, nls.localize('button.buttonSecondaryHoverBorder', "The hover border color for secondary buttons"));
 export const buttonDropdownBackgroundHover = registerColor('buttonDropdownBackgroundHover', { light: '#3062d6', dark: '#3062d6', hc: '#3062d6' }, nls.localize('buttonDropdownBackgroundHover', "The button dropdown background hover color"));
-export const disabledButton = registerColor('button.disabledForeground', { light: '#A19F9D', dark: '#797775', hc: '#797775' }, nls.localize('button.disabledForeground', "The color for a secondary disabled button"));
-export const disabledButtonBackground = registerColor('button.disabledBackground', { light: '#F3F2F1', dark: '#252423', hc: '#252423' }, nls.localize('button.disabledBackground', "The background color for secondary disabled button"));
 
 // -- Shadows
 export const hoverShadow = registerColor('buttonDropdownBoxShadow', { light: dropdownBoxShadow, dark: dropdownBoxShadow, hc: dropdownBoxShadow }, nls.localize('buttonDropdownBoxShadow', "The button dropdown box shadow color"));
@@ -68,3 +61,27 @@ export const codeEditorToolbarBackground = registerColor('notebook.codeEditorToo
 export const codeEditorToolbarBorder = registerColor('notebook.codeEditorToolbarBorder', { light: '#C8C6C4', dark: '#333333', hc: '#000000' }, nls.localize('notebook.codeEditorToolbarBorder', "Notebook: Code editor toolbar right border"));
 export const notebookCellTagBackground = registerColor('notebook.notebookCellTagBackground', { light: '#0078D4', dark: '#0078D4', hc: '#0078D4' }, nls.localize('notebook.notebookCellTagBackground', "Tag background color."));
 export const notebookCellTagForeground = registerColor('notebook.notebookCellTagForeground', { light: '#FFFFFF', dark: '#FFFFFF', hc: '#FFFFFF' }, nls.localize('notebook.notebookCellTagForeground', "Tag foreground color."));
+
+// Notebook: Find
+export const notebookFindMatchHighlight = registerColor('notebook.findMatchHighlightBackground', { light: '#FFFF00', dark: '#FFFF00', hc: null }, nls.localize('notebookFindMatchHighlight', "Color of the other search matches. The color must not be opaque so as not to hide underlying decorations."), true);
+export const notebookFindRangeHighlight = registerColor('notebook.findRangeHighlightBackground', { dark: '#FFA500', light: '#FFA500', hc: null }, nls.localize('notebookFindRangeHighlight', "Color of the range limiting the search. The color must not be opaque so as not to hide underlying decorations."), true);
+
+// Info Box
+export const infoBoxInformationBackground = registerColor('infoBox.infomationBackground', { light: '#F0F6FF', dark: '#001433', hc: '#000000' }, nls.localize('infoBox.infomationBackground', "InfoBox: The background color when the notification type is information."));
+export const infoBoxWarningBackground = registerColor('infoBox.warningBackground', { light: '#FFF8F0', dark: '#331B00', hc: '#000000' }, nls.localize('infoBox.warningBackground', "InfoBox: The background color when the notification type is warning."));
+export const infoBoxErrorBackground = registerColor('infoBox.errorBackground', { light: '#FEF0F1', dark: '#300306', hc: '#000000' }, nls.localize('infoBox.errorBackground', "InfoBox: The background color when the notification type is error."));
+export const infoBoxSuccessBackground = registerColor('infoBox.successBackground', { light: '#F8FFF0', dark: '#1B3300', hc: '#000000' }, nls.localize('infoBox.successBackground', "InfoBox: The background color when the notification type is success."));
+
+// Info Button
+export const infoButtonForeground = registerColor('infoButton.foreground', { dark: '#FFFFFF', light: '#000000', hc: '#FFFFFF' }, nls.localize('infoButton.foreground', "Info button foreground color."));
+export const infoButtonBackground = registerColor('infoButton.background', { dark: '#1B1A19', light: '#FFFFFF', hc: '#000000' }, nls.localize('infoButton.background', "Info button background color."));
+export const infoButtonBorder = registerColor('infoButton.border', { dark: '#1B1A19', light: '#FFFFFF', hc: contrastBorder }, nls.localize('infoButton.border', "Info button border color."));
+export const infoButtonHoverBackground = registerColor('infoButton.hoverBackground', { dark: '#282625', light: '#F3F2F1', hc: '#000000' }, nls.localize('infoButton.hoverBackground', "Info button hover background color."));
+
+// Callout Dialog
+export const calloutDialogForeground = registerColor('calloutDialog.foreground', { light: '#616161', dark: '#CCCCCC', hc: '#FFFFFF' }, nls.localize('calloutDialogForeground', 'Callout dialog foreground.'));
+export const calloutDialogInteriorBorder = registerColor('calloutDialog.interiorBorder', { light: '#D6D6D6', dark: '#323130', hc: '#2B56F2' }, nls.localize('calloutDialogInteriorBorder', "Callout dialog interior borders used for separating elements."));
+export const calloutDialogExteriorBorder = registerColor('calloutDialog.exteriorBorder', { light: '#CCCCCC', dark: '#CCCCCC', hc: '#2B56F2' }, nls.localize('calloutDialogExteriorBorder', "Callout dialog exterior borders to provide contrast against notebook UI."));
+export const calloutDialogHeaderFooterBackground = registerColor('calloutDialog.headerFooterBackground', { light: '#FFFFFF', dark: '#1E1E1E', hc: Color.black }, nls.localize('calloutDialogHeaderFooterBackground', 'Callout dialog header and footer background.'));
+export const calloutDialogBodyBackground = registerColor('calloutDialog.bodyBackground', { light: '#FFFFFF', dark: '#1E1E1E', hc: Color.black }, nls.localize('calloutDialogBodyBackground', "Callout dialog body background."));
+export const calloutDialogShadowColor = registerColor('calloutDialog.shadow', { light: '#000000', dark: '#FFFFFF', hc: '#000000' }, nls.localize('calloutDialogShadowColor', 'Callout dialog box shadow color.'));

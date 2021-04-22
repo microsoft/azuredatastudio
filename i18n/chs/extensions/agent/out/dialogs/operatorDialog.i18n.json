@@ -23,7 +23,7 @@
 	"createOperator.PagerSundayCheckBox": "星期日",
 	"createOperator.workdayBegin": "工作日开始",
 	"createOperator.workdayEnd": "工作日结束",
-	"createOperator.PagerDutySchedule": "值班安排表上的寻呼机",
+	"createOperator.PagerDutySchedule": "寻呼机待机计划",
 	"createOperator.AlertListHeading": "警报列表",
 	"createOperator.AlertNameColumnLabel": "警报名称",
 	"createOperator.AlertEmailColumnLabel": "电子邮件",

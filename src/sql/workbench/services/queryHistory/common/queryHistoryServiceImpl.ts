@@ -26,6 +26,8 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 	private _onInfosUpdated: Emitter<QueryHistoryInfo[]> = new Emitter<QueryHistoryInfo[]>();
 	private _onQueryHistoryCaptureChanged: Emitter<boolean> = new Emitter<boolean>();
 	private _captureEnabled: boolean;
+	private _started: boolean = false;
+
 	// EVENTS //////////////////////////////////////////////////////////////
 	public get onInfosUpdated(): Event<QueryHistoryInfo[]> { return this._onInfosUpdated.event; }
 	public get onQueryHistoryCaptureChanged(): Event<boolean> { return this._onQueryHistoryCaptureChanged.event; }
@@ -38,7 +40,7 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 	) {
 		super();
 
-		this._captureEnabled = !!this._configurationService.getValue<boolean>('queryHistory.captureEnabled');
+		this.updateCaptureEnabled();
 
 		this._register(this._configurationService.onDidChangeConfiguration((e: IConfigurationChangeEvent) => {
 			if (e.affectedKeys.find(x => x === 'queryHistory.captureEnabled')) {
@@ -117,7 +119,7 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 
 	private updateCaptureEnabled(): void {
 		const currentCaptureEnabled = this._captureEnabled;
-		this._captureEnabled = !!this._configurationService.getValue<boolean>('queryHistory.captureEnabled');
+		this._captureEnabled = !!this._configurationService.getValue<boolean>('queryHistory.captureEnabled') && this._started;
 		if (currentCaptureEnabled !== this._captureEnabled) {
 			this._onQueryHistoryCaptureChanged.fire(this._captureEnabled);
 		}
@@ -127,6 +129,7 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 	 * Method to force initialization of the service so that it can start tracking query events
 	 */
 	public start(): void {
-
+		this._started = true;
+		this.updateCaptureEnabled();
 	}
 }

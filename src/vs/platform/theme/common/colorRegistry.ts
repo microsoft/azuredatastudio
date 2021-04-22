@@ -198,7 +198,7 @@ export const textBlockQuoteBorder = registerColor('textBlockQuote.border', { lig
 export const textCodeBlockBackground = registerColor('textCodeBlock.background', { light: '#dcdcdc66', dark: '#0a0a0a66', hc: Color.black }, nls.localize('textCodeBlockBackground', "Background color for code blocks in text."));
 
 // ----- widgets
-export const widgetShadow = registerColor('widget.shadow', { dark: '#000000', light: '#A8A8A8', hc: null }, nls.localize('widgetShadow', 'Shadow color of widgets such as find/replace inside the editor.'));
+export const widgetShadow = registerColor('widget.shadow', { dark: transparent(Color.black, .36), light: transparent(Color.black, .16), hc: null }, nls.localize('widgetShadow', 'Shadow color of widgets such as find/replace inside the editor.'));
 
 export const inputBackground = registerColor('input.background', { dark: '#3C3C3C', light: Color.white, hc: Color.black }, nls.localize('inputBoxBackground', "Input box background."));
 export const inputForeground = registerColor('input.foreground', { dark: foreground, light: foreground, hc: foreground }, nls.localize('inputBoxForeground', "Input box foreground."));
@@ -227,13 +227,23 @@ export const simpleCheckboxBackground = registerColor('checkbox.background', { d
 export const simpleCheckboxForeground = registerColor('checkbox.foreground', { dark: selectForeground, light: selectForeground, hc: selectForeground }, nls.localize('checkbox.foreground', "Foreground color of checkbox widget."));
 export const simpleCheckboxBorder = registerColor('checkbox.border', { dark: selectBorder, light: selectBorder, hc: selectBorder }, nls.localize('checkbox.border', "Border color of checkbox widget."));
 
-export const buttonForeground = registerColor('button.foreground', { dark: Color.white, light: Color.white, hc: Color.white }, nls.localize('buttonForeground', "Button foreground color."));
-export const buttonBackground = registerColor('button.background', { dark: '#0078D4', light: '#007ACC', hc: '#0078D4' }, nls.localize('buttonBackground', "Button background color."));
-export const buttonHoverBackground = registerColor('button.hoverBackground', { dark: lighten(buttonBackground, 0.2), light: darken(buttonBackground, 0.2), hc: null }, nls.localize('buttonHoverBackground', "Button background color when hovering."));
+// {{SQL CARBON EDIT}} - ADS custom button styles
+// Existing VSCode button colors, reuse the color ids with modified color values
+export const buttonForeground = registerColor('button.foreground', { dark: '#111111', light: Color.white, hc: Color.white }, nls.localize('buttonForeground', "Button foreground color."));
+export const buttonBackground = registerColor('button.background', { dark: '#4894FE', light: '#0078D4', hc: null }, nls.localize('buttonBackground', "Button background color."));
+export const buttonHoverBackground = registerColor('button.hoverBackground', { dark: '#6CA9FE', light: '#106EBE', hc: null }, nls.localize('buttonHoverBackground', "Button background color when hovering."));
 
-export const buttonSecondaryForeground = registerColor('button.secondaryForeground', { dark: Color.white, light: Color.white, hc: Color.white }, nls.localize('buttonSecondaryForeground', "Secondary button foreground color."));
-export const buttonSecondaryBackground = registerColor('button.secondaryBackground', { dark: '#3A3D41', light: '#5F6A79', hc: null }, nls.localize('buttonSecondaryBackground', "Secondary button background color."));
-export const buttonSecondaryHoverBackground = registerColor('button.secondaryHoverBackground', { dark: lighten(buttonSecondaryBackground, 0.2), light: darken(buttonSecondaryBackground, 0.2), hc: null }, nls.localize('buttonSecondaryHoverBackground', "Secondary button background color when hovering."));
+export const buttonSecondaryForeground = registerColor('button.secondaryForeground', { dark: '#4894FE', light: '#323130', hc: Color.white }, nls.localize('buttonSecondaryForeground', "Secondary button foreground color."));
+export const buttonSecondaryBackground = registerColor('button.secondaryBackground', { dark: '#212121', light: Color.white, hc: null }, nls.localize('buttonSecondaryBackground', "Secondary button background color."));
+export const buttonSecondaryHoverBackground = registerColor('button.secondaryHoverBackground', { dark: new Color(new RGBA(127, 127, 127, 0.1)), light: '#F3F2F1', hc: null }, nls.localize('buttonSecondaryHoverBackground', "Secondary button background color when hovering."));
+
+// new button colors introduced by ADS
+export const buttonBorder = registerColor('button.border', { dark: '#4894FE', light: '#0078D4', hc: contrastBorder }, nls.localize('button.border', "Primary button border color."));
+export const buttonSecondaryBorder = registerColor('button.secondaryBorder', { dark: '#4894FE', light: '#8A8886', hc: contrastBorder }, nls.localize('button.secondaryBorder', "Secondary button border color."));
+export const buttonDisabledBorder = registerColor('button.disabledBorder', { dark: new Color(new RGBA(127, 127, 127, 0.1)), light: '#F3F2F1', hc: '#00FF00' }, nls.localize('button.secondaryBorder', "Secondary button border color."));
+export const buttonDisabledForeground = registerColor('button.disabledForeground', { dark: new Color(new RGBA(127, 127, 127, 0.7)), light: '#A19F9D', hc: '#00FF00' }, nls.localize('button.disabledForeground', "Disabled button foreground color."));
+export const buttonDisabledBackground = registerColor('button.disabledBackground', { dark: new Color(new RGBA(127, 127, 127, 0.1)), light: '#F3F2F1', hc: Color.black }, nls.localize('button.disabledBackground', "Disablbed button background color."));
+// {{SQL CARBON EDIT}} - end of ADS custom button styles
 
 export const badgeBackground = registerColor('badge.background', { dark: '#4D4D4D', light: '#C4C4C4', hc: Color.black }, nls.localize('badgeBackground', "Badge background color. Badges are small information labels, e.g. for search results count."));
 export const badgeForeground = registerColor('badge.foreground', { dark: Color.white, light: '#333', hc: Color.white }, nls.localize('badgeForeground', "Badge foreground color. Badges are small information labels, e.g. for search results count."));
@@ -245,17 +255,22 @@ export const scrollbarSliderActiveBackground = registerColor('scrollbarSlider.ac
 
 export const progressBarBackground = registerColor('progressBar.background', { dark: Color.fromHex('#0E70C0'), light: Color.fromHex('#0E70C0'), hc: contrastBorder }, nls.localize('progressBarBackground', "Background color of the progress bar that can show for long running operations."));
 
+export const editorErrorBackground = registerColor('editorError.background', { dark: null, light: null, hc: null }, nls.localize('editorError.background', 'Background color of error text in the editor. The color must not be opaque so as not to hide underlying decorations.'), true);
 export const editorErrorForeground = registerColor('editorError.foreground', { dark: '#F48771', light: '#E51400', hc: null }, nls.localize('editorError.foreground', 'Foreground color of error squigglies in the editor.'));
 export const editorErrorBorder = registerColor('editorError.border', { dark: null, light: null, hc: Color.fromHex('#E47777').transparent(0.8) }, nls.localize('errorBorder', 'Border color of error boxes in the editor.'));
 
+export const editorWarningBackground = registerColor('editorWarning.background', { dark: null, light: null, hc: null }, nls.localize('editorWarning.background', 'Background color of warning text in the editor. The color must not be opaque so as not to hide underlying decorations.'), true);
 export const editorWarningForeground = registerColor('editorWarning.foreground', { dark: '#CCA700', light: '#E9A700', hc: null }, nls.localize('editorWarning.foreground', 'Foreground color of warning squigglies in the editor.'));
 export const editorWarningBorder = registerColor('editorWarning.border', { dark: null, light: null, hc: Color.fromHex('#FFCC00').transparent(0.8) }, nls.localize('warningBorder', 'Border color of warning boxes in the editor.'));
 
+export const editorInfoBackground = registerColor('editorInfo.background', { dark: null, light: null, hc: null }, nls.localize('editorInfo.background', 'Background color of info text in the editor. The color must not be opaque so as not to hide underlying decorations.'), true);
 export const editorInfoForeground = registerColor('editorInfo.foreground', { dark: '#75BEFF', light: '#75BEFF', hc: null }, nls.localize('editorInfo.foreground', 'Foreground color of info squigglies in the editor.'));
 export const editorInfoBorder = registerColor('editorInfo.border', { dark: null, light: null, hc: Color.fromHex('#75BEFF').transparent(0.8) }, nls.localize('infoBorder', 'Border color of info boxes in the editor.'));
 
 export const editorHintForeground = registerColor('editorHint.foreground', { dark: Color.fromHex('#eeeeee').transparent(0.7), light: '#6c6c6c', hc: null }, nls.localize('editorHint.foreground', 'Foreground color of hint squigglies in the editor.'));
 export const editorHintBorder = registerColor('editorHint.border', { dark: null, light: null, hc: Color.fromHex('#eeeeee').transparent(0.8) }, nls.localize('hintBorder', 'Border color of hint boxes in the editor.'));
+
+export const sashHoverBorder = registerColor('sash.hoverBorder', { dark: null, light: null, hc: null }, nls.localize('sashActiveBorder', "Border color of active sashes."));
 
 /**
  * Editor background color.
@@ -444,6 +459,18 @@ export const minimapSliderActiveBackground = registerColor('minimapSlider.active
 export const problemsErrorIconForeground = registerColor('problemsErrorIcon.foreground', { dark: editorErrorForeground, light: editorErrorForeground, hc: editorErrorForeground }, nls.localize('problemsErrorIconForeground', "The color used for the problems error icon."));
 export const problemsWarningIconForeground = registerColor('problemsWarningIcon.foreground', { dark: editorWarningForeground, light: editorWarningForeground, hc: editorWarningForeground }, nls.localize('problemsWarningIconForeground', "The color used for the problems warning icon."));
 export const problemsInfoIconForeground = registerColor('problemsInfoIcon.foreground', { dark: editorInfoForeground, light: editorInfoForeground, hc: editorInfoForeground }, nls.localize('problemsInfoIconForeground', "The color used for the problems info icon."));
+
+/**
+ * Chart colors
+ */
+export const chartsForeground = registerColor('charts.foreground', { dark: foreground, light: foreground, hc: foreground }, nls.localize('chartsForeground', "The foreground color used in charts."));
+export const chartsLines = registerColor('charts.lines', { dark: transparent(foreground, .5), light: transparent(foreground, .5), hc: transparent(foreground, .5) }, nls.localize('chartsLines', "The color used for horizontal lines in charts."));
+export const chartsRed = registerColor('charts.red', { dark: editorErrorForeground, light: editorErrorForeground, hc: editorErrorForeground }, nls.localize('chartsRed', "The red color used in chart visualizations."));
+export const chartsBlue = registerColor('charts.blue', { dark: editorInfoForeground, light: editorInfoForeground, hc: editorInfoForeground }, nls.localize('chartsBlue', "The blue color used in chart visualizations."));
+export const chartsYellow = registerColor('charts.yellow', { dark: editorWarningForeground, light: editorWarningForeground, hc: editorWarningForeground }, nls.localize('chartsYellow', "The yellow color used in chart visualizations."));
+export const chartsOrange = registerColor('charts.orange', { dark: minimapFindMatch, light: minimapFindMatch, hc: minimapFindMatch }, nls.localize('chartsOrange', "The orange color used in chart visualizations."));
+export const chartsGreen = registerColor('charts.green', { dark: '#89D185', light: '#388A34', hc: '#89D185' }, nls.localize('chartsGreen', "The green color used in chart visualizations."));
+export const chartsPurple = registerColor('charts.purple', { dark: '#B180D7', light: '#652D90', hc: '#B180D7' }, nls.localize('chartsPurple', "The purple color used in chart visualizations."));
 
 // ----- color functions
 

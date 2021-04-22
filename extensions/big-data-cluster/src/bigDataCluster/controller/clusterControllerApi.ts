@@ -159,17 +159,36 @@ export class ClusterController implements IClusterController {
 		}
 	}
 
+	/**
+	 * Verify that this cluster supports Kerberos authentication. It does this by sending a request to the Token API route
+	 * without any credentials and verifying that it gets a 401 response back with a Negotiate www-authenticate header.
+	 */
 	private async verifyKerberosSupported(): Promise<boolean> {
 		let tokenApi = new TokenRouterApi(this._url);
 		tokenApi.setDefaultAuthentication(new SslAuth());
 		try {
 			await tokenApi.apiV1TokenPost();
-			// If we get to here, the route for endpoints doesn't require auth so state this is false
+			console.warn(`Token API returned success without any auth while verifying Kerberos support for BDC Cluster ${this._url}`);
+			// If we get to here, the route for tokens doesn't require auth which is an unexpected error state
 			return false;
 		}
 		catch (error) {
-			let auths = error && error.response && error.response.statusCode === 401 && error.response.headers['www-authenticate'];
-			return auths && auths.includes('Negotiate');
+			if (!error.response) {
+				console.warn(`No response when verifying Kerberos support for BDC Cluster ${this._url} - ${error}`);
+				return false;
+			}
+
+			if (error.response.statusCode !== 401) {
+				console.warn(`Got unexpected status code ${error.response.statusCode} when verifying Kerberos support for BDC Cluster ${this._url}`);
+				return false;
+			}
+
+			const auths = error.response.headers['www-authenticate'] as string[] ?? [];
+			if (auths.includes('Negotiate')) {
+				return true;
+			}
+			console.warn(`Didn't get expected Negotiate auth type when verifying Kerberos support for BDC Cluster ${this.url}. Supported types : ${auths.join(', ')}`);
+			return false;
 		}
 	}
 

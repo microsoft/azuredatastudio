@@ -78,8 +78,6 @@ export class DeployClusterWizardModel extends ResourceTypeModel {
 		await this.scriptToNotebook();
 	}
 
-	onCancel(): void { }
-
 	constructor(public bdcProvider: BdcWizardDeploymentProvider, wizard: ResourceTypeWizard) {
 		super(bdcProvider, wizard);
 		this._kubeService = this.wizard._kubeService;

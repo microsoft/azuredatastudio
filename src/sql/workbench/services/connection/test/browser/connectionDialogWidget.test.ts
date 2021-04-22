@@ -57,8 +57,6 @@ suite('ConnectionDialogWidget tests', () => {
 		cmInstantiationService.stub(IContextKeyService, new MockContextKeyService());
 
 		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict,
-			undefined, // connection store
-			undefined, // connection status manager
 			undefined, // connection dialog service
 			cmInstantiationService, // instantiation service
 			undefined, // editor service

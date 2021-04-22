@@ -245,6 +245,33 @@ describe('ProjectsController', function (): void {
 				should(await exists(noneEntry.fsUri.fsPath)).equal(true, 'none entry pre-deployment script is supposed to still exist on disk');
 			});
 
+			it('Should delete folders with excluded items', async function (): Promise<void> {
+				let proj = await testUtils.createTestProject(templates.newSqlProjectTemplate);
+				const setupResult = await setupDeleteExcludeTest(proj);
+
+				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1];
+				const upperFolder = projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!;
+				const lowerFolder = upperFolder.children.find(x => x.friendlyName === 'LowerFolder')!;
+
+				const projController = new ProjectsController();
+
+				// Exclude files under LowerFolder
+				await projController.exclude(createWorkspaceTreeItem(<FileNode>lowerFolder.children.find(x => x.friendlyName === 'someScript.sql')!));
+				await projController.exclude(createWorkspaceTreeItem(<FileNode>lowerFolder.children.find(x => x.friendlyName === 'someOtherScript.sql')!));
+
+				// Delete UpperFolder
+				await projController.delete(createWorkspaceTreeItem(<FolderNode>projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!));
+
+				// Reload edited sqlproj from disk
+				proj = await Project.openProject(proj.projectFilePath);
+
+				// Confirm result
+				should(proj.files.some(x => x.relativePath === 'UpperFolder')).equal(false, 'UpperFolder should not be part of proj file any more');
+				should(await exists(scriptEntry.fsUri.fsPath)).equal(false, 'script is supposed to be deleted from disk');
+				should(await exists(lowerFolder.projectUri.fsPath)).equal(false, 'LowerFolder is supposed to be deleted from disk');
+				should(await exists(upperFolder.projectUri.fsPath)).equal(false, 'UpperFolder is supposed to be deleted from disk');
+			});
+
 			it('Should reload correctly after changing sqlproj file', async function (): Promise<void> {
 				// create project
 				const folderPath = await testUtils.generateTestFolderPath();
@@ -382,7 +409,9 @@ describe('ProjectsController', function (): void {
 
 				projController.setup(x => x.getDaxFxService()).returns(() => Promise.resolve(testContext.dacFxService.object));
 
-				await projController.object.publishProjectCallback(new Project(''), { connectionUri: '', databaseName: '' });
+				const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
+
+				await projController.object.publishProjectCallback(proj, { connectionUri: '', databaseName: '' });
 
 				should(builtDacpacPath).not.equal('', 'built dacpac path should be set');
 				should(publishedDacpacPath).not.equal('', 'published dacpac path should be set');
@@ -550,7 +579,7 @@ describe('ProjectsController', function (): void {
 			const project2 = await Project.openProject(vscode.Uri.file(projPath2).fsPath);
 			const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
-			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace()).returns(() => [vscode.Uri.file(project1.projectFilePath), vscode.Uri.file(project2.projectFilePath)]);
+			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny())).returns(() => [vscode.Uri.file(project1.projectFilePath), vscode.Uri.file(project2.projectFilePath)]);
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object });
 
 			// add project reference from project1 to project2
@@ -574,6 +603,62 @@ describe('ProjectsController', function (): void {
 			should(showErrorMessageSpy.called).be.true('showErrorMessage should have been called');
 		});
 
+		it('Should add dacpac references as relative paths', async function (): Promise<void> {
+			const projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+			const projController = new ProjectsController();
+
+			const project1 = await Project.openProject(vscode.Uri.file(projFilePath).fsPath);
+			const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
+			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
+			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object });
+
+			// add dacpac reference to something in the same folder
+			should(project1.databaseReferences.length).equal(0, 'There should not be any database references to start with');
+
+			await projController.addDatabaseReferenceCallback(project1, {
+				databaseName: <string>this.databaseNameTextbox?.value,
+				dacpacFileLocation: vscode.Uri.file(path.join(path.dirname(projFilePath), 'sameFolderTest.dacpac')),
+				suppressMissingDependenciesErrors: false
+			},
+				{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
+			should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
+			should(project1.databaseReferences.length).equal(1, 'Dacpac reference should have been added');
+			should(project1.databaseReferences[0].databaseName).equal('sameFolderTest');
+			should(project1.databaseReferences[0].pathForSqlProj()).equal('sameFolderTest.dacpac');
+			// make sure reference to sameFolderTest.dacpac was added to project file
+			let projFileText = (await fs.readFile(projFilePath)).toString();
+			should(projFileText).containEql('sameFolderTest.dacpac');
+
+			// add dacpac reference to something in the a nested folder
+			await projController.addDatabaseReferenceCallback(project1, {
+				databaseName: <string>this.databaseNameTextbox?.value,
+				dacpacFileLocation: vscode.Uri.file(path.join(path.dirname(projFilePath), 'refs', 'nestedFolderTest.dacpac')),
+				suppressMissingDependenciesErrors: false
+			},
+				{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
+			should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
+			should(project1.databaseReferences.length).equal(2, 'Another dacpac reference should have been added');
+			should(project1.databaseReferences[1].databaseName).equal('nestedFolderTest');
+			should(project1.databaseReferences[1].pathForSqlProj()).equal('refs\\nestedFolderTest.dacpac');
+			// make sure reference to nestedFolderTest.dacpac was added to project file
+			projFileText = (await fs.readFile(projFilePath)).toString();
+			should(projFileText).containEql('refs\\nestedFolderTest.dacpac');
+
+			// add dacpac reference to something in the a folder outside of the project
+			await projController.addDatabaseReferenceCallback(project1, {
+				databaseName: <string>this.databaseNameTextbox?.value,
+				dacpacFileLocation: vscode.Uri.file(path.join(path.dirname(projFilePath), '..','someFolder', 'outsideFolderTest.dacpac')),
+				suppressMissingDependenciesErrors: false
+			},
+				{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
+			should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
+			should(project1.databaseReferences.length).equal(3, 'Another dacpac reference should have been added');
+			should(project1.databaseReferences[2].databaseName).equal('outsideFolderTest');
+			should(project1.databaseReferences[2].pathForSqlProj()).equal('..\\someFolder\\outsideFolderTest.dacpac');
+			// make sure reference to outsideFolderTest.dacpac was added to project file
+			projFileText = (await fs.readFile(projFilePath)).toString();
+			should(projFileText).containEql('..\\someFolder\\outsideFolderTest.dacpac');
+		});
 	});
 });
 

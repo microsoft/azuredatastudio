@@ -28,7 +28,7 @@ import { INotebookService, INotebookParams, INotebookEditor, INotebookSection, I
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { Deferred } from 'sql/base/common/promise';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction, RunParametersAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
@@ -41,7 +41,7 @@ import { createErrorWithActions } from 'vs/base/common/errorsWithActions';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { MaskedLabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
@@ -129,7 +129,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.notebookService.removeNotebookEditor(this);
 		}
 	}
-
 	public get model(): NotebookModel | null {
 		return this._model;
 	}
@@ -370,15 +369,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let spacerElement = document.createElement('li');
 			spacerElement.style.marginLeft = 'auto';
 
-			let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'notebook-button masked-pseudo code');
+			let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'masked-pseudo code');
 
-			let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codePreview', "Code cell"), 'notebook-button masked-pseudo code');
+			let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codePreview', "Code cell"), 'masked-pseudo code');
 			addCodeCellButton.cellType = CellTypes.Code;
 
-			let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('textPreview', "Text cell"), 'notebook-button masked-pseudo markdown');
+			let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('textPreview', "Text cell"), 'masked-pseudo markdown');
 			addTextCellButton.cellType = CellTypes.Markdown;
 
-			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'notebook-button masked-pseudo start-outline');
+			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'masked-pseudo start-outline');
 
 			let collapseCellsAction = this.instantiationService.createInstance(CollapseCellsAction, 'notebook.collapseCells', true);
 
@@ -386,6 +385,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', true);
 			this._trustedAction.enabled = false;
+
+			let runParametersAction = this.instantiationService.createInstance(RunParametersAction, 'notebook.runParameters', true, this._notebookParams.notebookUri);
 
 			let taskbar = <HTMLElement>this.toolbar.nativeElement;
 			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
@@ -401,7 +402,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				undefined,
 				this._actionBar.actionRunner,
 				undefined,
-				'codicon notebook-button masked-pseudo masked-pseudo-after add-new dropdown-arrow',
+				'codicon masked-pseudo masked-pseudo-after add-new dropdown-arrow',
 				localize('addCell', "Cell"),
 				undefined
 			);
@@ -418,6 +419,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ action: collapseCellsAction },
 				{ action: clearResultsButton },
 				{ action: this._trustedAction },
+				{ action: runParametersAction },
 			]);
 		} else {
 			let kernelContainer = document.createElement('div');
@@ -431,13 +433,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			attachToDropdown.render(attachToContainer);
 			attachSelectBoxStyler(attachToDropdown, this.themeService);
 
-			let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('code', "Code"), 'notebook-button icon-add');
+			let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('code', "Code"), 'icon-add');
 			addCodeCellButton.cellType = CellTypes.Code;
 
-			let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
+			let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('text', "Text"), 'icon-add');
 			addTextCellButton.cellType = CellTypes.Markdown;
 
-			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run Cells"), 'notebook-button icon-run-cells');
+			this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run Cells"), 'icon-run-cells');
 
 			let clearResultsButton = this.instantiationService.createInstance(ClearAllOutputsAction, 'notebook.ClearAllOutputs', false);
 
@@ -458,10 +460,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ action: this._trustedAction },
 				{ action: this._runAllCellsAction },
 				{ action: clearResultsButton },
-				{ action: collapseCellsAction }
+				{ action: collapseCellsAction },
 			]);
 		}
-
 	}
 
 	protected initNavSection(): void {
@@ -509,7 +510,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				action.tooltip = action.label;
 				action.label = '';
 			}
-			return new LabeledMenuItemActionItem(action, this.keybindingService, this.contextMenuService, this.notificationService, 'notebook-button fixed-width');
+			return new MaskedLabeledMenuItemActionItem(action, this.keybindingService, this.notificationService);
 		}
 		return undefined;
 	}
@@ -700,22 +701,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	navigateToSection(id: string): void {
-		id = id.toLowerCase();
-		let chromeHeight: number = 0;
-		let elBody: HTMLElement = document.body;
-		let tabBar = elBody.querySelector('.title.tabs') as HTMLElement;
-		let actionBar = elBody.querySelector('.editor-toolbar.actionbar-container') as HTMLElement;
-		let section = this.getSectionElements().find(s => s.relativeUri && s.relativeUri.toLowerCase() === id);
+		let section = this.getSectionElements().find(s => s.relativeUri && s.relativeUri.toLowerCase() === id.toLowerCase());
 		if (section) {
-			// Scroll this section to the top of the header instead of just bringing header into view.
-			if (tabBar && actionBar) {
-				chromeHeight = tabBar.scrollHeight + actionBar.scrollHeight;
-			}
-			let scrollTop: number = section.headerEl.getBoundingClientRect().top - (chromeHeight + 10);
-			(<HTMLElement>this.container.nativeElement).scrollTo({
-				top: scrollTop,
-				behavior: 'smooth'
-			});
+			section.headerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 			section.headerEl.focus();
 		}
 	}

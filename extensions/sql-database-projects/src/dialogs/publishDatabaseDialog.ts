@@ -15,6 +15,7 @@ import { DeploymentOptions, SchemaObjectType } from '../../../mssql/src/mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
 import { getConnectionName } from './utils';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 interface DataSourceDropdownValue extends azdata.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -40,6 +41,7 @@ export class PublishDatabaseDialog {
 	private connectionIsDataSource: boolean | undefined;
 	private sqlCmdVars: Record<string, string> | undefined;
 	private deploymentOptions: DeploymentOptions | undefined;
+	private profileUsed: boolean = false;
 
 	private toDispose: vscode.Disposable[] = [];
 
@@ -48,7 +50,7 @@ export class PublishDatabaseDialog {
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
 	constructor(private project: Project) {
-		this.dialog = azdata.window.createModelViewDialog(constants.publishDialogName);
+		this.dialog = azdata.window.createModelViewDialog(constants.publishDialogName, 'sqlProjectPublishDialog');
 		this.publishTab = azdata.window.createTab(constants.publishDialogName);
 	}
 
@@ -184,7 +186,8 @@ export class PublishDatabaseDialog {
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
-			deploymentOptions: await this.getDeploymentOptions()
+			deploymentOptions: await this.getDeploymentOptions(),
+			profileUsed: this.profileUsed
 		};
 
 		azdata.window.closeDialog(this.dialog);
@@ -194,12 +197,15 @@ export class PublishDatabaseDialog {
 	}
 
 	public async generateScriptClick(): Promise<void> {
+		TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.generateScriptClicked);
+
 		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
 		const settings: IGenerateScriptSettings = {
 			databaseName: this.getTargetDatabaseName(),
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars,
-			deploymentOptions: await this.getDeploymentOptions()
+			deploymentOptions: await this.getDeploymentOptions(),
+			profileUsed: this.profileUsed
 		};
 
 		azdata.window.closeDialog(this.dialog);

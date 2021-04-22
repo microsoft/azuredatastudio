@@ -14,18 +14,19 @@
 		"textLinkActiveForeground": "#3062d6",
 
 		//Button control
-		"button.background": "#007ACC",
-		"button.foreground": "#ffffff",
-		"button.hoverBackground": "#0078d7",
+		"button.background": "#0078D4",
+		"button.foreground": "#FFFFFF",
+		"button.hoverBackground": "#106EBE",
+		"button.border": "#0078D4",
 
-		// TODO add support for these
-		"button.secondaryBackground": "#ffffff",
-		"button.secondaryHoverBackground": "#ffffff",
+		"button.secondaryBackground": "#FFFFFF",
+		"button.secondaryHoverBackground": "#F3F2F1",
 		"button.secondaryForeground": "#323130",
-		"button.secondaryHoverForeground": "#0078D4",
+		"button.secondaryBorder": "#8A8886",
 
 		"button.disabledBackground": "#F3F2F1",
 		"button.disabledForeground": "#A19F9D",
+		"button.disabledBorder": "#F3F2F1",
 
 
 		//Checkbox
@@ -55,11 +56,6 @@
 		"list.hoverBackground": "#dcdcdc",
 		"pickerGroup.border": "#0078d7",
 
-		// Workbench: Activity Bar
-		"activityBar.background": "#212121",
-
-		// Workbench: Side Bar
-		"sideBar.background": "#eaeaea",
 		"editorGroupHeader.tabsBackground": "#f4f4f4",
 		"editor.background": "#fffffe",
 		"editor.foreground": "#212121",
@@ -81,7 +77,10 @@
 		"panel.border": "#888888",
 		"panelTitle.activeForeground": "#212121",
 		"panelTitle.inactiveForeground": "#757575",
-		"panelTitle.activeBorder": "#026dc8"
+		"panelTitle.activeBorder": "#026dc8",
+
+		"sideBarSectionHeader.background": "#0000",
+		"sideBarSectionHeader.border": "#61616130"
 	},
 	"tokenColors": [
 		{

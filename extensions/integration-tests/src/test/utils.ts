@@ -146,7 +146,7 @@ export async function deleteDB(server: TestServerProfile, dbName: string, ownerU
  */
 export async function tryDeleteDB(server: TestServerProfile, dbName: string, ownerUri: string): Promise<boolean> {
 	try {
-		deleteDB(server, dbName, ownerUri);
+		await deleteDB(server, dbName, ownerUri);
 		return true;
 	} catch (err) {
 		console.warn(err);

@@ -45,8 +45,6 @@ suite('Insights Dialog Controller Tests', () => {
 		let testinstantiationService = new TestInstantiationService();
 		testinstantiationService.stub(IStorageService, new TestStorageService());
 		let connMoq = Mock.ofType(ConnectionManagementService, MockBehavior.Strict,
-			undefined, // connection store
-			undefined, // connection status manager
 			undefined, // connection dialog service
 			testinstantiationService, // instantiation service
 			undefined, // editor service

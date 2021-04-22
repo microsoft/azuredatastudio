@@ -28,7 +28,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 	selector: 'modelview-dropdown',
 	template: `
 
-	<div [style.width]="getWidth()">
+	<div [ngStyle]="CSSStyles">
 		<div [style.display]="getLoadingDisplay()" style="width: 100%; position: relative">
 			<div class="modelview-loadingComponent-spinner" style="position:absolute; right: 0px; margin-right: 5px; height:15px; z-index:1" #spinnerElement></div>
 			<div [style.display]="getLoadingDisplay()" #loadingBox style="width: 100%;"></div>
@@ -96,9 +96,13 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			this._register(this._selectBox);
 			this._register(attachSelectBoxStyler(this._selectBox, this.themeService));
 			this._register(this._selectBox.onDidSelect(async e => {
-				if (!this.editable) {
+				// also update the selected value here while in accessibility mode since the read-only selectbox
+				// is used even if the editable flag is true
+				if (!this.editable || (this._isInAccessibilityMode && !this.loading)) {
 					this.setSelectedValue(e.selected);
 					await this.validate();
+				}
+				if (!this.editable) {
 					// This is currently sending the ISelectData as the args, but to change this now would be a breaking
 					// change for extensions using it. So while not ideal this should be left as is for the time being.
 					this.fireEvent({
@@ -285,5 +289,11 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 
 	public getStatusText(): string {
 		return this.loading ? this.loadingText : this.loadingCompletedText;
+	}
+
+	public get CSSStyles(): azdata.CssStyles {
+		return this.mergeCss(super.CSSStyles, {
+			'width': this.getWidth()
+		});
 	}
 }

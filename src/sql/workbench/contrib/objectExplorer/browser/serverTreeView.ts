@@ -8,7 +8,7 @@ import * as errors from 'vs/base/common/errors';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
+import { attachButtonStyler, attachListStyler } from 'vs/platform/theme/common/styler';
 import { ISelectionEvent, ITree } from 'vs/base/parts/tree/browser/tree';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
@@ -27,7 +27,6 @@ import { TreeSelectionHandler } from 'sql/workbench/services/objectExplorer/brow
 import { IObjectExplorerService, IServerTreeView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/browser/serverTreeActionProvider';

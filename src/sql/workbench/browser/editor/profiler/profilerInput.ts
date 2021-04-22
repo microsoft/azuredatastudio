@@ -277,10 +277,6 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		this.data.clearFilter();
 	}
 
-	isDirty(): boolean {
-		return this.state.isRunning || !!this.state.isPaused;
-	}
-
 	dispose() {
 		super.dispose();
 		this._profilerService.disconnectSession(this.id);

@@ -11,7 +11,7 @@ export abstract class DashboardPage extends InitializingComponent {
 
 	protected disposables: vscode.Disposable[] = [];
 
-	constructor(protected modelView: azdata.ModelView) {
+	constructor(protected modelView: azdata.ModelView, protected dashboard: azdata.window.ModelViewDashboard) {
 		super();
 		this.disposables.push(modelView.onClosed(() => {
 			// Clean up best we can
@@ -26,8 +26,9 @@ export abstract class DashboardPage extends InitializingComponent {
 			title: this.title,
 			id: this.id,
 			icon: this.icon,
-			content: this.container,
-			toolbar: this.toolbarContainer
+			// Get toolbar first since things in the container might depend on these being created
+			toolbar: this.toolbarContainer,
+			content: this.container
 		};
 	}
 

@@ -19,15 +19,15 @@ import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResult
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
-	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, CopyQueryWithResultsKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
+	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, CopyQueryWithResultsKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction, ToggleFocusBetweenQueryEditorAndResultsAction
 } from 'sql/workbench/contrib/query/browser/keyboardQueryActions';
 import * as gridActions from 'sql/workbench/contrib/editData/browser/gridActions';
 import * as gridCommands from 'sql/workbench/contrib/editData/browser/gridCommands';
 import { localize } from 'vs/nls';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 
-import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
-import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, QueryStatusStatusBarContributions } from 'sql/workbench/contrib/query/browser/statusBarItems';
+import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
+import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, QueryStatusStatusBarContributions, QueryResultSelectionSummaryStatusBarContribution } from 'sql/workbench/contrib/query/browser/statusBarItems';
 import { SqlFlavorStatusbarItem, ChangeFlavorAction } from 'sql/workbench/contrib/query/browser/flavorStatus';
 import { IEditorInputFactoryRegistry, Extensions as EditorInputFactoryExtensions } from 'vs/workbench/common/editor';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
@@ -198,6 +198,17 @@ actionRegistry.registerWorkbenchAction(
 		QueryEditorVisibleCondition
 	),
 	ToggleQueryResultsKeyboardAction.LABEL
+);
+
+actionRegistry.registerWorkbenchAction(
+	SyncActionDescriptor.create(
+		ToggleFocusBetweenQueryEditorAndResultsAction,
+		ToggleFocusBetweenQueryEditorAndResultsAction.ID,
+		ToggleFocusBetweenQueryEditorAndResultsAction.LABEL,
+		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_F },
+		QueryEditorVisibleCondition
+	),
+	ToggleFocusBetweenQueryEditorAndResultsAction.LABEL
 );
 
 // Register Flavor Action
@@ -380,6 +391,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.optimizedTable', "(Experimental) Use a optimized table in the results out. Some functionality might be missing and in the works."),
 			'default': false
 		},
+		'queryEditor.results.inMemoryDataProcessingThreshold': {
+			'type': 'number',
+			'default': 2000,
+			'description': localize('queryEditor.inMemoryDataProcessingThreshold', "Controls the max number of rows allowed to do filtering and sorting in memory. If the number is exceeded, sorting and filtering will be disabled.")
+		},
 		'queryEditor.messages.showBatchTime': {
 			'type': 'boolean',
 			'description': localize('queryEditor.messages.showBatchTime', "Should execution time be shown for individual batches"),
@@ -452,7 +468,7 @@ for (let i = 0; i < 9; i++) {
 		'type': 'string',
 		'default': defaultVal,
 		'description': localize('queryShortcutDescription',
-			"Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call. Any selected text in the query editor will be passed as a parameter",
+			"Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call or query execution. Any selected text in the query editor will be passed as a parameter at the end of your query, or you can reference it with {arg}",
 			queryIndex)
 	};
 }
@@ -468,3 +484,4 @@ workbenchRegistry.registerWorkbenchContribution(TimeElapsedStatusBarContribution
 workbenchRegistry.registerWorkbenchContribution(RowCountStatusBarContributions, LifecyclePhase.Restored);
 workbenchRegistry.registerWorkbenchContribution(QueryStatusStatusBarContributions, LifecyclePhase.Restored);
 workbenchRegistry.registerWorkbenchContribution(SqlFlavorStatusbarItem, LifecyclePhase.Restored);
+workbenchRegistry.registerWorkbenchContribution(QueryResultSelectionSummaryStatusBarContribution, LifecyclePhase.Restored);

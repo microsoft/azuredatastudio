@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { DataTierApplicationWizard } from './wizard/dataTierApplicationWizard';
 
 export async function activate(context: vscode.ExtensionContext) {
-	vscode.commands.registerCommand('dacFx.start', (profile: azdata.IConnectionProfile, ...args: any[]) => new DataTierApplicationWizard().start(profile, args));
+	vscode.commands.registerCommand('dacFx.start', (profile: azdata.IConnectionProfile) => new DataTierApplicationWizard(undefined, context).start(profile));
 }
 
 export function deactivate(): void {

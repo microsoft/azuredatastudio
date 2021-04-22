@@ -65,9 +65,6 @@ export class DeployAzureSQLDBWizardModel extends ResourceTypeModel {
 		await this.scriptToNotebook();
 	}
 
-	onCancel(): void {
-	}
-
 	private getPages(): ResourceTypePage[] {
 		const pages: ResourceTypePage[] = [];
 		pages.push(new AzureSettingsPage(this));

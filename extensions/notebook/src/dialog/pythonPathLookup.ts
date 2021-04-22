@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as glob from 'glob';
-import * as vscode from 'vscode';
 
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
@@ -14,19 +13,25 @@ export interface PythonPathInfo {
 	version: string;
 }
 
+export interface PythonCommand {
+	command: string;
+	args?: string[];
+}
+
 export class PythonPathLookup {
-	private condaLocations: string[];
-	constructor(private readonly _outputChannel: vscode.OutputChannel) {
+	private readonly _condaLocations: string[];
+	private readonly _pythonCommands: PythonCommand[];
+	constructor() {
 		if (process.platform !== constants.winPlatform) {
 			let userFolder = process.env['HOME'];
-			this.condaLocations = [
+			this._condaLocations = [
 				'/opt/*conda*/bin/python3',
 				'/usr/share/*conda*/bin/python3',
 				`${userFolder}/*conda*/bin/python3`
 			];
 		} else {
 			let userFolder = process.env['USERPROFILE'].replace(/\\/g, '/').replace('C:', '');
-			this.condaLocations = [
+			this._condaLocations = [
 				'/ProgramData/[Mm]iniconda*/python.exe',
 				'/ProgramData/[Aa]naconda*/python.exe',
 				`${userFolder}/[Mm]iniconda*/python.exe`,
@@ -35,34 +40,43 @@ export class PythonPathLookup {
 				`${userFolder}/AppData/Local/Continuum/[Aa]naconda*/python.exe`
 			];
 		}
-	}
 
-	public async getSuggestions(): Promise<PythonPathInfo[]> {
-		let pythonSuggestions = await this.getPythonSuggestions();
-		let condaSuggestions = await this.getCondaSuggestions();
+		this._pythonCommands = [
+			{ command: 'python3.7' },
+			{ command: 'python3.6' },
+			{ command: 'python3' },
+			{ command: 'python' }
+		];
 
-		if (pythonSuggestions) {
-			if (condaSuggestions && condaSuggestions.length > 0) {
-				pythonSuggestions = pythonSuggestions.concat(condaSuggestions);
-			}
-			return this.getInfoForPaths(pythonSuggestions);
-		} else {
-			return [];
+		if (process.platform === constants.winPlatform) {
+			this._pythonCommands.concat([
+				{ command: 'py', args: ['-3.7'] },
+				{ command: 'py', args: ['-3.6'] },
+				{ command: 'py', args: ['-3'] }
+			]);
 		}
 	}
 
-	private async getCondaSuggestions(): Promise<string[]> {
+	public async getSuggestions(): Promise<PythonPathInfo[]> {
+		let pythonSuggestions = await this.getPythonSuggestions(this._pythonCommands);
+		let condaSuggestions = await this.getCondaSuggestions(this._condaLocations);
+
+		let allSuggestions = pythonSuggestions.concat(condaSuggestions);
+		return this.getInfoForPaths(allSuggestions);
+	}
+
+	public async getCondaSuggestions(condaLocations: string[]): Promise<string[]> {
 		try {
-			let condaResults = await Promise.all(this.condaLocations.map(location => this.globSearch(location)));
+			let condaResults = await Promise.all(condaLocations.map(location => this.globSearch(location)));
 			let condaFiles = condaResults.reduce((first, second) => first.concat(second));
 			return condaFiles.filter(condaPath => condaPath && condaPath.length > 0);
 		} catch (err) {
-			this._outputChannel.appendLine(`Problem encountered getting Conda installations: ${err}`);
+			console.log(`Problem encountered getting Conda installs: ${err}`);
 		}
 		return [];
 	}
 
-	private globSearch(globPattern: string): Promise<string[]> {
+	public globSearch(globPattern: string): Promise<string[]> {
 		return new Promise<string[]>((resolve, reject) => {
 			glob(globPattern, (err, files) => {
 				if (err) {
@@ -73,20 +87,17 @@ export class PythonPathLookup {
 		});
 	}
 
-	private async getPythonSuggestions(): Promise<string[]> {
-		let pathsToCheck = this.getPythonCommands();
-
-		let pythonPaths = await Promise.all(pathsToCheck.map(item => this.getPythonPath(item)));
-		let results: string[];
-		if (pythonPaths) {
-			results = pythonPaths.filter(path => path && path.length > 0);
-		} else {
-			results = [];
+	public async getPythonSuggestions(pythonCommands: PythonCommand[]): Promise<string[]> {
+		try {
+			let pythonPaths = await Promise.all(pythonCommands.map(item => this.getPythonPath(item)));
+			return pythonPaths.filter(path => path && path.length > 0);
+		} catch (err) {
+			console.log(`Problem encountered getting Python installs: ${err}`);
 		}
-		return results;
+		return [];
 	}
 
-	private async getPythonPath(options: { command: string; args?: string[] }): Promise<string> {
+	public async getPythonPath(options: PythonCommand): Promise<string | undefined> {
 		try {
 			let args = Array.isArray(options.args) ? options.args : [];
 			args = args.concat(['-c', '"import sys;print(sys.executable)"']);
@@ -97,26 +108,13 @@ export class PythonPathLookup {
 				return value;
 			}
 		} catch (err) {
-			this._outputChannel.appendLine(`Problem encountered getting Python path: ${err}`);
+			// Ignoring this error since it's probably from trying to run a non-existent python executable.
 		}
 
 		return undefined;
 	}
 
-	private getPythonCommands(): { command: string; args?: string[] }[] {
-		const paths = ['python3.7', 'python3.6', 'python3', 'python']
-			.map(item => { return { command: item }; });
-		if (process.platform !== constants.winPlatform) {
-			return paths;
-		}
-
-		const versions = ['3.7', '3.6', '3'];
-		return paths.concat(versions.map(version => {
-			return { command: 'py', args: [`-${version}`] };
-		}));
-	}
-
-	private async getInfoForPaths(pythonPaths: string[]): Promise<PythonPathInfo[]> {
+	public async getInfoForPaths(pythonPaths: string[]): Promise<PythonPathInfo[]> {
 		let pathsInfo = await Promise.all(pythonPaths.map(path => this.getInfoForPath(path)));
 
 		// Remove duplicate paths, and entries with missing values
@@ -141,7 +139,7 @@ export class PythonPathLookup {
 		});
 	}
 
-	private async getInfoForPath(pythonPath: string): Promise<PythonPathInfo> {
+	public async getInfoForPath(pythonPath: string): Promise<PythonPathInfo | undefined> {
 		try {
 			// "python --version" returns nothing from executeBufferedCommand with Python 2.X,
 			// so use sys.version_info here instead.
@@ -160,7 +158,7 @@ export class PythonPathLookup {
 				};
 			}
 		} catch (err) {
-			this._outputChannel.appendLine(`Problem encountered getting Python info for path: ${err}`);
+			console.log(`Problem encountered getting Python info for path: ${err}`);
 		}
 		return undefined;
 	}

@@ -27,7 +27,7 @@ import { ISearchHistoryService } from 'vs/workbench/contrib/search/common/search
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import * as dom from 'vs/base/browser/dom';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
@@ -43,6 +43,8 @@ import { searchClearIcon, searchCollapseAllIcon, searchExpandAllIcon, searchStop
 import { Action, IAction } from 'vs/base/common/actions';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { Memento } from 'vs/workbench/common/memento';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 const $ = dom.$;
 
@@ -82,12 +84,13 @@ export class NotebookSearchView extends SearchView {
 		@IOpenerService openerService: IOpenerService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@ICommandService readonly commandService: ICommandService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 
 		super(options, fileService, editorService, progressService, notificationService, dialogService, contextViewService, instantiationService, viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService, replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService, menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService);
 
 		this.memento = new Memento(this.id, storageService);
-		this.viewletState = this.memento.getMemento(StorageScope.WORKSPACE);
+		this.viewletState = this.memento.getMemento(StorageScope.WORKSPACE, StorageTarget.MACHINE);
 		this.viewActions = [
 			this._register(this.instantiationService.createInstance(ClearSearchResultsAction, ClearSearchResultsAction.ID, ClearSearchResultsAction.LABEL)),
 		];
@@ -146,7 +149,7 @@ export class NotebookSearchView extends SearchView {
 		e.browserEvent.stopPropagation();
 
 		const actions: IAction[] = [];
-		const actionsDisposable = createAndFillInContextMenuActions(this.contextMenu, { shouldForwardArgs: true }, actions, this.contextMenuService);
+		const actionsDisposable = createAndFillInContextMenuActions(this.contextMenu, { shouldForwardArgs: true }, actions);
 
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => e.anchor,
@@ -229,18 +232,20 @@ export class NotebookSearchView extends SearchView {
 				let element = this.tree.getSelection()[0] as Match;
 				const resource = element instanceof Match ? element.parent().resource : (<FileMatch>element).resource;
 				if (resource.fsPath.endsWith('.md')) {
-					this.commandService.executeCommand('markdown.showPreview', resource);
+					await this.commandService.executeCommand('markdown.showPreview', resource);
 				} else {
-					await this.open(this.tree.getSelection()[0] as Match, true, false, false);
+					await this.commandService.executeCommand('bookTreeView.openNotebook', resource.fsPath);
 				}
+				await this.commandService.executeCommand('notebook.action.launchFindInNotebook', this.viewModel.searchResult.query?.contentPattern?.pattern);
 			}
 		}));
 	}
 
 	public startSearch(query: ITextQuery, excludePatternText: string, includePatternText: string, triggeredOnType: boolean, searchWidget: NotebookSearchWidget): Thenable<void> {
+		let start = new Date().getTime();
 		let progressComplete: () => void;
 		this.progressService.withProgress({ location: this.getProgressLocation(), delay: triggeredOnType ? 300 : 0 }, _progress => {
-			return new Promise(resolve => progressComplete = resolve);
+			return new Promise<void>(resolve => progressComplete = resolve);
 		});
 
 		this.state = SearchUIState.Searching;
@@ -252,6 +257,12 @@ export class NotebookSearchView extends SearchView {
 		}, 2000);
 
 		const onComplete = async (completed?: ISearchComplete) => {
+			let end = new Date().getTime();
+			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.SearchCompleted)
+				.withAdditionalProperties({ resultsReturned: completed?.results.length })
+				.withAdditionalMeasurements({ timeTakenMs: end - start })
+				.send();
+
 			clearTimeout(slowTimer);
 			this.state = SearchUIState.Idle;
 
@@ -384,7 +395,7 @@ export class NotebookSearchView extends SearchView {
 	}
 
 	protected async refreshAndUpdateCount(event?: IChangeEvent): Promise<void> {
-		this.updateSearchResultCount(this.viewModel.searchResult.query!.userDisabledExcludesAndIgnoreFiles);
+		this.updateSearchResultCount(this.viewModel.searchResult.query!.userDisabledExcludesAndIgnoreFiles, false);
 		return this.refreshTree(event);
 	}
 
@@ -551,7 +562,7 @@ class CancelSearchAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchStopIcon.classNames);
+		super(id, label, 'search-action ' + searchStopIcon.id);
 		this.update();
 	}
 
@@ -578,7 +589,7 @@ class ExpandAllAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchExpandAllIcon.classNames);
+		super(id, label, 'search-action ' + searchExpandAllIcon.id);
 		this.update();
 	}
 
@@ -607,7 +618,7 @@ class CollapseDeepestExpandedLevelAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchCollapseAllIcon.classNames);
+		super(id, label, 'search-action ' + searchCollapseAllIcon.id);
 		this.update();
 	}
 
@@ -663,7 +674,7 @@ class ClearSearchResultsAction extends Action {
 	constructor(id: string, label: string,
 		@IViewsService private readonly viewsService: IViewsService
 	) {
-		super(id, label, 'search-action ' + searchClearIcon.classNames);
+		super(id, label, 'search-action ' + searchClearIcon.id);
 		this.update();
 	}
 

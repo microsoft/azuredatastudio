@@ -18,6 +18,8 @@ import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensio
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { isThenable } from 'vs/base/common/async';
 import { withNullAsUndefined } from 'vs/base/common/types';
+import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
+import { mixin } from 'vs/base/common/objects';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -41,7 +43,7 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 		// 	return undefined;
 		// }
 
-		if (!(editor instanceof FileEditorInput) && !(editor instanceof UntitledTextEditorInput)) {
+		if (!(editor instanceof FileEditorInput) && !(editor instanceof UntitledTextEditorInput) && !(editor instanceof DiffEditorInput)) {
 			return undefined;
 		}
 
@@ -57,17 +59,27 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 		}
 
 		if (!language) {
-			// just use the extension
-			language = path.extname(editor.resource.toString()).slice(1); // remove the .
+			// Attempt to use extension or extension of modified input (if in diff editor)
+			// remove the .
+			language = editor instanceof DiffEditorInput ? path.extname(editor.modifiedInput.resource.fsPath).slice(1) : path.extname(editor.resource.toString()).slice(1);
 		}
 
 		if (!language) {
 			const defaultInputCreator = languageAssociationRegistry.defaultAssociation;
-			if (defaultInputCreator) {
+			if (defaultInputCreator && !(editor instanceof DiffEditorInput)) {
 				editor.setMode(defaultInputCreator[0]);
 				const newInput = defaultInputCreator[1].convertInput(editor);
 				if (newInput) {
-					return { override: isThenable(newInput) ? newInput.then(input => this.editorService.openEditor(input ?? editor, options, group)) : this.editorService.openEditor(newInput, options, group) };
+					return {
+						// If the new input is a thenable which resolves to undefined (no input to convert)
+						// then don't allow further overriding since otherwise we could get in an infinite loop
+						// (openEditor calls onEditorOpening handler and we keep repeating this process). This
+						// is replicating the behavior for the non-Thenable returns where we just let the openEditor
+						// continue on
+						override: isThenable(newInput) ?
+							newInput.then(input => this.editorService.openEditor(input ?? editor, mixin(options, { override: input ? options?.override : false }), group)) :
+							this.editorService.openEditor(newInput, options, group)
+					};
 				}
 			}
 		} else {
@@ -75,7 +87,16 @@ export class EditorReplacementContribution implements IWorkbenchContribution {
 			if (inputCreator) {
 				const newInput = inputCreator.convertInput(editor);
 				if (newInput) {
-					return { override: isThenable(newInput) ? newInput.then(input => this.editorService.openEditor(input ?? editor, options, group)) : this.editorService.openEditor(newInput, options, group) };
+					return {
+						// If the new input is a thenable which resolves to undefined (no input to convert)
+						// then don't allow further overriding since otherwise we could get in an infinite loop
+						// (openEditor calls onEditorOpening handler and we keep repeating this process). This
+						// is replicating the behavior for the non-Thenable returns where we just let the openEditor
+						// continue on
+						override: isThenable(newInput) ?
+							newInput.then(input => this.editorService.openEditor(input ?? editor, mixin(options, { override: input ? options?.override : false }), group))
+							: this.editorService.openEditor(newInput, options, group)
+					};
 				}
 			}
 		}

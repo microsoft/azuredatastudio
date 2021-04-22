@@ -6,9 +6,8 @@
 import { ChangeDetectorRef, ElementRef } from '@angular/core';
 import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { createIconCssClass, IUserFriendlyIcon } from 'sql/workbench/browser/modelComponents/iconUtils';
+import { createIconCssClass, IconPath } from 'sql/workbench/browser/modelComponents/iconUtils';
 import { removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
-import { URI } from 'vs/base/common/uri';
 import { IComponentDescriptor } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -20,7 +19,7 @@ export class ItemDescriptor<T> {
 export abstract class ComponentWithIconBase<T extends azdata.ComponentWithIconProperties> extends ComponentBase<T> {
 
 	protected _iconClass: string;
-	protected _iconPath: IUserFriendlyIcon;
+	protected _iconPath: IconPath;
 	constructor(
 		changeRef: ChangeDetectorRef,
 		el: ElementRef,
@@ -58,8 +57,8 @@ export abstract class ComponentWithIconBase<T extends azdata.ComponentWithIconPr
 		return convertSize(this.iconHeight, `${this.defaultIconHeight}px`);
 	}
 
-	public get iconPath(): string | URI | { light: string | URI; dark: string | URI } {
-		return this.getPropertyOrDefault<IUserFriendlyIcon>((props) => props.iconPath, undefined);
+	public get iconPath(): IconPath {
+		return this.getPropertyOrDefault<IconPath>((props) => props.iconPath, undefined);
 	}
 
 	public get iconHeight(): number | string {

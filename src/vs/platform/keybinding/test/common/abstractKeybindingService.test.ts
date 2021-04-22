@@ -120,7 +120,8 @@ suite('AbstractKeybindingService', () => {
 				createScoped: undefined!,
 				getContext: (target: IContextKeyServiceTarget): any => {
 					return currentContextValue;
-				}
+				},
+				updateParent: () => { }
 			};
 
 			let commandService: ICommandService = {
@@ -191,7 +192,8 @@ suite('AbstractKeybindingService', () => {
 			null,
 			when,
 			true,
-			null
+			null,
+			false
 		);
 	}
 

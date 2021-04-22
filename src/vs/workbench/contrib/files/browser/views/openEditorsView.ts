@@ -13,7 +13,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IEditorGroupsService, IEditorGroup, GroupChangeKind, GroupsOrder } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { IEditorInput, Verbosity, toResource, SideBySideEditor } from 'vs/workbench/common/editor';
+import { IEditorInput, Verbosity, EditorResourceAccessor, SideBySideEditor } from 'vs/workbench/common/editor';
 import { SaveAllAction, SaveAllInGroupAction, CloseGroupAction } from 'vs/workbench/contrib/files/browser/fileActions';
 import { OpenEditorsFocusedContext, ExplorerFocusedContext, IFilesConfiguration, OpenEditor } from 'vs/workbench/contrib/files/common/files';
 import { CloseAllEditorsAction, CloseEditorAction, UnpinEditorAction } from 'vs/workbench/browser/parts/editor/editorActions';
@@ -48,6 +48,7 @@ import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
+import { compareFileNamesDefault } from 'vs/base/common/comparers';
 
 const $ = dom.$;
 
@@ -64,6 +65,8 @@ export class OpenEditorsView extends ViewPane {
 	private listLabels: ResourceLabels | undefined;
 	private contributedContextMenu!: IMenu;
 	private needsRefresh = false;
+	private elements: (OpenEditor | IEditorGroup)[] = [];
+	private sortOrder: 'editorOrder' | 'alphabetical';
 	private resourceContext!: ResourceContextKey;
 	private groupFocusedContext!: IContextKey<boolean>;
 	private dirtyEditorFocusedContext!: IContextKey<boolean>;
@@ -91,13 +94,14 @@ export class OpenEditorsView extends ViewPane {
 		this.structuralRefreshDelay = 0;
 		this.listRefreshScheduler = new RunOnceScheduler(() => {
 			const previousLength = this.list.length;
-			this.list.splice(0, this.list.length, this.elements);
+			this.list.splice(0, this.list.length, this.getElements());
 			this.focusActiveEditor();
 			if (previousLength !== this.list.length) {
 				this.updateSize();
 			}
 			this.needsRefresh = false;
 		}, this.structuralRefreshDelay);
+		this.sortOrder = configurationService.getValue('explorer.openEditors.sortOrder');
 
 		this.registerUpdateEvents();
 
@@ -132,7 +136,7 @@ export class OpenEditorsView extends ViewPane {
 				const index = this.getIndex(group, e.editor);
 				switch (e.kind) {
 					case GroupChangeKind.GROUP_INDEX: {
-						if (this.showGroups) {
+						if (index >= 0) {
 							this.list.splice(index, 1, [group]);
 						}
 						break;
@@ -149,19 +153,10 @@ export class OpenEditorsView extends ViewPane {
 						this.list.splice(index, 1, [new OpenEditor(e.editor!, group)]);
 						break;
 					}
-					case GroupChangeKind.EDITOR_OPEN: {
-						this.list.splice(index, 0, [new OpenEditor(e.editor!, group)]);
-						setTimeout(() => this.updateSize(), this.structuralRefreshDelay);
-						break;
-					}
-					case GroupChangeKind.EDITOR_CLOSE: {
-						const previousIndex = this.getIndex(group, undefined) + (e.editorIndex || 0) + (this.showGroups ? 1 : 0);
-						this.list.splice(previousIndex, 1);
-						this.updateSize();
-						break;
-					}
+					case GroupChangeKind.EDITOR_OPEN:
+					case GroupChangeKind.EDITOR_CLOSE:
 					case GroupChangeKind.EDITOR_MOVE: {
-						this.listRefreshScheduler.schedule();
+						updateWholeList();
 						break;
 					}
 				}
@@ -331,42 +326,37 @@ export class OpenEditorsView extends ViewPane {
 		return this.editorGroupService.groups.length > 1;
 	}
 
-	private get elements(): Array<IEditorGroup | OpenEditor> {
-		const result: Array<IEditorGroup | OpenEditor> = [];
+	private getElements(): Array<IEditorGroup | OpenEditor> {
+		this.elements = [];
 		this.editorGroupService.getGroups(GroupsOrder.GRID_APPEARANCE).forEach(g => {
 			if (this.showGroups) {
-				result.push(g);
+				this.elements.push(g);
 			}
-			result.push(...g.editors.map(ei => new OpenEditor(ei, g)));
+			let editors = g.editors.map(ei => new OpenEditor(ei, g));
+			if (this.sortOrder === 'alphabetical') {
+				editors = editors.sort((first, second) => compareFileNamesDefault(first.editor.getName(), second.editor.getName()));
+			}
+			this.elements.push(...editors);
 		});
 
-		return result;
+		return this.elements;
 	}
 
 	private getIndex(group: IEditorGroup, editor: IEditorInput | undefined | null): number {
-		let index = editor ? group.getIndexOfEditor(editor) : 0;
-		if (!this.showGroups) {
-			return index;
+		if (!editor) {
+			return this.elements.findIndex(e => !(e instanceof OpenEditor) && e.id === group.id);
 		}
 
-		for (let g of this.editorGroupService.getGroups(GroupsOrder.GRID_APPEARANCE)) {
-			if (g.id === group.id) {
-				return index + (!!editor ? 1 : 0);
-			} else {
-				index += g.count + 1;
-			}
-		}
-
-		return -1;
+		return this.elements.findIndex(e => e instanceof OpenEditor && e.editor === editor && e.group.id === group.id);
 	}
 
 	private openEditor(element: OpenEditor, options: { preserveFocus?: boolean; pinned?: boolean; sideBySide?: boolean; }): void {
 		if (element) {
 			this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', { id: 'workbench.files.openFile', from: 'openEditors' });
 
-			const preserveActivateGroup = options.sideBySide && options.preserveFocus; // needed for https://github.com/Microsoft/vscode/issues/42399
+			const preserveActivateGroup = options.sideBySide && options.preserveFocus; // needed for https://github.com/microsoft/vscode/issues/42399
 			if (!preserveActivateGroup) {
-				this.editorGroupService.activateGroup(element.group); // needed for https://github.com/Microsoft/vscode/issues/6672
+				this.editorGroupService.activateGroup(element.group); // needed for https://github.com/microsoft/vscode/issues/6672
 			}
 			this.editorService.openEditor(element.editor, options, options.sideBySide ? SIDE_GROUP : element.group);
 		}
@@ -379,12 +369,12 @@ export class OpenEditorsView extends ViewPane {
 
 		const element = e.element;
 		const actions: IAction[] = [];
-		const actionsDisposable = createAndFillInContextMenuActions(this.contributedContextMenu, { shouldForwardArgs: true, arg: element instanceof OpenEditor ? element.editor.resource : {} }, actions, this.contextMenuService);
+		const actionsDisposable = createAndFillInContextMenuActions(this.contributedContextMenu, { shouldForwardArgs: true, arg: element instanceof OpenEditor ? EditorResourceAccessor.getOriginalUri(element.editor) : {} }, actions);
 
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => e.anchor,
 			getActions: () => actions,
-			getActionsContext: () => element instanceof OpenEditor ? { groupId: element.groupId, editorIndex: element.editorIndex } : { groupId: element.id },
+			getActionsContext: () => element instanceof OpenEditor ? { groupId: element.groupId, editorIndex: element.group.getIndexOfEditor(element.editor) } : { groupId: element.id },
 			onHide: () => dispose(actionsDisposable)
 		});
 	}
@@ -393,9 +383,13 @@ export class OpenEditorsView extends ViewPane {
 		if (this.list.length && this.editorGroupService.activeGroup) {
 			const index = this.getIndex(this.editorGroupService.activeGroup, this.editorGroupService.activeGroup.activeEditor);
 			if (index >= 0) {
-				this.list.setFocus([index]);
-				this.list.setSelection([index]);
-				this.list.reveal(index);
+				try {
+					this.list.setFocus([index]);
+					this.list.setSelection([index]);
+					this.list.reveal(index);
+				} catch (e) {
+					// noop list updated in the meantime
+				}
 				return;
 			}
 		}
@@ -408,9 +402,9 @@ export class OpenEditorsView extends ViewPane {
 		if (event.affectsConfiguration('explorer.openEditors')) {
 			this.updateSize();
 		}
-
-		// Trigger a 'repaint' when decoration settings change
-		if (event.affectsConfiguration('explorer.decorations')) {
+		// Trigger a 'repaint' when decoration settings change or the sort order changed
+		if (event.affectsConfiguration('explorer.decorations') || event.affectsConfiguration('explorer.openEditors.sortOrder')) {
+			this.sortOrder = this.configurationService.getValue('explorer.openEditors.sortOrder');
 			this.listRefreshScheduler.schedule();
 		}
 	}
@@ -500,7 +494,7 @@ class OpenEditorActionRunner extends ActionRunner {
 			return;
 		}
 
-		return super.run(action, { groupId: this.editor.groupId, editorIndex: this.editor.editorIndex });
+		return super.run(action, { groupId: this.editor.groupId, editorIndex: this.editor.group.getIndexOfEditor(this.editor.editor) });
 	}
 }
 
@@ -595,9 +589,10 @@ class OpenEditorRenderer implements IListRenderer<OpenEditor, IOpenEditorTemplat
 	renderElement(openedEditor: OpenEditor, _index: number, templateData: IOpenEditorTemplateData): void {
 		const editor = openedEditor.editor;
 		templateData.actionRunner.editor = openedEditor;
-		editor.isDirty() && !editor.isSaving() ? templateData.container.classList.add('dirty') : templateData.container.classList.remove('dirty');
+		templateData.container.classList.toggle('dirty', editor.isDirty() && !editor.isSaving());
+		templateData.container.classList.toggle('sticky', openedEditor.isSticky());
 		templateData.root.setResource({
-			resource: toResource(editor, { supportSideBySide: SideBySideEditor.BOTH }),
+			resource: EditorResourceAccessor.getOriginalUri(editor, { supportSideBySide: SideBySideEditor.BOTH }),
 			name: editor.getName(),
 			description: editor.getDescription(Verbosity.MEDIUM)
 		}, {
@@ -686,7 +681,7 @@ class OpenEditorsDragAndDrop implements IListDragAndDrop<OpenEditor | IEditorGro
 
 	drop(data: IDragAndDropData, targetElement: OpenEditor | IEditorGroup | undefined, _targetIndex: number, originalEvent: DragEvent): void {
 		const group = targetElement instanceof OpenEditor ? targetElement.group : targetElement || this.editorGroupService.groups[this.editorGroupService.count - 1];
-		const index = targetElement instanceof OpenEditor ? targetElement.editorIndex : 0;
+		const index = targetElement instanceof OpenEditor ? targetElement.group.getIndexOfEditor(targetElement.editor) : 0;
 
 		if (data instanceof ElementsDragAndDropData) {
 			const elementsData = data.elements;

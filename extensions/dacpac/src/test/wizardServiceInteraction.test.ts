@@ -10,6 +10,7 @@ import * as should from 'should';
 import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
 import * as loc from '../localizedConstants';
+import * as utils from '../utils';
 import { DataTierApplicationWizard, Operation } from '../wizard/dataTierApplicationWizard';
 import { DacFxDataModel } from '../wizard/api/models';
 import { DacFxTestService, deployOperationId, extractOperationId, importOperationId, exportOperationId, generateDeployPlan } from './testDacFxService';
@@ -56,6 +57,11 @@ describe('Dacfx wizard with connection', function (): void {
 
 	it('Should call all service methods correctly', async () => {
 		wizard.model.server = connectionProfileMock;
+		wizard.model.potentialDataLoss = true;
+		wizard.model.upgradeExisting = true;
+
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber());
 
 		await validateServiceCalls(wizard, Operation.deploy, deployOperationId);
 		await validateServiceCalls(wizard, Operation.extract, extractOperationId);
@@ -65,7 +71,7 @@ describe('Dacfx wizard with connection', function (): void {
 
 	it('executeOperation should show error message if deploy fails', async () => {
 		let service = TypeMoq.Mock.ofInstance(new DacFxTestService());
-		service.setup(x => x.deployDacpac(TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny())).returns(x => Promise.resolve({
+		service.setup(x => x.deployDacpac(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(x => Promise.resolve({
 			errorMessage: 'error1',
 			success: false,
 			operationId: ''
@@ -74,6 +80,10 @@ describe('Dacfx wizard with connection', function (): void {
 		let wizard = new DataTierApplicationWizard(service.object);
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = connectionProfileMock;
+		wizard.model.potentialDataLoss = true;
+		wizard.model.upgradeExisting = true;
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber());
 		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
 		wizard.selectedOperation = Operation.deploy;
 		await wizard.executeOperation();
@@ -83,7 +93,7 @@ describe('Dacfx wizard with connection', function (): void {
 
 	it('executeOperation should show error message if export fails', async () => {
 		let service = TypeMoq.Mock.ofInstance(new DacFxTestService());
-		service.setup(x => x.exportBacpac(TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny())).returns(x => Promise.resolve({
+		service.setup(x => x.exportBacpac(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(x => Promise.resolve({
 			errorMessage: 'error1',
 			success: false,
 			operationId: ''
@@ -92,6 +102,8 @@ describe('Dacfx wizard with connection', function (): void {
 		let wizard = new DataTierApplicationWizard(service.object);
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = connectionProfileMock;
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber());
 		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
 		wizard.selectedOperation = Operation.export;
 		await wizard.executeOperation();
@@ -101,7 +113,7 @@ describe('Dacfx wizard with connection', function (): void {
 
 	it('executeOperation should show error message if extract fails', async () => {
 		let service = TypeMoq.Mock.ofInstance(new DacFxTestService());
-		service.setup(x => x.extractDacpac(TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny())).returns(x => Promise.resolve({
+		service.setup(x => x.extractDacpac(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(x => Promise.resolve({
 			errorMessage: 'error1',
 			success: false,
 			operationId: ''
@@ -110,6 +122,8 @@ describe('Dacfx wizard with connection', function (): void {
 		let wizard = new DataTierApplicationWizard(service.object);
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = connectionProfileMock;
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber());
 		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
 		wizard.selectedOperation = Operation.extract;
 		await wizard.executeOperation();
@@ -119,7 +133,7 @@ describe('Dacfx wizard with connection', function (): void {
 
 	it('Should show error message if generateDeployScript fails', async () => {
 		let service = TypeMoq.Mock.ofInstance(new DacFxTestService());
-		service.setup(x => x.generateDeployScript(TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny())).returns(x => Promise.resolve({
+		service.setup(x => x.generateDeployScript(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(x => Promise.resolve({
 			errorMessage: 'error1',
 			success: false,
 			operationId: ''
@@ -128,6 +142,9 @@ describe('Dacfx wizard with connection', function (): void {
 		let wizard = new DataTierApplicationWizard(service.object);
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = connectionProfileMock;
+		wizard.model.potentialDataLoss = true;
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber());
 		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
 		await wizard.generateDeployScript();
 		should(showErrorMessageStub.calledOnce).be.true();
@@ -136,7 +153,7 @@ describe('Dacfx wizard with connection', function (): void {
 
 	it('executeOperation should show error message if import fails', async () => {
 		let service = TypeMoq.Mock.ofInstance(new DacFxTestService());
-		service.setup(x => x.importBacpac(TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny(),TypeMoq.It.isAny())).returns(x => Promise.resolve({
+		service.setup(x => x.importBacpac(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(x => Promise.resolve({
 			errorMessage: 'error1',
 			success: false,
 			operationId: ''
@@ -145,6 +162,8 @@ describe('Dacfx wizard with connection', function (): void {
 		let wizard = new DataTierApplicationWizard(service.object);
 		wizard.model = <DacFxDataModel>{};
 		wizard.model.server = connectionProfileMock;
+		const fileSizeStub = sinon.stub(utils, 'tryGetFileSize');
+		fileSizeStub.resolves(TypeMoq.It.isAnyNumber());
 		let showErrorMessageStub = sinon.stub(vscode.window, 'showErrorMessage').resolves();
 		wizard.selectedOperation = Operation.import;
 		await wizard.executeOperation();

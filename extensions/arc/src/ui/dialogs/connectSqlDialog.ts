@@ -6,29 +6,30 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { Deferred } from '../../common/promise';
+import * as loc from '../../localizedConstants';
 import { createCredentialId } from '../../common/utils';
 import { credentialNamespace } from '../../constants';
-import * as loc from '../../localizedConstants';
-import { ControllerModel } from '../../models/controllerModel';
-import { MiaaModel } from '../../models/miaaModel';
 import { InitializingComponent } from '../components/initializingComponent';
+import { ResourceModel } from '../../models/resourceModel';
+import { ControllerModel } from '../../models/controllerModel';
 
-export class ConnectToSqlDialog extends InitializingComponent {
-	private modelBuilder!: azdata.ModelBuilder;
+export abstract class ConnectToSqlDialog extends InitializingComponent {
+	protected modelBuilder!: azdata.ModelBuilder;
 
-	private serverNameInputBox!: azdata.InputBoxComponent;
-	private usernameInputBox!: azdata.InputBoxComponent;
-	private passwordInputBox!: azdata.InputBoxComponent;
-	private rememberPwCheckBox!: azdata.CheckBoxComponent;
+	protected serverNameInputBox!: azdata.InputBoxComponent;
+	protected usernameInputBox!: azdata.InputBoxComponent;
+	protected passwordInputBox!: azdata.InputBoxComponent;
+	protected rememberPwCheckBox!: azdata.CheckBoxComponent;
+	private options: { [name: string]: any } = {};
 
-	private _completionPromise = new Deferred<azdata.IConnectionProfile | undefined>();
+	protected _completionPromise = new Deferred<azdata.IConnectionProfile | undefined>();
 
-	constructor(private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
+	constructor(private _controllerModel: ControllerModel, protected _model: ResourceModel) {
 		super();
 	}
 
-	public showDialog(connectionProfile?: azdata.IConnectionProfile): azdata.window.Dialog {
-		const dialog = azdata.window.createModelViewDialog(loc.connectToSql(this._miaaModel.info.name));
+	public showDialog(dialogTitle: string, connectionProfile?: azdata.IConnectionProfile): azdata.window.Dialog {
+		const dialog = azdata.window.createModelViewDialog(dialogTitle);
 		dialog.cancelButton.onClick(() => this.handleCancel());
 		dialog.registerContent(async view => {
 			this.modelBuilder = view.modelBuilder;
@@ -84,6 +85,7 @@ export class ConnectToSqlDialog extends InitializingComponent {
 		dialog.registerCloseValidator(async () => await this.validate());
 		dialog.okButton.label = loc.connect;
 		dialog.cancelButton.label = loc.cancel;
+		this.options = connectionProfile?.options!;
 		azdata.window.openDialog(dialog);
 		return dialog;
 	}
@@ -96,7 +98,7 @@ export class ConnectToSqlDialog extends InitializingComponent {
 			serverName: this.serverNameInputBox.value,
 			databaseName: '',
 			authenticationType: 'SqlLogin',
-			providerName: 'MSSQL',
+			providerName: this.providerName,
 			connectionName: '',
 			userName: this.usernameInputBox.value,
 			password: this.passwordInputBox.value,
@@ -105,25 +107,29 @@ export class ConnectToSqlDialog extends InitializingComponent {
 			saveProfile: true,
 			id: '',
 			groupId: undefined,
-			options: {}
+			options: this.options
 		};
 		const result = await azdata.connection.connect(connectionProfile, false, false);
 		if (result.connected) {
 			connectionProfile.id = result.connectionId;
 			const credentialProvider = await azdata.credentials.getProvider(credentialNamespace);
 			if (connectionProfile.savePassword) {
-				await credentialProvider.saveCredential(createCredentialId(this._controllerModel.info.id, this._miaaModel.info.resourceType, this._miaaModel.info.name), connectionProfile.password);
+				await credentialProvider.saveCredential(createCredentialId(this._controllerModel.info.id, this._model.info.resourceType, this._model.info.name), connectionProfile.password);
 			} else {
-				await credentialProvider.deleteCredential(createCredentialId(this._controllerModel.info.id, this._miaaModel.info.resourceType, this._miaaModel.info.name));
+				await credentialProvider.deleteCredential(createCredentialId(this._controllerModel.info.id, this._model.info.resourceType, this._model.info.name));
 			}
 			this._completionPromise.resolve(connectionProfile);
 			return true;
 		}
 		else {
-			vscode.window.showErrorMessage(loc.connectToSqlFailed(this.serverNameInputBox.value, result.errorMessage));
+			vscode.window.showErrorMessage(this.connectionFailedMessage(result.errorMessage));
 			return false;
 		}
 	}
+
+	protected abstract get providerName(): string;
+
+	protected abstract connectionFailedMessage(error: any): string;
 
 	private handleCancel(): void {
 		this._completionPromise.resolve(undefined);

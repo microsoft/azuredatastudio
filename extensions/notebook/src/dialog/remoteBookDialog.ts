@@ -63,7 +63,8 @@ export class RemoteBookDialog {
 			this.searchButton = this.view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 				label: loc.search,
 				title: loc.search,
-				width: '200px'
+				width: '200px',
+				secondary: true
 			}).component();
 			this.searchButton.onDidClick(async () => await this.validate());
 

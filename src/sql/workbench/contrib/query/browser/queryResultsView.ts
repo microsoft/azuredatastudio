@@ -237,6 +237,16 @@ export class QueryResultsView extends Disposable {
 			if (runner.messages.some(v => v.isError)) {
 				this._panelView.showTab(this.messagesTab.identifier);
 			}
+			// Currently we only need to support visualization options for the first result set.
+			if (runner.batchSets[0]?.resultSetSummaries[0]?.visualization) {
+				const batchSet = runner.batchSets[0];
+				const resultSet = batchSet.resultSetSummaries[0];
+				this.chartData({
+					resultId: batchSet.id,
+					batchId: resultSet.batchId
+				});
+				this.chartTab.view.setVisualizationOptions(resultSet.visualization);
+			}
 		}));
 
 		if (this.input?.state.visibleTabs.has(this.chartTab.identifier) && !this._panelView.contains(this.chartTab)) {
@@ -429,5 +439,9 @@ export class QueryResultsView extends Disposable {
 		if (this.input) {
 			tab.putState(this.input.state.dynamicModelViewTabsState);
 		}
+	}
+
+	public focus(): void {
+		this._panelView.focusCurrentTab();
 	}
 }

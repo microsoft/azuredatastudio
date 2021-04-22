@@ -127,7 +127,7 @@ export class RenderLineInput {
 		this.containsRTL = containsRTL;
 		this.fauxIndentLength = fauxIndentLength;
 		this.lineTokens = lineTokens;
-		this.lineDecorations = lineDecorations;
+		this.lineDecorations = lineDecorations.sort(LineDecoration.compare);
 		this.tabSize = tabSize;
 		this.startVisibleColumn = startVisibleColumn;
 		this.spaceWidth = spaceWidth;
@@ -348,8 +348,7 @@ export function renderViewLine(input: RenderLineInput, sb: IStringBuilder): Rend
 
 		let containsForeignElements = ForeignElementType.None;
 
-		// This is basically for IE's hit test to work
-		let content: string = '<span><span>\u00a0</span></span>';
+		let content: string = '<span><span></span></span>';
 
 		if (input.lineDecorations.length > 0) {
 			// This line is empty, but it contains inline decorations
@@ -521,7 +520,7 @@ const enum Constants {
 }
 
 /**
- * See https://github.com/Microsoft/vscode/issues/6885.
+ * See https://github.com/microsoft/vscode/issues/6885.
  * It appears that having very large spans causes very slow reading of character positions.
  * So here we try to avoid that.
  */

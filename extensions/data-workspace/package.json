@@ -34,6 +34,11 @@
           "projects.defaultProjectSaveLocation": {
             "type": "string",
             "description": "%projects.defaultProjectSaveLocation%"
+          },
+          "projects.showNotAddedProjectsInWorkspacePrompt": {
+            "type": "boolean",
+            "description": "%projects.showNotAddedProjectsInWorkspacePrompt%",
+            "default": true
           }
         }
       }
@@ -66,6 +71,10 @@
       {
         "command": "projects.removeProject",
         "title": "%remove-project-command%"
+      },
+      {
+        "command": "projects.manageProject",
+        "title": "%manage-project-command%"
       }
     ],
     "menus": {
@@ -73,22 +82,22 @@
         {
           "command": "dataworkspace.refresh",
           "when": "view == dataworkspace.views.main",
-          "group": "2_currentWorkspace"
+          "group": "1_currentWorkspace"
         },
         {
           "command": "dataworkspace.close",
           "when": "view == dataworkspace.views.main && workbenchState == workspace",
-          "group": "3_commands"
+          "group": "2_commands"
         },
         {
           "command": "projects.new",
           "when": "view == dataworkspace.views.main",
-          "group": "1_navigation"
+          "group": "navigation"
         },
         {
           "command": "projects.openExisting",
           "when": "view == dataworkspace.views.main",
-          "group": "1_navigation"
+          "group": "navigation"
         }
       ],
       "commandPalette": [
@@ -109,9 +118,18 @@
         },
         {
           "command": "projects.openExisting"
+        },
+        {
+          "command": "projects.manageProject",
+          "when": "false"
         }
       ],
       "view/item/context": [
+        {
+          "command": "projects.manageProject",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "group": "0_projectsFirst@1"
+        },
         {
           "command": "projects.removeProject",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
@@ -153,7 +171,8 @@
     ]
   },
   "dependencies": {
-    "ads-extension-telemetry": "^1.0.0",
+    "fast-glob": "^3.1.0",
+    "@microsoft/ads-extension-telemetry": "^1.1.3",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {

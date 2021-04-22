@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as fs from 'fs';
+
 export interface IPackageInfo {
 	name: string;
 	version: string;
@@ -22,14 +24,16 @@ export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
 }
 
 /**
- * Map an error message into a short name for the type of error.
- * @param msg The error message to map
+ * Get file size from the file stats using the file path uri
+ * If the file does not exists, purposely returning undefined instead of throwing an error for telemetry purpose.
+ * @param uri The file path
  */
-export function getTelemetryErrorType(msg: string): string {
-	if (msg && msg.indexOf('Object reference not set to an instance of an object') !== -1) {
-		return 'ObjectReferenceNotSet';
+export async function tryGetFileSize(uri: string): Promise<number | undefined> {
+	try {
+		const stats = await fs.promises.stat(uri);
+		return stats?.size;
 	}
-	else {
-		return 'Other';
+	catch (e) {
+		return undefined;
 	}
 }

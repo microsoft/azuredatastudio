@@ -5,21 +5,18 @@
 
 import {
 	Component, Input, Inject, forwardRef, ComponentFactoryResolver, ViewChild,
-	ElementRef, ChangeDetectorRef, ReflectiveInjector, Injector, ComponentRef, AfterViewInit
+	ChangeDetectorRef, ReflectiveInjector, Injector, ComponentRef, AfterViewInit
 } from '@angular/core';
 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IComponentConfig, COMPONENT_CONFIG } from './interfaces';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/browser/modelComponentRegistry';
 
-import * as colors from 'vs/platform/theme/common/colorRegistry';
-import * as themeColors from 'vs/workbench/common/theme';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Event } from 'vs/base/common/event';
 import { LayoutRequestParams } from 'sql/workbench/services/dialog/browser/dialogContainer.component';
-import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { IComponentDescriptor, IModelStore, IComponent } from 'sql/platform/dashboard/browser/interfaces';
@@ -56,27 +53,23 @@ export class ModelComponentWrapper extends AngularDisposable implements AfterVie
 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
-		@Inject(forwardRef(() => ElementRef)) private _ref: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
 		@Inject(forwardRef(() => Injector)) private _injector: Injector,
-		@Inject(IThemeService) private themeService: IThemeService,
 		@Inject(ILogService) private readonly logService: ILogService,
 		@Inject(IBootstrapParams) params: ModelComponentParams
 	) {
 		super();
 		if (params && params.onLayoutRequested) {
 			this._modelViewId = params.modelViewId;
-			params.onLayoutRequested(layoutParams => {
+			this._register(params.onLayoutRequested(layoutParams => {
 				if (layoutParams && (layoutParams.alwaysRefresh || layoutParams.modelViewId === this._modelViewId)) {
 					this.layout();
 				}
-			});
+			}));
 		}
 	}
 
 	ngAfterViewInit() {
-		this._register(this.themeService.onDidColorThemeChange(event => this.updateTheme(event)));
-		this.updateTheme(this.themeService.getColorTheme());
 		if (this.componentHost) {
 			this.loadComponent();
 		}
@@ -117,7 +110,7 @@ export class ModelComponentWrapper extends AngularDisposable implements AfterVie
 		let selector = componentRegistry.getCtorFromId(this.descriptor.type);
 
 		if (selector === undefined) {
-			this.logService.error('No selector defined for type {0}', this.descriptor.type);
+			this.logService.error('No selector defined for type ', this.descriptor.type);
 			return;
 		}
 
@@ -135,7 +128,13 @@ export class ModelComponentWrapper extends AngularDisposable implements AfterVie
 			this._componentInstance.modelStore = this.modelStore;
 			this._changeref.detectChanges();
 		} catch (e) {
-			this.logService.error('Error rendering component: {0}', e);
+			// There's a possible race condition here where a component that is added is then immediately removed,
+			// which then makes it so that while the changeRef isn't destroyed when we call detectChanges above
+			// it becomes destroyed during the detectChanges call and thus eventually throws. So to avoid a pointless
+			// error message in the console we just make sure that we aren't disposed before printing it out
+			if (!this.isDisposed) {
+				this.logService.error('Error rendering component: ', e);
+			}
 			return;
 		}
 		let el = <HTMLElement>componentRef.location.nativeElement;
@@ -143,21 +142,5 @@ export class ModelComponentWrapper extends AngularDisposable implements AfterVie
 		// set widget styles to conform to its box
 		el.style.overflow = 'hidden';
 		el.style.position = 'relative';
-	}
-
-	private updateTheme(theme: IColorTheme): void {
-		// TODO handle theming appropriately
-		let el = <HTMLElement>this._ref.nativeElement;
-		let backgroundColor = theme.getColor(colors.editorBackground, true);
-		let foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
-
-		if (backgroundColor) {
-			el.style.backgroundColor = backgroundColor.toString();
-		}
-
-		if (foregroundColor) {
-			el.style.color = foregroundColor.toString();
-		}
-
 	}
 }

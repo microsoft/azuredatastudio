@@ -18,7 +18,7 @@ import { getErrorMessage } from 'vs/base/common/errors';
 
 let notebookMoreActionMsg = localize('notebook.failed', "Please select active cell and try again");
 const emptyExecutionCountLabel = '[ ]';
-const HIDE_ICON_CLASS = ' hideIcon';
+const HIDE_ICON_CLASS = 'hideIcon';
 
 function hasModelAndCell(context: CellContext, notificationService: INotificationService): boolean {
 	if (!context || !context.model) {

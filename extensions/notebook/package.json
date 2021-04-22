@@ -8,6 +8,7 @@
     "vscode": "*",
     "azdata": "*"
   },
+  "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
   "main": "./out/extension",
   "activationEvents": [
     "*"
@@ -235,8 +236,24 @@
         "title": "%title.closeJupyterBook%"
       },
       {
+        "command": "notebook.command.addNotebook",
+        "title": "%title.addNotebook%"
+      },
+      {
+        "command": "notebook.command.addMarkdown",
+        "title": "%title.addMarkdown%"
+      },
+      {
         "command": "notebook.command.closeNotebook",
-        "title": "%title.closeJupyterNotebook%"
+        "title": "%title.closeNotebook%"
+      },
+      {
+        "command": "notebook.command.removeNotebook",
+        "title": "%title.removeNotebook%"
+      },
+      {
+        "command": "notebook.command.moveTo",
+        "title": "%title.moveTo%"
       },
       {
         "command": "notebook.command.createBook",
@@ -381,7 +398,23 @@
           "when": "false"
         },
         {
+          "command": "notebook.command.addNotebook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.addMarkdown",
+          "when": "false"
+        },
+        {
           "command": "notebook.command.closeNotebook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.removeNotebook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.moveTo",
           "when": "false"
         },
         {
@@ -457,8 +490,26 @@
           "when": "view == bookTreeView && viewItem == savedNotebook"
         },
         {
+          "command": "notebook.command.removeNotebook",
+          "when": "view == bookTreeView && viewItem == savedBookNotebook"
+        },
+        {
+          "command": "notebook.command.addNotebook",
+          "when": "view == bookTreeView && viewItem == section || view == bookTreeView && viewItem == savedBook",
+          "group": "newFile@1"
+        },
+        {
+          "command": "notebook.command.addMarkdown",
+          "when": "view == bookTreeView && viewItem == section || view == bookTreeView && viewItem == savedBook",
+          "group": "newFile@1"
+        },
+        {
+          "command": "notebook.command.moveTo",
+          "when": "view == bookTreeView && viewItem == savedNotebook || view == bookTreeView && viewItem == savedBookNotebook || view == bookTreeView && viewItem == section || view == bookTreeView && viewItem == Markdown"
+        },
+        {
           "command": "notebook.command.pinNotebook",
-          "when": "view == bookTreeView && viewItem  == savedNotebook",
+          "when": "view == bookTreeView && viewItem  == savedNotebook || view == bookTreeView && viewItem == savedBookNotebook || view == bookTreeView && viewItem == Markdown",
           "group": "inline"
         },
         {
@@ -609,6 +660,7 @@
   },
   "dependencies": {
     "@jupyterlab/services": "^3.2.1",
+    "@microsoft/ads-extension-telemetry": "^1.1.3",
     "adm-zip": "^0.4.14",
     "error-ex": "^1.3.1",
     "fast-glob": "^3.1.0",
@@ -642,6 +694,9 @@
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
     "vscodetestcover": "^1.1.0"
+  },
+  "resolutions": {
+    "url-parse": "^1.5.1"
   },
   "enableProposedApi": true
 }

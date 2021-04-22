@@ -28,7 +28,7 @@ import 'vs/workbench/contrib/search/browser/search.contribution';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { ITextModel } from 'vs/editor/common/model';
 import { nullExtensionDescription, IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { dispose } from 'vs/base/common/lifecycle';
+import { dispose, ImmortalReference } from 'vs/base/common/lifecycle';
 import { IEditorWorkerService } from 'vs/editor/common/services/editorWorkerService';
 import { mock } from 'vs/base/test/common/mock';
 import { NullApiDeprecationService } from 'vs/workbench/api/common/extHostApiDeprecationService';
@@ -48,6 +48,7 @@ import 'vs/editor/contrib/parameterHints/provideSignatureHelp';
 import 'vs/editor/contrib/smartSelect/smartSelect';
 import 'vs/editor/contrib/suggest/suggest';
 import 'vs/editor/contrib/rename/rename';
+import { IResolvedTextEditorModel, ITextModelService } from 'vs/editor/common/services/resolverService';
 
 const defaultSelector = { scheme: 'far' };
 const model: ITextModel = createTextModel(
@@ -107,6 +108,13 @@ suite('ExtHostLanguageFeatureCommands', function () {
 		services.set(IMarkerService, new MarkerService());
 		services.set(IModelService, new class extends mock<IModelService>() {
 			getModel() { return model; }
+		});
+		services.set(ITextModelService, new class extends mock<ITextModelService>() {
+			async createModelReference() {
+				return new ImmortalReference<IResolvedTextEditorModel>(new class extends mock<IResolvedTextEditorModel>() {
+					textEditorModel = model;
+				});
+			}
 		});
 		services.set(IEditorWorkerService, new class extends mock<IEditorWorkerService>() {
 			async computeMoreMinimalEdits(_uri: any, edits: any) {
@@ -923,6 +931,38 @@ suite('ExtHostLanguageFeatureCommands', function () {
 				assert.equal(first.isPreferred, true);
 			});
 		});
+	});
+
+	test('resolving code action', async function () {
+
+		let didCallResolve = 0;
+		class MyAction extends types.CodeAction { }
+
+		disposables.push(extHost.registerCodeActionProvider(nullExtensionDescription, defaultSelector, {
+			provideCodeActions(document, rangeOrSelection): vscode.CodeAction[] {
+				return [new MyAction('title', types.CodeActionKind.Empty.append('foo'))];
+			},
+			resolveCodeAction(action): vscode.CodeAction {
+				assert.ok(action instanceof MyAction);
+
+				didCallResolve += 1;
+				action.title = 'resolved title';
+				action.edit = new types.WorkspaceEdit();
+				return action;
+			}
+		}));
+
+		const selection = new types.Selection(0, 0, 1, 1);
+
+		await rpcProtocol.sync();
+
+		const value = await commands.executeCommand<vscode.CodeAction[]>('vscode.executeCodeActionProvider', model.uri, selection, undefined, 1000);
+		assert.equal(didCallResolve, 1);
+		assert.equal(value.length, 1);
+
+		const [first] = value;
+		assert.equal(first.title, 'title'); // does NOT change
+		assert.ok(first.edit); // is set
 	});
 
 	// --- code lens
