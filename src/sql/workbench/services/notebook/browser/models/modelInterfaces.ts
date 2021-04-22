@@ -535,6 +535,7 @@ export interface ICellModel {
 	readonly savedConnectionName: string | undefined;
 	readonly attachments: nb.ICellAttachments;
 	readonly currentMode: CellEditModes;
+	addAttachment(mimeType: string, base64Encoding: string, name: string): nb.ICellAttachments;
 }
 
 export interface IModelFactory {

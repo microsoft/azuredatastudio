@@ -149,6 +149,16 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._attachments;
 	}
 
+	addAttachment(mimeType: string, base64Encoding: string, name: string): nb.ICellAttachments {
+		let attachment: nb.ICellAttachment = { 'image/png': base64Encoding };
+		// TO DO: Check if name already exists flow
+		if (!this._attachments) {
+			this._attachments = {};
+		}
+		this._attachments[name] = attachment;
+		return this._attachments;
+	}
+
 	public get isEditMode(): boolean {
 		return this._isEditMode;
 	}

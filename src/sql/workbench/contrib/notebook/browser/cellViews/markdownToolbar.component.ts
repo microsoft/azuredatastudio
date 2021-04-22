@@ -22,6 +22,8 @@ import { IEditor } from 'vs/editor/common/editorCommon';
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import { escape } from 'vs/base/common/strings';
+import { IImageCalloutDialogOptions, ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
+//import { IFileService } from 'vs/platform/files/common/files';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
@@ -74,7 +76,9 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		@Inject(INotebookService) private _notebookService: INotebookService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private _contextMenuService: IContextMenuService,
-		@Inject(IConfigurationService) private _configurationService: IConfigurationService
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
+		//@Inject(IFileService) private readonly _fileService: IFileService,
+
 	) {
 		super();
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
@@ -224,6 +228,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		let triggerElement = event.target as HTMLElement;
 		let needsTransform = true;
 		let linkCalloutResult: ILinkCalloutDialogOptions;
+		let imageCalloutResult: IImageCalloutDialogOptions;
 
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
 			linkCalloutResult = await this.createCallout(type, triggerElement);
@@ -250,6 +255,17 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				document.execCommand('insertHTML', false, `<a href="${escape(linkUrl)}">${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
 				return;
 			}
+		} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
+			imageCalloutResult = await this.createCallout(type, triggerElement);
+			if (imageCalloutResult) {
+				if (imageCalloutResult.embedImage) {
+					// add to cell attachments
+				}
+			}
+			// If cell edit mode isn't WYSIWYG, use result from callout. No need for further transformation.
+			if (this.cellModel.currentMode !== CellEditModes.WYSIWYG) {
+				needsTransform = false;
+			}
 		}
 
 		const transformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
@@ -258,6 +274,16 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		} else if (!needsTransform) {
 			if (type === MarkdownButtonType.LINK_PREVIEW) {
 				await insertFormattedMarkdown(linkCalloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
+			} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
+				if (!imageCalloutResult.embedImage) {
+					await insertFormattedMarkdown(imageCalloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
+				} else {
+					//let file = await this._fileService.readFile(URI.file(imageCalloutResult.imagePath));
+					let base64String = await this.fileToBase64(imageCalloutResult.imagePath);
+					// btoa(unescape(encodeURIComponent(file.value.buffer.toString())));
+					this.cellModel.addAttachment('image/png', base64String.toString(), path.basename(imageCalloutResult.imagePath));
+					await insertFormattedMarkdown(imageCalloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
+				}
 			}
 		}
 	}
@@ -303,6 +329,10 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogPosition, dialogProperties, defaultLabel, defaultLinkUrl);
 			this._linkCallout.render();
 			calloutOptions = await this._linkCallout.open();
+		} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
+			const imageCallout = this._instantiationService.createInstance(ImageCalloutDialog, this.insertImageHeading, dialogPosition, dialogProperties);
+			imageCallout.render();
+			calloutOptions = await imageCallout.open();
 		}
 		return calloutOptions;
 	}
@@ -340,4 +370,20 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		}
 		return undefined;
 	}
+
+	public fileToBase64 = (filepath) => {
+		return new Promise<string | ArrayBuffer>(async resolve => {
+			let response = await fetch(filepath);
+			let blob = await response.blob();
+			// let contents = await this._fileService.readFile(URI.file(filepath));
+			let file = new File([blob], filepath);
+			let reader = new FileReader();
+			// Read file content on file loaded event
+			reader.onload = function (event) {
+				resolve(event.target.result);
+			};
+			// Convert data to base64
+			reader.readAsDataURL(file);
+		});
+	};
 }

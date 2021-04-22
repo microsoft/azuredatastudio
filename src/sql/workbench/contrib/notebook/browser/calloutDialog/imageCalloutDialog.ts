@@ -9,7 +9,7 @@ import * as styler from 'vs/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
 import { URI } from 'vs/base/common/uri';
-import { Modal, IDialogProperties } from 'sql/workbench/browser/modal/modal';
+import { Modal, IDialogProperties, DialogPosition, DialogWidth } from 'sql/workbench/browser/modal/modal';
 import { IFileDialogService, IOpenDialogOptions } from 'vs/platform/dialogs/common/dialogs';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -24,9 +24,9 @@ import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
-import { DialogPosition, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 import { escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
+import * as path from 'vs/base/common/path';
 
 export interface IImageCalloutDialogOptions {
 	insertTitle?: string,
@@ -163,16 +163,6 @@ export class ImageCalloutDialog extends Modal {
 			}
 		}, true));
 
-		this._register(this._imageRemoteRadioButton.onClicked(e => {
-			this._imageBrowseButton.style.display = 'none';
-			this._imageUrlLabel.innerText = constants.urlPlaceholder;
-			this._imageUrlInputBox.setPlaceHolder(constants.urlPlaceholder);
-		}));
-		this._register(this._imageLocalRadioButton.onClicked(e => {
-			this._imageBrowseButton.style.display = 'block';
-			this._imageUrlLabel.innerText = constants.pathPlaceholder;
-			this._imageUrlInputBox.setPlaceHolder(constants.pathPlaceholder);
-		}));
 		DOM.append(pathRow, inputContainer);
 
 		let embedRow = DOM.$('.row');
@@ -187,6 +177,18 @@ export class ImageCalloutDialog extends Modal {
 				ariaLabel: constants.embedImageLabel
 			});
 		DOM.append(embedRow, this._imageEmbedLabel);
+
+		this._register(this._imageRemoteRadioButton.onClicked(e => {
+			this._imageBrowseButton.style.display = 'none';
+			this._imageEmbedCheckbox.enabled = false;
+			this._imageUrlLabel.innerText = constants.urlPlaceholder;
+			this._imageUrlInputBox.setPlaceHolder(constants.urlPlaceholder);
+		}));
+		this._register(this._imageLocalRadioButton.onClicked(e => {
+			this._imageBrowseButton.style.display = 'block';
+			this._imageUrlLabel.innerText = constants.pathPlaceholder;
+			this._imageUrlInputBox.setPlaceHolder(constants.pathPlaceholder);
+		}));
 	}
 
 	private registerListeners(): void {
@@ -196,10 +198,11 @@ export class ImageCalloutDialog extends Modal {
 
 	public insert(): void {
 		this.hide('ok');
+		let imageName = path.basename(this._imageUrlInputBox.value);
 		this._selectionComplete.resolve({
-			insertEscapedMarkdown: `![](${escapeUrl(this._imageUrlInputBox.value)})`,
-			imagePath: this._imageUrlInputBox.value,
-			embedImage: this._imageEmbedCheckbox.checked
+			embedImage: this._imageEmbedCheckbox.checked,
+			insertEscapedMarkdown: this._imageEmbedCheckbox.checked ? `![${imageName}](attachment:${imageName})` : `![](${escapeUrl(this._imageUrlInputBox.value)})`,
+			imagePath: this._imageUrlInputBox.value
 		});
 		this.dispose();
 	}
