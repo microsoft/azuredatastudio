@@ -25,7 +25,7 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 				'scope': ConfigurationScope.APPLICATION, // Make sure repositories cannot trigger opening a README for tracking.
 				'type': 'string',
 				'enum': [
-					...['none', 'welcomePage', 'welcomePageWithTour', 'readme', 'newUntitledFile', 'welcomePageInEmptyWorkbench'],
+					...['none', 'welcomePageWithTour', 'welcomePage', 'readme', 'newUntitledFile', 'welcomePageInEmptyWorkbench'],
 					...(product.quality !== 'stable'
 						? ['gettingStarted']
 						: [])
