@@ -523,6 +523,7 @@ export interface SqlMigrationImpactedObjectInfo {
 export interface SqlMigrationAssessmentResultItem {
 	rulesetVersion: string;
 	rulesetName: string;
+	ruleId: string;
 	targetType: azdata.sqlAssessment.SqlAssessmentTargetType;
 	targetName: string;
 	checkId: string;
@@ -536,6 +537,7 @@ export interface SqlMigrationAssessmentResultItem {
 	message: string;
 	appliesToMigrationTargetPlatform: string;
 	issueCategory: string;
+	databaseName: string;
 	impactedObjects: SqlMigrationImpactedObjectInfo[];
 }
 

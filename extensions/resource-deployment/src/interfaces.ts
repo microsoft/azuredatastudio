@@ -146,6 +146,7 @@ export function instanceOfAzureSQLDBDeploymentProvider(obj: any): obj is AzureSQ
 }
 
 export interface DeploymentProviderBase {
+	name: string;
 	requiredTools: ToolRequirementInfo[];
 	when: string;
 }

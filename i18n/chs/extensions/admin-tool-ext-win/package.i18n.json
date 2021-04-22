@@ -9,5 +9,5 @@
 	"adminToolExtWin.displayName": "适用于 Windows 的数据库管理工具扩展",
 	"adminToolExtWin.description": "向 Azure Data Studio 添加其他特定于 Windows 的功能",
 	"adminToolExtWin.propertiesMenuItem": "属性",
-	"adminToolExtWin.launchGswMenuItem": "生成脚本..."
+	"adminToolExtWin.launchGswMenuItem": "生成脚本…"
 }

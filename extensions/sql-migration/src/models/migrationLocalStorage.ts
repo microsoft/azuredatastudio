@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
-import { DatabaseMigration, SqlManagedInstance } from '../api/azure';
+import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus, AzureAsyncOperationResource, getMigrationAsyncOperationDetails } from '../api/azure';
 import * as azdata from 'azdata';
 
 
@@ -16,34 +16,66 @@ export class MigrationLocalStorage {
 		MigrationLocalStorage.context = context;
 	}
 
-	public static getMigrations(connectionProfile: azdata.connection.ConnectionProfile): MigrationContext[] {
+	public static async getMigrationsBySourceConnections(connectionProfile: azdata.connection.ConnectionProfile, refreshStatus?: boolean): Promise<MigrationContext[]> {
 
-		let dataBaseMigrations: MigrationContext[] = [];
-		try {
-			const migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
+		const result: MigrationContext[] = [];
+		const validMigrations: MigrationContext[] = [];
 
-			dataBaseMigrations = migrationMementos.filter((memento) => {
-				return memento.sourceConnectionProfile.serverName === connectionProfile.serverName;
-			}).map((memento) => {
-				return memento;
-			});
-		} catch (e) {
-			console.log(e);
+		const migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
+		for (let i = 0; i < migrationMementos.length; i++) {
+			const migration = migrationMementos[i];
+			if (migration.sourceConnectionProfile.serverName === connectionProfile.serverName) {
+				if (refreshStatus) {
+					try {
+						migration.migrationContext = await getMigrationStatus(
+							migration.azureAccount,
+							migration.subscription,
+							migration.migrationContext
+						);
+						if (migration.asyncUrl) {
+							migration.asyncOperationResult = await getMigrationAsyncOperationDetails(
+								migration.azureAccount,
+								migration.subscription,
+								migration.asyncUrl
+							);
+						}
+					}
+					catch (e) {
+						// Keeping only valid migrations in cache. Clearing all the migrations which return ResourceDoesNotExit error.
+						if (e.message === 'ResourceDoesNotExist') {
+							continue;
+						} else {
+							console.log(e);
+						}
+					}
+				}
+				result.push(migration);
+			}
+			validMigrations.push(migration);
 		}
-
-
-		return dataBaseMigrations;
+		this.context.globalState.update(this.mementoToken, validMigrations);
+		return result;
 	}
 
-	public static saveMigration(connectionProfile: azdata.connection.ConnectionProfile, migrationContext: DatabaseMigration, targetMI: SqlManagedInstance, azureAccount: azdata.Account, subscription: azureResource.AzureResourceSubscription): void {
+	public static saveMigration(
+		connectionProfile: azdata.connection.ConnectionProfile,
+		migrationContext: DatabaseMigration,
+		targetMI: SqlManagedInstance,
+		azureAccount: azdata.Account,
+		subscription: azureResource.AzureResourceSubscription,
+		controller: SqlMigrationService,
+		asyncURL: string): void {
 		try {
-			const migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
+			let migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
+			migrationMementos = migrationMementos.filter(m => m.migrationContext.id !== migrationContext.id);
 			migrationMementos.push({
 				sourceConnectionProfile: connectionProfile,
 				migrationContext: migrationContext,
 				targetManagedInstance: targetMI,
 				subscription: subscription,
-				azureAccount: azureAccount
+				azureAccount: azureAccount,
+				controller: controller,
+				asyncUrl: asyncURL
 			});
 			this.context.globalState.update(this.mementoToken, migrationMementos);
 		} catch (e) {
@@ -61,5 +93,8 @@ export interface MigrationContext {
 	migrationContext: DatabaseMigration,
 	targetManagedInstance: SqlManagedInstance,
 	azureAccount: azdata.Account,
-	subscription: azureResource.AzureResourceSubscription
+	subscription: azureResource.AzureResourceSubscription,
+	controller: SqlMigrationService,
+	asyncUrl: string,
+	asyncOperationResult?: AzureAsyncOperationResource
 }

@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import { ApiWrapper } from '../common/apiWrapper';
 import { ModelViewBase } from './models/modelViewBase';
 import { ViewBase } from './viewBase';
@@ -16,7 +15,7 @@ export interface iconSettings {
 	containerWidth?: number,
 	containerHeight?: number,
 	css?: { [key: string]: string },
-	path?: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri }
+	path?: azdata.IconPath;
 }
 /**
  * View to pick model source

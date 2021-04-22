@@ -156,7 +156,7 @@ export class Button extends Disposable implements IButton {
 		this.applyStyles();
 	}
 
-	private setHoverBackground(): void {
+	protected setHoverBackground(): void { // {{SQL CARBON EDIT}} - mark as protected
 		// {{SQL CARBON EDIT}} - skip if this is an icon button
 		if (this.hasIcon) {
 			return;

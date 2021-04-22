@@ -55,9 +55,6 @@ export class NotebookWizardModel extends ResourceTypeModel {
 		this.wizard.setPages(this.getPages());
 	}
 
-	public onCancel(): void {
-	}
-
 	/**
 	 * Generates the notebook and returns true if generation was done and so the wizard should be closed.
 	 **/

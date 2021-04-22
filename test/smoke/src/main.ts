@@ -21,7 +21,7 @@ import {
 	FileLogger,
 } from '../../automation';
 
-import { main as sqlMain, setup as sqlSetup } from './sql/main'; //{{SQL CARBON EDIT}}
+import { main as sqlMain, setup as sqlSetup } from './sql/main'; // {{SQL CARBON EDIT}}
 /*import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
 import { setup as setupDataLossTests } from './areas/workbench/data-loss.test';
 import { setup as setupDataPreferencesTests } from './areas/preferences/preferences.test';
@@ -53,7 +53,8 @@ const opts = minimist(args, {
 		'wait-time',
 		'test-repo',
 		'screenshots',
-		'log'
+		'log',
+		'extensionsDir' // {{SQL CARBON EDIT}} Let callers control extensions dir for non-packaged extensions
 	],
 	boolean: [
 		'verbose',
@@ -65,10 +66,16 @@ const opts = minimist(args, {
 	}
 });
 
-const testRepoUrl = 'https://github.com/kburtram/azuredatastudio-smoke-test-repo.git';
+const testRepoUrl = 'https://github.com/Microsoft/azuredatastudio-smoke-test-repo.git';
 const workspacePath = path.join(testDataPath, 'azuredatastudio-smoke-test-repo');
-const extensionsPath = path.join(testDataPath, 'extensions-dir');
-mkdirp.sync(extensionsPath);
+// {{SQL CARBON EDIT}} Let callers control extensions dir for non-packaged extensions
+let extensionsPath = opts.extensionsDir;
+if (!extensionsPath) {
+	extensionsPath = path.join(testDataPath, 'extensions-dir');
+	mkdirp.sync(extensionsPath);
+}
+console.log(`Using extensions dir : ${extensionsPath}`);
+
 
 const screenshotsPath = opts.screenshots ? path.resolve(opts.screenshots) : null;
 if (screenshotsPath) {

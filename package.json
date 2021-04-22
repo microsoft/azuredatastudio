@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
-  "version": "1.27.0",
-  "distro": "bd3f837b488907e3b5e55043ba79e7bf218e1dff",
+  "version": "1.29.0",
+  "distro": "2c6adba5d5c27f8119165dfa988b318cfe91a208",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -189,6 +189,7 @@
     "mkdirp": "^0.5.0",
     "mocha": "^2.2.5",
     "mocha-junit-reporter": "^1.23.1",
+    "mocha-multi-reporters": "^1.5.1",
     "opn": "^6.0.0",
     "optimist": "0.3.5",
     "p-all": "^1.0.0",
@@ -199,6 +200,7 @@
     "rimraf": "^2.2.8",
     "sinon": "^1.17.2",
     "source-map": "^0.4.4",
+    "source-map-support": "^0.3.2",
     "style-loader": "^1.0.0",
     "temp-write": "^3.4.0",
     "ts-loader": "^4.4.2",

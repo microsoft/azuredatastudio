@@ -23,7 +23,7 @@ import { ConfigBasedRecommendations } from 'vs/workbench/contrib/extensions/brow
 import { StaticRecommendations } from 'sql/workbench/contrib/extensions/browser/staticRecommendations';
 import { ScenarioRecommendations } from 'sql/workbench/contrib/extensions/browser/scenarioRecommendations';
 import { IExtensionRecommendationNotificationService } from 'vs/platform/extensionRecommendations/common/extensionRecommendations';
-import { IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement'; // {{ SQL CARBON EDIT }}
+import { IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement'; // {{SQL CARBON EDIT}}
 
 type IgnoreRecommendationClassification = {
 	recommendationReason: { classification: 'SystemMetaData', purpose: 'FeatureInsight', isMeasurement: true };

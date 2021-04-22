@@ -14,9 +14,11 @@ const winOrCtrl = process.platform === 'darwin' ? 'ctrl' : 'win';
 export class Notebook {
 
 	public readonly toolbar: NotebookToolbar;
+	public readonly view: NotebookView;
 
 	constructor(private code: Code, private quickAccess: QuickAccess, private quickInput: QuickInput, private editors: Editors) {
 		this.toolbar = new NotebookToolbar(code);
+		this.view = new NotebookView(code, quickAccess);
 	}
 
 	async openFile(fileName: string): Promise<void> {
@@ -35,9 +37,9 @@ export class Notebook {
 
 	async addCell(cellType: 'markdown' | 'code'): Promise<void> {
 		if (cellType === 'markdown') {
-			await this.code.dispatchKeybinding(winOrCtrl + '+shift+t');
+			await this.code.dispatchKeybinding('ctrl+shift+t');
 		} else {
-			await this.code.dispatchKeybinding(winOrCtrl + '+shift+c');
+			await this.code.dispatchKeybinding('ctrl+shift+c');
 		}
 
 		await this.code.waitForElement('.notebook-cell.active');
@@ -56,7 +58,7 @@ export class Notebook {
 	}
 
 	async runAllCells(): Promise<void> {
-		await this.code.dispatchKeybinding(winOrCtrl + '+shift+F5');
+		await this.code.dispatchKeybinding('ctrl+shift+F5');
 	}
 
 	async clearResults(): Promise<void> {
@@ -192,5 +194,31 @@ export class NotebookToolbar {
 
 	async waitForNotTrustedIcon(): Promise<void> {
 		await this.code.waitForElement(NotebookToolbar.notTrustedButtonSelector);
+	}
+}
+
+export class NotebookView {
+	private static readonly inputBox = '.notebookExplorer-viewlet .search-widget .input-box';
+	private static actualResult = '.search-view .result-messages';
+
+	constructor(private code: Code, private quickAccess: QuickAccess) { }
+
+	async focus(): Promise<void> {
+		return this.quickAccess.runCommand('Notebooks: Focus on Search Results View');
+	}
+
+	async searchInNotebook(expr: string): Promise<IElement> {
+		await this.waitForSetSearchValue(expr);
+		await this.code.dispatchKeybinding('enter');
+		let selector = `${NotebookView.actualResult} `;
+		if (expr) {
+			selector += '.message';
+		}
+		return await this.code.waitForElement(selector, undefined);
+	}
+
+	async waitForSetSearchValue(text: string): Promise<void> {
+		const textArea = `${NotebookView.inputBox} textarea`;
+		await this.code.waitForTypeInEditor(textArea, text);
 	}
 }

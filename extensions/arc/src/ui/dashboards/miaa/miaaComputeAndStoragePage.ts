@@ -32,8 +32,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
-	constructor(protected modelView: azdata.ModelView, private _miaaModel: MiaaModel) {
-		super(modelView);
+	constructor(protected modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _miaaModel: MiaaModel) {
+		super(modelView, dashboard);
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
 		this.initializeConfigurationBoxes();
@@ -129,19 +129,18 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
-							let session: azdataExt.AzdataSession | undefined = undefined;
 							try {
-								session = await this._miaaModel.controllerModel.acquireAzdataSession();
 								await this._azdataApi.azdata.arc.sql.mi.edit(
-									this._miaaModel.info.name, this.saveArgs, this._miaaModel.controllerModel.azdataAdditionalEnvVars, session);
+									this._miaaModel.info.name, this.saveArgs, this._miaaModel.controllerModel.azdataAdditionalEnvVars, this._miaaModel.controllerModel.controllerContext);
 							} catch (err) {
 								this.saveButton!.enabled = true;
 								throw err;
-							} finally {
-								session?.dispose();
 							}
-
-							await this._miaaModel.refresh();
+							try {
+								await this._miaaModel.refresh();
+							} catch (error) {
+								vscode.window.showErrorMessage(loc.refreshFailed(error));
+							}
 						}
 					);
 
@@ -217,7 +216,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.memoryLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 2,
-			validationErrorMessage: loc.memoryLimitValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
@@ -235,7 +233,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.memoryRequestBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			readOnly: false,
 			min: 2,
-			validationErrorMessage: loc.memoryRequestValidationErrorMessage,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
@@ -320,7 +317,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
-		this.coresRequestBox!.validationErrorMessage = loc.validationMin(this.coresRequestBox!.min!);
 		this.coresRequestBox!.placeHolder = currentCPUSize;
 		this.coresRequestBox!.value = '';
 		this.saveArgs.coresRequest = undefined;
@@ -331,7 +327,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
-		this.coresLimitBox!.validationErrorMessage = loc.validationMin(this.coresLimitBox!.min!);
 		this.coresLimitBox!.placeHolder = currentCPUSize;
 		this.coresLimitBox!.value = '';
 		this.saveArgs.coresLimit = undefined;

@@ -12,6 +12,8 @@ import * as localizedConstants from '../../../localizedConstants';
 import { BasePage } from './basePage';
 import { DeployAzureSQLVMWizardModel } from '../deployAzureSQLVMWizardModel';
 
+const supportedRegions = ['eastus', 'eastus2', 'westus', 'centralus', 'northcentralus', 'southcentralus', 'northeurope', 'westeurope', 'eastasia', 'southeastasia', 'japaneast', 'japanwest', 'australiaeast', 'australiasoutheast', 'australiacentral', 'brazilsouth', 'southindia', 'centralindia', 'westindia', 'canadacentral', 'canadaeast', 'westus2', 'westcentralus', 'uksouth', 'ukwest', 'koreacentral', 'koreasouth', 'francecentral', 'southafricanorth', 'uaenorth', 'switzerlandnorth', 'germanywestcentral', 'norwayeast'];
+
 export class AzureSettingsPage extends BasePage {
 	// <- means depends on
 	//dropdown for azure accounts
@@ -101,6 +103,9 @@ export class AzureSettingsPage extends BasePage {
 		this._azureAccountsDropdown = view.modelBuilder.dropDown().withProperties({}).component();
 
 		this._azureAccountsDropdown.onValueChanged(async (value) => {
+			if (!this._azureAccountsDropdown.value) {
+				return;
+			}
 			this._model.azureAccount = this._accountsMap.get(value.selected)!;
 			this.populateAzureSubscriptionsDropdown();
 		});
@@ -161,8 +166,10 @@ export class AzureSettingsPage extends BasePage {
 	private async createAzureSubscriptionsDropdown(view: azdata.ModelView) {
 		this._azureSubscriptionsDropdown = view.modelBuilder.dropDown().withProperties({}).component();
 
-		this._azureSubscriptionsDropdown.onValueChanged(async (value) => {
-
+		this._azureSubscriptionsDropdown.onValueChanged(async value => {
+			if (!this._azureSubscriptionsDropdown.value) {
+				return;
+			}
 			let currentSubscriptionValue = this._azureSubscriptionsDropdown.value as azdata.CategoryValue;
 			this._model.azureSubscription = currentSubscriptionValue.name;
 			this._model.azureSubscriptionDisplayName = currentSubscriptionValue.displayName;
@@ -180,7 +187,7 @@ export class AzureSettingsPage extends BasePage {
 
 	private async populateAzureSubscriptionsDropdown() {
 		this._azureSubscriptionsDropdown.loading = true;
-		let subService = await apiService.azurecoreApi;
+		let subService = apiService.azurecoreApi;
 		let currentAccountDropdownValue = (this._azureAccountsDropdown.value as azdata.CategoryValue);
 		if (currentAccountDropdownValue === undefined) {
 			this._azureSubscriptionsDropdown.loading = false;
@@ -237,7 +244,7 @@ export class AzureSettingsPage extends BasePage {
 
 	private async populateResourceGroupDropdown() {
 		this._resourceGroupDropdown.loading = true;
-		let subService = await apiService.azurecoreApi;
+		let subService = apiService.azurecoreApi;
 		let currentSubscriptionValue = this._azureSubscriptionsDropdown.value as azdata.CategoryValue;
 		if (currentSubscriptionValue === undefined || currentSubscriptionValue.displayName === '') {
 
@@ -275,7 +282,10 @@ export class AzureSettingsPage extends BasePage {
 			required: true
 		}).component();
 
-		this._azureRegionsDropdown.onValueChanged((value) => {
+		this._azureRegionsDropdown.onValueChanged(value => {
+			if (!this._azureRegionsDropdown.value) {
+				return;
+			}
 			this._model.azureRegion = (this._azureRegionsDropdown.value as azdata.CategoryValue).name;
 		});
 	}
@@ -283,15 +293,13 @@ export class AzureSettingsPage extends BasePage {
 	private async populateAzureRegionsDropdown() {
 		this._azureRegionsDropdown.loading = true;
 
-		let supportedRegions = 'eastus, eastus2, westus, centralus, northcentralus, southcentralus, northeurope, westeurope, eastasia, southeastasia, japaneast, japanwest, australiaeast, australiasoutheast, australiacentral, brazilsouth, southindia, centralindia, westindia, canadacentral, canadaeast, westus2, westcentralus, uksouth, ukwest, koreacentral, koreasouth, francecentral, southafricanorth, uaenorth, switzerlandnorth, germanywestcentral, norwayeast';
-		let supportedRegionsArray = supportedRegions.split(', ');
 		let url = `https://management.azure.com/subscriptions/${this._model.azureSubscription}/locations?api-version=2020-01-01`;
 		const response = await this._model.getRequest(url, false);
 		response.data.value = response.data.value.sort((a: any, b: any) => (a.displayName > b.displayName) ? 1 : -1);
 		this._model.addDropdownValues(
 			this._azureRegionsDropdown,
 			response.data.value.filter((value: any) => {
-				return supportedRegionsArray.includes(value.name);
+				return supportedRegions.includes(value.name);
 			}).map((value: any) => {
 				return {
 					displayName: value.displayName,

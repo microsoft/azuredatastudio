@@ -228,7 +228,7 @@ export class SettingsEditor2 extends EditorPane {
 	private get focusedSettingDOMElement(): HTMLElement | undefined {
 		const focused = this.settingsTree.getFocus()[0];
 		if (!(focused instanceof SettingsTreeSettingElement)) {
-			return undefined; // {{ SQL CARBON EDIT }}
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		return this.settingRenderers.getDOMElementsForSettingKey(this.settingsTree.getHTMLElement(), focused.setting.key)[0];

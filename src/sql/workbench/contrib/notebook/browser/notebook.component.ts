@@ -28,7 +28,7 @@ import { INotebookService, INotebookParams, INotebookEditor, INotebookSection, I
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { Deferred } from 'sql/base/common/promise';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction, NotebookViewsOptions } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction, RunParametersAction, NotebookViewsOptions } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
@@ -41,7 +41,7 @@ import { createErrorWithActions } from 'vs/base/common/errorsWithActions';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { MaskedLabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
@@ -128,7 +128,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	ngOnDestroy() {
 		this.dispose();
 	}
-
 	public get model(): NotebookModel | null {
 		return this._model;
 	}
@@ -390,6 +389,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted', true);
 			this._trustedAction.enabled = false;
 
+			let runParametersAction = this.instantiationService.createInstance(RunParametersAction, 'notebook.runParameters', true, this._notebookParams.notebookUri);
+
 			let taskbar = <HTMLElement>this.toolbar.nativeElement;
 			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 			this._actionBar.context = this._notebookParams.notebookUri;
@@ -445,6 +446,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ action: collapseCellsAction },
 				{ action: clearResultsButton },
 				{ action: this._trustedAction },
+				{ action: runParametersAction },
 			]);
 		} else {
 			let kernelContainer = document.createElement('div');
@@ -485,10 +487,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ action: this._trustedAction },
 				{ action: this._runAllCellsAction },
 				{ action: clearResultsButton },
-				{ action: collapseCellsAction }
+				{ action: collapseCellsAction },
 			]);
 		}
-
 	}
 
 	protected initNavSection(): void {
@@ -536,7 +537,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				action.tooltip = action.label;
 				action.label = '';
 			}
-			return new LabeledMenuItemActionItem(action, this.keybindingService, this.notificationService, 'notebook-button');
+			return new MaskedLabeledMenuItemActionItem(action, this.keybindingService, this.notificationService);
 		}
 		return undefined;
 	}

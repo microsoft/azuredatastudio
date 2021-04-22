@@ -9,6 +9,7 @@
 	"query.ExecutionFailedError": "由於意外錯誤導致執行失敗: {0} {1}",
 	"query.message.executionTime": "總執行時間: {0}",
 	"query.message.startQuery": "已於第 {0} 行開始執行查詢",
-	"query.initEditExecutionFailed": "初始化編輯執行失敗:",
-	"elapsedBatchTime": "批次執行時間: {0}"
+	"query.initEditExecutionFailed": "初始化編輯資料工作階段失敗:",
+	"elapsedBatchTime": "批次執行時間: {0}",
+	"copyFailed": "複製失敗。錯誤: {0}"
 }

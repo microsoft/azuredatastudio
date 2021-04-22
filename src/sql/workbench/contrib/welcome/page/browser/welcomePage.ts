@@ -186,10 +186,10 @@ const extensionPacks: ExtensionSuggestion[] = [
 ];
 
 const extensionPackExtensions: ExtensionPackExtensions[] = [
-	{ name: 'SQL Server Agent', icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.agent"}` },
-	{ name: 'SQL Server Profiler', icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.profiler"}` },
-	{ name: 'SQL Server Import', icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.import"}` },
-	{ name: 'SQL Server Dacpac', icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.dacpac"}` }
+	{ name: localize('welcomePage.sqlServerAgent', "SQL Server Agent"), icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.agent"}` },
+	{ name: localize('welcomePage.sqlServerProfiler', "SQL Server Profiler"), icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.profiler"}` },
+	{ name: localize('welcomePage.sqlServerImport', "SQL Server Import"), icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.import"}` },
+	{ name: localize('welcomePage.sqlServerDacpac', "SQL Server Dacpac"), icon: require.toUrl('./../../media/defaultExtensionIcon.svg'), link: `command:azdata.extension.open?{"id":"microsoft.dacpac"}` }
 ];
 
 const extensions: ExtensionSuggestion[] = [
@@ -343,7 +343,7 @@ class WelcomePage extends Disposable {
 
 			const workspacesToShow = workspaces.slice(0, 5);
 			clearNode(ul);
-			await this.mapListEntries(workspacesToShow, container, ul);
+			await this.mapListEntries(workspacesToShow, container);
 		}).then(undefined, onUnexpectedError);
 		this.addExtensionList(container, '.extension-list');
 		this.addExtensionPack(container, '.extensionPack');
@@ -514,7 +514,7 @@ class WelcomePage extends Disposable {
 		return result;
 	}
 
-	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], container: HTMLElement, ul: HTMLElement): Promise<HTMLElement[]> {
+	private async mapListEntries(recents: (IRecentWorkspace | IRecentFolder)[], container: HTMLElement): Promise<HTMLElement[]> {
 		const result: HTMLElement[] = [];
 		for (let i = 0; i < recents.length; i++) {
 			const recent = recents[i];

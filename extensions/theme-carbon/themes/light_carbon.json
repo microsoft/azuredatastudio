@@ -56,11 +56,6 @@
 		"list.hoverBackground": "#dcdcdc",
 		"pickerGroup.border": "#0078d7",
 
-		// Workbench: Activity Bar
-		"activityBar.background": "#212121",
-
-		// Workbench: Side Bar
-		"sideBar.background": "#eaeaea",
 		"editorGroupHeader.tabsBackground": "#f4f4f4",
 		"editor.background": "#fffffe",
 		"editor.foreground": "#212121",
@@ -82,7 +77,10 @@
 		"panel.border": "#888888",
 		"panelTitle.activeForeground": "#212121",
 		"panelTitle.inactiveForeground": "#757575",
-		"panelTitle.activeBorder": "#026dc8"
+		"panelTitle.activeBorder": "#026dc8",
+
+		"sideBarSectionHeader.background": "#0000",
+		"sideBarSectionHeader.border": "#61616130"
 	},
 	"tokenColors": [
 		{

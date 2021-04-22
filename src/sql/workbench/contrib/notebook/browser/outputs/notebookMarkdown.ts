@@ -4,13 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 import * as path from 'vs/base/common/path';
 
+import { nb } from 'azdata';
 import { URI } from 'vs/base/common/uri';
 import { IMarkdownString, removeMarkdownEscapes } from 'vs/base/common/htmlContent';
 import { IMarkdownRenderResult } from 'vs/editor/browser/core/markdownRenderer';
 import * as marked from 'vs/base/common/marked/marked';
 import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
-import { MarkdownRenderOptions } from 'vs/base/browser/markdownRenderer';
+import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { IMarkdownStringWithCellAttachments, MarkdownRenderOptionsWithCellAttachments } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
@@ -21,15 +23,15 @@ export class NotebookMarkdownRenderer {
 
 	}
 
-	render(markdown: IMarkdownString): IMarkdownRenderResult {
-		const element: HTMLElement = markdown ? this.renderMarkdown(markdown, undefined) : document.createElement('span');
+	render(markdown: IMarkdownStringWithCellAttachments): IMarkdownRenderResult {
+		const element: HTMLElement = markdown ? this.renderMarkdown(markdown, { cellAttachments: markdown.cellAttachments }) : document.createElement('span');
 		return {
 			element,
 			dispose: () => { }
 		};
 	}
 
-	createElement(options: MarkdownRenderOptions): HTMLElement {
+	createElement(options: MarkdownRenderOptionsWithCellAttachments): HTMLElement {
 		const tagName = options.inline ? 'span' : 'div';
 		const element = document.createElement(tagName);
 		if (options.className) {
@@ -51,7 +53,7 @@ export class NotebookMarkdownRenderer {
 	 * respects the trusted state of a notebook, and allows command links to
 	 * be clickable.
 	 */
-	renderMarkdown(markdown: IMarkdownString, options: MarkdownRenderOptions = {}): HTMLElement {
+	renderMarkdown(markdown: IMarkdownString, options: MarkdownRenderOptionsWithCellAttachments = {}): HTMLElement {
 		const element = this.createElement(options);
 
 		// signal to code-block render that the element has been created
@@ -64,7 +66,11 @@ export class NotebookMarkdownRenderer {
 		}
 		const renderer = new marked.Renderer({ baseUrl: notebookFolder });
 		renderer.image = (href: string, title: string, text: string) => {
-			href = this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
+			const attachment = findAttachmentIfExists(href, options.cellAttachments);
+			// Attachments are already properly formed, so do not need cleaning. Cleaning only takes into account relative/absolute
+			// paths issues, and encoding issues -- neither of which apply to cell attachments.
+			// Attachments are always shown, regardless of notebook trust
+			href = attachment ? attachment : this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
 			let dimensions: string[] = [];
 			if (href) {
 				const splitted = href.split('|').map(s => s.trim());
@@ -245,4 +251,30 @@ export class NotebookMarkdownRenderer {
 	setNotebookURI(val: URI) {
 		this._notebookURI = val;
 	}
+}
+
+/**
+* The following is a sample cell attachment from JSON:
+*  "attachments": {
+*     "test.png": {
+*        "image/png": "iVBORw0KGgoAAAANggg==="
+*     }
+*  }
+*
+* In a cell, the above attachment would be referenced in markdown like this:
+* ![altText](attachment:test.png)
+*/
+function findAttachmentIfExists(href: string, cellAttachments: nb.ICellAttachments): string {
+	if (href.startsWith('attachment:') && cellAttachments) {
+		const imageName = href.replace('attachment:', '');
+		const imageDefinition = cellAttachments[imageName];
+		if (imageDefinition) {
+			for (let i = 0; i < ImageMimeTypes.length; i++) {
+				if (imageDefinition[ImageMimeTypes[i]]) {
+					return `data:${ImageMimeTypes[i]};base64,${imageDefinition[ImageMimeTypes[i]]}`;
+				}
+			}
+		}
+	}
+	return '';
 }

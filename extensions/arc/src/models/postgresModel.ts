@@ -28,7 +28,8 @@ export type EngineSettingsModel = {
 
 export class PostgresModel extends ResourceModel {
 	private _config?: azdataExt.PostgresServerShowResult;
-	public _engineSettings: EngineSettingsModel[] = [];
+	public workerNodesEngineSettings: EngineSettingsModel[] = [];
+	public coordinatorNodeEngineSettings: EngineSettingsModel[] = [];
 	private readonly _azdataApi: azdataExt.IExtension;
 
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.PostgresServerShowResult>();
@@ -52,10 +53,7 @@ export class PostgresModel extends ResourceModel {
 
 	/** Returns the major version of Postgres */
 	public get engineVersion(): string | undefined {
-		const kind = this._config?.kind;
-		return kind
-			? kind.substring(kind.lastIndexOf('-') + 1)
-			: undefined;
+		return this._config?.spec.engine.version;
 	}
 
 	/** Returns the IP address and port of Postgres */
@@ -75,7 +73,9 @@ export class PostgresModel extends ResourceModel {
 		const ramLimit = this._config.spec.scheduling?.default?.resources?.limits?.memory;
 		const cpuRequest = this._config.spec.scheduling?.default?.resources?.requests?.cpu;
 		const ramRequest = this._config.spec.scheduling?.default?.resources?.requests?.memory;
-		const storage = this._config.spec.storage?.data?.size;
+		const dataStorage = this._config.spec.storage?.data?.size;
+		const logStorage = this._config.spec.storage?.logs?.size;
+		const backupsStorage = this._config.spec.storage?.backups?.size;
 
 		// scale.shards was renamed to scale.workers. Check both for backwards compatibility.
 		const scale = this._config.spec.scale;
@@ -93,8 +93,19 @@ export class PostgresModel extends ResourceModel {
 			configuration.push(`${ramLimit ?? ramRequest!} ${loc.ram}`);
 		}
 
-		if (storage) {
-			configuration.push(`${storage} ${loc.storagePerNode}`);
+		let storage: string[] = [];
+		if (dataStorage) {
+			storage.push(loc.dataStorage(dataStorage));
+		}
+		if (logStorage) {
+			storage.push(loc.logStorage(logStorage));
+		}
+		if (backupsStorage) {
+			storage.push(loc.backupsStorage(backupsStorage));
+		}
+		if (dataStorage || logStorage || backupsStorage) {
+			storage.push(`${loc.storagePerNode}`);
+			configuration.push(storage.join(' '));
 		}
 
 		return configuration.join(', ');
@@ -107,10 +118,8 @@ export class PostgresModel extends ResourceModel {
 			return this._refreshPromise.promise;
 		}
 		this._refreshPromise = new Deferred();
-		let session: azdataExt.AzdataSession | undefined = undefined;
 		try {
-			session = await this.controllerModel.acquireAzdataSession();
-			this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name, this.controllerModel.azdataAdditionalEnvVars, session)).result;
+			this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name, this.controllerModel.azdataAdditionalEnvVars, this.controllerModel.controllerContext)).result;
 			this.configLastUpdated = new Date();
 			this._onConfigUpdated.fire(this._config);
 			this._refreshPromise.resolve();
@@ -118,7 +127,6 @@ export class PostgresModel extends ResourceModel {
 			this._refreshPromise.reject(err);
 			throw err;
 		} finally {
-			session?.dispose();
 			this._refreshPromise = undefined;
 		}
 	}
@@ -137,6 +145,7 @@ export class PostgresModel extends ResourceModel {
 			this._activeConnectionId = result.connectionId;
 		}
 
+		// TODO Need to make separate calls for worker nodes and coordinator node
 		const provider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this._connectionProfile!.providerName, azdata.DataProviderType.QueryProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this._activeConnectionId);
 
@@ -150,7 +159,7 @@ export class PostgresModel extends ResourceModel {
 			'shared_preload_libraries', 'synchronous_commit', 'ssl', 'unix_socket_permissions', 'wal_level'
 		];
 
-		this._engineSettings = [];
+		this.workerNodesEngineSettings = [];
 
 		engineSettings.rows.forEach(row => {
 			let rowValues = row.map(c => c.displayValue);
@@ -166,12 +175,12 @@ export class PostgresModel extends ResourceModel {
 					type: rowValues.shift()
 				};
 
-				this._engineSettings.push(result);
+				this.workerNodesEngineSettings.push(result);
 			}
 		});
 
 		this.engineSettingsLastUpdated = new Date();
-		this._onEngineSettingsUpdated.fire(this._engineSettings);
+		this._onEngineSettingsUpdated.fire(this.workerNodesEngineSettings);
 	}
 
 	protected createConnectionProfile(): azdata.IConnectionProfile {

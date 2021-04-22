@@ -23,7 +23,7 @@ const TEST_EDITOR_ID = 'MyTestEditorForEditorsObserver';
 const TEST_EDITOR_INPUT_ID = 'testEditorInputForEditorsObserver';
 const TEST_SERIALIZABLE_EDITOR_INPUT_ID = 'testSerializableEditorInputForEditorsObserver';
 
-suite.skip('EditorsObserver', function () { //{{SQL CARBON EDIT}} disable failing tests due to tabcolormode
+suite.skip('EditorsObserver', function () { // {{SQL CARBON EDIT}} disable failing tests due to tabcolormode
 
 	let disposables: IDisposable[] = [];
 

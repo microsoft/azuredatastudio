@@ -25,7 +25,7 @@ export class NewProjectDialog extends DialogBase {
 	public model: NewProjectDialogModel = new NewProjectDialogModel();
 
 	constructor(private workspaceService: IWorkspaceService) {
-		super(constants.NewProjectDialogTitle, 'NewProject');
+		super(constants.NewProjectDialogTitle, 'NewProject', constants.CreateButtonText);
 
 		// dialog launched from Welcome message button (only visible when no current workspace) vs. "add project" button
 		TelemetryReporter.createActionEvent(TelemetryViews.NewProjectDialog, TelemetryActions.NewProjectDialogLaunched)

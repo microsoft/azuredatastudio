@@ -9,8 +9,8 @@
 	"dacfx.targetServerName": "Serveur cible",
 	"dacfx.targetDatabaseName": "Base de données cible",
 	"dacfx.sourceServerName": "Serveur source",
-	"dacfx.sourceDatabaseName": "Base de données source ",
-	"dacfx.fileLocation": "Emplacement du fichier",
+	"dacfx.sourceDatabaseName": "Base de données source",
+	"dacfx.fileLocation": "Emplacement de fichier",
 	"dacfxExtract.version": "Version",
 	"dacfx.settingColumn": "Paramètre",
 	"dacfx.valueColumn": "Valeur"

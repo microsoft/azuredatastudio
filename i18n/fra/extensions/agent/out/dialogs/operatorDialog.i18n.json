@@ -18,7 +18,7 @@
 	"createOperator.PagerTuesdayCheckBox": "Mardi",
 	"createOperator.PagerWednesdayCheckBox": "Mercredi",
 	"createOperator.PagerThursdayCheckBox": "Jeudi",
-	"createOperator.PagerFridayCheckBox": "Vendredi",
+	"createOperator.PagerFridayCheckBox": "Vendredi  ",
 	"createOperator.PagerSaturdayCheckBox": "Samedi",
 	"createOperator.PagerSundayCheckBox": "Dimanche",
 	"createOperator.workdayBegin": "Début de journée",
@@ -26,6 +26,6 @@
 	"createOperator.PagerDutySchedule": "Planification de la radiomessagerie active",
 	"createOperator.AlertListHeading": "Liste d'alertes",
 	"createOperator.AlertNameColumnLabel": "Nom de l'alerte",
-	"createOperator.AlertEmailColumnLabel": "Messagerie électronique",
-	"createOperator.AlertPagerColumnLabel": "Radiomessagerie"
+	"createOperator.AlertEmailColumnLabel": "E-mail",
+	"createOperator.AlertPagerColumnLabel": "Récepteur de radiomessagerie"
 }

@@ -9,7 +9,7 @@
 	"flatFileImport.importData": "Importa dati",
 	"flatFileImport.next": "Avanti",
 	"flatFileImport.columnName": "Nome colonna",
-	"flatFileImport.dataType": "Tipo di dato",
+	"flatFileImport.dataType": "Tipo di dati",
 	"flatFileImport.primaryKey": "Chiave primaria",
 	"flatFileImport.allowNulls": "Consenti valori Null"
 }

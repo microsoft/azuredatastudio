@@ -244,6 +244,13 @@ export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
 	return extension.exports;
 }
 
+/**
+ * if the current workspace is untitled, the returned URI of vscode.workspace.workspaceFile will use the `untitled` scheme
+ */
+export function isCurrentWorkspaceUntitled(): boolean {
+	return !!vscode.workspace.workspaceFile && vscode.workspace.workspaceFile.scheme.toLowerCase() === 'untitled';
+}
+
 /*
  * Returns the default deployment options from DacFx
  */
@@ -276,4 +283,38 @@ export function getPackageInfo(packageJson?: any): IPackageInfo | undefined {
 	}
 
 	return undefined;
+}
+
+/**
+ * Converts time in milliseconds to hr, min, sec
+ * @param duration time in milliseconds
+ * @returns string in "hr, min, sec" or "msec" format
+ */
+export function timeConversion(duration: number): string {
+	const portions: string[] = [];
+
+	const msInHour = 1000 * 60 * 60;
+	const hours = Math.trunc(duration / msInHour);
+	if (hours > 0) {
+		portions.push(`${hours} ${constants.hr}`);
+		duration = duration - (hours * msInHour);
+	}
+
+	const msInMinute = 1000 * 60;
+	const minutes = Math.trunc(duration / msInMinute);
+	if (minutes > 0) {
+		portions.push(`${minutes} ${constants.min}`);
+		duration = duration - (minutes * msInMinute);
+	}
+
+	const seconds = Math.trunc(duration / 1000);
+	if (seconds > 0) {
+		portions.push(`${seconds} ${constants.sec}`);
+	}
+
+	if (hours === 0 && minutes === 0 && seconds === 0) {
+		portions.push(`${duration} ${constants.msec}`);
+	}
+
+	return portions.join(', ');
 }

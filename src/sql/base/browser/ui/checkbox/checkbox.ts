@@ -7,7 +7,6 @@ import 'vs/css!./media/checkbox';
 
 import { Color } from 'vs/base/common/color';
 import { Event, Emitter } from 'vs/base/common/event';
-import { KeyCode } from 'vs/base/common/keyCodes';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { generateUuid } from 'vs/base/common/uuid';
 
@@ -43,6 +42,7 @@ export class Checkbox extends Widget {
 		this._el.id = this.id;
 		this._el.type = 'checkbox';
 		this._el.style.verticalAlign = 'middle';
+		this._el.id = this.id;
 
 		if (opts.ariaLabel) {
 			this.ariaLabel = opts.ariaLabel;
@@ -52,15 +52,6 @@ export class Checkbox extends Widget {
 			this._onChange.fire(this.checked);
 		});
 
-		this.onkeydown(this._el, e => {
-			if (e.equals(KeyCode.Enter)) {
-				this.checked = !this.checked;
-				// Manually fire the event since we stop the event propagation which means
-				// the onchange event won't fire.
-				this._onChange.fire(this.checked);
-				e.stopPropagation();
-			}
-		});
 
 		this._label = document.createElement('label');
 		this._label.style.verticalAlign = 'middle';
@@ -69,8 +60,8 @@ export class Checkbox extends Widget {
 		this._displayCheckmark = opts.displayCheckmark || true;
 
 		this.label = opts.label;
-		this.enabled = opts.enabled || true;
-		this.checked = opts.checked || false;
+		this.enabled = opts.enabled ?? true;
+		this.checked = opts.checked ?? false;
 
 		if (opts.onChange) {
 			this.onChange(opts.onChange);

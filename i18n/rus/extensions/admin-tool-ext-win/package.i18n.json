@@ -9,5 +9,5 @@
 	"adminToolExtWin.displayName": "Расширения средства администрирования баз данных для Windows",
 	"adminToolExtWin.description": "Добавляет в Azure Data Studio дополнительные возможности для Windows",
 	"adminToolExtWin.propertiesMenuItem": "Свойства",
-	"adminToolExtWin.launchGswMenuItem": "Создание сценариев..."
+	"adminToolExtWin.launchGswMenuItem": "Создание сценариев…"
 }

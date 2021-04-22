@@ -8,9 +8,9 @@
 	],
 	"insights.item": "Item",
 	"insights.value": "Valor",
-	"property": "Propriedade.",
+	"property": "Propriedade",
 	"value": "Valor",
 	"InsightsDialogTitle": "Insights",
 	"insights.dialog.items": "Itens",
-	"insights.dialog.itemDetails": "Detalhes do item"
+	"insights.dialog.itemDetails": "Detalhes do Item"
 }

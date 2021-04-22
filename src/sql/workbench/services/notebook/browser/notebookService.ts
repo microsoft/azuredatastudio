@@ -7,18 +7,20 @@ import * as azdata from 'azdata';
 
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { URI } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ICellModel, INotebookModel, IContentManager } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { Range } from 'vs/editor/common/core/range';
-import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
+import { IEditorPane } from 'vs/workbench/common/editor';
+import { INotebookInput } from 'sql/workbench/services/notebook/browser/interface';
+import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 
 export const SERVICE_ID = 'sqlNotebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -130,6 +132,20 @@ export interface INotebookService {
 	 * @param isTrusted True if notebook is to be set to trusted, false otherwise.
 	 */
 	setTrusted(notebookUri: URI, isTrusted: boolean): Promise<boolean>;
+
+	/**
+	 * Event that gets fired when a cell is executed.
+	 */
+	onCodeCellExecutionStart: Event<void>;
+
+	/**
+	 * Fires the onCodeCellExecutionStart event.
+	 */
+	notifyCellExecutionStarted(): void;
+
+	openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined>;
+
+	getUntitledUriPath(originalTitle: string): string;
 }
 
 export interface INotebookProvider {
@@ -148,17 +164,6 @@ export interface INotebookManager {
 export interface IProviderInfo {
 	providerId: string;
 	providers: string[];
-}
-
-export interface INotebookInput {
-	readonly notebookUri: URI;
-	updateModel(): void;
-	isDirty(): boolean;
-	readonly defaultKernel: azdata.nb.IKernelSpec;
-	readonly editorOpenedTimestamp: number;
-	readonly contentManager: IContentManager;
-	readonly standardKernels: IStandardKernelWithProvider[];
-	readonly layoutChanged: Event<void>;
 }
 
 export interface INotebookParams extends IBootstrapParams {

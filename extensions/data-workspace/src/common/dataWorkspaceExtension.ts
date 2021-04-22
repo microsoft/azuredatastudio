@@ -31,5 +31,4 @@ export class DataWorkspaceExtension implements IExtension {
 	validateWorkspace(): Promise<boolean> {
 		return this.workspaceService.validateWorkspace();
 	}
-
 }

@@ -46,7 +46,7 @@ export class ResourceProviderService implements IResourceProviderService {
 		return new Promise<azdata.CreateFirewallRuleResponse>((resolve, reject) => {
 			const provider = this._providers[resourceProviderId];
 			if (provider) {
-				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.FirewallRuleRequested)
+				this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryAction.FirewallRuleRequested)
 					.withAdditionalProperties({
 						provider: resourceProviderId
 					}).send();

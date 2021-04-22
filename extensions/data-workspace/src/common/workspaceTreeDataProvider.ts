@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { IWorkspaceService } from './interfaces';
-import { UnknownProjectsError } from './constants';
+import { ProjectsFailedToLoad, UnknownProjectsError } from './constants';
 import { WorkspaceTreeItem } from 'dataworkspace';
 import { TelemetryReporter } from './telemetry';
 
@@ -45,28 +45,38 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 
 			const typeMetric: Record<string, number> = {};
 
+			let errorCount = 0;
 			for (const project of projects) {
-				const projectProvider = await this._workspaceService.getProjectProvider(project);
+				try {
+					const projectProvider = await this._workspaceService.getProjectProvider(project);
 
-				this.incrementProjectTypeMetric(typeMetric, project);
+					this.incrementProjectTypeMetric(typeMetric, project);
 
-				if (projectProvider === undefined) {
-					unknownProjects.push(project.path);
-					continue;
-				}
-				const treeDataProvider = await projectProvider.getProjectTreeDataProvider(project);
-				if (treeDataProvider.onDidChangeTreeData) {
-					treeDataProvider.onDidChangeTreeData((e: any) => {
-						this._onDidChangeTreeData?.fire(e);
+					if (projectProvider === undefined) {
+						unknownProjects.push(project.path);
+						continue;
+					}
+					const treeDataProvider = await projectProvider.getProjectTreeDataProvider(project);
+					if (treeDataProvider.onDidChangeTreeData) {
+						treeDataProvider.onDidChangeTreeData((e: any) => {
+							this._onDidChangeTreeData?.fire(e);
+						});
+					}
+					const children = await treeDataProvider.getChildren(element);
+					children?.forEach(child => {
+						treeItems.push({
+							treeDataProvider: treeDataProvider,
+							element: child
+						});
 					});
+				} catch (e) {
+					errorCount++;
+					console.error(e.message);
 				}
-				const children = await treeDataProvider.getChildren(element);
-				children?.forEach(child => {
-					treeItems.push({
-						treeDataProvider: treeDataProvider,
-						element: child
-					});
-				});
+			}
+
+			if (errorCount > 0) {
+				vscode.window.showErrorMessage(ProjectsFailedToLoad);
 			}
 
 			TelemetryReporter.sendMetricsEvent(typeMetric, 'OpenWorkspaceProjectTypes');

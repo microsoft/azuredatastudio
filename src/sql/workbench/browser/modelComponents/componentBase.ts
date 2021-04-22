@@ -14,7 +14,6 @@ import * as azdata from 'azdata';
 import { Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { ModelComponentWrapper } from 'sql/workbench/browser/modelComponents/modelComponentWrapper.component';
-import { URI } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 import { EventType, addDisposableListener } from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -22,8 +21,6 @@ import { IComponentDescriptor, IComponent, IModelStore, IComponentEventArgs, Com
 import { convertSize } from 'sql/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
-
-export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
 
 export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) { }

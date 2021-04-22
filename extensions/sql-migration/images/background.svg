@@ -16,21 +16,7 @@
 <stop offset="0.82" stop-color="#559CEC"/>
 <stop offset="1" stop-color="#5EA0EF"/>
 </linearGradient>
-<linearGradient id="paint1_linear" x1="538.219" y1="282.481" x2="720.628" y2="282.481" gradientUnits="userSpaceOnUse">
-<stop stop-color="#32BEDD"/>
-<stop offset="0.06" stop-color="#37C5E3"/>
-<stop offset="0.3" stop-color="#49DDF7"/>
-<stop offset="0.45" stop-color="#50E6FF"/>
-<stop offset="0.55" stop-color="#50E6FF"/>
-<stop offset="0.7" stop-color="#49DDF7"/>
-<stop offset="0.94" stop-color="#37C5E3"/>
-<stop offset="1" stop-color="#32BEDD"/>
-</linearGradient>
-<linearGradient id="paint2_linear" x1="509" y1="403" x2="509" y2="0.000435431" gradientUnits="userSpaceOnUse">
-<stop stop-color="#F0F0F0"/>
-<stop offset="1" stop-color="#F2F2F2" stop-opacity="0"/>
-<stop offset="1" stop-color="#F2F2F2" stop-opacity="0.0572917"/>
-</linearGradient>
+
 <clipPath id="clip0">
 <rect width="371" height="329" fill="white" transform="translate(443 35)"/>
 </clipPath>

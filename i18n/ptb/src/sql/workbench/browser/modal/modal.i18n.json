@@ -9,9 +9,9 @@
 	"infoAltText": "Informações",
 	"warningAltText": "Aviso",
 	"errorAltText": "Erro",
-	"showMessageDetails": "Mostrar detalhes",
-	"hideMessageDetails": "Ocultar detalhes",
+	"showMessageDetails": "Mostrar Detalhes",
 	"copyMessage": "Copiar",
 	"closeMessage": "Fechar",
-	"modalBack": "voltar"
+	"modal.back": "Voltar",
+	"hideMessageDetails": "Ocultar Detalhes"
 }

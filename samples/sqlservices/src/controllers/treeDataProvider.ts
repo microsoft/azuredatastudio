@@ -121,52 +121,67 @@ export class TreeNode implements azdata.TreeComponentItem {
 		return this._data;
 	}
 
-	public changeNodeCheckedState(value: boolean, fromParent?: boolean): void {
-		if (value !== this.checked) {
-			if (value !== undefined && this.children) {
-				this.children.forEach(child => {
-					child.changeNodeCheckedState(value, true);
-				});
-			}
-
-			this.checked = value;
-			if (!fromParent && this.parent) {
-				this.parent.refreshState();
-			}
-
-			this.onValueChanged();
+	/**
+	 * Sets node checked state to the given value.
+	 * @param value New checked state for the node.
+	 * @param fromParent Flag that indicates whether change is being propagated from child to parent (false),
+	 * 	from parent to child (true), or state change was initiated by the user (undefined).
+	 * @returns true if state has changed, otherwise false.
+	 */
+	public changeNodeCheckedState(value: boolean, fromParent?: boolean): boolean {
+		if (value === this.checked) {
+			return false;
 		}
+
+		if (fromParent !== false && this.children) {
+			// State change is caused by the user or propagation from parent - propagate new state to children
+			this.children.forEach(child => {
+				child.changeNodeCheckedState(value, true);
+			});
+		}
+
+		this.checked = value;
+		this._onNodeChange.fire();
+
+		if (fromParent !== true) {
+			// State change is caused by the user or propagation from children - notify parent about check state change
+			// Raise change event from here, if it's not coming from parent and parent node didn't change,
+			// otherwise parent node will raise this event
+			if (!this.parent?.refreshState(value) && this.root) {
+				this.root._onTreeChange.fire(this);
+			}
+		}
+
+		return true;
 	}
 
 	public set checked(value: boolean) {
 		this.data.checked = value;
 	}
 
-	public refreshState(): void {
-		if (this.hasChildren) {
-			if (this.children.every(c => c.checked)) {
-				this.changeNodeCheckedState(true);
-			} else if (this.children.every(c => c.checked !== undefined && !c.checked)) {
-				this.changeNodeCheckedState(false);
-			} else {
-				this.changeNodeCheckedState(undefined);
-			}
+	/**
+	 * Refreshes the state of the node based on the state of the children nodes.
+	 * @param childState New check state of the child node that caused the refresh.
+	 * @returns true if state has changed, otherwise false.
+	 */
+	public refreshState(childState?: boolean): boolean {
+		if (childState === undefined) {
+			// Child node is changing to partially checked.
+			// In this case we simply follow its state, as we know not all children are selected further down the tree.
+			return this.changeNodeCheckedState(undefined, false);
+		} else {
+			// Child node is changing to fully checked or unchecked.
+			// In this case we can either change to that same state if all children are the same or become partially checked.
+			return this.changeNodeCheckedState(
+				!this.children || this.children.every(c => c.checked === childState)
+					? childState
+					: undefined,
+				false);
 		}
-	}
-
-	public get hasChildren(): boolean {
-		return this.children !== undefined && this.children.length > 0;
 	}
 
 	public get checked(): boolean {
 		return this.data.checked;
-	}
-
-	private onValueChanged(): void {
-		this._onNodeChange.fire();
-		if (this.root) {
-			this.root._onTreeChange.fire(this);
-		}
 	}
 
 	public get checkboxState(): TreeCheckboxState {
@@ -253,51 +268,54 @@ export class TreeNode implements azdata.TreeComponentItem {
 }
 
 export class TreeDataProvider implements azdata.TreeComponentDataProvider<TreeNode> {
-		private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode>();
-		constructor(private _root: TreeNode) {
-			if (this._root) {
-				this._root.onTreeChange(node => {
-					this._onDidChangeTreeData.fire(node);
-				});
-			}
-		}
-		onDidChangeTreeData?: vscode.Event<TreeNode | undefined | null> = this._onDidChangeTreeData.event ;
+	private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode>();
 
-		/**
-		 * Get [TreeItem](#TreeItem) representation of the `element`
-		 *
-		 * @param element The element for which [TreeItem](#TreeItem) representation is asked for.
-		 * @return [TreeItem](#TreeItem) representation of the element
-		 */
-		getTreeItem(element: TreeNode): azdata.TreeComponentItem | Thenable<azdata.TreeComponentItem> {
-			let item: azdata.TreeComponentItem = {};
-			item.label = element.label;
-			item.checked = element.checked;
-			item.collapsibleState = element.collapsibleState;
-			item.iconPath = vscode.Uri.file(path.join(__dirname, '..', 'media', 'monitor.svg'));
-			return item;
+	constructor(private _root: TreeNode) {
+		if (this._root) {
+			this._root.onTreeChange(node => {
+				this._onDidChangeTreeData.fire(node);
+			});
 		}
+	}
 
-		/**
-		 * Get the children of `element` or root if no element is passed.
-		 *
-		 * @param element The element from which the provider gets children. Can be `undefined`.
-		 * @return Children of `element` or root if no element is passed.
-		 */
-		getChildren(element?: TreeNode): vscode.ProviderResult<TreeNode[]> {
-			if (element) {
-				return Promise.resolve(element.children);
-			} else {
-				return Promise.resolve(this._root.children);
-			}
+	onDidChangeTreeData?: vscode.Event<TreeNode | undefined | null> = this._onDidChangeTreeData.event ;
+
+	/**
+	 * Get [TreeItem](#TreeItem) representation of the `element`
+	 *
+	 * @param element The element for which [TreeItem](#TreeItem) representation is asked for.
+	 * @return [TreeItem](#TreeItem) representation of the element
+	 */
+	getTreeItem(element: TreeNode): azdata.TreeComponentItem | Thenable<azdata.TreeComponentItem> {
+		let item: azdata.TreeComponentItem = {};
+		item.label = element.label;
+		item.checked = element.checked;
+		item.collapsibleState = element.collapsibleState;
+		item.iconPath = vscode.Uri.file(path.join(__dirname, '..', 'media', 'monitor.svg'));
+		return item;
+	}
+
+	/**
+	 * Get the children of `element` or root if no element is passed.
+	 *
+	 * @param element The element from which the provider gets children. Can be `undefined`.
+	 * @return Children of `element` or root if no element is passed.
+	 */
+	getChildren(element?: TreeNode): vscode.ProviderResult<TreeNode[]> {
+		if (element) {
+			return Promise.resolve(element.children);
+		} else {
+			return Promise.resolve([this._root]);
 		}
+	}
 
-		getParent(element?: TreeNode): vscode.ProviderResult<TreeNode> {
-			if (element) {
-				return Promise.resolve(element.parent);
-			} else {
-				return Promise.resolve(this._root);
-			}
-		}
-
+	/**
+	 * Gets the parent of `element`. Returns `null` or `undefined` if `element` is a child of root.
+	 * 
+	 * @param element The element from which the provider gets parent.
+	 * @returns Parent of the `element` or undefined.
+	 */
+	getParent(element: TreeNode): vscode.ProviderResult<TreeNode> {
+		return Promise.resolve(element.parent);
+	}
 }

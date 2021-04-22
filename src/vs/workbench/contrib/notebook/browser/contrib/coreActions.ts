@@ -244,13 +244,13 @@ registerAction2(class extends NotebookCellAction<ICellRange> {
 
 	getCellContextFromArgs(accessor: ServicesAccessor, context?: ICellRange): INotebookCellActionContext | undefined {
 		if (!context || typeof context.start !== 'number' || typeof context.end !== 'number' || context.start >= context.end) {
-			return undefined; // {{ SQL CARBON EDIT }}
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		const activeEditorContext = this.getActiveEditorContext(accessor);
 
 		if (!activeEditorContext || !activeEditorContext.notebookEditor.viewModel || context.start >= activeEditorContext.notebookEditor.viewModel.viewCells.length) {
-			return undefined; // {{ SQL CARBON EDIT }}
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		const cells = activeEditorContext.notebookEditor.viewModel.viewCells;
@@ -299,13 +299,13 @@ registerAction2(class extends NotebookCellAction<ICellRange> {
 
 	getCellContextFromArgs(accessor: ServicesAccessor, context?: ICellRange): INotebookCellActionContext | undefined {
 		if (!context || typeof context.start !== 'number' || typeof context.end !== 'number' || context.start >= context.end) {
-			return undefined; // {{ SQL CARBON EDIT }}
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		const activeEditorContext = this.getActiveEditorContext(accessor);
 
 		if (!activeEditorContext || !activeEditorContext.notebookEditor.viewModel || context.start >= activeEditorContext.notebookEditor.viewModel.viewCells.length) {
-			return undefined; // {{ SQL CARBON EDIT }}
+			return undefined; // {{SQL CARBON EDIT}}
 		}
 
 		const cells = activeEditorContext.notebookEditor.viewModel.viewCells;

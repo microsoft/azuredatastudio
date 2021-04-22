@@ -10,8 +10,8 @@
 	"warningAltText": "경고",
 	"errorAltText": "오류",
 	"showMessageDetails": "세부 정보 표시",
-	"hideMessageDetails": "세부 정보 숨기기",
 	"copyMessage": "복사",
 	"closeMessage": "닫기",
-	"modalBack": "뒤로"
+	"modal.back": "뒤로",
+	"hideMessageDetails": "세부 정보 숨기기"
 }

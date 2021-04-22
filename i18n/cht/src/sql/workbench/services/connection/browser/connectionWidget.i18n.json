@@ -17,9 +17,10 @@
 	"connectionWidget.fieldWillBeTrimmed": "{0} 將受到修剪。",
 	"rememberPassword": "記住密碼",
 	"connection.azureAccountDropdownLabel": "帳戶",
-	"connectionWidget.refreshAzureCredentials": "重新整理帳戶認證",
+	"connectionWidget.refreshAzureCredentials": "重新整理帳戶登入資訊",
 	"connection.azureTenantDropdownLabel": "Azure AD 租用戶",
 	"connectionWidget.toggleDatabaseNameDropdown": "選取資料庫切換下拉式清單",
+	"connectionName": "名稱 (選用)",
 	"advanced": "進階...",
 	"connectionWidget.invalidAzureAccount": "您必須選取帳戶"
 }

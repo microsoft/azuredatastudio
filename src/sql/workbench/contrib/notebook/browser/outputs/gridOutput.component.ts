@@ -7,7 +7,7 @@ import { OnInit, Component, Input, Inject, ViewChild, ElementRef } from '@angula
 import * as azdata from 'azdata';
 
 import { IGridDataProvider, getResultsString } from 'sql/workbench/services/query/common/gridDataProvider';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -27,7 +27,7 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimemodel';
 import { GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
 import { GridTableBase } from 'sql/workbench/contrib/query/browser/gridPanel';
-import { getErrorMessage } from 'vs/base/common/errors';
+import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { ISerializationService, SerializeDataParams } from 'sql/platform/serialization/common/serializationService';
 import { SaveResultAction, IGridActionContext } from 'sql/workbench/contrib/query/browser/actions';
 import { SaveFormat, ResultSerializer, SaveResultsResponse } from 'sql/workbench/services/query/common/resultSerializer';
@@ -43,6 +43,12 @@ import { URI } from 'vs/base/common/uri';
 import { assign } from 'vs/base/common/objects';
 import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
 import { equals } from 'vs/base/common/arrays';
+import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { getChartMaxRowCount, notifyMaxRowCountExceeded } from 'sql/workbench/contrib/charts/browser/utils';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+
 @Component({
 	selector: GridOutputComponent.SELECTOR,
 	template: `<div #output class="notebook-cellTable"></div>`
@@ -71,7 +77,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	@Input() set bundleOptions(value: MimeModel.IOptions) {
 		this._bundleOptions = value;
 		if (this._initialized) {
-			this.renderGrid();
+			this.renderGrid().catch(onUnexpectedError);
 		}
 	}
 
@@ -84,7 +90,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	@Input() set cellModel(value: ICellModel) {
 		this._cellModel = value;
 		if (this._initialized) {
-			this.renderGrid();
+			this.renderGrid().catch(onUnexpectedError);
 		}
 	}
 
@@ -96,7 +102,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		this._cellOutput = value;
 	}
 
-	ngOnInit() {
+	async ngOnInit() {
 		if (this.cellModel) {
 			let outputId: QueryResultId = this.cellModel.getOutputId(this._cellOutput);
 			if (outputId) {
@@ -109,10 +115,10 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 				}
 			}));
 		}
-		this.renderGrid();
+		await this.renderGrid();
 	}
 
-	renderGrid(): void {
+	async renderGrid(): Promise<void> {
 		if (!this._bundleOptions || !this._cellModel || !this.mimeType) {
 			return;
 		}
@@ -124,7 +130,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			let outputElement = <HTMLElement>this.output.nativeElement;
 			outputElement.appendChild(this._table.element);
 			this._register(attachTableStyler(this._table, this.themeService));
-			this._table.onDidInsert();
+			await this._table.onDidInsert();
 			this.layout();
 			this._initialized = true;
 			this._table.rebuildActionBar();
@@ -201,9 +207,15 @@ class DataResourceTable extends GridTableBase<any> {
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IQueryModelService queryModelService: IQueryModelService
+		@IQueryModelService queryModelService: IQueryModelService,
+		@IThemeService themeService: IThemeService,
+		@IContextViewService contextViewService: IContextViewService
 	) {
-		super(state, createResultSet(source), { actionOrientation: ActionsOrientation.HORIZONTAL, displayActions: cellOutput?.metadata?.displayActionBar }, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService);
+		super(state, createResultSet(source), {
+			actionOrientation: ActionsOrientation.HORIZONTAL,
+			//displayActions: cellOutput?.metadata?.displayActionBar,
+			inMemoryDataProcessing: true
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel);
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 
@@ -279,11 +291,14 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 
 	public updateChartData(rowCount: number, columnCount: number, gridDataProvider: IGridDataProvider): void {
-		gridDataProvider.getRowData(0, rowCount).then(result => {
-			let range = new Slick.Range(0, 0, rowCount - 1, columnCount - 1);
-			let columns = gridDataProvider.getColumnHeaders(range);
-			this._chart.setData(result.rows, columns);
-		});
+		if (this.chartDisplayed) {
+			const actualRowCount = Math.min(getChartMaxRowCount(this.configurationService), rowCount);
+			gridDataProvider.getRowData(0, actualRowCount).then(result => {
+				let range = new Slick.Range(0, 0, actualRowCount - 1, columnCount - 1);
+				let columns = gridDataProvider.getColumnHeaders(range);
+				this._chart.setData(result.rows, columns);
+			});
+		}
 	}
 
 	private setChartOptions(options: IInsightOptions | undefined) {
@@ -294,6 +309,7 @@ class DataResourceTable extends GridTableBase<any> {
 	public updateResultSet(resultSet: ResultSetSummary, rows: ICellValue[][]): void {
 		this._gridDataProvider.updateResultSet(resultSet, rows);
 		super.updateResult(resultSet);
+		this.updateChartData(resultSet?.rowCount, resultSet?.columnInfo?.length, this._gridDataProvider);
 	}
 }
 
@@ -350,13 +366,13 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		return Promise.resolve(resultSubset);
 	}
 
-	async copyResults(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
-		return this.copyResultsAsync(selection, includeHeaders);
+	async copyResults(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
+		return this.copyResultsAsync(selection, includeHeaders, tableView);
 	}
 
-	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
+	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean, tableView?: IDisposableDataProvider<Slick.SlickData>): Promise<void> {
 		try {
-			let results = await getResultsString(this, selection, includeHeaders);
+			let results = await getResultsString(this, selection, includeHeaders, tableView);
 			this._clipboardService.writeText(results);
 		} catch (error) {
 			this._notificationService.error(localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
@@ -528,7 +544,11 @@ export class NotebookChartAction extends ToggleableAction {
 	public static SHOWTABLE_LABEL = localize('notebook.showTable', "Show table");
 	public static SHOWTABLE_ICON = 'table';
 
-	constructor(private resourceTable: DataResourceTable) {
+	constructor(private resourceTable: DataResourceTable,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IStorageService private readonly storageService: IStorageService,
+		@INotificationService private readonly notificationService: INotificationService,
+		@IAdsTelemetryService private readonly adsTelemetryService: IAdsTelemetryService) {
 		super(NotebookChartAction.ID, {
 			toggleOnLabel: NotebookChartAction.SHOWTABLE_LABEL,
 			toggleOnClass: NotebookChartAction.SHOWTABLE_ICON,
@@ -542,9 +562,17 @@ export class NotebookChartAction extends ToggleableAction {
 		this.resourceTable.toggleChartVisibility();
 		this.toggle(!this.state.isOn);
 		if (this.state.isOn) {
-			let rowCount = context.table.getData().getLength();
-			let columnCount = context.table.columns.length;
-			this.resourceTable.updateChartData(rowCount, columnCount, context.gridDataProvider);
+			const rowCount = context.table.getData().getLength();
+			const columnCount = context.table.columns.length;
+			const maxRowCount = getChartMaxRowCount(this.configurationService);
+			const maxRowCountExceeded = rowCount > maxRowCount;
+			if (maxRowCountExceeded) {
+				notifyMaxRowCountExceeded(this.storageService, this.notificationService, this.configurationService);
+			}
+			this.adsTelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.ShowChart).withAdditionalProperties(
+				{ [TelemetryKeys.TelemetryPropertyName.ChartMaxRowCountExceeded]: maxRowCountExceeded }
+			).send();
+			this.resourceTable.updateChartData(Math.min(rowCount, maxRowCount), columnCount, context.gridDataProvider);
 		}
 		return true;
 	}

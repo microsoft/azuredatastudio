@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { Modal } from 'sql/workbench/browser/modal/modal';
+import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -49,7 +49,7 @@ export class WebViewDialog extends Modal {
 		@IWebviewService private readonly webviewService: IWebviewService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', TelemetryKeys.WebView, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
+		super('', TelemetryKeys.ModalDialogName.WebView, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 		this._okLabel = localize('webViewDialog.ok', "OK");
 		this._closeLabel = localize('webViewDialog.close', "Close");
 	}
@@ -136,11 +136,11 @@ export class WebViewDialog extends Modal {
 
 	public ok(): void {
 		this._onOk.fire();
-		this.close();
+		this.close('ok');
 	}
 
-	public close() {
-		this.hide();
+	public close(hideReason: HideReason = 'close') {
+		this.hide(hideReason);
 		this._onClosed.fire();
 	}
 

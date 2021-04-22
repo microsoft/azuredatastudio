@@ -10,7 +10,7 @@ import { fail } from 'assert';
 
 import { azureResource } from 'azureResource';
 import { AzureResourceService } from '../../azureResource/resourceService';
-import { AzureAccount } from '../../account-provider/interfaces';
+import { AzureAccount } from 'azurecore';
 import settings from '../../account-provider/providerSettings';
 
 // Mock test data

@@ -689,7 +689,7 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 				}
 			});
 
-			container.innerHTML = this.options[longest]?.text + (!!this.options[longest]?.decoratorRight ? (this.options[longest].decoratorRight + ' ') : ''); // {{ SQL CARBON EDIT }} Don't error if no option found (empty list)
+			container.innerHTML = this.options[longest]?.text + (!!this.options[longest]?.decoratorRight ? (this.options[longest].decoratorRight + ' ') : ''); // {{SQL CARBON EDIT}} Don't error if no option found (empty list)
 
 			elementWidth = dom.getTotalWidth(container);
 		}

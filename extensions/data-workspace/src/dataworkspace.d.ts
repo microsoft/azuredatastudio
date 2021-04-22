@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 declare module 'dataworkspace' {
+	import * as azdata from 'azdata';
 	import * as vscode from 'vscode';
 	export const enum extension {
 		name = 'Microsoft.data-workspace'
@@ -37,8 +38,8 @@ declare module 'dataworkspace' {
 		defaultProjectSaveLocation: vscode.Uri | undefined;
 
 		/**
-	 	* Verifies that a workspace is open or if it should be automatically created
-	 	*/
+		  * Verifies that a workspace is open or if it should be automatically created
+		  */
 		validateWorkspace(): Promise<boolean>;
 	}
 
@@ -67,9 +68,24 @@ declare module 'dataworkspace' {
 		createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
 
 		/**
+		 * Gets the project data corresponding to the project file, to be placed in the dashboard container
+		 */
+		getDashboardComponents(projectFile: string): IDashboardTable[];
+
+		/**
 		 * Gets the supported project types
 		 */
 		readonly supportedProjectTypes: IProjectType[];
+
+		/**
+		 * Gets the project actions to be placed on the dashboard toolbar
+		 */
+		readonly projectActions: (IProjectAction | IProjectActionGroup)[];
+
+		/**
+		 * Gets the project image to be used as background in dashboard container
+		 */
+		 readonly image?: azdata.ThemedIconPath;
 	}
 
 	/**
@@ -99,7 +115,7 @@ declare module 'dataworkspace' {
 		/**
 		 * Gets the icon path of the project type
 		 */
-		readonly icon: string | vscode.Uri | { light: string | vscode.Uri, dark: string | vscode.Uri }
+		readonly icon: azdata.IconPath
 	}
 
 	/**
@@ -116,4 +132,71 @@ declare module 'dataworkspace' {
 		 */
 		element: any;
 	}
+
+	export interface IProjectAction {
+		/**
+		 * id of the project action
+		 */
+		readonly id: string;
+
+		/**
+		 * icon path of the project action
+		 */
+		readonly icon?: azdata.IconPath;
+
+		/**
+		 * Run context for each project action
+		 * @param treeItem The treeItem in a project's hierarchy, to be used to obtain a Project
+		 */
+		run(treeItem: WorkspaceTreeItem): void;
+	}
+
+	/**
+	 * List of project actions that should be grouped and have a separator after the last action
+	 */
+	export interface IProjectActionGroup {
+		actions: IProjectAction[];
+	}
+
+	/**
+	 * Defines table to be presented in the dashboard container
+	 */
+	export interface IDashboardTable {
+		/**
+		 * name of the table
+		 */
+		name: string;
+
+		/**
+		 * column definitions
+		 */
+		columns: IDashboardColumnInfo[];
+
+		/**
+		 * project data
+		 */
+		data: (string | IconCellValue)[][];
+	}
+
+	/**
+	 * Project dashboard table's column information
+	 */
+	export interface IDashboardColumnInfo {
+		displayName: string;
+		width: number | string;
+		type?: IDashboardColumnType;
+	}
+
+	/**
+	 * Cell value of an icon for the table data
+	 */
+	export interface IconCellValue {
+		text: string;
+		icon: azdata.IconPath;
+	}
+
+	/**
+	 * Union type representing data types in dashboard table
+	 */
+	export type IDashboardColumnType = 'string' | 'icon';
 }

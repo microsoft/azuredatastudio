@@ -48,18 +48,26 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 			width: componentWidth
 		}).component();
 
-		this._accounts.onValueChanged(async () => {
-			await this.onAccountSelected();
+		this._accounts.onValueChanged(async (newValue) => {
+			if (newValue.selected !== (<azdata.CategoryValue>this._accounts.value)?.name) {
+				await this.onAccountSelected();
+			}
 		});
 
-		this._subscriptions.onValueChanged(async () => {
-			await this.onSubscriptionSelected();
+		this._subscriptions.onValueChanged(async (newValue) => {
+			if (newValue.selected !== (<azdata.CategoryValue>this._subscriptions.value)?.name) {
+				await this.onSubscriptionSelected();
+			}
 		});
-		this._groups.onValueChanged(async () => {
-			await this.onGroupSelected();
+		this._groups.onValueChanged(async (newValue) => {
+			if (newValue.selected !== (<azdata.CategoryValue>this._groups.value)?.name) {
+				await this.onGroupSelected();
+			}
 		});
-		this._workspaces.onValueChanged(async () => {
-			await this.onWorkspaceSelectedChanged();
+		this._workspaces.onValueChanged(async (newValue) => {
+			if (newValue.selected !== (<azdata.CategoryValue>this._workspaces.value)?.name) {
+				await this.onWorkspaceSelectedChanged();
+			}
 		});
 
 		this._form = this._modelBuilder.formContainer().withFormItems([{
@@ -174,6 +182,7 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 	}
 
 	private async onGroupSelected(): Promise<void> {
+		let currentWorkspace = this._workspaces.value;
 		this._azureWorkspaces = await this.listWorkspaces(this.account, this.subscription, this.group);
 		if (this._azureWorkspaces && this._azureWorkspaces.length > 0) {
 			let values = this._azureWorkspaces.map(s => { return { displayName: s.name || '', name: s.id || '' }; });
@@ -183,7 +192,9 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 			this._workspaces.values = [];
 			this._workspaces.value = undefined;
 		}
-		this.onWorkspaceSelectedChanged();
+		if (currentWorkspace !== this._workspaces.value) {
+			this.onWorkspaceSelectedChanged();
+		}
 	}
 
 	private onWorkspaceSelectedChanged(): void {

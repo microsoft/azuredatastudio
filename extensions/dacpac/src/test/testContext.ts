@@ -311,7 +311,8 @@ export function createViewContext(): ViewTestContext {
 			tabbedPanel: undefined!,
 			separator: undefined!,
 			propertiesContainer: undefined!,
-			infoBox: undefined!
+			infoBox: undefined!,
+			slider: undefined!
 		}
 	};
 	return {

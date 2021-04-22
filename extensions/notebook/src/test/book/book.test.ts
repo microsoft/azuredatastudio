@@ -184,6 +184,7 @@ describe('BooksTreeViewTests', function () {
 				should(children).be.Array();
 				should(children.length).equal(1);
 				book = children[0];
+				should(book).equal(bookTreeViewProvider.currentBook.rootNode);
 				should(book.title).equal(expectedBook.title);
 			});
 
@@ -210,13 +211,13 @@ describe('BooksTreeViewTests', function () {
 			});
 
 			it('should set notebooks trusted to true on trustBook', async () => {
-				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
+				let notebook1Path = notebook1.tooltip;
 				let bookTrustManager: BookTrustManager = new BookTrustManager(bookTreeViewProvider.books);
-				let isTrusted = bookTrustManager.isNotebookTrustedByDefault(vscode.Uri.file(notebook1Path).fsPath);
+				let isTrusted = bookTrustManager.isNotebookTrustedByDefault(notebook1Path);
 				should(isTrusted).equal(false, 'Notebook should not be trusted by default');
 
-				bookTreeViewProvider.trustBook(bookTreeViewProvider.currentBook.bookItems[0]);
-				isTrusted = bookTrustManager.isNotebookTrustedByDefault(vscode.Uri.file(notebook1Path).fsPath);
+				bookTreeViewProvider.trustBook(notebook1);
+				isTrusted = bookTrustManager.isNotebookTrustedByDefault(notebook1Path);
 				should(isTrusted).equal(true, 'Failed to set trust on trustBook');
 
 			});
@@ -232,7 +233,7 @@ describe('BooksTreeViewTests', function () {
 
 			});
 
-			it.skip('getParent should return when element is a valid child notebook', async () => {
+			it('getParent should return when element is a valid child notebook', async () => {
 				let parent = await bookTreeViewProvider.getParent();
 				should(parent).be.undefined();
 
@@ -242,8 +243,9 @@ describe('BooksTreeViewTests', function () {
 			});
 
 			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
-				let notebook1Path = vscode.Uri.file(path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb')).fsPath;
+				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb').replace(/\\/g, '/');
 				let currentSelection = await bookTreeViewProvider.findAndExpandParentNode(notebook1Path);
+				should(currentSelection).not.be.undefined();
 				equalBookItems(currentSelection, expectedNotebook1);
 			});
 
@@ -252,7 +254,7 @@ describe('BooksTreeViewTests', function () {
 				let notebook2Path = path.join(rootFolderPath, 'Book', 'content', 'notebook2.ipynb');
 				let notebookUri = vscode.Uri.file(notebook2Path);
 
-				let revealActiveDocumentInViewletSpy = sinon.spy(bookTreeViewProvider, 'revealActiveDocumentInViewlet');
+				let revealActiveDocumentInViewletSpy = sinon.spy(bookTreeViewProvider, 'revealDocumentInTreeView');
 				await azdata.nb.showNotebookDocument(notebookUri);
 				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === notebookUri.fsPath)).not.be.undefined();
 				should(revealActiveDocumentInViewletSpy.calledOnce).be.true('revealActiveDocumentInViewlet should have been called');
@@ -326,8 +328,9 @@ describe('BooksTreeViewTests', function () {
 			});
 
 			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
-				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb');
+				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb').replace(/\\/g, '/');
 				let currentSelection = await providedbookTreeViewProvider.findAndExpandParentNode(notebook1Path);
+				should(currentSelection).not.be.undefined();
 				equalBookItems(currentSelection, expectedNotebook1);
 			});
 
@@ -335,7 +338,7 @@ describe('BooksTreeViewTests', function () {
 				const untitledNotebook1Uri = vscode.Uri.parse(`untitled:notebook1.ipynb`);
 				const untitledNotebook2Uri = vscode.Uri.parse(`untitled:notebook2.ipynb`);
 
-				let revealActiveDocumentInViewletSpy = sinon.spy(providedbookTreeViewProvider, 'revealActiveDocumentInViewlet');
+				let revealActiveDocumentInViewletSpy = sinon.spy(providedbookTreeViewProvider, 'revealDocumentInTreeView');
 				await azdata.nb.showNotebookDocument(untitledNotebook1Uri);
 				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === untitledNotebook1Uri.fsPath)).not.be.undefined();
 				should(revealActiveDocumentInViewletSpy.calledOnce).be.true('revealActiveDocumentInViewlet should have been called');
@@ -485,14 +488,14 @@ describe('BooksTreeViewTests', function () {
 
 				if (run.it === 'v1') {
 					it('should ignore toc.yml files not in _data folder', async () => {
-						await bookTreeViewProvider.currentBook.readBookStructure(rootFolderPath);
+						await bookTreeViewProvider.currentBook.readBookStructure();
 						await bookTreeViewProvider.currentBook.loadTableOfContentFiles();
 						let path = bookTreeViewProvider.currentBook.tableOfContentsPath;
 						should(vscode.Uri.file(path).fsPath).equal(vscode.Uri.file(run.folderPaths.tableOfContentsFile).fsPath);
 					});
 				} else if (run.it === 'v2') {
 					it('should ignore toc.yml files not under the root book folder', async () => {
-						await bookTreeViewProvider.currentBook.readBookStructure(rootFolderPath);
+						await bookTreeViewProvider.currentBook.readBookStructure();
 						await bookTreeViewProvider.currentBook.loadTableOfContentFiles();
 						let path = bookTreeViewProvider.currentBook.tableOfContentsPath;
 						should(vscode.Uri.file(path).fsPath).equal(vscode.Uri.file(run.folderPaths.tableOfContentsFile).fsPath);
@@ -652,7 +655,7 @@ describe('BooksTreeViewTests', function () {
 
 				it('should show error if notebook or markdown file is missing', async function (): Promise<void> {
 					let books: BookTreeItem[] = bookTreeViewProvider.currentBook.bookItems;
-					let children = await bookTreeViewProvider.currentBook.getSections({ sections: [] }, books[0].sections, rootFolderPath, books[0].book);
+					let children = await bookTreeViewProvider.currentBook.getSections(books[0]);
 					should(bookTreeViewProvider.currentBook.errorMessage).equal('Missing file : Notebook1 from '.concat(bookTreeViewProvider.currentBook.bookItems[0].title));
 					// rest of book should be detected correctly even with a missing file
 					equalBookItems(children[0], expectedNotebook2);

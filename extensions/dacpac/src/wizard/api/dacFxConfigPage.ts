@@ -104,12 +104,12 @@ export abstract class DacFxConfigPage extends BasePage {
 
 		// Handle database changes
 		this.databaseDropdown.onValueChanged(() => {
-			const databaseDropdownValue = this.databaseDropdown.value;
+			const databaseDropdownValue: string = this.databaseDropdown.value as string;
 			if (!databaseDropdownValue) {
 				return;
 			}
 
-			this.model.database = databaseDropdownValue as string;
+			this.model.database = databaseDropdownValue;
 			this.fileTextBox.value = this.generateFilePathFromDatabaseAndTimestamp();
 			this.model.filePath = this.fileTextBox.value;
 		});

@@ -66,7 +66,7 @@ export class Application {
 
 	async start(expectWalkthroughPart = true): Promise<any> {
 		await this._start();
-		//{{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}}
 		await this.code.waitForElement('.object-explorer-view');
 
 		//Original
@@ -77,7 +77,7 @@ export class Application {
 			await this.code.waitForActiveElement(`.editor-instance[data-editor-id="workbench.editor.walkThroughPart"] > div > div[tabIndex="0"]`);
 		}
 		*/
-		//{{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}}
 	}
 
 	async restart(options: { workspaceOrFolder?: string, extraArgs?: string[] }): Promise<any> {

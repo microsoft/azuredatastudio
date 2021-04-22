@@ -46,7 +46,11 @@ suite('MainThreadNotebook Tests', () => {
 			undefined,
 			undefined,
 			new MockContextKeyService(),
-			instantiationService.get(IProductService)
+			instantiationService.get(IProductService),
+			undefined,
+			undefined,
+			undefined,
+			undefined,
 		);
 		mockNotebookService = TypeMoq.Mock.ofInstance(notebookService);
 		notebookUri = URI.parse('file:/user/default/my.ipynb');
@@ -161,6 +165,9 @@ class ExtHostNotebookStub implements ExtHostNotebookShape {
 	$shutdownSession(managerHandle: number, sessionId: string): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
+	$shutdownAll(managerHandle: number): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
 	$changeKernel(sessionId: number, kernelInfo: azdata.nb.IKernelSpec): Thenable<INotebookKernelDetails> {
 		throw new Error('Method not implemented.');
 	}
@@ -189,6 +196,9 @@ class ExtHostNotebookStub implements ExtHostNotebookShape {
 		throw new Error('Method not implemented.');
 	}
 	$disposeFuture(futureId: number): void {
+		throw new Error('Method not implemented.');
+	}
+	$dispose(): void {
 		throw new Error('Method not implemented.');
 	}
 }

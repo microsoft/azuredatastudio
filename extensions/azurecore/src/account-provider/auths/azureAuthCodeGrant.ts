@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AuthorizationCodePostData, AzureAuth, OAuthTokenResponse } from './azureAuth';
-import { AzureAccountProviderMetadata, AzureAuthType, Deferred, Resource, Tenant } from '../interfaces';
+import { AzureAccountProviderMetadata, AzureAuthType, Resource, Tenant } from 'azurecore';
+import { Deferred } from '../interfaces';
 import * as vscode from 'vscode';
 import * as crypto from 'crypto';
 import { SimpleTokenCache } from '../simpleTokenCache';

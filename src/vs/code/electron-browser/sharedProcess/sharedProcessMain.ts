@@ -90,7 +90,7 @@ interface ISharedProcessInitData {
 	backupWorkspacesPath: string;
 }
 
-const eventPrefix = 'adsworkbench'; // {{ SQL CARBON EDIT }}
+const eventPrefix = 'adsworkbench'; // {{SQL CARBON EDIT}}
 
 class MainProcessService implements IMainProcessService {
 
