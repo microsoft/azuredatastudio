@@ -27,12 +27,6 @@ export interface IDisposableDataProvider<T> extends Slick.DataProvider<T> {
 	getColumnValues(column: Slick.Column<T>): Promise<string[]>;
 
 	/**
-	 * Gets the unique values of the filtered cells in the given column
-	 * @param column
-	 */
-	getFilteredColumnValues(column: Slick.Column<T>): Promise<string[]>;
-
-	/**
 	 * Filters the data
 	 * @param columns columns to be filtered, the
 	 */
