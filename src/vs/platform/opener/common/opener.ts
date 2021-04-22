@@ -29,9 +29,18 @@ type OpenInternalOptions = {
 	 * action, such as keyboard or mouse usage.
 	 */
 	readonly fromUserGesture?: boolean;
+
+	/**
+	 * Allow command links to be handled.
+	 */
+	readonly allowCommands?: boolean;
 };
 
-type OpenExternalOptions = { readonly openExternal?: boolean; readonly allowTunneling?: boolean };
+export type OpenExternalOptions = {
+	readonly openExternal?: boolean;
+	readonly allowTunneling?: boolean;
+	readonly allowContributedOpeners?: boolean | string;
+};
 
 export type OpenOptions = OpenInternalOptions & OpenExternalOptions;
 

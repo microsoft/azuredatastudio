@@ -40,6 +40,12 @@ const headerRight: azdata.CssStyles = {
 	'border-bottom': '1px solid'
 };
 
+const blockingIssues: Array<string> = [
+	'MultipleLogFiles',
+	'FileStream',
+	'MIDatabaseSize'
+];
+
 export class SqlDatabaseTree {
 	private _view!: azdata.ModelView;
 	private _instanceTable!: azdata.DeclarativeTableComponent;
@@ -47,9 +53,11 @@ export class SqlDatabaseTree {
 	private _assessmentResultsTable!: azdata.DeclarativeTableComponent;
 	private _impactedObjectsTable!: azdata.DeclarativeTableComponent;
 	private _assessmentContainer!: azdata.FlexContainer;
+	private _assessmentsTable!: azdata.FlexContainer;
 	private _dbMessageContainer!: azdata.FlexContainer;
 	private _rootContainer!: azdata.FlexContainer;
 	private _resultComponent!: azdata.Component;
+	private _noIssuesContainer!: azdata.FlexContainer;
 
 	private _recommendation!: azdata.TextComponent;
 	private _dbName!: azdata.TextComponent;
@@ -63,6 +71,7 @@ export class SqlDatabaseTree {
 	private _moreInfo!: azdata.HyperlinkComponent;
 	private _assessmentTitle!: azdata.TextComponent;
 	private _databaseTableValues!: azdata.DeclarativeTableCellValue[][];
+
 
 	private _activeIssues!: SqlMigrationAssessmentResultItem[];
 	private _selectedIssue!: SqlMigrationAssessmentResultItem;
@@ -263,7 +272,7 @@ export class SqlDatabaseTree {
 	async createComponentResult(view: azdata.ModelView): Promise<azdata.Component> {
 		this._view = view;
 		const topContainer = this.createTopContainer();
-		this._assessmentContainer = this.createBottomContainer();
+		const bottomContainer = this.createBottomContainer();
 
 		const container = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
@@ -277,7 +286,7 @@ export class SqlDatabaseTree {
 		}).component();
 
 		container.addItem(topContainer, { flex: '0 0 auto' });
-		container.addItem(this._assessmentContainer, { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'hidden' } });
+		container.addItem(bottomContainer, { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'hidden' } });
 
 		return container;
 	}
@@ -314,8 +323,9 @@ export class SqlDatabaseTree {
 
 	private createBottomContainer(): azdata.FlexContainer {
 
-		const impactedObjects = this.createImpactedObjectsTable();
-		const rightContainer = this.createAssessmentContainer();
+		this._assessmentsTable = this.createImpactedObjectsTable();
+		this._assessmentContainer = this.createAssessmentContainer();
+		const noIssuesText = this.createNoIssuesText();
 
 		const container = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
@@ -326,9 +336,46 @@ export class SqlDatabaseTree {
 			}
 		}).component();
 
-		container.addItem(impactedObjects, { flex: '0 0 auto', CSSStyles: { 'border-right': 'solid 1px', 'overflow-y': 'auto' } });
-		container.addItem(rightContainer, { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'auto' } });
+		container.addItem(noIssuesText, { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'auto' } });
+		container.addItem(this._assessmentsTable, { flex: '0 0 auto', CSSStyles: { 'overflow-y': 'auto' } });
+		container.addItem(this._assessmentContainer, { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'auto' } });
 		return container;
+	}
+
+	private createNoIssuesText(): azdata.FlexContainer {
+		let message: azdata.TextComponent;
+		if (this._model._targetType === MigrationTargetType.SQLVM) {
+			message = this._view.modelBuilder.text().withProps({
+				value: constants.NO_ISSUES_FOUND_VM,
+				CSSStyles: {
+					'font-size': '14px',
+					'width': '400px',
+					'margin': '10px 0px 0px 0px',
+					'text-align': 'left'
+				}
+			}).component();
+		} else {
+			message = this._view.modelBuilder.text().withProps({
+				value: constants.NO_ISSUES_FOUND_MI,
+				CSSStyles: {
+					'font-size': '14px',
+					'width': '400px',
+					'margin': '10px 0px 0px 0px',
+					'text-align': 'left'
+				}
+			}).component();
+		}
+		//TODO: will need to add a SQL DB condition here in the future
+
+		this._noIssuesContainer = this._view.modelBuilder.flexContainer().withItems([message]).withProps({
+			CSSStyles: {
+				'margin-left': '24px',
+				'margin-top': '20px',
+				'display': 'none'
+			}
+		}).component();
+
+		return this._noIssuesContainer;
 	}
 
 	private createSelectDbMessage(): azdata.FlexContainer {
@@ -632,7 +679,7 @@ export class SqlDatabaseTree {
 	}
 
 
-	private createImpactedObjectsTable(): azdata.DeclarativeTableComponent {
+	private createImpactedObjectsTable(): azdata.FlexContainer {
 
 		const headerStyle: azdata.CssStyles = {
 			'border': 'none',
@@ -673,7 +720,16 @@ export class SqlDatabaseTree {
 			this.refreshAssessmentDetails();
 		});
 
-		return this._assessmentResultsTable;
+		const container = this._view.modelBuilder.flexContainer().withItems([this._assessmentResultsTable]).withLayout({
+			flexFlow: 'column',
+			height: '100%'
+		}).withProps({
+			CSSStyles: {
+				'border-right': 'solid 1px'
+			}
+		}).component();
+
+		return container;
 	}
 
 	public selectedDbs(): string[] {
@@ -688,6 +744,30 @@ export class SqlDatabaseTree {
 
 	public refreshResults(): void {
 		const assessmentResults: azdata.DeclarativeTableCellValue[][] = [];
+		if (this._activeIssues.length === 0) {
+			/// show no issues here
+			this._assessmentsTable.updateCssStyles({
+				'display': 'none',
+				'border-right': 'none'
+			});
+			this._assessmentContainer.updateCssStyles({
+				'display': 'none'
+			});
+			this._noIssuesContainer.updateCssStyles({
+				'display': 'flex'
+			});
+		} else {
+			this._assessmentContainer.updateCssStyles({
+				'display': 'flex'
+			});
+			this._assessmentsTable.updateCssStyles({
+				'display': 'flex',
+				'border-right': 'solid 1px'
+			});
+			this._noIssuesContainer.updateCssStyles({
+				'display': 'none'
+			});
+		}
 		this._activeIssues.forEach((v) => {
 			assessmentResults.push(
 				[
@@ -802,15 +882,19 @@ export class SqlDatabaseTree {
 			// Reset the dbName list so that it is in sync with the table
 			this._dbNames = this._model._assessmentResults.databaseAssessments.map(da => da.name);
 			this._model._assessmentResults.databaseAssessments.forEach((db) => {
+				let selectable = true;
+				if (db.issues.find(item => blockingIssues.includes(item.ruleId))) {
+					selectable = false;
+				}
 				this._databaseTableValues.push(
 					[
 						{
 							value: selectedDbs.includes(db.name),
-							enabled: db.issues.length === 0,
-							style: styleLeft
+							style: styleLeft,
+							enabled: selectable
 						},
 						{
-							value: this.createIconTextCell((db.issues.length === 0) ? IconPathHelper.sqlDatabaseLogo : IconPathHelper.sqlDatabaseWarningLogo, db.name),
+							value: this.createIconTextCell((selectable) ? IconPathHelper.sqlDatabaseLogo : IconPathHelper.sqlDatabaseWarningLogo, db.name),
 							style: styleLeft
 						},
 						{

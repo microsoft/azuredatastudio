@@ -81,20 +81,10 @@ suite('OpenerService', function () {
 		const id = `aCommand${Math.random()}`;
 		CommandsRegistry.registerCommand(id, function () { });
 
+		assert.strictEqual(lastCommand, undefined);
 		await openerService.open(URI.parse('command:' + id));
-		assert.equal(lastCommand!.id, id);
-		assert.equal(lastCommand!.args.length, 0);
 
-		await openerService.open(URI.parse('command:' + id).with({ query: '123' }));
-		assert.equal(lastCommand!.id, id);
-		assert.equal(lastCommand!.args.length, 1);
-		assert.equal(lastCommand!.args[0], '123');
-
-		await openerService.open(URI.parse('command:' + id).with({ query: JSON.stringify([12, true]) }));
-		assert.equal(lastCommand!.id, id);
-		assert.equal(lastCommand!.args.length, 2);
-		assert.equal(lastCommand!.args[0], 12);
-		assert.equal(lastCommand!.args[1], true);
+		assert.strictEqual(lastCommand, undefined);
 	});
 
 	test('links are protected by validators', async function () {
@@ -106,6 +96,33 @@ suite('OpenerService', function () {
 		const httpsResult = await openerService.open(URI.parse('https://www.microsoft.com'));
 		assert.equal(httpResult, false);
 		assert.equal(httpsResult, false);
+	});
+
+	test('delegate to commandsService, command:someid', async function () {
+		const openerService = new OpenerService(editorService, commandService);
+
+		const id = `aCommand${Math.random()}`;
+		CommandsRegistry.registerCommand(id, function () { });
+
+		await openerService.open(URI.parse('command:' + id).with({ query: '\"123\"' }), { allowCommands: true });
+		assert.strictEqual(lastCommand!.id, id);
+		assert.strictEqual(lastCommand!.args.length, 1);
+		assert.strictEqual(lastCommand!.args[0], '123');
+
+		await openerService.open(URI.parse('command:' + id), { allowCommands: true });
+		assert.strictEqual(lastCommand!.id, id);
+		assert.strictEqual(lastCommand!.args.length, 0);
+
+		await openerService.open(URI.parse('command:' + id).with({ query: '123' }), { allowCommands: true });
+		assert.strictEqual(lastCommand!.id, id);
+		assert.strictEqual(lastCommand!.args.length, 1);
+		assert.strictEqual(lastCommand!.args[0], 123);
+
+		await openerService.open(URI.parse('command:' + id).with({ query: JSON.stringify([12, true]) }), { allowCommands: true });
+		assert.strictEqual(lastCommand!.id, id);
+		assert.strictEqual(lastCommand!.args.length, 2);
+		assert.strictEqual(lastCommand!.args[0], 12);
+		assert.strictEqual(lastCommand!.args[1], true);
 	});
 
 	test('links validated by validators go to openers', async function () {

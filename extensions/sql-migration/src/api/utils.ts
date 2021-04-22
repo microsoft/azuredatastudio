@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { DAYS, HRS, MINUTE, SEC } from '../constants/strings';
+
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
 		return obj;
@@ -38,5 +40,29 @@ export function getSqlServerName(majorVersion: number): string | undefined {
 			return 'SQL Server 2019';
 		default:
 			return undefined;
+	}
+}
+
+/**
+ * Generates a wordy time difference between start and end time.
+ * @returns stringified duration like '10.0 days', '12.0 hrs', '1.0 min'
+ */
+export function convertTimeDifferenceToDuration(startTime: Date, endTime: Date): string {
+	const time = endTime.getTime() - startTime.getTime();
+	let seconds = (time / 1000).toFixed(1);
+	let minutes = (time / (1000 * 60)).toFixed(1);
+	let hours = (time / (1000 * 60 * 60)).toFixed(1);
+	let days = (time / (1000 * 60 * 60 * 24)).toFixed(1);
+	if (time / 1000 < 60) {
+		return SEC(parseFloat(seconds));
+	}
+	else if (time / (1000 * 60) < 60) {
+		return MINUTE(parseFloat(minutes));
+	}
+	else if (time / (1000 * 60 * 60) < 24) {
+		return HRS(parseFloat(hours));
+	}
+	else {
+		return DAYS(parseFloat(days));
 	}
 }
