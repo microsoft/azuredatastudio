@@ -574,7 +574,7 @@ class TableFilterListAccessibilityProvider implements IListAccessibilityProvider
 		return 'listbox';
 	}
 
-	getRole?(element: TableFilterListElement): string {
+	getRole(element: TableFilterListElement): string {
 		return 'option';
 	}
 }

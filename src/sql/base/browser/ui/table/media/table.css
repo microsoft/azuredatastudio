@@ -123,6 +123,7 @@
 .slick-header-menu .searchbox-row .visible-count
 {
 	position: absolute;
+	/* visible count badge is not visible but will be read by the screen reader */
 	left: -10000px;
 }
 
