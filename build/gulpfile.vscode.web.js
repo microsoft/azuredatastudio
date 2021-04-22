@@ -16,6 +16,7 @@ const rename = require('gulp-rename');
 const filter = require('gulp-filter');
 const json = require('gulp-json-editor');
 const _ = require('underscore');
+const deps = require('./dependencies');
 const vfs = require('vinyl-fs');
 const fs = require('fs');
 const packageJson = require('../package.json');
@@ -29,6 +30,8 @@ const WEB_FOLDER = path.join(REPO_ROOT, 'remote', 'web');
 const commit = util.getVersion(REPO_ROOT);
 const quality = product.quality;
 const version = (quality && quality !== 'stable') ? `${packageJson.version}-${quality}` : packageJson.version;
+
+const productionDependencies = deps.getProductionDependencies(WEB_FOLDER);
 
 const vscodeWebResourceIncludes = [
 	// Workbench
