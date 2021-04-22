@@ -24,7 +24,7 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 				'scope': ConfigurationScope.APPLICATION, // Make sure repositories cannot trigger opening a README for tracking.
 				'type': 'string',
 				'enum': [
-					...['none', 'welcomePageWithTour', 'welcomePage', 'readme', 'newUntitledFile', 'welcomePageInEmptyWorkbench'],
+					...['none', 'welcomePageWithTour', 'welcomePage', 'readme', 'newUntitledFile', 'welcomePageInEmptyWorkbench'], // {{SQL CARBON EDIT}} Add our own welcomePageWithTour
 					// {{SQL CARBON EDIT}} We don't use the VS Code gettingStarted experience
 					// ...(product.quality !== 'stable'
 					// 	? ['gettingStarted']
