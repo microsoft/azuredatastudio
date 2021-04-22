@@ -113,17 +113,9 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		return this._data.slice(startIndex, startIndex + length);
 	}
 
-	public async getFilteredColumnValues(column: Slick.Column<T>): Promise<string[]> {
-		return this.getDistinctColumnValues(this._data, column);
-	}
-
 	public async getColumnValues(column: Slick.Column<T>): Promise<string[]> {
-		return this.getDistinctColumnValues(this.filterEnabled ? this._allData : this._data, column);
-	}
-
-	private getDistinctColumnValues(source: T[], column: Slick.Column<T>): string[] {
 		const distinctValues: Set<string> = new Set();
-		source.forEach(items => {
+		this._data.forEach(items => {
 			const value = items[column.field!];
 			const valueArr = value instanceof Array ? value : [value];
 			valueArr.forEach(v => distinctValues.add(this._cellValueGetter(v)));
