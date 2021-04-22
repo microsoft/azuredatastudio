@@ -34,5 +34,6 @@ export class ConnectionDialog extends Dialog {
 		// Try pressing the connect button again if the dialog does not go away
 		await this.waitForDialogGone().catch(async _ =>
 			await this.code.waitAndClick(ConnectionDialog.CONNECT_BUTTON_SELECTOR));
+		await this.waitForDialogGone();
 	}
 }
