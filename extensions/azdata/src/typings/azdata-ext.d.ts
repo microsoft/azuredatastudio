@@ -132,11 +132,11 @@ declare module 'azdata-ext' {
 					resources?: {
 						limits?: {
 							memory?: string // "10Gi"
-							vcores?: string // "4"
+							cpu?: string // "4"
 						},
 						requests?: {
 							memory?: string // "10Gi"
-							vcores?: string // "4"
+							cpu?: string // "4"
 						}
 					}
 				}

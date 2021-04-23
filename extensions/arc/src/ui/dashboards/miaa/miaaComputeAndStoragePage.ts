@@ -311,7 +311,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 	}
 
 	private editCores(): void {
-		let currentCPUSize = this._miaaModel.config?.spec?.scheduling?.default?.resources?.requests?.vcores;
+		let currentCPUSize = this._miaaModel.config?.spec?.scheduling?.default?.resources?.requests?.cpu;
 
 		if (!currentCPUSize) {
 			currentCPUSize = '';
@@ -321,7 +321,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.coresRequestBox!.value = '';
 		this.saveArgs.coresRequest = undefined;
 
-		currentCPUSize = this._miaaModel.config?.spec?.scheduling?.default?.resources?.limits?.vcores;
+		currentCPUSize = this._miaaModel.config?.spec?.scheduling?.default?.resources?.limits?.cpu;
 
 		if (!currentCPUSize) {
 			currentCPUSize = '';
