@@ -32,8 +32,8 @@ const msgInstallPkgStart = localize('msgInstallPkgStart', "Installing Notebook d
 const msgInstallPkgFinish = localize('msgInstallPkgFinish', "Notebook dependencies installation is complete");
 const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.");
 const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python installation is currently in progress. Waiting for it to complete.");
-const msgPythonVersionUpdatePrompt = localize('msgPythonVersionUpdatePrompt', "You are currently using Python 3.6.6. Would you like to update to Python 3.8.8?");
-const msgPythonVersionUpdateWarning = localize('msgPythonVersionUpdateWarning', "This will remove the existing Python 3.6.6 installation and install Python 3.8.8. Some packages may no longer be compatible with the new version. Would you like to continue with the update?");
+const msgPythonVersionUpdatePrompt = localize('msgPythonVersionUpdatePrompt', "Python 3.8.8 is now available in Azure Data Studio. You are currently using Python 3.6.6, which will be out of support in December 2021. Would you like to update to Python 3.8.8 now?");
+const msgPythonVersionUpdateWarning = localize('msgPythonVersionUpdateWarning', "Python 3.8.8 will be installed and the existing Python 3.6.6 installation will be removed. Some packages may no longer be compatible with the new version. Would you like to continue with the update now?");
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 function msgPackageRetrievalFailed(errorMessage: string): string { return localize('msgPackageRetrievalFailed', "Encountered an error when trying to retrieve list of installed packages: {0}", errorMessage); }
@@ -171,7 +171,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		try {
 			let pythonExists = await utils.exists(this._pythonExecutable);
 			let upgradePython = false;
-			if (pythonExists && await this.getInstalledPythonVersion(this._pythonExecutable) === '3.6.6') {
+			// Warn current ADS Python 3.6 users before installing Python 3.8
+			if (pythonExists && !this._usingExistingPython && await this.getInstalledPythonVersion(this._pythonExecutable) === '3.6.6') {
 				upgradePython = await vscode.window.showInformationMessage(msgPythonVersionUpdateWarning, yes, no) === yes;
 			}
 			if (!pythonExists || forceInstall || upgradePython) {
@@ -466,8 +467,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled();
 
-		// If Python 3.6.6 is installed, prompt user to upgrade to Python 3.8.8
-		if (isPythonInstalled && await this.getInstalledPythonVersion(this._pythonExecutable) === '3.6.6') {
+		// If ADS Python 3.6.6 is installed, prompt user to upgrade to Python 3.8.8
+		if (isPythonInstalled && !this._usingExistingPython && await this.getInstalledPythonVersion(this._pythonExecutable) === '3.6.6') {
 			this.promptUserForPythonUpgrade();
 		}
 		let areRequiredPackagesInstalled = await this.areRequiredPackagesInstalled(kernelDisplayName);
