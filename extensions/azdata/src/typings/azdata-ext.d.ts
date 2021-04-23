@@ -114,6 +114,21 @@ declare module 'azdata-ext' {
 		}
 	}
 
+	export interface StorageVolume {
+		className?: string, // "local-storage"
+		size: string // "5Gi"
+	}
+
+	export interface SchedulingOptions {
+		memory?: string // "10Gi"
+		cpu?: string // "4"
+	}
+
+	export interface ServiceSpec {
+		type: string, // "NodePort"
+		port?: number // 5432
+	}
+
 	export interface SqlMiShowResult {
 		apiVersion: string, // "sql.arcdata.microsoft.com/v1alpha1"
 		kind: string, // "sqlmanagedinstance"
@@ -130,30 +145,20 @@ declare module 'azdata-ext' {
 			scheduling?: {
 				default?: {
 					resources?: {
-						limits?: {
-							memory?: string // "10Gi"
-							cpu?: string // "4"
-						},
-						requests?: {
-							memory?: string // "10Gi"
-							cpu?: string // "4"
-						}
+						limits?: SchedulingOptions,
+						requests?: SchedulingOptions
 					}
 				}
 			}
 			services: {
-				primary: {
-					type: string // "NodePort"
-				}
+				primary: ServiceSpec
 			}
 			storage: {
 				data: {
-					className: string, // "local-storage"
-					size: string // "5Gi"
+					volumes: StorageVolume[]
 				},
 				logs: {
-					className: string, // "local-storage"
-					size: string // "5Gi"
+					volumes: StorageVolume[]
 				}
 			}
 		},
@@ -195,61 +200,37 @@ declare module 'azdata-ext' {
 			scheduling: { // If no roles are specified, settings will apply to all nodes of the PostgreSQL Hyperscale server group.
 				default: {
 					resources: {
-						requests: {
-							cpu: string, // "1.5"
-							memory: string // "256Mi"
-						},
-						limits: {
-							cpu: string, // "1.5"
-							memory: string // "256Mi"
-						}
+						requests: SchedulingOptions,
+						limits: SchedulingOptions
 					}
 				},
 				roles: {
 					coordinator: {
 						resources: {
-							requests: {
-								cpu: string, // "1.5"
-								memory: string // "256Mi"
-							},
-							limits: {
-								cpu: string, // "1.5"
-								memory: string // "256Mi"
-							}
+							requests: SchedulingOptions,
+							limits: SchedulingOptions
 						}
 					},
 					worker: {
 						resources: {
-							requests: {
-								cpu: string, // "1.5"
-								memory: string // "256Mi"
-							},
-							limits: {
-								cpu: string, // "1.5"
-								memory: string // "256Mi"
-							}
+							requests: SchedulingOptions,
+							limits: SchedulingOptions
 						}
 					}
 				}
 			},
 			services: {
-				primary: {
-					type: string, // "NodePort"
-					port?: number // 5432
-				}
+				primary: ServiceSpec
 			},
 			storage: {
 				data: {
-					className: string, // "local-storage"
-					size: string // "5Gi"
+					volumes: StorageVolume[]
 				},
 				logs: {
-					className: string, // "local-storage"
-					size: string // "5Gi"
+					volumes: StorageVolume[]
 				},
 				backups: {
-					className: string, // "local-storage"
-					size: string // "5Gi"
+					volumes: StorageVolume[]
 				}
 			}
 		},
