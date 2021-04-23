@@ -56,7 +56,6 @@ export const mockConnectionResult: azdata.ConnectionResult = {
 
 export const mockConnectionInfo = {
 	options: {},
-	serverDisplayName: 'My Connection',
 	serverName: 'My Server',
 	databaseName: 'My Database',
 	userName: 'My User',
@@ -112,12 +111,14 @@ export function setDacpacEndpointInfo(path: string): mssql.SchemaCompareEndpoint
 
 export function setDatabaseEndpointInfo(): mssql.SchemaCompareEndpointInfo {
 	let endpointInfo: mssql.SchemaCompareEndpointInfo;
+	let serverName = 'My Server';
 	let dbName = 'My Database';
 	let serverDisplayName = 'My Connection';
 
 	endpointInfo = { ...mockDatabaseEndpoint };
 	endpointInfo.databaseName = dbName;
 	endpointInfo.serverDisplayName = serverDisplayName;
+	endpointInfo.serverName = serverName;
 
 	return endpointInfo;
 }
