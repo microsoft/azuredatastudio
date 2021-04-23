@@ -33,7 +33,8 @@ const msgInstallPkgFinish = localize('msgInstallPkgFinish', "Notebook dependenci
 const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.");
 const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python installation is currently in progress. Waiting for it to complete.");
 const msgPythonVersionUpdatePrompt = localize('msgPythonVersionUpdatePrompt', "Python 3.8.8 is now available in Azure Data Studio. You are currently using Python 3.6.6, which will be out of support in December 2021. Would you like to update to Python 3.8.8 now?");
-const msgPythonVersionUpdateWarning = localize('msgPythonVersionUpdateWarning', "Python 3.8.8 will be installed and the existing Python 3.6.6 installation will be removed. Some packages may no longer be compatible with the new version. Would you like to continue with the update now?");
+const msgPythonVersionUpdateWarning = localize('msgPythonVersionUpdateWarning', "Python 3.8.8 will be installed. Some packages may no longer be compatible with the new version. Would you like to continue with the update now?");
+const msgRemoveOldPythonPrompt = localize('msgRemoveOldPythonPrompt', "Would you like to remove the Python 3.6.6 installation?");
 function msgRemovePython366Error(errorMessage: string, oldPythonPath: string): string { return localize('msgRemovePython366Error', "Encountered error while removing Python 3.6.6 installation: {0}. You can manually remove Python 3.6.6 by deleting this folder: {1}.", errorMessage, oldPythonPath); }
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
@@ -445,10 +446,13 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 						this._installInProgress = false;
 						await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions');
 						if (this._removeOldPythonInstallation) {
-							fs.remove(this._oldPythonInstallationPath).catch(err => {
-								let errorMsg = msgRemovePython366Error(utils.getErrorMessage(err), this._oldPythonInstallationPath);
-								vscode.window.showErrorMessage(errorMsg);
-							});
+							let remove = await vscode.window.showInformationMessage(msgRemoveOldPythonPrompt, yes, no);
+							if (remove === yes) {
+								fs.remove(this._oldPythonInstallationPath).catch(err => {
+									let errorMsg = msgRemovePython366Error(utils.getErrorMessage(err), this._oldPythonInstallationPath);
+									vscode.window.showErrorMessage(errorMsg);
+								});
+							}
 						}
 					})
 					.catch(err => {
