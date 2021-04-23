@@ -136,8 +136,8 @@ steps:
         set -e
         APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
         APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
-        export INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
-        export NO_CLEANUP=1
+        INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
+        NO_CLEANUP=1 \
         DISPLAY=:10 node ./scripts/test-extensions-unit.js ${{ extension }}
       displayName: 'Run ${{ extension }} Stable Extension Unit Tests'
       condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))

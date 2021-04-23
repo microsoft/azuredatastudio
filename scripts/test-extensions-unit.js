@@ -33,6 +33,12 @@ let argv = require('yargs')
 	.default('extensions', extensionList)
 	.strict().help().wrap(null).version(false).argv;
 
+let LINUX_EXTRA_ARGS='';
+
+if(os.platform() === 'linux') {
+	LINUX_EXTRA_ARGS = '--no-sandbox --disable-dev-shm-usage --use-gl=swiftshader';
+}
+
 if (!process.env.INTEGRATION_TEST_ELECTRON_PATH) {
 	process.env.INTEGRATION_TEST_ELECTRON_PATH = path.join(__dirname, '..', 'scripts', os.platform() === 'win32' ? 'code.bat' : 'code.sh');
 	console.log('Running unit tests out of sources.');
@@ -65,9 +71,14 @@ for (const ext of argv.extensions) {
 	console.log(`VSCODEUSERDATADIR : ${VSCODEUSERDATADIR}`);
 	console.log(`VSCODEEXTENSIONSDIR : ${VSCODEEXTENSIONSDIR}`);
 
-	const command = `${process.env.INTEGRATION_TEST_ELECTRON_PATH} --no-sandbox --extensionDevelopmentPath=${path.join(__dirname, '..', 'extensions', ext)} --extensionTestsPath=${path.join(__dirname, '..', 'extensions', ext, 'out', 'test')} --user-data-dir=${VSCODEUSERDATADIR} --extensions-dir=${VSCODEEXTENSIONSDIR} --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --no-cached-data --disable-keytar --nogpu`;
+	const command = `${process.env.INTEGRATION_TEST_ELECTRON_PATH} ${LINUX_EXTRA_ARGS} --extensionDevelopmentPath=${path.join(__dirname, '..', 'extensions', ext)} --extensionTestsPath=${path.join(__dirname, '..', 'extensions', ext, 'out', 'test')} --user-data-dir=${VSCODEUSERDATADIR} --extensions-dir=${VSCODEEXTENSIONSDIR} --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --no-cached-data --disable-keytar --nogpu`;
 	console.log(`Command used: ${command}`);
-	console.log(execSync(command, { stdio: 'inherit' }));
+	const env = {
+		VSCODE_CLI: 1,
+		ELECTRON_ENABLE_STACK_DUMPING: 1,
+		ELECTRON_ENABLE_LOGGING: 1
+	};
+	console.log(execSync(command, { stdio: 'inherit', env: env}));
 
 	// clean up
 	if (!process.env.NO_CLEANUP) {
