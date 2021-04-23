@@ -97,6 +97,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 	private async handleGridKeyDown(e: KeyboardEvent): Promise<void> {
 		const event = new StandardKeyboardEvent(e);
+		// The shortcut key to open the filter menu is provided so that this feature is keyboard accessible.
+		// The buttons added to the column headers are set to not keyboard focusable so that they won't interfere with the slickgrid's internal focus management.
+		// F3 key is chosen because it is known for search related features
 		if (event.keyCode === KeyCode.F3) {
 			const cell = this.grid.getActiveCell();
 			if (cell) {
