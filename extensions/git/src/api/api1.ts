@@ -6,12 +6,12 @@
 import { Model } from '../model';
 import { Repository as BaseRepository, Resource } from '../repository';
 import { InputBox, Git, API, Repository, Remote, RepositoryState, Branch, Ref, Submodule, Commit, Change, RepositoryUIState, Status, LogOptions, APIState, CommitOptions, RefType, RemoteSourceProvider, CredentialsProvider, BranchQuery, PushErrorHandler } from './git';
-import { CancellationToken, commands, Disposable, Event, SourceControl, SourceControlInputBox, Uri } from 'vscode';
+import { Event, SourceControlInputBox, Uri, SourceControl, Disposable, commands, CancellationToken } from 'vscode'; // {{SQL CARBON EDIT}} add CancellationToken
 import { mapEvent } from '../util';
 import { toGitUri } from '../uri';
 import { pickRemoteSource, PickRemoteSourceOptions } from '../remoteSource';
 import { GitExtensionImpl } from './extension';
-import { ICloneOptions } from '../git';
+import { ICloneOptions } from '../git'; 	// {{SQL CARBON EDIT}}
 
 class ApiInputBox implements InputBox {
 	set value(value: string) { this._inputBox.value = value; }
@@ -250,6 +250,7 @@ export class ApiImpl implements API {
 		return this._model.repositories.map(r => new ApiRepository(r));
 	}
 
+	// {{SQL CARBON EDIT}}
 	async clone(url: string, options: ICloneOptions, cancellationToken?: CancellationToken): Promise<string> {
 		return this._model.git.clone(url, options, cancellationToken);
 	}
