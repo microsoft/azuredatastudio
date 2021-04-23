@@ -87,8 +87,7 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 					}
 				}
 			},
-			services:
-			{
+			services: {
 				primary: {
 					type: '',
 					port: 0
