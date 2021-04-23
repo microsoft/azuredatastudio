@@ -39,8 +39,9 @@ function msgDownloadPython(platform: string, pythonDownloadUrl: string): string 
 function msgPackageRetrievalFailed(errorMessage: string): string { return localize('msgPackageRetrievalFailed', "Encountered an error when trying to retrieve list of installed packages: {0}", errorMessage); }
 function msgGetPythonUserDirFailed(errorMessage: string): string { return localize('msgGetPythonUserDirFailed', "Encountered an error when getting Python user path: {0}", errorMessage); }
 
-const yes: vscode.MessageItem = { title: localize('yes', "Yes") };
-const no: vscode.MessageItem = { title: localize('no', "No") };
+const yes = localize('yes', "Yes");
+const no = localize('no', "No");
+const dontAskAgain = localize('dontAskAgain', "Don't Ask Again");
 
 export interface PythonInstallSettings {
 	installPath: string;
@@ -471,6 +472,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		if (isPythonInstalled && !this._usingExistingPython && await this.getInstalledPythonVersion(this._pythonExecutable) === '3.6.6') {
 			this.promptUserForPythonUpgrade();
 		}
+
 		let areRequiredPackagesInstalled = await this.areRequiredPackagesInstalled(kernelDisplayName);
 		if (!isPythonInstalled || !areRequiredPackagesInstalled) {
 			let pythonWizard = new ConfigurePythonWizard(this);
@@ -482,9 +484,16 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	private async promptUserForPythonUpgrade(): Promise<void> {
-		let upgradePython = await vscode.window.showInformationMessage(msgPythonVersionUpdatePrompt, yes, no) === yes;
-		if (upgradePython) {
+		let notebookConfig: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(constants.notebookConfigKey);
+		if (notebookConfig && notebookConfig[constants.dontPromptPythonUpdate]) {
+			return;
+		}
+		let response = await vscode.window.showInformationMessage(msgPythonVersionUpdatePrompt, yes, no, dontAskAgain);
+		if (response === yes) {
 			vscode.commands.executeCommand(constants.jupyterConfigurePython);
+		} else if (response === dontAskAgain) {
+			await notebookConfig.update(constants.dontPromptPythonUpdate, true, vscode.ConfigurationTarget.Global);
+			console.log('dont ask again');
 		}
 	}
 

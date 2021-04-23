@@ -38,6 +38,11 @@
           "default": false,
           "description": "%notebook.useExistingPython.description%"
         },
+        "notebook.dontPromptPythonUpdate": {
+          "type": "boolean",
+          "default": "",
+          "description": "%notebook.dontPromptPythonUpdate.description%"
+        },
         "notebook.overrideEditorTheming": {
           "type": "boolean",
           "default": true,

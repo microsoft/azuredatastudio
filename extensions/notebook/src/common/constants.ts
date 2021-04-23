@@ -16,6 +16,7 @@ export const notebookCommandNew = 'notebook.command.new';
 export const pythonVersion = '3.8.8';
 export const pythonPathConfigKey = 'pythonPath';
 export const existingPythonConfigKey = 'useExistingPython';
+export const dontPromptPythonUpdate = 'dontPromptPythonUpdate';
 export const notebookConfigKey = 'notebook';
 export const trustedBooksConfigKey = 'trustedBooks';
 export const pinnedBooksConfigKey = 'pinnedNotebooks';
