@@ -16,6 +16,7 @@ import { deepClone } from 'vs/base/common/objects';
 
 const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
 const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
+const CONNECTION_SORT_CONFIG_KEY = 'datasource.connectionSort';
 
 export interface ISaveGroupResult {
 	groups: IConnectionProfileGroup[];
@@ -214,6 +215,21 @@ export class ConnectionConfig {
 			return ConnectionProfile.createFromStoredProfile(p, this._capabilitiesService);
 		});
 
+		const sortBy = this.configurationService.getValue<string>(CONNECTION_SORT_CONFIG_KEY);
+		if (sortBy === 'by name') {
+			connectionProfiles.sort((a, b) => {
+				let aSortString = a.title;
+				let bSortString = b.title;
+				if (aSortString < bSortString) {
+					return -1;
+				}
+				else if (aSortString > bSortString) {
+					return 1;
+				} else {
+					return 0;
+				}
+			});
+		}
 		return connectionProfiles;
 	}
 

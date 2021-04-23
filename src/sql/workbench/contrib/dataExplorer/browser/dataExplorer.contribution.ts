@@ -29,6 +29,12 @@ configurationRegistry.registerConfiguration({
 		'datasource.connectionGroups': {
 			'description': localize('datasource.connectionGroups', "data source groups"),
 			'type': 'array'
+		},
+		'datasource.connectionSort': {
+			'type': 'string',
+			'enum': ['by added time', 'by name'],
+			'default': 'by added time',
+			'description': localize('datasource.connectionSort', "Order used for sorting saved connections")
 		}
 	}
 });
