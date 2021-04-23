@@ -21,6 +21,7 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 	:: and the build bundles extensions into .build webpacked
 	:: {{SQL CARBON EDIT}} Don't compile unused extensions
 	call yarn gulp 	compile-extension:azurecore^
+					compile-extension:git
 					:: compile-extension:vscode-api-tests^
 					:: compile-extension:vscode-colorize-tests^
 					:: compile-extension:markdown-language-features^
@@ -31,7 +32,6 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 					:: compile-extension:css-language-features-server^
 					:: compile-extension:html-language-features-server^
 					:: compile-extension:json-language-features-server^
-					compile-extension:git
 
 	:: Configuration for more verbose output
 	set VSCODE_CLI=1

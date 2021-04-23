@@ -28,6 +28,7 @@ else
 	# and the build bundles extensions into .build webpacked
 	# {{SQL CARBON EDIT}} Don't compile unused extensions
 	yarn gulp 	compile-extension:azurecore \
+				compile-extension:git
 				# compile-extension:vscode-api-tests \
 				# compile-extension:vscode-colorize-tests \
 				# compile-extension:vscode-custom-editor-tests \
@@ -38,7 +39,7 @@ else
 				# compile-extension:css-language-features-server \
 				# compile-extension:html-language-features-server \
 				# compile-extension:json-language-features-server \
-				compile-extension:git
+
 
 	# Configuration for more verbose output
 	export VSCODE_CLI=1
