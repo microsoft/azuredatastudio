@@ -14,7 +14,7 @@ import { IQuestion, QuestionTypes } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { getErrorMessage, isEditorTitleFree } from '../common/utils';
 import * as constants from '../common/constants';
-import { ContentsManager } from '@jupyterlab/services';
+import { readJson } from 'fs-extra';
 
 
 export class NotebookUriHandler implements vscode.UriHandler {
@@ -97,24 +97,25 @@ export class NotebookUriHandler implements vscode.UriHandler {
 			if (!doOpen) {
 				return;
 			}
+			let contents: string;
 			if (uri.scheme === 'file') {
-				await azdata.nb.showNotebookDocument(uri);
+				contents = await readJson(uri.fsPath);
 			} else {
-				let contents = await this.download(url);
-				let untitledUriPath = this.getUntitledUriPath(path.basename(uri.fsPath));
-				let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: untitledUriPath });
-				if (path.extname(uri.fsPath) === '.ipynb') {
-					await azdata.nb.showNotebookDocument(untitledUri, {
-						initialContent: contents,
-						preserveFocus: true
-					});
-				} else {
-					let doc = await vscode.workspace.openTextDocument(untitledUri);
-					let editor = await vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, true);
-					await editor.edit(builder => {
-						builder.insert(new vscode.Position(0, 0), contents);
-					});
-				}
+				contents = await this.download(url);
+			}
+			let untitledUriPath = this.getUntitledUriPath(path.basename(uri.fsPath));
+			let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: untitledUriPath });
+			if (path.extname(uri.fsPath) === '.ipynb') {
+				await azdata.nb.showNotebookDocument(untitledUri, {
+					initialContent: contents,
+					preserveFocus: true
+				});
+			} else {
+				let doc = await vscode.workspace.openTextDocument(untitledUri);
+				let editor = await vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, true);
+				await editor.edit(builder => {
+					builder.insert(new vscode.Position(0, 0), contents);
+				});
 			}
 		} catch (err) {
 			vscode.window.showErrorMessage(getErrorMessage(err));
