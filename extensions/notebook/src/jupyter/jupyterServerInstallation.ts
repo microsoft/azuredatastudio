@@ -34,6 +34,7 @@ const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrit
 const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python installation is currently in progress. Waiting for it to complete.");
 const msgPythonVersionUpdatePrompt = localize('msgPythonVersionUpdatePrompt', "Python 3.8.8 is now available in Azure Data Studio. You are currently using Python 3.6.6, which will be out of support in December 2021. Would you like to update to Python 3.8.8 now?");
 const msgPythonVersionUpdateWarning = localize('msgPythonVersionUpdateWarning', "Python 3.8.8 will be installed and the existing Python 3.6.6 installation will be removed. Some packages may no longer be compatible with the new version. Would you like to continue with the update now?");
+function msgRemovePython366Error(errorMessage: string, oldPythonPath: string): string { return localize('msgRemovePython366Error', "Encountered error while removing Python 3.6.6 installation: {0}. You can manually remove Python 3.6.6 by deleting this folder: {1}.", errorMessage, oldPythonPath); }
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 function msgPackageRetrievalFailed(errorMessage: string): string { return localize('msgPackageRetrievalFailed', "Encountered an error when trying to retrieve list of installed packages: {0}", errorMessage); }
@@ -115,6 +116,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private _usingExistingPython: boolean;
 	private _usingConda: boolean;
 	private _installedPythonVersion: string;
+	private _removeOldPythonInstallation: boolean = false;
+	private _oldPythonInstallationPath: string | undefined;
 
 	private _installInProgress: boolean;
 	private _installCompletion: Deferred<void>;
@@ -178,12 +181,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			}
 			if (!pythonExists || forceInstall || upgradePython) {
 				if (upgradePython) {
-					let shutdownPythonCmd = `"${this._pythonExecutable}" -c "import sys;sys.exit()"`;
-					await this.executeBufferedCommand(shutdownPythonCmd);
-					// remove old Python installation
-					await fs.remove(this._pythonInstallationPath);
+					this._removeOldPythonInstallation = true;
+					this._oldPythonInstallationPath = path.join(this._pythonInstallationPath, '0.0.1');
+
 					// remove '0.0.1' from python executable path
-					this._pythonExecutable = JupyterServerInstallation.getPythonExePath(this._pythonInstallationPath);
+					this._pythonExecutable = path.join(this._pythonInstallationPath, process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 				}
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
 				// reinstall pip to make sure !pip command works
@@ -442,6 +444,12 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 						this._installCompletion.resolve();
 						this._installInProgress = false;
 						await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions');
+						if (this._removeOldPythonInstallation) {
+							fs.remove(this._oldPythonInstallationPath).catch(err => {
+								let errorMsg = msgRemovePython366Error(utils.getErrorMessage(err), this._oldPythonInstallationPath);
+								vscode.window.showErrorMessage(errorMsg);
+							});
+						}
 					})
 					.catch(err => {
 						let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
@@ -740,12 +748,13 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			pythonInstallPath,
 			'0.0.1',
 			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
-		if (fs.existsSync(oldPythonPath)) {
-			return oldPythonPath;
-		}
-		return path.join(
+		let newPythonPath = path.join(
 			pythonInstallPath,
 			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
+		if (fs.existsSync(newPythonPath)) {
+			return newPythonPath;
+		}
+		return oldPythonPath;
 	}
 
 	private async getPythonUserDir(pythonExecutable: string): Promise<string> {
