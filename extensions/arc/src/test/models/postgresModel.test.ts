@@ -87,9 +87,12 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 					}
 				}
 			},
-			service: {
-				type: '',
-				port: 0
+			services:
+			{
+				primary: {
+					type: '',
+					port: 0
+				}
 			},
 			storage: {
 				data: {
@@ -107,7 +110,7 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 			}
 		},
 		status: {
-			externalEndpoint: '127.0.0.1:5432',
+			primaryEndpoint: '127.0.0.1:5432',
 			readyPods: '',
 			state: '',
 			logSearchDashboard: '',

@@ -127,16 +127,24 @@ declare module 'azdata-ext' {
 			uid: string // "cea737aa-3f82-4f6a-9bed-2b51c2c33dff"
 		},
 		spec: {
-			limits?: {
-				memory?: string // "10Gi"
-				vcores?: string // "4"
-			},
-			requests?: {
-				memory?: string // "10Gi"
-				vcores?: string // "4"
+			scheduling?: {
+				default?: {
+					resources?: {
+						limits?: {
+							memory?: string // "10Gi"
+							vcores?: string // "4"
+						},
+						requests?: {
+							memory?: string // "10Gi"
+							vcores?: string // "4"
+						}
+					}
+				}
 			}
-			service: {
-				type: string // "NodePort"
+			services: {
+				primary: {
+					type: string // "NodePort"
+				}
 			}
 			storage: {
 				data: {
@@ -154,7 +162,7 @@ declare module 'azdata-ext' {
 			state: string, // "Ready",
 			logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:miaa1'))
 			metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
-			externalEndpoint?: string // "10.91.86.39:32718"
+			primaryEndpoint?: string // "10.91.86.39:32718"
 		}
 	}
 
@@ -224,9 +232,11 @@ declare module 'azdata-ext' {
 					}
 				}
 			},
-			service: {
-				type: string, // "NodePort"
-				port: number // 5432
+			services: {
+				primary: {
+					type: string, // "NodePort"
+					port?: number // 5432
+				}
 			},
 			storage: {
 				data: {
@@ -244,7 +254,7 @@ declare module 'azdata-ext' {
 			}
 		},
 		status: {
-			externalEndpoint: string, // "10.130.12.136:26630"
+			primaryEndpoint: string, // "10.130.12.136:26630"
 			readyPods: string, // "1/1",
 			state: string, // "Ready"
 			logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:pg1'))
