@@ -72,7 +72,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.subscribe(this.grid.onBeforeHeaderCellDestroy, (e: Event, args: Slick.OnBeforeHeaderCellDestroyEventArgs<T>) => this.handleBeforeHeaderCellDestroy(e, args))
 			.subscribe(this.grid.onClick, (e: DOMEvent) => this.handleBodyMouseDown(e as MouseEvent))
 			.subscribe(this.grid.onColumnsResized, () => this.columnsResized())
-			.subscribe(this.grid.onKeyDown, (e: DOMEvent) => this.handleGridKeyDown(e as KeyboardEvent));
+			.subscribe(this.grid.onKeyDown, async (e: DOMEvent) => { await this.handleGridKeyDown(e as KeyboardEvent); });
 		this.grid.setColumns(this.grid.getColumns());
 
 		this.disposableStore.add(addDisposableListener(document.body, 'mousedown', e => this.handleBodyMouseDown(e), true));
@@ -95,14 +95,14 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		}
 	}
 
-	private handleGridKeyDown(e: KeyboardEvent): void {
+	private async handleGridKeyDown(e: KeyboardEvent): Promise<void> {
 		const event = new StandardKeyboardEvent(e);
 		if (event.keyCode === KeyCode.F3) {
 			const cell = this.grid.getActiveCell();
 			if (cell) {
 				const column = this.grid.getColumns()[cell.cell] as FilterableColumn<T>;
 				if (column.filterable !== false && this.enabled && this.columnButtonMapping[column.id]) {
-					this.showFilter(this.columnButtonMapping[column.id]);
+					await this.showFilter(this.columnButtonMapping[column.id]);
 					EventHelper.stop(e, true);
 				}
 			}
