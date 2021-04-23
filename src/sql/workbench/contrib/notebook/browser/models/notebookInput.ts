@@ -34,6 +34,7 @@ import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel'
 import { NotebookFindModel } from 'sql/workbench/contrib/notebook/browser/find/notebookFindModel';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
+import { INotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -118,6 +119,11 @@ export class NotebookEditorModel extends EditorModel {
 	}
 
 	public updateModel(contentChange?: NotebookContentChange, type?: NotebookChangeType): void {
+		// If text editor model is readonly, exit early as no changes need to occur on the model
+		// Note: this follows what happens in fileCommands where update/save logic is skipped for readonly text editor models
+		if (this.textEditorModel?.isReadonly()) {
+			return;
+		}
 		if (type === NotebookChangeType.KernelChanged && this._isFirstKernelChange) {
 			this._isFirstKernelChange = false;
 			return;
@@ -204,7 +210,7 @@ export class NotebookEditorModel extends EditorModel {
 
 type TextInput = ResourceEditorInput | UntitledTextEditorInput | FileEditorInput;
 
-export abstract class NotebookInput extends EditorInput {
+export abstract class NotebookInput extends EditorInput implements INotebookInput {
 	private _providerId: string;
 	private _providers: string[];
 	private _standardKernels: IStandardKernelWithProvider[];
@@ -222,6 +228,7 @@ export abstract class NotebookInput extends EditorInput {
 	private _notebookEditorOpenedTimestamp: number;
 	private _modelResolveInProgress: boolean = false;
 	private _modelResolved: Deferred<void> = new Deferred<void>();
+	private _containerResolved: Deferred<void> = new Deferred<void>();
 
 	private _notebookFindModel: NotebookFindModel;
 
@@ -456,10 +463,15 @@ export abstract class NotebookInput extends EditorInput {
 	set container(container: HTMLElement) {
 		this._disposeContainer();
 		this._parentContainer = container;
+		this._containerResolved.resolve();
 	}
 
 	get container(): HTMLElement {
 		return this._parentContainer;
+	}
+
+	get containerResolved(): Promise<void> {
+		return this._containerResolved.promise;
 	}
 
 	/**

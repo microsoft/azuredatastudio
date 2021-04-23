@@ -48,23 +48,26 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 				width: WIZARD_INPUT_COMPONENT_WIDTH
 			})
 			.withValidation((c) => {
-				if ((<azdata.CategoryValue>c.value).displayName === constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR) {
+				if (c.value) {
+					if ((<azdata.CategoryValue>c.value).displayName === constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR) {
+						this.wizard.message = {
+							text: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR,
+							level: azdata.window.MessageLevel.Error
+						};
+						return false;
+					}
+					if (this.migrationStateModel._azureAccount?.isStale) {
+						this.wizard.message = {
+							text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount)
+						};
+						return false;
+					}
 					this.wizard.message = {
-						text: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR,
-						level: azdata.window.MessageLevel.Error
+						text: ''
 					};
-					return false;
+					return true;
 				}
-				if (this.migrationStateModel._azureAccount?.isStale) {
-					this.wizard.message = {
-						text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount)
-					};
-					return false;
-				}
-				this.wizard.message = {
-					text: ''
-				};
-				return true;
+				return false;
 			}).component();
 
 		this._azureAccountsDropdown.onValueChanged(async (value) => {
@@ -103,6 +106,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			this.wizard.message = {
 				text: ''
 			};
+			this._azureAccountsDropdown.validate();
 		});
 
 		const flexContainer = view.modelBuilder.flexContainer()

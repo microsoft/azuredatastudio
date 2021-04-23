@@ -24,6 +24,7 @@ import { URI } from 'vs/base/common/uri';
 import { escape } from 'vs/base/common/strings';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
+const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
 
 @Component({
 	selector: MARKDOWN_TOOLBAR_SELECTOR,
@@ -236,11 +237,14 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				needsTransform = false;
 			} else {
 				let linkUrl = linkCalloutResult.insertUnescapedLinkUrl;
-				const isFile = URI.parse(linkUrl).scheme === 'file';
-				if (isFile && !path.isAbsolute(linkUrl)) {
-					const notebookDirName = path.dirname(this.cellModel?.notebookModel?.notebookUri.fsPath);
-					const relativePath = (linkUrl).replace(/\\/g, path.posix.sep);
-					linkUrl = path.resolve(notebookDirName, relativePath);
+				const isAnchorLink = linkUrl.startsWith('#');
+				if (!isAnchorLink) {
+					const isFile = URI.parse(linkUrl).scheme === 'file';
+					if (isFile && !path.isAbsolute(linkUrl)) {
+						const notebookDirName = path.dirname(this.cellModel?.notebookModel?.notebookUri.fsPath);
+						const relativePath = (linkUrl).replace(/\\/g, path.posix.sep);
+						linkUrl = path.resolve(notebookDirName, relativePath);
+					}
 				}
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
@@ -295,15 +299,16 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		let calloutOptions;
 
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
-			const defaultLabel = this.getCurrentSelectionText();
-			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogPosition, dialogProperties, defaultLabel);
+			const defaultLabel = this.getCurrentLinkLabel();
+			const defaultLinkUrl = this.getCurrentLinkUrl();
+			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogPosition, dialogProperties, defaultLabel, defaultLinkUrl);
 			this._linkCallout.render();
 			calloutOptions = await this._linkCallout.open();
 		}
 		return calloutOptions;
 	}
 
-	private getCurrentSelectionText(): string {
+	private getCurrentLinkLabel(): string {
 		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
 			return document.getSelection()?.toString() || '';
 		} else {
@@ -312,7 +317,28 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			if (selection && !selection.isEmpty()) {
 				const textModel = editorControl?.getModel() as TextModel;
 				const value = textModel?.getValueInRange(selection);
-				return value || '';
+				let linkMatches = value?.match(linksRegex);
+				return linkMatches?.groups.text || value || '';
+			}
+			return '';
+		}
+	}
+
+	private getCurrentLinkUrl(): string {
+		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
+			if (document.getSelection().anchorNode.parentNode['protocol'] === 'file:') {
+				return document.getSelection().anchorNode.parentNode['pathname'] || '';
+			} else {
+				return document.getSelection().anchorNode.parentNode['href'] || '';
+			}
+		} else {
+			const editorControl = this.getCellEditorControl();
+			const selection = editorControl?.getSelection();
+			if (selection && !selection.isEmpty()) {
+				const textModel = editorControl?.getModel() as TextModel;
+				const value = textModel?.getValueInRange(selection);
+				let linkMatches = value?.match(linksRegex);
+				return linkMatches?.groups.url || '';
 			}
 			return '';
 		}

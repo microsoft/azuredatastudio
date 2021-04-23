@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
-import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellEditModes, ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
@@ -535,7 +535,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 	private searchFn(cell: ICellModel, exp: string, matchCase: boolean = false, wholeWord: boolean = false, maxMatches?: number): NotebookRange[] {
 		let findResults: NotebookRange[] = [];
-		if (cell.cellType === 'markdown' && cell.isEditMode && typeof cell.source !== 'string') {
+		if (cell.cellType === 'markdown' && (cell.showMarkdown || cell.currentMode === CellEditModes.SPLIT) && typeof cell.source !== 'string') {
 			let cellSource = cell.source;
 			for (let j = 0; j < cellSource.length; j++) {
 				let findStartResults = this.search(cellSource[j], exp, matchCase, wholeWord, maxMatches - findResults.length);
@@ -546,7 +546,8 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 				});
 			}
 		}
-		let cellVal = cell.cellType === 'markdown' ? cell.renderedOutputTextContent : cell.source;
+		// if it's markdown cell in Markdown only mode, don't search on renderedOutput.
+		let cellVal = cell.cellType === 'markdown' ? (cell.currentMode === CellEditModes.SPLIT || !cell.showMarkdown ? cell.renderedOutputTextContent : undefined) : cell.source;
 		if (cellVal) {
 			if (typeof cellVal === 'string') {
 				let findStartResults = this.search(cellVal, exp, matchCase, wholeWord, maxMatches);
@@ -557,7 +558,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 			} else {
 				for (let j = 0; j < cellVal.length; j++) {
-					let cellValFormatted = cell.cellType === 'markdown' ? this.cleanMarkdownLinks(cellVal[j]) : cellVal[j];
+					let cellValFormatted = cellVal[j];
 					let findStartResults = this.search(cellValFormatted, exp, matchCase, wholeWord, maxMatches - findResults.length);
 					findStartResults.forEach(start => {
 						// lineNumber: j+1 since notebook editors aren't zero indexed.
@@ -604,12 +605,6 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 			searchText = input.substr(index - 1);
 		}
 		return findResults;
-	}
-
-	// In markdown links are defined as [Link Text](https://url/of/the/text). when searching for text we shouldn't
-	// look for the values inside the (), below regex replaces that with just the Link Text.
-	cleanMarkdownLinks(cellSrc: string): string {
-		return cellSrc.replace(/(?:__|[*#])|\[(.*?)\]\(.*?\)/gm, '$1');
 	}
 
 	clearFind(): void {

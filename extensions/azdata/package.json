@@ -2,7 +2,7 @@
   "name": "azdata",
   "displayName": "%azdata.displayName%",
   "description": "%azdata.description%",
-  "version": "0.6.0",
+  "version": "0.6.2",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -71,6 +71,19 @@
               "%azdata.update.prompt.description%"
             ],
             "description": "%azdata.update.description%"
+          },
+          "azdata.requiredUpdate": {
+            "type": "string",
+            "default": "prompt",
+            "enum": [
+              "dontPrompt",
+              "prompt"
+            ],
+            "enumDescriptions": [
+              "%azdata.update.dontPrompt.description%",
+              "%azdata.update.prompt.description%"
+            ],
+            "description": "%azdata.requiredUpdate.description%"
           }
         }
       }

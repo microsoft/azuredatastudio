@@ -256,7 +256,6 @@ declare module 'azdata' {
 		rowCssStyles?: CssStyles;
 		ariaLabel?: string;
 		showCheckAll?: boolean;
-		isChecked?: boolean;
 	}
 
 
@@ -384,9 +383,23 @@ declare module 'azdata' {
 	}
 
 	export interface DeclarativeTableCellValue {
+		/**
+		 * The cell value
+		 */
 		value: string | number | boolean | Component;
+		/**
+		 * The aria-label of the cell
+		 */
 		ariaLabel?: string;
-		style?: CssStyles
+		/**
+		 * The CSS style of the cell
+		 */
+		style?: CssStyles;
+		/**
+		 * A boolean value indicates whether the cell is enabled. Default value is true.
+		 * Note: this is currently only implemented for boolean type (checkbox).
+		 */
+		enabled?: boolean;
 	}
 
 	/**

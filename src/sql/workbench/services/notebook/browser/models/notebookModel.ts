@@ -434,7 +434,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					});
 				}
 				// Only add new parameter cell if notebookUri Parameters are found
-				if (notebookUriParams) {
+				if (notebookUriParams && this.notebookUri?.scheme !== 'git') {
 					this.addUriParameterCell(notebookUriParams, hasParameterCell, parameterCellIndex, hasInjectedCell);
 				}
 			}
@@ -963,14 +963,23 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private async updateKernelInfoOnKernelChange(kernel: nb.IKernel, kernelAlias?: string) {
 		await this.updateKernelInfo(kernel);
-		this.kernelAliases.forEach(kernel => {
-			if (this._defaultLanguageInfo?.name === kernel.toLowerCase()) {
-				kernelAlias = kernel;
-			}
-		});
-		if (kernel.info) {
+		kernelAlias = this.kernelAliases.find(kernel => this._defaultLanguageInfo?.name === kernel.toLowerCase()) ?? kernelAlias;
+		if (kernelAlias) {
+			let aliasLanguageInfo: nb.ILanguageInfo = {
+				name: kernelAlias.toLowerCase(),
+				version: ''
+			};
+			this.updateLanguageInfo(aliasLanguageInfo);
+		}
+		else if (kernel.info) {
 			this.updateLanguageInfo(kernel.info.language_info);
 		}
+		this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.KernelChanged)
+			.withAdditionalProperties({
+				name: kernel.name,
+				alias: kernelAlias || ''
+			})
+			.send();
 		this._kernelChangedEmitter.fire({
 			newValue: kernel,
 			oldValue: undefined,

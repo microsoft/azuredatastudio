@@ -51,7 +51,7 @@ describe('api', function (): void {
 		it('succeed when azdata present and EULA accepted', async function (): Promise<void> {
 			const mementoMock = TypeMoq.Mock.ofType<vscode.Memento>();
 			mementoMock.setup(x => x.get(TypeMoq.It.isAny())).returns(() => true);
-			const azdataTool = new AzdataTool('', '1.0.0');
+			const azdataTool = new AzdataTool('', '99.0.0');
 			const azdataToolService = new AzdataToolService();
 			azdataToolService.localAzdata = azdataTool;
 			// Not using a mock here because it'll hang when resolving mocked objects
@@ -60,7 +60,7 @@ describe('api', function (): void {
 			sinon.stub(childProcess, 'executeCommand').callsFake(async (_command, args) => {
 				// Version needs to be valid so it can be parsed correctly
 				if (args[0] === '--version') {
-					return { stdout: `1.0.0`, stderr: '' };
+					return { stdout: `99.0.0`, stderr: '' };
 				}
 				console.log(args[0]);
 				return { stdout: `{ }`, stderr: '' };
@@ -96,15 +96,8 @@ describe('api', function (): void {
 		async function assertApiCalls(api: azdataExt.IExtension, assertCallback: (promise: Promise<any>, message: string) => Promise<void>): Promise<void> {
 			await assertCallback(api.azdata.getPath(), 'getPath');
 			await assertCallback(api.azdata.getSemVersion(), 'getSemVersion');
-			await assertCallback(api.azdata.login('', '', ''), 'login');
-			await assertCallback((async () => {
-				let session: azdataExt.AzdataSession | undefined;
-				try {
-					session = await api.azdata.acquireSession('', '', '');
-				} finally {
-					session?.dispose();
-				}
-			})(), 'acquireSession');
+			await assertCallback(api.azdata.login({ endpoint: 'https://127.0.0.1' }, '', ''), 'login');
+			await assertCallback(api.azdata.login({ namespace: 'namespace' }, '', ''), 'login');
 			await assertCallback(api.azdata.version(), 'version');
 
 			await assertCallback(api.azdata.arc.dc.create('', '', '', '', '', ''), 'arc dc create');
@@ -117,7 +110,7 @@ describe('api', function (): void {
 			await assertCallback(api.azdata.arc.sql.mi.list(), 'arc sql mi list');
 			await assertCallback(api.azdata.arc.sql.mi.delete(''), 'arc sql mi delete');
 			await assertCallback(api.azdata.arc.sql.mi.show(''), 'arc sql mi show');
-			await assertCallback(api.azdata.arc.sql.mi.edit('', { }), 'arc sql mi edit');
+			await assertCallback(api.azdata.arc.sql.mi.edit('', {}), 'arc sql mi edit');
 			await assertCallback(api.azdata.arc.postgres.server.list(), 'arc sql postgres server list');
 			await assertCallback(api.azdata.arc.postgres.server.delete(''), 'arc sql postgres server delete');
 			await assertCallback(api.azdata.arc.postgres.server.show(''), 'arc sql postgres server show');

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
-import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getDatabaseMigration } from '../api/azure';
+import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus, AzureAsyncOperationResource, getMigrationAsyncOperationDetails } from '../api/azure';
 import * as azdata from 'azdata';
 
 
@@ -27,12 +27,20 @@ export class MigrationLocalStorage {
 			if (migration.sourceConnectionProfile.serverName === connectionProfile.serverName) {
 				if (refreshStatus) {
 					try {
-						migration.migrationContext = await getDatabaseMigration(
+						const backupConfiguration = migration.migrationContext.properties.backupConfiguration;
+						migration.migrationContext = await getMigrationStatus(
 							migration.azureAccount,
 							migration.subscription,
-							migration.targetManagedInstance.location,
-							migration.migrationContext.id
+							migration.migrationContext
 						);
+						migration.migrationContext.properties.backupConfiguration = backupConfiguration;
+						if (migration.asyncUrl) {
+							migration.asyncOperationResult = await getMigrationAsyncOperationDetails(
+								migration.azureAccount,
+								migration.subscription,
+								migration.asyncUrl
+							);
+						}
 					}
 					catch (e) {
 						// Keeping only valid migrations in cache. Clearing all the migrations which return ResourceDoesNotExit error.
@@ -89,5 +97,6 @@ export interface MigrationContext {
 	azureAccount: azdata.Account,
 	subscription: azureResource.AzureResourceSubscription,
 	controller: SqlMigrationService,
-	asyncUrl: string
+	asyncUrl: string,
+	asyncOperationResult?: AzureAsyncOperationResource
 }

@@ -16,7 +16,6 @@ import { IAngularEventingService } from 'sql/platform/angularEventing/browser/an
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as nls from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -48,7 +47,6 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(INotificationService) notificationService: INotificationService,
 		@Inject(IAngularEventingService) angularEventingService: IAngularEventingService,
-		@Inject(IConfigurationService) configurationService: IConfigurationService,
 		@Inject(ILogService) logService: ILogService,
 		@Inject(ICommandService) commandService: ICommandService,
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
@@ -56,7 +54,7 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IWorkbenchThemeService) themeService: IWorkbenchThemeService
 	) {
-		super(dashboardService, el, _cd, notificationService, angularEventingService, configurationService, logService, commandService, contextKeyService, menuService, keybindingService, themeService);
+		super(dashboardService, el, _cd, notificationService, angularEventingService, logService, commandService, contextKeyService, menuService, keybindingService, themeService);
 		this._register(dashboardService.onUpdatePage(() => {
 			this.refresh(true);
 			this._cd.detectChanges();

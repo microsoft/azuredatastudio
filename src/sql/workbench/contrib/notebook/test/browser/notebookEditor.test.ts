@@ -81,6 +81,10 @@ class NotebookModelStub extends stubs.NotebookModelStub {
 		// When relevant a mock is used to intercept this call to do any verifications or run
 		// any code relevant for testing in the context of the test.
 	}
+
+	get activeCell(): ICellModel {
+		return <ICellModel>{};
+	}
 }
 
 suite('Test class NotebookEditor:', () => {
@@ -697,7 +701,11 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 		instantiationService.get(ILogService),
 		queryManagementService,
 		instantiationService.get(IContextKeyService),
-		instantiationService.get(IProductService)
+		instantiationService.get(IProductService),
+		undefined,
+		undefined,
+		undefined,
+		undefined,
 	);
 
 	instantiationService.stub(INotebookService, notebookService);

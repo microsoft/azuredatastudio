@@ -23,6 +23,7 @@ export const DoNotShowAgain = localize('dataworkspace.doNotShowAgain', "Do not s
 export const ProjectsFailedToLoad = localize('dataworkspace.projectsFailedToLoad', "Some projects failed to load. Please open console for more information");
 export const fileDoesNotExist = (name: string): string => { return localize('fileDoesNotExist', "File '{0}' doesn't exist", name); };
 export const projectNameNull = localize('projectNameNull', "Project name is null");
+export const noPreviousData = (tableName: string): string => { return localize('noPreviousData', "Prior {0} for the current project will appear here, please run to see the results.", tableName); };
 
 // config settings
 export const projectsConfigurationKey = 'projects';
@@ -74,6 +75,9 @@ export const LocalClonePathPlaceholder = localize('dataworkspace.localClonePathP
 // Workspace settings for saving new projects
 export const ProjectConfigurationKey = 'projects';
 export const ProjectSaveLocationKey = 'defaultProjectSaveLocation';
+
+// Dashboard dialog
+export const Refresh = localize('dataworksapce.refresh', 'Refresh');
 
 export namespace cssStyles {
 	export const title = { 'font-size': '18px', 'font-weight': '600' };

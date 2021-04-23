@@ -44,7 +44,7 @@ export enum MigrationSourceAuthenticationType {
 	Sql = 'SqlAuthentication'
 }
 
-export enum MigrationCutover {
+export enum MigrationMode {
 	ONLINE,
 	OFFLINE
 }
@@ -62,7 +62,7 @@ export interface NetworkShare {
 }
 
 export interface DatabaseBackupModel {
-	migrationCutover: MigrationCutover;
+	migrationMode: MigrationMode;
 	networkContainerType: NetworkContainerType;
 	networkShareLocation: string;
 	windowsUser: string;
@@ -116,6 +116,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _blobContainers!: azureResource.BlobContainer[];
 	public _refreshNetworkShareLocation!: azureResource.BlobContainer[];
 	public _targetDatabaseNames!: string[];
+	public _serverDatabases!: string[];
 
 	public _sqlMigrationService!: SqlMigrationService;
 	public _sqlMigrationServices!: SqlMigrationService[];
@@ -169,9 +170,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			ownerUri
 		);
 
-		const serverDatabases = await (await azdata.connection.listDatabases(this.sourceConnectionId)).filter((name) => !excludeDbs.includes(name));
+		this._serverDatabases = await (await azdata.connection.listDatabases(this.sourceConnectionId)).filter((name) => !excludeDbs.includes(name));
 		const serverLevelAssessments: mssql.SqlMigrationAssessmentResultItem[] = [];
-		const databaseLevelAssessments = serverDatabases.map(db => {
+		const databaseLevelAssessments = this._serverDatabases.map(db => {
 			return {
 				name: db,
 				issues: <mssql.SqlMigrationAssessmentResultItem[]>[]
@@ -180,7 +181,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 		assessmentResults?.items.forEach((item) => {
 			if (item.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) {
-				const dbIndex = serverDatabases.indexOf(item.databaseName);
+				const dbIndex = this._serverDatabases.indexOf(item.databaseName);
 				if (dbIndex === -1) {
 					serverLevelAssessments.push(item);
 				} else {
@@ -601,10 +602,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 
-	public async getSqlMigrationServiceValues(subscription: azureResource.AzureResourceSubscription, managedInstance: SqlManagedInstance): Promise<azdata.CategoryValue[]> {
+	public async getSqlMigrationServiceValues(subscription: azureResource.AzureResourceSubscription, managedInstance: SqlManagedInstance, resourceGroupName: string): Promise<azdata.CategoryValue[]> {
 		let sqlMigrationServiceValues: azdata.CategoryValue[] = [];
 		try {
-			this._sqlMigrationServices = (await getSqlMigrationServices(this._azureAccount, subscription, managedInstance.location)).filter(sms => sms.location.toLowerCase() === this._targetServerInstance.location.toLowerCase());
+			this._sqlMigrationServices = (await getSqlMigrationServices(this._azureAccount, subscription, managedInstance.location)).filter(sms => sms.location.toLowerCase() === this._targetServerInstance.location.toLowerCase() && sms.properties.resourceGroup.toLowerCase() === resourceGroupName?.toLowerCase());
 			this._sqlMigrationServices.forEach((sqlMigrationService) => {
 				sqlMigrationServiceValues.push({
 					name: sqlMigrationService.id,
@@ -647,7 +648,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		});
 
 		const requestBody: StartDatabaseMigrationRequest = {
-			location: this._sqlMigrationService?.properties.location!,
+			location: this._sqlMigrationService?.location!,
 			properties: {
 				sourceDatabaseName: '',
 				migrationService: this._sqlMigrationService?.id!,
@@ -681,11 +682,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				const response = await startDatabaseMigration(
 					this._azureAccount,
 					this._targetSubscription,
-					this._sqlMigrationService?.properties.location!,
+					this._sqlMigrationService?.location!,
 					this._targetServerInstance,
 					this._targetDatabaseNames[i],
 					requestBody
 				);
+				response.databaseMigration.properties.backupConfiguration = requestBody.properties.backupConfiguration!;
 				if (response.status === 201 || response.status === 200) {
 					MigrationLocalStorage.saveMigration(
 						currentConnection!,
