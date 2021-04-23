@@ -58,8 +58,8 @@ export class PostgresModel extends ResourceModel {
 
 	/** Returns the IP address and port of Postgres */
 	public get endpoint(): { ip: string, port: string } | undefined {
-		return this._config?.status.externalEndpoint
-			? parseIpAndPort(this._config.status.externalEndpoint)
+		return this._config?.status.primaryEndpoint
+			? parseIpAndPort(this._config.status.primaryEndpoint)
 			: undefined;
 	}
 
@@ -184,7 +184,7 @@ export class PostgresModel extends ResourceModel {
 	}
 
 	protected createConnectionProfile(): azdata.IConnectionProfile {
-		const ipAndPort = parseIpAndPort(this.config?.status.externalEndpoint || '');
+		const ipAndPort = parseIpAndPort(this.config?.status.primaryEndpoint || '');
 		return {
 			serverName: `${ipAndPort.ip},${ipAndPort.port}`,
 			databaseName: '',
