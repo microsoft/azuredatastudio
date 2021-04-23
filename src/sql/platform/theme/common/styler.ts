@@ -8,7 +8,7 @@ import * as colors from './colors';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
 import * as sqlcr from 'sql/platform/theme/common/colorRegistry';
-import { attachStyler, IColorMapping, IStyleOverrides } from 'vs/platform/theme/common/styler';
+import { attachStyler, defaultListStyles, IColorMapping, IStyleOverrides } from 'vs/platform/theme/common/styler';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IThemable } from 'vs/base/common/styler';
 
@@ -342,6 +342,10 @@ export function attachTableFilterStyler(widget: IThemable, themeService: IThemeS
 		buttonSecondaryBorder: cr.buttonSecondaryBorder,
 		buttonDisabledBorder: cr.buttonDisabledBorder,
 		buttonDisabledBackground: cr.buttonDisabledBackground,
-		buttonDisabledForeground: cr.buttonDisabledForeground
+		buttonDisabledForeground: cr.buttonDisabledForeground,
+		badgeBackground: cr.badgeBackground,
+		badgeForeground: cr.badgeForeground,
+		badgeBorder: cr.contrastBorder,
+		...defaultListStyles,
 	}, widget);
 }

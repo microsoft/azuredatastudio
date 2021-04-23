@@ -270,7 +270,7 @@ export const EASTUS2EUAP = localize('sql.migration.eastus2euap', 'East US 2 EUAP
 
 //Migration cutover dialog
 export const MIGRATION_CUTOVER = localize('sql.migration.cutover', "Migration cutover");
-export const SOURCE_DATABASE = localize('sql.migration.source.database', "Source database");
+export const SOURCE_DATABASE = localize('sql.migration.source.database', "Source database name");
 export const SOURCE_SERVER = localize('sql.migration.source.server', "Source server");
 export const SOURCE_VERSION = localize('sql.migration.source.version', "Source version");
 export const TARGET_DATABASE_NAME = localize('sql.migration.target.database.name', "Target database name");
@@ -306,7 +306,12 @@ export const SEARCH_FOR_MIGRATIONS = localize('sql.migration.search.for.migratio
 export const ONLINE = localize('sql.migration.online', "Online");
 export const OFFLINE = localize('sql.migration.offline', "Offline");
 export const DATABASE = localize('sql.migration.database', "Database");
-export const TARGET_AZURE_SQL_INSTANCE_NAME = localize('sql.migration.target.azure.sql.instance.name', "Target Azure SQL Instance Name");
+export const DATABASE_MIGRATION_SERVICE = localize('sql.migration.database.migration.service', "Database Migration Service");
+export const DURATION = localize('sql.migration.duration', "Duration");
+export const AZURE_SQL_TARGET = localize('sql.migration.azure.sql.target', "Azure SQL Target");
+export const SQL_MANAGED_INSTANCE = localize('sql.migration.sql.managed.instance', "SQL Managed Instance");
+export const SQL_VIRTUAL_MACHINE = localize('sql.migration.sql.virtual.machine', "SQL Virtual Machine");
+export const TARGET_AZURE_SQL_INSTANCE_NAME = localize('sql.migration.target.azure.sql.instance.name', "Azure SQL Target Name");
 export const MIGRATION_MODE = localize('sql.migration.cutover.type', "Migration Mode");
 export const START_TIME = localize('sql.migration.start.time', "Start Time");
 export const FINISH_TIME = localize('sql.migration.finish.time', "Finish Time");
@@ -330,7 +335,19 @@ export function STATUS_WARNING_COUNT(status: string, count: number): string {
 				return localize('sql.migration.status.error.count.multiple', "{0} ({1} Errors)", status, count);
 		}
 	}
+}
 
+export function HRS(hrs: number): string {
+	return hrs > 1 ? localize('sql.migration.hrs', "{0} hrs", hrs) : localize('sql.migration.hr', "{0} hr", hrs);
+}
+export function DAYS(days: number): string {
+	return days > 1 ? localize('sql.migration.days', "{0} days", days) : localize('sql.migration.day', "{0} day", days);
+}
+export function MINUTE(mins: number): string {
+	return mins > 1 ? localize('sql.migration.mins', "{0} mins", mins) : localize('sql.migration.min', "{0} min", mins);
+}
+export function SEC(sec: number): string {
+	return localize('sql.migration.sec', "{0} sec", sec);
 }
 
 //Source Credentials page.
