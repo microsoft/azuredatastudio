@@ -160,7 +160,6 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		button.label = title;
 		button.onDidClick(async () => {
 			await this.handleMenuItemClick(command, this.columnDef);
-			this.grid.setSortColumn(this.columnDef.id, command === 'sort-asc');
 		});
 		return button;
 	}
