@@ -186,6 +186,7 @@ export class ImageCalloutDialog extends Modal {
 		}));
 		this._register(this._imageLocalRadioButton.onClicked(e => {
 			this._imageBrowseButton.style.display = 'block';
+			this._imageEmbedCheckbox.enabled = true;
 			this._imageUrlLabel.innerText = constants.pathPlaceholder;
 			this._imageUrlInputBox.setPlaceHolder(constants.pathPlaceholder);
 		}));

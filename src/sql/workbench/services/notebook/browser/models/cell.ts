@@ -150,11 +150,16 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	addAttachment(mimeType: string, base64Encoding: string, name: string): nb.ICellAttachments {
-		let attachment: nb.ICellAttachment = { 'image/png': base64Encoding };
-		// TO DO: Check if name already exists flow
+		let index = base64Encoding.indexOf('base64,');
+		if (index > -1) {
+			base64Encoding = base64Encoding.substring(index + 7);
+		}
+		let attachment: nb.ICellAttachment = {};
+		attachment[mimeType] = base64Encoding;
 		if (!this._attachments) {
 			this._attachments = {};
 		}
+		// TO DO: Check if name already exists flow
 		this._attachments[name] = attachment;
 		return this._attachments;
 	}

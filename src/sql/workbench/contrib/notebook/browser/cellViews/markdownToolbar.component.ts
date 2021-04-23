@@ -23,7 +23,6 @@ import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import { escape } from 'vs/base/common/strings';
 import { IImageCalloutDialogOptions, ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
-//import { IFileService } from 'vs/platform/files/common/files';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 
@@ -76,9 +75,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		@Inject(INotebookService) private _notebookService: INotebookService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private _contextMenuService: IContextMenuService,
-		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
-		//@Inject(IFileService) private readonly _fileService: IFileService,
-
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
@@ -278,10 +275,9 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				if (!imageCalloutResult.embedImage) {
 					await insertFormattedMarkdown(imageCalloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
 				} else {
-					//let file = await this._fileService.readFile(URI.file(imageCalloutResult.imagePath));
-					let base64String = await this.fileToBase64(imageCalloutResult.imagePath);
-					// btoa(unescape(encodeURIComponent(file.value.buffer.toString())));
-					this.cellModel.addAttachment('image/png', base64String.toString(), path.basename(imageCalloutResult.imagePath));
+					let base64String = await this.fileToBase64(imageCalloutResult.imagePath, false);
+					let mimeType = await this.fileToBase64(imageCalloutResult.imagePath, true);
+					this.cellModel.addAttachment(mimeType.toString(), base64String.toString(), path.basename(imageCalloutResult.imagePath));
 					await insertFormattedMarkdown(imageCalloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
 				}
 			}
@@ -371,10 +367,13 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		return undefined;
 	}
 
-	public fileToBase64 = (filepath) => {
+	public fileToBase64 = (filepath, getType) => {
 		return new Promise<string | ArrayBuffer>(async resolve => {
 			let response = await fetch(filepath);
 			let blob = await response.blob();
+			if (getType) {
+				resolve(blob.type);
+			}
 			// let contents = await this._fileService.readFile(URI.file(filepath));
 			let file = new File([blob], filepath);
 			let reader = new FileReader();
