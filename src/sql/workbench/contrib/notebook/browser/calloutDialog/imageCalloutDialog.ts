@@ -199,11 +199,12 @@ export class ImageCalloutDialog extends Modal {
 
 	public insert(): void {
 		this.hide('ok');
-		let imageName = path.basename(this._imageUrlInputBox.value);
+		let imgPath = this._imageUrlInputBox.value;
+		let imageName = path.basename(imgPath);
 		this._selectionComplete.resolve({
 			embedImage: this._imageEmbedCheckbox.checked,
-			insertEscapedMarkdown: this._imageEmbedCheckbox.checked ? `![${imageName}](attachment:${imageName})` : `![](${escapeUrl(this._imageUrlInputBox.value)})`,
-			imagePath: this._imageUrlInputBox.value
+			insertEscapedMarkdown: this._imageEmbedCheckbox.checked ? `![${imageName.replace(' ', '&#32;')}](attachment:${imageName.replace(' ', '')})` : `![](${escapeUrl(imgPath).replace(' ', '&#32;')})`,
+			imagePath: imgPath
 		});
 		this.dispose();
 	}

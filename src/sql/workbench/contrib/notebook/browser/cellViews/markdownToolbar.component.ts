@@ -277,7 +277,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				} else {
 					let base64String = await this.fileToBase64(imageCalloutResult.imagePath, false);
 					let mimeType = await this.fileToBase64(imageCalloutResult.imagePath, true);
-					this.cellModel.addAttachment(mimeType.toString(), base64String.toString(), path.basename(imageCalloutResult.imagePath));
+					this.cellModel.addAttachment(mimeType.toString(), base64String.toString(), path.basename(imageCalloutResult.imagePath).replace(' ', ''));
 					await insertFormattedMarkdown(imageCalloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
 				}
 			}
