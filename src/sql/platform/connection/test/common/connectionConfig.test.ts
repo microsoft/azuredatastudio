@@ -384,6 +384,18 @@ suite('ConnectionConfig', () => {
 		});
 	});
 
+	test('getConnections should return connections sorted alphabetically by title given datasource.connectionSort is set to \'by title alphabetically\'', () => {
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(0, 2).reverse(), ConfigurationTarget.USER);
+		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(2, testConnections.length).reverse(), ConfigurationTarget.WORKSPACE);
+		configurationService.updateValue('datasource.connectionSort', 'by title alphabetically', ConfigurationTarget.USER);
+
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		let allConnections = config.getConnections(true);
+		assert.equal(allConnections.length, testConnections.length);
+		assert.ok(allConnections.slice(1).every((item, i) => allConnections[i].title <= item.title));
+	});
+
 	test('saveGroup should save the new groups to tree and return the id of the last group name', () => {
 		let config = new ConnectionConfig(undefined!, undefined!);
 		let groups: IConnectionProfileGroup[] = deepClone(testGroups);

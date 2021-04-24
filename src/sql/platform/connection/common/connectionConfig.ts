@@ -216,20 +216,24 @@ export class ConnectionConfig {
 		});
 
 		const sortBy = this.configurationService.getValue<string>(CONNECTION_SORT_CONFIG_KEY);
-		if (sortBy === 'by name') {
-			connectionProfiles.sort((a, b) => {
-				let aSortString = a.title;
-				let bSortString = b.title;
-				if (aSortString < bSortString) {
+		let sortFunc: (a: ConnectionProfile, b: ConnectionProfile) => number;
+
+		if (sortBy === 'by title alphabetically') {
+			sortFunc = ((a, b) => {
+				if (a.title < b.title) {
 					return -1;
-				}
-				else if (aSortString > bSortString) {
+				} else if (a.title > b.title) {
 					return 1;
 				} else {
 					return 0;
 				}
 			});
 		}
+
+		if (sortFunc) {
+			connectionProfiles.sort(sortFunc);
+		}
+
 		return connectionProfiles;
 	}
 
