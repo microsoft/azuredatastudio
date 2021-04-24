@@ -25,7 +25,6 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
-import { escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 import * as path from 'vs/base/common/path';
 
 export interface IImageCalloutDialogOptions {
@@ -37,6 +36,7 @@ export interface IImageCalloutDialogOptions {
 
 const DEFAULT_DIALOG_WIDTH: DialogWidth = 452;
 
+const IMAGE_Extensions: string[] = ['jpg', 'jpeg', 'png','gif'];
 export class ImageCalloutDialog extends Modal {
 	private _selectionComplete: Deferred<IImageCalloutDialogOptions> = new Deferred<IImageCalloutDialogOptions>();
 	private _imageLocationLabel: HTMLElement;
@@ -203,7 +203,7 @@ export class ImageCalloutDialog extends Modal {
 		let imageName = path.basename(imgPath);
 		this._selectionComplete.resolve({
 			embedImage: this._imageEmbedCheckbox.checked,
-			insertEscapedMarkdown: this._imageEmbedCheckbox.checked ? `![${imageName.replace(' ', '&#32;')}](attachment:${imageName.replace(' ', '')})` : `![](${escapeUrl(imgPath).replace(' ', '&#32;')})`,
+			insertEscapedMarkdown: this._imageEmbedCheckbox.checked ? `![${imageName}](attachment:${imageName.replace(' ', '')})` : `![](${imgPath.replace(' ', '&#32;')})`,
 			imagePath: imgPath
 		});
 		this.dispose();
@@ -230,7 +230,8 @@ export class ImageCalloutDialog extends Modal {
 			canSelectFolders: false,
 			canSelectMany: false,
 			defaultUri: URI.file(await this.getUserHome()),
-			title: undefined
+			title: undefined,
+			filters: [{extensions: IMAGE_Extensions, name: 'images'}]
 		};
 		let imageUri: URI[] = await this._fileDialogService.showOpenDialog(options);
 		if (imageUri.length > 0) {
@@ -238,5 +239,13 @@ export class ImageCalloutDialog extends Modal {
 		} else {
 			return undefined;
 		}
+	}
+
+	public set imagePath(val: string) {
+		this._imageUrlInputBox.value = val;
+	}
+
+	public set embedImage(val: boolean) {
+		this._imageEmbedCheckbox.checked = val;
 	}
 }
