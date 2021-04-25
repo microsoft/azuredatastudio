@@ -8,6 +8,9 @@ import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import * as azdata from 'azdata';
 import * as nock from 'nock';
+import * as os from 'os';
+import * as path from 'path';
+import { promises as fs } from 'fs';
 import * as loc from '../../common/localizedConstants';
 import * as constants from '../../common/constants';
 
@@ -116,6 +119,9 @@ describe('Notebook URI Handler', function (): void {
 	it('should open notebook when file is uri is valid', async function (): Promise<void> {
 		let showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(Promise.resolve(loc.msgYes) as any);
 		let fileNotebookUri = vscode.Uri.parse('azuredatastudio://microsoft.notebook/open?url=file:///hello.ipynb');
+		const notebookPath = path.join(os.tmpdir(),'/hello.ipynb');
+
+		await fs.writeFile(notebookPath, '');
 
 		await notebookUriHandler.handleUri(fileNotebookUri);
 
