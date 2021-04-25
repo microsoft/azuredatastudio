@@ -310,9 +310,22 @@ export class RunParametersAction extends TooltipFromLabelAction {
 		let defaultParameters = new Map<string, string>();
 		editor.cells.forEach(cell => {
 			if (cell.isParameter) {
+				if (!cell.source) {
+					// If there is no parameters in the cell indicate to user to add them
+					this.notificationService.notify({
+						severity: Severity.Info,
+						message: localize('noParametersInCell', "This notebook cannot run with parameters until a there are parameters added to the parameter cell. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)."),
+					});
+				}
 				for (let parameter of cell.source) {
-					let param = parameter.split('=', 2);
-					defaultParameters.set(param[0].trim(), param[1].trim());
+					if (parameter.includes('=')) {
+						// For syntax that includes multiple parameters on one line (ex. x=1;y=2)
+						let multiParams = parameter.split(';');
+						multiParams.forEach(param => {
+							let singleParam = param.split('=', 2);
+							defaultParameters.set(singleParam[0].trim(), singleParam[1].trim());
+						});
+					}
 				}
 			}
 		});
