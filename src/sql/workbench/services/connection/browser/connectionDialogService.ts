@@ -153,15 +153,15 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private handleOnConnect(params: INewConnectionParams, profile?: IConnectionProfile): void {
-		this._logService.info('ConnectionDialogService: onConnect event is received');
+		this._logService.debug('ConnectionDialogService: onConnect event is received');
 		if (!this._connecting) {
-			this._logService.info('ConnectionDialogService: Start connecting');
+			this._logService.debug('ConnectionDialogService: Start connecting');
 			this._connecting = true;
 			this.handleProviderOnConnecting();
 			if (!profile) {
 				let result = this.uiController.validateConnection();
 				if (!result.isValid) {
-					this._logService.info('ConnectionDialogService: Connection is invalid');
+					this._logService.debug('ConnectionDialogService: Connection is invalid');
 					this._connecting = false;
 					this._connectionDialog.resetConnection();
 					return;
@@ -262,17 +262,17 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				}
 			} else if (connectionResult && connectionResult.errorHandled) {
 				this._connectionDialog.resetConnection();
-				this._logService.error(`ConnectionDialogService: Error handled and connection reset - Error: ${connectionResult.errorMessage}`);
+				this._logService.debug(`ConnectionDialogService: Error handled and connection reset - Error: ${connectionResult.errorMessage}`);
 			} else {
 				this._connectionDialog.resetConnection();
 				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
-				this._logService.error(`ConnectionDialogService: Connection error: ${connectionResult.errorMessage}`);
+				this._logService.debug(`ConnectionDialogService: Connection error: ${connectionResult.errorMessage}`);
 			}
 		} catch (err) {
 			this._connecting = false;
 			this._connectionDialog.resetConnection();
 			this.showErrorDialog(Severity.Error, this._connectionErrorTitle, err);
-			this._logService.error(`ConnectionDialogService: Error encountered while connecting ${err}`);
+			this._logService.debug(`ConnectionDialogService: Error encountered while connecting ${err}`);
 		}
 	}
 
