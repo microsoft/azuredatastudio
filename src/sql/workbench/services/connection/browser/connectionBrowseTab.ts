@@ -74,7 +74,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 	private treeContainer: HTMLElement | undefined;
 	private model: TreeModel | undefined;
 	private treeLabels: ResourceLabels | undefined;
-	private treeMenus: TreeMenus | undefined;
+	private treeMenus: ConnectionBrowseTreeMenuProvider | undefined;
 	private treeDataSource: DataSource | undefined;
 	private filterProgressBar: ProgressBar | undefined;
 
@@ -89,7 +89,6 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		@IContextViewService private readonly contextViewService: IContextViewService,
 		@IThemeService private readonly themeService: IThemeService,
 		@ICommandService private readonly commandService: ICommandService,
-		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
@@ -150,8 +149,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 	renderTree(container: HTMLElement): void {
 		this.treeContainer = container.appendChild(DOM.$('div'));
 		this.treeLabels = this._register(this.instantiationService.createInstance(ResourceLabels, this));
-		this.treeMenus = this.instantiationService.createInstance(TreeMenus);
-		this.treeMenus.contextKeyService = this.contextKeyService;
+		this.treeMenus = this.instantiationService.createInstance(ConnectionBrowseTreeMenuProvider);
 		const actionViewItemProvider = (action: IAction) => {
 			if (action instanceof MenuItemAction) {
 				return this.instantiationService.createInstance(MenuEntryActionViewItem, action);
@@ -336,7 +334,7 @@ abstract class BaseTreeItemRender<T> implements ITreeRenderer<T, void, TreeEleme
 	protected abstract getText(element: T): string;
 	protected abstract getIconClass(element: T): string;
 
-	constructor(private menus?: TreeMenus,
+	constructor(private menus?: ConnectionBrowseTreeMenuProvider,
 		private actionViewItemProvider?: IActionViewItemProvider
 	) {
 	}
@@ -374,7 +372,7 @@ class ProviderElementRenderer extends BaseTreeItemRender<ConnectionDialogTreePro
 	public static readonly TEMPLATE_ID = 'ProviderElementTemplate';
 	public readonly templateId = ProviderElementRenderer.TEMPLATE_ID;
 
-	constructor(menus: TreeMenus, actionViewItemProvider: IActionViewItemProvider) {
+	constructor(menus: ConnectionBrowseTreeMenuProvider, actionViewItemProvider: IActionViewItemProvider) {
 		super(menus, actionViewItemProvider);
 	}
 
@@ -558,11 +556,10 @@ interface ITreeExplorerTemplateData {
 	actionBar: ActionBar;
 }
 
-class TreeMenus {
-	public contextKeyService: IContextKeyService | undefined;
-
+class ConnectionBrowseTreeMenuProvider {
 	constructor(
-		@IMenuService private readonly menuService: IMenuService
+		@IMenuService private readonly menuService: IMenuService,
+		@IContextKeyService private readonly contextKeyService: IContextKeyService
 	) {
 	}
 
@@ -613,7 +610,7 @@ class TreeItemRenderer extends Disposable implements ITreeRenderer<ITreeItemFrom
 	static readonly TREE_TEMPLATE_ID = 'treeExplorer';
 
 	constructor(
-		private menus: TreeMenus,
+		private menus: ConnectionBrowseTreeMenuProvider,
 		private labels: ResourceLabels,
 		private actionViewItemProvider: IActionViewItemProvider,
 		@IThemeService private readonly themeService: IThemeService,
