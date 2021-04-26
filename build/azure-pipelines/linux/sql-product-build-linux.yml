@@ -165,7 +165,6 @@ steps:
       # Only archive directories we want for debugging purposes
       tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
       done
-
     displayName: Archive Logs
     continueOnError: true
     condition: succeededOrFailed()
