@@ -103,7 +103,6 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 				}
 			},
 			storage: {
-<<<<<<< HEAD
 				data: {
 					volumes: [
 						{
@@ -127,16 +126,6 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 							size: ''
 						}
 					]
-=======
-				data:{
-					volumes: FakeStorageVolume
-				},
-				logs: {
-					volumes: FakeStorageVolume
-				},
-				backups: {
-					volumes: FakeStorageVolume
->>>>>>> nasc/ServerParamsPerRole
 				}
 			}
 		},
