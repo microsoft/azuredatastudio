@@ -254,11 +254,6 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			}
 		} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
 			imageCalloutResult = await this.createCallout(type, triggerElement);
-			if (imageCalloutResult) {
-				if (imageCalloutResult.embedImage) {
-					// add to cell attachments
-				}
-			}
 			// If cell edit mode isn't WYSIWYG, use result from callout. No need for further transformation.
 			if (this.cellModel.currentMode !== CellEditModes.WYSIWYG) {
 				needsTransform = false;
@@ -275,9 +270,10 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				if (imageCalloutResult.embedImage) {
 					let base64String = await this.fileToBase64(imageCalloutResult.imagePath, false);
 					let mimeType = await this.fileToBase64(imageCalloutResult.imagePath, true);
-					this.cellModel.addAttachment(mimeType.toString(), base64String.toString(), path.basename(imageCalloutResult.imagePath).replace(' ', '')); await insertFormattedMarkdown(imageCalloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
+					this.cellModel.addAttachment(mimeType.toString(), base64String.toString(), path.basename(imageCalloutResult.imagePath).replace(' ', ''));
+					await insertFormattedMarkdown(imageCalloutResult.insertEscapedMarkdown, this.getCellEditorControl());
 				}
-				await insertFormattedMarkdown(imageCalloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
+				await insertFormattedMarkdown(imageCalloutResult.insertEscapedMarkdown, this.getCellEditorControl());
 			}
 		}
 	}
@@ -372,7 +368,6 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			if (getType) {
 				resolve(blob.type);
 			}
-			// let contents = await this._fileService.readFile(URI.file(filepath));
 			let file = new File([blob], filepath);
 			let reader = new FileReader();
 			// Read file content on file loaded event
