@@ -549,13 +549,19 @@ export class SchemaCompareDialog {
 			count++;
 
 			let usr = c.options.user;
-			let srv = c.options.server;
 
 			if (!usr) {
 				usr = loc.defaultText;
 			}
 
+			let srv = c.options.server;
+
 			let finalName = `${srv} (${usr})`;
+
+			if (c.options.connectionName) {
+				finalName = c.options.connectionName;
+			}
+
 			// use previously selected server or current connection if there is one
 			if (endpointInfo && !isNullOrUndefined(endpointInfo.serverName) && !isNullOrUndefined(endpointInfo.serverDisplayName)
 				&& c.options.server.toLowerCase() === endpointInfo.serverName.toLowerCase()
