@@ -12,7 +12,7 @@ import * as os from 'os';
 import * as templates from '../templates/templates';
 
 import { Uri, window } from 'vscode';
-import { IFileProjectEntry, IProject } from 'sqldbproj';
+import { IFileProjectEntry, ISqlProject } from 'sqldbproj';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
@@ -21,7 +21,7 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 /**
  * Class representing a Project, and providing functions for operating on it
  */
-export class Project implements IProject {
+export class Project implements ISqlProject {
 	private _projectFilePath: string;
 	private _projectFileName: string;
 	private _projectGuid: string | undefined;

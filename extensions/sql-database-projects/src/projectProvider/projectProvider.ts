@@ -80,7 +80,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	/**
 	 * Opens and loads a .sqlproj file
 	 */
-	openProject(projectFilePath: string): Promise<sqldbproj.IProject> {
+	openProject(projectFilePath: string): Promise<sqldbproj.ISqlProject> {
 		return Project.openProject(projectFilePath);
 	}
 

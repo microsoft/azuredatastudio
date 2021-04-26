@@ -25,10 +25,10 @@ declare module 'sqldbproj' {
 		/**
 		 * Opens and loads a .sqlproj file
 		 */
-		openProject(projectFilePath: string): Promise<IProject>;
+		openProject(projectFilePath: string): Promise<ISqlProject>;
 	}
 
-	export interface IProject {
+	export interface ISqlProject {
 		/**
 		 * Reads the project setting and contents from the file
 		 */
