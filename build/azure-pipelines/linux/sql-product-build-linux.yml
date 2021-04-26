@@ -238,6 +238,12 @@ steps:
     condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: crash reports'
+    inputs:
+      PathtoPublish: '$(Build.SourcesDirectory)/.build/crashes'
+      ArtifactName: crashes
+
+  - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
     condition: succeededOrFailed()
 
