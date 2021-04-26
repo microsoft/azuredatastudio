@@ -16,7 +16,6 @@ import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { localize } from 'vs/nls';
 import { Deferred } from 'sql/base/common/promise';
@@ -58,7 +57,6 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		@Inject(IBootstrapParams) private _notebookParams: INotebookParams,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
-		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(INotificationService) private notificationService: INotificationService,
 		@Inject(INotebookService) private notebookService: INotebookService,
 		@Inject(IConnectionManagementService) private connectionManagementService: IConnectionManagementService,
@@ -249,7 +247,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 				action.tooltip = action.label;
 				action.label = '';
 			}
-			return new LabeledMenuItemActionItem(action, this.keybindingService, this.contextMenuService, this.notificationService, 'notebook-button fixed-width');
+			return new LabeledMenuItemActionItem(action, this.keybindingService, this.notificationService, 'notebook-button fixed-width');
 		}
 		return undefined;
 	}
