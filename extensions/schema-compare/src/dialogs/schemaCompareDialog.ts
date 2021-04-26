@@ -51,6 +51,8 @@ export class SchemaCompareDialog {
 	private initDialogComplete: Deferred<void>;
 	private initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
 
+	private textBoxWidth: number = 280;
+
 	constructor(private schemaCompareMainWindow: SchemaCompareMainWindow, private view?: azdata.ModelView, private extensionContext?: vscode.ExtensionContext) {
 		this.previousSource = schemaCompareMainWindow.sourceEndpointInfo;
 		this.previousTarget = schemaCompareMainWindow.targetEndpointInfo;
@@ -183,7 +185,7 @@ export class SchemaCompareDialog {
 
 			this.sourceTextBox = this.view.modelBuilder.inputBox().withProperties({
 				value: this.schemaCompareMainWindow.sourceEndpointInfo ? this.schemaCompareMainWindow.sourceEndpointInfo.packageFilePath : '',
-				width: 280,
+				width: this.textBoxWidth,
 				ariaLabel: loc.sourceFile
 			}).component();
 
@@ -193,7 +195,7 @@ export class SchemaCompareDialog {
 
 			this.targetTextBox = this.view.modelBuilder.inputBox().withProperties({
 				value: this.schemaCompareMainWindow.targetEndpointInfo ? this.schemaCompareMainWindow.targetEndpointInfo.packageFilePath : '',
-				width: 280,
+				width: this.textBoxWidth,
 				ariaLabel: loc.targetFile
 			}).component();
 
@@ -452,17 +454,17 @@ export class SchemaCompareDialog {
 	protected createSourceServerDropdown(): azdata.FormComponent {
 		this.sourceServerDropdown = this.view.modelBuilder.dropDown().withProperties(
 			{
-				editable: false,
+				editable: true,
 				fireOnTextChange: true,
 				ariaLabel: loc.sourceServer,
-				width: 280
+				width: this.textBoxWidth
 			}
 		).component();
 
 		this.sourceConnectionButton = this.createConnectionButton(false);
 
 		this.sourceServerDropdown.onValueChanged(async (value) => {
-			if (this.sourceServerDropdown.values.findIndex(x => this.matchesValue(x, value.selected)) === -1) {
+			if (value.selected && this.sourceServerDropdown.values.findIndex(x => this.matchesValue(x, value.selected)) === -1) {
 				await this.sourceDatabaseDropdown.updateProperties({
 					values: [],
 					value: '  '
@@ -497,6 +499,7 @@ export class SchemaCompareDialog {
 			this.connectionId = connection.connectionId;
 
 			this.populateServerDropdown(isTarget);
+			this.populateServerDropdown(!isTarget, true);		// passively populate the other server dropdown as well to add the new connections
 			selectConnectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
 		});
 
@@ -506,17 +509,17 @@ export class SchemaCompareDialog {
 	protected createTargetServerDropdown(): azdata.FormComponent {
 		this.targetServerDropdown = this.view.modelBuilder.dropDown().withProperties(
 			{
-				editable: false,
+				editable: true,
 				fireOnTextChange: true,
 				ariaLabel: loc.targetServer,
-				width: 280
+				width: this.textBoxWidth
 			}
 		).component();
 
 		this.targetConnectionButton = this.createConnectionButton(true);
 
 		this.targetServerDropdown.onValueChanged(async (value) => {
-			if (this.targetServerDropdown.values.findIndex(x => this.matchesValue(x, value.selected)) === -1) {
+			if (value.selected && this.targetServerDropdown.values.findIndex(x => this.matchesValue(x, value.selected)) === -1) {
 				await this.targetDatabaseDropdown.updateProperties({
 					values: [],
 					value: '  '
@@ -538,21 +541,29 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	protected async populateServerDropdown(isTarget: boolean): Promise<void> {
+	protected async populateServerDropdown(isTarget: boolean, passivelyPopulate: boolean = false): Promise<void> {
 		const currentDropdown = isTarget ? this.targetServerDropdown : this.sourceServerDropdown;
 		currentDropdown.loading = true;
 		const values = await this.getServerValues(isTarget);
 
 		if (values && values.length > 0) {
-			await currentDropdown.updateProperties({
-				values: values,
-				value: values[0]
-			});
+			if (passivelyPopulate) {	// only update the dropdown values, not the selected value
+				await currentDropdown.updateProperties({
+					values: values
+				});
+			} else {
+				await currentDropdown.updateProperties({
+					values: values,
+					value: values[0]
+				});
+			}
 		}
 
 		currentDropdown.loading = false;
 
-		await this.populateDatabaseDropdown((currentDropdown.value as ConnectionDropdownValue).connection, isTarget);
+		if (!passivelyPopulate) {
+			await this.populateDatabaseDropdown((currentDropdown.value as ConnectionDropdownValue).connection, isTarget);
+		}
 	}
 
 	protected async getServerValues(isTarget: boolean): Promise<{ connection: azdata.connection.ConnectionProfile, displayName: string, name: string }[]> {
@@ -625,7 +636,7 @@ export class SchemaCompareDialog {
 				editable: true,
 				fireOnTextChange: true,
 				ariaLabel: loc.sourceDatabase,
-				width: 280
+				width: this.textBoxWidth
 			}
 		).component();
 		this.sourceDatabaseDropdown.onValueChanged(async (value) => {
@@ -645,7 +656,7 @@ export class SchemaCompareDialog {
 				editable: true,
 				fireOnTextChange: true,
 				ariaLabel: loc.targetDatabase,
-				width: 280
+				width: this.textBoxWidth
 			}
 		).component();
 		this.targetDatabaseDropdown.onValueChanged(async (value) => {
@@ -666,7 +677,10 @@ export class SchemaCompareDialog {
 	protected async populateDatabaseDropdown(connectionProfile: azdata.connection.ConnectionProfile, isTarget: boolean): Promise<void> {
 		const currentDropdown = isTarget ? this.targetDatabaseDropdown : this.sourceDatabaseDropdown;
 		currentDropdown.loading = true;
-		await currentDropdown.updateProperties({ values: [], value: null });
+		await currentDropdown.updateProperties({
+			values: [],
+			value: null
+		});
 
 		let values = [];
 		try {

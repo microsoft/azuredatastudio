@@ -33,7 +33,7 @@ describe('SchemaCompareDialog.openDialog @DacFx@', function (): void {
 
 	it('Should be correct when created.', async function (): Promise<void> {
 		let schemaCompareResult = new SchemaCompareMainWindow(undefined, mockExtensionContext.object);
-		let dialog = new SchemaCompareDialog(schemaCompareResult);
+		let dialog = new SchemaCompareDialog(schemaCompareResult, undefined, mockExtensionContext.object);
 		await dialog.openDialog();
 
 		should(dialog.dialog.title).equal(loc.SchemaCompareLabel);
@@ -47,7 +47,7 @@ describe('SchemaCompareDialog.openDialog @DacFx@', function (): void {
 		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
 		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
 
-		let dialog = new SchemaCompareDialog(schemaCompareResult);
+		let dialog = new SchemaCompareDialog(schemaCompareResult, undefined, mockExtensionContext.object);
 		await dialog.openDialog();
 
 		await dialog.execute();
