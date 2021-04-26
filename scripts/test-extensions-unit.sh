@@ -10,7 +10,8 @@ else
 	LINUX_EXTRA_ARGS="--no-sandbox"
 fi
 
-VSCODEUSERDATADIR=`mktemp -d 2>/dev/null`
+VSCODEUSERDATADIR=`mktemp -d adsuser_XXXXXXXXXX 2>/dev/null`
+VSCODEEXTDIR=`mktemp -d adsext_XXXXXXXXXX 2>/dev/null`
 VSCODECRASHDIR=$ROOT/.build/crashes
 cd $ROOT
 
