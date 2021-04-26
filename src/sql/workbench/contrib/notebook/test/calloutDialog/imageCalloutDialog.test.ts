@@ -56,7 +56,7 @@ suite('Image Callout Dialog', function (): void {
 	test('Should return expected values on insert', async function (): Promise<void> {
 		const sampleImageFileUrl = await pathService.fileURI('../resources/extension.png');
 		let imageCalloutDialog = new ImageCalloutDialog('Title', 'below', defaultDialogProperties, pathService, fileDialogService,
-		undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
+			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
 		imageCalloutDialog.render();
 
 		let deferred = new Deferred<IImageCalloutDialogOptions>();
@@ -77,7 +77,7 @@ suite('Image Callout Dialog', function (): void {
 	test('Should return expected values on insert when imageName has space', async function (): Promise<void> {
 		const sampleImageFileUrl = await pathService.fileURI('../resources/extension 2.png');
 		let imageCalloutDialog = new ImageCalloutDialog('Title', 'below', defaultDialogProperties, pathService, fileDialogService,
-		undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
+			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
 		imageCalloutDialog.render();
 
 		let deferred = new Deferred<IImageCalloutDialogOptions>();
@@ -99,7 +99,7 @@ suite('Image Callout Dialog', function (): void {
 	test('Should return expected values on insert when add as attachment is set', async function (): Promise<void> {
 		const sampleImageFileUrl = await pathService.fileURI('../resources/extension.png');
 		let imageCalloutDialog = new ImageCalloutDialog('Title', 'below', defaultDialogProperties, pathService, fileDialogService,
-		undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
+			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
 		imageCalloutDialog.render();
 
 		let deferred = new Deferred<IImageCalloutDialogOptions>();
@@ -123,7 +123,7 @@ suite('Image Callout Dialog', function (): void {
 	test('Should return expected values on insert when imageName has space and add attachment is set', async function (): Promise<void> {
 		const sampleImageFileUrl = await pathService.fileURI('../resources/extension 2.png');
 		let imageCalloutDialog = new ImageCalloutDialog('Title', 'below', defaultDialogProperties, pathService, fileDialogService,
-		undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
+			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
 		imageCalloutDialog.render();
 
 		let deferred = new Deferred<IImageCalloutDialogOptions>();

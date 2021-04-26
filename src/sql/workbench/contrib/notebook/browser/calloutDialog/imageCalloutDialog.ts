@@ -36,7 +36,7 @@ export interface IImageCalloutDialogOptions {
 
 const DEFAULT_DIALOG_WIDTH: DialogWidth = 452;
 
-const IMAGE_Extensions: string[] = ['jpg', 'jpeg', 'png','gif'];
+const IMAGE_Extensions: string[] = ['jpg', 'jpeg', 'png', 'gif'];
 export class ImageCalloutDialog extends Modal {
 	private _selectionComplete: Deferred<IImageCalloutDialogOptions> = new Deferred<IImageCalloutDialogOptions>();
 	private _imageLocationLabel: HTMLElement;
@@ -231,7 +231,7 @@ export class ImageCalloutDialog extends Modal {
 			canSelectMany: false,
 			defaultUri: URI.file(await this.getUserHome()),
 			title: undefined,
-			filters: [{extensions: IMAGE_Extensions, name: 'images'}]
+			filters: [{ extensions: IMAGE_Extensions, name: 'images' }]
 		};
 		let imageUri: URI[] = await this._fileDialogService.showOpenDialog(options);
 		if (imageUri.length > 0) {
