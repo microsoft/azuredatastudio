@@ -335,12 +335,14 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	private connect(element?: IConnectionProfile): void {
+		this.logService.info('ConnectionDialogWidget: Connect button is clicked');
 		if (this._connectButton.enabled) {
 			this._connecting = true;
 			this._connectButton.enabled = false;
 			this._providerTypeSelectBox.disable();
 			this.spinner = true;
 			this._onConnect.fire(element);
+			this.logService.info('ConnectionDialogWidget: onConnect event is fired');
 		}
 	}
 
