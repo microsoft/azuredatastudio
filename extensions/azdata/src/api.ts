@@ -123,6 +123,7 @@ export function getAzdataApi(localAzdataDiscovered: Promise<IAzdataTool | undefi
 							adminPassword?: boolean;
 							coresLimit?: string;
 							coresRequest?: string;
+							coordinatorEngineSettings?: string;
 							engineSettings?: string;
 							extensions?: string;
 							memoryLimit?: string;
@@ -130,6 +131,7 @@ export function getAzdataApi(localAzdataDiscovered: Promise<IAzdataTool | undefi
 							noWait?: boolean;
 							port?: number;
 							replaceEngineSettings?: boolean;
+							workerEngineSettings?: string;
 							workers?: number;
 						},
 						additionalEnvVars?: azdataExt.AdditionalEnvVars,

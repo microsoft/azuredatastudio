@@ -19,6 +19,11 @@ import { AzureArcTreeDataProvider } from '../../ui/tree/azureArcTreeDataProvider
 import { FakeControllerModel } from '../mocks/fakeControllerModel';
 import { FakeAzdataApi } from '../mocks/fakeAzdataApi';
 
+export const FakeStorageVolume:  azdataExt.StorageVolume[] = [{
+	className: '',
+	size: ''
+}];
+
 export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.PostgresServerShowResult> = {
 	logs: [],
 	stdout: [],
@@ -39,7 +44,11 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 			engine: {
 				extensions: [{ name: '' }],
 				settings: {
-					default: { ['']: '' }
+					default: { ['']: '' },
+					roles: {
+						coordinator: { ['']: '' },
+						worker: { ['']: '' }
+					}
 				},
 				version: ''
 			},
@@ -94,6 +103,7 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 				}
 			},
 			storage: {
+<<<<<<< HEAD
 				data: {
 					volumes: [
 						{
@@ -117,6 +127,16 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 							size: ''
 						}
 					]
+=======
+				data:{
+					volumes: FakeStorageVolume
+				},
+				logs: {
+					volumes: FakeStorageVolume
+				},
+				backups: {
+					volumes: FakeStorageVolume
+>>>>>>> nasc/ServerParamsPerRole
 				}
 			}
 		},
