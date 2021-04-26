@@ -7,12 +7,15 @@ import * as should from 'should';
 import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
 import * as loc from '../localizedConstants';
+import * as sinon from 'sinon';
+import * as azdata from 'azdata';
 import 'mocha';
-import { SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
+import { ConnectionDropdownValue, SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { createContext, TestContext } from './testContext';
-import { setDacpacEndpointInfo } from './testUtils';
+import { mockConnection, mockConnectionProfile, setDacpacEndpointInfo } from './testUtils';
 import { SchemaCompareMainWindowTest } from './testSchemaCompareMainWindow';
+import { SchemaCompareDialogTest } from './testSchemaCompareDialog';
 
 // Mock test data
 const mocksource: string = 'source.dacpac';
@@ -23,6 +26,10 @@ let testContext: TestContext;
 
 before(function (): void {
 	testContext = createContext();
+});
+
+afterEach(() => {
+	sinon.restore();
 });
 
 describe('SchemaCompareDialog.openDialog @DacFx@', function (): void {
@@ -65,5 +72,29 @@ describe('SchemaCompareDialog.openDialog @DacFx@', function (): void {
 			generateScriptButtonState: false,
 			applyButtonState: false
 		});
+	});
+
+	it('Verify database dropdown gets populated appropriately', async function (): Promise<void> {
+		const getConnectionsResults: azdata.connection.ConnectionProfile[] = [{ ...mockConnectionProfile }];
+		sinon.stub(azdata.connection, 'getCurrentConnection').resolves(undefined);
+		sinon.stub(azdata.connection, 'openConnectionDialog').resolves(<any>Promise.resolve(mockConnection));
+		sinon.stub(azdata.connection, 'getConnections').resolves(<any>Promise.resolve(getConnectionsResults));
+		sinon.stub(azdata.connection, 'listDatabases').resolves(['My Database']);
+
+		let schemaCompareResult = new SchemaCompareMainWindow(undefined, mockExtensionContext.object);
+		let dialog = new SchemaCompareDialogTest(schemaCompareResult, undefined, mockExtensionContext.object);
+
+		should.equal(dialog.getSourceDropdownValue(), undefined);
+		should.equal(dialog.getTargetDropdownValue(), undefined);
+
+		await dialog.openDialog();
+		await dialog.connectionButtonClick(false);
+
+		// Confirm source and target dropdowns have the new connection as its value
+		should.notEqual(dialog.getSourceDropdownValue(), undefined);
+		should((dialog.getSourceDropdownValue() as ConnectionDropdownValue).connection).deepEqual(mockConnectionProfile, `SourceDropdownValue: (Actual) ${(dialog.getSourceDropdownValue() as ConnectionDropdownValue).connection} (Expected) ${mockConnectionProfile}`);
+
+		should.notEqual(dialog.getTargetDropdownValue(), undefined);
+		should((dialog.getTargetDropdownValue() as ConnectionDropdownValue).connection).deepEqual(mockConnectionProfile, `TargetDropdownValue: (Actual) ${(dialog.getTargetDropdownValue() as ConnectionDropdownValue).connection} (Expected) ${mockConnectionProfile}`);
 	});
 });

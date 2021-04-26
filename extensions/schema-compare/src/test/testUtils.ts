@@ -63,6 +63,18 @@ export const mockConnectionInfo = {
 	authenticationType: 'SqlLogin'
 };
 
+export const mockConnection: azdata.connection.Connection = {
+	providerName: 'My Provider',
+	connectionId: 'My Id',
+	options: {
+		server: 'My Server',
+		database: 'My Database',
+		user: 'My User',
+		password: 'My Pwd',
+		authenticationType: 'SqlLogin'
+	}
+};
+
 export const mockFilePath: string = 'test.dacpac';
 
 export const mockDacpacEndpoint: mssql.SchemaCompareEndpointInfo = {

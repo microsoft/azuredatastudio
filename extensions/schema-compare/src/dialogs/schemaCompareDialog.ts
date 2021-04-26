@@ -28,7 +28,7 @@ export class SchemaCompareDialog {
 	private sourceTextBox: azdata.InputBoxComponent;
 	private sourceFileButton: azdata.ButtonComponent;
 	private sourceServerComponent: azdata.FormComponent;
-	private sourceServerDropdown: azdata.DropDownComponent;
+	protected sourceServerDropdown: azdata.DropDownComponent;
 	private sourceConnectionButton: azdata.ButtonComponent;
 	private sourceDatabaseComponent: azdata.FormComponent;
 	private sourceDatabaseDropdown: azdata.DropDownComponent;
@@ -36,7 +36,7 @@ export class SchemaCompareDialog {
 	private targetTextBox: azdata.InputBoxComponent;
 	private targetFileButton: azdata.ButtonComponent;
 	private targetServerComponent: azdata.FormComponent;
-	private targetServerDropdown: azdata.DropDownComponent;
+	protected targetServerDropdown: azdata.DropDownComponent;
 	private targetConnectionButton: azdata.ButtonComponent;
 	private targetDatabaseComponent: azdata.FormComponent;
 	private targetDatabaseDropdown: azdata.DropDownComponent;
@@ -495,15 +495,20 @@ export class SchemaCompareDialog {
 		}).component();
 
 		selectConnectionButton.onDidClick(async () => {
-			let connection = await azdata.connection.openConnectionDialog();
-			this.connectionId = connection.connectionId;
-
-			this.populateServerDropdown(isTarget);
-			this.populateServerDropdown(!isTarget, true);		// passively populate the other server dropdown as well to add the new connections
+			this.connectionButtonClick(isTarget);
 			selectConnectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
 		});
 
 		return selectConnectionButton;
+	}
+
+	public async connectionButtonClick(isTarget: boolean) {
+		let connection = await azdata.connection.openConnectionDialog();
+		if (connection) {
+			this.connectionId = connection.connectionId;
+			this.populateServerDropdown(isTarget);
+			this.populateServerDropdown(!isTarget, true);		// passively populate the other server dropdown as well to add the new connections
+		}
 	}
 
 	protected createTargetServerDropdown(): azdata.FormComponent {
@@ -543,6 +548,11 @@ export class SchemaCompareDialog {
 
 	protected async populateServerDropdown(isTarget: boolean, passivelyPopulate: boolean = false): Promise<void> {
 		const currentDropdown = isTarget ? this.targetServerDropdown : this.sourceServerDropdown;
+
+		if (passivelyPopulate && isNullOrUndefined(currentDropdown.value)) {
+			passivelyPopulate = false;		// Populate the dropdown if it is empty
+		}
+
 		currentDropdown.loading = true;
 		const values = await this.getServerValues(isTarget);
 
@@ -561,7 +571,7 @@ export class SchemaCompareDialog {
 
 		currentDropdown.loading = false;
 
-		if (!passivelyPopulate) {
+		if (!passivelyPopulate && currentDropdown.value) {
 			await this.populateDatabaseDropdown((currentDropdown.value as ConnectionDropdownValue).connection, isTarget);
 		}
 	}
@@ -679,7 +689,7 @@ export class SchemaCompareDialog {
 		currentDropdown.loading = true;
 		await currentDropdown.updateProperties({
 			values: [],
-			value: null
+			value: undefined
 		});
 
 		let values = [];
@@ -726,7 +736,7 @@ export class SchemaCompareDialog {
 	}
 }
 
-interface ConnectionDropdownValue extends azdata.CategoryValue {
+export interface ConnectionDropdownValue extends azdata.CategoryValue {
 	connection: azdata.connection.ConnectionProfile;
 }
 
