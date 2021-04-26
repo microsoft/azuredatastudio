@@ -242,6 +242,7 @@ steps:
     inputs:
       PathtoPublish: '$(Build.SourcesDirectory)/.build/crashes'
       ArtifactName: crashes
+    condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
