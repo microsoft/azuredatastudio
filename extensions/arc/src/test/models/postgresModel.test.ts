@@ -95,16 +95,28 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 			},
 			storage: {
 				data: {
-					className: '',
-					size: ''
+					volumes: [
+						{
+							className: '',
+							size: ''
+						}
+					]
 				},
 				logs: {
-					className: '',
-					size: ''
+					volumes: [
+						{
+							className: '',
+							size: ''
+						}
+					]
 				},
 				backups: {
-					className: '',
-					size: ''
+					volumes: [
+						{
+							className: '',
+							size: ''
+						}
+					]
 				}
 			}
 		},
