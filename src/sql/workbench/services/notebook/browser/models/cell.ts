@@ -149,11 +149,11 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._attachments;
 	}
 
-	addAttachment(mimeType: string, base64Encoding: string, name: string): nb.ICellAttachments {
+	addAttachment(mimeType: string, base64Encoding: string, name: string): void {
 		// base64Encoded value looks like: data:application/octet-stream;base64,<base64Value>
 		// get the <base64Value> from the string
 		let index = base64Encoding.indexOf('base64,');
-		if (index > -1) {
+		if (this.validBase64Image(base64Encoding)) {
 			base64Encoding = base64Encoding.substring(index + 7);
 			let attachment: nb.ICellAttachment = {};
 			attachment[mimeType] = base64Encoding;
@@ -163,7 +163,11 @@ export class CellModel extends Disposable implements ICellModel {
 			// TO DO: Check if name already exists and message the user?
 			this._attachments[name] = attachment;
 		}
-		return this._attachments;
+	}
+
+	private validBase64Image(base64Image: string): boolean {
+		const regex = /^data:application\/octet-stream;base64,(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})/;
+		return base64Image && regex.test(base64Image);
 	}
 
 	public get isEditMode(): boolean {
