@@ -24,7 +24,6 @@ async function main() {
     const appFrameworkPath = path.join(appRoot, appName, 'Contents', 'Frameworks');
     const helperAppBaseName = product.nameShort;
     const gpuHelperAppName = helperAppBaseName + ' Helper (GPU).app';
-    const pluginHelperAppName = helperAppBaseName + ' Helper (Plugin).app';
     const rendererHelperAppName = helperAppBaseName + ' Helper (Renderer).app';
     const defaultOpts = {
         app: path.join(appRoot, appName),
@@ -43,14 +42,11 @@ async function main() {
         // TODO(deepak1556): Incorrectly declared type in electron-osx-sign
         ignore: (filePath) => {
             return filePath.includes(gpuHelperAppName) ||
-                filePath.includes(pluginHelperAppName) ||
                 filePath.includes(rendererHelperAppName);
         } });
     const gpuHelperOpts = Object.assign(Object.assign({}, defaultOpts), { app: path.join(appFrameworkPath, gpuHelperAppName), entitlements: path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-gpu-entitlements.plist'), 'entitlements-inherit': path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-gpu-entitlements.plist') });
-    const pluginHelperOpts = Object.assign(Object.assign({}, defaultOpts), { app: path.join(appFrameworkPath, pluginHelperAppName), entitlements: path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-plugin-entitlements.plist'), 'entitlements-inherit': path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-plugin-entitlements.plist') });
     const rendererHelperOpts = Object.assign(Object.assign({}, defaultOpts), { app: path.join(appFrameworkPath, rendererHelperAppName), entitlements: path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-renderer-entitlements.plist'), 'entitlements-inherit': path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-renderer-entitlements.plist') });
     await codesign.signAsync(gpuHelperOpts);
-    await codesign.signAsync(pluginHelperOpts);
     await codesign.signAsync(rendererHelperOpts);
     await codesign.signAsync(appOpts);
 }
