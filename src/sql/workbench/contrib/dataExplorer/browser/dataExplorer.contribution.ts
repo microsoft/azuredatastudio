@@ -11,6 +11,7 @@ import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/co
 import { DataExplorerContainerExtensionHandler } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerExtensionPoint';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { DataExplorerViewletViewsContribution } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
+import { GROUPS_CONFIG_KEY, CONNECTIONS_CONFIG_KEY, CONNECTION_SORT_BY_CONFIG_KEY } from 'sql/platform/connection/common/connectionConfig';
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 workbenchRegistry.registerWorkbenchContribution(DataExplorerViewletViewsContribution, LifecyclePhase.Starting);
@@ -22,23 +23,23 @@ configurationRegistry.registerConfiguration({
 	'title': localize('databaseConnections', "Database Connections"),
 	'type': 'object',
 	'properties': {
-		'datasource.connections': {
-			'description': localize('datasource.connections', "data source connections"),
+		[CONNECTIONS_CONFIG_KEY]: {
+			'description': localize(CONNECTIONS_CONFIG_KEY, "data source connections"),
 			'type': 'array'
 		},
-		'datasource.connectionGroups': {
-			'description': localize('datasource.connectionGroups', "data source groups"),
+		[GROUPS_CONFIG_KEY]: {
+			'description': localize(GROUPS_CONFIG_KEY, "data source groups"),
 			'type': 'array'
 		},
-		'datasource.connectionSort': {
+		[CONNECTION_SORT_BY_CONFIG_KEY]: {
 			'type': 'string',
-			'enum': ['byTimeAdded', 'byTitleAlphabetically'],
+			'enum': ['DateAdded', 'DisplayName'],
 			'enumDescriptions': [
-				localize('connectionSort.byTimeAdded', 'Saved connections are sorted by the time they were added.'),
-				localize('connectionSort.byTitleAlphabetically', 'Saved connections are sorted by their titles alphabetically.')
+				localize('sortBy.DateAdded', 'Saved connections are sorted by the date they were added.'),
+				localize('sortBy.DisplayName', 'Saved connections are sorted by their display name alphabetically.')
 			],
 			'default': 'byTimeAdded',
-			'description': localize('datasource.connectionSort', "Order used for sorting saved connections and connection groups")
+			'description': localize(CONNECTION_SORT_BY_CONFIG_KEY, "Order used for sorting saved connections and connection groups")
 		}
 	}
 });

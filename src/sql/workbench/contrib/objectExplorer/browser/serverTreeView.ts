@@ -41,6 +41,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { coalesce } from 'vs/base/common/arrays';
+import { CONNECTION_SORT_BY_CONFIG_KEY } from 'sql/platform/connection/common/connectionConfig';
 
 /**
  * ServerTreeview implements the dynamic tree view.
@@ -197,7 +198,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			}
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('datasource.connectionSort')) {
+			if (e.affectsConfiguration(CONNECTION_SORT_BY_CONFIG_KEY)) {
 				this.refreshTree().catch(err => errors.onUnexpectedError);
 			}
 		}));
