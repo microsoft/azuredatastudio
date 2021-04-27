@@ -105,8 +105,7 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			],
-			"browserLaunchLocation": "workspace",
-			"preLaunchTask": "Ensure Prelaunch Dependencies",
+			"browserLaunchLocation": "workspace"
 		},
 		{
 			"type": "node",

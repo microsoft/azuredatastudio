@@ -176,7 +176,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		}).component();
 
 		this._dmsDropdown = this._view.modelBuilder.dropDown().withProps({
-			required: true,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true
 		}).component();
@@ -231,8 +230,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			width: '18px'
 		}).component();
 
-		this._refreshButton.onDidClick((e) => {
-			this.loadStatus();
+		this._refreshButton.onDidClick(async (e) => {
+			this._connectionStatusLoader.loading = true;
+			await this.loadStatus();
+			this._connectionStatusLoader.loading = false;
 		});
 
 		const connectionLabelContainer = this._view.modelBuilder.flexContainer().withProps({
@@ -261,11 +262,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			CSSStyles: {
 				'font-size': '13px'
 			}
-		}).withValidation(component => {
-			if (component.style === 'error') {
-				return false;
-			}
-			return true;
 		}).component();
 
 		const authenticationKeysLabel = this._view.modelBuilder.text().withProps({
@@ -275,7 +271,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				'font-size': '13px'
 			}
 		}).component();
-
 
 		this._copy1 = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.copy,
@@ -302,7 +297,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		this._refresh2 = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.refresh,
 		}).component();
-
 		this._authKeyTable = this._view.modelBuilder.declarativeTable().withProps({
 			columns: [
 				{
@@ -357,7 +351,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		this._connectionStatusLoader = this._view.modelBuilder.loadingComponent().withItem(
 			statusContainer
-		).component();
+		).withProps({
+			loading: false
+		}).component();
 
 		container.addItems(
 			[
@@ -376,20 +372,19 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this.migrationStateModel._sqlMigrationService = sqlMigrationService;
 			this.migrationStateModel._nodeNames = serviceNodes;
 		}
-
 		try {
 			this._subscription.value = this.migrationStateModel._targetSubscription.name;
 			this._location.value = await getLocationDisplayName(this.migrationStateModel._targetServerInstance.location);
 			this._resourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._targetSubscription);
+
+			let index = 0;
 			if (resourceGroupName) {
-				const index = (<azdata.CategoryValue[]>this._resourceGroupDropdown.values).findIndex(v => v.displayName.toLowerCase() === resourceGroupName.toLowerCase());
-				if (resourceGroupName.toLowerCase() === (<azdata.CategoryValue>this._resourceGroupDropdown.value).displayName.toLowerCase()) {
-					this.populateDms(resourceGroupName);
-				} else {
-					this._resourceGroupDropdown.value = this._resourceGroupDropdown.values[index];
-				}
+				index = (<azdata.CategoryValue[]>this._resourceGroupDropdown.values).findIndex(v => v.displayName.toLowerCase() === resourceGroupName.toLowerCase());
+			}
+			if ((<azdata.CategoryValue>this._resourceGroupDropdown.value)?.displayName.toLowerCase() === (<azdata.CategoryValue>this._resourceGroupDropdown.values[index])?.displayName.toLowerCase()) {
+				this.populateDms((<azdata.CategoryValue>this._resourceGroupDropdown.value)?.displayName);
 			} else {
-				this._resourceGroupDropdown.value = this._resourceGroupDropdown.values[0];
+				this._resourceGroupDropdown.value = this._resourceGroupDropdown.values[index];
 			}
 		} catch (error) {
 			console.log(error);
@@ -400,6 +395,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 
 	public async populateDms(resourceGroupName: string): Promise<void> {
+		if (!resourceGroupName) {
+			return;
+		}
 		this._dmsDropdown.loading = true;
 		try {
 			this._dmsDropdown.values = await this.migrationStateModel.getSqlMigrationServiceValues(this.migrationStateModel._targetSubscription, this.migrationStateModel._targetServerInstance, resourceGroupName);
@@ -432,7 +430,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 
 	private async loadStatus(): Promise<void> {
-		this._connectionStatusLoader.loading = true;
 		try {
 			if (this.migrationStateModel._sqlMigrationService) {
 				const migrationService = await getSqlMigrationService(
@@ -474,10 +471,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					});
 				}
 
-				this._dmsStatusInfoBox.validate();
-
-
-
 				const data = [
 					[
 						{
@@ -503,14 +496,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					]
 				];
 
-				this._authKeyTable.updateProperties({
-					dataValues: data
-				});
+				this._authKeyTable.dataValues = data;
 			}
 		} catch (e) {
 			console.log(e);
-		} finally {
-			this._connectionStatusLoader.loading = false;
 		}
 	}
 }
