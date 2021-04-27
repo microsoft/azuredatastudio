@@ -35,14 +35,14 @@ export class ConfigurePythonDialog extends Dialog {
 		await this.notificationToast.closeNotificationToasts();
 
 		const nextButton = '.modal-dialog .modal-content .modal-footer .right-footer .footer-button a[aria-label="Next"][aria-disabled="false"]';
-		await this.code.waitForElement(nextButton);
-		await this.code.dispatchKeybinding('enter');
+		await this.code.waitAndClick(dialog);
+		await this.code.waitAndClick(nextButton);
 
 		await this.notificationToast.closeNotificationToasts();
 
 		const installButton = '.modal-dialog .modal-content .modal-footer .right-footer .footer-button a[aria-label="Install"][aria-disabled="false"]';
-		await this.code.waitForElement(installButton);
-		await this.code.dispatchKeybinding('enter');
+		await this.code.waitAndClick(dialog);
+		await this.code.waitAndClick(installButton);
 
 		await this.waitForDialogGone();
 		return this._waitForInstallationComplete();
