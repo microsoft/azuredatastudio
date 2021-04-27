@@ -10,6 +10,7 @@ declare namespace monaco {
 	export type Thenable<T> = PromiseLike<T>;
 
 	export interface Environment {
+		globalAPI?: boolean;
 		baseUrl?: string;
 		getWorker?(workerId: string, label: string): Worker;
 		getWorkerUrl?(workerId: string, label: string): string;
@@ -898,6 +899,12 @@ declare namespace monaco.editor {
 	}): IMarker[];
 
 	/**
+	 * Emitted when markers change for a model.
+	 * @event
+	 */
+	export function onDidChangeMarkers(listener: (e: readonly Uri[]) => void): IDisposable;
+
+	/**
 	 * Get the model that has `uri` if it exists.
 	 */
 	export function getModel(uri: Uri): ITextModel | null;
@@ -968,6 +975,11 @@ declare namespace monaco.editor {
 	 * Clears all cached font measurements and triggers re-measurement.
 	 */
 	export function remeasureFonts(): void;
+
+	/**
+	 * Register a command.
+	 */
+	export function registerCommand(id: string, handler: (accessor: any, ...args: any[]) => void): IDisposable;
 
 	export type BuiltinTheme = 'vs' | 'vs-dark' | 'hc-black';
 
@@ -1890,11 +1902,15 @@ declare namespace monaco.editor {
 		 */
 		detectIndentation(defaultInsertSpaces: boolean, defaultTabSize: number): void;
 		/**
-		 * Push a stack element onto the undo stack. This acts as an undo/redo point.
-		 * The idea is to use `pushEditOperations` to edit the model and then to
-		 * `pushStackElement` to create an undo/redo stop point.
+		 * Close the current undo-redo element.
+		 * This offers a way to create an undo/redo stop point.
 		 */
 		pushStackElement(): void;
+		/**
+		 * Open the current undo-redo element.
+		 * This offers a way to remove the current undo/redo stop point.
+		 */
+		popStackElement(): void;
 		/**
 		 * Push edit operations, basically editing the model. This is the preferred way
 		 * of editing the model. The edit operations will land on the undo stack.
@@ -2588,14 +2604,6 @@ declare namespace monaco.editor {
 		Full = 4
 	}
 
-	export enum InDiffEditorState {
-		None = 0,
-		SideBySideLeft = 1,
-		SideBySideRight = 2,
-		InlineLeft = 3,
-		InlineRight = 4
-	}
-
 	/**
 	 * Configuration options for the editor.
 	 */
@@ -2603,7 +2611,7 @@ declare namespace monaco.editor {
 		/**
 		 * This editor is used inside a diff editor.
 		 */
-		inDiffEditor?: InDiffEditorState;
+		inDiffEditor?: boolean;
 		/**
 		 * The aria label for the editor's textarea (when it is focused).
 		 */
@@ -2820,6 +2828,14 @@ declare namespace monaco.editor {
 		 */
 		wordWrap?: 'off' | 'on' | 'wordWrapColumn' | 'bounded';
 		/**
+		 * Override the `wordWrap` setting.
+		 */
+		wordWrapOverride1?: 'off' | 'on' | 'inherit';
+		/**
+		 * Override the `wordWrapOverride1` setting.
+		 */
+		wordWrapOverride2?: 'off' | 'on' | 'inherit';
+		/**
 		 * Control the wrapping of the editor.
 		 * When `wordWrap` = "off", the lines will never wrap.
 		 * When `wordWrap` = "on", the lines will wrap at the viewport width.
@@ -2828,11 +2844,6 @@ declare namespace monaco.editor {
 		 * Defaults to 80.
 		 */
 		wordWrapColumn?: number;
-		/**
-		 * Force word wrapping when the text appears to be of a minified/generated file.
-		 * Defaults to true.
-		 */
-		wordWrapMinified?: boolean;
 		/**
 		 * Control indentation of wrapped lines. Can be: 'none', 'same', 'indent' or 'deepIndent'.
 		 * Defaults to 'same' in vscode and to 'none' in monaco-editor.
@@ -3177,6 +3188,10 @@ declare namespace monaco.editor {
 		 * Controls strikethrough deprecated variables.
 		 */
 		showDeprecated?: boolean;
+		/**
+		 * Control the behavior and rendering of the inline hints.
+		 */
+		inlineHints?: IEditorInlineHintsOptions;
 	}
 
 	/**
@@ -3227,6 +3242,11 @@ declare namespace monaco.editor {
 		 * Defaults to false
 		 */
 		isInEmbeddedEditor?: boolean;
+		/**
+		 * Is the diff editor should render overview ruler
+		 * Defaults to true
+		 */
+		renderOverviewRuler?: boolean;
 		/**
 		 * Control the wrapping of the diff editor.
 		 */
@@ -3526,6 +3546,29 @@ declare namespace monaco.editor {
 	}
 
 	export type EditorLightbulbOptions = Readonly<Required<IEditorLightbulbOptions>>;
+
+	/**
+	 * Configuration options for editor inlineHints
+	 */
+	export interface IEditorInlineHintsOptions {
+		/**
+		 * Enable the inline hints.
+		 * Defaults to true.
+		 */
+		enabled?: boolean;
+		/**
+		 * Font size of inline hints.
+		 * Default to 90% of the editor font size.
+		 */
+		fontSize?: number;
+		/**
+		 * Font family of inline hints.
+		 * Defaults to editor font family.
+		 */
+		fontFamily?: string;
+	}
+
+	export type EditorInlineHintsOptions = Readonly<Required<IEditorInlineHintsOptions>>;
 
 	/**
 	 * Configuration options for editor minimap
@@ -4023,15 +4066,17 @@ declare namespace monaco.editor {
 		wordWrapBreakAfterCharacters = 112,
 		wordWrapBreakBeforeCharacters = 113,
 		wordWrapColumn = 114,
-		wordWrapMinified = 115,
-		wrappingIndent = 116,
-		wrappingStrategy = 117,
-		showDeprecated = 118,
-		editorClassName = 119,
-		pixelRatio = 120,
-		tabFocusMode = 121,
-		layoutInfo = 122,
-		wrappingInfo = 123
+		wordWrapOverride1 = 115,
+		wordWrapOverride2 = 116,
+		wrappingIndent = 117,
+		wrappingStrategy = 118,
+		showDeprecated = 119,
+		inlineHints = 120,
+		editorClassName = 121,
+		pixelRatio = 122,
+		tabFocusMode = 123,
+		layoutInfo = 124,
+		wrappingInfo = 125
 	}
 	export const EditorOptions: {
 		acceptSuggestionOnCommitCharacter: IEditorOption<EditorOption.acceptSuggestionOnCommitCharacter, boolean>;
@@ -4084,7 +4129,7 @@ declare namespace monaco.editor {
 		hideCursorInOverviewRuler: IEditorOption<EditorOption.hideCursorInOverviewRuler, boolean>;
 		highlightActiveIndentGuide: IEditorOption<EditorOption.highlightActiveIndentGuide, boolean>;
 		hover: IEditorOption<EditorOption.hover, EditorHoverOptions>;
-		inDiffEditor: IEditorOption<EditorOption.inDiffEditor, number>;
+		inDiffEditor: IEditorOption<EditorOption.inDiffEditor, boolean>;
 		letterSpacing: IEditorOption<EditorOption.letterSpacing, number>;
 		lightbulb: IEditorOption<EditorOption.lightbulb, EditorLightbulbOptions>;
 		lineDecorationsWidth: IEditorOption<EditorOption.lineDecorationsWidth, string | number>;
@@ -4132,6 +4177,7 @@ declare namespace monaco.editor {
 		showFoldingControls: IEditorOption<EditorOption.showFoldingControls, 'always' | 'mouseover'>;
 		showUnused: IEditorOption<EditorOption.showUnused, boolean>;
 		showDeprecated: IEditorOption<EditorOption.showDeprecated, boolean>;
+		inlineHints: IEditorOption<EditorOption.inlineHints, any>;
 		snippetSuggestions: IEditorOption<EditorOption.snippetSuggestions, 'none' | 'top' | 'bottom' | 'inline'>;
 		smartSelect: IEditorOption<EditorOption.smartSelect, any>;
 		smoothScrolling: IEditorOption<EditorOption.smoothScrolling, boolean>;
@@ -4150,7 +4196,8 @@ declare namespace monaco.editor {
 		wordWrapBreakAfterCharacters: IEditorOption<EditorOption.wordWrapBreakAfterCharacters, string>;
 		wordWrapBreakBeforeCharacters: IEditorOption<EditorOption.wordWrapBreakBeforeCharacters, string>;
 		wordWrapColumn: IEditorOption<EditorOption.wordWrapColumn, number>;
-		wordWrapMinified: IEditorOption<EditorOption.wordWrapMinified, boolean>;
+		wordWrapOverride1: IEditorOption<EditorOption.wordWrapOverride1, 'on' | 'off' | 'inherit'>;
+		wordWrapOverride2: IEditorOption<EditorOption.wordWrapOverride2, 'on' | 'off' | 'inherit'>;
 		wrappingIndent: IEditorOption<EditorOption.wrappingIndent, WrappingIndent>;
 		wrappingStrategy: IEditorOption<EditorOption.wrappingStrategy, 'simple' | 'advanced'>;
 		editorClassName: IEditorOption<EditorOption.editorClassName, string>;
@@ -4496,6 +4543,10 @@ declare namespace monaco.editor {
 
 	export interface IDiffEditorConstructionOptions extends IDiffEditorOptions {
 		/**
+		 * The initial editor dimension (to avoid measuring the container).
+		 */
+		dimension?: IDimension;
+		/**
 		 * Place overflow widgets inside an external DOM node.
 		 * Defaults to an internal DOM node.
 		 */
@@ -4747,9 +4798,13 @@ declare namespace monaco.editor {
 		 */
 		executeCommand(source: string | null | undefined, command: ICommand): void;
 		/**
-		 * Push an "undo stop" in the undo-redo stack.
+		 * Create an "undo stop" in the undo-redo stack.
 		 */
 		pushUndoStop(): boolean;
+		/**
+		 * Remove the "undo stop" in the undo-redo stack.
+		 */
+		popUndoStop(): boolean;
 		/**
 		 * Execute edits on the editor.
 		 * The edits will land on the undo-redo stack, but no "undo stop" will be pushed.
@@ -4934,6 +4989,7 @@ declare namespace monaco.editor {
 
 	export class FontInfo extends BareFontInfo {
 		readonly _editorStylingBrand: void;
+		readonly version: number;
 		readonly isTrusted: boolean;
 		readonly isMonospace: boolean;
 		readonly typicalHalfwidthCharacterWidth: number;
@@ -4948,6 +5004,7 @@ declare namespace monaco.editor {
 	export class BareFontInfo {
 		readonly _bareFontInfoBrand: void;
 		readonly zoomLevel: number;
+		readonly pixelRatio: number;
 		readonly fontFamily: string;
 		readonly fontWeight: string;
 		readonly fontSize: number;
@@ -5068,7 +5125,17 @@ declare namespace monaco.languages {
 		 * Tokenize a line given the state at the beginning of the line.
 		 */
 		tokenizeEncoded(line: string, state: IState): IEncodedLineTokens;
+		/**
+		 * Tokenize a line given the state at the beginning of the line.
+		 */
+		tokenize?(line: string, state: IState): ILineTokens;
 	}
+
+	/**
+	 * Change the color map that is used for token colors.
+	 * Supported formats (hex): #RRGGBB, $RRGGBBAA, #RGB, #RGBA
+	 */
+	export function setColorMap(colorMap: string[] | null): void;
 
 	/**
 	 * Set the tokens provider for a language (manual implementation).
@@ -5361,7 +5428,7 @@ declare namespace monaco.languages {
 		/**
 		 * This rule will only execute if the text above the this line matches this regular expression.
 		 */
-		oneLineAboveText?: RegExp;
+		previousLineText?: RegExp;
 		/**
 		 * The action to execute.
 		 */
@@ -6347,6 +6414,19 @@ declare namespace monaco.languages {
 		resolveCodeLens?(model: editor.ITextModel, codeLens: CodeLens, token: CancellationToken): ProviderResult<CodeLens>;
 	}
 
+	export interface InlineHint {
+		text: string;
+		range: IRange;
+		description?: string | IMarkdownString;
+		whitespaceBefore?: boolean;
+		whitespaceAfter?: boolean;
+	}
+
+	export interface InlineHintsProvider {
+		onDidChangeInlineHints?: IEvent<void> | undefined;
+		provideInlineHints(model: editor.ITextModel, range: Range, token: CancellationToken): ProviderResult<InlineHint[]>;
+	}
+
 	export interface SemanticTokensLegend {
 		readonly tokenTypes: string[];
 		readonly tokenModifiers: string[];
@@ -6424,6 +6504,15 @@ declare namespace monaco.languages {
 		 * attach this to every token class (by default '.' + name)
 		 */
 		tokenPostfix?: string;
+		/**
+		 * include line feeds (in the form of a \n character) at the end of lines
+		 * Defaults to false
+		 */
+		includeLF?: boolean;
+		/**
+		 * Other keys that can be referred to by the tokenizer.
+		 */
+		[key: string]: any;
 	}
 
 	/**
