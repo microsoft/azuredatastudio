@@ -211,14 +211,21 @@ export class OpenExistingDialog extends DialogBase {
 			}
 		}));
 
+		const gitRepoTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			ariaLabel: constants.GitRepoUrlTitle,
+			placeHolder: constants.GitRepoUrlPlaceholder,
+			required: true,
+			width: constants.DefaultInputWidth
+		}).component();
+
+		this.register(gitRepoTextBox.onTextChanged(() => {
+			gitRepoTextBox.updateProperty('title', this.localClonePathTextBox!.value!);
+			this.updateWorkspaceInputbox(this.localClonePathTextBox!.value!, path.basename(gitRepoTextBox!.value!, '.git'));
+		}));
+
 		this.gitRepoTextBoxComponent = {
 			title: constants.GitRepoUrlTitle,
-			component: view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-				ariaLabel: constants.GitRepoUrlTitle,
-				placeHolder: constants.GitRepoUrlPlaceholder,
-				required: true,
-				width: constants.DefaultInputWidth
-			}).component()
+			component: gitRepoTextBox
 		};
 
 		this.localClonePathTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
@@ -227,6 +234,11 @@ export class OpenExistingDialog extends DialogBase {
 			required: true,
 			width: constants.DefaultInputWidth
 		}).component();
+
+		this.register(this.localClonePathTextBox.onTextChanged(() => {
+			this.localClonePathTextBox!.updateProperty('title', this.localClonePathTextBox!.value!);
+			this.updateWorkspaceInputbox(this.localClonePathTextBox!.value!, path.basename(gitRepoTextBox!.value!, '.git'));
+		}));
 
 		const localClonePathBrowseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			ariaLabel: constants.BrowseButtonText,
@@ -248,6 +260,8 @@ export class OpenExistingDialog extends DialogBase {
 
 			const selectedFolder = folderUris[0].fsPath;
 			this.localClonePathTextBox!.value = selectedFolder;
+			this.localClonePathTextBox!.updateProperty('title', this.localClonePathTextBox!.value);
+			this.updateWorkspaceInputbox(path.dirname(this.localClonePathTextBox!.value!), path.basename((<azdata.InputBoxComponent>this.gitRepoTextBoxComponent?.component)!.value!, '.git'));
 		}));
 
 		this.localClonePathComponent = {

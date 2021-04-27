@@ -14,7 +14,7 @@ import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
 import { TelemetryReporter, TelemetryViews, calculateRelativity, TelemetryActions } from '../common/telemetry';
-import { directoryExist, isCurrentWorkspaceUntitled } from '../common/utils';
+import { isCurrentWorkspaceUntitled } from '../common/utils';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
@@ -273,33 +273,26 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	async gitCloneProject(url: string, localClonePath: string, workspaceFile: vscode.Uri): Promise<void> {
-		// git.clone command doesn't return the folder that will be created, so this is how it's calculated
 		const gitApi: git.API = (<git.GitExtension>vscode.extensions.getExtension('vscode.git')!.exports).getAPI(1);
-
 		const opts = {
 			location: vscode.ProgressLocation.Notification,
-			title: `Cloning git repository '${url}'...`,
+			title: constants.gitCloneMessage(url),
 			cancellable: true
 		};
-		const repositoryPath = await vscode.window.withProgress(
-			opts,
-			(progress, token) => gitApi.clone(url!, { parentPath: localClonePath!, progress, recursive: true }, token)
-		);
 
-		// git clone wasn't successful if folder wasn't created
-		if (!(await directoryExist(repositoryPath))) {
-			return;
-		} else {
-			console.error('it exists!');
+		try {
+			const repositoryPath = await vscode.window.withProgress(
+				opts,
+				(progress, token) => gitApi.clone(url!, { parentPath: localClonePath!, progress, recursive: true }, token)
+			);
+
+			// get all the project files in the cloned repo and add them to workspace
+			const repoProjects = (await this.getAllProjectsInFolder(vscode.Uri.file(repositoryPath))).map(p => { return vscode.Uri.file(p); });
+			this.addProjectsToWorkspace(repoProjects, workspaceFile);
+		} catch (e) {
+			vscode.window.showErrorMessage(constants.gitCloneError);
+			console.error(e);
 		}
-
-		// // get all the project files in the cloned repo and add them to workspace
-		const repoProjects = await (await this.getAllProjectsInFolder(vscode.Uri.file(repositoryPath))).map(p => { return vscode.Uri.file(p); });
-		this.addProjectsToWorkspace(repoProjects, workspaceFile);
-	}
-
-	async sleep(ms: number): Promise<{}> {
-		return new Promise(resolve => setTimeout(resolve, ms));
 	}
 
 	/**
