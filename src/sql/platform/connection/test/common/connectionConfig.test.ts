@@ -239,6 +239,20 @@ suite('ConnectionConfig', () => {
 		assert.ok(groupsAreEqual(allGroups, testGroups), 'the groups returned did not match expectation');
 	});
 
+	test('getAllGroups should return groups sorted alphabetically by name given datasource.connectionSort is set to \'byTitleAlphabetically\'', () => {
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(0, 3), ConfigurationTarget.USER);
+		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(2, testGroups.length), ConfigurationTarget.WORKSPACE);
+		configurationService.updateValue('datasource.connectionSort', 'byTitleAlphabetically', ConfigurationTarget.USER);
+
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		let allGroups = config.getAllGroups();
+
+		assert.equal(allGroups.length, testGroups.length, 'did not meet the expected length');
+		assert.ok(groupsAreEqual(allGroups, testGroups), 'the groups returned did not match expectation');
+		assert.ok(allGroups.slice(1).every((item, i) => allGroups[i].name <= item.name), 'the groups are not sorted correctly');
+	});
+
 	test('addConnection should add the new profile to user settings', async () => {
 		let newProfile: IConnectionProfile = {
 			serverName: 'new server',

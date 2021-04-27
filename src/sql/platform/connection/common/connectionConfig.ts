@@ -50,6 +50,26 @@ export class ConnectionConfig {
 			}
 			allGroups = allGroups.concat(userValue);
 		}
+
+		const sortBy = this.configurationService.getValue<string>(CONNECTION_SORT_CONFIG_KEY);
+		let sortFunc: (a: IConnectionProfileGroup, b: IConnectionProfileGroup) => number;
+
+		if (sortBy === 'byTitleAlphabetically') {
+			sortFunc = ((a, b) => {
+				if (a.name < b.name) {
+					return -1;
+				} else if (a.name > b.name) {
+					return 1;
+				} else {
+					return 0;
+				}
+			});
+		}
+
+		if (sortFunc) {
+			allGroups.sort(sortFunc);
+		}
+
 		return deepClone(allGroups).map(g => {
 			if (g.parentId === '' || !g.parentId) {
 				g.parentId = undefined;
