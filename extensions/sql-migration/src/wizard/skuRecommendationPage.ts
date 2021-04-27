@@ -451,14 +451,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				errors.push('Please select databases to migrate');
 
 			}
-			if ((<azdata.CategoryValue>this._managedInstanceSubscriptionDropdown.value).displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
+			if ((<azdata.CategoryValue>this._managedInstanceSubscriptionDropdown.value)?.displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
 				errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
 			}
-			if ((<azdata.CategoryValue>this._azureLocationDropdown.value).displayName === constants.NO_LOCATION_FOUND) {
+			if ((<azdata.CategoryValue>this._azureLocationDropdown.value)?.displayName === constants.NO_LOCATION_FOUND) {
 				errors.push(constants.INVALID_LOCATION_ERROR);
 			}
 
-			if ((<azdata.CategoryValue>this._managedInstanceSubscriptionDropdown.value).displayName === constants.RESOURCE_GROUP_NOT_FOUND) {
+			if ((<azdata.CategoryValue>this._managedInstanceSubscriptionDropdown.value)?.displayName === constants.RESOURCE_GROUP_NOT_FOUND) {
 				errors.push(constants.INVALID_RESOURCE_GROUP_ERROR);
 			}
 			const resourceDropdownValue = (<azdata.CategoryValue>this._resourceDropdown.value).displayName;

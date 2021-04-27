@@ -20,12 +20,13 @@ import { ServerTreeRenderer } from 'sql/workbench/services/objectExplorer/browse
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import * as DOM from 'vs/base/browser/dom';
+import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { status } from 'vs/base/browser/ui/aria/aria';
 import { IIdentityProvider, IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
 import { ProgressBar } from 'vs/base/browser/ui/progressbar/progressbar';
 import { IAsyncDataSource, ITreeNode, ITreeRenderer } from 'vs/base/browser/ui/tree/tree';
-import { IAction } from 'vs/base/common/actions';
+import { IAction, IActionViewItemProvider } from 'vs/base/common/actions';
 import { debounce } from 'vs/base/common/decorators';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Iterable } from 'vs/base/common/iterator';
@@ -35,8 +36,8 @@ import { isString } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import 'vs/css!./media/connectionBrowseTab';
 import { localize } from 'vs/nls';
-import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
-import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
+import { createAndFillInContextMenuActions, MenuEntryActionViewItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { IMenuService, MenuId, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
@@ -73,8 +74,8 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 	private treeContainer: HTMLElement | undefined;
 	private model: TreeModel | undefined;
 	private treeLabels: ResourceLabels | undefined;
+	private treeMenus: ConnectionBrowseTreeMenuProvider | undefined;
 	private treeDataSource: DataSource | undefined;
-	private readonly contextKey = new ContextKey(this.contextKeyService);
 	private filterProgressBar: ProgressBar | undefined;
 
 	public onDidChangeVisibility = Event.None;
@@ -88,8 +89,6 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		@IContextViewService private readonly contextViewService: IContextViewService,
 		@IThemeService private readonly themeService: IThemeService,
 		@ICommandService private readonly commandService: ICommandService,
-		@IMenuService private readonly menuService: IMenuService,
-		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
@@ -150,9 +149,16 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 	renderTree(container: HTMLElement): void {
 		this.treeContainer = container.appendChild(DOM.$('div'));
 		this.treeLabels = this._register(this.instantiationService.createInstance(ResourceLabels, this));
+		this.treeMenus = this.instantiationService.createInstance(ConnectionBrowseTreeMenuProvider);
+		const actionViewItemProvider = (action: IAction) => {
+			if (action instanceof MenuItemAction) {
+				return this.instantiationService.createInstance(MenuEntryActionViewItem, action);
+			}
+			return undefined;
+		};
 		const renderers: ITreeRenderer<TreeElement, any, any>[] = [
-			new ProviderElementRenderer(),
-			this.instantiationService.createInstance(TreeItemRenderer, this.treeLabels),
+			new ProviderElementRenderer(this.treeMenus, actionViewItemProvider),
+			this.instantiationService.createInstance(TreeItemRenderer, this.treeMenus, this.treeLabels, actionViewItemProvider),
 			this.instantiationService.createInstance(ConnectionProfileRenderer, true),
 			this.instantiationService.createInstance(ConnectionProfileGroupRenderer),
 			this.instantiationService.createInstance(TreeNodeRenderer),
@@ -176,26 +182,12 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 				accessibilityProvider: new ListAccessibilityProvider()
 			}) as WorkbenchAsyncDataTree<TreeModel, TreeElement>);
 		this._register(this.tree.onContextMenu(e => {
-			let context: ITreeItem | ConnectionDialogTreeProviderElement | undefined;
-			let actionContext: TreeViewItemHandleArg | ConnectionDialogTreeProviderElement | undefined;
-			if (instanceOfITreeItemFromProvider(e.element)) {
-				context = e.element.element;
-				actionContext = <TreeViewItemHandleArg>{ $treeViewId: e.element.treeId, $treeItemHandle: context.handle, $treeItem: context };
-			} else if (e.element instanceof ConnectionDialogTreeProviderElement) {
-				context = e.element;
-				actionContext = e.element;
-			}
-			if (context) {
-				this.contextKey.set(context);
-				const menu = this.menuService.createMenu(MenuId.ConnectionDialogBrowseTreeContext, this.contextKeyService);
-				const primary: IAction[] = [];
-				const secondary: IAction[] = [];
-				const result = { primary, secondary };
-				createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result);
-
+			const actionContext = this.treeMenus.getActionContext(e.element);
+			if (actionContext) {
+				const actions = this.treeMenus.getActions(e.element);
 				this.contextMenuService.showContextMenu({
 					getAnchor: () => e.anchor,
-					getActions: () => result.primary,
+					getActions: () => actions,
 					getActionsContext: () => actionContext
 				});
 			}
@@ -334,6 +326,7 @@ class ListDelegate implements IListVirtualDelegate<TreeElement> {
 interface TreeElementTemplate {
 	readonly icon: HTMLElement;
 	readonly name: HTMLElement;
+	readonly actionBar?: ActionBar;
 }
 
 abstract class BaseTreeItemRender<T> implements ITreeRenderer<T, void, TreeElementTemplate> {
@@ -341,25 +334,47 @@ abstract class BaseTreeItemRender<T> implements ITreeRenderer<T, void, TreeEleme
 	protected abstract getText(element: T): string;
 	protected abstract getIconClass(element: T): string;
 
+	constructor(private menus?: ConnectionBrowseTreeMenuProvider,
+		private actionViewItemProvider?: IActionViewItemProvider
+	) {
+	}
+
 	renderTemplate(container: HTMLElement): TreeElementTemplate {
 		const root = DOM.append(container, DOM.$('div.browse-tree-element'));
 		const icon = DOM.append(root, DOM.$('.icon'));
 		const name = DOM.append(root, DOM.$('.name'));
-		return { name, icon };
+		let actionBar: ActionBar | undefined;
+		if (this.menus) {
+			const actionsContainer = DOM.append(root, DOM.$('.actions'));
+			actionBar = new ActionBar(actionsContainer, {
+				actionViewItemProvider: this.actionViewItemProvider
+			});
+		}
+		return { name, icon, actionBar };
 	}
 
 	renderElement(element: ITreeNode<T, void>, index: number, templateData: TreeElementTemplate, height: number): void {
 		templateData.name.innerText = this.getText(element.element);
 		templateData.icon.classList.add('codicon', this.getIconClass(element.element));
+		if (this.menus) {
+			templateData.actionBar.clear();
+			templateData.actionBar.context = this.menus.getActionContext(element.element);
+			templateData.actionBar.push(this.menus.getActions(element.element), { icon: true, label: false });
+		}
 	}
 
 	disposeTemplate(templateData: TreeElementTemplate): void {
+		templateData.actionBar?.dispose();
 	}
 }
 
 class ProviderElementRenderer extends BaseTreeItemRender<ConnectionDialogTreeProviderElement> {
 	public static readonly TEMPLATE_ID = 'ProviderElementTemplate';
 	public readonly templateId = ProviderElementRenderer.TEMPLATE_ID;
+
+	constructor(menus: ConnectionBrowseTreeMenuProvider, actionViewItemProvider: IActionViewItemProvider) {
+		super(menus, actionViewItemProvider);
+	}
 
 	getText(element: ConnectionDialogTreeProviderElement): string {
 		return element.name;
@@ -538,21 +553,66 @@ interface ITreeExplorerTemplateData {
 	container: HTMLElement;
 	resourceLabel: IResourceLabel;
 	icon: HTMLElement;
-	// actionBar: ActionBar;
+	actionBar: ActionBar;
+}
+
+class ConnectionBrowseTreeMenuProvider {
+	constructor(
+		@IMenuService private readonly menuService: IMenuService,
+		@IContextKeyService private readonly contextKeyService: IContextKeyService
+	) {
+	}
+
+	public getActionContext(element: any): TreeViewItemHandleArg | ConnectionDialogTreeProviderElement | undefined {
+		let actionContext: TreeViewItemHandleArg | ConnectionDialogTreeProviderElement | undefined;
+		if (instanceOfITreeItemFromProvider(element)) {
+			actionContext = <TreeViewItemHandleArg>{ $treeViewId: element.treeId, $treeItemHandle: element.element.handle, $treeItem: element.element };
+		} else if (element instanceof ConnectionDialogTreeProviderElement) {
+			actionContext = element;
+		}
+		return actionContext;
+	}
+
+	public getActions(element: any): IAction[] {
+		if (!this.contextKeyService) {
+			return [];
+		}
+
+		let context: ITreeItem | ConnectionDialogTreeProviderElement | undefined;
+		if (instanceOfITreeItemFromProvider(element)) {
+			context = element.element;
+		} else if (element instanceof ConnectionDialogTreeProviderElement) {
+			context = element;
+		}
+
+		if (!context) {
+			return [];
+		}
+
+		const contextKeyService = this.contextKeyService.createScoped();
+		const contextKey = new ContextKey(contextKeyService);
+		contextKey.set(context);
+		const menu = this.menuService.createMenu(MenuId.ConnectionDialogBrowseTreeContext, contextKeyService);
+		const primary: IAction[] = [];
+		const secondary: IAction[] = [];
+		const result = { primary, secondary };
+		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result);
+
+		menu.dispose();
+		contextKeyService.dispose();
+
+		return result.primary;
+	}
 }
 
 class TreeItemRenderer extends Disposable implements ITreeRenderer<ITreeItemFromProvider, void, ITreeExplorerTemplateData> {
 	static readonly ITEM_HEIGHT = 22;
 	static readonly TREE_TEMPLATE_ID = 'treeExplorer';
 
-	// private _actionRunner: MultipleSelectionActionRunner | undefined;
-
 	constructor(
-		// private treeViewId: string,
-		// private menus: TreeMenus,
+		private menus: ConnectionBrowseTreeMenuProvider,
 		private labels: ResourceLabels,
-		// private actionViewItemProvider: IActionViewItemProvider,
-		// private aligner: Aligner,
+		private actionViewItemProvider: IActionViewItemProvider,
 		@IThemeService private readonly themeService: IThemeService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ILabelService private readonly labelService: ILabelService
@@ -564,22 +624,18 @@ class TreeItemRenderer extends Disposable implements ITreeRenderer<ITreeItemFrom
 		return TreeItemRenderer.TREE_TEMPLATE_ID;
 	}
 
-	// set actionRunner(actionRunner: MultipleSelectionActionRunner) {
-	// 	this._actionRunner = actionRunner;
-	// }
-
 	renderTemplate(container: HTMLElement): ITreeExplorerTemplateData {
 		container.classList.add('custom-view-tree-node-item');
 
 		const icon = DOM.append(container, DOM.$('.custom-view-tree-node-item-icon'));
 
 		const resourceLabel = this.labels.create(container, { supportHighlights: true });
-		// const actionsContainer = DOM.append(resourceLabel.element, DOM.$('.actions'));
-		// const actionBar = new ActionBar(actionsContainer, {
-		// 	actionViewItemProvider: this.actionViewItemProvider
-		// });
+		const actionsContainer = DOM.append(resourceLabel.element, DOM.$('.actions'));
+		const actionBar = new ActionBar(actionsContainer, {
+			actionViewItemProvider: this.actionViewItemProvider
+		});
 
-		return { resourceLabel, icon, container, elementDisposable: Disposable.None };
+		return { resourceLabel, icon, container, elementDisposable: Disposable.None, actionBar };
 	}
 
 	renderElement(element: ITreeNode<ITreeItemFromProvider, void>, index: number, templateData: ITreeExplorerTemplateData): void {
@@ -595,7 +651,7 @@ class TreeItemRenderer extends Disposable implements ITreeRenderer<ITreeItemFrom
 		const sqlIcon = node.sqlIcon;
 
 		// reset
-		// templateData.actionBar.clear();
+		templateData.actionBar.clear();
 
 		if (resource || this.isFileKindThemeIcon(node.themeIcon)) {
 			const fileDecorations = this.configurationService.getValue<{ colors: boolean, badges: boolean }>('explorer.decorations');
@@ -622,17 +678,8 @@ class TreeItemRenderer extends Disposable implements ITreeRenderer<ITreeItemFrom
 			templateData.icon.style.backgroundImage = '';
 		}
 
-		// templateData.actionBar.context = <TreeViewItemHandleArg>{ $treeViewId: this.treeViewId, $treeItemHandle: node.handle };
-		// templateData.actionBar.push(this.menus.getResourceActions(node), { icon: true, label: false });
-		// if (this._actionRunner) {
-		// 	templateData.actionBar.actionRunner = this._actionRunner;
-		// }
-		this.setAlignment(templateData.container, node);
-		templateData.elementDisposable = (this.themeService.onDidFileIconThemeChange(() => this.setAlignment(templateData.container, node)));
-	}
-
-	private setAlignment(container: HTMLElement, treeItem: ITreeItem) {
-		// DOM.toggleClass(container.parentElement!, 'align-icon-with-twisty', this.aligner.alignIconWithTwisty(treeItem));
+		templateData.actionBar.context = this.menus.getActionContext(element.element);
+		templateData.actionBar.push(this.menus.getActions(element.element), { icon: true, label: false });
 	}
 
 	private isFileKindThemeIcon(icon: ThemeIcon | undefined): boolean {
@@ -660,8 +707,8 @@ class TreeItemRenderer extends Disposable implements ITreeRenderer<ITreeItemFrom
 	}
 
 	disposeTemplate(templateData: ITreeExplorerTemplateData): void {
-		// templateData.resourceLabel.dispose();
-		// templateData.actionBar.dispose();
+		templateData.resourceLabel.dispose();
+		templateData.actionBar.dispose();
 		templateData.elementDisposable.dispose();
 	}
 }

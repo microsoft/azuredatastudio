@@ -3,6 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+// mocha disables running through electron by default. Note that this must
+// come before any mocha imports.
+process.env.MOCHA_COLORS = '1';
+
 const { app, BrowserWindow, ipcMain } = require('electron');
 const { tmpdir } = require('os');
 const { join } = require('path');
@@ -11,12 +15,12 @@ const mocha = require('mocha');
 const events = require('events');
 const MochaJUnitReporter = require('mocha-junit-reporter');
 const url = require('url');
+const createStatsCollector = require('mocha/lib/stats-collector');
+const FullJsonStreamReporter = require('../fullJsonStreamReporter');
 
 // Disable render process reuse, we still have
 // non-context aware native modules in the renderer.
 app.allowRendererProcessReuse = false;
-
-const defaultReporterName = process.platform === 'win32' ? 'list' : 'spec';
 
 const optimist = require('optimist')
 	.describe('grep', 'only run tests matching <pattern>').alias('grep', 'g').alias('grep', 'f').string('grep')
@@ -26,7 +30,7 @@ const optimist = require('optimist')
 	.describe('build', 'run with build output (out-build)').boolean('build')
 	.describe('coverage', 'generate coverage report').boolean('coverage')
 	.describe('debug', 'open dev tools, keep window open, reuse app data').string('debug')
-	.describe('reporter', 'the mocha reporter').string('reporter').default('reporter', defaultReporterName)
+	.describe('reporter', 'the mocha reporter').string('reporter').default('reporter', 'spec')
 	.describe('reporter-options', 'the mocha reporter options').string('reporter-options').default('reporter-options', '')
 	.describe('tfs').string('tfs')
 	.describe('help', 'show the help').alias('help', 'h');
@@ -56,10 +60,10 @@ function deserializeSuite(suite) {
 		suites: suite.suites,
 		tests: suite.tests,
 		title: suite.title,
+		titlePath: () => suite.titlePath,
 		fullTitle: () => suite.fullTitle,
 		timeout: () => suite.timeout,
 		retries: () => suite.retries,
-		enableTimeouts: () => suite.enableTimeouts,
 		slow: () => suite.slow,
 		bail: () => suite.bail
 	};
@@ -68,6 +72,7 @@ function deserializeSuite(suite) {
 function deserializeRunnable(runnable) {
 	return {
 		title: runnable.title,
+		titlePath: () => runnable.titlePath,
 		fullTitle: () => runnable.fullTitle,
 		async: runnable.async,
 		slow: () => runnable.slow,
@@ -75,6 +80,15 @@ function deserializeRunnable(runnable) {
 		duration: runnable.duration,
 		currentRetry: () => runnable.currentRetry
 	};
+}
+
+function importMochaReporter(name) {
+	if (name === 'full-json-stream') {
+		return FullJsonStreamReporter;
+	}
+
+	const reporterPath = path.join(path.dirname(require.resolve('mocha')), 'lib', 'reporters', name);
+	return require(reporterPath);
 }
 
 function deserializeError(err) {
@@ -147,6 +161,7 @@ app.on('ready', () => {
 	win.loadURL(url.format({ pathname: path.join(__dirname, 'renderer.html'), protocol: 'file:', slashes: true }));
 
 	const runner = new IPCRunner();
+	createStatsCollector(runner);
 
 	if (argv.tfs) {
 		new mocha.reporters.Spec(runner);
@@ -157,11 +172,19 @@ app.on('ready', () => {
 			}
 		});
 	} else {
-		const reporterPath = path.join(path.dirname(require.resolve('mocha')), 'lib', 'reporters', argv.reporter);
-		let Reporter;
+		// mocha patches symbols to use windows escape codes, but it seems like
+		// Electron mangles these in its output.
+		if (process.platform === 'win32') {
+			Object.assign(importMochaReporter('base').symbols, {
+				ok: '+',
+				err: 'X',
+				dot: '.',
+			});
+		}
 
+		let Reporter;
 		try {
-			Reporter = require(reporterPath);
+			Reporter = importMochaReporter(argv.reporter);
 		} catch (err) {
 			try {
 				Reporter = require(argv.reporter);

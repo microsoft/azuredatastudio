@@ -60,6 +60,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private filterStyles?: ITableFilterStyles;
 	private disposableStore = new DisposableStore();
 	private _enabled: boolean = true;
+	private columnButtonMapping: Map<string, HTMLElement> = new Map<string, HTMLElement>();
+	private previouslyFocusedElement: HTMLElement;
 
 	constructor(private readonly contextViewProvider: IContextViewProvider) {
 	}
@@ -70,7 +72,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.subscribe(this.grid.onBeforeHeaderCellDestroy, (e: Event, args: Slick.OnBeforeHeaderCellDestroyEventArgs<T>) => this.handleBeforeHeaderCellDestroy(e, args))
 			.subscribe(this.grid.onClick, (e: DOMEvent) => this.handleBodyMouseDown(e as MouseEvent))
 			.subscribe(this.grid.onColumnsResized, () => this.columnsResized())
-			.subscribe(this.grid.onKeyDown, (e: DOMEvent) => this.handleKeyDown(e as KeyboardEvent));
+			.subscribe(this.grid.onKeyDown, async (e: DOMEvent) => { await this.handleGridKeyDown(e as KeyboardEvent); });
 		this.grid.setColumns(this.grid.getColumns());
 
 		this.disposableStore.add(addDisposableListener(document.body, 'mousedown', e => this.handleBodyMouseDown(e), true));
@@ -86,7 +88,27 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		const event = new StandardKeyboardEvent(e);
 		if (this.menu && event.keyCode === KeyCode.Escape) {
 			this.hideMenu();
+			if (this.previouslyFocusedElement?.focus && this.previouslyFocusedElement.tabIndex !== -1) {
+				this.previouslyFocusedElement?.focus();
+			}
 			EventHelper.stop(e, true);
+		}
+	}
+
+	private async handleGridKeyDown(e: KeyboardEvent): Promise<void> {
+		const event = new StandardKeyboardEvent(e);
+		// The shortcut key to open the filter menu is provided so that this feature is keyboard accessible.
+		// The buttons added to the column headers are set to not keyboard focusable so that they won't interfere with the slickgrid's internal focus management.
+		// F3 key is chosen because it is known for search related features
+		if (event.keyCode === KeyCode.F3) {
+			const cell = this.grid.getActiveCell();
+			if (cell) {
+				const column = this.grid.getColumns()[cell.cell] as FilterableColumn<T>;
+				if (column.filterable !== false && this.enabled && this.columnButtonMapping[column.id]) {
+					await this.showFilter(this.columnButtonMapping[column.id]);
+					EventHelper.stop(e, true);
+				}
+			}
 		}
 	}
 
@@ -113,7 +135,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			return;
 		}
 		args.node.classList.add('slick-header-with-filter');
-		const $el = jQuery(`<button aria-label="${ShowFilterText}" title="${ShowFilterText}"></button>`)
+		const $el = jQuery(`<button tabindex="-1" aria-label="${ShowFilterText}" title="${ShowFilterText}"></button>`)
 			.addClass('slick-header-menubutton')
 			.data('column', column);
 		this.setButtonImage($el, column.filterValues?.length > 0);
@@ -124,6 +146,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			await this.showFilter($el[0]);
 		});
 		$el.appendTo(args.node);
+
+		this.columnButtonMapping[column.id] = $el[0];
 	}
 
 	private handleBeforeHeaderCellDestroy(e: Event, args: Slick.OnBeforeHeaderCellDestroyEventArgs<T>) {
@@ -135,7 +159,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private createButtonMenuItem(title: string, command: HeaderFilterCommands, iconClass: string): Button {
 		const buttonContainer = append(this.menu, $(''));
 		const button = new Button(buttonContainer);
-		button.icon = { classNames: `slick-header-menuicon ${iconClass}` };
+		button.icon = { id: `slick-header-menuicon ${iconClass}` };
 		button.label = title;
 		button.onDidClick(async () => {
 			await this.handleMenuItemClick(command, this.columnDef);
@@ -281,6 +305,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	}
 
 	private async showFilter(filterButton: HTMLElement): Promise<void> {
+		this.previouslyFocusedElement = document.activeElement as HTMLElement;
 		await this.createFilterMenu(filterButton);
 		// Get the absolute coordinates of the filter button
 		const offset = jQuery(filterButton).offset();
