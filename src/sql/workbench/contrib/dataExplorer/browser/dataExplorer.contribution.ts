@@ -24,11 +24,11 @@ configurationRegistry.registerConfiguration({
 	'type': 'object',
 	'properties': {
 		[CONNECTIONS_CONFIG_KEY]: {
-			'description': localize(CONNECTIONS_CONFIG_KEY, "data source connections"),
+			'description': localize('datasource.connections', "data source connections"),
 			'type': 'array'
 		},
 		[GROUPS_CONFIG_KEY]: {
-			'description': localize(GROUPS_CONFIG_KEY, "data source groups"),
+			'description': localize('datasource.connectionGroups', "data source groups"),
 			'type': 'array'
 		},
 		[CONNECTIONS_SORT_BY_CONFIG_KEY]: {
@@ -39,7 +39,7 @@ configurationRegistry.registerConfiguration({
 				localize('connections.sortBy.displayName', 'Saved connections are sorted by their display names alphabetically.')
 			],
 			'default': ConnectionsSortBy.dateAdded,
-			'description': localize(CONNECTIONS_SORT_BY_CONFIG_KEY, "Order used for sorting saved connections and connection groups")
+			'description': localize('datasource.connections.sortBy', "Order used for sorting saved connections and connection groups")
 		}
 	}
 });
