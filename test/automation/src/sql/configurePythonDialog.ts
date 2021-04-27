@@ -32,13 +32,13 @@ export class ConfigurePythonDialog extends Dialog {
 		const pythonInstallLocationDropdownValue = `${dialog} select[aria-label="Python Install Location"] option`;
 		await this.code.waitForElement(pythonInstallLocationDropdownValue);
 
-		this.notificationToast.closeNotificationToasts();
+		await this.notificationToast.closeNotificationToasts();
 
 		const nextButton = '.modal-dialog .modal-content .modal-footer .right-footer .footer-button a[aria-label="Next"][aria-disabled="false"]';
 		await this.code.waitForElement(nextButton);
 		await this.code.dispatchKeybinding('enter');
 
-		this.notificationToast.closeNotificationToasts();
+		await this.notificationToast.closeNotificationToasts();
 
 		const installButton = '.modal-dialog .modal-content .modal-footer .right-footer .footer-button a[aria-label="Install"][aria-disabled="false"]';
 		await this.code.waitForElement(installButton);
