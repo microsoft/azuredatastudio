@@ -218,7 +218,7 @@ export class ConnectionConfig {
 		const sortBy = this.configurationService.getValue<string>(CONNECTION_SORT_CONFIG_KEY);
 		let sortFunc: (a: ConnectionProfile, b: ConnectionProfile) => number;
 
-		if (sortBy === 'by title alphabetically') {
+		if (sortBy === 'byTitleAlphabetically') {
 			sortFunc = ((a, b) => {
 				if (a.title < b.title) {
 					return -1;

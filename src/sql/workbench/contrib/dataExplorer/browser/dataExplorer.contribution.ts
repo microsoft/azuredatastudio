@@ -32,9 +32,13 @@ configurationRegistry.registerConfiguration({
 		},
 		'datasource.connectionSort': {
 			'type': 'string',
-			'enum': ['by time added', 'by title alphabetically'],
-			'default': 'by time added',
-			'description': localize('datasource.connectionSort', "Order used for sorting saved connections")
+			'enum': ['byTimeAdded', 'byTitleAlphabetically'],
+			'enumDescriptions': [
+				localize('connectionSort.byTimeAdded', 'Saved connections are sorted by the time they were added.'),
+				localize('connectionSort.byTitleAlphabetically', 'Saved connections are sorted by their titles alphabetically.')
+			],
+			'default': 'byTimeAdded',
+			'description': localize('datasource.connectionSort', "Order used for sorting saved connections and connection groups")
 		}
 	}
 });

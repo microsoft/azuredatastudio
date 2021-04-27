@@ -384,16 +384,16 @@ suite('ConnectionConfig', () => {
 		});
 	});
 
-	test('getConnections should return connections sorted alphabetically by title given datasource.connectionSort is set to \'by title alphabetically\'', () => {
+	test('getConnections should return connections sorted alphabetically by title given datasource.connectionSort is set to \'byTitleAlphabetically\'', () => {
 		let configurationService = new TestConfigurationService();
 		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(0, 2).reverse(), ConfigurationTarget.USER);
 		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(2, testConnections.length).reverse(), ConfigurationTarget.WORKSPACE);
-		configurationService.updateValue('datasource.connectionSort', 'by title alphabetically', ConfigurationTarget.USER);
+		configurationService.updateValue('datasource.connectionSort', 'byTitleAlphabetically', ConfigurationTarget.USER);
 
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allConnections = config.getConnections(true);
-		assert.equal(allConnections.length, testConnections.length);
-		assert.ok(allConnections.slice(1).every((item, i) => allConnections[i].title <= item.title));
+		assert.equal(allConnections.length, testConnections.length, 'The result groups length is invalid');
+		assert.ok(allConnections.slice(1).every((item, i) => allConnections[i].title <= item.title), 'The connections are not sorted correctly');
 	});
 
 	test('saveGroup should save the new groups to tree and return the id of the last group name', () => {

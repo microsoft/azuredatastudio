@@ -91,7 +91,8 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		@ICommandService private readonly commandService: ICommandService,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
-		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
 	) {
 		super();
 		this.connectionTreeService.setView(this);
@@ -224,6 +225,13 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		this._register(this.themeService.onDidColorThemeChange(async () => {
 			await this.refresh();
 		}));
+
+		this._register(this.configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('datasource.connectionSort')) {
+				this.updateSavedConnectionsNode();
+			}
+		}));
+
 	}
 
 	private handleTreeElementSelection(selectedNode: TreeElement, connect: boolean): void {

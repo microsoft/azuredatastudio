@@ -196,6 +196,11 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 				this.deleteObjectExplorerNodeAndRefreshTree(connectionParams.connectionProfile).catch(errors.onUnexpectedError);
 			}
 		}));
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('datasource.connectionSort')) {
+				this.refreshTree().catch(err => errors.onUnexpectedError);
+			}
+		}));
 
 		if (this._objectExplorerService && this._objectExplorerService.onUpdateObjectExplorerNodes) {
 			this._register(this._objectExplorerService.onUpdateObjectExplorerNodes(args => {
