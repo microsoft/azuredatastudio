@@ -343,6 +343,7 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	private connect(element?: IConnectionProfile): void {
+		this.logService.debug('ConnectionDialogWidget: Connect button is clicked');
 		if (this._connectButton.enabled) {
 			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ConnectionDialog, TelemetryKeys.TelemetryAction.ConnectToServer).withAdditionalProperties(
 				{ [TelemetryKeys.TelemetryPropertyName.ConnectionSource]: this._connectionSource }
@@ -352,6 +353,7 @@ export class ConnectionDialogWidget extends Modal {
 			this._providerTypeSelectBox.disable();
 			this.spinner = true;
 			this._onConnect.fire(element);
+			this.logService.debug('ConnectionDialogWidget: onConnect event is fired');
 		}
 	}
 
