@@ -11,7 +11,7 @@ import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/co
 import { DataExplorerContainerExtensionHandler } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerExtensionPoint';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { DataExplorerViewletViewsContribution } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
-import { GROUPS_CONFIG_KEY, CONNECTIONS_CONFIG_KEY, CONNECTION_SORT_BY_CONFIG_KEY } from 'sql/platform/connection/common/connectionConfig';
+import { GROUPS_CONFIG_KEY, CONNECTIONS_CONFIG_KEY, CONNECTIONS_SORT_BY_CONFIG_KEY, ConnectionsSortBy } from 'sql/platform/connection/common/connectionConfig';
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 workbenchRegistry.registerWorkbenchContribution(DataExplorerViewletViewsContribution, LifecyclePhase.Starting);
@@ -31,15 +31,15 @@ configurationRegistry.registerConfiguration({
 			'description': localize(GROUPS_CONFIG_KEY, "data source groups"),
 			'type': 'array'
 		},
-		[CONNECTION_SORT_BY_CONFIG_KEY]: {
+		[CONNECTIONS_SORT_BY_CONFIG_KEY]: {
 			'type': 'string',
-			'enum': ['DateAdded', 'DisplayName'],
+			'enum': [ConnectionsSortBy.dateAdded, ConnectionsSortBy.displayName],
 			'enumDescriptions': [
-				localize('sortBy.DateAdded', 'Saved connections are sorted by the date they were added.'),
-				localize('sortBy.DisplayName', 'Saved connections are sorted by their display name alphabetically.')
+				localize('connections.sortBy.dateAdded', 'Saved connections are sorted by the dates they were added.'),
+				localize('connections.sortBy.displayName', 'Saved connections are sorted by their display names alphabetically.')
 			],
-			'default': 'byTimeAdded',
-			'description': localize(CONNECTION_SORT_BY_CONFIG_KEY, "Order used for sorting saved connections and connection groups")
+			'default': ConnectionsSortBy.dateAdded,
+			'description': localize(CONNECTIONS_SORT_BY_CONFIG_KEY, "Order used for sorting saved connections and connection groups")
 		}
 	}
 });

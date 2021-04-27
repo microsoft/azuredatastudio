@@ -16,7 +16,12 @@ import { deepClone } from 'vs/base/common/objects';
 
 export const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
 export const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
-export const CONNECTION_SORT_BY_CONFIG_KEY = 'datasource.connections.sortBy';
+export const CONNECTIONS_SORT_BY_CONFIG_KEY = 'datasource.connections.sortBy';
+
+export const enum ConnectionsSortBy {
+	dateAdded = 'dateAdded',
+	displayName = 'displayName'
+}
 
 export interface ISaveGroupResult {
 	groups: IConnectionProfileGroup[];
@@ -51,10 +56,10 @@ export class ConnectionConfig {
 			allGroups = allGroups.concat(userValue);
 		}
 
-		const sortBy = this.configurationService.getValue<string>(CONNECTION_SORT_BY_CONFIG_KEY);
+		const sortBy = this.configurationService.getValue<string>(CONNECTIONS_SORT_BY_CONFIG_KEY);
 		let sortFunc: (a: IConnectionProfileGroup, b: IConnectionProfileGroup) => number;
 
-		if (sortBy === 'DisplayName') {
+		if (sortBy === ConnectionsSortBy.displayName) {
 			sortFunc = ((a, b) => {
 				if (a.name < b.name) {
 					return -1;
@@ -235,10 +240,10 @@ export class ConnectionConfig {
 			return ConnectionProfile.createFromStoredProfile(p, this._capabilitiesService);
 		});
 
-		const sortBy = this.configurationService.getValue<string>(CONNECTION_SORT_BY_CONFIG_KEY);
+		const sortBy = this.configurationService.getValue<string>(CONNECTIONS_SORT_BY_CONFIG_KEY);
 		let sortFunc: (a: ConnectionProfile, b: ConnectionProfile) => number;
 
-		if (sortBy === 'DisplayName') {
+		if (sortBy === ConnectionsSortBy.displayName) {
 			sortFunc = ((a, b) => {
 				if (a.title < b.title) {
 					return -1;
