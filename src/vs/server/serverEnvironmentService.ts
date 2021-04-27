@@ -15,7 +15,6 @@ export const serverOptions: OptionDescriptions<ServerParsedArgs> = {
 	'driver': { type: 'string' },
 	'start-server': { type: 'boolean' },
 	'print-startup-performance': { type: 'boolean' },
-	'print-ip-address': { type: 'boolean' },
 
 	'fileWatcherPolling': { type: 'string' },
 
@@ -61,7 +60,6 @@ export interface ServerParsedArgs {
 	'socket-path'?: string;
 	driver?: string;
 	'print-startup-performance'?: boolean;
-	'print-ip-address'?: boolean;
 	'disable-telemetry'?: boolean;
 	fileWatcherPolling?: string;
 	'start-server'?: boolean;

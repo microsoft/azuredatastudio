@@ -14,6 +14,7 @@
 	"win32AppUserModelId": "Microsoft.azuredatastudio.rc1",
 	"win32ShellNameShort": "Azure Data Studio - RC1",
 	"darwinBundleIdentifier": "com.azuredatastudio.oss.rc1",
+	"linuxIconName": "com.azuredatastudio.rc1",
 	"quality": "rc1",
 	"extensionsGallery": {
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery-test.json"

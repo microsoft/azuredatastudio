@@ -6,8 +6,9 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as http from 'http';
 import * as net from 'net';
+import * as os from 'os';
 import * as url from 'url';
-// import { performance } from 'perf_hooks';
+import { performance } from 'perf_hooks';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { Disposable, toDisposable } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -42,8 +43,6 @@ import { ILocalizationsService } from 'vs/platform/localizations/common/localiza
 import { LocalizationsService } from 'vs/platform/localizations/node/localizations';
 import { AppInsightsAppender } from 'vs/platform/telemetry/node/appInsightsAppender';
 import { ITelemetryServiceConfig, TelemetryService } from 'vs/platform/telemetry/common/telemetryService';
-import { resolveCommonProperties } from 'vs/platform/telemetry/node/commonProperties';
-import { getMachineId } from 'vs/base/node/id';
 import { FileService } from 'vs/platform/files/common/fileService';
 import { DiskFileSystemProvider } from 'vs/platform/files/node/diskFileSystemProvider';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -65,9 +64,10 @@ import { URI } from 'vs/base/common/uri';
 import { isEqualOrParent } from 'vs/base/common/extpath';
 import { ServerEnvironmentService, ServerParsedArgs } from 'vs/server/serverEnvironmentService';
 import { basename, dirname, join } from 'vs/base/common/path';
+import { assertIsDefined } from 'vs/base/common/types';
 import { REMOTE_TERMINAL_CHANNEL_NAME } from 'vs/workbench/contrib/terminal/common/remoteTerminalChannel';
 import { RemoteTerminalChannel } from 'vs/server/remoteTerminalChannel';
-//import { LoaderStats } from 'vs/base/common/amd';
+import { LoaderStats } from 'vs/base/common/amd';
 import { SpdLogService } from 'vs/platform/log/node/spdlogService';
 import { RemoteExtensionLogFileName } from 'vs/workbench/services/remote/common/remoteAgentService';
 
@@ -268,10 +268,10 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 				this._register(toDisposable(() => appInsightsAppender!.flush())); // Ensure the AI appender is disposed so that it flushes remaining data
 			}
 
-			const machineId = await getMachineId();
+			// const machineId = await getMachineId();
 			const config: ITelemetryServiceConfig = {
 				appender: appInsightsAppender,
-				commonProperties: resolveCommonProperties(product.commit, product.version + '-remote', machineId, product.msftInternalDomains, this._environmentService.installSourcePath, 'remoteAgent'),
+				commonProperties: undefined, // resolveCommonProperties(product.commit, product.version + '-remote', machineId, product.msftInternalDomains, this._environmentService.installSourcePath, 'remoteAgent'),
 				piiPaths: [this._environmentService.appRoot]
 			};
 
@@ -414,7 +414,7 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		// Finally!
 		let reconnectionToken = generateUuid();
 		let isReconnection = false;
-		let skipWebSocketFrames = false;
+		// let skipWebSocketFrames = false;
 
 		if (req.url) {
 			const query = url.parse(req.url, true).query;
@@ -424,16 +424,18 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 			if (query.reconnection === 'true') {
 				isReconnection = true;
 			}
-			if (query.skipWebSocketFrames === 'true') {
-				skipWebSocketFrames = true;
-			}
+			// if (query.skipWebSocketFrames === 'true') {
+			// 	skipWebSocketFrames = true;
+			// }
 		}
 
-		if (skipWebSocketFrames) {
-			this._handleWebSocketConnection(new NodeSocket(socket), isReconnection, reconnectionToken);
-		} else {
-			this._handleWebSocketConnection(new WebSocketNodeSocket(new NodeSocket(socket)), isReconnection, reconnectionToken);
-		}
+		this._handleWebSocketConnection(new NodeSocket(socket), isReconnection, reconnectionToken);
+
+		// if (skipWebSocketFrames) {
+		// 	this._handleWebSocketConnection(new NodeSocket(socket), isReconnection, reconnectionToken);
+		// } else {
+		// 	this._handleWebSocketConnection(new WebSocketNodeSocket(new NodeSocket(socket)), isReconnection, reconnectionToken);
+		// }
 	}
 
 	public handleServerError(err: Error): void {
@@ -788,6 +790,17 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 	}
 }
 
+function parsePort(args: ServerParsedArgs): number {
+	try {
+		if (args.port) {
+			return parseInt(args.port);
+		}
+	} catch (e) {
+		console.log('Port is not a number, using 8000 instead.');
+	}
+	return 8000;
+}
+
 function parseConnectionToken(args: ServerParsedArgs): { connectionToken: string; connectionTokenIsMandatory: boolean; } {
 	if (args['connection-secret']) {
 		if (args['connectionToken']) {
@@ -806,15 +819,7 @@ function parseConnectionToken(args: ServerParsedArgs): { connectionToken: string
 	}
 }
 
-export interface IServerAPI {
-	initialize(): Promise<void>;
-	handleRequest(req: http.IncomingMessage, res: http.ServerResponse): Promise<void>;
-	handleUpgrade(req: http.IncomingMessage, socket: net.Socket): void;
-	handleServerError(err: Error): void;
-	dispose(): void;
-}
-
-export function createServer(address: string | net.AddressInfo | null, args: ServerParsedArgs, REMOTE_DATA_FOLDER: string): Promise<IServerAPI> {
+export async function runServer(args: ServerParsedArgs, REMOTE_DATA_FOLDER: string): Promise<void> {
 	const environmentService = new ServerEnvironmentService(args);
 
 	//
@@ -849,37 +854,91 @@ export function createServer(address: string | net.AddressInfo | null, args: Ser
 	const { connectionToken, connectionTokenIsMandatory } = parseConnectionToken(args);
 	const hasWebClient = fs.existsSync(FileAccess.asFileUri('vs/code/browser/workbench/workbench.html', require).fsPath);
 
-	if (hasWebClient && address && typeof address !== 'string') {
-		// ships the web ui!
-		console.log(`Web UI available at http://localhost${address.port === 80 ? '' : `:${address.port}`}/?tkn=${connectionToken}`);
-	}
+	let _remoteExtensionHostAgentServer: RemoteExtensionHostAgentServer | null = null;
+	let _remoteExtensionHostAgentServerPromise: Promise<RemoteExtensionHostAgentServer> | null = null;
+	const getRemoteExtensionHostAgentServer = (): Promise<RemoteExtensionHostAgentServer> => {
+		if (!_remoteExtensionHostAgentServerPromise) {
+			_remoteExtensionHostAgentServerPromise = new Promise((resolve, reject) => {
+				_remoteExtensionHostAgentServer = new RemoteExtensionHostAgentServer(environmentService, connectionToken, connectionTokenIsMandatory, hasWebClient, REMOTE_DATA_FOLDER);
+				_remoteExtensionHostAgentServer.initialize().then(_ => resolve(_remoteExtensionHostAgentServer!), reject);
+			});
+		}
+		return _remoteExtensionHostAgentServerPromise;
+	};
 
-	const remoteExtensionHostAgentServer = new RemoteExtensionHostAgentServer(environmentService, connectionToken, connectionTokenIsMandatory, hasWebClient, REMOTE_DATA_FOLDER);
-	return remoteExtensionHostAgentServer.initialize().then(_ => {
-		// {{SQL CARBON EDIT}} - build break
-		// if (args['print-startup-performance']) {
-		// 	const currentTime = performance.now();
-		// 	const vscodeServerStartTime: number = (<any>global).vscodeServerStartTime;
-		// 	const vscodeServerListenTime: number = (<any>global).vscodeServerListenTime;
-		// 	const vscodeServerCodeLoadedTime: number = (<any>global).vscodeServerCodeLoadedTime;
+	const server = http.createServer(async (req: http.IncomingMessage, res: http.ServerResponse) => {
+		const remoteExtensionHostAgentServer = await getRemoteExtensionHostAgentServer();
+		return remoteExtensionHostAgentServer.handleRequest(req, res);
+	});
+	server.on('upgrade', async (req: http.IncomingMessage, socket: net.Socket) => {
+		const remoteExtensionHostAgentServer = await getRemoteExtensionHostAgentServer();
+		return remoteExtensionHostAgentServer.handleUpgrade(req, socket);
+	});
+	server.on('error', async (err) => {
+		const remoteExtensionHostAgentServer = await getRemoteExtensionHostAgentServer();
+		return remoteExtensionHostAgentServer.handleServerError(err);
+	});
+	const nodeListenOptions = (
+		args['socket-path']
+			? { path: args['socket-path'] }
+			: { host: args.host, port: parsePort(args) }
+	);
+	server.listen(nodeListenOptions, async () => {
 
-		// 	const stats = LoaderStats.get();
-		// 	let output = '';
-		// 	output += '\n\n### Load AMD-module\n';
-		// 	output += LoaderStats.toMarkdownTable(['Module', 'Duration'], stats.amdLoad);
-		// 	output += '\n\n### Load commonjs-module\n';
-		// 	output += LoaderStats.toMarkdownTable(['Module', 'Duration'], stats.nodeRequire);
-		// 	output += '\n\n### Invoke AMD-module factory\n';
-		// 	output += LoaderStats.toMarkdownTable(['Module', 'Duration'], stats.amdInvoke);
-		// 	output += '\n\n### Invoke commonjs-module\n';
-		// 	output += LoaderStats.toMarkdownTable(['Module', 'Duration'], stats.nodeEval);
-		// 	output += `Start-up time: ${vscodeServerListenTime - vscodeServerStartTime}\n`;
-		// 	output += `Code loading time: ${vscodeServerCodeLoadedTime - vscodeServerStartTime}\n`;
-		// 	output += `Initialized time: ${currentTime - vscodeServerStartTime}\n`;
-		// 	output += `\n`;
-		// 	console.log(output);
-		// }
-		return remoteExtensionHostAgentServer;
+		let output = '';
+
+		output += license + '\n';
+
+		if (typeof nodeListenOptions.port === 'number') {
+			const ifaces = os.networkInterfaces();
+			Object.keys(ifaces).forEach(function (ifname) {
+				ifaces[ifname].forEach(function (iface) {
+					if (!iface.internal && iface.family === 'IPv4') {
+						output += `IP Address: ${iface.address}\n`;
+					}
+				});
+			});
+		}
+
+		// Do not change this line. VS Code looks for this in the output.
+		const address = assertIsDefined(server.address());
+		output += `Extension host agent listening on ${typeof address === 'string' ? address : address.port}\n`;
+		if (hasWebClient && typeof address !== 'string') {
+			// ships the web ui!
+			output += `Web UI available at http://localhost${address.port === 80 ? '' : `:${address.port}`}/?tkn=${connectionToken}\n`;
+		}
+		output += `\n`;
+		console.log(output);
+
+		if (args['print-startup-performance']) {
+			const currentTime = performance.now();
+			const vscodeServerStartTime: number = (<any>global).vscodeServerStartTime;
+			const vscodeServerCodeLoadedTime: number = (<any>global).vscodeServerCodeLoadedTime;
+
+			const stats = LoaderStats.get();
+			let output = '';
+			output += '\n\n### Load AMD-module\n';
+			output += LoaderStats.toMarkdownTable(['Module', 'Duration'], stats.amdLoad);
+			output += '\n\n### Load commonjs-module\n';
+			output += LoaderStats.toMarkdownTable(['Module', 'Duration'], stats.nodeRequire);
+			output += '\n\n### Invoke AMD-module factory\n';
+			output += LoaderStats.toMarkdownTable(['Module', 'Duration'], stats.amdInvoke);
+			output += '\n\n### Invoke commonjs-module\n';
+			output += LoaderStats.toMarkdownTable(['Module', 'Duration'], stats.nodeEval);
+			output += `Code loading time: ${vscodeServerCodeLoadedTime - vscodeServerStartTime}\n`;
+			output += `Start-up time: ${currentTime - vscodeServerStartTime}\n`;
+			output += `\n`;
+			console.log(output);
+		}
+
+		await getRemoteExtensionHostAgentServer();
+	});
+
+	process.on('exit', () => {
+		server.close();
+		if (_remoteExtensionHostAgentServer) {
+			_remoteExtensionHostAgentServer.dispose();
+		}
 	});
 }
 

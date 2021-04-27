@@ -14,8 +14,11 @@
 	"win32AppUserModelId": "Microsoft.azuredatastudio.saw",
 	"win32ShellNameShort": "Azure Data Studio - SAW",
 	"darwinBundleIdentifier": "com.azuredatastudio.oss.saw",
+	"linuxIconName": "com.azuredatastudio.saw",
 	"quality": "saw",
-	"disabledFeatures": ["workbench.extensions.action.installVSIX"],
+	"disabledFeatures": [
+		"workbench.extensions.action.installVSIX"
+	],
 	"msftInternalDomains": [
 		"redmond.corp.microsoft.com",
 		"northamerica.corp.microsoft.com",

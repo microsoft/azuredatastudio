@@ -8,7 +8,6 @@ import { URI } from 'vs/base/common/uri';
 import { createRemoteURITransformer } from 'vs/server/remoteUriTransformer';
 import { IRemoteAgentEnvironmentDTO, IGetEnvironmentDataArguments, IScanExtensionsArguments, IScanSingleExtensionArguments } from 'vs/workbench/services/remote/common/remoteAgentEnvironmentChannel';
 import * as nls from 'vs/nls';
-import * as pfs from 'vs/base/node/pfs';
 import { FileAccess, Schemas } from 'vs/base/common/network';
 import { INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 import product from 'vs/platform/product/common/product';
@@ -17,7 +16,6 @@ import { IServerChannel } from 'vs/base/parts/ipc/common/ipc';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { transformOutgoingURIs } from 'vs/base/common/uriIpc';
 import { ILogService } from 'vs/platform/log/common/log';
-import { getNLSConfiguration, InternalNLSConfiguration } from 'vs/server/remoteLanguagePacks';
 import { ContextKeyExpr, ContextKeyDefinedExpr, ContextKeyNotExpr, ContextKeyEqualsExpr, ContextKeyNotEqualsExpr, ContextKeyRegexExpr, IContextKeyExprMapper, ContextKeyExpression, ContextKeyInExpr } from 'vs/platform/contextkey/common/contextkey';
 import { listProcesses } from 'vs/base/node/ps';
 import { getMachineInfo, collectWorkspaceStats } from 'vs/platform/diagnostics/node/diagnosticsService';
@@ -29,7 +27,6 @@ import { ILog, Translations } from 'vs/workbench/services/extensions/common/exte
 import { ITelemetryAppender } from 'vs/platform/telemetry/common/telemetryUtils';
 import { IBuiltInExtension } from 'vs/platform/product/common/productService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Main as CliMain } from 'vs/code/node/cliProcessMain';
 
 let _SystemExtensionsRoot: string | null = null;
 function getSystemExtensionsRoot(): string {
@@ -73,23 +70,23 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 			}
 		};
 
-		const cli = instantiationService.createInstance(CliMain);
-		if (environmentService.args['install-builtin-extension']) {
-			this.whenExtensionsReady = cli.installExtensions([], environmentService.args['install-builtin-extension'], !!environmentService.args['do-not-sync'], !!environmentService.args['force'])
-				.then(null, error => {
-					logService.error(error);
-				});
-		} else {
-			this.whenExtensionsReady = Promise.resolve();
-		}
+		// const cli = instantiationService.createInstance(CliMain);
+		// if (environmentService.args['install-builtin-extension']) {
+		// 	this.whenExtensionsReady = cli.installExtensions([], environmentService.args['install-builtin-extension'], !!environmentService.args['do-not-sync'], !!environmentService.args['force'])
+		// 		.then(null, error => {
+		// 			logService.error(error);
+		// 		});
+		// } else {
+		// 	this.whenExtensionsReady = Promise.resolve();
+		// }
 
-		if (environmentService.args['install-extension']) {
-			this.whenExtensionsReady
-				.then(() => cli.installExtensions(environmentService.args['install-extension']!, [], !!environmentService.args['do-not-sync'], !!environmentService.args['force']))
-				.then(null, error => {
-					logService.error(error);
-				});
-		}
+		// if (environmentService.args['install-extension']) {
+		// 	this.whenExtensionsReady
+		// 		.then(() => cli.installExtensions(environmentService.args['install-extension']!, [], !!environmentService.args['do-not-sync'], !!environmentService.args['force']))
+		// 		.then(null, error => {
+		// 			logService.error(error);
+		// 		});
+		// }
 	}
 
 	async call(_: any, command: string, arg?: any): Promise<any> {
@@ -127,7 +124,6 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 				let extensions = await this._scanExtensions(language, extensionDevelopmentPath);
 				extensions = transformOutgoingURIs(extensions, uriTransformer);
 
-				this.logService.trace('Scanned Extensions', extensions);
 				RemoteAgentEnvironmentChannel._massageWhenConditions(extensions);
 
 				return extensions;
@@ -272,6 +268,19 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 			mapIn(key: string, valueKey: string): ContextKeyInExpr {
 				return ContextKeyInExpr.create(key, valueKey);
 			}
+
+			mapGreater(key: string, value: any): ContextKeyExpression {
+				return undefined;
+			}
+			mapGreaterEquals(key: string, value: any): ContextKeyExpression {
+				return undefined;
+			}
+			mapSmaller(key: string, value: any): ContextKeyExpression {
+				return undefined;
+			}
+			mapSmallerEquals(key: string, value: any): ContextKeyExpression {
+				return undefined;
+			}
 		};
 
 		const _massageWhenUser = (element: WhenUser) => {
@@ -332,22 +341,24 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 			workspaceStorageHome: this.environmentService.workspaceStorageHome,
 			userHome: this.environmentService.userHome,
 			os: platform.OS,
-			useHostProxy: false
+			useHostProxy: false,
+			marks: undefined
 		};
 	}
 
 	private async _getTranslations(language: string): Promise<Translations> {
-		const config = await getNLSConfiguration(language, this.environmentService.userDataPath);
-		if (InternalNLSConfiguration.is(config)) {
-			try {
-				const content = await pfs.readFile(config._translationsConfigFile, 'utf8');
-				return JSON.parse(content);
-			} catch (err) {
-				return Object.create(null);
-			}
-		} else {
-			return Object.create(null);
-		}
+		// const config = await getNLSConfiguration(language, this.environmentService.userDataPath);
+		// if (InternalNLSConfiguration.is(config)) {
+		// 	try {
+		// 		const content = await pfs.readFile(config._translationsConfigFile, 'utf8');
+		// 		return JSON.parse(content);
+		// 	} catch (err) {
+		// 		return Object.create(null);
+		// 	}
+		// } else {
+		// 	return Object.create(null);
+		// }
+		return Object.create(null);
 	}
 
 	private async _scanExtensions(language: string, extensionDevelopmentPath?: string[]): Promise<IExtensionDescription[]> {

@@ -134,7 +134,9 @@ export class ExtensionHostConnection {
 		const msg: IExtHostSocketMessage = {
 			type: 'VSCODE_EXTHOST_IPC_SOCKET',
 			initialDataChunk: (<Buffer>initialDataChunk.buffer).toString('base64'),
-			skipWebSocketFrames: skipWebSocketFrames
+			skipWebSocketFrames: skipWebSocketFrames,
+			permessageDeflate: false,
+			inflateBytes: 'false'
 		};
 		this._extensionHostProcess.send(msg, socket);
 	}
@@ -216,7 +218,9 @@ export class ExtensionHostConnection {
 					const reply: IExtHostSocketMessage = {
 						type: 'VSCODE_EXTHOST_IPC_SOCKET',
 						initialDataChunk: (<Buffer>this._initialDataChunk!.buffer).toString('base64'),
-						skipWebSocketFrames: this._skipWebSocketFrames
+						skipWebSocketFrames: this._skipWebSocketFrames,
+						inflateBytes: 'false',
+						permessageDeflate: false
 					};
 					this._extensionHostProcess!.send(reply, this._rendererConnection!);
 					this._initialDataChunk = null;
