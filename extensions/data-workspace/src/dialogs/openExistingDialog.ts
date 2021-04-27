@@ -119,10 +119,9 @@ export class OpenExistingDialog extends DialogBase {
 
 				if (this.remoteGitRepoRadioButton!.checked) {
 					TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, TelemetryActions.GitClone)
-						.withAdditionalProperties({ selectedTarget: 'workspace' })
+						.withAdditionalProperties({ selectedTarget: 'project' })
 						.send();
 
-					// after this executes, the git extension will show a popup asking if you want to enter the workspace
 					addProjectsPromise = this.workspaceService.gitCloneProject((<azdata.InputBoxComponent>this.gitRepoTextBoxComponent?.component).value!, this.localClonePathTextBox!.value!, vscode.Uri.file(this.workspaceInputBox!.value!));
 				} else {
 					if (validateWorkspace) {
