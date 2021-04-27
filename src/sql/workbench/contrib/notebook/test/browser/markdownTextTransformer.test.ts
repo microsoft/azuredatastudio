@@ -71,6 +71,7 @@ suite('MarkdownTextTransformer', () => {
 			undefined,
 			undefined,
 			undefined,
+			undefined,
 		);
 		mockNotebookService = TypeMoq.Mock.ofInstance(notebookService);
 

@@ -25,7 +25,7 @@ export class NotebookEditorInputAssociation implements ILanguageAssociation {
 
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService, @IConfigurationService private readonly configurationService: IConfigurationService) { }
 
-	convertInput(activeEditor: IEditorInput): NotebookInput | DiffNotebookInput {
+	convertInput(activeEditor: IEditorInput): NotebookInput | DiffNotebookInput | undefined {
 		if (activeEditor instanceof FileEditorInput) {
 			return this.instantiationService.createInstance(FileNotebookInput, activeEditor.getName(), activeEditor.resource, activeEditor);
 		} else if (activeEditor instanceof UntitledTextEditorInput) {

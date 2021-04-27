@@ -6,6 +6,7 @@
 import { setup as setupQueryEditorTests, setupWeb as setupQueryEditorWebTests } from './areas/queryEditor/queryEditor.test';
 import { setup as setupNotebookTests } from './areas/notebook/notebook.test';
 import { setup as setupNotebookViewTests } from './areas/notebook/notebookView.test';
+import { setup as setupImportTests } from './areas/import/import.test';
 import { ApplicationOptions } from '../../../automation';
 import * as yazl from 'yauzl';
 import * as fs from 'fs';
@@ -21,6 +22,7 @@ export function main(isWeb: boolean = false): void {
 	}
 	setupNotebookTests();
 	setupNotebookViewTests();
+	setupImportTests();
 }
 
 /* eslint-disable no-sync */
@@ -29,7 +31,7 @@ const PLATFORM = '${PLATFORM}';
 const RUNTIME = '${RUNTIME}';
 const VERSION = '${VERSION}';
 
-const sqliteUrl = `https://github.com/Microsoft/azuredatastudio-sqlite/releases/download/1.1.0/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
+const sqliteUrl = `https://github.com/Microsoft/azuredatastudio-sqlite/releases/download/1.1.2/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
 
 export async function setup(app: ApplicationOptions): Promise<void> {
 	console.log('*** Downloading test extensions');
