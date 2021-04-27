@@ -205,7 +205,7 @@ export class ImageCalloutDialog extends Modal {
 			embedImage: this._imageEmbedCheckbox.checked,
 			// check for spaces and remove them in imageName.
 			// if spaces in image path replace with &#32; as per https://github.com/microsoft/vscode/issues/11933#issuecomment-249987377
-			insertEscapedMarkdown: this._imageEmbedCheckbox.checked ? `![${imageName}](attachment:${imageName.replace(' ', '')})` : `![](${imgPath.replace(' ', '&#32;')})`,
+			insertEscapedMarkdown: this._imageEmbedCheckbox.checked ? `![${imageName}](attachment:${imageName.replace(/\s/g, '')})` : `![](${imgPath.replace(/\s/g, '&#32;')})`,
 			imagePath: imgPath
 		});
 		this.dispose();
