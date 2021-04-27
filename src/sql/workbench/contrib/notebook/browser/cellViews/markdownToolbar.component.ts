@@ -268,9 +268,9 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				await insertFormattedMarkdown(linkCalloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
 			} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
 				if (imageCalloutResult.embedImage) {
-					let base64String = await this.fileToBase64(imageCalloutResult.imagePath, false);
-					let mimeType = await this.fileToBase64(imageCalloutResult.imagePath, true);
-					this.cellModel.addAttachment(mimeType.toString(), base64String.toString(), path.basename(imageCalloutResult.imagePath).replace(' ', ''));
+					let base64String = await this.getBase64MimeType(imageCalloutResult.imagePath, false);
+					let mimeType = await this.getBase64MimeType(imageCalloutResult.imagePath, true);
+					this.cellModel.addAttachment(mimeType, base64String, path.basename(imageCalloutResult.imagePath).replace(' ', ''));
 					await insertFormattedMarkdown(imageCalloutResult.insertEscapedMarkdown, this.getCellEditorControl());
 				}
 				await insertFormattedMarkdown(imageCalloutResult.insertEscapedMarkdown, this.getCellEditorControl());
@@ -361,21 +361,21 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		return undefined;
 	}
 
-	public fileToBase64 = (filepath, getType) => {
-		return new Promise<string | ArrayBuffer>(async resolve => {
+	public async getBase64MimeType(filepath: string, getMimeType: boolean): Promise<string> {
+		return new Promise<string>(async resolve => {
 			let response = await fetch(filepath);
 			let blob = await response.blob();
-			if (getType) {
+			if (getMimeType) {
 				resolve(blob.type);
 			}
 			let file = new File([blob], filepath);
 			let reader = new FileReader();
 			// Read file content on file loaded event
 			reader.onload = function (event) {
-				resolve(event.target.result);
+				resolve(event.target.result.toString());
 			};
 			// Convert data to base64
 			reader.readAsDataURL(file);
 		});
-	};
+	}
 }
