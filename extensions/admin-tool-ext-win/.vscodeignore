@@ -1,8 +1,9 @@
-coverage
-out/test
-src
 .gitignore
-coverConfig.json
+src/**
+out/**
+extension.webpack.config.js
 tsconfig.json
-cgmanifest.json
-.vscode
+yarn.lock
+coverConfig.json
+*.vsix
+coverage

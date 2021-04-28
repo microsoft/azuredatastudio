@@ -1,2 +1,8 @@
+.gitignore
 client/src/**
+client/out/**
+extension.webpack.config.js
 client/tsconfig.json
+yarn.lock
+*.vsix
+coverage
