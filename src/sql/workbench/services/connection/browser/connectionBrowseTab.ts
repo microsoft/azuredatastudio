@@ -12,6 +12,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { ITreeItem } from 'sql/workbench/common/views';
+import { ConnectionSource } from 'sql/workbench/services/connection/browser/connectionDialogWidget';
 import { IConnectionTreeDescriptor, IConnectionTreeService } from 'sql/workbench/services/connection/common/connectionTreeService';
 import { AsyncRecentConnectionTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/asyncRecentConnectionTreeDataSource';
 import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
@@ -65,7 +66,8 @@ export class ConnectionBrowseTab implements IPanelTab {
 
 export interface SelectedConnectionChangedEventArgs {
 	connectionProfile: IConnectionProfile,
-	connect: boolean
+	connect: boolean,
+	source: ConnectionSource
 }
 
 export class ConnectionBrowserView extends Disposable implements IPanelView {
@@ -238,14 +240,16 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 					this._onSelectedConnectionChanged.fire(
 						{
 							connectionProfile: selectedNode.element.payload,
-							connect: connect
+							connect: connect,
+							source: 'azure'
 						});
 				}
 			}
 		} else if (selectedNode instanceof ConnectionProfile) {
 			this._onSelectedConnectionChanged.fire({
 				connectionProfile: selectedNode,
-				connect: connect
+				connect: connect,
+				source: 'savedconnections'
 			});
 		}
 	}

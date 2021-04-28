@@ -49,6 +49,11 @@ export interface OnShowUIResponse {
 	container: HTMLElement;
 }
 
+/**
+ * Defines where the connection information is coming from
+ */
+export type ConnectionSource = 'manual' | 'recent' | 'savedconnections' | 'azure';
+
 export class ConnectionDialogWidget extends Modal {
 	private _body: HTMLElement;
 	private _recentConnection: HTMLElement;
@@ -93,6 +98,8 @@ export class ConnectionDialogWidget extends Modal {
 	private browsePanel: ConnectionBrowseTab;
 
 	private _connecting = false;
+
+	private _connectionSource: ConnectionSource = 'manual';
 
 	constructor(
 		private providerDisplayNameOptions: string[],
@@ -336,6 +343,9 @@ export class ConnectionDialogWidget extends Modal {
 
 	private connect(element?: IConnectionProfile): void {
 		if (this._connectButton.enabled) {
+			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ConnectionDialog, TelemetryKeys.TelemetryAction.ConnectToServer).withAdditionalProperties(
+				{ [TelemetryKeys.TelemetryPropertyName.ConnectionSource]: this._connectionSource }
+			).send();
 			this._connecting = true;
 			this._connectButton.enabled = false;
 			this._providerTypeSelectBox.disable();
@@ -383,6 +393,7 @@ export class ConnectionDialogWidget extends Modal {
 		const leftClick = (element: any, eventish: ICancelableEvent, origin: string) => {
 			// element will be a server group if the tree is clicked rather than a item
 			const isDoubleClick = origin === 'mouse' && (eventish as MouseEvent).detail === 2;
+			this._connectionSource = 'recent';
 			this.onConnectionClick(element, isDoubleClick);
 		};
 		const actionProvider = this.instantiationService.createInstance(RecentConnectionActionsProvider);
@@ -401,6 +412,7 @@ export class ConnectionDialogWidget extends Modal {
 		});
 		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, this._configurationService, localize('connectionDialog.recentConnections', "Recent Connections"), controller);
 		if (this._recentConnectionTree instanceof AsyncServerTree) {
+			this._connectionSource = 'recent';
 			this._recentConnectionTree.onMouseClick(e => {
 				if (e.element instanceof ConnectionProfile) {
 					this.onConnectionClick(e.element, false);
