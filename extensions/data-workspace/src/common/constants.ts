@@ -20,12 +20,12 @@ export const EnterWorkspaceConfirmation = localize('dataworkspace.enterWorkspace
 export const WorkspaceContainsNotAddedProjects = localize('dataworkspace.workspaceContainsNotAddedProjects', "The current workspace contains one or more projects that have not been added to the workspace. Use the 'Open existing' dialog to add projects to the projects pane.");
 export const LaunchOpenExisitingDialog = localize('dataworkspace.launchOpenExistingDialog', "Launch Open existing dialog");
 export const DoNotShowAgain = localize('dataworkspace.doNotShowAgain', "Do not show again");
-export const ProjectsFailedToLoad = localize('dataworkspace.projectsFailedToLoad', "Some projects failed to load. Please open console for more information");
+export const ProjectsFailedToLoad = localize('dataworkspace.projectsFailedToLoad', "Some projects failed to load. Please turn on developer tools and view console for more information.");
 export const fileDoesNotExist = (name: string): string => { return localize('fileDoesNotExist', "File '{0}' doesn't exist", name); };
 export const projectNameNull = localize('projectNameNull', "Project name is null");
 export const noPreviousData = (tableName: string): string => { return localize('noPreviousData', "Prior {0} for the current project will appear here, please run to see the results.", tableName); };
 export const gitCloneMessage = (url: string): string => { return localize('gitCloneMessage', "Cloning git repository '{0}'...", url); };
-export const gitCloneError = localize('gitCloneError', "Error during git clone. Please open console for more information.");
+export const gitCloneError = localize('gitCloneError', "Error during git clone. Please turn on developer tools and view console for more information.");
 
 // config settings
 export const projectsConfigurationKey = 'projects';

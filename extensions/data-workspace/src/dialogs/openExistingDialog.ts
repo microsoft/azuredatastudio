@@ -304,14 +304,14 @@ export class OpenExistingDialog extends DialogBase {
 		this.register(this.targetTypeRadioCardGroup.onSelectionChanged(({ cardId }) => {
 			if (cardId === constants.Project) {
 				this.filePathTextBox!.placeHolder = constants.ProjectFilePlaceholder;
-				this.formBuilder?.removeFormItem(<azdata.FormComponent>this.gitRepoTextBoxComponent);
-				this.formBuilder?.removeFormItem(<azdata.FormComponent>this.localClonePathComponent);
 
 				if (this.remoteGitRepoRadioButton!.checked) {
 					this.formBuilder?.removeFormItem(<azdata.FormComponent>this.filePathAndButtonComponent);
 					this.formBuilder?.insertFormItem(<azdata.FormComponent>this.gitRepoTextBoxComponent, 2);
 					this.formBuilder?.insertFormItem(<azdata.FormComponent>this.localClonePathComponent, 3);
 				} else {
+					this.formBuilder?.removeFormItem(<azdata.FormComponent>this.gitRepoTextBoxComponent);
+					this.formBuilder?.removeFormItem(<azdata.FormComponent>this.localClonePathComponent);
 					this.formBuilder?.addFormItem(this.filePathAndButtonComponent!);
 				}
 

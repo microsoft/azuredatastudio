@@ -239,6 +239,13 @@ export interface API {
 	readonly onDidOpenRepository: Event<Repository>;
 	readonly onDidCloseRepository: Event<Repository>;
 
+	/**
+	 * clones the repository at the specified url locally
+	 * @param url url of repository to clone
+	 * @param options
+	 * @param cancellationToken
+	 * @returns a promise to the string location where the repository was cloned to
+	 */
 	clone(url: string, options: ICloneOptions, cancellationToken?: CancellationToken): Promise<string>;
 	toGitUri(uri: Uri, ref: string): Uri;
 	getRepository(uri: Uri): Repository | null;
