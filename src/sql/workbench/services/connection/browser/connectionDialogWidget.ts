@@ -413,14 +413,15 @@ export class ConnectionDialogWidget extends Modal {
 		});
 		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this.instantiationService, this._configurationService, localize('connectionDialog.recentConnections', "Recent Connections"), controller);
 		if (this._recentConnectionTree instanceof AsyncServerTree) {
-			this._connectionSource = 'recent';
 			this._recentConnectionTree.onMouseClick(e => {
 				if (e.element instanceof ConnectionProfile) {
+					this._connectionSource = 'recent';
 					this.onConnectionClick(e.element, false);
 				}
 			});
 			this._recentConnectionTree.onMouseDblClick(e => {
 				if (e.element instanceof ConnectionProfile) {
+					this._connectionSource = 'recent';
 					this.onConnectionClick(e.element, true);
 				}
 			});
