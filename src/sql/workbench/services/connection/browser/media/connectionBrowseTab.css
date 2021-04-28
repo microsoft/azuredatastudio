@@ -40,6 +40,10 @@
 	align-items: center;
 }
 
+.connection-dialog .monaco-list .monaco-list-row .custom-view-tree-node-item .custom-view-tree-node-item-resourceLabel .monaco-icon-name-container .monaco-highlighted-label>span {
+	white-space: nowrap;
+}
+
 .connection-dialog .monaco-list .monaco-list-row {
 	padding-right: 12px;
 	padding-left: 0px;
