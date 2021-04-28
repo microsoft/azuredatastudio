@@ -33,21 +33,29 @@ describe('utils: Tests to verify getEndpointName @DacFx@', function (): void {
 		should(getEndpointName(mockDatabaseEndpoint)).equal(' ');
 	});
 
-	it('Should get endpoint information from ConnectionInfo', () => {
-		let testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
+	it('Should get only database information from ConnectionInfo if connection', () => {
+		const testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
+		testDatabaseEndpoint.serverDisplayName = 'My Connection';
+		testDatabaseEndpoint.connectionDetails = { ...mockConnectionInfo };
+
+		should(getEndpointName(testDatabaseEndpoint)).equal('My Connection.My Database');
+	});
+
+	it('Should get information from ConnectionInfo if no connection', () => {
+		const testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
 		testDatabaseEndpoint.connectionDetails = { ...mockConnectionInfo };
 
 		should(getEndpointName(testDatabaseEndpoint)).equal('My Server.My Database');
 	});
 
 	it('Should get correct endpoint information from SchemaCompareEndpointInfo', () => {
-		let dbName = 'My Database';
-		let serverName = 'My Server';
-		let testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
+		const dbName = 'My Database';
+		const serverDisplayName = 'My Connection';
+		const testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
 		testDatabaseEndpoint.databaseName = dbName;
-		testDatabaseEndpoint.serverName = serverName;
+		testDatabaseEndpoint.serverDisplayName = serverDisplayName;
 
-		should(getEndpointName(testDatabaseEndpoint)).equal('My Server.My Database');
+		should(getEndpointName(testDatabaseEndpoint)).equal('My Connection.My Database');
 	});
 });
 
@@ -65,7 +73,7 @@ describe('utils: Basic tests to verify verifyConnectionAndGetOwnerUri', function
 
 	it('Should return undefined for endpoint as database and no ConnectionInfo', async function (): Promise<void> {
 		let ownerUri = undefined;
-		let testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
+		const testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
 		testDatabaseEndpoint.connectionDetails = undefined;
 
 		ownerUri = await verifyConnectionAndGetOwnerUri(testDatabaseEndpoint, 'test');
@@ -84,9 +92,9 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 	});
 
 	it('Should throw an error asking to make a connection', async function (): Promise<void> {
-		let getConnectionsResults: azdata.connection.ConnectionProfile[] = [];
-		let connection = { ...mockConnectionResult };
-		let testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
+		const getConnectionsResults: azdata.connection.ConnectionProfile[] = [];
+		const connection = { ...mockConnectionResult };
+		const testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
 		testDatabaseEndpoint.connectionDetails = { ...mockConnectionInfo };
 		const getConnectionString = loc.getConnectionString('test');
 
@@ -101,9 +109,9 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 	});
 
 	it('Should throw an error for login failure', async function (): Promise<void> {
-		let getConnectionsResults: azdata.connection.ConnectionProfile[] = [{ ...mockConnectionProfile }];
-		let connection = { ...mockConnectionResult };
-		let testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
+		const getConnectionsResults: azdata.connection.ConnectionProfile[] = [{ ...mockConnectionProfile }];
+		const connection = { ...mockConnectionResult };
+		const testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
 		testDatabaseEndpoint.connectionDetails = { ...mockConnectionInfo };
 
 		sinon.stub(azdata.connection, 'connect').returns(<any>Promise.resolve(connection));
@@ -118,9 +126,9 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 	});
 
 	it('Should throw an error for login failure with openConnectionDialog but no ownerUri', async function (): Promise<void> {
-		let getConnectionsResults: azdata.connection.ConnectionProfile[] = [];
-		let connection = { ...mockConnectionResult };
-		let testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
+		const getConnectionsResults: azdata.connection.ConnectionProfile[] = [];
+		const connection = { ...mockConnectionResult };
+		const testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
 		testDatabaseEndpoint.connectionDetails = { ...mockConnectionInfo };
 
 		sinon.stub(azdata.connection, 'connect').returns(<any>Promise.resolve(connection));
@@ -139,9 +147,9 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 
 	it('Should not throw an error and set ownerUri appropriately', async function (): Promise<void> {
 		let ownerUri = undefined;
-		let connection = { ...mockConnectionResult };
-		let testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
-		let expectedOwnerUri: string = 'providerName:MSSQL|authenticationType:SqlLogin|database:My Database|server:My Server|user:My User|databaseDisplayName:My Database';
+		const connection = { ...mockConnectionResult };
+		const testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
+		const expectedOwnerUri: string = 'providerName:MSSQL|authenticationType:SqlLogin|database:My Database|server:My Server|user:My User|databaseDisplayName:My Database';
 		testDatabaseEndpoint.connectionDetails = { ...mockConnectionInfo };
 
 		sinon.stub(azdata.connection, 'connect').returns(<any>Promise.resolve(connection));

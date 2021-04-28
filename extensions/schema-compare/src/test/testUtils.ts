@@ -111,11 +111,13 @@ export function setDacpacEndpointInfo(path: string): mssql.SchemaCompareEndpoint
 
 export function setDatabaseEndpointInfo(): mssql.SchemaCompareEndpointInfo {
 	let endpointInfo: mssql.SchemaCompareEndpointInfo;
-	let dbName = 'My Database';
-	let serverName = 'My Server';
+	const serverName = 'My Server';
+	const dbName = 'My Database';
+	const serverDisplayName = 'My Connection';
 
 	endpointInfo = { ...mockDatabaseEndpoint };
 	endpointInfo.databaseName = dbName;
+	endpointInfo.serverDisplayName = serverDisplayName;
 	endpointInfo.serverName = serverName;
 
 	return endpointInfo;
