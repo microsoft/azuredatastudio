@@ -121,6 +121,7 @@ suite('Notebook Editor Model', function (): void {
 		undefined,
 		undefined,
 		undefined,
+		undefined,
 	);
 	let mockNotebookService = TypeMoq.Mock.ofInstance(notebookService);
 
@@ -976,7 +977,7 @@ suite('Notebook Editor Model', function (): void {
 		await notebookModel.loadContents();
 	}
 
-	async function createTextEditorModel(self: Mocha.ITestCallbackContext): Promise<NotebookEditorModel> {
+	async function createTextEditorModel(self: Mocha.Context): Promise<NotebookEditorModel> {
 		let textFileEditorModel = instantiationService.createInstance(TextFileEditorModel, toResource.call(self, defaultUri.toString()), 'utf8', undefined);
 		(<TestTextFileEditorModelManager>accessor.textFileService.files).add(textFileEditorModel.resource, textFileEditorModel);
 		await textFileEditorModel.load();

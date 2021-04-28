@@ -963,12 +963,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private async updateKernelInfoOnKernelChange(kernel: nb.IKernel, kernelAlias?: string) {
 		await this.updateKernelInfo(kernel);
-		this.kernelAliases.forEach(kernel => {
-			if (this._defaultLanguageInfo?.name === kernel.toLowerCase()) {
-				kernelAlias = kernel;
-			}
-		});
-		if (kernel.info) {
+		kernelAlias = this.kernelAliases.find(kernel => this._defaultLanguageInfo?.name === kernel.toLowerCase()) ?? kernelAlias;
+		if (kernelAlias) {
+			let aliasLanguageInfo: nb.ILanguageInfo = {
+				name: kernelAlias.toLowerCase(),
+				version: ''
+			};
+			this.updateLanguageInfo(aliasLanguageInfo);
+		}
+		else if (kernel.info) {
 			this.updateLanguageInfo(kernel.info.language_info);
 		}
 		this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.KernelChanged)

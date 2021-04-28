@@ -35,11 +35,6 @@ import { setup as setupDataMultirootTests } from './areas/multiroot/multiroot.te
 import { setup as setupDataLocalizationTests } from './areas/workbench/localization.test';
 import { setup as setupLaunchTests } from './areas/workbench/launch.test';*/
 
-if (!/^v10/.test(process.version) && !/^v12/.test(process.version)) {
-	console.error('Error: Smoketest must be run using Node 10/12. Currently running', process.version);
-	process.exit(1);
-}
-
 const tmpDir = tmp.dirSync({ prefix: 't' }) as { name: string; removeCallback: Function; };
 const testDataPath = tmpDir.name;
 process.once('exit', () => rimraf.sync(testDataPath));
@@ -53,7 +48,8 @@ const opts = minimist(args, {
 		'wait-time',
 		'test-repo',
 		'screenshots',
-		'log'
+		'log',
+		'extensionsDir' // {{SQL CARBON EDIT}} Let callers control extensions dir for non-packaged extensions
 	],
 	boolean: [
 		'verbose',
@@ -65,10 +61,16 @@ const opts = minimist(args, {
 	}
 });
 
-const testRepoUrl = 'https://github.com/kburtram/azuredatastudio-smoke-test-repo.git';
+const testRepoUrl = 'https://github.com/Microsoft/azuredatastudio-smoke-test-repo.git';
 const workspacePath = path.join(testDataPath, 'azuredatastudio-smoke-test-repo');
-const extensionsPath = path.join(testDataPath, 'extensions-dir');
-mkdirp.sync(extensionsPath);
+// {{SQL CARBON EDIT}} Let callers control extensions dir for non-packaged extensions
+let extensionsPath = opts.extensionsDir;
+if (!extensionsPath) {
+	extensionsPath = path.join(testDataPath, 'extensions-dir');
+	mkdirp.sync(extensionsPath);
+}
+console.log(`Using extensions dir : ${extensionsPath}`);
+
 
 const screenshotsPath = opts.screenshots ? path.resolve(opts.screenshots) : null;
 if (screenshotsPath) {
@@ -275,19 +277,39 @@ after(async function () {
 	if (opts.log) {
 		const logsDir = path.join(userDataDir, 'logs');
 		const destLogsDir = path.join(path.dirname(opts.log), 'logs');
-		await new Promise((c, e) => ncp(logsDir, destLogsDir, err => err ? e(err) : c()));
+		await new Promise((c, e) => ncp(logsDir, destLogsDir, err => err ? e(err) : c(undefined)));
 	}
 
-	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c()));
+	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c(undefined)));
 });
 
 describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
+	if (screenshotsPath) {
+		afterEach(async function () {
+			if (this.currentTest!.state !== 'failed') {
+				return;
+			}
+			const app = this.app as Application;
+			const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
 
-	/*if (!opts.web && opts['stable-build']) {
-		describe(`Stable vs Insiders Smoke Tests: This test MUST run before releasing by providing the --stable-build command line argument`, () => {
-			setupDataMigrationTests(opts['stable-build'], testDataPath);
+			await app.captureScreenshot(name);
 		});
-	}*/
+	}
+
+	if (opts.log) {
+		beforeEach(async function () {
+			const app = this.app as Application;
+			const title = this.currentTest!.fullTitle();
+
+			app.logger.log('*** Test start:', title);
+		});
+	}
+
+	// if (!opts.web && opts['stable-build']) {
+	// 	describe(`Stable vs Insiders Smoke Tests: This test MUST run before releasing by providing the --stable-build command line argument`, () => {
+	// 		setupDataMigrationTests(opts['stable-build'], testDataPath);
+	// 	});
+	// }
 
 	describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 		before(async function () {
@@ -300,36 +322,16 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 			await this.app.stop();
 		});
 
-		if (screenshotsPath) {
-			afterEach(async function () {
-				if (this.currentTest.state !== 'failed') {
-					return;
-				}
-				const app = this.app as Application;
-				const name = this.currentTest.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
-
-				await app.captureScreenshot(name);
-			});
-		}
-
-		if (opts.log) {
-			beforeEach(async function () {
-				const app = this.app as Application;
-				const title = this.currentTest.fullTitle();
-
-				app.logger.log('*** Test start:', title);
-			});
-		}
-
 		sqlMain(opts.web);
-		/*if (!opts.web) { setupDataLossTests(); }
+
+		/* if (!opts.web) { setupDataLossTests(); }
 		if (!opts.web) { setupDataPreferencesTests(); }
 		setupDataSearchTests();
 		setupDataNotebookTests();
 		setupDataLanguagesTests();
 		setupDataEditorTests();
 		setupDataStatusbarTests(!!opts.web);
-		if (!opts.web) { setupDataExtensionTests(); }
+		setupDataExtensionTests();
 		if (!opts.web) { setupDataMultirootTests(); }
 		if (!opts.web) { setupDataLocalizationTests(); }
 		if (!opts.web) { setupLaunchTests(); }*/

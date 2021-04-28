@@ -3,7 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
+import { IDisposable } from 'vs/base/common/lifecycle';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 
 export function isHidden(element: HTMLElement): boolean {
 	return element.style.display === 'none';
@@ -63,4 +67,34 @@ export function getFocusableElements(container: HTMLElement): HTMLElement[] {
 		}
 	});
 	return elements;
+}
+
+/**
+ * Trap the keyboard navigation (Tab/Shift+Tab) inside the specified container
+ * @param container The container element to trap the keyboard focus in
+ * @returns The object to be disposed when the trap should be removed.
+ */
+export function trapKeyboardNavigation(container: HTMLElement): IDisposable {
+	return addDisposableListener(container, EventType.KEY_DOWN, (e) => {
+		const focusableElements = getFocusableElements(container);
+		if (focusableElements.length === 0) {
+			return;
+		}
+		const firstFocusable = focusableElements[0];
+		const lastFocusable = focusableElements[focusableElements.length - 1];
+		const event = new StandardKeyboardEvent(e);
+		let elementToFocus = undefined;
+		if (event.equals(KeyMod.Shift | KeyCode.Tab) && firstFocusable === document.activeElement) {
+			// Backward navigation
+			elementToFocus = lastFocusable;
+		} else if (event.equals(KeyCode.Tab) && lastFocusable === document.activeElement) {
+			// Forward navigation
+			elementToFocus = firstFocusable;
+		}
+
+		if (elementToFocus) {
+			e.preventDefault();
+			elementToFocus.focus();
+		}
+	});
 }

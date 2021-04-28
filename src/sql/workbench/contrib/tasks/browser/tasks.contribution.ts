@@ -75,14 +75,11 @@ registry.registerWorkbenchAction(
 // markers view container
 const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: TASKS_CONTAINER_ID,
-	name: localize('tasks', "Tasks"),
+	title: localize('tasks', "Tasks"),
 	hideIfEmpty: true,
 	order: 20,
 	ctorDescriptor: new SyncDescriptor(ViewPaneContainer, [TASKS_CONTAINER_ID, { mergeViewWithContainerWhenSingleView: true, donotShowContainerTitleWhenMergedWithContainer: true }]),
-	storageId: `${TASKS_CONTAINER_ID}.storage`,
-	focusCommand: {
-		id: ToggleTasksAction.ID
-	}
+	storageId: `${TASKS_CONTAINER_ID}.storage`
 }, ViewContainerLocation.Panel);
 
 Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{

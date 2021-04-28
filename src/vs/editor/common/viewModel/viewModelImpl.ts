@@ -183,6 +183,14 @@ export class ViewModel extends Disposable implements IViewModel {
 		this._eventDispatcher.emitOutgoingEvent(new FocusChangedEvent(!hasFocus, hasFocus));
 	}
 
+	public onCompositionStart(): void {
+		this._eventDispatcher.emitSingleViewEvent(new viewEvents.ViewCompositionStartEvent());
+	}
+
+	public onCompositionEnd(): void {
+		this._eventDispatcher.emitSingleViewEvent(new viewEvents.ViewCompositionEndEvent());
+	}
+
 	public onDidColorThemeChange(): void {
 		this._eventDispatcher.emitSingleViewEvent(new viewEvents.ViewThemeChangedEvent());
 	}
@@ -808,7 +816,23 @@ export class ViewModel extends Disposable implements IViewModel {
 
 		const fontInfo = this._configuration.options.get(EditorOption.fontInfo);
 		const colorMap = this._getColorMap();
-		const fontFamily = fontInfo.fontFamily === EDITOR_FONT_DEFAULTS.fontFamily ? fontInfo.fontFamily : `'${fontInfo.fontFamily}', ${EDITOR_FONT_DEFAULTS.fontFamily}`;
+		const hasBadChars = (/[:;\\\/<>]/.test(fontInfo.fontFamily));
+		const useDefaultFontFamily = (hasBadChars || fontInfo.fontFamily === EDITOR_FONT_DEFAULTS.fontFamily);
+		let fontFamily: string;
+		if (useDefaultFontFamily) {
+			fontFamily = EDITOR_FONT_DEFAULTS.fontFamily;
+		} else {
+			fontFamily = fontInfo.fontFamily;
+			fontFamily = fontFamily.replace(/"/g, '\'');
+			const hasQuotesOrIsList = /[,']/.test(fontFamily);
+			if (!hasQuotesOrIsList) {
+				const needsQuotes = /[+ ]/.test(fontFamily);
+				if (needsQuotes) {
+					fontFamily = `'${fontFamily}'`;
+				}
+			}
+			fontFamily = `${fontFamily}, ${EDITOR_FONT_DEFAULTS.fontFamily}`;
+		}
 
 		return {
 			mode: languageId.language,
@@ -908,8 +932,8 @@ export class ViewModel extends Disposable implements IViewModel {
 	public getPosition(): Position {
 		return this._cursor.getPrimaryCursorState().modelState.position;
 	}
-	public setSelections(source: string | null | undefined, selections: readonly ISelection[]): void {
-		this._withViewEventsCollector(eventsCollector => this._cursor.setSelections(eventsCollector, source, selections));
+	public setSelections(source: string | null | undefined, selections: readonly ISelection[], reason = CursorChangeReason.NotSet): void {
+		this._withViewEventsCollector(eventsCollector => this._cursor.setSelections(eventsCollector, source, selections, reason));
 	}
 	public saveCursorState(): ICursorState[] {
 		return this._cursor.saveState();

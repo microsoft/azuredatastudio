@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/calloutDialog';
 import 'vs/css!./media/modal';
-import { getFocusableElements } from 'sql/base/browser/dom';
+import { getFocusableElements, trapKeyboardNavigation } from 'sql/base/browser/dom';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
@@ -13,7 +13,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { Color } from 'vs/base/common/color';
-import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { KeyCode } from 'vs/base/common/keyCodes';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Schemas } from 'vs/base/common/network';
 import { mixin } from 'vs/base/common/objects';
@@ -120,8 +120,6 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _messageDetailText?: string;
 
 	private _spinnerElement?: HTMLElement;
-	private _firstTabbableElement?: HTMLElement; // The first element in the dialog the user could tab to
-	private _lastTabbableElement?: HTMLElement; // The last element in the dialog the user could tab to
 	private _focusedElementBeforeOpen?: HTMLElement;
 
 	private _dialogForeground?: Color;
@@ -242,7 +240,7 @@ export abstract class Modal extends Disposable implements IThemable {
 					const container = DOM.append(this._modalHeaderSection, DOM.$('.modal-go-back'));
 					this._backButton = new Button(container, { secondary: true });
 					this._backButton.icon = {
-						classNames: 'backButtonIcon'
+						id: 'backButtonIcon'
 					};
 					this._backButton.title = localize('modal.back', "Back");
 				}
@@ -264,21 +262,21 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._detailsButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
 			this._toggleMessageDetailButton = new Button(this._detailsButtonContainer);
 			this._toggleMessageDetailButton.icon = {
-				classNames: 'message-details-icon'
+				id: 'message-details-icon'
 			};
 			this._toggleMessageDetailButton.label = SHOW_DETAILS_TEXT;
 			this._register(this._toggleMessageDetailButton.onDidClick(() => this.toggleMessageDetail()));
 			const copyMessageButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
 			this._copyMessageButton = new Button(copyMessageButtonContainer);
 			this._copyMessageButton.icon = {
-				classNames: 'copy-message-icon'
+				id: 'copy-message-icon'
 			};
 			this._copyMessageButton.label = COPY_TEXT;
 			this._register(this._copyMessageButton.onDidClick(() => this._clipboardService.writeText(this.getTextForClipboard())));
 			const closeMessageButtonContainer = DOM.append(headerContainer, DOM.$('.dialog-message-button'));
 			this._closeMessageButton = new Button(closeMessageButtonContainer);
 			this._closeMessageButton.icon = {
-				classNames: 'close-message-icon'
+				id: 'close-message-icon'
 			};
 			this._closeMessageButton.label = CLOSE_TEXT;
 			this._register(this._closeMessageButton.onDidClick(() => this.setError(undefined)));
@@ -347,22 +345,6 @@ export abstract class Modal extends Disposable implements IThemable {
 		this.hide('ok');
 	}
 
-	private handleBackwardTab(e: KeyboardEvent) {
-		this.setFirstLastTabbableElement(); // called every time to get the current elements
-		if (this._firstTabbableElement && this._lastTabbableElement && document.activeElement === this._firstTabbableElement) {
-			e.preventDefault();
-			this._lastTabbableElement.focus();
-		}
-	}
-
-	private handleForwardTab(e: KeyboardEvent) {
-		this.setFirstLastTabbableElement(); // called everytime to get the current elements
-		if (this._firstTabbableElement && this._lastTabbableElement && document.activeElement === this._lastTabbableElement) {
-			e.preventDefault();
-			this._firstTabbableElement.focus();
-		}
-	}
-
 	private getTextForClipboard(): string {
 		const eol = this.textResourcePropertiesService.getEOL(URI.from({ scheme: Schemas.untitled }));
 		return this._messageDetailText === '' ? this._messageSummaryText! : `${this._messageSummaryText}${eol}========================${eol}${this._messageDetailText}`;
@@ -394,17 +376,6 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	private get shouldShowExpandMessageButton(): boolean {
 		return this._messageDetailText !== '' || this._messageSummary!.scrollWidth > this._messageSummary!.offsetWidth;
-	}
-
-	/**
-	 * Figures out the first and last elements which the user can tab to in the dialog
-	 */
-	public setFirstLastTabbableElement() {
-		const tabbableElements = getFocusableElements(this._bodyContainer!);
-		if (tabbableElements && tabbableElements.length > 0) {
-			this._firstTabbableElement = <HTMLElement>tabbableElements[0];
-			this._lastTabbableElement = <HTMLElement>tabbableElements[tabbableElements.length - 1];
-		}
 	}
 
 	/**
@@ -485,13 +456,10 @@ export abstract class Modal extends Disposable implements IThemable {
 				} else if (event.equals(KeyCode.Escape)) {
 					DOM.EventHelper.stop(e, true);
 					this.onClose(event);
-				} else if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
-					this.handleBackwardTab(e);
-				} else if (event.equals(KeyCode.Tab)) {
-					this.handleForwardTab(e);
 				}
 			}
 		}));
+		this.disposableStore.add(trapKeyboardNavigation(this._modalDialog!));
 		this.disposableStore.add(DOM.addDisposableListener(window, DOM.EventType.RESIZE, (e: Event) => {
 			this.layout(DOM.getTotalHeight(this._modalBodySection!));
 		}));

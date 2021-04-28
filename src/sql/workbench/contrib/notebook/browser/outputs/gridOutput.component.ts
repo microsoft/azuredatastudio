@@ -7,7 +7,7 @@ import { OnInit, Component, Input, Inject, ViewChild, ElementRef } from '@angula
 import * as azdata from 'azdata';
 
 import { IGridDataProvider, getResultsString } from 'sql/workbench/services/query/common/gridDataProvider';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -207,12 +207,13 @@ class DataResourceTable extends GridTableBase<any> {
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IQueryModelService queryModelService: IQueryModelService,
-		@IThemeService themeService: IThemeService
+		@IThemeService themeService: IThemeService,
+		@IContextViewService contextViewService: IContextViewService
 	) {
 		super(state, createResultSet(source), {
 			actionOrientation: ActionsOrientation.HORIZONTAL,
 			inMemoryDataProcessing: true
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel);
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 

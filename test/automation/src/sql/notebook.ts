@@ -37,9 +37,9 @@ export class Notebook {
 
 	async addCell(cellType: 'markdown' | 'code'): Promise<void> {
 		if (cellType === 'markdown') {
-			await this.code.dispatchKeybinding(winOrCtrl + '+shift+t');
+			await this.code.dispatchKeybinding('ctrl+shift+t');
 		} else {
-			await this.code.dispatchKeybinding(winOrCtrl + '+shift+c');
+			await this.code.dispatchKeybinding('ctrl+shift+c');
 		}
 
 		await this.code.waitForElement('.notebook-cell.active');
@@ -58,7 +58,7 @@ export class Notebook {
 	}
 
 	async runAllCells(): Promise<void> {
-		await this.code.dispatchKeybinding(winOrCtrl + '+shift+F5');
+		await this.code.dispatchKeybinding('ctrl+shift+F5');
 	}
 
 	async clearResults(): Promise<void> {

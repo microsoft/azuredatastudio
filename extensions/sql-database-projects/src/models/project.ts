@@ -12,6 +12,7 @@ import * as os from 'os';
 import * as templates from '../templates/templates';
 
 import { Uri, window } from 'vscode';
+import { IFileProjectEntry, ISqlProject } from 'sqldbproj';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
@@ -20,32 +21,76 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 /**
  * Class representing a Project, and providing functions for operating on it
  */
-export class Project {
-	public projectFilePath: string;
-	public projectFileName: string;
-	public projectGuid: string | undefined;
-	public files: FileProjectEntry[] = [];
-	public dataSources: DataSource[] = [];
-	public importedTargets: string[] = [];
-	public databaseReferences: IDatabaseReferenceProjectEntry[] = [];
-	public sqlCmdVariables: Record<string, string> = {};
-	public preDeployScripts: FileProjectEntry[] = [];
-	public postDeployScripts: FileProjectEntry[] = [];
-	public noneDeployScripts: FileProjectEntry[] = [];
+export class Project implements ISqlProject {
+	private _projectFilePath: string;
+	private _projectFileName: string;
+	private _projectGuid: string | undefined;
+	private _files: FileProjectEntry[] = [];
+	private _dataSources: DataSource[] = [];
+	private _importedTargets: string[] = [];
+	private _databaseReferences: IDatabaseReferenceProjectEntry[] = [];
+	private _sqlCmdVariables: Record<string, string> = {};
+	private _preDeployScripts: FileProjectEntry[] = [];
+	private _postDeployScripts: FileProjectEntry[] = [];
+	private _noneDeployScripts: FileProjectEntry[] = [];
 
 	public get dacpacOutputPath(): string {
-		return path.join(this.projectFolderPath, 'bin', 'Debug', `${this.projectFileName}.dacpac`);
+		return path.join(this.projectFolderPath, 'bin', 'Debug', `${this._projectFileName}.dacpac`);
 	}
 
 	public get projectFolderPath() {
-		return Uri.file(path.dirname(this.projectFilePath)).fsPath;
+		return Uri.file(path.dirname(this._projectFilePath)).fsPath;
+	}
+
+	public get projectFilePath(): string {
+		return this._projectFilePath;
+	}
+
+	public get projectFileName(): string {
+		return this._projectFileName;
+	}
+
+	public get projectGuid(): string | undefined {
+		return this._projectGuid;
+	}
+
+	public get files(): FileProjectEntry[] {
+		return this._files;
+	}
+
+	public get dataSources(): DataSource[] {
+		return this._dataSources;
+	}
+
+	public get importedTargets(): string[] {
+		return this._importedTargets;
+	}
+
+	public get databaseReferences(): IDatabaseReferenceProjectEntry[] {
+		return this._databaseReferences;
+	}
+
+	public get sqlCmdVariables(): Record<string, string> {
+		return this._sqlCmdVariables;
+	}
+
+	public get preDeployScripts(): FileProjectEntry[] {
+		return this._preDeployScripts;
+	}
+
+	public get postDeployScripts(): FileProjectEntry[] {
+		return this._postDeployScripts;
+	}
+
+	public get noneDeployScripts(): FileProjectEntry[] {
+		return this._noneDeployScripts;
 	}
 
 	private projFileXmlDoc: any = undefined;
 
 	constructor(projectFilePath: string) {
-		this.projectFilePath = projectFilePath;
-		this.projectFileName = path.basename(projectFilePath, '.sqlproj');
+		this._projectFilePath = projectFilePath;
+		this._projectFileName = path.basename(projectFilePath, '.sqlproj');
 	}
 
 	/**
@@ -65,11 +110,11 @@ export class Project {
 	public async readProjFile(): Promise<void> {
 		this.resetProject();
 
-		const projFileText = await fs.readFile(this.projectFilePath);
+		const projFileText = await fs.readFile(this._projectFilePath);
 		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
 
 		// get projectGUID
-		this.projectGuid = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ProjectGuid)[0].childNodes[0].nodeValue;
+		this._projectGuid = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ProjectGuid)[0].childNodes[0].nodeValue;
 
 		// find all folders and files to include
 		for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
@@ -77,14 +122,14 @@ export class Project {
 
 			const buildElements = itemGroup.getElementsByTagName(constants.Build);
 			for (let b = 0; b < buildElements.length; b++) {
-				this.files.push(this.createFileProjectEntry(buildElements[b].getAttribute(constants.Include), EntryType.File, buildElements[b].getAttribute(constants.Type)));
+				this._files.push(this.createFileProjectEntry(buildElements[b].getAttribute(constants.Include), EntryType.File, buildElements[b].getAttribute(constants.Type)));
 			}
 
 			const folderElements = itemGroup.getElementsByTagName(constants.Folder);
 			for (let f = 0; f < folderElements.length; f++) {
 				// don't add Properties folder since it isn't supported for now
 				if (folderElements[f].getAttribute(constants.Include) !== constants.Properties) {
-					this.files.push(this.createFileProjectEntry(folderElements[f].getAttribute(constants.Include), EntryType.Folder));
+					this._files.push(this.createFileProjectEntry(folderElements[f].getAttribute(constants.Include), EntryType.Folder));
 				}
 			}
 
@@ -92,7 +137,7 @@ export class Project {
 			let preDeployScriptCount: number = 0;
 			const preDeploy = itemGroup.getElementsByTagName(constants.PreDeploy);
 			for (let pre = 0; pre < preDeploy.length; pre++) {
-				this.preDeployScripts.push(this.createFileProjectEntry(preDeploy[pre].getAttribute(constants.Include), EntryType.File));
+				this._preDeployScripts.push(this.createFileProjectEntry(preDeploy[pre].getAttribute(constants.Include), EntryType.File));
 				preDeployScriptCount++;
 			}
 
@@ -100,7 +145,7 @@ export class Project {
 			let postDeployScriptCount: number = 0;
 			const postDeploy = itemGroup.getElementsByTagName(constants.PostDeploy);
 			for (let post = 0; post < postDeploy.length; post++) {
-				this.postDeployScripts.push(this.createFileProjectEntry(postDeploy[post].getAttribute(constants.Include), EntryType.File));
+				this._postDeployScripts.push(this.createFileProjectEntry(postDeploy[post].getAttribute(constants.Include), EntryType.File));
 				postDeployScriptCount++;
 			}
 
@@ -111,7 +156,7 @@ export class Project {
 			// find all none-deployment scripts to include
 			const noneItems = itemGroup.getElementsByTagName(constants.None);
 			for (let n = 0; n < noneItems.length; n++) {
-				this.noneDeployScripts.push(this.createFileProjectEntry(noneItems[n].getAttribute(constants.Include), EntryType.File));
+				this._noneDeployScripts.push(this.createFileProjectEntry(noneItems[n].getAttribute(constants.Include), EntryType.File));
 			}
 		}
 
@@ -119,11 +164,11 @@ export class Project {
 		const importElements = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Import);
 		for (let i = 0; i < importElements.length; i++) {
 			const importTarget = importElements[i];
-			this.importedTargets.push(importTarget.getAttribute(constants.Project));
+			this._importedTargets.push(importTarget.getAttribute(constants.Project));
 		}
 
 		// find all SQLCMD variables to include
-		this.sqlCmdVariables = utils.readSqlCmdVariables(this.projFileXmlDoc);
+		this._sqlCmdVariables = utils.readSqlCmdVariables(this.projFileXmlDoc);
 
 		// find all database references to include
 		const references = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ArtifactReference);
@@ -142,13 +187,13 @@ export class Project {
 
 				const path = utils.convertSlashesForSqlProj(this.getSystemDacpacUri(`${name}.dacpac`).fsPath);
 				if (path.includes(filepath)) {
-					this.databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
+					this._databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
 						Uri.file(filepath),
 						this.getSystemDacpacSsdtUri(`${name}.dacpac`),
 						name,
 						suppressMissingDependencies));
 				} else {
-					this.databaseReferences.push(new DacpacReferenceProjectEntry({
+					this._databaseReferences.push(new DacpacReferenceProjectEntry({
 						dacpacFileLocation: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
 						databaseName: name,
 						suppressMissingDependenciesErrors: suppressMissingDependencies
@@ -171,7 +216,7 @@ export class Project {
 			const suppressMissingDependenciesErrorNode = projectReferences[r].getElementsByTagName(constants.SuppressMissingDependenciesErrors);
 			const suppressMissingDependencies = suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === true ?? false;
 
-			this.databaseReferences.push(new SqlProjectReferenceProjectEntry({
+			this._databaseReferences.push(new SqlProjectReferenceProjectEntry({
 				projectRelativePath: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
 				projectName: name,
 				projectGuid: '', // don't care when just reading project as a reference
@@ -181,27 +226,27 @@ export class Project {
 	}
 
 	private resetProject(): void {
-		this.files = [];
-		this.importedTargets = [];
-		this.databaseReferences = [];
-		this.sqlCmdVariables = {};
-		this.preDeployScripts = [];
-		this.postDeployScripts = [];
-		this.noneDeployScripts = [];
+		this._files = [];
+		this._importedTargets = [];
+		this._databaseReferences = [];
+		this._sqlCmdVariables = {};
+		this._preDeployScripts = [];
+		this._postDeployScripts = [];
+		this._noneDeployScripts = [];
 		this.projFileXmlDoc = undefined;
 	}
 
 	public async updateProjectForRoundTrip(): Promise<void> {
-		if (this.importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences()) {
+		if (this._importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences()) {
 			return;
 		}
 
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectForRoundtrip);
 
-		if (!this.importedTargets.includes(constants.NetCoreTargets)) {
+		if (!this._importedTargets.includes(constants.NetCoreTargets)) {
 			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
 			if (result === constants.yesString) {
-				await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
+				await fs.copyFile(this._projectFilePath, this._projectFilePath + '_backup');
 				await this.updateImportToSupportRoundTrip();
 				await this.updatePackageReferenceInProjFile();
 				await this.updateBeforeBuildTargetInProjFile();
@@ -210,7 +255,7 @@ export class Project {
 		} else if (this.containsSSDTOnlySystemDatabaseReferences()) {
 			const result = await window.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip, constants.yesString, constants.noString);
 			if (result === constants.yesString) {
-				await fs.copyFile(this.projectFilePath, this.projectFilePath + '_backup');
+				await fs.copyFile(this._projectFilePath, this._projectFilePath + '_backup');
 				await this.updateSystemDatabaseReferencesInProjFile();
 			}
 		}
@@ -266,6 +311,11 @@ export class Project {
 	public async addFolderItem(relativeFolderPath: string): Promise<FileProjectEntry> {
 		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
 
+		// check if folder already has been added to sqlproj
+		if (this.files.find(f => f.relativePath.toLowerCase() === relativeFolderPath.toLowerCase())) {
+			throw new Error(constants.folderAlreadyAddedToProject((relativeFolderPath)));
+		}
+
 		//If folder doesn't exist, create it
 		let exists = await utils.exists(absoluteFolderPath);
 		if (!exists) {
@@ -273,7 +323,7 @@ export class Project {
 		}
 
 		const folderEntry = this.createFileProjectEntry(relativeFolderPath, EntryType.Folder);
-		this.files.push(folderEntry);
+		this._files.push(folderEntry);
 
 		await this.addToProjFile(folderEntry);
 		return folderEntry;
@@ -290,6 +340,11 @@ export class Project {
 		// check if file already exists if content was passed to write to a new file
 		if (contents !== undefined && contents !== '' && await utils.exists(absoluteFilePath)) {
 			throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
+		}
+
+		// check if file already has been added to sqlproj
+		if (this.files.find(f => f.relativePath.toLowerCase() === relativeFilePath.toLowerCase())) {
+			throw new Error(constants.fileAlreadyAddedToProject((relativeFilePath)));
 		}
 
 		// create the file if contents were passed in
@@ -311,15 +366,15 @@ export class Project {
 		switch (itemType) {
 			case templates.preDeployScript:
 				xmlTag = constants.PreDeploy;
-				this.preDeployScripts.length === 0 ? this.preDeployScripts.push(fileEntry) : this.noneDeployScripts.push(fileEntry);
+				this._preDeployScripts.length === 0 ? this._preDeployScripts.push(fileEntry) : this._noneDeployScripts.push(fileEntry);
 				break;
 			case templates.postDeployScript:
 				xmlTag = constants.PostDeploy;
-				this.postDeployScripts.length === 0 ? this.postDeployScripts.push(fileEntry) : this.noneDeployScripts.push(fileEntry);
+				this._postDeployScripts.length === 0 ? this._postDeployScripts.push(fileEntry) : this._noneDeployScripts.push(fileEntry);
 				break;
 			default:
 				xmlTag = constants.Build;
-				this.files.push(fileEntry);
+				this._files.push(fileEntry);
 		}
 
 		const attributes = new Map<string, string>();
@@ -335,19 +390,19 @@ export class Project {
 	}
 
 	public async exclude(entry: FileProjectEntry): Promise<void> {
-		const toExclude: FileProjectEntry[] = this.files.concat(this.preDeployScripts).concat(this.postDeployScripts).concat(this.noneDeployScripts).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
+		const toExclude: FileProjectEntry[] = this._files.concat(this._preDeployScripts).concat(this._postDeployScripts).concat(this._noneDeployScripts).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
 		await this.removeFromProjFile(toExclude);
 
-		this.files = this.files.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-		this.preDeployScripts = this.preDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-		this.postDeployScripts = this.postDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-		this.noneDeployScripts = this.noneDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
+		this._files = this._files.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
+		this._preDeployScripts = this._preDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
+		this._postDeployScripts = this._postDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
+		this._noneDeployScripts = this._noneDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
 	}
 
 	public async deleteFileFolder(entry: FileProjectEntry): Promise<void> {
 		// compile a list of folder contents to delete; if entry is a file, contents will contain only itself
-		const toDeleteFiles: FileProjectEntry[] = this.files.concat(this.preDeployScripts).concat(this.postDeployScripts).concat(this.noneDeployScripts).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.File);
-		const toDeleteFolders: FileProjectEntry[] = this.files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.Folder);
+		const toDeleteFiles: FileProjectEntry[] = this._files.concat(this._preDeployScripts).concat(this._postDeployScripts).concat(this._noneDeployScripts).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.File);
+		const toDeleteFolders: FileProjectEntry[] = this._files.filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath) && x.type === EntryType.Folder);
 
 		await Promise.all(toDeleteFiles.map(x => fs.unlink(x.fsUri.fsPath)));
 		await Promise.all(toDeleteFolders.map(x => fs.rmdir(x.fsUri.fsPath, { recursive: true })));
@@ -357,7 +412,7 @@ export class Project {
 
 	public async deleteDatabaseReference(entry: IDatabaseReferenceProjectEntry): Promise<void> {
 		await this.removeFromProjFile(entry);
-		this.databaseReferences = this.databaseReferences.filter(x => x !== entry);
+		this._databaseReferences = this._databaseReferences.filter(x => x !== entry);
 	}
 
 	/**
@@ -371,7 +426,7 @@ export class Project {
 			this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].nodeValue = newDSP;
 
 			// update any system db references
-			const systemDbReferences = this.databaseReferences.filter(r => r instanceof SystemDatabaseReferenceProjectEntry) as SystemDatabaseReferenceProjectEntry[];
+			const systemDbReferences = this._databaseReferences.filter(r => r instanceof SystemDatabaseReferenceProjectEntry) as SystemDatabaseReferenceProjectEntry[];
 			if (systemDbReferences.length > 0) {
 				for (let r of systemDbReferences) {
 					// remove old entry in sqlproj
@@ -676,12 +731,12 @@ export class Project {
 		}
 
 		if (!this.databaseReferenceExists(entry)) {
-			this.databaseReferences.push(entry);
+			this._databaseReferences.push(entry);
 		}
 	}
 
 	private databaseReferenceExists(entry: IDatabaseReferenceProjectEntry): boolean {
-		const found = this.databaseReferences.find(reference => reference.pathForSqlProj() === entry.pathForSqlProj()) !== undefined;
+		const found = this._databaseReferences.find(reference => reference.pathForSqlProj() === entry.pathForSqlProj()) !== undefined;
 		return found;
 	}
 
@@ -739,7 +794,7 @@ export class Project {
 
 	public async addSqlCmdVariableToProjFile(entry: SqlCmdVariableProjectEntry): Promise<void> {
 		// Remove any entries with the same variable name. It'll be replaced with a new one
-		if (Object.keys(this.sqlCmdVariables).includes(entry.variableName)) {
+		if (Object.keys(this._sqlCmdVariables).includes(entry.variableName)) {
 			await this.removeFromProjFile(entry);
 		}
 
@@ -749,7 +804,7 @@ export class Project {
 		this.findOrCreateItemGroup(constants.SqlCmdVariable).appendChild(sqlCmdVariableNode);
 
 		// add to the project's loaded sqlcmd variables
-		this.sqlCmdVariables[entry.variableName] = <string>entry.defaultValue;
+		this._sqlCmdVariables[entry.variableName] = <string>entry.defaultValue;
 	}
 
 	private addSqlCmdVariableChildren(sqlCmdVariableNode: any, entry: SqlCmdVariableProjectEntry): void {
@@ -797,7 +852,7 @@ export class Project {
 		}
 		else {
 			this.projFileXmlDoc.documentElement.appendChild(importNode, oldImportNode);
-			this.importedTargets.push(projectAttributeVal);	// Add new import target to the list
+			this._importedTargets.push(projectAttributeVal);	// Add new import target to the list
 		}
 
 		await this.serializeToProjFile(this.projFileXmlDoc);
@@ -856,7 +911,7 @@ export class Project {
 				}
 
 				// remove from database references because it'll get added again later
-				this.databaseReferences.splice(this.databaseReferences.findIndex(n => n.databaseName === (systemDb === SystemDatabase.master ? constants.master : constants.msdb)), 1);
+				this._databaseReferences.splice(this._databaseReferences.findIndex(n => n.databaseName === (systemDb === SystemDatabase.master ? constants.master : constants.msdb)), 1);
 
 				await this.addSystemDatabaseReference({ databaseName: databaseVariableName, systemDb: systemDb, suppressMissingDependenciesErrors: suppressMissingDependences });
 			}
@@ -920,7 +975,7 @@ export class Project {
 			whiteSpaceAtEndOfSelfclosingTag: true
 		}); // TODO: replace <any>
 
-		await fs.writeFile(this.projectFilePath, xml);
+		await fs.writeFile(this._projectFilePath, xml);
 	}
 
 	/**
@@ -938,7 +993,7 @@ export class Project {
 		}
 
 		for (let file of list) {
-			const relativePath = utils.trimChars(utils.trimUri(Uri.file(this.projectFilePath), file), '/');
+			const relativePath = utils.trimChars(utils.trimUri(Uri.file(this._projectFilePath), file), '/');
 
 			if (relativePath.length > 0) {
 				const fileStat = await fs.stat(file.fsPath);
@@ -964,7 +1019,7 @@ export abstract class ProjectEntry {
 	}
 }
 
-export class FileProjectEntry extends ProjectEntry {
+export class FileProjectEntry extends ProjectEntry implements IFileProjectEntry {
 	/**
 	 * Absolute file system URI
 	 */

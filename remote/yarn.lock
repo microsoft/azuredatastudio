@@ -171,10 +171,10 @@ chartjs-color@^2.1.0:
     chartjs-color-string "^0.6.0"
     color-convert "^1.9.3"
 
-chokidar@3.4.3:
-  version "3.4.3"
-  resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-3.4.3.tgz#c1df38231448e45ca4ac588e6c79573ba6a57d5b"
-  integrity sha512-DtM3g7juCXQxFVSNPNByEC2+NImtBuxQQvWlHunpJIS5Ocr0lG306cC7FCi7cEA0fzmybPUIl4txBIobk1gGOQ==
+chokidar@3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-3.5.1.tgz#ee9ce7bbebd2b79f49f304799d5468e31e14e68a"
+  integrity sha512-9+s+Od+W0VJJzawDma/gvBNQqkTiqYTWLuZoyAsivsI4AaWTCzHG06/TMjsf1cYe9Cb97UCEhjz7HvnPk2p/tw==
   dependencies:
     anymatch "~3.1.1"
     braces "~3.0.2"
@@ -184,7 +184,7 @@ chokidar@3.4.3:
     normalize-path "~3.0.0"
     readdirp "~3.5.0"
   optionalDependencies:
-    fsevents "~2.1.2"
+    fsevents "~2.3.1"
 
 color-convert@^1.9.0, color-convert@^1.9.3:
   version "1.9.3"
@@ -327,10 +327,10 @@ fs-extra@^7.0.0:
     jsonfile "^4.0.0"
     universalify "^0.1.0"
 
-fsevents@~2.1.2:
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.1.3.tgz#fb738703ae8d2f9fe900c33836ddebee8b97f23e"
-  integrity sha512-Auw9a4AxqWpa9GUfj370BMPzzyncfBABW8Mab7BGWBYDj4Isgq+cDKtx0i6u9jcX9pQDnswsaaOTgTmA5pEjuQ==
+fsevents@~2.3.1:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
+  integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
 
 glob-parent@~5.1.0:
   version "5.1.0"
@@ -544,15 +544,15 @@ ng2-charts@^1.6.0:
   dependencies:
     chart.js "^2.6.0"
 
-node-addon-api@1.6.2:
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-1.6.2.tgz#d8aad9781a5cfc4132cc2fecdbdd982534265217"
-  integrity sha512-479Bjw9nTE5DdBSZZWprFryHGjUaQC31y1wHo19We/k0BZlrmhqQitWoUL0cD8+scljCbIUL+E58oRDEakdGGA==
+node-addon-api@^3.0.2:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-3.1.0.tgz#98b21931557466c6729e51cb77cd39c965f42239"
+  integrity sha512-flmrDNB06LIl5lywUz7YlNGZH/5p0M7W28k8hzd9Lshtdh1wshD2Y+U4h9LD6KObOy1f+fEVdgprPrEymjM5uw==
 
-node-pty@0.10.0-beta17:
-  version "0.10.0-beta17"
-  resolved "https://registry.yarnpkg.com/node-pty/-/node-pty-0.10.0-beta17.tgz#962d4a3f4dc6772385e0cad529c209cef3bc79e6"
-  integrity sha512-tn7EANQacnAvnOQCImvgag1DL0tVmUoY/1yIZbh3u/BBpvCcGHLZJNn7TXheodRLr6hmGSUS2VbfcUr9p0gOug==
+node-pty@0.10.0-beta19:
+  version "0.10.0-beta19"
+  resolved "https://registry.yarnpkg.com/node-pty/-/node-pty-0.10.0-beta19.tgz#b7cbfba53f7b2a816efe8c9302dd083cc5874458"
+  integrity sha512-4UIOGMvpofUbe+ZniBUtY8zc/psMURSzbMonQgIhK7JlMQsUwcbkDIrKzStVLJX0FkeZpUNlsVtK7qqzHvrUZA==
   dependencies:
     nan "^2.14.0"
 
@@ -804,12 +804,12 @@ vscode-textmate@5.2.0:
   resolved "https://registry.yarnpkg.com/vscode-textmate/-/vscode-textmate-5.2.0.tgz#01f01760a391e8222fe4f33fbccbd1ad71aed74e"
   integrity sha512-Uw5ooOQxRASHgu6C7GVvUxisKXfSgW4oFlO+aa+PAkgmH89O3CXxEEzNRNtHSqtXFTl0nAC1uYj0GMSH27uwtQ==
 
-vscode-windows-ca-certs@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/vscode-windows-ca-certs/-/vscode-windows-ca-certs-0.2.0.tgz#086f0f4de57e2760a35ac6920831bff246237115"
-  integrity sha512-YBrJRT0zos+Yb1Qdn73GD8QZr7pa2IE96b5Y1hmmp6XeR8aYB7Iiq5gDAF/+/AxL+caSR9KPZQ6jiYWh5biD7w==
+vscode-windows-ca-certs@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/vscode-windows-ca-certs/-/vscode-windows-ca-certs-0.3.0.tgz#324e1f8ba842bbf048a39e7c0ee8fe655e9adfcc"
+  integrity sha512-CYrpCEKmAFQJoZNReOrelNL+VKyebOVRCqL9evrBlVcpWQDliliJgU5RggGS8FPGtQ3jAKLQt9frF0qlxYYPKA==
   dependencies:
-    node-addon-api "1.6.2"
+    node-addon-api "^3.0.2"
 
 vscode-windows-registry@1.0.2:
   version "1.0.2"
@@ -821,25 +821,25 @@ xtend@^4.0.1:
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
 
-xterm-addon-search@0.8.0-beta.3:
-  version "0.8.0-beta.3"
-  resolved "https://registry.yarnpkg.com/xterm-addon-search/-/xterm-addon-search-0.8.0-beta.3.tgz#c6c7e36a03706bd43d8bba383511acf9e435aed0"
-  integrity sha512-EZP97KJIJ4KGQaOPYiiOaRRJst6LOgeEFoQL46WcBl5EWH9pH8qfrv0BHAJ8+6nBV2B9u5M6rzxO1GvLLec19w==
+xterm-addon-search@0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/xterm-addon-search/-/xterm-addon-search-0.8.0.tgz#e33eab918df7eac7e7baf95dd2b3d14133754881"
+  integrity sha512-MPJGPVPpHRUw9cLIuqQbrVepmENMOybVUSxIALz5h1ryyQBrVqVujq2hL5aroX5/dZJoHx9lGHQTVLQ07SKgKA==
 
 xterm-addon-unicode11@0.3.0-beta.3:
   version "0.3.0-beta.3"
   resolved "https://registry.yarnpkg.com/xterm-addon-unicode11/-/xterm-addon-unicode11-0.3.0-beta.3.tgz#70af2dfb67809258edb62c19e2861f7ce5ccf5cd"
   integrity sha512-vaYopnOjn19wCLDCyIWPWLwKR7CvLPxB5YZ3CAxt9qL05o3symxIJJJC0DuCa4GaGKVjNc7EmjRCs5bsJ2O1tw==
 
-xterm-addon-webgl@0.10.0-beta.1:
-  version "0.10.0-beta.1"
-  resolved "https://registry.yarnpkg.com/xterm-addon-webgl/-/xterm-addon-webgl-0.10.0-beta.1.tgz#e0bf964945a9aa8fc18318ddbd32e56ec99c219e"
-  integrity sha512-XNZMrmiyFaz3XiPq+LqF0qn2QHpUEwuk+cG53JwpJHnWo3dd2jxoIgHFQUcrnvHIVPZMbTKySIwLCCC9uQVl7Q==
+xterm-addon-webgl@0.10.0-beta.2:
+  version "0.10.0-beta.2"
+  resolved "https://registry.yarnpkg.com/xterm-addon-webgl/-/xterm-addon-webgl-0.10.0-beta.2.tgz#520547b2f845b2f9265f1817140b0f4e114c4a55"
+  integrity sha512-DLfmF5+H1M/0BABEaqJlLUasKck7TjyRWVlzGflFTWVCr7/Kqaf0al4KMlw3yWX76A1ITGXrWj0qbDn2Sixl2Q==
 
-xterm@4.10.0-beta.4:
-  version "4.10.0-beta.4"
-  resolved "https://registry.yarnpkg.com/xterm/-/xterm-4.10.0-beta.4.tgz#95efce7a40ec582101ec9777f4ccc6e68e95185e"
-  integrity sha512-q/yRy2nn4mp1jWZe218TJwlKjXCIr6h28Kw0JMB+lcTeU+MebZ3TrHqlrNVnB+UJfFDOpkw0qfKYfRoV8G/hXA==
+xterm@4.11.0-beta.2:
+  version "4.11.0-beta.2"
+  resolved "https://registry.yarnpkg.com/xterm/-/xterm-4.11.0-beta.2.tgz#a95560b61c771f54a336c2eb10e1472e556d9f4b"
+  integrity sha512-0BUaAfuclnowirdOuB13OGgq6OUGg/8etnRVT6apgnOrLGOLRCE1NiL3KhxotleAf4gVP0m3iCxsIr3csDY40g==
 
 yauzl@^2.9.2:
   version "2.10.0"
