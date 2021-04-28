@@ -190,7 +190,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 					this._pythonExecutable = path.join(this._pythonInstallationPath, process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 
 					if (userInstalledPipPackages.length !== 0) {
-						this.createPipPackagesInstallNotebook(userInstalledPipPackages);
+						this.createInstallPipPackagesHelpNotebook(userInstalledPipPackages);
 					}
 				}
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
@@ -505,12 +505,12 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		if (notebookConfig && notebookConfig[constants.dontPromptPythonUpdate]) {
 			return;
 		}
+
 		let response = await vscode.window.showInformationMessage(msgPythonVersionUpdatePrompt, yes, no, dontAskAgain);
 		if (response === yes) {
 			vscode.commands.executeCommand(constants.jupyterConfigurePython);
 		} else if (response === dontAskAgain) {
 			await notebookConfig.update(constants.dontPromptPythonUpdate, true, vscode.ConfigurationTarget.Global);
-			console.log('dont ask again');
 		}
 	}
 
@@ -835,7 +835,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		await fs.writeFile(kernelPath, JSON.stringify(kernelSpec, undefined, '\t'));
 	}
 
-	private async createPipPackagesInstallNotebook(userInstalledPipPackages: PythonPkgDetails[]): Promise<void> {
+	private async createInstallPipPackagesHelpNotebook(userInstalledPipPackages: PythonPkgDetails[]): Promise<void> {
 		let packagesList: string[] = userInstalledPipPackages.map(pkg => { return pkg.name; });
 		let installPackagesCode = `import sys\n!{sys.executable} -m pip install --user ${packagesList.join(' ')}`;
 		let initialContent: azdata.nb.INotebookContents = {
