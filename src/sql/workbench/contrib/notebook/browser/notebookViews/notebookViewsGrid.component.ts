@@ -46,22 +46,22 @@ export class NotebookViewsGridComponent implements OnInit {
 		return localize('emptyText', "This view is empty. Add a cell to this view by clicking the Insert Cells button.");
 	}
 
-	ngOnInit() {
+	ngOnInit() { }
+
+	ngAfterViewInit() {
 		const self = this;
 
-		setTimeout(() => {
-			self._grid = GridStack.init({
-				alwaysShowResizeHandle: false,
-				styleInHead: true
-			});
+		self._grid = GridStack.init({
+			alwaysShowResizeHandle: false,
+			styleInHead: true
+		});
 
-			this.loaded = true;
-			this.detectChanges();
+		this.loaded = true;
+		this.detectChanges();
 
-			self._grid.on('added', function (e: Event, items: GridStackNode[]) { self.persist('added', items, self._grid, self._items); });
-			self._grid.on('removed', function (e: Event, items: GridStackNode[]) { self.persist('removed', items, self._grid, self._items); });
-			self._grid.on('change', function (e: Event, items: GridStackNode[]) { self.persist('change', items, self._grid, self._items); });
-		}, 100);
+		self._grid.on('added', function (e: Event, items: GridStackNode[]) { self.persist('added', items, self._grid, self._items); });
+		self._grid.on('removed', function (e: Event, items: GridStackNode[]) { self.persist('removed', items, self._grid, self._items); });
+		self._grid.on('change', function (e: Event, items: GridStackNode[]) { self.persist('change', items, self._grid, self._items); });
 	}
 
 	private detectChanges(): void {
@@ -81,6 +81,7 @@ export class NotebookViewsGridComponent implements OnInit {
 
 			if (e.cell && e.event === 'insert') {
 				const component = this._items.find(x => x.cell.cellGuid === e.cell.cellGuid);
+				// Prevent an awkward movement on the grid by moving this out of view first
 				currentView.moveCell(e.cell, 9999, 0);
 				currentView.insertCell(e.cell);
 

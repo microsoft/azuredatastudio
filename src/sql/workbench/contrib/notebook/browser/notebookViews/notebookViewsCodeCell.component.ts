@@ -17,15 +17,13 @@ export const CODE_SELECTOR: string = 'views-code-cell-component';
 })
 
 export class NotebookViewsCodeCellComponent extends CodeCellComponent {
+	public readonly emptyCellText: string = localize('viewsCodeCell.emptyCellText', "Please run this cell to view outputs.");
+
 	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
 		super(changeRef);
 	}
 
 	get outputs(): nb.ICellOutput[] {
 		return this.cellModel.outputs.filter((output: nb.IDisplayResult) => output.data && output.data['text/plain'] !== '<IPython.core.display.HTML object>');
-	}
-
-	get emptyCellText(): string {
-		return localize('viewsCodeCell.emptyCellText', "Please run this cell to view outputs.");
 	}
 }

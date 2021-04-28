@@ -64,9 +64,8 @@ export class NotebookViewsCardComponent implements OnInit {
 	}
 
 	public selectCell(cell: ICellModel, event?: Event) {
-		if (event) {
-			event.stopPropagation();
-		}
+		event?.stopPropagation();
+
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
 			this.model.updateActiveCell(cell);
 			this.changed('active');
