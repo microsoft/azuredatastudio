@@ -66,15 +66,19 @@ export function getPythonInstallationLocation(rootFolder: string) {
 
 export function getPythonExePath(rootFolder: string): string {
 	let oldPythonPath = path.join(
-		getPythonInstallationLocation(rootFolder),
+		rootFolder,
 		'0.0.1',
 		process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
-	if (fs.existsSync(oldPythonPath)) {
-		return oldPythonPath;
-	}
-	return path.join(
-		getPythonInstallationLocation(rootFolder),
+	let newPythonPath = path.join(
+		rootFolder,
 		process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
+
+	// If Python 3.6 and Python 3.8 both do not exist OR Python 3.8 exists, return the new path without the bundleversion
+	if (!fs.existsSync(newPythonPath) && !fs.existsSync(oldPythonPath) || fs.existsSync(newPythonPath)) {
+		return newPythonPath;
+	}
+	// If only Python 3.6 exists then return the old path with the bundleversion
+	return oldPythonPath;
 }
 
 export function getPackageFilePath(rootFolder: string, packageName: string): string {

@@ -32,7 +32,7 @@ const msgInstallPkgStart = localize('msgInstallPkgStart', "Installing Notebook d
 const msgInstallPkgFinish = localize('msgInstallPkgFinish', "Notebook dependencies installation is complete");
 const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.");
 const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python installation is currently in progress. Waiting for it to complete.");
-const msgPythonVersionUpdatePrompt = localize('msgPythonVersionUpdatePrompt', "Python 3.8.8 is now available in Azure Data Studio. You are currently using Python 3.6.6, which will be out of support in December 2021. Would you like to update to Python 3.8.8 now?");
+const msgPythonVersionUpdatePrompt = localize('msgPythonVersionUpdatePrompt', "Python 3.8.8 is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python 3.8.8 now?");
 const msgRemoveOldPythonPrompt = localize('msgRemoveOldPythonPrompt', "Would you like to remove the Python 3.6.6 installation?");
 const msgPythonVersionUpdateWarning = localize('msgPythonVersionUpdateWarning', "Python 3.8.8 will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?");
 function msgRemovePython366Error(errorMessage: string, oldPythonPath: string): string { return localize('msgRemovePython366Error', "Encountered error while removing Python 3.6.6 installation: {0}. You can manually remove Python 3.6.6 by deleting this folder: {1}.", errorMessage, oldPythonPath); }
@@ -766,13 +766,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			pythonInstallPath,
 			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 
-		// new Python 3.8.8 installation
-		if (!fs.existsSync(newPythonPath) && !fs.existsSync(oldPythonPath)) {
-			return newPythonPath;
-		} else if (fs.existsSync(newPythonPath)) {
+		// If Python 3.6 and Python 3.8 both do not exist OR Python 3.8 exists, return the new path without the bundleversion
+		if (!fs.existsSync(newPythonPath) && !fs.existsSync(oldPythonPath) || fs.existsSync(newPythonPath)) {
 			return newPythonPath;
 		}
-		// old Python 3.6.6 installation
+		// If only Python 3.6 exists then return the old path with the bundleversion
 		return oldPythonPath;
 	}
 
@@ -843,7 +841,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let initialContent: azdata.nb.INotebookContents = {
 			cells: [{
 				cell_type: 'markdown',
-				source: ['# Install Pip Packages\n\nThis notebook will help you reinstall the pip packages you were previously using so that they can be used with Python 3.8.\n\n**Note:** packages that have a dependency on Python 3.6 will not work with Python 3.8.\n\nRun the following code cell after Python 3.8 installation is complete.'],
+				source: ['# Install Pip Packages\n\nThis notebook will help you reinstall the pip packages you were previously using so that they can be used with Python 3.8.\n\n**Note:** Some packages may have a dependency on Python 3.6 and will not work with Python 3.8.\n\nRun the following code cell after Python 3.8 installation is complete.'],
 			}, {
 				cell_type: 'code',
 				source: [installPackagesCode],
