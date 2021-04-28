@@ -7,9 +7,10 @@ import { MainThreadDashboardWebviewShape, SqlMainContext, ExtHostDashboardWebvie
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IDashboardViewService, IDashboardWebview } from 'sql/platform/dashboard/browser/dashboardViewService';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadDashboardWebview)
-export class MainThreadDashboardWebview implements MainThreadDashboardWebviewShape {
+export class MainThreadDashboardWebview extends Disposable implements MainThreadDashboardWebviewShape {
 
 	private static _handlePool = 0;
 	private readonly _proxy: ExtHostDashboardWebviewsShape;
@@ -21,8 +22,9 @@ export class MainThreadDashboardWebview implements MainThreadDashboardWebviewSha
 		context: IExtHostContext,
 		@IDashboardViewService viewService: IDashboardViewService
 	) {
+		super();
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostDashboardWebviews);
-		viewService.onRegisteredWebview(e => {
+		this._register(viewService.onRegisteredWebview(e => {
 			if (this.knownWidgets.find(x => x === e.id)) {
 				let handle = MainThreadDashboardWebview._handlePool++;
 				this._dialogs.set(handle, e);
@@ -31,11 +33,7 @@ export class MainThreadDashboardWebview implements MainThreadDashboardWebviewSha
 					this._proxy.$onMessage(handle, e);
 				});
 			}
-		});
-	}
-
-	public dispose(): void {
-		throw new Error('Method not implemented.');
+		}));
 	}
 
 	$sendMessage(handle: number, message: string) {
