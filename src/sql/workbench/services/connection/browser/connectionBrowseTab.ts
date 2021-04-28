@@ -13,6 +13,7 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 import { ITreeItem } from 'sql/workbench/common/views';
 import { ConnectionSource } from 'sql/workbench/services/connection/browser/connectionDialogWidget';
+import { CONNECTIONS_SORT_BY_CONFIG_KEY } from 'sql/platform/connection/common/connectionConfig';
 import { IConnectionTreeDescriptor, IConnectionTreeService } from 'sql/workbench/services/connection/common/connectionTreeService';
 import { AsyncRecentConnectionTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/asyncRecentConnectionTreeDataSource';
 import { ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
@@ -93,7 +94,8 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		@ICommandService private readonly commandService: ICommandService,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
-		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
 	) {
 		super();
 		this.connectionTreeService.setView(this);
@@ -226,6 +228,13 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		this._register(this.themeService.onDidColorThemeChange(async () => {
 			await this.refresh();
 		}));
+
+		this._register(this.configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration(CONNECTIONS_SORT_BY_CONFIG_KEY)) {
+				this.updateSavedConnectionsNode();
+			}
+		}));
+
 	}
 
 	private handleTreeElementSelection(selectedNode: TreeElement, connect: boolean): void {
