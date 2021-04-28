@@ -11,9 +11,10 @@ import { MainThreadModalDialogShape, SqlMainContext, SqlExtHostContext, ExtHostM
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModalDialog)
-export class MainThreadModalDialog implements MainThreadModalDialogShape {
+export class MainThreadModalDialog extends Disposable implements MainThreadModalDialogShape {
 	private readonly _proxy: ExtHostModalDialogsShape;
 	private readonly _dialogs = new Map<number, WebViewDialog>();
 
@@ -21,11 +22,8 @@ export class MainThreadModalDialog implements MainThreadModalDialogShape {
 		context: IExtHostContext,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService
 	) {
+		super();
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostModalDialogs);
-	}
-
-	dispose(): void {
-		throw new Error('Method not implemented.');
 	}
 
 	$createDialog(handle: number): void {
