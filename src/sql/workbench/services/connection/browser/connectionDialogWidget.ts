@@ -272,6 +272,7 @@ export class ConnectionDialogWidget extends Modal {
 		this.browsePanel = new ConnectionBrowseTab(this.instantiationService);
 
 		this._register(this.browsePanel.view.onSelectedConnectionChanged(e => {
+			this._connectionSource = e.source;
 			this.onConnectionClick(e.connectionProfile, e.connect);
 		}));
 
@@ -489,6 +490,7 @@ export class ConnectionDialogWidget extends Modal {
 	 * @param recentConnections Are there recent connections that should be shown
 	 */
 	public async open(recentConnections: boolean): Promise<void> {
+		this._connectionSource = 'manual';
 		this._panel.showTab(this._recentConnectionTabId);
 
 		this.show();
