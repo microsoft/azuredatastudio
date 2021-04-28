@@ -16,7 +16,7 @@ import { deepClone } from 'vs/base/common/objects';
 
 export const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
 export const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
-export const CONNECTIONS_SORT_BY_CONFIG_KEY = 'datasource.connections.sortBy';
+export const CONNECTIONS_SORT_BY_CONFIG_KEY = 'datasource.connectionsSortBy';
 
 export const enum ConnectionsSortBy {
 	dateAdded = 'dateAdded',

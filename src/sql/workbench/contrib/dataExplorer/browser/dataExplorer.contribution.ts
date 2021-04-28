@@ -35,8 +35,8 @@ configurationRegistry.registerConfiguration({
 			'type': 'string',
 			'enum': [ConnectionsSortBy.dateAdded, ConnectionsSortBy.displayName],
 			'enumDescriptions': [
-				localize('connections.sortBy.dateAdded', 'Saved connections are sorted by the dates they were added.'),
-				localize('connections.sortBy.displayName', 'Saved connections are sorted by their display names alphabetically.')
+				localize('connectionsSortBy.dateAdded', 'Saved connections are sorted by the dates they were added.'),
+				localize('connectionsSortBy.displayName', 'Saved connections are sorted by their display names alphabetically.')
 			],
 			'default': ConnectionsSortBy.dateAdded,
 			'description': localize('datasource.connections.sortBy', "Order used for sorting saved connections and connection groups")
