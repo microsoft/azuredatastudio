@@ -239,7 +239,7 @@ suite('ConnectionConfig', () => {
 		assert.ok(groupsAreEqual(allGroups, testGroups), 'the groups returned did not match expectation');
 	});
 
-	test('getAllGroups should return groups sorted alphabetically by display name given datasource.connections.sortBy is set to \'' + ConnectionsSortBy.displayName + '\'', () => {
+	test('getAllGroups should return groups sorted alphabetically by display name given datasource.connectionsSortBy is set to \'' + ConnectionsSortBy.displayName + '\'', () => {
 		let configurationService = new TestConfigurationService();
 		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(0, 3), ConfigurationTarget.USER);
 		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(2, testGroups.length), ConfigurationTarget.WORKSPACE);
@@ -253,7 +253,7 @@ suite('ConnectionConfig', () => {
 		assert.ok(allGroups.slice(1).every((item, i) => allGroups[i].name <= item.name), 'the groups are not sorted correctly');
 	});
 
-	test('getAllGroups should return groups sorted by date added given datasource.connections.sortBy is set to \'' + ConnectionsSortBy.dateAdded + '\'', () => {
+	test('getAllGroups should return groups sorted by date added given datasource.connectionsSortBy is set to \'' + ConnectionsSortBy.dateAdded + '\'', () => {
 		let configurationService = new TestConfigurationService();
 		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(0, 3).reverse(), ConfigurationTarget.USER);
 		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(2, testGroups.length).reverse(), ConfigurationTarget.WORKSPACE);
@@ -411,7 +411,7 @@ suite('ConnectionConfig', () => {
 		});
 	});
 
-	test('getConnections should return connections sorted alphabetically by title given datasource.connections.sortBy is set to \'' + ConnectionsSortBy.displayName + '\'', () => {
+	test('getConnections should return connections sorted alphabetically by title given datasource.connectionsSortBy is set to \'' + ConnectionsSortBy.displayName + '\'', () => {
 		let configurationService = new TestConfigurationService();
 		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(0, 2).reverse(), ConfigurationTarget.USER);
 		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(2, testConnections.length).reverse(), ConfigurationTarget.WORKSPACE);
@@ -423,7 +423,7 @@ suite('ConnectionConfig', () => {
 		assert.ok(allConnections.slice(1).every((item, i) => allConnections[i].title <= item.title), 'The connections are not sorted correctly');
 	});
 
-	test('getConnections should return connections sorted by date added given datasource.connections.sortBy is set to \'' + ConnectionsSortBy.dateAdded + '\'', () => {
+	test('getConnections should return connections sorted by date added given datasource.connectionsSortBy is set to \'' + ConnectionsSortBy.dateAdded + '\'', () => {
 		let configurationService = new TestConfigurationService();
 		configurationService.updateValue('datasource.connections', deepClone(testConnections).reverse(), ConfigurationTarget.USER);
 		configurationService.updateValue(CONNECTIONS_SORT_BY_CONFIG_KEY, ConnectionsSortBy.dateAdded, ConfigurationTarget.USER);

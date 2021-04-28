@@ -39,7 +39,7 @@ configurationRegistry.registerConfiguration({
 				localize('connectionsSortBy.displayName', 'Saved connections are sorted by their display names alphabetically.')
 			],
 			'default': ConnectionsSortBy.dateAdded,
-			'description': localize('datasource.connections.sortBy', "Order used for sorting saved connections and connection groups")
+			'description': localize('datasource.connectionsSortBy', "Order used for sorting saved connections and connection groups")
 		}
 	}
 });
