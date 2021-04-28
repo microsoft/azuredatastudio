@@ -312,29 +312,24 @@ export class RunParametersAction extends TooltipFromLabelAction {
 		editor.cells.forEach(cell => {
 			if (cell.isParameter) {
 				// Check if cell is empty or contains just whitespace
-				for (let x of cell.source) {
+				const cellSource = typeof cell.source === 'string' ? [cell.source] : cell.source;
+				for (let x of cellSource) {
 					emptyParameterCell = /^\s*$/.test(x);
 				}
-				if (!cell.source || emptyParameterCell) {
+				if (emptyParameterCell) {
 					// If there is no parameters in the cell indicate to user to add them
 					this.notificationService.notify({
 						severity: Severity.Info,
 						message: localize('noParametersInCell', "This notebook cannot run with parameters until there are parameters added to the parameter cell. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)."),
 					});
+					return;
 				}
 				for (let parameter of cell.source) {
-					if (parameter.includes('=')) {
-						// For syntax that includes multiple parameters on one line (ex. x=1;y=2)
-						let multiParams = parameter.split(';');
-						multiParams.forEach(param => {
-							let singleParam = param.split('=', 2);
-							if (singleParam.toString() !== '') {
-								defaultParameters.set(singleParam[0].trim(), singleParam[1].trim());
-							}
-						});
-					}
+					let param = parameter.split('=', 2);
+					defaultParameters.set(param[0].trim(), param[1].trim());
 				}
 			}
+			return;
 		});
 
 		// Store new parameters values the user inputs
