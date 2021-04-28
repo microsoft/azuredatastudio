@@ -45,8 +45,8 @@ import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 import { LocalizedStrings } from 'sql/workbench/contrib/assessment/common/strings';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { attachTableFilterStyler } from 'sql/platform/theme/common/styler';
 
 export const ASMTRESULTSVIEW_SELECTOR: string = 'asmt-results-view-component';
 export const ROW_HEIGHT: number = 25;
@@ -319,7 +319,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		columns.unshift(columnDef);
 
 		let filterPlugin = new HeaderFilter<Slick.SlickData>(this._contextViewService);
-		this._register(attachButtonStyler(filterPlugin, this._themeService));
+		this._register(attachTableFilterStyler(filterPlugin, this._themeService));
 		this.filterPlugin = filterPlugin;
 		this.filterPlugin.onFilterApplied.subscribe((e, args) => {
 			let filterValues = args.column.filterValues;
@@ -335,7 +335,6 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		// we need to be able to show distinct array values in filter dialog for columns with array data
 		filterPlugin['getFilterValues'] = this.getFilterValues;
 		filterPlugin['getAllFilterValues'] = this.getAllFilterValues;
-		filterPlugin['getFilterValuesByInput'] = this.getFilterValuesByInput;
 
 		dom.clearNode(this._gridEl.nativeElement);
 		dom.clearNode(this.actionBarContainer.nativeElement);
@@ -581,54 +580,6 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			} else {
 				if (!seen.some(x => x === value)) {
 					seen.push(value);
-				}
-			}
-		}
-
-		return seen.sort((v) => { return v; });
-	}
-
-	private async getFilterValuesByInput($input: JQuery<HTMLElement>): Promise<Array<string>> {
-		const column = $input.data('column'),
-			filter = $input.val() as string,
-			dataView = this['grid'].getData() as Slick.DataProvider<Slick.SlickData>,
-			seen: Array<any> = [];
-
-		for (let i = 0; i < dataView.getLength(); i++) {
-			const value = dataView.getItem(i)[column.field];
-			if (value instanceof Array) {
-				if (filter.length > 0) {
-					const itemValue = !value ? [] : value;
-					const lowercaseFilter = filter.toString().toLowerCase();
-					const lowercaseVals = itemValue.map(v => v.toLowerCase());
-					for (let valIdx = 0; valIdx < value.length; valIdx++) {
-						if (!seen.some(x => x === value[valIdx]) && lowercaseVals[valIdx].indexOf(lowercaseFilter) > -1) {
-							seen.push(value[valIdx]);
-						}
-					}
-				}
-				else {
-					for (let item = 0; item < value.length; item++) {
-						if (!seen.some(x => x === value[item])) {
-							seen.push(value[item]);
-						}
-					}
-				}
-
-			} else {
-				if (filter.length > 0) {
-					const itemValue = !value ? '' : value;
-					const lowercaseFilter = filter.toString().toLowerCase();
-					const lowercaseVal = itemValue.toString().toLowerCase();
-
-					if (!seen.some(x => x === value) && lowercaseVal.indexOf(lowercaseFilter) > -1) {
-						seen.push(value);
-					}
-				}
-				else {
-					if (!seen.some(x => x === value)) {
-						seen.push(value);
-					}
 				}
 			}
 		}

@@ -143,6 +143,8 @@ export interface INotebookService {
 	notifyCellExecutionStarted(): void;
 
 	openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined>;
+
+	getUntitledUriPath(originalTitle: string): string;
 }
 
 export interface INotebookProvider {

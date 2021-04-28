@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import {
@@ -20,23 +20,21 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadTasks)
-export class MainThreadTasks implements MainThreadTasksShape {
+export class MainThreadTasks extends Disposable implements MainThreadTasksShape {
 
 	private readonly _disposables = new Map<string, IDisposable>();
-	private readonly _generateCommandsDocumentationRegistration: IDisposable;
 	private readonly _proxy: ExtHostTasksShape;
 
 	constructor(
 		extHostContext: IExtHostContext
 	) {
+		super();
 		this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostTasks);
 	}
 
 	dispose() {
 		this._disposables.forEach(value => value.dispose());
 		this._disposables.clear();
-
-		this._generateCommandsDocumentationRegistration.dispose();
 	}
 
 	$registerTask(id: string): Promise<any> {

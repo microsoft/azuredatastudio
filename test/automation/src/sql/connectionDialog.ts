@@ -5,12 +5,13 @@
 
 import { Code } from '../code';
 import { Dialog } from './dialog';
+import { NotificationToast } from './notificationToast';
 
 const CONNECTION_DIALOG_TITLE = 'Connection';
 
 export class ConnectionDialog extends Dialog {
 
-	constructor(code: Code) {
+	constructor(code: Code, private notificationToast: NotificationToast) {
 		super(CONNECTION_DIALOG_TITLE, code);
 	}
 
@@ -30,8 +31,10 @@ export class ConnectionDialog extends Dialog {
 
 	private static readonly CONNECT_BUTTON_SELECTOR = '.modal .modal-footer a[aria-label="Connect"]:not(.disabled)';
 	async connect(): Promise<void> {
+		await this.notificationToast.closeNotificationToasts();
+
 		await this.code.waitAndClick(ConnectionDialog.CONNECT_BUTTON_SELECTOR);
 
-		return this.waitForDialogGone();
+		await this.waitForDialogGone();
 	}
 }

@@ -88,16 +88,55 @@
 	padding: 4px;
 }
 
+.slick-header-menu .searchbox-row
+{
+	display: flex;
+	align-items: center;
+	padding-left: 5px;
+	margin-top: 5px;
+}
+
+.slick-header-menu .searchbox-row .select-all-checkbox
+{
+	flex: 0;
+}
+
+.slick-header-menu .searchbox-row .search-input
+{
+	flex: 1 1 auto;
+}
+
+.slick-header-menu .searchbox-row .search-input input
+{
+	padding-right: 70px;
+}
+
+.slick-header-menu .searchbox-row .selected-count
+{
+	position: absolute;
+	right: 8px;
+	align-self: center;
+	align-items: center;
+	display: flex;
+}
+
+.slick-header-menu .searchbox-row .visible-count
+{
+	position: absolute;
+	/* visible count badge is not visible but will be read by the screen reader */
+	left: -10000px;
+}
+
+
 .slick-header-menu .filter
 {
 	border: 1px solid #BFBDBD;
 	font-size: 8pt;
 	height: 250px;
 	margin-top: 6px;
-	overflow: scroll;
-	padding: 4px;
+	overflow: hidden;
+	padding: 1px;
 	white-space: nowrap;
-	width: 200px;
 	align-content: flex-start;
 	display: flex;
 	flex-direction: column;
@@ -106,6 +145,7 @@
 .slick-header-menu .filter .filter-option {
 	display: flex;
 	align-items: center;
+	padding-left: 3px;
 }
 
 .slick-header-menu .filter-menu-button-container {
@@ -132,25 +172,24 @@
 	margin: 0;
 }
 
-.slick-header-menuicon
+.slick-header-menu a.monaco-button.monaco-text-button.slick-header-menuicon
 {
 	display: inline-block;
-	height: 16px;
-	margin-right: 4px;
-	vertical-align: middle;
-	width: 16px;
+	background-position: 2px center;
+	background-repeat: no-repeat;
+	padding-left: 18px;
+	text-align: left;
+	width: 100%;
+	padding: 0 0 0 18px;
+	margin: 0px;
 }
 
 .slick-header-menuicon.ascending {
-	background: url('sort-asc.gif');
-	background-position: center center;
-	background-repeat: no-repeat;
+	background-image: url('sort-asc.gif');
 }
 
 .slick-header-menuicon.descending {
-	background: url('sort-desc.gif');
-	background-position: center center;
-	background-repeat: no-repeat;
+	background-image: url('sort-desc.gif');
 }
 
 .slick-header-menucontent {
@@ -166,19 +205,6 @@
 	display: block;
 	position: absolute;
 	z-index: 999;
-}
-
-.vs-dark .slick-header-menu > input.input {
-	color: #4a4a4a;
-}
-
-.hc-black .slick-header-menu > input.input {
-	color: #000000;
-}
-
-.vs-dark .slick-header-menu,
-.hc-black .slick-header-menu {
-	color: #FFFFFF;
 }
 
 .slick-icon-cell-content {

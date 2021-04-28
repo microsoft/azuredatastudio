@@ -6,6 +6,9 @@
 import { nb } from 'azdata';
 import * as assert from 'assert';
 
+import * as fs from 'fs';
+import * as pfs from 'vs/base/node/pfs';
+
 import { URI } from 'vs/base/common/uri';
 import * as tempWrite from 'temp-write';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
@@ -13,9 +16,9 @@ import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { TestFileService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IFileService, IReadFileOptions, IFileContent, IWriteFileOptions, IFileStatWithMetadata } from 'vs/platform/files/common/files';
-import * as pfs from 'vs/base/node/pfs';
 import { VSBuffer, VSBufferReadable } from 'vs/base/common/buffer';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import { promisify } from 'util';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -53,7 +56,8 @@ suite('Local Content Manager', function (): void {
 		const instantiationService = new TestInstantiationService();
 		const fileService = new class extends TestFileService {
 			async readFile(resource: URI, options?: IReadFileOptions | undefined): Promise<IFileContent> {
-				const content = await pfs.readFile(resource.fsPath);
+				const content = await promisify(fs.readFile)(resource.fsPath);
+
 				return { name: ',', size: 0, etag: '', mtime: 0, value: VSBuffer.fromString(content.toString()), resource, ctime: 0 };
 			}
 			async writeFile(resource: URI, bufferOrReadable: VSBuffer | VSBufferReadable, options?: IWriteFileOptions): Promise<IFileStatWithMetadata> {

@@ -6,7 +6,7 @@
 import 'vs/css!./media/gridPanel';
 
 import { ITableStyles, ITableMouseEvent, FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { attachTableFilterStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, IColumn, ICellValue } from 'sql/workbench/services/query/common/query';
 import { VirtualizedCollection } from 'sql/base/browser/ui/table/asyncDataView';
@@ -50,7 +50,6 @@ import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
 
 const ROW_HEIGHT = 29;
@@ -529,7 +528,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}));
 		if (this.enableFilteringFeature) {
 			this.filterPlugin = new HeaderFilter(this.contextViewService);
-			attachButtonStyler(this.filterPlugin, this.themeService);
+			this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
 			this.table.registerPlugin(this.filterPlugin);
 		}
 		if (this.styles) {
@@ -655,17 +654,25 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	private async notifyTableSelectionChanged() {
-		const selectedValues = [];
+		const selectedCells = [];
 		for (const range of this.state.selection) {
-			const subset = await this.gridDataProvider.getRowData(range.fromRow, range.toRow - range.fromRow + 1);
-			subset.rows.forEach(row => {
+			let subset;
+			if (this.dataProvider.isDataInMemory) {
+				// handle the scenario when the data is sorted/filtered,
+				// we need to use the data that is being displayed
+				const data = await this.dataProvider.getRangeAsync(range.fromRow, range.toRow - range.fromRow + 1);
+				subset = data.map(item => Object.keys(item).map(key => item[key]));
+			} else {
+				subset = (await this.gridDataProvider.getRowData(range.fromRow, range.toRow - range.fromRow + 1)).rows;
+			}
+			subset.forEach(row => {
 				// start with range.fromCell -1 because we have row number column which is not available in the actual data
 				for (let i = range.fromCell - 1; i < range.toCell; i++) {
-					selectedValues.push(row[i]?.displayValue);
+					selectedCells.push(row[i]);
 				}
 			});
 		}
-		this.queryModelService.notifyCellSelectionChanged(selectedValues);
+		this.queryModelService.notifyCellSelectionChanged(selectedCells);
 	}
 
 	private onTableClick(event: ITableMouseEvent) {
@@ -762,7 +769,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					dataWithSchema[this.columns[i].field] = {
 						displayValue: r[i - 1].displayValue,
 						ariaLabel: escape(r[i - 1].displayValue),
-						isNull: r[i - 1].isNull
+						isNull: r[i - 1].isNull,
+						invariantCultureDisplayValue: r[i - 1].invariantCultureDisplayValue
 					};
 				}
 				return dataWithSchema as T;
