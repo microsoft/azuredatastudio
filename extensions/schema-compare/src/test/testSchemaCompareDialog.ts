@@ -18,14 +18,14 @@ export class SchemaCompareDialogTest extends SchemaCompareDialog {
 	}
 
 	// only for test
-	public getSourceDropdownValue(): string | azdata.CategoryValue {
+	public getSourceServerDropdownValue(): string | azdata.CategoryValue {
 		if (this.sourceServerDropdown) {
 			return this.sourceServerDropdown.value;
 		}
 		return undefined;
 	}
 
-	public getTargetDropdownValue(): string | azdata.CategoryValue {
+	public getTargetServerDropdownValue(): string | azdata.CategoryValue {
 		if (this.targetServerDropdown) {
 			return this.targetServerDropdown.value;
 		}

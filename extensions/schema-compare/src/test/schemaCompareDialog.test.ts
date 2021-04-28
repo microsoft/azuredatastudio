@@ -13,7 +13,7 @@ import 'mocha';
 import { ConnectionDropdownValue, SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { createContext, TestContext } from './testContext';
-import { mockConnection, mockConnectionProfile, setDacpacEndpointInfo } from './testUtils';
+import { mockConnectionProfile, mockConnectionProfile2, setDacpacEndpointInfo } from './testUtils';
 import { SchemaCompareMainWindowTest } from './testSchemaCompareMainWindow';
 import { SchemaCompareDialogTest } from './testSchemaCompareDialog';
 
@@ -74,27 +74,58 @@ describe('SchemaCompareDialog.openDialog @DacFx@', function (): void {
 		});
 	});
 
-	it('Verify database dropdown gets populated appropriately', async function (): Promise<void> {
+	it('Verify server dropdown gets populated appropriately', async function (): Promise<void> {
 		const getConnectionsResults: azdata.connection.ConnectionProfile[] = [{ ...mockConnectionProfile }];
 		sinon.stub(azdata.connection, 'getCurrentConnection').resolves(undefined);
-		sinon.stub(azdata.connection, 'openConnectionDialog').resolves(<any>Promise.resolve(mockConnection));
+		sinon.stub(azdata.connection, 'openConnectionDialog').resolves(<any>Promise.resolve(mockConnectionProfile));
 		sinon.stub(azdata.connection, 'getConnections').resolves(<any>Promise.resolve(getConnectionsResults));
 		sinon.stub(azdata.connection, 'listDatabases').resolves(['My Database']);
 
 		let schemaCompareResult = new SchemaCompareMainWindow(undefined, mockExtensionContext.object);
 		let dialog = new SchemaCompareDialogTest(schemaCompareResult, undefined, mockExtensionContext.object);
 
-		should.equal(dialog.getSourceDropdownValue(), undefined);
-		should.equal(dialog.getTargetDropdownValue(), undefined);
+		should.equal(dialog.getSourceServerDropdownValue(), undefined);
+		should.equal(dialog.getTargetServerDropdownValue(), undefined);
 
 		await dialog.openDialog();
 		await dialog.connectionButtonClick(false);
 
-		// Confirm source and target dropdowns have the new connection as its value
-		should.notEqual(dialog.getSourceDropdownValue(), undefined);
-		should((dialog.getSourceDropdownValue() as ConnectionDropdownValue).connection).deepEqual(mockConnectionProfile, `SourceDropdownValue: (Actual) ${(dialog.getSourceDropdownValue() as ConnectionDropdownValue).connection} (Expected) ${mockConnectionProfile}`);
+		await dialog.promise;
+		await dialog.promise2;
 
-		should.notEqual(dialog.getTargetDropdownValue(), undefined);
-		should((dialog.getTargetDropdownValue() as ConnectionDropdownValue).connection).deepEqual(mockConnectionProfile, `TargetDropdownValue: (Actual) ${(dialog.getTargetDropdownValue() as ConnectionDropdownValue).connection} (Expected) ${mockConnectionProfile}`);
+		// Confirm source server dropdown has the new connection as its value
+		should.notEqual(dialog.getSourceServerDropdownValue(), undefined);
+		should((dialog.getSourceServerDropdownValue() as ConnectionDropdownValue).connection).deepEqual(mockConnectionProfile, `SourceDropdownValue: (Actual) ${(dialog.getSourceServerDropdownValue() as ConnectionDropdownValue).connection} (Expected) ${mockConnectionProfile}`);
+
+		// Target server dropdown passively populated with the new connection, since it wasn't pre-populated
+		should.notEqual(dialog.getTargetServerDropdownValue(), undefined);
+		should((dialog.getTargetServerDropdownValue() as ConnectionDropdownValue).connection).deepEqual(mockConnectionProfile, `TargetDropdownValue: (Actual) ${(dialog.getTargetServerDropdownValue() as ConnectionDropdownValue).connection} (Expected) ${mockConnectionProfile}`);
+	});
+
+	it('Verify source server dropdown does not get updated when target server is updated', async function (): Promise<void> {
+		sinon.stub(azdata.connection, 'getCurrentConnection').resolves({ ...mockConnectionProfile });
+		sinon.stub(azdata.connection, 'openConnectionDialog').resolves(<any>Promise.resolve(mockConnectionProfile2));
+		sinon.stub(azdata.connection, 'getConnections').resolves(<any>Promise.resolve([{ ...mockConnectionProfile }, { ...mockConnectionProfile2 }]));
+		sinon.stub(azdata.connection, 'listDatabases').resolves(['My Database']);
+
+		let schemaCompareResult = new SchemaCompareMainWindow(undefined, mockExtensionContext.object);
+		let dialog = new SchemaCompareDialogTest(schemaCompareResult, undefined, mockExtensionContext.object);
+
+		should.equal(dialog.getSourceServerDropdownValue(), undefined);
+		should.equal(dialog.getTargetServerDropdownValue(), undefined);
+
+		await dialog.openDialog();
+		await dialog.connectionButtonClick(true);	// openConnectionDialog for target server
+
+		await dialog.promise;
+		await dialog.promise2;
+
+		// Confirm source server dropdown has the current connection (from getCurrentConnection) as its value (and doesn't get updated to what target server is)
+		should.notEqual(dialog.getSourceServerDropdownValue(), undefined);
+		should((dialog.getSourceServerDropdownValue() as ConnectionDropdownValue).connection).deepEqual(mockConnectionProfile, `SourceDropdownValue: (Actual) ${(dialog.getSourceServerDropdownValue() as ConnectionDropdownValue).connection} (Expected) ${mockConnectionProfile}`);
+
+		// Confirm target server dropdown has the new connection (from openConnectionDialog) as its value
+		should.notEqual(dialog.getTargetServerDropdownValue(), undefined);
+		should((dialog.getTargetServerDropdownValue() as ConnectionDropdownValue).connection).deepEqual(mockConnectionProfile2, `TargetDropdownValue: (Actual) ${(dialog.getTargetServerDropdownValue() as ConnectionDropdownValue).connection} (Expected) ${mockConnectionProfile2}`);
 	});
 });

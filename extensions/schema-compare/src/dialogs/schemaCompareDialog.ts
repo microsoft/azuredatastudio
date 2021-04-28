@@ -53,6 +53,9 @@ export class SchemaCompareDialog {
 
 	private textBoxWidth: number = 280;
 
+	public promise;
+	public promise2;
+
 	constructor(private schemaCompareMainWindow: SchemaCompareMainWindow, private view?: azdata.ModelView, private extensionContext?: vscode.ExtensionContext) {
 		this.previousSource = schemaCompareMainWindow.sourceEndpointInfo;
 		this.previousTarget = schemaCompareMainWindow.targetEndpointInfo;
@@ -495,19 +498,19 @@ export class SchemaCompareDialog {
 		}).component();
 
 		selectConnectionButton.onDidClick(async () => {
-			this.connectionButtonClick(isTarget);
+			await this.connectionButtonClick(isTarget);
 			selectConnectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
 		});
 
 		return selectConnectionButton;
 	}
 
-	public async connectionButtonClick(isTarget: boolean) {
+	public async connectionButtonClick(isTarget: boolean): Promise<void> {
 		let connection = await azdata.connection.openConnectionDialog();
 		if (connection) {
 			this.connectionId = connection.connectionId;
-			this.populateServerDropdown(isTarget);
-			this.populateServerDropdown(!isTarget, true);		// passively populate the other server dropdown as well to add the new connections
+			this.promise = this.populateServerDropdown(isTarget);
+			this.promise2 = this.populateServerDropdown(!isTarget, true);		// passively populate the other server dropdown as well to add the new connections
 		}
 	}
 
