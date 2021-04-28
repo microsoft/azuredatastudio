@@ -14,8 +14,14 @@ import * as nls from 'vs/nls';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { deepClone } from 'vs/base/common/objects';
 
-const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
-const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
+export const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
+export const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
+export const CONNECTIONS_SORT_BY_CONFIG_KEY = 'datasource.connections.sortBy';
+
+export const enum ConnectionsSortBy {
+	dateAdded = 'dateAdded',
+	displayName = 'displayName'
+}
 
 export interface ISaveGroupResult {
 	groups: IConnectionProfileGroup[];
@@ -49,6 +55,26 @@ export class ConnectionConfig {
 			}
 			allGroups = allGroups.concat(userValue);
 		}
+
+		const sortBy = this.configurationService.getValue<string>(CONNECTIONS_SORT_BY_CONFIG_KEY);
+		let sortFunc: (a: IConnectionProfileGroup, b: IConnectionProfileGroup) => number;
+
+		if (sortBy === ConnectionsSortBy.displayName) {
+			sortFunc = ((a, b) => {
+				if (a.name < b.name) {
+					return -1;
+				} else if (a.name > b.name) {
+					return 1;
+				} else {
+					return 0;
+				}
+			});
+		}
+
+		if (sortFunc) {
+			allGroups.sort(sortFunc);
+		}
+
 		return deepClone(allGroups).map(g => {
 			if (g.parentId === '' || !g.parentId) {
 				g.parentId = undefined;
@@ -213,6 +239,25 @@ export class ConnectionConfig {
 		let connectionProfiles = this.getIConnectionProfileStores(getWorkspaceConnections).map(p => {
 			return ConnectionProfile.createFromStoredProfile(p, this._capabilitiesService);
 		});
+
+		const sortBy = this.configurationService.getValue<string>(CONNECTIONS_SORT_BY_CONFIG_KEY);
+		let sortFunc: (a: ConnectionProfile, b: ConnectionProfile) => number;
+
+		if (sortBy === ConnectionsSortBy.displayName) {
+			sortFunc = ((a, b) => {
+				if (a.title < b.title) {
+					return -1;
+				} else if (a.title > b.title) {
+					return 1;
+				} else {
+					return 0;
+				}
+			});
+		}
+
+		if (sortFunc) {
+			connectionProfiles.sort(sortFunc);
+		}
 
 		return connectionProfiles;
 	}
