@@ -34,7 +34,7 @@ const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrit
 const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python installation is currently in progress. Waiting for it to complete.");
 const msgPythonVersionUpdatePrompt = localize('msgPythonVersionUpdatePrompt', "Python 3.8.8 is now available in Azure Data Studio. You are currently using Python 3.6.6, which will be out of support in December 2021. Would you like to update to Python 3.8.8 now?");
 const msgRemoveOldPythonPrompt = localize('msgRemoveOldPythonPrompt', "Would you like to remove the Python 3.6.6 installation?");
-function msgPythonVersionUpdateWarning(customPackages: string): string { return localize('msgPythonVersionUpdateWarning', "Python 3.8.8 will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version. {0} Would you like to continue with the update now?", customPackages); }
+const msgPythonVersionUpdateWarning = localize('msgPythonVersionUpdateWarning', "Python 3.8.8 will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?");
 function msgRemovePython366Error(errorMessage: string, oldPythonPath: string): string { return localize('msgRemovePython366Error', "Encountered error while removing Python 3.6.6 installation: {0}. You can manually remove Python 3.6.6 by deleting this folder: {1}.", errorMessage, oldPythonPath); }
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
@@ -178,22 +178,20 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			let upgradePython = false;
 			// Warn current ADS Python 3.6 users before installing Python 3.8
 			if (pythonExists && !this._usingExistingPython && await this.getInstalledPythonVersion(this._pythonExecutable) === '3.6.6') {
-				let userInstalledPipPackagesMsg = '';
-				let userInstalledPipPackages = await this.getInstalledPipPackages(this._pythonExecutable, true);
-				if (userInstalledPipPackages.length !== 0) {
-					let packagesList: string[] = userInstalledPipPackages.map(pkg => { return pkg.name; });
-					userInstalledPipPackagesMsg = `The following packages will need to be reinstalled with Python 3.8: ${packagesList.join(', ')}.`;
-				}
-				let warningMsg = msgPythonVersionUpdateWarning(userInstalledPipPackagesMsg);
-				upgradePython = await vscode.window.showInformationMessage(warningMsg, yes, no) === yes;
+				upgradePython = await vscode.window.showInformationMessage(msgPythonVersionUpdateWarning, yes, no) === yes;
 			}
 			if (!pythonExists || forceInstall || upgradePython) {
 				if (upgradePython) {
+					let userInstalledPipPackages: PythonPkgDetails[] = await this.getInstalledPipPackages(this._pythonExecutable, true);
 					this._promptToRemoveOldPythonInstallation = true;
 					this._oldPythonInstallationPath = path.join(this._pythonInstallationPath, '0.0.1');
 
 					// remove '0.0.1' from python executable path
 					this._pythonExecutable = path.join(this._pythonInstallationPath, process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
+
+					if (userInstalledPipPackages.length !== 0) {
+						this.createPipPackagesInstallNotebook(userInstalledPipPackages);
+					}
 				}
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
 				// reinstall pip to make sure !pip command works
@@ -767,9 +765,14 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let newPythonPath = path.join(
 			pythonInstallPath,
 			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
-		if (fs.existsSync(newPythonPath)) {
+
+		// new Python 3.8.8 installation
+		if (!fs.existsSync(newPythonPath) && !fs.existsSync(oldPythonPath)) {
+			return newPythonPath;
+		} else if (fs.existsSync(newPythonPath)) {
 			return newPythonPath;
 		}
+		// old Python 3.6.6 installation
 		return oldPythonPath;
 	}
 
@@ -832,6 +835,37 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let kernelSpec = <IKernelInfo>JSON.parse(fileContents.toString());
 		kernelSpec.argv = kernelSpec.argv?.map(arg => arg.replace('{ADS_PYTHONDIR}', this._pythonInstallationPath));
 		await fs.writeFile(kernelPath, JSON.stringify(kernelSpec, undefined, '\t'));
+	}
+
+	private async createPipPackagesInstallNotebook(userInstalledPipPackages: PythonPkgDetails[]): Promise<void> {
+		let packagesList: string[] = userInstalledPipPackages.map(pkg => { return pkg.name; });
+		let installPackagesCode = `import sys\n!{sys.executable} -m pip install --user ${packagesList.join(' ')}`;
+		let initialContent: azdata.nb.INotebookContents = {
+			cells: [{
+				cell_type: 'markdown',
+				source: ['# Install Pip Packages\n\nThis notebook will help you reinstall the pip packages you were previously using so that they can be used with Python 3.8.\n\n**Note:** packages that have a dependency on Python 3.6 will not work with Python 3.8.\n\nRun the following code cell after Python 3.8 installation is complete.'],
+			}, {
+				cell_type: 'code',
+				source: [installPackagesCode],
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python3',
+					language: 'python3',
+					display_name: 'Python 3'
+				},
+				language_info: {
+					name: 'python3'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+
+		await vscode.commands.executeCommand('_notebook.command.new', {
+			initialContent: JSON.stringify(initialContent),
+			defaultKernel: 'Python 3'
+		});
 	}
 }
 

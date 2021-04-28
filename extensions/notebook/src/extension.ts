@@ -74,12 +74,8 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		dialog.createDialog();
 	}));
 
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', async (context?: azdata.ConnectedContext) => {
-		let connectionProfile: azdata.IConnectionProfile = undefined;
-		if (context && context.connectionProfile) {
-			connectionProfile = context.connectionProfile;
-		}
-		return appContext.notebookUtils.newNotebook(connectionProfile);
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', async (options?: azdata.nb.NotebookShowOptions) => {
+		return appContext.notebookUtils.newNotebook(options);
 	}));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.open', async () => {
 		await appContext.notebookUtils.openNotebook();
