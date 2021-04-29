@@ -20,7 +20,7 @@ import * as loc from './localizedConstants';
 /**
  * The minimum required azdata CLI version for this extension to function properly
  */
-export const MIN_AZDATA_VERSION = new SemVer('20.3.2');
+export const MIN_AZDATA_VERSION = new SemVer('20.3.3');
 
 export const enum AzdataDeployOption {
 	dontPrompt = 'dontPrompt',

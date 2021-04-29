@@ -49,6 +49,11 @@ export interface OnShowUIResponse {
 	container: HTMLElement;
 }
 
+/**
+ * Defines where the connection information is coming from
+ */
+export type ConnectionSource = 'manual' | 'recent' | 'savedconnections' | 'azure';
+
 export class ConnectionDialogWidget extends Modal {
 	private _body: HTMLElement;
 	private _recentConnection: HTMLElement;
@@ -93,6 +98,8 @@ export class ConnectionDialogWidget extends Modal {
 	private browsePanel: ConnectionBrowseTab;
 
 	private _connecting = false;
+
+	private _connectionSource: ConnectionSource = 'manual';
 
 	constructor(
 		private providerDisplayNameOptions: string[],
@@ -265,6 +272,7 @@ export class ConnectionDialogWidget extends Modal {
 		this.browsePanel = new ConnectionBrowseTab(this.instantiationService);
 
 		this._register(this.browsePanel.view.onSelectedConnectionChanged(e => {
+			this._connectionSource = e.source;
 			this.onConnectionClick(e.connectionProfile, e.connect);
 		}));
 
@@ -335,12 +343,17 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	private connect(element?: IConnectionProfile): void {
+		this.logService.debug('ConnectionDialogWidget: Connect button is clicked');
 		if (this._connectButton.enabled) {
+			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ConnectionDialog, TelemetryKeys.TelemetryAction.ConnectToServer).withAdditionalProperties(
+				{ [TelemetryKeys.TelemetryPropertyName.ConnectionSource]: this._connectionSource }
+			).send();
 			this._connecting = true;
 			this._connectButton.enabled = false;
 			this._providerTypeSelectBox.disable();
 			this.spinner = true;
 			this._onConnect.fire(element);
+			this.logService.debug('ConnectionDialogWidget: onConnect event is fired');
 		}
 	}
 
@@ -383,6 +396,7 @@ export class ConnectionDialogWidget extends Modal {
 		const leftClick = (element: any, eventish: ICancelableEvent, origin: string) => {
 			// element will be a server group if the tree is clicked rather than a item
 			const isDoubleClick = origin === 'mouse' && (eventish as MouseEvent).detail === 2;
+			this._connectionSource = 'recent';
 			this.onConnectionClick(element, isDoubleClick);
 		};
 		const actionProvider = this.instantiationService.createInstance(RecentConnectionActionsProvider);
@@ -403,11 +417,13 @@ export class ConnectionDialogWidget extends Modal {
 		if (this._recentConnectionTree instanceof AsyncServerTree) {
 			this._recentConnectionTree.onMouseClick(e => {
 				if (e.element instanceof ConnectionProfile) {
+					this._connectionSource = 'recent';
 					this.onConnectionClick(e.element, false);
 				}
 			});
 			this._recentConnectionTree.onMouseDblClick(e => {
 				if (e.element instanceof ConnectionProfile) {
+					this._connectionSource = 'recent';
 					this.onConnectionClick(e.element, true);
 				}
 			});
@@ -475,6 +491,7 @@ export class ConnectionDialogWidget extends Modal {
 	 * @param recentConnections Are there recent connections that should be shown
 	 */
 	public async open(recentConnections: boolean): Promise<void> {
+		this._connectionSource = 'manual';
 		this._panel.showTab(this._recentConnectionTabId);
 
 		this.show();

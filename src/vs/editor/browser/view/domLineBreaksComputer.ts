@@ -111,8 +111,8 @@ function createLineBreaks(requests: string[], fontInfo: FontInfo, tabSize: numbe
 		allVisibleColumns[i] = tmp[1];
 	}
 	const html = sb.build();
-	const trustedhtml = ttPolicy ? ttPolicy.createHTML(html) : html;
-	containerDomNode.innerHTML = trustedhtml as unknown as string;
+	const trustedhtml = ttPolicy?.createHTML(html) ?? html;
+	containerDomNode.innerHTML = trustedhtml as string;
 
 	containerDomNode.style.position = 'absolute';
 	containerDomNode.style.top = '10000';
@@ -232,11 +232,11 @@ function renderLine(lineContent: string, initialVisibleColumn: number, tabSize: 
 				if (strings.isFullWidthCharacter(charCode)) {
 					charWidth++;
 				}
-				// if (renderControlCharacters && charCode < 32) {
-				// 	sb.write1(9216 + charCode);
-				// } else {
-				sb.write1(charCode);
-			// }
+				if (charCode < 32) {
+					sb.write1(9216 + charCode);
+				} else {
+					sb.write1(charCode);
+				}
 		}
 
 		charOffset += producedCharacters;

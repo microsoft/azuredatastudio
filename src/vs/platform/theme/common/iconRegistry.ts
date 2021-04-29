@@ -11,12 +11,11 @@ import { localize } from 'vs/nls';
 import { Extensions as JSONExtensions, IJSONContributionRegistry } from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import * as Codicons from 'vs/base/common/codicons';
-
+import { URI } from 'vs/base/common/uri';
 
 //  ------ API types
 
-
-// color registry
+// icon registry
 export const Extensions = {
 	IconContribution: 'base.contributions.icons'
 };
@@ -35,6 +34,15 @@ export interface IconContribution {
 	defaults: IconDefaults;
 }
 
+export interface IconFontContribution {
+	id: string;
+	definition: IconFontDefinition;
+}
+
+export interface IconFontDefinition {
+	src: { location: URI, format: string; }[]
+}
+
 export interface IIconRegistry {
 
 	readonly onDidChange: Event<void>;
@@ -43,12 +51,12 @@ export interface IIconRegistry {
 	 * Register a icon to the registry.
 	 * @param id The icon id
 	 * @param defaults The default values
-	 * @description the description
+	 * @param description The description
 	 */
 	registerIcon(id: string, defaults: IconDefaults, description?: string): ThemeIcon;
 
 	/**
-	 * Register a icon to the registry.
+	 * Deregister a icon from the registry.
 	 */
 	deregisterIcon(id: string): void;
 
@@ -63,7 +71,7 @@ export interface IIconRegistry {
 	getIcon(id: string): IconContribution | undefined;
 
 	/**
-	 * JSON schema for an object to assign icon values to one of the color contributions.
+	 * JSON schema for an object to assign icon values to one of the icon contributions.
 	 */
 	getIconSchema(): IJSONSchema;
 
@@ -73,10 +81,26 @@ export interface IIconRegistry {
 	getIconReferenceSchema(): IJSONSchema;
 
 	/**
-	 * The CSS for all icons
+	 * Register a icon font to the registry.
+	 * @param id The icon font id
+	 * @param definition The iocn font definition
 	 */
-	getCSS(): string;
+	registerIconFont(id: string, definition: IconFontDefinition): IconFontContribution;
 
+	/**
+	 * Deregister an icon font to the registry.
+	 */
+	deregisterIconFont(id: string): void;
+
+	/**
+	 * Get all icon font contributions
+	 */
+	getIconFonts(): IconFontContribution[];
+
+	/**
+	 * Get the icon font for the given id
+	 */
+	getIconFont(id: string): IconFontContribution | undefined;
 }
 
 class IconRegistry implements IIconRegistry {
@@ -100,10 +124,13 @@ class IconRegistry implements IIconRegistry {
 		type: 'object',
 		properties: {}
 	};
-	private iconReferenceSchema: IJSONSchema & { enum: string[], enumDescriptions: string[] } = { type: 'string', enum: [], enumDescriptions: [] };
+	private iconReferenceSchema: IJSONSchema & { enum: string[], enumDescriptions: string[] } = { type: 'string', pattern: `^${Codicons.CSSIcon.iconNameExpression}$`, enum: [], enumDescriptions: [] };
+
+	private iconFontsById: { [key: string]: IconFontContribution };
 
 	constructor() {
 		this.iconsById = {};
+		this.iconFontsById = {};
 	}
 
 	public registerIcon(id: string, defaults: IconDefaults, description?: string, deprecationMessage?: string): ThemeIcon {
@@ -111,7 +138,7 @@ class IconRegistry implements IIconRegistry {
 		if (existing) {
 			if (description && !existing.description) {
 				existing.description = description;
-				this.iconSchema.properties[id].markdownDescription = `${description}: $(${id})`;
+				this.iconSchema.properties[id].markdownDescription = `${description} $(${id})`;
 				const enumIndex = this.iconReferenceSchema.enum.indexOf(id);
 				if (enumIndex !== -1) {
 					this.iconReferenceSchema.enumDescriptions[enumIndex] = description;
@@ -165,36 +192,31 @@ class IconRegistry implements IIconRegistry {
 		return this.iconReferenceSchema;
 	}
 
-	public getCSS() {
-		const rules = [];
-		for (let id in this.iconsById) {
-			const rule = this.formatRule(id);
-			if (rule) {
-				rules.push(rule);
-			}
+	public registerIconFont(id: string, definition: IconFontDefinition): IconFontContribution {
+		const existing = this.iconFontsById[id];
+		if (existing) {
+			return existing;
 		}
-		return rules.join('\n');
+		let iconFontContribution: IconFontContribution = { id, definition };
+		this.iconFontsById[id] = iconFontContribution;
+		this._onDidChange.fire();
+		return iconFontContribution;
 	}
 
-	private formatRule(id: string): string | undefined {
-		let definition = this.iconsById[id].defaults;
-		while (ThemeIcon.isThemeIcon(definition)) {
-			const c = this.iconsById[definition.id];
-			if (!c) {
-				return undefined;
-			}
-			definition = c.defaults;
-		}
-		return `.codicon-${id}:before { content: '${definition.character}'; }`;
+	public deregisterIconFont(id: string): void {
+		delete this.iconFontsById[id];
+	}
+
+	public getIconFonts(): IconFontContribution[] {
+		return Object.keys(this.iconFontsById).map(id => this.iconFontsById[id]);
+	}
+
+	public getIconFont(id: string): IconFontContribution | undefined {
+		return this.iconFontsById[id];
 	}
 
 	public toString() {
 		const sorter = (i1: IconContribution, i2: IconContribution) => {
-			const isThemeIcon1 = ThemeIcon.isThemeIcon(i1.defaults);
-			const isThemeIcon2 = ThemeIcon.isThemeIcon(i2.defaults);
-			if (isThemeIcon1 !== isThemeIcon2) {
-				return isThemeIcon1 ? -1 : 1;
-			}
 			return i1.id.localeCompare(i2.id);
 		};
 		const classNames = (i: IconContribution) => {
@@ -205,18 +227,24 @@ class IconRegistry implements IIconRegistry {
 		};
 
 		let reference = [];
-		let docCss = [];
 
+		reference.push(`| preview     | identifier                        | default codicon ID                | description`);
+		reference.push(`| ----------- | --------------------------------- | --------------------------------- | --------------------------------- |`);
 		const contributions = Object.keys(this.iconsById).map(key => this.iconsById[key]);
 
-		for (const i of contributions.sort(sorter)) {
-			reference.push(`|<i class="${classNames(i)}"></i>|${i.id}|${ThemeIcon.isThemeIcon(i.defaults) ? i.defaults.id : ''}|${i.description || ''}|`);
-
-			if (!ThemeIcon.isThemeIcon((i.defaults))) {
-				docCss.push(`.codicon-${i.id}:before { content: "${i.defaults.character}" }`);
-			}
+		for (const i of contributions.filter(i => !!i.description).sort(sorter)) {
+			reference.push(`|<i class="${classNames(i)}"></i>|${i.id}|${ThemeIcon.isThemeIcon(i.defaults) ? i.defaults.id : i.id}|${i.description || ''}|`);
 		}
-		return reference.join('\n') + '\n\n' + docCss.join('\n');
+
+		reference.push(`| preview     | identifier                        `);
+		reference.push(`| ----------- | --------------------------------- |`);
+
+		for (const i of contributions.filter(i => !ThemeIcon.isThemeIcon(i.defaults)).sort(sorter)) {
+			reference.push(`|<i class="${classNames(i)}"></i>|${i.id}|`);
+
+		}
+
+		return reference.join('\n');
 	}
 
 }
@@ -262,3 +290,5 @@ export const widgetClose = registerIcon('widget-close', Codicons.Codicon.close, 
 
 export const gotoPreviousLocation = registerIcon('goto-previous-location', Codicons.Codicon.arrowUp, localize('previousChangeIcon', 'Icon for goto previous editor location.'));
 export const gotoNextLocation = registerIcon('goto-next-location', Codicons.Codicon.arrowDown, localize('nextChangeIcon', 'Icon for goto next editor location.'));
+
+export const syncing = ThemeIcon.modify(Codicons.Codicon.sync, 'spin');
