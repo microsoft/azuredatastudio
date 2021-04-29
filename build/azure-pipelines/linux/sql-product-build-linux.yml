@@ -20,12 +20,11 @@ steps:
   - task: DownloadPipelineArtifact@2
     inputs:
       artifact: Compilation
-      path: $(Build.ArtifactStagingDirectory)
     displayName: Download compilation output
 
   - script: |
       set -e
-      tar -xzf $(Build.ArtifactStagingDirectory)/compilation.tar.gz
+      tar -xzf $(Pipeline.Workspace)/compilation.tar.gz
     displayName: Extract compilation output
 
   - script: |
@@ -132,16 +131,19 @@ steps:
     displayName: Run integration tests (Electron)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - ${{each extension in parameters.extensionsToUnitTest}}:
-    - script: |
-        set -e
-        APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
-        APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
-        export INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
-        export NO_CLEANUP=1
-        DISPLAY=:10 node ./scripts/test-extensions-unit.js ${{ extension }}
-      displayName: 'Run ${{ extension }} Stable Extension Unit Tests'
-      condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+  - script: |
+      # Figure out the full absolute path of the product we just built
+      # including the remote server and configure the unit tests
+      # to run with these builds instead of running out of sources.
+      set -e
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-linux-x64
+      APP_NAME=$(node -p "require(\"$APP_ROOT/resources/app/product.json\").applicationName")
+      INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME" \
+      NO_CLEANUP=1 \
+      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
+      DISPLAY=:10 ./scripts/test-extensions-unit.sh --build --tfs "Extension Unit Tests"
+    displayName: 'Run Stable Extension Unit Tests'
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
       set -e
@@ -163,7 +165,6 @@ steps:
       # Only archive directories we want for debugging purposes
       tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
       done
-
     displayName: Archive Logs
     continueOnError: true
     condition: succeededOrFailed()
@@ -236,6 +237,13 @@ steps:
       testResultsFiles: '*.xml'
       searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
     continueOnError: true
+    condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: crash reports'
+    inputs:
+      PathtoPublish: '$(Build.SourcesDirectory)/.build/crashes'
+      ArtifactName: crashes
     condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: PublishBuildArtifacts@1

@@ -303,6 +303,9 @@ export class NotebookServiceStub implements INotebookService {
 	notifyCellExecutionStarted(): void {
 		throw new Error('Method not implemented.');
 	}
+	getUntitledUriPath(originalTitle: string): string {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export class ClientSessionStub implements IClientSession {

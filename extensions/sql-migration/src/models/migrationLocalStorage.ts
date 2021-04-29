@@ -27,11 +27,13 @@ export class MigrationLocalStorage {
 			if (migration.sourceConnectionProfile.serverName === connectionProfile.serverName) {
 				if (refreshStatus) {
 					try {
+						const backupConfiguration = migration.migrationContext.properties.backupConfiguration;
 						migration.migrationContext = await getMigrationStatus(
 							migration.azureAccount,
 							migration.subscription,
 							migration.migrationContext
 						);
+						migration.migrationContext.properties.backupConfiguration = backupConfiguration;
 						if (migration.asyncUrl) {
 							migration.asyncOperationResult = await getMigrationAsyncOperationDetails(
 								migration.azureAccount,

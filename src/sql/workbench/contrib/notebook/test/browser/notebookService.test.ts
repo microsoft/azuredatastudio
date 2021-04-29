@@ -33,6 +33,8 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 
 /**
  * class to mock azdata.nb.ServerManager object
@@ -120,6 +122,7 @@ suite.skip('NotebookService:', function (): void {
 		didInstallExtensionEmitter: Emitter<DidInstallExtensionEvent>,
 		uninstallExtensionEmitter: Emitter<IExtensionIdentifier>,
 		didUninstallExtensionEmitter: Emitter<DidUninstallExtensionEvent>;
+	let configurationService: IConfigurationService;
 
 	setup(() => {
 		testNo++;
@@ -143,6 +146,7 @@ suite.skip('NotebookService:', function (): void {
 		didInstallExtensionEmitter = new Emitter<DidInstallExtensionEvent>();
 		uninstallExtensionEmitter = new Emitter<IExtensionIdentifier>();
 		didUninstallExtensionEmitter = new Emitter<DidUninstallExtensionEvent>();
+		configurationService = new TestConfigurationService();
 
 		instantiationService.stub(IExtensionManagementService, ExtensionManagementService);
 		instantiationService.stub(IExtensionManagementService, 'onInstallExtension', installExtensionEmitter.event);
@@ -159,7 +163,7 @@ suite.skip('NotebookService:', function (): void {
 
 		notebookService = new NotebookService(lifecycleService, storageService, extensionServiceMock.object, extensionManagementService,
 			instantiationService, fileService, logServiceMock.object, queryManagementService, contextService, productService,
-			editorService, untitledTextEditorService, editorGroupsService);
+			editorService, untitledTextEditorService, editorGroupsService, configurationService);
 		sandbox = sinon.sandbox.create();
 	});
 
@@ -457,7 +461,7 @@ suite.skip('NotebookService:', function (): void {
 		};
 		errorHandler.setUnexpectedErrorHandler(onUnexpectedErrorVerifier);
 		// The following call throws an exception internally with queryManagementService parameter being undefined.
-		new NotebookService(lifecycleService, storageService, extensionService, extensionManagementService, instantiationService, fileService, logService, /* queryManagementService */ undefined, contextService, productService, editorService, untitledTextEditorService, editorGroupsService);
+		new NotebookService(lifecycleService, storageService, extensionService, extensionManagementService, instantiationService, fileService, logService, /* queryManagementService */ undefined, contextService, productService, editorService, untitledTextEditorService, editorGroupsService, configurationService);
 		await unexpectedErrorPromise;
 		assert.strictEqual(unexpectedErrorCalled, true, `onUnexpectedError must be have been raised when queryManagementService is undefined when calling NotebookService constructor`);
 	});
@@ -561,6 +565,14 @@ suite.skip('NotebookService:', function (): void {
 		mock.verifyAll();
 
 	});
+
+	test('verify getUntitledUriPath gets the proper next title', () => {
+		let getUntitledUriPathSpy = sinon.spy(notebookService, 'getUntitledUriPath');
+		notebookService.getUntitledUriPath('title.ipynb');
+		sinon.assert.calledOnce(getUntitledUriPathSpy);
+		assert.equal(getUntitledUriPathSpy, 'title-0.ipynb');
+	});
+
 });
 
 function unRegisterProviders(notebookService: NotebookService) {

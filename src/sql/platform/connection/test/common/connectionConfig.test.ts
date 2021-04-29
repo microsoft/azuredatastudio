@@ -6,7 +6,7 @@
 import * as assert from 'assert';
 import * as azdata from 'azdata';
 import { ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionConfig, ISaveGroupResult } from 'sql/platform/connection/common/connectionConfig';
+import { ConnectionConfig, ISaveGroupResult, CONNECTIONS_SORT_BY_CONFIG_KEY, ConnectionsSortBy } from 'sql/platform/connection/common/connectionConfig';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { IConnectionProfile, IConnectionProfileStore, ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
@@ -239,6 +239,33 @@ suite('ConnectionConfig', () => {
 		assert.ok(groupsAreEqual(allGroups, testGroups), 'the groups returned did not match expectation');
 	});
 
+	test('getAllGroups should return groups sorted alphabetically by display name given datasource.connections.sortBy is set to \'' + ConnectionsSortBy.displayName + '\'', () => {
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(0, 3), ConfigurationTarget.USER);
+		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(2, testGroups.length), ConfigurationTarget.WORKSPACE);
+		configurationService.updateValue(CONNECTIONS_SORT_BY_CONFIG_KEY, ConnectionsSortBy.displayName, ConfigurationTarget.USER);
+
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		let allGroups = config.getAllGroups();
+
+		assert.equal(allGroups.length, testGroups.length, 'did not meet the expected length');
+		assert.ok(groupsAreEqual(allGroups, testGroups), 'the groups returned did not match expectation');
+		assert.ok(allGroups.slice(1).every((item, i) => allGroups[i].name <= item.name), 'the groups are not sorted correctly');
+	});
+
+	test('getAllGroups should return groups sorted by date added given datasource.connections.sortBy is set to \'' + ConnectionsSortBy.dateAdded + '\'', () => {
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(0, 3).reverse(), ConfigurationTarget.USER);
+		configurationService.updateValue('datasource.connectionGroups', deepClone(testGroups).slice(2, testGroups.length).reverse(), ConfigurationTarget.WORKSPACE);
+		configurationService.updateValue(CONNECTIONS_SORT_BY_CONFIG_KEY, ConnectionsSortBy.dateAdded, ConfigurationTarget.USER);
+
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		let allGroups = config.getAllGroups();
+		let expectedGroups = deepClone(testGroups).slice(0, 3).reverse().concat(deepClone(testGroups).slice(3, testGroups.length).reverse());
+		assert.equal(allGroups.length, expectedGroups.length, 'The result groups length is invalid');
+		assert.ok(allGroups.every((item, i) => item.id === allGroups[i].id));
+	});
+
 	test('addConnection should add the new profile to user settings', async () => {
 		let newProfile: IConnectionProfile = {
 			serverName: 'new server',
@@ -382,6 +409,30 @@ suite('ConnectionConfig', () => {
 				assert.equal(workspaceConnection!.id, connection.id);
 			}
 		});
+	});
+
+	test('getConnections should return connections sorted alphabetically by title given datasource.connections.sortBy is set to \'' + ConnectionsSortBy.displayName + '\'', () => {
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(0, 2).reverse(), ConfigurationTarget.USER);
+		configurationService.updateValue('datasource.connections', deepClone(testConnections).slice(2, testConnections.length).reverse(), ConfigurationTarget.WORKSPACE);
+		configurationService.updateValue(CONNECTIONS_SORT_BY_CONFIG_KEY, ConnectionsSortBy.displayName, ConfigurationTarget.USER);
+
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		let allConnections = config.getConnections(true);
+		assert.equal(allConnections.length, testConnections.length, 'The result connections length is invalid');
+		assert.ok(allConnections.slice(1).every((item, i) => allConnections[i].title <= item.title), 'The connections are not sorted correctly');
+	});
+
+	test('getConnections should return connections sorted by date added given datasource.connections.sortBy is set to \'' + ConnectionsSortBy.dateAdded + '\'', () => {
+		let configurationService = new TestConfigurationService();
+		configurationService.updateValue('datasource.connections', deepClone(testConnections).reverse(), ConfigurationTarget.USER);
+		configurationService.updateValue(CONNECTIONS_SORT_BY_CONFIG_KEY, ConnectionsSortBy.dateAdded, ConfigurationTarget.USER);
+
+		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
+		let allConnections = config.getConnections(false);
+		let expectedConnections = deepClone(testConnections).reverse();
+		assert.equal(allConnections.length, expectedConnections.length, 'The result connections length is invalid');
+		assert.ok(allConnections.every((item, i) => item.id === expectedConnections[i].id));
 	});
 
 	test('saveGroup should save the new groups to tree and return the id of the last group name', () => {

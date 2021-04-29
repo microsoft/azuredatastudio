@@ -24,6 +24,7 @@ import { URI } from 'vs/base/common/uri';
 import { escape } from 'vs/base/common/strings';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
+const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
 
 @Component({
 	selector: MARKDOWN_TOOLBAR_SELECTOR,
@@ -298,7 +299,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		let calloutOptions;
 
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
-			const defaultLabel = this.getCurrentSelectionText();
+			const defaultLabel = this.getCurrentLinkLabel();
 			const defaultLinkUrl = this.getCurrentLinkUrl();
 			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogPosition, dialogProperties, defaultLabel, defaultLinkUrl);
 			this._linkCallout.render();
@@ -307,7 +308,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		return calloutOptions;
 	}
 
-	private getCurrentSelectionText(): string {
+	private getCurrentLinkLabel(): string {
 		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
 			return document.getSelection()?.toString() || '';
 		} else {
@@ -316,17 +317,30 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			if (selection && !selection.isEmpty()) {
 				const textModel = editorControl?.getModel() as TextModel;
 				const value = textModel?.getValueInRange(selection);
-				return value || '';
+				let linkMatches = value?.match(linksRegex);
+				return linkMatches?.groups.text || value || '';
 			}
 			return '';
 		}
 	}
 
 	private getCurrentLinkUrl(): string {
-		if (document.getSelection().anchorNode.parentNode['protocol'] === 'file:') {
-			return document.getSelection().anchorNode.parentNode['pathname'] || '';
+		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
+			if (document.getSelection().anchorNode.parentNode['protocol'] === 'file:') {
+				return document.getSelection().anchorNode.parentNode['pathname'] || '';
+			} else {
+				return document.getSelection().anchorNode.parentNode['href'] || '';
+			}
 		} else {
-			return document.getSelection().anchorNode.parentNode['href'] || '';
+			const editorControl = this.getCellEditorControl();
+			const selection = editorControl?.getSelection();
+			if (selection && !selection.isEmpty()) {
+				const textModel = editorControl?.getModel() as TextModel;
+				const value = textModel?.getValueInRange(selection);
+				let linkMatches = value?.match(linksRegex);
+				return linkMatches?.groups.url || '';
+			}
+			return '';
 		}
 	}
 

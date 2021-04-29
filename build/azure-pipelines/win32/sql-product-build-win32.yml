@@ -22,13 +22,12 @@ steps:
   - task: DownloadPipelineArtifact@2
     inputs:
       artifact: Compilation
-      path: $(Build.ArtifactStagingDirectory)
     displayName: Download compilation output
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { tar --force-local -xzf $(Build.ArtifactStagingDirectory)/compilation.tar.gz }
+      exec { tar --force-local -xzf $(Pipeline.Workspace)/compilation.tar.gz }
     displayName: Extract compilation output
 
   - powershell: |
