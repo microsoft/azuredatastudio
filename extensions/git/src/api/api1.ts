@@ -5,13 +5,12 @@
 
 import { Model } from '../model';
 import { Repository as BaseRepository, Resource } from '../repository';
-import { InputBox, Git, API, Repository, Remote, RepositoryState, Branch, ForcePushMode, Ref, Submodule, Commit, Change, RepositoryUIState, Status, LogOptions, APIState, CommitOptions, RefType, RemoteSourceProvider, CredentialsProvider, BranchQuery, PushErrorHandler, PublishEvent } from './git';
+import { InputBox, Git, API, Repository, Remote, RepositoryState, Branch, ForcePushMode, Ref, Submodule, Commit, Change, RepositoryUIState, Status, LogOptions, APIState, CommitOptions, RefType, RemoteSourceProvider, CredentialsProvider, BranchQuery, PushErrorHandler, PublishEvent, ICloneOptions } from './git'; // {{SQL CARBON EDIT}} add ICloneOptions
 import { Event, SourceControlInputBox, Uri, SourceControl, Disposable, commands, CancellationToken } from 'vscode'; // {{SQL CARBON EDIT}} add CancellationToken
 import { mapEvent } from '../util';
 import { toGitUri } from '../uri';
 import { pickRemoteSource, PickRemoteSourceOptions } from '../remoteSource';
 import { GitExtensionImpl } from './extension';
-import { ICloneOptions } from '../git'; 	// {{SQL CARBON EDIT}}
 
 class ApiInputBox implements InputBox {
 	set value(value: string) { this._inputBox.value = value; }

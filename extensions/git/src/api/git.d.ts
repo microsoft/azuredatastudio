@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Uri, Event, Disposable, ProviderResult, CancellationToken } from 'vscode'; // {{SQL CARBON EDIT}} add CancellationToken
-import { ICloneOptions } from '../git'; // {{SQL CARBON EDIT}}
+import { Uri, Event, Disposable, ProviderResult, CancellationToken, Progress } from 'vscode'; // {{SQL CARBON EDIT}} add CancellationToken
 export { ProviderResult } from 'vscode';
 
 export interface Git {
@@ -324,4 +323,11 @@ export const enum GitErrorCodes {
 	PatchDoesNotApply = 'PatchDoesNotApply',
 	NoPathFound = 'NoPathFound',
 	UnknownPath = 'UnknownPath',
+}
+
+// {{SQL CARBON EDIT}} move ICloneOptions from git.ts to here since it's used in clone()
+export interface ICloneOptions {
+	readonly parentPath: string;
+	readonly progress: Progress<{ increment: number }>;
+	readonly recursive?: boolean;
 }

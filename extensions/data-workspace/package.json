@@ -20,6 +20,9 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
+  "scripts": {
+    "postinstall": "node ./postInstall.js"
+  },
   "extensionDependencies": [],
   "contributes": {
     "configuration": [
