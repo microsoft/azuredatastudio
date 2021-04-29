@@ -298,9 +298,6 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 
 	if (opts.log) {
 		beforeEach(async function () {
-			console.log('Entering test setup...');
-			console.log(this);
-			console.log(this.app);
 			const app = this.app as Application;
 			const title = this.currentTest!.fullTitle();
 
@@ -314,12 +311,9 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	// 	});
 	// }
 	before(async function () {
-		console.log('Entering test suite setup');
 		const app = new Application(this.defaultOptions);
 		await app!.start(opts.web ? false : undefined);
 		this.app = app;
-		console.log('Test suite setup done');
-		console.log(this.app);
 	});
 
 	after(async function () {
