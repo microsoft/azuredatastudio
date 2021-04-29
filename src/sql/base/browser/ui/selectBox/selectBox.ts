@@ -216,8 +216,9 @@ export class SelectBox extends vsSelectBox {
 		let selectOptions: SelectOptionItemSQL[] = SelectBox.createOptions(options);
 		this.populateOptionsDictionary(selectOptions);
 		super.setOptions(selectOptions, selected);
+		// Adding following since setOptions from super alone is not setting this._selectedOption
 		let selectedOptionIndex = this._optionsDictionary.get(this._selectedOption);
-		if (selectedOptionIndex === selected) { // Not generating an event if the same value is selected.
+		if (selectedOptionIndex === selected) {
 			return;
 		}
 		if (this._dialogOptions !== undefined) {
