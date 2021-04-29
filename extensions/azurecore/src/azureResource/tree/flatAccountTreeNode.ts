@@ -16,7 +16,6 @@ import { TreeNode } from '../treeNode';
 import { AzureResourceCredentialError } from '../errors';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceItemType, AzureResourceServiceNames } from '../constants';
-import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService } from '../../azureResource/interfaces';
 import { AzureAccount } from 'azurecore';
