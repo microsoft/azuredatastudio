@@ -173,7 +173,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	constructor(
 		private _title: string,
 		private _name: string,
-		private readonly _telemetryService: IAdsTelemetryService,
+		protected readonly _telemetryService: IAdsTelemetryService,
 		protected readonly layoutService: ILayoutService,
 		protected readonly _clipboardService: IClipboardService,
 		protected readonly _themeService: IThemeService,
