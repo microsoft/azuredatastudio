@@ -311,29 +311,31 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	// 	});
 	// }
 
-	describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
-		before(async function () {
-			const app = new Application(this.defaultOptions);
-			await app!.start(opts.web ? false : undefined);
-			this.app = app;
-		});
+	// {{SQL CARBON EDIT}} - Remove the nested test suite to make sure the suite setup is also applied to beforeEach and afterEach
+	// describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 
-		after(async function () {
-			await this.app.stop();
-		});
-
-		sqlMain(opts.web);
-
-		/* if (!opts.web) { setupDataLossTests(); }
-		if (!opts.web) { setupDataPreferencesTests(); }
-		setupDataSearchTests();
-		setupDataNotebookTests();
-		setupDataLanguagesTests();
-		setupDataEditorTests();
-		setupDataStatusbarTests(!!opts.web);
-		setupDataExtensionTests();
-		if (!opts.web) { setupDataMultirootTests(); }
-		if (!opts.web) { setupDataLocalizationTests(); }
-		if (!opts.web) { setupLaunchTests(); }*/
+	before(async function () {
+		const app = new Application(this.defaultOptions);
+		await app!.start(opts.web ? false : undefined);
+		this.app = app;
 	});
+
+	after(async function () {
+		await this.app.stop();
+	});
+
+	sqlMain(opts.web);
+
+	/* if (!opts.web) { setupDataLossTests(); }
+	if (!opts.web) { setupDataPreferencesTests(); }
+	setupDataSearchTests();
+	setupDataNotebookTests();
+	setupDataLanguagesTests();
+	setupDataEditorTests();
+	setupDataStatusbarTests(!!opts.web);
+	setupDataExtensionTests();
+	if (!opts.web) { setupDataMultirootTests(); }
+	if (!opts.web) { setupDataLocalizationTests(); }
+	if (!opts.web) { setupLaunchTests(); }*/
+	// });
 });
