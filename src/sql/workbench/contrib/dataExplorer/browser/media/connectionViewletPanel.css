@@ -168,13 +168,13 @@
 
 /* Connected badge */
 .monaco-list .connection-tile .connection-status-badge.connected {
-	border: 0.12rem solid rgba(59, 180, 74, 100%);
+	border: 0.15rem solid rgba(59, 180, 74, 100%);
 	background: rgba(59, 180, 74, 100%);
 }
 
 /* Disconnected badge */
 .monaco-list .connection-tile .connection-status-badge.disconnected {
-	border: 0.12rem solid rgba(208, 46, 0, 100%);
+	border: 0.15rem solid rgba(208, 46, 0, 100%);
 	background: rgba(255, 255, 255, 80%);
 }
 

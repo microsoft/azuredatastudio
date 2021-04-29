@@ -71,7 +71,7 @@ class BadgeRenderer {
 			width: 0.25rem;
 			top: 14px;
 			left: 19px;
-			border: 0.12rem solid ${circleColor};
+			border: 0.15rem solid ${circleColor};
 			border-radius: 100%;
 			background: ${bgColor};
 			content:"";
