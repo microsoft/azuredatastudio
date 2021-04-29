@@ -310,6 +310,10 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	// 		setupDataMigrationTests(opts['stable-build'], testDataPath);
 	// 	});
 	// }
+
+	// {{SQL CARBON EDIT}} - Remove the nested test suite to make sure the suite setup is also applied to beforeEach and afterEach
+	// describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
+
 	before(async function () {
 		const app = new Application(this.defaultOptions);
 		await app!.start(opts.web ? false : undefined);
@@ -333,4 +337,5 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	if (!opts.web) { setupDataMultirootTests(); }
 	if (!opts.web) { setupDataLocalizationTests(); }
 	if (!opts.web) { setupLaunchTests(); }*/
+	// });
 });
