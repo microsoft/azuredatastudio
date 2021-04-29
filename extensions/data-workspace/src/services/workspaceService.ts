@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as dataworkspace from 'dataworkspace';
 import * as path from 'path';
-import * as git from '../typings/git';
+import * as git from '../../../git/src/api/git';
 import * as constants from '../common/constants';
 import * as glob from 'fast-glob';
 import { IWorkspaceService } from '../common/interfaces';
