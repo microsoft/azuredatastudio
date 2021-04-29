@@ -15,7 +15,7 @@ export enum TelemetryViews {
 	SqlServerDashboard = 'SqlServerDashboard',
 	MigrationWizard = 'MigrationWizard',
 	CreateDataMigrationServiceDialog = 'CreateDataMigrationServiceDialog',
-	AssesssmentsDialog = 'AssessmentsDialog',
+	AssessmentsDialog = 'AssessmentsDialog',
 	MigrationCutoverDialog = 'MigrationCutoverDialog',
 	MigrationStatusDialog = 'MigrationStatusDialog',
 	AssessmentsPage = 'AssessmentsPage'
