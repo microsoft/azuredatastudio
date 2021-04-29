@@ -105,6 +105,8 @@ export class OpenExistingDialog extends DialogBase {
 						.withAdditionalProperties({ selectedTarget: 'workspace' })
 						.send();
 
+					// show git output channel
+					vscode.commands.executeCommand('git.showOutput');
 					// after this executes, the git extension will show a popup asking if you want to enter the workspace
 					await vscode.commands.executeCommand('git.clone', (<azdata.InputBoxComponent>this.gitRepoTextBoxComponent?.component).value, this.localClonePathTextBox!.value);
 				} else {

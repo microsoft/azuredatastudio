@@ -281,6 +281,8 @@ export class WorkspaceService implements IWorkspaceService {
 		};
 
 		try {
+			// show git output channel
+			vscode.commands.executeCommand('git.showOutput');
 			const repositoryPath = await vscode.window.withProgress(
 				opts,
 				(progress, token) => gitApi.clone(url!, { parentPath: localClonePath!, progress, recursive: true }, token)
