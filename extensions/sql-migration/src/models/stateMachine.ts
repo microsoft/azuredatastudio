@@ -13,8 +13,6 @@ import { SKURecommendations } from './externalContract';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
-import { getCurrentTime, getEndTime } from '../api/utils';
-import { sendSqlMigrationTelemetryEvent, TelemetryViews } from '../telemtery';
 const localize = nls.loadMessageBundle();
 
 export enum State {
