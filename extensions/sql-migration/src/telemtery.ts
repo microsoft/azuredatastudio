@@ -21,7 +21,6 @@ export enum TelemetryViews {
 	AssessmentsPage = 'AssessmentsPage'
 }
 
-
 export function sendSqlMigrationActionEvent(telemetryView: string, telemetryAction: string, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {
 	TelemetryReporter.createActionEvent(telemetryView, telemetryAction)
 		.withAdditionalProperties(additionalProps)
