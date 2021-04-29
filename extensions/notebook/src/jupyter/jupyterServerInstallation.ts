@@ -176,23 +176,27 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		try {
 			let pythonExists = await utils.exists(this._pythonExecutable);
 			let upgradePython = false;
-			// Warn current ADS Python 3.6 users before installing Python 3.8
-			if (pythonExists && !this._usingExistingPython && await this.getInstalledPythonVersion(this._pythonExecutable) === '3.6.6') {
+			// Warn users that some packages may need to be reinstalled after updating Python versions
+			if (pythonExists && !this._usingExistingPython && await this.getInstalledPythonVersion(this._pythonExecutable) !== constants.pythonVersion) {
 				upgradePython = await vscode.window.showInformationMessage(msgPythonVersionUpdateWarning, yes, no) === yes;
 			}
+
 			if (!pythonExists || forceInstall || upgradePython) {
 				if (upgradePython) {
 					let userInstalledPipPackages: PythonPkgDetails[] = await this.getInstalledPipPackages(this._pythonExecutable, true);
-					this._promptToRemoveOldPythonInstallation = true;
-					this._oldPythonInstallationPath = path.join(this._pythonInstallationPath, '0.0.1');
 
-					// remove '0.0.1' from python executable path
-					this._pythonExecutable = path.join(this._pythonInstallationPath, process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
+					if (await this.getInstalledPythonVersion(this._pythonExecutable) === '3.6.6') {
+						this._promptToRemoveOldPythonInstallation = true;
+						this._oldPythonInstallationPath = this._pythonExecutable;
+						// remove '0.0.1' from python executable path
+						this._pythonExecutable = path.join(this._pythonInstallationPath, process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
+					}
 
 					if (userInstalledPipPackages.length !== 0) {
 						this.createInstallPipPackagesHelpNotebook(userInstalledPipPackages);
 					}
 				}
+
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
 				// reinstall pip to make sure !pip command works
 				if (!this._usingExistingPython) {
@@ -485,8 +489,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled();
 
-		// If ADS Python 3.6.6 is installed, prompt user to upgrade to Python 3.8.8
-		if (isPythonInstalled && !this._usingExistingPython && await this.getInstalledPythonVersion(this._pythonExecutable) === '3.6.6') {
+		// If the latest version of ADS-Python is not installed, then prompt the user to upgrade
+		if (isPythonInstalled && !this._usingExistingPython && await this.getInstalledPythonVersion(this._pythonExecutable) !== constants.pythonVersion) {
 			this.promptUserForPythonUpgrade();
 		}
 
@@ -758,6 +762,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public static getPythonExePath(pythonInstallPath: string): string {
+		// The bundle version (0.0.1) is removed from the path for ADS-Python 3.8.8+.
+		// Only ADS-Python 3.6.6 contains the bundle version in the path.
 		let oldPythonPath = path.join(
 			pythonInstallPath,
 			'0.0.1',
@@ -766,11 +772,13 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			pythonInstallPath,
 			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 
-		// If Python 3.6 and Python 3.8 both do not exist OR Python 3.8 exists, return the new path without the bundleversion
+		// Note: If Python exists in both paths (which can happen if the user chose not to remove Python 3.6 when upgrading),
+		// then we want to default to using the newer Python version.
 		if (!fs.existsSync(newPythonPath) && !fs.existsSync(oldPythonPath) || fs.existsSync(newPythonPath)) {
 			return newPythonPath;
 		}
-		// If only Python 3.6 exists then return the old path with the bundleversion
+		// If Python only exists in the old path then return the old path.
+		// This is for users who are still using Python 3.6
 		return oldPythonPath;
 	}
 
