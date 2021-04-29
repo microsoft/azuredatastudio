@@ -11,7 +11,7 @@ import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/co
 import { DataExplorerContainerExtensionHandler } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerExtensionPoint';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { DataExplorerViewletViewsContribution } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
-import { GROUPS_CONFIG_KEY, CONNECTIONS_CONFIG_KEY, CONNECTIONS_SORT_BY_CONFIG_KEY, ConnectionsSortBy } from 'sql/platform/connection/common/connectionConfig';
+import { GROUPS_CONFIG_KEY, CONNECTIONS_CONFIG_KEY, CONNECTIONS_SORT_BY_CONFIG_KEY, ConnectionsSortOrder } from 'sql/platform/connection/common/connectionConfig';
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 workbenchRegistry.registerWorkbenchContribution(DataExplorerViewletViewsContribution, LifecyclePhase.Starting);
@@ -33,13 +33,13 @@ configurationRegistry.registerConfiguration({
 		},
 		[CONNECTIONS_SORT_BY_CONFIG_KEY]: {
 			'type': 'string',
-			'enum': [ConnectionsSortBy.dateAdded, ConnectionsSortBy.displayName],
+			'enum': [ConnectionsSortOrder.dateAdded, ConnectionsSortOrder.displayName],
 			'enumDescriptions': [
-				localize('connectionsSortBy.dateAdded', 'Saved connections are sorted by the dates they were added.'),
-				localize('connectionsSortBy.displayName', 'Saved connections are sorted by their display names alphabetically.')
+				localize('connectionsSortOrder.dateAdded', 'Saved connections are sorted by the dates they were added.'),
+				localize('connectionsSortOrder.displayName', 'Saved connections are sorted by their display names alphabetically.')
 			],
-			'default': ConnectionsSortBy.dateAdded,
-			'description': localize('datasource.connectionsSortBy', "Order used for sorting saved connections and connection groups")
+			'default': ConnectionsSortOrder.dateAdded,
+			'description': localize('datasource.connectionsSortOrder', "Controls sorting order of saved connections and connection groups.")
 		}
 	}
 });

@@ -16,9 +16,9 @@ import { deepClone } from 'vs/base/common/objects';
 
 export const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
 export const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
-export const CONNECTIONS_SORT_BY_CONFIG_KEY = 'datasource.connectionsSortBy';
+export const CONNECTIONS_SORT_BY_CONFIG_KEY = 'datasource.connectionsSortOrder';
 
-export const enum ConnectionsSortBy {
+export const enum ConnectionsSortOrder {
 	dateAdded = 'dateAdded',
 	displayName = 'displayName'
 }
@@ -59,7 +59,7 @@ export class ConnectionConfig {
 		const sortBy = this.configurationService.getValue<string>(CONNECTIONS_SORT_BY_CONFIG_KEY);
 		let sortFunc: (a: IConnectionProfileGroup, b: IConnectionProfileGroup) => number;
 
-		if (sortBy === ConnectionsSortBy.displayName) {
+		if (sortBy === ConnectionsSortOrder.displayName) {
 			sortFunc = ((a, b) => {
 				if (a.name < b.name) {
 					return -1;
@@ -243,7 +243,7 @@ export class ConnectionConfig {
 		const sortBy = this.configurationService.getValue<string>(CONNECTIONS_SORT_BY_CONFIG_KEY);
 		let sortFunc: (a: ConnectionProfile, b: ConnectionProfile) => number;
 
-		if (sortBy === ConnectionsSortBy.displayName) {
+		if (sortBy === ConnectionsSortOrder.displayName) {
 			sortFunc = ((a, b) => {
 				if (a.title < b.title) {
 					return -1;
