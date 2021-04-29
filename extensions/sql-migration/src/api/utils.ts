@@ -60,14 +60,6 @@ export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
 	return undefined;
 }
 
-export function getCurrentTime(): [number, number] {
-	return process.hrtime();
-}
-
-export function getEndTime(startTime: [number, number]): [number, number] {
-	return process.hrtime(startTime);
-}
-
 /**
  * Generates a wordy time difference between start and end time.
  * @returns stringified duration like '10.0 days', '12.0 hrs', '1.0 min'
