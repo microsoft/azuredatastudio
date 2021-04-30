@@ -11,7 +11,7 @@ import { UserCancelledError } from '../../../common/api';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { EngineSettingsModel, PostgresModel } from '../../../models/postgresModel';
-import { debounce } from '../../../common/utils';
+import { debounce, instanceOfCheckBox } from '../../../common/utils';
 
 export type ParametersModel = {
 	parameterName: string,
@@ -320,7 +320,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			this.searchBox.enabled = true;
 			this.resetAllButton.enabled = true;
 			this.parameterContainer.addItem(this._parametersTable!);
-			this.refreshParametersTable();
+			this.refreshParametersTableValues();
 		}
 	}
 
@@ -328,7 +328,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		try {
 			await this._postgresModel.getEngineSettings().then(() => {
 				if (this._parametersTable.data?.length !== 0) {
-					this.refreshParametersTable();
+					this.refreshParametersTableValues();
 				} else {
 					this.populateParametersTable();
 				}
@@ -577,14 +577,10 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		}
 	}
 
-	private instanceOfCheckBox(object: any): object is azdata.CheckBoxComponent {
-		return 'checked' in object;
-	}
-
 	private discardParametersTableChanges(): void {
 		this.changedComponentValues.forEach(v => {
 			let param = this._parameters.find(p => p.parameterName === v);
-			if (this.instanceOfCheckBox(param!.valueComponent)) {
+			if (instanceOfCheckBox(param!.valueComponent)) {
 				if (param!.originalValue === 'on') {
 					param!.valueComponent.checked = true;
 				} else {
@@ -612,20 +608,24 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		});
 	}
 
-	private refreshParametersTable(): void {
+	private refreshParametersTableValues(): void {
+		//Checks if exisiting parameter values needs to be updated.
+		//Only updates exisiting parameters, will not add/remove parameters from the table.
 		this.engineSettings.map(parameter => {
 			let param = this._parameters.find(p => p.parameterName === parameter.parameterName);
-			if (parameter.value !== param!.originalValue) {
-				param!.originalValue = parameter.value!;
+			if (param) {
+				if (parameter.value !== param.originalValue) {
+					param.originalValue = parameter.value!;
 
-				if (this.instanceOfCheckBox(param!.valueComponent)) {
-					if (param!.originalValue === 'on') {
-						param!.valueComponent.checked = true;
+					if (instanceOfCheckBox(param.valueComponent)) {
+						if (param.originalValue === 'on') {
+							param.valueComponent.checked = true;
+						} else {
+							param.valueComponent.checked = false;
+						}
 					} else {
-						param!.valueComponent.checked = false;
+						param.valueComponent.value = parameter.value;
 					}
-				} else {
-					param!.valueComponent.value = parameter.value;
 				}
 			}
 		});
