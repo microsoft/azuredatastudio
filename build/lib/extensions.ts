@@ -201,6 +201,7 @@ const baseHeaders = {
 };
 
 export function fromMarketplace(extensionName: string, version: string, metadata: any): Stream {
+	const remote = require('gulp-remote-retry-src');
 	const json = require('gulp-json-editor') as typeof import('gulp-json-editor');
 
 	const [, name] = extensionName.split('.');
