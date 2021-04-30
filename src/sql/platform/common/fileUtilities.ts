@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { URI } from 'vs/workbench/workbench.web.api';
+import { URI } from 'vs/base/common/uri';
 
 export function getFileContentBase64(fileUri: URI): Promise<string> {
 	return new Promise<string>(async resolve => {
