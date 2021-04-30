@@ -188,7 +188,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 					if (await this.getInstalledPythonVersion(this._pythonExecutable) === '3.6.6') {
 						this._promptToRemoveOldPythonInstallation = true;
 						this._oldPythonInstallationPath = this._pythonExecutable;
-						// remove '0.0.1' from python executable path
+						// Remove '0.0.1' from python executable path since the bundle version is removed from the path for ADS-Python 3.8.8+.
 						this._pythonExecutable = path.join(this._pythonInstallationPath, process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 					}
 
