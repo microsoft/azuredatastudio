@@ -34,7 +34,7 @@ import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
-
+const validBase64OctetStreamRegex = /^data:application\/octet-stream;base64,(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})/;
 export interface QueryResultId {
 	batchId: number;
 	id: number;
@@ -153,7 +153,7 @@ export class CellModel extends Disposable implements ICellModel {
 		// base64Encoded value looks like: data:application/octet-stream;base64,<base64Value>
 		// get the <base64Value> from the string
 		let index = base64Encoding.indexOf('base64,');
-		if (this.validBase64Image(base64Encoding)) {
+		if (this.isValidBase64OctetStream(base64Encoding)) {
 			base64Encoding = base64Encoding.substring(index + 7);
 			let attachment: nb.ICellAttachment = {};
 			attachment[mimeType] = base64Encoding;
@@ -165,9 +165,8 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 	}
 
-	private validBase64Image(base64Image: string): boolean {
-		const regex = /^data:application\/octet-stream;base64,(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})/;
-		return base64Image && regex.test(base64Image);
+	private isValidBase64OctetStream(base64Image: string): boolean {
+		return base64Image && validBase64OctetStreamRegex.test(base64Image);
 	}
 
 	public get isEditMode(): boolean {
