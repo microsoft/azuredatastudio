@@ -70,10 +70,11 @@ function withNodeDefaults(/**@type WebpackConfig*/extConfig) {
 		// yes, really source maps
 		devtool: 'source-map',
 		plugins: [
-			// @ts-expect-error
-			new CopyWebpackPlugin([
-				{ from: 'src', to: '.', ignore: ['**/test/**', '*.ts'] }
-			]),
+			new CopyWebpackPlugin({
+				patterns: [
+					{ from: 'src', to: '.', globOptions: { ignore: ['**/test/**', '**/*.ts'] }, noErrorOnMissing: true }
+				]
+			}),
 			new NLSBundlePlugin(id)
 		],
 	};
@@ -127,10 +128,11 @@ function withBrowserDefaults(/**@type WebpackConfig*/extConfig) {
 		// yes, really source maps
 		devtool: 'source-map',
 		plugins: [
-			// @ts-expect-error
-			new CopyWebpackPlugin([
-				{ from: 'src', to: '.', ignore: ['**/test/**', '*.ts'] }
-			]),
+			new CopyWebpackPlugin({
+				patterns: [
+					{ from: 'src', to: '.', globOptions: { ignore: ['**/test/**', '**/*.ts'] }, noErrorOnMissing: true }
+				]
+			}),
 			new DefinePlugin({ WEBWORKER: JSON.stringify(true) })
 		]
 	};

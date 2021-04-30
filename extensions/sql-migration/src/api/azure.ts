@@ -350,19 +350,8 @@ export interface StartDatabaseMigrationRequest {
 			targetLocation: {
 				storageAccountResourceId: string,
 				accountKey: string,
-			}
-			sourceLocation: {
-				fileShare?: {
-					path: string,
-					username: string,
-					password: string,
-				},
-				azureBlob?: {
-					storageAccountResourceId: string,
-					accountKey: string,
-					blobContainerName: string
-				}
 			},
+			sourceLocation: SourceLocation
 		},
 		sourceSqlConnection: {
 			authentication: string,
@@ -454,8 +443,8 @@ export interface BackupSetInfo {
 }
 
 export interface SourceLocation {
-	fileShare: DatabaseMigrationFileShare;
-	azureBlob: DatabaseMigrationAzureBlob;
+	fileShare?: DatabaseMigrationFileShare;
+	azureBlob?: DatabaseMigrationAzureBlob;
 }
 
 export interface TargetLocation {

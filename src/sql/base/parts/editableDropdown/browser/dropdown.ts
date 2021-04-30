@@ -120,6 +120,9 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		// in the text box - we already have tooltips for each item in the dropdown itself.
 		this._input.inputElement.title = '';
 
+		// add the padding to the element show the the text won't overlap with the dropdown arrow
+		this._input.inputElement.style.paddingRight = '22px';
+
 		this._inputContainer.setAttribute('role', 'combobox');
 
 		this._register(DOM.addDisposableListener(this._input.inputElement, DOM.EventType.CLICK, () => {

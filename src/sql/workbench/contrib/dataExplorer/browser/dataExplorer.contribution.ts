@@ -6,27 +6,15 @@
 import 'vs/css!./media/dataExplorer.contribution';
 import { localize } from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { DataExplorerViewletViewsContribution, OpenDataExplorerViewletAction } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
-import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
-import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
-import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
-import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { DataExplorerContainerExtensionHandler } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerExtensionPoint';
+import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
+import { DataExplorerViewletViewsContribution } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
+import { GROUPS_CONFIG_KEY, CONNECTIONS_CONFIG_KEY, CONNECTIONS_SORT_BY_CONFIG_KEY, ConnectionsSortOrder } from 'sql/platform/connection/common/connectionConfig';
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 workbenchRegistry.registerWorkbenchContribution(DataExplorerViewletViewsContribution, LifecyclePhase.Starting);
-const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
-registry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		OpenDataExplorerViewletAction,
-		OpenDataExplorerViewletAction.ID,
-		OpenDataExplorerViewletAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_D }),
-	'View: Show Data Explorer',
-	localize('dataExplorer.view', "View")
-);
 
 let configurationRegistry = <IConfigurationRegistry>Registry.as(Extensions.Configuration);
 configurationRegistry.registerConfiguration({
@@ -35,13 +23,23 @@ configurationRegistry.registerConfiguration({
 	'title': localize('databaseConnections', "Database Connections"),
 	'type': 'object',
 	'properties': {
-		'datasource.connections': {
+		[CONNECTIONS_CONFIG_KEY]: {
 			'description': localize('datasource.connections', "data source connections"),
 			'type': 'array'
 		},
-		'datasource.connectionGroups': {
+		[GROUPS_CONFIG_KEY]: {
 			'description': localize('datasource.connectionGroups', "data source groups"),
 			'type': 'array'
+		},
+		[CONNECTIONS_SORT_BY_CONFIG_KEY]: {
+			'type': 'string',
+			'enum': [ConnectionsSortOrder.dateAdded, ConnectionsSortOrder.displayName],
+			'enumDescriptions': [
+				localize('connectionsSortOrder.dateAdded', 'Saved connections are sorted by the dates they were added.'),
+				localize('connectionsSortOrder.displayName', 'Saved connections are sorted by their display names alphabetically.')
+			],
+			'default': ConnectionsSortOrder.dateAdded,
+			'description': localize('datasource.connectionsSortOrder', "Controls sorting order of saved connections and connection groups.")
 		}
 	}
 });

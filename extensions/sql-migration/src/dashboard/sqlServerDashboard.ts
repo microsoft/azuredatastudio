@@ -212,7 +212,7 @@ export class DashboardWidget {
 			height: maxHeight,
 			iconHeight: 32,
 			iconPath: taskMetaData.iconPath,
-			iconWidth: 36,
+			iconWidth: 32,
 			label: taskMetaData.title,
 			title: taskMetaData.title,
 			width: maxWidth,

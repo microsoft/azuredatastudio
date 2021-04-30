@@ -59,29 +59,69 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 							memory: ''
 						}
 					}
+				},
+				roles: {
+					coordinator: {
+						resources: {
+							requests: {
+								cpu: '',
+								memory: ''
+							},
+							limits: {
+								cpu: '',
+								memory: ''
+							}
+						}
+					},
+					worker: {
+						resources: {
+							requests: {
+								cpu: '',
+								memory: ''
+							},
+							limits: {
+								cpu: '',
+								memory: ''
+							}
+						}
+					}
 				}
 			},
-			service: {
-				type: '',
-				port: 0
+			services: {
+				primary: {
+					type: '',
+					port: 0
+				}
 			},
 			storage: {
 				data: {
-					className: '',
-					size: ''
+					volumes: [
+						{
+							className: '',
+							size: ''
+						}
+					]
 				},
 				logs: {
-					className: '',
-					size: ''
+					volumes: [
+						{
+							className: '',
+							size: ''
+						}
+					]
 				},
 				backups: {
-					className: '',
-					size: ''
+					volumes: [
+						{
+							className: '',
+							size: ''
+						}
+					]
 				}
 			}
 		},
 		status: {
-			externalEndpoint: '127.0.0.1:5432',
+			primaryEndpoint: '127.0.0.1:5432',
 			readyPods: '',
 			state: '',
 			logSearchDashboard: '',
