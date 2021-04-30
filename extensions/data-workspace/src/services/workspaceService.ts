@@ -247,7 +247,12 @@ export class WorkspaceService implements IWorkspaceService {
 			const currentProjects: vscode.Uri[] = this.getProjectsInWorkspace();
 			const projectIdx = currentProjects.findIndex((p: vscode.Uri) => p.fsPath === projectFile.fsPath);
 			if (projectIdx !== -1) {
+				// remove project from data workspace list of projects
 				currentProjects.splice(projectIdx, 1);
+
+				// call project provider's remove project in case open projects are also tracked there
+				const projectProvider = await this.getProjectProvider(projectFile);
+				projectProvider?.RemoveProject(projectFile);
 
 				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectRemovedFromWorkspace)
 					.withAdditionalProperties({

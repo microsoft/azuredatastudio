@@ -25,7 +25,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 */
 	async getProjectTreeDataProvider(projectFilePath: vscode.Uri): Promise<vscode.TreeDataProvider<BaseProjectTreeItem>> {
 		const provider = new SqlDatabaseProjectTreeViewProvider();
-		const project = await Project.openProject(projectFilePath.fsPath);
+		const project = await this.projectController.openProject(projectFilePath);
 		provider.load([project]);
 		return provider;
 	}
@@ -35,7 +35,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * @param projectFile The Uri of the project file
 	 */
 	RemoveProject(projectFile: vscode.Uri): Promise<void> {
-		// No resource release needed
+		this.projectController.removeProject(projectFile);
 		console.log(`project file unloaded: ${projectFile.fsPath}`);
 		return Promise.resolve();
 	}

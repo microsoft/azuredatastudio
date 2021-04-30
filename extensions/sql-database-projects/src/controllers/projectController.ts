@@ -45,6 +45,7 @@ export class ProjectsController {
 	private buildInfo: DashboardData[] = [];
 	private deployInfo: DashboardData[] = [];
 
+	projects: Project[] = [];
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
 	constructor() {
@@ -118,6 +119,35 @@ export class ProjectsController {
 
 	public refreshProjectsTree(workspaceTreeItem: dataworkspace.WorkspaceTreeItem): void {
 		(workspaceTreeItem.treeDataProvider as SqlDatabaseProjectTreeViewProvider).notifyTreeDataChanged();
+	}
+
+
+	public async openProject(projectFile: vscode.Uri): Promise<Project> {
+		// if project has already been opened, just refresh and read the project file again, but don't add it to the list of projects again
+		const existingProject = this.projects.find((p => p.projectFilePath === projectFile.fsPath));
+		if (existingProject) {
+			await existingProject.readProjFile();
+			return existingProject;
+		}
+
+		const newProject = await Project.openProject(projectFile.fsPath);
+		this.projects.push(newProject);
+		return newProject;
+	}
+
+	/**
+	 * Removes the project from the array opened projects
+	 * @param projectFile
+	 * @returns true if project was found and removed, false if project wasn't found
+	 */
+	public removeProject(projectFile: vscode.Uri): boolean {
+		const index = this.projects.findIndex(p => p.projectFilePath === projectFile.fsPath);
+		if (index) {
+			this.projects.splice(index, 1);
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
