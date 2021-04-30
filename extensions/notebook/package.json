@@ -40,7 +40,7 @@
         },
         "notebook.dontPromptPythonUpdate": {
           "type": "boolean",
-          "default": "",
+          "default": false,
           "description": "%notebook.dontPromptPythonUpdate.description%"
         },
         "notebook.overrideEditorTheming": {

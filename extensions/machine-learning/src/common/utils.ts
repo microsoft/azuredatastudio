@@ -64,27 +64,6 @@ export function getPythonInstallationLocation(rootFolder: string) {
 	return path.join(rootFolder, 'python');
 }
 
-export function getPythonExePath(rootFolder: string): string {
-	// The bundle version (0.0.1) is removed from the path for ADS-Python 3.8.8+.
-	// Only ADS-Python 3.6.6 contains the bundle version in the path.
-	let oldPythonPath = path.join(
-		rootFolder,
-		'0.0.1',
-		process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
-	let newPythonPath = path.join(
-		rootFolder,
-		process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
-
-	// Note: If Python exists in both paths (which can happen if the user chose not to remove Python 3.6 when upgrading),
-	// then we want to default to using the newer Python version.
-	if (!fs.existsSync(newPythonPath) && !fs.existsSync(oldPythonPath) || fs.existsSync(newPythonPath)) {
-		return newPythonPath;
-	}
-	// If Python only exists in the old path then return the old path.
-	// This is for users who are still using Python 3.6
-	return oldPythonPath;
-}
-
 export function getPackageFilePath(rootFolder: string, packageName: string): string {
 	return path.join(
 		rootFolder,

@@ -140,7 +140,7 @@ export function getOSPlatformId(): string {
  * @param second Second version string to compare.
  * @returns 1 if the first version is greater, -1 if it's less, and 0 otherwise.
  */
-export function comparePackageVersions(first: string, second: string): number {
+export function compareVersions(first: string, second: string): number {
 	let firstVersion = first.split('.');
 	let secondVersion = second.split('.');
 
@@ -179,7 +179,7 @@ export function comparePackageVersions(first: string, second: string): number {
 
 export function sortPackageVersions(versions: string[], ascending: boolean = true): string[] {
 	return versions.sort((first, second) => {
-		let compareResult = comparePackageVersions(first, second);
+		let compareResult = compareVersions(first, second);
 		if (ascending) {
 			return compareResult;
 		} else {
@@ -230,7 +230,7 @@ export function isPackageSupported(pythonVersion: string, packageVersionConstrai
 				versionSpecifier = constraint.slice(0, splitIndex);
 				version = constraint.slice(splitIndex).trim();
 			}
-			let versionComparison = comparePackageVersions(pythonVersion, version);
+			let versionComparison = compareVersions(pythonVersion, version);
 			switch (versionSpecifier) {
 				case '>=':
 					supportedVersionFound = versionComparison !== -1;
