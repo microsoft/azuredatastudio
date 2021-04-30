@@ -184,7 +184,7 @@ export class ConnectionDialogWidget extends Modal {
 		attachTabbedPanelStyler(this._panel, this._themeService);
 		this._recentConnectionTabId = this._panel.pushTab({
 			identifier: 'recent_connection',
-			title: localize('recentConnectionTitle', "Recent Connections"),
+			title: localize('recentConnectionTitle', "Recent"),
 			view: {
 				render: c => {
 					c.append(recentConnectionTab);
