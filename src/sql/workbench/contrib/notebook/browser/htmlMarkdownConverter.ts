@@ -266,6 +266,12 @@ export class HTMLMarkdownConverter {
 				return delimiter + leadingSpace + content + trailingSpace + delimiter;
 			}
 		});
+		this.turndownService.addRule('p', {
+			filter: 'p',
+			replacement: function (content, node) {
+				return node.parentNode?.nodeName === 'TH' || node.parentNode?.nodeName === 'TD' ? content : '\n\n' + content + '\n\n';
+			}
+		});
 		this.turndownService.escape = escapeMarkdown;
 	}
 }
@@ -281,6 +287,8 @@ function blankReplacement(content, node) {
 	// When outdenting a nested list, an empty list will still remain. Need to handle this case.
 	if (node.nodeName === 'UL' || node.nodeName === 'OL') {
 		return '\n';
+	} else if (node.parentNode?.nodeName === 'TH' || node.parentNode?.nodeName === 'TD') {
+		return ' ';
 	}
 	return node.isBlock ? '\n\n' : '';
 }

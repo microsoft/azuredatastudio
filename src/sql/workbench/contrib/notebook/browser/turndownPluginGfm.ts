@@ -93,7 +93,21 @@ rules['table'] = {
 	// Only convert tables with a heading row.
 	// Tables with no heading row are kept using `keep` (see below).
 	filter: function (node) {
-		return node.nodeName === 'TABLE' && isHeadingRow(node.rows[0]);
+		if (node.nodeName === 'TABLE') {
+			if (!node.tHead &&  !isHeadingRow(node.rows[0])) {
+				let head = node.createTHead();
+				if (head) {
+					let row = head.insertRow();
+					if (row) {
+						for(let i = 0; i < node.rows[1]?.cells?.length || 0; i++) {
+							let headerCell = document.createElement('TH');
+							row.appendChild(headerCell);
+						}
+					}
+				}
+			}
+		}
+		return node.nodeName === 'TABLE';
 	},
 	replacement: function (content, node) {
 		// Ensure there are no blank lines
@@ -149,9 +163,6 @@ function cell(content, node) {
 }
 
 export function tables(turndownService) {
-	turndownService.keep(function (node) {
-		return node.nodeName === 'TABLE' && !isHeadingRow(node.rows[0]);
-	});
 	for (let key in rules) {
 		turndownService.addRule(key, rules[key]);
 	}
