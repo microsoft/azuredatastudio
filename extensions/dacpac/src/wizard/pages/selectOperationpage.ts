@@ -8,6 +8,8 @@ import * as loc from '../../localizedConstants';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard, Operation, DeployOperationPath, ExtractOperationPath, ImportOperationPath, ExportOperationPath, PageName } from '../dataTierApplicationWizard';
 import { BasePage } from '../api/basePage';
+import * as sqldbproj from 'sqldbproj';
+import * as vscode from 'vscode';
 
 export class SelectOperationPage extends BasePage {
 	private deployRadioButton: azdata.RadioButtonComponent;
@@ -26,13 +28,40 @@ export class SelectOperationPage extends BasePage {
 		let importComponent = await this.createImportRadioButton();
 		let exportComponent = await this.createExportRadioButton();
 
+		let testButton = this.view.modelBuilder.button().withProperties({
+			label: 'test'
+		}).component();
+
+		testButton.onDidClick(async () => {
+			const api: sqldbproj.IExtension = vscode.extensions.getExtension(sqldbproj.extension.name).exports;
+			// get projects and look for aprilTest
+			const project: sqldbproj.ISqlProject = api.getProjects().find(p => p.projectFilePath === '/Users/kisantia/SqlProjects/aprilTest/aprilTest.sqlproj');
+			// opening an already opened project should return the already opened project, not a new instance
+			const project2: sqldbproj.ISqlProject = await api.openProject('/Users/kisantia/SqlProjects/aprilTest/aprilTest.sqlproj');
+			await project.addScriptItem('test.sql', 'asdfasfsadf');
+
+			// verify project was added to both
+			console.error('project files: ' + project.files.length);
+			console.error('project copy files: ' + project2.files.length);
+
+			await project2.addScriptItem('test2.sql', 'fdasasdf');
+
+			console.error('project files: ' + project.files.length);
+			console.error('project2 files: ' + project2.files.length);
+
+			vscode.commands.executeCommand('dataworkspace.refresh');
+		});
+
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
 				[
 					deployComponent,
 					extractComponent,
 					importComponent,
-					exportComponent
+					exportComponent,
+					{
+						component: testButton
+					}
 				], {
 				horizontal: true
 			}).component();
