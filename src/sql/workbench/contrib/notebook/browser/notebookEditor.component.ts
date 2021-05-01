@@ -125,6 +125,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 		this._register(model.layoutChanged(() => this.detectChanges()));
 
 		this.views.onViewDeleted(() => this.handleViewDeleted());
+		this.views.onActiveViewChanged(() => this.handleActiveViewChanged());
 
 		this.detectChanges();
 	}
@@ -194,6 +195,11 @@ export class NotebookEditorComponent extends AngularDisposable {
 
 	private handleViewDeleted() {
 		this.viewMode = this.model?.viewMode;
+		this.detectChanges();
+	}
+
+	private handleActiveViewChanged() {
+		this.setActiveView();
 		this.detectChanges();
 	}
 

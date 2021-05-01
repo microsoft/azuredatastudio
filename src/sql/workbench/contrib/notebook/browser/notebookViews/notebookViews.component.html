@@ -8,7 +8,7 @@
 	<div #viewsToolbar class="editor-toolbar actionbar-container" style="flex: 0 0 auto; display: flex; flex-flow: row; width: 100%; align-items: center;"></div>
 	<div #container class="scrollable" style="flex: 1 1 auto; position: relative; outline: none" (click)="unselectActiveCell()" (scroll)="scrollHandler($event)">
 		<loading-spinner [loading]="isLoading"></loading-spinner>
-		<notebook-views-grid-component #gridstack [views]="views" [cells]="cells" [model]="model"></notebook-views-grid-component>
+		<notebook-views-grid-component #gridstack [views]="views" activeView=[activeView] [cells]="cells" [model]="model"></notebook-views-grid-component>
 		<div class="book-nav" #bookNav [style.visibility]="navigationVisibility">
 		</div>
 	</div>

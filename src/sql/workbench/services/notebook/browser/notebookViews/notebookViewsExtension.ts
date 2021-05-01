@@ -9,9 +9,9 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { NotebookViewModel } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
 import { NotebookExtension } from 'sql/workbench/services/notebook/browser/models/notebookExtension';
-import { INotebookView, INotebookViewCell, INotebookViewCellMetadata, INotebookViewMetadata } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { INotebookView, INotebookViewCell, INotebookViewCellMetadata, INotebookViewMetadata, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 
-export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetadata, INotebookViewCellMetadata> {
+export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetadata, INotebookViewCellMetadata> implements INotebookViews {
 	static readonly defaultViewName = localize('notebookView.untitledView', "Untitled View");
 
 	readonly maxNameIterationAttempts = 100;
@@ -20,6 +20,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 
 	protected _metadata: INotebookViewMetadata;
 	private _onViewDeleted = new Emitter<void>();
+	private _onActiveViewChanged = new Emitter<void>();
 
 	constructor(protected _notebook: INotebookModel) {
 		super();
@@ -70,7 +71,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 		return view;
 	}
 
-	public removeView(guid: string) {
+	public removeView(guid: string): void {
 		let viewToRemove = this._metadata.views.findIndex(view => view.guid === guid);
 		if (viewToRemove !== -1) {
 			let removedView = this._metadata.views.splice(viewToRemove, 1);
@@ -134,8 +135,9 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 		return this.getViews().find(view => view.guid === this._metadata.activeView);
 	}
 
-	public setActiveView(view: INotebookView) {
+	public setActiveView(view: INotebookView): void {
 		this._metadata.activeView = view.guid;
+		this._onActiveViewChanged.fire();
 	}
 
 	public commit() {
@@ -148,5 +150,9 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 
 	public get onViewDeleted(): Event<void> {
 		return this._onViewDeleted.event;
+	}
+
+	public get onActiveViewChanged(): Event<void> {
+		return this._onActiveViewChanged.event;
 	}
 }

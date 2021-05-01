@@ -7,6 +7,7 @@ import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryText
 import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
 import { INotebookModel, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookParams } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import * as dom from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils';
@@ -19,6 +20,7 @@ import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServic
 export class NotebookEditorStub extends stubs.NotebookEditorStub {
 	cellEditors: CellEditorProviderStub[];
 	model: INotebookModel | undefined;
+	views: NotebookViewsExtension | undefined;
 	cells?: ICellModel[] = [];
 
 	public readonly id: string;
@@ -26,9 +28,10 @@ export class NotebookEditorStub extends stubs.NotebookEditorStub {
 	public readonly modelReady: Promise<INotebookModel>;
 
 	// Normally one needs to provide either the editor or the instantiationService as the constructor parameter
-	constructor({ cellGuid, instantiationService, editor, model, notebookParams }: { cellGuid?: string; instantiationService?: IInstantiationService; editor?: QueryTextEditor; model?: INotebookModel, notebookParams?: INotebookParams } = {}) {
+	constructor({ cellGuid, instantiationService, editor, model, views, notebookParams }: { cellGuid?: string; instantiationService?: IInstantiationService; editor?: QueryTextEditor; model?: INotebookModel, views?: NotebookViewsExtension, notebookParams?: INotebookParams } = {}) {
 		super();
 		this.model = model;
+		this.views = views;
 		this.notebookParams = notebookParams;
 		this.cellEditors = [new CellEditorProviderStub({ cellGuid: cellGuid, instantiationService: instantiationService, editor: editor })];
 		this.id = this.notebookParams?.notebookUri?.toString();

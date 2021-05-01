@@ -13,6 +13,15 @@ export type CellChangeEvent = {
 	event: CellChangeEventType
 };
 
+export interface INotebookViews {
+	onActiveViewChanged: Event<void>;
+	createNewView(name?: string): INotebookView;
+	removeView(guid: string): void;
+	getActiveView(): INotebookView;
+	setActiveView(view: INotebookView);
+	viewNameIsTaken(name: string): boolean;
+}
+
 export interface INotebookView {
 	readonly guid: string;
 	readonly onDeleted: Event<INotebookView>;

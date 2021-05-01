@@ -11,7 +11,7 @@ import { GridStack, GridStackEvent, GridStackNode } from 'gridstack';
 import 'gridstack/dist/h5/gridstack-dd-native';
 import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
-import { CellChangeEvent, INotebookViewCell } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { CellChangeEvent, INotebookView, INotebookViewCell } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 
 @Component({
 	selector: 'notebook-views-grid-component',
@@ -21,6 +21,7 @@ import { CellChangeEvent, INotebookViewCell } from 'sql/workbench/services/noteb
 export class NotebookViewsGridComponent implements OnInit {
 	@Input() cells: ICellModel[];
 	@Input() model: NotebookModel;
+	@Input() activeView: INotebookView;
 	@Input() views: NotebookViewsExtension;
 
 	@ViewChildren(NotebookViewsCardComponent) private _items: QueryList<NotebookViewsCardComponent>;

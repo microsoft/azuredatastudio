@@ -27,6 +27,7 @@ import { URI } from 'vs/base/common/uri';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { MockQuickInputService } from 'sql/workbench/contrib/notebook/test/common/quickInputServiceMock';
 import { localize } from 'vs/nls';
+//import { INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 
 class TestClientSession extends ClientSessionStub {
 	private _errorState: boolean = false;
@@ -494,6 +495,26 @@ suite('Notebook Actions', function (): void {
 			assert.ok(updateKernelStub.calledWithExactly(e.newValue, e.nbKernelAlias), `updateKernel should be called with the parameter: ${JSON.stringify(e.newValue), JSON.stringify(e.nbKernelAlias)}`);
 		});
 
+	});
+
+	test('Create new view action', async () => {
+		/*
+		let sandbox: sinon.SinonSandbox;
+
+		sandbox = sinon.sandbox.create();
+
+		let views = mockNotebookEditor.object.views;
+		let mockNotebookViews = TypeMoq.Mock.ofType<INotebookViews>(NotebookViewsStub);
+		mockNotebookEditor.setup(x => x.views).returns(() => mockNotebookViews);
+		const createNewViewStub = sandbox.stub(views, 'createNewView').returns(new NotebookViewStub());
+
+		let newViewAction = new CreateNotebookViewAction('notebookView.newView', 'Create New View', 'notebook-button', mockNotebookService.object);
+		let result = await newViewAction.run(testUri);
+
+
+		assert.ok(result, "New view action should succeed");
+		assert.ok(createNewViewStub.calledOnce, "createNewView should be called");
+		*/
 	});
 });
 
