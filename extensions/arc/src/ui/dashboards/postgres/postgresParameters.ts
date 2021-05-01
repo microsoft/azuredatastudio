@@ -608,9 +608,11 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		});
 	}
 
+	/**
+	 * Checks if exisiting parameter values needs to be updated.
+	 * Only updates exisiting parameters, will not add/remove parameters from the table.
+	 */
 	private refreshParametersTableValues(): void {
-		//Checks if exisiting parameter values needs to be updated.
-		//Only updates exisiting parameters, will not add/remove parameters from the table.
 		this.engineSettings.map(parameter => {
 			let param = this._parameters.find(p => p.parameterName === parameter.parameterName);
 			if (param) {
