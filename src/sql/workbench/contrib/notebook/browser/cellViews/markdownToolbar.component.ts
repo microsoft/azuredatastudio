@@ -23,7 +23,6 @@ import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import { escape } from 'vs/base/common/strings';
 import { IImageCalloutDialogOptions, ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
-import { getFileContentBase64, getFileMimeType } from 'sql/base/common/file';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
@@ -270,8 +269,8 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				await insertFormattedMarkdown(linkCalloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
 			} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
 				if (imageCalloutResult.embedImage) {
-					let base64String = await getFileContentBase64(URI.file(imageCalloutResult.imagePath));
-					let mimeType = await getFileMimeType(URI.file(imageCalloutResult.imagePath));
+					let base64String = await this.getFileContentBase64(URI.file(imageCalloutResult.imagePath));
+					let mimeType = await this.getFileMimeType(URI.file(imageCalloutResult.imagePath));
 					this.cellModel.addAttachment(mimeType, base64String, path.basename(imageCalloutResult.imagePath).replace(' ', ''));
 					await insertFormattedMarkdown(imageCalloutResult.insertEscapedMarkdown, this.getCellEditorControl());
 				}
@@ -375,5 +374,26 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		}
 		return undefined;
 	}
-}
 
+	public async getFileContentBase64(fileUri: URI): Promise<string> {
+		return new Promise<string>(async resolve => {
+			let response = await fetch(fileUri.toString());
+			let blob = await response.blob();
+
+			let file = new File([blob], fileUri.toString());
+			let reader = new FileReader();
+			// Read file content on file loaded event
+			reader.onload = function (event) {
+				resolve(event.target.result.toString());
+			};
+			// Convert data to base64
+			reader.readAsDataURL(file);
+		});
+	}
+
+	public async getFileMimeType(fileUri: URI): Promise<string> {
+		let response = await fetch(fileUri.toString());
+		let blob = await response.blob();
+		return blob.type;
+	}
+}
