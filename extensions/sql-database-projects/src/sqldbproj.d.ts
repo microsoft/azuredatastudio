@@ -26,6 +26,11 @@ declare module 'sqldbproj' {
 		 * Opens and loads a .sqlproj file
 		 */
 		openProject(projectFilePath: string): Promise<ISqlProject>;
+
+		/**
+		 * returns array of open sql projects
+		 */
+		getProjects(): ISqlProject[];
 	}
 
 	export interface ISqlProject {

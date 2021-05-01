@@ -11,7 +11,6 @@ import * as constants from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
-import { Project } from '../models/project';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 
 export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvider, sqldbproj.IExtension {
@@ -81,7 +80,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * Opens and loads a .sqlproj file
 	 */
 	openProject(projectFilePath: string): Promise<sqldbproj.ISqlProject> {
-		return Project.openProject(projectFilePath);
+		return this.projectController.openProject(vscode.Uri.file(projectFilePath));
 	}
 
 	/**
@@ -121,6 +120,10 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 		let group: dataworkspace.IProjectActionGroup = { actions: [addItemAction, schemaCompareAction, buildAction, publishAction] };
 
 		return [group, changeTargetPlatformAction];
+	}
+
+	getProjects(): sqldbproj.ISqlProject[] {
+		return this.projectController.projects;
 	}
 
 	/**
