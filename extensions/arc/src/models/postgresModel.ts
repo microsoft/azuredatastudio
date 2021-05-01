@@ -33,13 +33,12 @@ export class PostgresModel extends ResourceModel {
 	private readonly _azdataApi: azdataExt.IExtension;
 
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.PostgresServerShowResult>();
-	public readonly _onEngineSettingsUpdated = new vscode.EventEmitter<EngineSettingsModel[]>();
 	public onConfigUpdated = this._onConfigUpdated.event;
-	public onEngineSettingsUpdated = this._onEngineSettingsUpdated.event;
 	public configLastUpdated?: Date;
 	public engineSettingsLastUpdated?: Date;
 
 	private _refreshPromise?: Deferred<void>;
+	private _engineSettingsPromise?: Deferred<void>;
 
 	constructor(_controllerModel: ControllerModel, private _pgInfo: PGResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
 		super(_controllerModel, _pgInfo, registration);
@@ -132,55 +131,69 @@ export class PostgresModel extends ResourceModel {
 	}
 
 	public async getEngineSettings(): Promise<void> {
-		if (!this._connectionProfile) {
-			await this.getConnectionProfile();
+		// Only allow to get engine setting once at a time
+		if (this._engineSettingsPromise) {
+			return this._engineSettingsPromise.promise;
 		}
+		this._engineSettingsPromise = new Deferred();
 
-		// We haven't connected yet so do so now and then store the ID for the active connection
-		if (!this._activeConnectionId) {
-			const result = await azdata.connection.connect(this._connectionProfile!, false, false);
-			if (!result.connected) {
-				throw new Error(result.errorMessage);
+		try {
+			if (!this._connectionProfile) {
+				await this.getConnectionProfile();
 			}
-			this._activeConnectionId = result.connectionId;
-		}
 
-		// TODO Need to make separate calls for worker nodes and coordinator node
-		const provider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this._connectionProfile!.providerName, azdata.DataProviderType.QueryProvider);
-		const ownerUri = await azdata.connection.getUriForConnection(this._activeConnectionId);
-
-		const engineSettings = await provider.runQueryAndReturn(ownerUri, 'select name, setting, short_desc,min_val, max_val, enumvals, vartype from pg_settings');
-		if (!engineSettings) {
-			throw new Error('Could not fetch engine settings');
-		}
-
-		const skippedEngineSettings: String[] = [
-			'archive_command', 'archive_timeout', 'log_directory', 'log_file_mode', 'log_filename', 'restore_command',
-			'shared_preload_libraries', 'synchronous_commit', 'ssl', 'unix_socket_permissions', 'wal_level'
-		];
-
-		this.workerNodesEngineSettings = [];
-
-		engineSettings.rows.forEach(row => {
-			let rowValues = row.map(c => c.displayValue);
-			let name = rowValues.shift();
-			if (!skippedEngineSettings.includes(name!)) {
-				let result: EngineSettingsModel = {
-					parameterName: name,
-					value: rowValues.shift(),
-					description: rowValues.shift(),
-					min: rowValues.shift(),
-					max: rowValues.shift(),
-					options: rowValues.shift(),
-					type: rowValues.shift()
-				};
-
-				this.workerNodesEngineSettings.push(result);
+			// We haven't connected yet so do so now and then store the ID for the active connection
+			if (!this._activeConnectionId) {
+				const result = await azdata.connection.connect(this._connectionProfile!, false, false);
+				if (!result.connected) {
+					throw new Error(result.errorMessage);
+				}
+				this._activeConnectionId = result.connectionId;
 			}
-		});
 
-		this.engineSettingsLastUpdated = new Date();
-		this._onEngineSettingsUpdated.fire(this.workerNodesEngineSettings);
+			// TODO Need to make separate calls for worker nodes and coordinator node
+			const provider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this._connectionProfile!.providerName, azdata.DataProviderType.QueryProvider);
+			const ownerUri = await azdata.connection.getUriForConnection(this._activeConnectionId);
+
+			const engineSettings = await provider.runQueryAndReturn(ownerUri, 'select name, setting, short_desc,min_val, max_val, enumvals, vartype from pg_settings');
+			if (!engineSettings) {
+				throw new Error('Could not fetch engine settings');
+			}
+
+			const skippedEngineSettings: String[] = [
+				'archive_command', 'archive_timeout', 'log_directory', 'log_file_mode', 'log_filename', 'restore_command',
+				'shared_preload_libraries', 'synchronous_commit', 'ssl', 'unix_socket_permissions', 'wal_level'
+			];
+
+			this.workerNodesEngineSettings = [];
+
+			engineSettings.rows.forEach(row => {
+				let rowValues = row.map(c => c.displayValue);
+				let name = rowValues.shift();
+				if (!skippedEngineSettings.includes(name!)) {
+					let result: EngineSettingsModel = {
+						parameterName: name,
+						value: rowValues.shift(),
+						description: rowValues.shift(),
+						min: rowValues.shift(),
+						max: rowValues.shift(),
+						options: rowValues.shift(),
+						type: rowValues.shift()
+					};
+
+					this.workerNodesEngineSettings.push(result);
+				}
+			});
+
+
+			this.engineSettingsLastUpdated = new Date();
+			this._engineSettingsPromise.resolve();
+		} catch (err) {
+			this._engineSettingsPromise.reject(err);
+			throw err;
+		} finally {
+			this._engineSettingsPromise = undefined;
+		}
 	}
 
 	protected createConnectionProfile(): azdata.IConnectionProfile {
