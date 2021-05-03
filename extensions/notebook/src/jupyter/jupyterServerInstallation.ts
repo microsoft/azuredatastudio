@@ -32,10 +32,8 @@ const msgInstallPkgStart = localize('msgInstallPkgStart', "Installing Notebook d
 const msgInstallPkgFinish = localize('msgInstallPkgFinish', "Notebook dependencies installation is complete");
 const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.");
 const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python installation is currently in progress. Waiting for it to complete.");
-const msgRemoveOldPythonPrompt = localize('msgRemoveOldPythonPrompt', "Would you like to remove the old Python installation?");
 function msgPythonVersionUpdatePrompt(pythonVersion: string): string { return localize('msgPythonVersionUpdatePrompt', "Python {0} is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python {0} now?", pythonVersion); }
 function msgPythonVersionUpdateWarning(pythonVersion: string): string { return localize('msgPythonVersionUpdateWarning', "Python {0} will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?", pythonVersion); }
-function msgRemovePythonError(errorMessage: string, oldPythonPath: string): string { return localize('msgRemovePythonError', "Encountered error while removing Python installation: {0}. You can manually remove the installation by deleting this folder: {1}.", errorMessage, oldPythonPath); }
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 function msgPackageRetrievalFailed(errorMessage: string): string { return localize('msgPackageRetrievalFailed', "Encountered an error when trying to retrieve list of installed packages: {0}", errorMessage); }
@@ -117,8 +115,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private _usingExistingPython: boolean;
 	private _usingConda: boolean;
 	private _installedPythonVersion: string;
-	private _promptToRemoveOldPythonInstallation: boolean = false;
+	private _oldPythonExecutable: string | undefined;
 	private _oldPythonInstallationPath: string | undefined;
+	private _oldUserInstalledPipPackages: PythonPkgDetails[] = [];
 
 	private _installInProgress: boolean;
 	private _installCompletion: Deferred<void>;
@@ -177,29 +176,31 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			let pythonExists = await utils.exists(this._pythonExecutable);
 			let upgradePython = false;
 			// Warn users that some packages may need to be reinstalled after updating Python versions
-			if (pythonExists && !this._usingExistingPython && utils.compareVersions(await this.getInstalledPythonVersion(this._pythonExecutable), constants.pythonVersion) < 0) {
+			if (!this._usingExistingPython && this._oldPythonExecutable && utils.compareVersions(await this.getInstalledPythonVersion(this._oldPythonExecutable), constants.pythonVersion) < 0) {
 				upgradePython = await vscode.window.showInformationMessage(msgPythonVersionUpdateWarning(constants.pythonVersion), yes, no) === yes;
-			}
-
-			if (!pythonExists || forceInstall || upgradePython) {
 				if (upgradePython) {
-					let userInstalledPipPackages: PythonPkgDetails[] = await this.getInstalledPipPackages(this._pythonExecutable, true);
+					if (await this.isPythonRunning(this._oldPythonExecutable)) {
+						vscode.window.showErrorMessage(msgPythonRunningError);
+						return;
+					}
 
-					if (await this.getInstalledPythonVersion(this._pythonExecutable) === '3.6.6') {
-						this._promptToRemoveOldPythonInstallation = true;
-						this._oldPythonInstallationPath = this._pythonExecutable;
+					this._oldUserInstalledPipPackages = await this.getInstalledPipPackages(this._oldPythonExecutable, true);
+
+					if (await this.getInstalledPythonVersion(this._oldPythonExecutable) === '3.6.6') {
 						// Remove '0.0.1' from python executable path since the bundle version is removed from the path for ADS-Python 3.8.8+.
 						this._pythonExecutable = path.join(this._pythonInstallationPath, process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 					}
-
-					if (userInstalledPipPackages.length !== 0) {
-						this.createInstallPipPackagesHelpNotebook(userInstalledPipPackages);
-					}
+					await fs.remove(this._oldPythonInstallationPath).catch(err => {
+						vscode.window.showErrorMessage(localize('notebook.removePythonError', "Failed to remove old Python installation due to Error: {0}", err));
+						return;
+					});
 				}
+			}
 
+			if (!pythonExists || forceInstall || upgradePython) {
 				await this.installPythonPackage(backgroundOperation, this._usingExistingPython, this._pythonInstallationPath, this.outputChannel);
-				// reinstall pip to make sure !pip command works
-				if (!this._usingExistingPython) {
+				// reinstall pip to make sure !pip command works on Windows
+				if (!this._usingExistingPython && process.platform === constants.winPlatform) {
 					let packages: PythonPkgDetails[] = await this.getInstalledPipPackages(this._pythonExecutable);
 					let pip: PythonPkgDetails = packages.find(x => x.name === 'pip');
 					let cmd = `"${this._pythonExecutable}" -m pip install --force-reinstall pip=="${pip.version}"`;
@@ -454,14 +455,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 						this._installCompletion.resolve();
 						this._installInProgress = false;
 						await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions');
-						if (this._promptToRemoveOldPythonInstallation) {
-							let remove = await vscode.window.showInformationMessage(msgRemoveOldPythonPrompt, yes, no);
-							if (remove === yes) {
-								fs.remove(this._oldPythonInstallationPath).catch(err => {
-									let errorMsg = msgRemovePythonError(utils.getErrorMessage(err), this._oldPythonInstallationPath);
-									vscode.window.showErrorMessage(errorMsg);
-								});
-							}
+
+						if (this._oldUserInstalledPipPackages.length !== 0) {
+							await this.createInstallPipPackagesHelpNotebook(this._oldUserInstalledPipPackages);
 						}
 					})
 					.catch(err => {
@@ -512,6 +508,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		let response = await vscode.window.showInformationMessage(msgPythonVersionUpdatePrompt(constants.pythonVersion), yes, no, dontAskAgain);
 		if (response === yes) {
+			this._oldPythonInstallationPath = path.join(this._pythonInstallationPath);
+			this._oldPythonExecutable = this._pythonExecutable;
 			vscode.commands.executeCommand(constants.jupyterConfigurePython);
 		} else if (response === dontAskAgain) {
 			await notebookConfig.update(constants.dontPromptPythonUpdate, true, vscode.ConfigurationTarget.Global);
