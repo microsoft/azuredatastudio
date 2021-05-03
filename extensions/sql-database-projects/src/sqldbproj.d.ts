@@ -23,11 +23,6 @@ declare module 'sqldbproj' {
 		createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
 
 		/**
-		 * Opens and loads a .sqlproj file
-		 */
-		openProject(projectFilePath: string): Promise<ISqlProject>;
-
-		/**
 		 * returns array of open sql projects
 		 */
 		getProjects(): ISqlProject[];

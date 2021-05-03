@@ -77,13 +77,6 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	}
 
 	/**
-	 * Opens and loads a .sqlproj file
-	 */
-	openProject(projectFilePath: string): Promise<sqldbproj.ISqlProject> {
-		return this.projectController.openProject(vscode.Uri.file(projectFilePath));
-	}
-
-	/**
 	 * Gets the supported project types
 	 */
 	get projectActions(): (dataworkspace.IProjectAction | dataworkspace.IProjectActionGroup)[] {
@@ -122,6 +115,9 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 		return [group, changeTargetPlatformAction];
 	}
 
+	/**
+	 * returns array of currently open sql projects
+	 */
 	getProjects(): sqldbproj.ISqlProject[] {
 		return this.projectController.projects;
 	}
