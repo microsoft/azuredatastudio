@@ -21,7 +21,7 @@ export function activate(context: vscode.ExtensionContext): void {
 	output.appendLine(
 		localize("extension.activating", "Activating {0}.", Strings.extensionName));
 
-	launchServiceClient(path.join(__dirname, '../sqltoolsservice/windows/3.0.0-release.1/MicrosoftAzureMonitorServiceLayer.exe'), context);
+	launchServiceClient(path.join(__dirname, '../sqltoolsservice/windows/3.0.0-release.1/MicrosoftKustoServiceLayer.exe'), context);
 
 	isActivated = true;
 }
