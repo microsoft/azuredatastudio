@@ -122,7 +122,7 @@ export class ProjectsController {
 	}
 
 	public async openProject(projectFile: vscode.Uri): Promise<Project> {
-		// if project has already been opened, just refresh and read the project file again, but don't add it to the list of projects again
+		// if project has already been opened, just refresh and read the project file again, but don't add it to the array of projects again
 		const existingProject = this.projects.find((p => p.projectFilePath === projectFile.fsPath));
 		if (existingProject) {
 			await existingProject.readProjFile();
