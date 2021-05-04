@@ -308,14 +308,13 @@ export class RunParametersAction extends TooltipFromLabelAction {
 		const editor = this._notebookService.findNotebookEditor(context);
 		// Set defaultParameters to the parameter values in parameter cell
 		let defaultParameters = new Map<string, string>();
-		let emptyParameterCell: boolean;
-		editor.cells.forEach(cell => {
+		let emptyParameterCell: boolean = false;
+		for (let cell of editor?.cells) {
 			if (cell.isParameter) {
-				// Check if cell is empty or contains just whitespace
+				// Check if parameter cell is empty
 				const cellSource = typeof cell.source === 'string' ? [cell.source] : cell.source;
-				for (let x of cellSource) {
-					emptyParameterCell = /^\s*$/.test(x);
-				}
+				// Check to see if every line in the cell is empty or contains whitespace
+				emptyParameterCell = cellSource.every(s => /^\s*$/.test(s));
 				if (emptyParameterCell) {
 					// If there is no parameters in the cell indicate to user to add them
 					this.notificationService.notify({
@@ -325,25 +324,26 @@ export class RunParametersAction extends TooltipFromLabelAction {
 					return;
 				}
 				for (let parameter of cell.source) {
-					let param = parameter.split('=', 2);
-					defaultParameters.set(param[0].trim(), param[1].trim());
+					if (parameter.includes('=')) {
+						let param = parameter.split('=', 2);
+						defaultParameters.set(param[0].trim(), param[1].trim());
+					}
 				}
 			}
-			return;
-		});
+		}
 
 		// Store new parameters values the user inputs
 		let inputParameters = new Map<string, string>();
 		let uriParams = new URLSearchParams();
 		// Store new parameter values to map based off defaultParameters
-		if (defaultParameters.size === 0 && !emptyParameterCell) {
+		if (defaultParameters.size === 0) {
 			// If there is no parameter cell indicate to user to create one
 			this.notificationService.notify({
 				severity: Severity.Info,
 				message: localize('noParametersCell', "This notebook cannot run with parameters until a parameter cell is added. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)."),
 			});
 			return;
-		} else if (!emptyParameterCell) {
+		} else {
 			for (let key of defaultParameters.keys()) {
 				let newParameterValue = await this.quickInputService.input({ prompt: key, value: defaultParameters.get(key), ignoreFocusLost: true });
 				// If user cancels or escapes then it stops the action entirely

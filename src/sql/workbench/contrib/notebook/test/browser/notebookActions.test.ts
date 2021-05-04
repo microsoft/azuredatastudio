@@ -347,6 +347,51 @@ suite('Notebook Actions', function (): void {
 		assert.strictEqual(actualMsg, expectedMsg);
 	});
 
+	test('Run with Parameters Action with no empty parameter cell in notebook', async function (): Promise<void> {
+		const testContents: azdata.nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: ['\n'],
+				metadata: { language: 'python' },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python',
+					language: 'python',
+					display_name: 'Python 3'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		let expectedMsg: string = localize('emptyParametersCell', "This notebook cannot run with parameters until there are parameters added to the parameter cell.[Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
+		let notification = {
+			severity: Severity.Info,
+			message: expectedMsg,
+		};
+
+		let actualMsg: string;
+		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
+		mockNotification.setup(n => n.notify(TypeMoq.It.isAny())).returns(notification => {
+			actualMsg = notification.message;
+			return undefined;
+		});
+		let quickInputService = new MockQuickInputService;
+		let mockNotebookModel = new NotebookModelStub(undefined, undefined, testContents);
+
+		let action = new RunParametersAction('TestId', true, testUri, quickInputService, mockNotebookService.object, mockNotification.object);
+
+		mockNotebookEditor.setup(x => x.model).returns(() => mockNotebookModel);
+
+		// Run Parameters Action
+		await action.run(testUri);
+
+		assert.ok(actualMsg !== undefined, 'Should have received a notification');
+		assert.call(mockNotification.object.notify(notification), 'Should notify user there is no parameter cell');
+		assert.strictEqual(actualMsg, expectedMsg);
+	});
+
 	suite('Kernels dropdown', async () => {
 		let kernelsDropdown: KernelsDropdown;
 		let contextViewProvider: ContextViewProviderStub;
