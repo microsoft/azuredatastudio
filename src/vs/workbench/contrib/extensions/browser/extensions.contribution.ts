@@ -61,7 +61,7 @@ import { IWorkpsaceExtensionsConfigService } from 'vs/workbench/services/extensi
 import { Schemas } from 'vs/base/common/network';
 import { ShowRuntimeExtensionsAction } from 'vs/workbench/contrib/extensions/browser/abstractRuntimeExtensionsEditor';
 import { clearSearchResultsIcon, configureRecommendedIcon, extensionsViewIcon, filterIcon, installWorkspaceRecommendedIcon, refreshIcon } from 'vs/workbench/contrib/extensions/browser/extensionsIcons';
-import { ExtensionsPolicy, EXTENSION_CATEGORIES } from 'vs/platform/extensions/common/extensions';
+import { ExtensionsPolicy, ExtensionsPolicyKey, EXTENSION_CATEGORIES } from 'vs/platform/extensions/common/extensions';
 import { Disposable, DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
 import { isArray } from 'vs/base/common/types';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -69,6 +69,7 @@ import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { mnemonicButtonLabel } from 'vs/base/common/labels';
 import { Query } from 'vs/workbench/contrib/extensions/common/extensionQuery';
 import { Promises } from 'vs/base/common/async';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 
 // Singletons
 registerSingleton(IExtensionsWorkbenchService, ExtensionsWorkbenchService);
@@ -626,6 +627,15 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 			}
 		});
 
+		// {{SQL CARBON EDIT}} - extension policy check function
+		const isExtensionInstallationAllowed = (configurationService: IConfigurationService, notificationService: INotificationService): boolean => {
+			const allowAll = configurationService.getValue<string>(ExtensionsPolicyKey) === ExtensionsPolicy.allowAll;
+			if (!allowAll) {
+				this.notificationService.error(localize('InstallVSIXAction.allowNone', 'Your extension policy does not allow installing extensions. Please change your extension policy and try again.'));
+			}
+			return allowAll;
+		};
+
 		this.registerExtensionAction({
 			id: SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID,
 			title: { value: localize('InstallFromVSIX', "Install from VSIX..."), original: 'Install from VSIX...' },
@@ -642,6 +652,14 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 			run: async (accessor: ServicesAccessor) => {
 				const fileDialogService = accessor.get(IFileDialogService);
 				const commandService = accessor.get(ICommandService);
+
+				// {{SQL CARBON EDIT}} - add policy check
+				const configurationService = accessor.get(IConfigurationService);
+				const notificationService = accessor.get(INotificationService);
+				if (!isExtensionInstallationAllowed(configurationService, notificationService)) {
+					return;
+				}
+
 				const vsixPaths = await fileDialogService.showOpenDialog({
 					title: localize('installFromVSIX', "Install from VSIX"),
 					filters: [{ name: 'VSIX Extensions', extensions: ['vsix'] }],
@@ -669,12 +687,56 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 				const hostService = accessor.get(IHostService);
 				const notificationService = accessor.get(INotificationService);
 
+
+				// {{SQL CARBON EDIT}} - added policy check and third party extension confirmation.
+				const storageService = accessor.get(IStorageService);
+				const configurationService = accessor.get(IConfigurationService);
+				if (!isExtensionInstallationAllowed(configurationService, notificationService)) {
+					return;
+				}
 				const extensions = Array.isArray(resources) ? resources : [resources];
-				await Promises.settled(extensions.map(async (vsix) => await extensionsWorkbenchService.install(vsix)))
+				await Promises.settled(extensions.map(async (vsix) => {
+					if (!storageService.getBoolean(vsix.fsPath, StorageScope.GLOBAL)) {
+						const accept = await new Promise<boolean>(resolve => {
+							this.notificationService.prompt(
+								Severity.Warning,
+								localize('thirdPartyExtension.vsix', 'This is a third party extension and might involve security risks. Are you sure you want to install this extension?'),
+								[
+									{
+										label: localize('thirdPartExt.yes', 'Yes'),
+										run: () => resolve(true)
+									},
+									{
+										label: localize('thirdPartyExt.no', 'No'),
+										run: () => resolve(false)
+									},
+									{
+										label: localize('thirdPartyExt.dontShowAgain', 'Don\'t Show Again'),
+										isSecondary: true,
+										run: () => {
+											storageService.store(vsix.fsPath, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
+											resolve(true);
+										}
+									}
+								],
+								{ sticky: true }
+							);
+						});
+
+						if (!accept) {
+							return undefined;
+						}
+					}
+					return await extensionsWorkbenchService.install(vsix);
+				}))
 					.then(async (extensions) => {
 						for (const extension of extensions) {
+							// {{SQL CARBON EDIT}} - Add null check
+							if (extension === undefined) {
+								continue;
+							}
 							const requireReload = !(extension.local && extensionService.canAddExtension(toExtensionDescription(extension.local)));
-							const message = requireReload ? localize('InstallVSIXAction.successReload', "Completed installing {0} extension from VSIX. Please reload Visual Studio Code to enable it.", extension.displayName || extension.name)
+							const message = requireReload ? localize('InstallVSIXAction.successReload', "Completed installing {0} extension from VSIX. Please reload Azure Data Studio to enable it.", extension.displayName || extension.name) // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 								: localize('InstallVSIXAction.success', "Completed installing {0} extension from VSIX.", extension.displayName || extension.name);
 							const actions = requireReload ? [{
 								label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
