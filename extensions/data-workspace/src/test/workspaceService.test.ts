@@ -398,6 +398,23 @@ suite('WorkspaceService Tests', function (): void {
 		const processPath = (original: string): string => {
 			return original.replace(/\//g, path.sep);
 		};
+		const getProviderByProjectTypeStub = sinon.stub(ProjectProviderRegistry, 'getProviderByProjectExtension');
+		getProviderByProjectTypeStub.returns(createProjectProvider([{
+			id: 'tp',
+			description: '',
+			projectFileExtension: 'sqlproj',
+			icon: '',
+			displayName: 'test sql project'
+		}],
+			[{
+				id: 'testAction',
+				run: async (): Promise<any> => { return Promise.resolve(); }
+			}],
+			[{
+				name: 'tableInfo',
+				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+				data: [['d1']]
+			}]));
 		stubWorkspaceFile(DefaultWorkspaceFilePath);
 		const updateConfigurationStub = sinon.stub();
 		const getConfigurationStub = sinon.stub().returns([processPath('folder1/proj2.sqlproj'), processPath('folder2/proj3.sqlproj')]);
@@ -406,6 +423,7 @@ suite('WorkspaceService Tests', function (): void {
 			onWorkspaceProjectsChangedStub();
 		});
 		stubGetConfigurationValue(getConfigurationStub, updateConfigurationStub);
+		// sinon.stub(dataworkspace.IProjectProvider, 'RemoveProject').resolves();
 		await service.removeProject(vscode.Uri.file('/test/folder/folder1/proj2.sqlproj'));
 		should.strictEqual(updateConfigurationStub.calledWith('projects', sinon.match.array.deepEquals([
 			processPath('folder2/proj3.sqlproj')
