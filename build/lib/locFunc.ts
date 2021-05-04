@@ -88,7 +88,7 @@ export function modifyI18nPackFiles(existingTranslationFolder: string, adsExtens
 	let errors: any[] = [];
 	return through(function (this: ThroughStream, xlf: File) {
 		let project = path.basename(path.dirname(xlf.relative));
-		let resource = path.basename(xlf.relative, '.xlf');
+		let resource = path.basename(xlf.relative, '.xlf').replace(/\.[a-zA-Z-]*\./, '.');
 		let contents = xlf.contents.toString();
 		let parsePromise = pseudo ? i18n.XLF.parsePseudo(contents) : i18n.XLF.parse(contents);
 		parsePromises.push(parsePromise);
