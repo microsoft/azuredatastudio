@@ -61,7 +61,6 @@ describe('Notebook URI Handler', function (): void {
 
 	it('should show error when file is not found given file uri scheme https', async function (): Promise<void> {
 		let showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(Promise.resolve(loc.msgYes) as any);
-
 		await notebookUriHandler.handleUri(notebookUri);
 
 		sinon.assert.calledOnce(showQuickPickStub);
@@ -110,7 +109,6 @@ describe('Notebook URI Handler', function (): void {
 				.reply(httpErrorCode);
 
 			await notebookUriHandler.handleUri(notebookUri);
-
 			sinon.assert.callCount(showErrorMessageSpy, 1);
 			sinon.assert.notCalled(showNotebookDocumentStub);
 		});
@@ -118,15 +116,16 @@ describe('Notebook URI Handler', function (): void {
 
 	it('should open notebook when file is uri is valid', async function (): Promise<void> {
 		let showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(Promise.resolve(loc.msgYes) as any);
-		let fileNotebookUri = vscode.Uri.parse('azuredatastudio://microsoft.notebook/open?url=file:///hello.ipynb');
 		const notebookPath = path.join(os.tmpdir(),'/hello.ipynb');
+		let fileURI = 'azuredatastudio://microsoft.notebook/open?url=file:///'+ notebookPath;
+		let fileNotebookUri = vscode.Uri.parse(fileURI);
 
 		await fs.writeFile(notebookPath, '');
 
 		await notebookUriHandler.handleUri(fileNotebookUri);
 
 		sinon.assert.calledOnce(showQuickPickStub);
-		sinon.assert.notCalled(showNotebookDocumentStub);
+		sinon.assert.calledOnce(showNotebookDocumentStub);
 		sinon.assert.callCount(showErrorMessageSpy, 0);
 	});
 });
