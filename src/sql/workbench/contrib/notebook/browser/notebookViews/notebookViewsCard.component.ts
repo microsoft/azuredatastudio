@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as DOM from 'vs/base/browser/dom';
 import { Component, OnInit, Input, ViewChild, TemplateRef, ElementRef, Inject, Output, EventEmitter, ChangeDetectorRef, forwardRef } from '@angular/core';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellExecutionState, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { DEFAULT_VIEW_CARD_HEIGHT, DEFAULT_VIEW_CARD_WIDTH } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
@@ -16,15 +16,17 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { cellBorder, notebookToolbarSelectBackground } from 'sql/platform/theme/common/colorRegistry';
+import { AngularDisposable } from 'sql/base/browser/lifecycle';
 
 @Component({
 	selector: 'view-card-component',
 	templateUrl: decodeURI(require.toUrl('./notebookViewsCard.component.html'))
 })
-export class NotebookViewsCardComponent implements OnInit {
+export class NotebookViewsCardComponent extends AngularDisposable implements OnInit {
 	private _actionbar: Taskbar;
 	private _metadata: INotebookViewCellMetadata;
 	private _activeView: INotebookView;
+	private _executionState: CellExecutionState;
 
 	public _cellToggleMoreActions: ViewCellToggleMoreActions;
 
@@ -41,10 +43,13 @@ export class NotebookViewsCardComponent implements OnInit {
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
-	) { }
+	) {
+		super();
+	}
 
 	ngOnInit() {
 		this.initActionBar();
+		this._register(this.cell.onExecutionStateChange(e => this.executionState = e));
 	}
 
 	ngOnChanges() {
@@ -52,6 +57,7 @@ export class NotebookViewsCardComponent implements OnInit {
 			this._activeView = this.views.getActiveView();
 			this._metadata = this.views.getCellMetadata(this.cell);
 		}
+		this.detectChanges();
 	}
 
 	ngAfterContentInit() {
@@ -59,6 +65,7 @@ export class NotebookViewsCardComponent implements OnInit {
 			this._activeView = this.views.getActiveView();
 			this._metadata = this.views.getCellMetadata(this.cell);
 		}
+		this.detectChanges();
 	}
 
 	initActionBar() {
@@ -100,6 +107,10 @@ export class NotebookViewsCardComponent implements OnInit {
 		this.onChange.emit({ cell: this.cell, event: event });
 	}
 
+	get modal(): boolean {
+		return this.awaitingInput;
+	}
+
 	detectChanges() {
 		this._changeRef.detectChanges();
 	}
@@ -112,6 +123,18 @@ export class NotebookViewsCardComponent implements OnInit {
 			this.model.updateActiveCell(cell);
 			this.changed('active');
 		}
+	}
+
+	public set executionState(state: CellExecutionState) {
+		if (this._executionState !== state) {
+			this._executionState = state;
+			this.detectChanges();
+			this.changed('execution');
+		}
+	}
+
+	public get executionState(): CellExecutionState {
+		return this._executionState;
 	}
 
 	public hide(): void {
@@ -139,11 +162,15 @@ export class NotebookViewsCardComponent implements OnInit {
 	}
 
 	public get display(): boolean {
-		if (!this._metadata || !this._activeView) {
+		if (!this._metadata || !this._activeView || this.awaitingInput) {
 			return true;
 		}
 
 		return !this.data?.hidden;
+	}
+
+	public get awaitingInput(): boolean {
+		return this.cell.future && this.cell.future.inProgress && (this.cell.outputs.length > 0 || this.cell.stdInVisible);
 	}
 
 	public get showActionBar(): boolean {

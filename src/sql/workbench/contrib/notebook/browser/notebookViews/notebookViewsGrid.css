@@ -27,6 +27,14 @@
 	position: absolute;
 	padding: 0;
 }
+.grid-stack > .grid-stack-item .modal{
+	display: block;
+	position: absolute;
+	z-index: 999;
+	height: 100%;
+	width: 100%;
+}
+
 .grid-stack > .grid-stack-item > .grid-stack-item-content {
 	margin: 0;
 	position: absolute;

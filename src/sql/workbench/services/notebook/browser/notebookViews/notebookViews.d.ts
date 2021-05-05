@@ -6,7 +6,7 @@
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Event } from 'vs/base/common/event';
 
-export type CellChangeEventType = 'hide' | 'insert' | 'active';
+export type CellChangeEventType = 'hide' | 'insert' | 'active' | 'execution';
 
 export type CellChangeEvent = {
 	cell: ICellModel,

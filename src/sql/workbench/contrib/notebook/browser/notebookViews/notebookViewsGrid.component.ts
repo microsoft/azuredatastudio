@@ -5,20 +5,21 @@
 import 'vs/css!./cellToolbar';
 import { Component, OnInit, ViewChildren, QueryList, Input, Inject, forwardRef, ChangeDetectorRef, ViewEncapsulation, } from '@angular/core';
 import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCard.component';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { GridStack, GridStackEvent, GridStackNode } from 'gridstack';
 import 'gridstack/dist/h5/gridstack-dd-native';
 import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { CellChangeEvent, INotebookView, INotebookViewCell } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { AngularDisposable } from 'sql/base/browser/lifecycle';
 
 @Component({
 	selector: 'notebook-views-grid-component',
 	templateUrl: decodeURI(require.toUrl('./notebookViewsGrid.component.html')),
 	encapsulation: ViewEncapsulation.None,
 })
-export class NotebookViewsGridComponent implements OnInit {
+export class NotebookViewsGridComponent extends AngularDisposable implements OnInit {
 	@Input() cells: ICellModel[];
 	@Input() model: NotebookModel;
 	@Input() activeView: INotebookView;
@@ -32,7 +33,13 @@ export class NotebookViewsGridComponent implements OnInit {
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 	) {
+		super();
 		this.loaded = false;
+	}
+
+	private handleContentChanged(change: NotebookContentChange): void {
+		//if(change.changeType === NotebookChangeType.
+		this.detectChanges();
 	}
 
 	public get empty(): boolean {
@@ -63,6 +70,7 @@ export class NotebookViewsGridComponent implements OnInit {
 			self._grid.on('removed', function (e: Event, items: GridStackNode[]) { self.persist('removed', items, self._grid, self._items); });
 			self._grid.on('change', function (e: Event, items: GridStackNode[]) { self.persist('change', items, self._grid, self._items); });
 		}, 100);
+		this._register(this.model.contentChanged((e) => this.handleContentChanged(e)));
 	}
 
 	private detectChanges(): void {

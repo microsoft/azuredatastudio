@@ -22,9 +22,15 @@ export class NotebookViewModel implements INotebookView {
 
 	constructor(
 		protected _name: string,
-		private _notebookViews: NotebookViewsExtension
+		private _notebookViews: NotebookViewsExtension,
+		guid?: string
 	) {
-		this.guid = generateUuid();
+		this.guid = guid ?? generateUuid();
+	}
+
+	public static load(guid: string, notebookViews: NotebookViewsExtension): INotebookView {
+		const view = notebookViews.getViews().find(v => v.guid === guid);
+		return new NotebookViewModel(view.name, notebookViews, view.guid);
 	}
 
 	public initialize(): void {

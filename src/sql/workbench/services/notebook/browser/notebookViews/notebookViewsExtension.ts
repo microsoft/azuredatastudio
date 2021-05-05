@@ -34,6 +34,8 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 			this.initializeNotebook();
 			this.initializeCells();
 			this.commit();
+		} else {
+			this._metadata.views = this._metadata.views.map(view => NotebookViewModel.load(view.guid, this));
 		}
 	}
 

@@ -531,6 +531,7 @@ export class CellModel extends Disposable implements ICellModel {
 						}, false);
 						this.setFuture(future as FutureInternal);
 						this.fireExecutionStateChanged();
+						this.notebookModel.onCellChange(this, NotebookChangeType.CellExecutionStarted);
 						this._notebookService?.notifyCellExecutionStarted();
 						// For now, await future completion. Later we should just track and handle cancellation based on model notifications
 						let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any>await future.done;
