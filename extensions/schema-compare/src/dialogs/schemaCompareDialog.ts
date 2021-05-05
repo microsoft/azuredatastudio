@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
+import * as path from 'path';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { TelemetryReporter, TelemetryViews } from '../telemetry';
 import { getEndpointName, getRootPath, exists } from '../utils';
@@ -27,18 +28,18 @@ export class SchemaCompareDialog {
 	private sourceTextBox: azdata.InputBoxComponent;
 	private sourceFileButton: azdata.ButtonComponent;
 	private sourceServerComponent: azdata.FormComponent;
-	private sourceServerDropdown: azdata.DropDownComponent;
+	protected sourceServerDropdown: azdata.DropDownComponent;
+	private sourceConnectionButton: azdata.ButtonComponent;
 	private sourceDatabaseComponent: azdata.FormComponent;
 	private sourceDatabaseDropdown: azdata.DropDownComponent;
-	private sourceNoActiveConnectionsText: azdata.FormComponent;
 	private targetDacpacComponent: azdata.FormComponent;
 	private targetTextBox: azdata.InputBoxComponent;
 	private targetFileButton: azdata.ButtonComponent;
 	private targetServerComponent: azdata.FormComponent;
-	private targetServerDropdown: azdata.DropDownComponent;
+	protected targetServerDropdown: azdata.DropDownComponent;
+	private targetConnectionButton: azdata.ButtonComponent;
 	private targetDatabaseComponent: azdata.FormComponent;
 	private targetDatabaseDropdown: azdata.DropDownComponent;
-	private targetNoActiveConnectionsText: azdata.FormComponent;
 	private formBuilder: azdata.FormBuilder;
 	private sourceIsDacpac: boolean;
 	private targetIsDacpac: boolean;
@@ -50,7 +51,12 @@ export class SchemaCompareDialog {
 	private initDialogComplete: Deferred<void>;
 	private initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
 
-	constructor(private schemaCompareMainWindow: SchemaCompareMainWindow, private view?: azdata.ModelView) {
+	private textBoxWidth: number = 280;
+
+	public promise;
+	public promise2;
+
+	constructor(private schemaCompareMainWindow: SchemaCompareMainWindow, private view?: azdata.ModelView, private extensionContext?: vscode.ExtensionContext) {
 		this.previousSource = schemaCompareMainWindow.sourceEndpointInfo;
 		this.previousTarget = schemaCompareMainWindow.targetEndpointInfo;
 	}
@@ -182,7 +188,7 @@ export class SchemaCompareDialog {
 
 			this.sourceTextBox = this.view.modelBuilder.inputBox().withProperties({
 				value: this.schemaCompareMainWindow.sourceEndpointInfo ? this.schemaCompareMainWindow.sourceEndpointInfo.packageFilePath : '',
-				width: 275,
+				width: this.textBoxWidth,
 				ariaLabel: loc.sourceFile
 			}).component();
 
@@ -192,7 +198,7 @@ export class SchemaCompareDialog {
 
 			this.targetTextBox = this.view.modelBuilder.inputBox().withProperties({
 				value: this.schemaCompareMainWindow.targetEndpointInfo ? this.schemaCompareMainWindow.targetEndpointInfo.packageFilePath : '',
-				width: 275,
+				width: this.textBoxWidth,
 				ariaLabel: loc.targetFile
 			}).component();
 
@@ -213,9 +219,6 @@ export class SchemaCompareDialog {
 
 			let sourceRadioButtons = this.createSourceRadiobuttons();
 			let targetRadioButtons = this.createTargetRadiobuttons();
-
-			this.sourceNoActiveConnectionsText = this.createNoActiveConnectionsText();
-			this.targetNoActiveConnectionsText = this.createNoActiveConnectionsText();
 
 			let sourceComponents = [];
 			let targetComponents = [];
@@ -345,23 +348,20 @@ export class SchemaCompareDialog {
 		// show dacpac file browser
 		this.sourceDacpacRadioButton.onDidClick(async () => {
 			this.sourceIsDacpac = true;
-			this.formBuilder.removeFormItem(this.sourceNoActiveConnectionsText);
 			this.formBuilder.removeFormItem(this.sourceServerComponent);
 			this.formBuilder.removeFormItem(this.sourceDatabaseComponent);
 			this.formBuilder.insertFormItem(this.sourceDacpacComponent, 2, { horizontal: true, titleFontSize: titleFontSize });
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
-		// show server and db dropdowns or 'No active connections' text
+		// show server and db dropdowns
 		this.sourceDatabaseRadioButton.onDidClick(async () => {
 			this.sourceIsDacpac = false;
-			if ((this.sourceServerDropdown.value as ConnectionDropdownValue)) {
-				this.formBuilder.insertFormItem(this.sourceServerComponent, 2, { horizontal: true, titleFontSize: titleFontSize });
-				this.formBuilder.insertFormItem(this.sourceDatabaseComponent, 3, { horizontal: true, titleFontSize: titleFontSize });
-			} else {
-				this.formBuilder.insertFormItem(this.sourceNoActiveConnectionsText, 2, { horizontal: true, titleFontSize: titleFontSize });
-			}
+			this.formBuilder.insertFormItem(this.sourceServerComponent, 2, { horizontal: true, titleFontSize: titleFontSize });
+			this.formBuilder.insertFormItem(this.sourceDatabaseComponent, 3, { horizontal: true, titleFontSize: titleFontSize });
 			this.formBuilder.removeFormItem(this.sourceDacpacComponent);
+
+			this.populateServerDropdown(false);
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
@@ -401,23 +401,20 @@ export class SchemaCompareDialog {
 		// show dacpac file browser
 		dacpacRadioButton.onDidClick(async () => {
 			this.targetIsDacpac = true;
-			this.formBuilder.removeFormItem(this.targetNoActiveConnectionsText);
 			this.formBuilder.removeFormItem(this.targetServerComponent);
 			this.formBuilder.removeFormItem(this.targetDatabaseComponent);
 			this.formBuilder.addFormItem(this.targetDacpacComponent, { horizontal: true, titleFontSize: titleFontSize });
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
-		// show server and db dropdowns or 'No active connections' text
+		// show server and db dropdowns
 		databaseRadioButton.onDidClick(async () => {
 			this.targetIsDacpac = false;
 			this.formBuilder.removeFormItem(this.targetDacpacComponent);
-			if ((this.targetServerDropdown.value as ConnectionDropdownValue)) {
-				this.formBuilder.addFormItem(this.targetServerComponent, { horizontal: true, titleFontSize: titleFontSize });
-				this.formBuilder.addFormItem(this.targetDatabaseComponent, { horizontal: true, titleFontSize: titleFontSize });
-			} else {
-				this.formBuilder.addFormItem(this.targetNoActiveConnectionsText, { horizontal: true, titleFontSize: titleFontSize });
-			}
+			this.formBuilder.addFormItem(this.targetServerComponent, { horizontal: true, titleFontSize: titleFontSize });
+			this.formBuilder.addFormItem(this.targetDatabaseComponent, { horizontal: true, titleFontSize: titleFontSize });
+
+			this.populateServerDropdown(true);
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
@@ -462,17 +459,22 @@ export class SchemaCompareDialog {
 			{
 				editable: true,
 				fireOnTextChange: true,
-				ariaLabel: loc.sourceServer
+				ariaLabel: loc.sourceServer,
+				width: this.textBoxWidth
 			}
 		).component();
+
+		this.sourceConnectionButton = this.createConnectionButton(false);
+
 		this.sourceServerDropdown.onValueChanged(async (value) => {
-			if (this.sourceServerDropdown.values.findIndex(x => this.matchesValue(x, value as string)) === -1) {
+			if (value.selected && this.sourceServerDropdown.values.findIndex(x => this.matchesValue(x, value.selected)) === -1) {
 				await this.sourceDatabaseDropdown.updateProperties({
 					values: [],
 					value: '  '
 				});
 			}
 			else {
+				this.sourceConnectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
 				await this.populateDatabaseDropdown((this.sourceServerDropdown.value as ConnectionDropdownValue).connection, false);
 			}
 		});
@@ -482,8 +484,34 @@ export class SchemaCompareDialog {
 
 		return {
 			component: this.sourceServerDropdown,
-			title: loc.ServerDropdownLabel
+			title: loc.ServerDropdownLabel,
+			actions: [this.sourceConnectionButton]
 		};
+	}
+
+	private createConnectionButton(isTarget: boolean): azdata.ButtonComponent {
+		const selectConnectionButton = this.view.modelBuilder.button().withProperties({
+			ariaLabel: loc.selectConnection,
+			iconPath: path.join(this.extensionContext.extensionPath, 'media', 'selectConnection.svg'),
+			height: '20px',
+			width: '20px'
+		}).component();
+
+		selectConnectionButton.onDidClick(async () => {
+			await this.connectionButtonClick(isTarget);
+			selectConnectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
+		});
+
+		return selectConnectionButton;
+	}
+
+	public async connectionButtonClick(isTarget: boolean): Promise<void> {
+		let connection = await azdata.connection.openConnectionDialog();
+		if (connection) {
+			this.connectionId = connection.connectionId;
+			this.promise = this.populateServerDropdown(isTarget);
+			this.promise2 = this.populateServerDropdown(!isTarget, true);		// passively populate the other server dropdown as well to add the new connections
+		}
 	}
 
 	protected createTargetServerDropdown(): azdata.FormComponent {
@@ -491,17 +519,22 @@ export class SchemaCompareDialog {
 			{
 				editable: true,
 				fireOnTextChange: true,
-				ariaLabel: loc.targetServer
+				ariaLabel: loc.targetServer,
+				width: this.textBoxWidth
 			}
 		).component();
+
+		this.targetConnectionButton = this.createConnectionButton(true);
+
 		this.targetServerDropdown.onValueChanged(async (value) => {
-			if (this.targetServerDropdown.values.findIndex(x => this.matchesValue(x, value as string)) === -1) {
+			if (value.selected && this.targetServerDropdown.values.findIndex(x => this.matchesValue(x, value.selected)) === -1) {
 				await this.targetDatabaseDropdown.updateProperties({
 					values: [],
 					value: '  '
 				});
 			}
 			else {
+				this.targetConnectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
 				await this.populateDatabaseDropdown((this.targetServerDropdown.value as ConnectionDropdownValue).connection, true);
 			}
 		});
@@ -511,25 +544,39 @@ export class SchemaCompareDialog {
 
 		return {
 			component: this.targetServerDropdown,
-			title: loc.ServerDropdownLabel
+			title: loc.ServerDropdownLabel,
+			actions: [this.targetConnectionButton]
 		};
 	}
 
-	protected async populateServerDropdown(isTarget: boolean): Promise<void> {
+	protected async populateServerDropdown(isTarget: boolean, passivelyPopulate: boolean = false): Promise<void> {
 		const currentDropdown = isTarget ? this.targetServerDropdown : this.sourceServerDropdown;
+
+		if (passivelyPopulate && isNullOrUndefined(currentDropdown.value)) {
+			passivelyPopulate = false;		// Populate the dropdown if it is empty
+		}
+
 		currentDropdown.loading = true;
 		const values = await this.getServerValues(isTarget);
 
 		if (values && values.length > 0) {
-			await currentDropdown.updateProperties({
-				values: values,
-				value: values[0]
-			});
+			if (passivelyPopulate) {	// only update the dropdown values, not the selected value
+				await currentDropdown.updateProperties({
+					values: values
+				});
+			} else {
+				await currentDropdown.updateProperties({
+					values: values,
+					value: values[0]
+				});
+			}
 		}
 
 		currentDropdown.loading = false;
 
-		await this.populateDatabaseDropdown((currentDropdown.value as ConnectionDropdownValue).connection, isTarget);
+		if (!passivelyPopulate && currentDropdown.value) {
+			await this.populateDatabaseDropdown((currentDropdown.value as ConnectionDropdownValue).connection, isTarget);
+		}
 	}
 
 	protected async getServerValues(isTarget: boolean): Promise<{ connection: azdata.connection.ConnectionProfile, displayName: string, name: string }[]> {
@@ -538,6 +585,10 @@ export class SchemaCompareDialog {
 		if (!cons || cons.length === 0) {
 			return undefined;
 		}
+
+		// Update connection icon to "connected" state
+		let connectionButton = isTarget ? this.targetConnectionButton : this.sourceConnectionButton;
+		connectionButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'connect.svg');
 
 		let endpointInfo = isTarget ? this.schemaCompareMainWindow.targetEndpointInfo : this.schemaCompareMainWindow.sourceEndpointInfo;
 		// reverse list so that most recent connections are first
@@ -603,7 +654,8 @@ export class SchemaCompareDialog {
 			{
 				editable: true,
 				fireOnTextChange: true,
-				ariaLabel: loc.sourceDatabase
+				ariaLabel: loc.sourceDatabase,
+				width: this.textBoxWidth
 			}
 		).component();
 		this.sourceDatabaseDropdown.onValueChanged(async (value) => {
@@ -622,7 +674,8 @@ export class SchemaCompareDialog {
 			{
 				editable: true,
 				fireOnTextChange: true,
-				ariaLabel: loc.targetDatabase
+				ariaLabel: loc.targetDatabase,
+				width: this.textBoxWidth
 			}
 		).component();
 		this.targetDatabaseDropdown.onValueChanged(async (value) => {
@@ -643,7 +696,10 @@ export class SchemaCompareDialog {
 	protected async populateDatabaseDropdown(connectionProfile: azdata.connection.ConnectionProfile, isTarget: boolean): Promise<void> {
 		const currentDropdown = isTarget ? this.targetDatabaseDropdown : this.sourceDatabaseDropdown;
 		currentDropdown.loading = true;
-		await currentDropdown.updateProperties({ values: [], value: null });
+		await currentDropdown.updateProperties({
+			values: [],
+			value: undefined
+		});
 
 		let values = [];
 		try {
@@ -687,21 +743,13 @@ export class SchemaCompareDialog {
 		}
 		return values;
 	}
-
-	protected createNoActiveConnectionsText(): azdata.FormComponent {
-		let noActiveConnectionsText = this.view.modelBuilder.text().withProperties({ value: loc.NoActiveConnectionsLabel }).component();
-
-		return {
-			component: noActiveConnectionsText,
-			title: ''
-		};
-	}
 }
 
-interface ConnectionDropdownValue extends azdata.CategoryValue {
+export interface ConnectionDropdownValue extends azdata.CategoryValue {
 	connection: azdata.connection.ConnectionProfile;
 }
 
 function isNullOrUndefined(val: any): boolean {
 	return val === null || val === undefined;
 }
+

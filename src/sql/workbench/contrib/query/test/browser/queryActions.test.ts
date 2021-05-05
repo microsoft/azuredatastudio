@@ -68,6 +68,7 @@ suite('SQL QueryAction Tests', () => {
 		queryModelService.setup(q => q.onRunQueryComplete).returns(() => Event.None);
 		connectionManagementService = TypeMoq.Mock.ofType<TestConnectionManagementService>(TestConnectionManagementService);
 		connectionManagementService.setup(q => q.onDisconnect).returns(() => Event.None);
+		connectionManagementService.setup(q => q.onConnectionChanged).returns(() => Event.None);
 		connectionManagementService.setup(q => q.listDatabases(TypeMoq.It.isAny())).returns(() => Promise.resolve({ databaseNames: ['master', 'msdb', 'model'] }));
 		const workbenchinstantiationService = workbenchInstantiationService();
 		const accessor = workbenchinstantiationService.createInstance(ServiceAccessor);
