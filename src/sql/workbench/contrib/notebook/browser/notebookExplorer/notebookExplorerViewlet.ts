@@ -21,10 +21,9 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { ShowViewletAction, Viewlet } from 'vs/workbench/browser/viewlet';
-import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
-import { ViewPaneContainer, ViewPane } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { Viewlet } from 'vs/workbench/browser/viewlet';
+import { ViewPane } from 'vs/workbench/browser/parts/views/viewPane';
+import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { NotebookSearchWidget, INotebookExplorerSearchOptions } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchWidget';
 import * as Constants from 'sql/workbench/common/constants';
@@ -41,24 +40,9 @@ import { URI } from 'vs/base/common/uri';
 import { TreeViewPane } from 'vs/workbench/browser/parts/views/treeView';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 
 export const VIEWLET_ID = 'workbench.view.notebooks';
-
-// Viewlet Action
-export class OpenNotebookExplorerViewletAction extends ShowViewletAction {
-	public static ID = VIEWLET_ID;
-	public static LABEL = localize('showNotebookExplorer', "Show Notebooks");
-
-	constructor(
-		id: string,
-		label: string,
-		@IViewletService viewletService: IViewletService,
-		@IEditorGroupsService editorGroupService: IEditorGroupsService,
-		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService
-	) {
-		super(id, label, VIEWLET_ID, viewletService, editorGroupService, layoutService);
-	}
-}
 
 export class NotebookExplorerViewletViewsContribution implements IWorkbenchContribution {
 
@@ -450,8 +434,13 @@ export const notebookIconId = 'book';
 
 export const NOTEBOOK_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
-	name: localize('notebookExplorer.name', "Notebooks"),
+	title: localize('notebookExplorer.name', "Notebooks"),
 	ctorDescriptor: new SyncDescriptor(NotebookExplorerViewPaneContainer),
+	openCommandActionDescriptor: {
+		id: VIEWLET_ID,
+		keybindings: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_B },
+		order: 0
+	},
 	icon: { id: notebookIconId },
 	order: 6,
 	storageId: `${VIEWLET_ID}.state`

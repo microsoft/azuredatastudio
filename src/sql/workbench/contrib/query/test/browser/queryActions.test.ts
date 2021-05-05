@@ -68,6 +68,7 @@ suite('SQL QueryAction Tests', () => {
 		queryModelService.setup(q => q.onRunQueryComplete).returns(() => Event.None);
 		connectionManagementService = TypeMoq.Mock.ofType<TestConnectionManagementService>(TestConnectionManagementService);
 		connectionManagementService.setup(q => q.onDisconnect).returns(() => Event.None);
+		connectionManagementService.setup(q => q.onConnectionChanged).returns(() => Event.None);
 		connectionManagementService.setup(q => q.listDatabases(TypeMoq.It.isAny())).returns(() => Promise.resolve({ databaseNames: ['master', 'msdb', 'model'] }));
 		const workbenchinstantiationService = workbenchInstantiationService();
 		const accessor = workbenchinstantiationService.createInstance(ServiceAccessor);
@@ -466,6 +467,7 @@ suite('SQL QueryAction Tests', () => {
 		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{
 			databaseName: databaseName
 		});
+		connectionManagementService.setup(x => x.changeDatabase(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true));
 
 		// If I query without having initialized anything, state should be clear
 		listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, configurationService.object, undefined);
@@ -497,6 +499,7 @@ suite('SQL QueryAction Tests', () => {
 		let databaseName = 'foobar';
 		connectionManagementService.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
 		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
+		connectionManagementService.setup(x => x.changeDatabase(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true));
 
 		// ... Create a database dropdown that has been connected
 		let listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, configurationService.object, undefined);
@@ -519,6 +522,7 @@ suite('SQL QueryAction Tests', () => {
 		let databaseName = 'foobar';
 		connectionManagementService.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
 		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
+		connectionManagementService.setup(x => x.changeDatabase(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true));
 
 		// ... Create a database dropdown that has been connected
 		let listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, configurationService.object, undefined);

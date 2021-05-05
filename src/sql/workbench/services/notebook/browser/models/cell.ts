@@ -34,7 +34,7 @@ import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
-
+const validBase64OctetStreamRegex = /^data:application\/octet-stream;base64,(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})/;
 export interface QueryResultId {
 	batchId: number;
 	id: number;
@@ -147,6 +147,26 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get attachments() {
 		return this._attachments;
+	}
+
+	addAttachment(mimeType: string, base64Encoding: string, name: string): void {
+		// base64Encoded value looks like: data:application/octet-stream;base64,<base64Value>
+		// get the <base64Value> from the string
+		let index = base64Encoding.indexOf('base64,');
+		if (this.isValidBase64OctetStream(base64Encoding)) {
+			base64Encoding = base64Encoding.substring(index + 7);
+			let attachment: nb.ICellAttachment = {};
+			attachment[mimeType] = base64Encoding;
+			if (!this._attachments) {
+				this._attachments = {};
+			}
+			// TO DO: Check if name already exists and message the user?
+			this._attachments[name] = attachment;
+		}
+	}
+
+	private isValidBase64OctetStream(base64Image: string): boolean {
+		return base64Image && validBase64OctetStreamRegex.test(base64Image);
 	}
 
 	public get isEditMode(): boolean {

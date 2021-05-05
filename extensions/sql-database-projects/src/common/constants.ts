@@ -198,6 +198,8 @@ export function fileOrFolderDoesNotExist(name: string) { return localize('fileOr
 export function cannotResolvePath(path: string) { return localize('cannotResolvePath', "Cannot resolve path {0}", path); }
 export function fileAlreadyExists(filename: string) { return localize('fileAlreadyExists', "A file with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
 export function folderAlreadyExists(filename: string) { return localize('folderAlreadyExists', "A folder with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
+export function fileAlreadyAddedToProject(filepath: string) { return localize('fileAlreadyAddedToProject', "A file with the path '{0}' has already been added to the project", filepath); }
+export function folderAlreadyAddedToProject(folderpath: string) { return localize('folderAlreadyAddedToProject', "A folder with the path '{0}' has already been added to the project", folderpath); }
 export function invalidInput(input: string) { return localize('invalidInput', "Invalid input: {0}", input); }
 export function unableToCreatePublishConnection(input: string) { return localize('unableToCreatePublishConnection', "Unable to construct connection: {0}", input); }
 export function circularProjectReference(project1: string, project2: string) { return localize('cicularProjectReference', "Circular reference from project {0} to project {1}", project1, project2); }
@@ -336,6 +338,7 @@ export const sqlServer2016 = 'SQL Server 2016';
 export const sqlServer2017 = 'SQL Server 2017';
 export const sqlServer2019 = 'SQL Server 2019';
 export const sqlAzure = 'Microsoft Azure SQL Database';
+export const sqlDW = 'Microsoft Azure SQL Data Warehouse';
 
 export const targetPlatformToVersion: Map<string, string> = new Map<string, string>([
 	[sqlServer2005, '90'],
@@ -345,7 +348,8 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[sqlServer2016, '130'],
 	[sqlServer2017, '140'],
 	[sqlServer2019, '150'],
-	[sqlAzure, 'AzureV12']
+	[sqlAzure, 'AzureV12'],
+	[sqlDW, 'Dw']
 ]);
 
 export function getTargetPlatformFromVersion(version: string): string {

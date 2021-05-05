@@ -218,10 +218,6 @@ export class AsyncDataProvider<T extends Slick.SlickData> implements IDisposable
 		throw new Error('Method not implemented.');
 	}
 
-	getFilteredColumnValues(column: Slick.Column<T>): Promise<string[]> {
-		throw new Error('Method not implemented.');
-	}
-
 	getColumnValues(column: Slick.Column<T>): Promise<string[]> {
 		throw new Error('Method not implemented.');
 	}

@@ -44,7 +44,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IRange } from 'vs/editor/common/core/range';
-import { onUnexpectedError } from 'vs/base/common/errors';
+import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -684,6 +684,11 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private databaseSelected(dbName: string): void {
+		// If dbName is blank (this can happen for example when setting the box value to empty when disconnecting)
+		// then just no-op, there's nothing we can do.
+		if (!dbName) {
+			return;
+		}
 		if (!this._editor.input) {
 			this.logService.error('editor input was null');
 			return;
@@ -714,7 +719,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 					this.resetDatabaseName();
 					this.notificationService.notify({
 						severity: Severity.Error,
-						message: nls.localize('changeDatabase.failedWithError', "Failed to change database {0}", error)
+						message: nls.localize('changeDatabase.failedWithError', "Failed to change database: {0}", getErrorMessage(error))
 					});
 				});
 	}

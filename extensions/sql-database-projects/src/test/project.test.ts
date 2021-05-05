@@ -13,7 +13,7 @@ import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
 import { Project, EntryType, SystemDatabase, SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
-import { exists, convertSlashesForSqlProj } from '../common/utils';
+import { exists, convertSlashesForSqlProj, trimChars, trimUri } from '../common/utils';
 import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 
@@ -568,6 +568,27 @@ describe('Project: sqlproj content operations', function (): void {
 		should(newProject.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(preDeploymentScriptFilePath2))).not.equal(undefined, 'File Script.PreDeployment2.sql not read');
 		should(newProject.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(postDeploymentScriptFilePath2))).not.equal(undefined, 'File Script.PostDeployment2.sql not read');
 
+	});
+
+	it('Should not allow adding duplicate file/folder entries in sqlproj', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project: Project = await Project.openProject(projFilePath);
+		const fileList = await testUtils.createListOfFiles(path.dirname(projFilePath));
+
+		// verify first entry in list is a folder
+		const existingFolderUri = fileList[0];
+		const folderStats =  await fs.stat(existingFolderUri.fsPath);
+		should(folderStats.isDirectory()).equal(true, 'First entry in fileList should be a folder');
+		await project.addToProject([existingFolderUri]);
+		const folderRelativePath = trimChars(trimUri(Uri.file(projFilePath), existingFolderUri), '');
+		testUtils.shouldThrowSpecificError(async () => await project.addToProject([existingFolderUri]), constants.folderAlreadyAddedToProject(folderRelativePath));
+
+		// verify duplicate file can't be added
+		const existingFileUri = fileList[1];
+		const fileStats = await fs.stat(existingFileUri.fsPath);
+		should(fileStats.isFile()).equal(true, 'Second entry in fileList should be a file');
+		const fileRelativePath = trimChars(trimUri(Uri.file(projFilePath), existingFileUri), '/');
+		testUtils.shouldThrowSpecificError(async () => await project.addToProject([existingFileUri]), constants.fileAlreadyAddedToProject(fileRelativePath));
 	});
 });
 

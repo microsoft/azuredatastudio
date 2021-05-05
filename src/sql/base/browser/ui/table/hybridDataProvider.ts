@@ -68,11 +68,6 @@ export class HybridDataProvider<T extends Slick.SlickData> implements IDisposabl
 		return this.provider.getColumnValues(column);
 	}
 
-	public async getFilteredColumnValues(column: Slick.Column<T>): Promise<string[]> {
-		await this.initializeCacheIfNeeded();
-		return this.provider.getFilteredColumnValues(column);
-	}
-
 	public get dataRows(): IObservableCollection<T> {
 		return this._asyncDataProvider.dataRows;
 	}

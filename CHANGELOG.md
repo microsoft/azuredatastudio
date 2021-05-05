@@ -1,5 +1,15 @@
 # Change Log
 
+## Version 1.28.0
+* Release date: April 16, 2021
+* Release status: General Availability
+* New Notebook Features:
+    * Added Add Notebook and Remove Notebook commands
+* Extension Updates:
+    * SQL Database Projects
+    * Schema Compare
+* Bug Fixes
+
 ## Version 1.27.0
 * Release date: March 17, 2021
 * Release status: General Availability
@@ -13,7 +23,7 @@
     * Arc
     * SQL Database Projects
     * ASDE Deployment
-* Bux Fixes
+* Bug Fixes
 
 ## Version 1.26.1
 * Release date: February 25, 2021

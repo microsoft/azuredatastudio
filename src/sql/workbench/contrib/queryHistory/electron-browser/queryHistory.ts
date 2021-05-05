@@ -96,14 +96,11 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 					// markers view container
 					const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 						id: QUERY_HISTORY_CONTAINER_ID,
-						name: localize('queryHistory', "Query History"),
+						title: localize('queryHistory', "Query History"),
 						hideIfEmpty: true,
 						order: 20,
 						ctorDescriptor: new SyncDescriptor(ViewPaneContainer, [QUERY_HISTORY_CONTAINER_ID, { mergeViewWithContainerWhenSingleView: true, donotShowContainerTitleWhenMergedWithContainer: true }]),
 						storageId: `${QUERY_HISTORY_CONTAINER_ID}.storage`,
-						focusCommand: {
-							id: ToggleQueryHistoryAction.ID
-						}
 					}, ViewContainerLocation.Panel);
 
 					Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).registerViews([{

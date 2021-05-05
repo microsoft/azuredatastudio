@@ -220,11 +220,6 @@ const germanyAzureSettings: ProviderSettings = {
 				endpoint: 'https://vault.microsoftazure.de',
 				azureResourceId: AzureResource.AzureKeyVault
 			},
-			azureLogAnalyticsResource: {
-				id: SettingIds.ala,
-				endpoint: 'https://api.loganalytics.io',
-				azureResourceId: AzureResource.AzureLogAnalytics,
-			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/'
 		}
 	}
