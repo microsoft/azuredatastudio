@@ -881,7 +881,8 @@
 					"typemoq",
                     "sinon",
                     "crypto",
-                    "xterm*"
+					"xterm*",
+					"azdata"
                 ]
             }
         ]
