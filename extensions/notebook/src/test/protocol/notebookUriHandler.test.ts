@@ -116,16 +116,16 @@ describe('Notebook URI Handler', function (): void {
 
 	it('should open notebook when file is uri is valid', async function (): Promise<void> {
 		let showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(Promise.resolve(loc.msgYes) as any);
-		const notebookPath = path.join(os.tmpdir(),'/hello.ipynb');
+		const notebookPath = path.join(os.tmpdir(),'hello.ipynb');
 		let fileURI = 'azuredatastudio://microsoft.notebook/open?url=file:///'+ notebookPath;
 		let fileNotebookUri = vscode.Uri.parse(fileURI);
 
-		await fs.writeFile(notebookPath, '');
+		await fs.writeFile(notebookPath, notebookContent);
 
 		await notebookUriHandler.handleUri(fileNotebookUri);
 
 		sinon.assert.calledOnce(showQuickPickStub);
-		sinon.assert.calledOnce(showNotebookDocumentStub);
+		sinon.assert.calledWith(showNotebookDocumentStub, sinon.match.any, sinon.match({ initialContent: notebookContent }));
 		sinon.assert.callCount(showErrorMessageSpy, 0);
 	});
 });
