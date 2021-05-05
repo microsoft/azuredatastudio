@@ -95,7 +95,7 @@ steps:
     yarn gulp vscode-reh-web-linux-x64-min
   displayName: Compile
 
- script: |
+- script: |
     set -e
     yarn gulp refresh-langpack-extension de --location '.resources\xlf'
     yarn gulp refresh-langpack-extension es --location '.resources\xlf'
