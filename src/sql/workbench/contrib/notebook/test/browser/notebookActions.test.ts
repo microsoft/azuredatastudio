@@ -383,12 +383,16 @@ suite('Notebook Actions', function (): void {
 		let action = new RunParametersAction('TestId', true, testUri, quickInputService, mockNotebookService.object, mockNotification.object);
 
 		mockNotebookEditor.setup(x => x.model).returns(() => mockNotebookModel);
-
+		let sinonTest = sinon.stub(TestNotificationService).returns(notification => {
+			actualMsg = notification.message;
+			return undefined;
+		});
 		// Run Parameters Action
 		await action.run(testUri);
 
 		assert.ok(actualMsg !== undefined, 'Should have received a notification');
-		assert.call(mockNotification.object.notify(notification), 'Should notify user there is no parameter cell');
+		sinon.assert.calledOnce(sinonTest);
+		assert.call(mockNotification.object.notify(notification), 'Should notify user the parameter cell is empty');
 		assert.strictEqual(actualMsg, expectedMsg);
 	});
 
