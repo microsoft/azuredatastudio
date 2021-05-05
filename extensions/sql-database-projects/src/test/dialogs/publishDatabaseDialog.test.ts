@@ -73,6 +73,7 @@ describe('Publish Database Dialog', () => {
 
 		const expectedPublish: IPublishSettings = {
 			databaseName: 'MockDatabaseName',
+			serverName: 'MockServer',
 			connectionUri: 'Mock|Connection|Uri',
 			upgradeExisting: true,
 			sqlCmdVariables: {
@@ -90,6 +91,7 @@ describe('Publish Database Dialog', () => {
 
 		const expectedGenScript: IGenerateScriptSettings = {
 			databaseName: 'MockDatabaseName',
+			serverName: 'MockServer',
 			connectionUri: 'Mock|Connection|Uri',
 			sqlCmdVariables: {
 				'ProdDatabaseName': 'MyProdDatabase',

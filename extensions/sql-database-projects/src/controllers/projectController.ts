@@ -32,7 +32,7 @@ import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTree
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IconPathHelper } from '../common/iconHelper';
-import { DashboardData, Status } from '../models/dashboardData/dashboardData';
+import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
 
 const maxTableLength = 10;
 
@@ -43,7 +43,7 @@ export class ProjectsController {
 	private netCoreTool: NetCoreTool;
 	private buildHelper: BuildHelper;
 	private buildInfo: DashboardData[] = [];
-	private deployInfo: DashboardData[] = [];
+	private publishInfo: PublishData[] = [];
 
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
@@ -52,17 +52,17 @@ export class ProjectsController {
 		this.buildHelper = new BuildHelper();
 	}
 
-	public getDashboardDeployData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
+	public getDashboardPublishData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
 		const infoRows: (string | dataworkspace.IconCellValue)[][] = [];
 
-		for (let i = 0; i < this.deployInfo.length; i++) {
-			if (this.deployInfo[i].projectFile === projectFile) {
+		for (let i = this.publishInfo.length - 1; i >= 0; i--) {
+			if (this.publishInfo[i].projectFile === projectFile) {
 				let icon: azdata.IconPath;
 				let text: string;
-				if (this.deployInfo[i].status === Status.success) {
+				if (this.publishInfo[i].status === Status.success) {
 					icon = IconPathHelper.success;
 					text = constants.Success;
-				} else if (this.deployInfo[i].status === Status.failed) {
+				} else if (this.publishInfo[i].status === Status.failed) {
 					icon = IconPathHelper.error;
 					text = constants.Failed;
 				} else {
@@ -70,12 +70,13 @@ export class ProjectsController {
 					text = constants.InProgress;
 				}
 
-				let infoRow: (string | dataworkspace.IconCellValue)[] = [infoRows.length.toString(),
-				{ text: text, icon: icon },
-				this.deployInfo[i].target,
-				this.deployInfo[i].timeToCompleteAction,
-				this.deployInfo[i].startDate];
-				infoRows.unshift(infoRow);
+				let infoRow: (string | dataworkspace.IconCellValue)[] = [{ text: text, icon: icon },
+				this.publishInfo[i].startDate,
+				this.publishInfo[i].timeToCompleteAction,
+				this.publishInfo[i].target,
+				this.publishInfo[i].targetServer,
+				this.publishInfo[i].targetDatabase];
+				infoRows.push(infoRow);
 			}
 		}
 
@@ -85,7 +86,7 @@ export class ProjectsController {
 	public getDashboardBuildData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
 		const infoRows: (string | dataworkspace.IconCellValue)[][] = [];
 
-		for (let i = 0; i < this.buildInfo.length; i++) {
+		for (let i = this.buildInfo.length - 1; i >= 0; i--) {
 			if (this.buildInfo[i].projectFile === projectFile) {
 				let icon: azdata.IconPath;
 				let text: string;
@@ -100,12 +101,11 @@ export class ProjectsController {
 					text = constants.InProgress;
 				}
 
-				let infoRow: (string | dataworkspace.IconCellValue)[] = [infoRows.length.toString(),
-				{ text: text, icon: icon },
-				this.buildInfo[i].target,
+				let infoRow: (string | dataworkspace.IconCellValue)[] = [{ text: text, icon: icon },
+				this.buildInfo[i].startDate,
 				this.buildInfo[i].timeToCompleteAction,
-				this.buildInfo[i].startDate];
-				infoRows.unshift(infoRow);
+				this.buildInfo[i].target];
+				infoRows.push(infoRow);
 			}
 		}
 
@@ -274,13 +274,13 @@ export class ProjectsController {
 		telemetryProps.profileUsed = (settings.profileUsed ?? false).toString();
 		const currentDate = new Date();
 		const actionStartTime = currentDate.getTime();
-		const currentDeployTimeInfo = `${currentDate.toLocaleDateString()} ${constants.at} ${currentDate.toLocaleTimeString()}`;
+		const currentPublishTimeInfo = `${currentDate.toLocaleDateString()} ${constants.at} ${currentDate.toLocaleTimeString()}`;
 
-		let deployInfoNew = new DashboardData(project.projectFilePath, Status.inProgress, project.getProjectTargetVersion(), currentDeployTimeInfo);
-		this.deployInfo.push(deployInfoNew);
+		let publishInfoNew = new PublishData(project.projectFilePath, Status.inProgress, project.getProjectTargetVersion(), currentPublishTimeInfo, settings.databaseName, settings.serverName);
+		this.publishInfo.push(publishInfoNew);
 
-		if (this.deployInfo.length - 1 === maxTableLength) {
-			this.deployInfo.shift();	// Remove the first element to maintain the length
+		if (this.publishInfo.length - 1 === maxTableLength) {
+			this.publishInfo.shift();	// Remove the first element to maintain the length
 		}
 
 		try {
@@ -294,29 +294,29 @@ export class ProjectsController {
 			}
 		} catch (err) {
 			const actionEndTime = new Date().getTime();
-			const timeToFailureDeploy = actionEndTime - actionStartTime;
-			telemetryProps.actionDuration = timeToFailureDeploy.toString();
+			const timeToFailurePublish = actionEndTime - actionStartTime;
+			telemetryProps.actionDuration = timeToFailurePublish.toString();
 			telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
 
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
 				.withAdditionalProperties(telemetryProps)
 				.send();
 
-			const currentDeployIndex = this.deployInfo.findIndex(d => d.startDate === currentDeployTimeInfo);
-			this.deployInfo[currentDeployIndex].status = Status.failed;
-			this.deployInfo[currentDeployIndex].timeToCompleteAction = utils.timeConversion(timeToFailureDeploy);
+			const currentPublishIndex = this.publishInfo.findIndex(d => d.startDate === currentPublishTimeInfo);
+			this.publishInfo[currentPublishIndex].status = Status.failed;
+			this.publishInfo[currentPublishIndex].timeToCompleteAction = utils.timeConversion(timeToFailurePublish);
 
 			throw err;
 		}
 
 		const actionEndTime = new Date().getTime();
-		const timeToDeploy = actionEndTime - actionStartTime;
-		telemetryProps.actionDuration = timeToDeploy.toString();
+		const timeToPublish = actionEndTime - actionStartTime;
+		telemetryProps.actionDuration = timeToPublish.toString();
 		telemetryProps.totalDuration = (actionEndTime - buildStartTime).toString();
 
-		const currentDeployIndex = this.deployInfo.findIndex(d => d.startDate === currentDeployTimeInfo);
-		this.deployInfo[currentDeployIndex].status = result.success ? Status.success : Status.failed;
-		this.deployInfo[currentDeployIndex].timeToCompleteAction = utils.timeConversion(timeToDeploy);
+		const currentPublishIndex = this.publishInfo.findIndex(d => d.startDate === currentPublishTimeInfo);
+		this.publishInfo[currentPublishIndex].status = result.success ? Status.success : Status.failed;
+		this.publishInfo[currentPublishIndex].timeToCompleteAction = utils.timeConversion(timeToPublish);
 
 		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)
 			.withAdditionalProperties(telemetryProps)

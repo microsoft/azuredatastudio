@@ -42,6 +42,7 @@ export class PublishDatabaseDialog {
 	private sqlCmdVars: Record<string, string> | undefined;
 	private deploymentOptions: DeploymentOptions | undefined;
 	private profileUsed: boolean = false;
+	private serverName: string | undefined;
 
 	private toDispose: vscode.Disposable[] = [];
 
@@ -183,6 +184,7 @@ export class PublishDatabaseDialog {
 	public async publishClick(): Promise<void> {
 		const settings: IPublishSettings = {
 			databaseName: this.getTargetDatabaseName(),
+			serverName: this.serverName!,
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
@@ -202,6 +204,7 @@ export class PublishDatabaseDialog {
 		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
 		const settings: IGenerateScriptSettings = {
 			databaseName: this.getTargetDatabaseName(),
+			serverName: this.serverName!,
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars,
 			deploymentOptions: await this.getDeploymentOptions(),
@@ -488,6 +491,7 @@ export class PublishDatabaseDialog {
 		selectConnectionButton.onDidClick(async () => {
 			let connection = await azdata.connection.openConnectionDialog();
 			this.connectionId = connection.connectionId;
+			this.serverName = connection.options['server'];
 
 			let connectionTextboxValue: string = getConnectionName(connection);
 
@@ -550,6 +554,7 @@ export class PublishDatabaseDialog {
 				(<azdata.DropDownComponent>this.targetDatabaseDropDown).values = [];
 
 				this.connectionId = result.connectionId;
+				this.serverName = result.serverName;
 				await this.updateConnectionComponents(result.connection, <string>this.connectionId);
 
 				if (result.databaseName) {

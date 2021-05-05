@@ -37,12 +37,14 @@ export const buildAction = localize('buildAction', "Build");
 export const publishAction = localize('publishAction', "Publish");
 export const changeTargetPlatformAction = localize('changeTargetPlatformAction', "Change Target Platform");
 
-export const ID = localize('ID', "ID");
 export const Status = localize('Status', "Status");
 export const Time = localize('Time', "Time");
 export const Date = localize('Date', "Date");
-export const Builds = localize('Builds', "Builds");
-export const Deployments = localize('Deployments', "Deployments");
+export const TargetPlatform = localize('TargetPlatform', "Target Platform");
+export const TargetServer = localize('TargetServer', "Target Server");
+export const TargetDatabase = localize('TargetDatabase', "Target Database");
+export const BuildHistory = localize('BuildHistory', "Build History");
+export const PublishHistory = localize('PublishHistory', "Publish History");
 
 export const Success = localize('Success', "Success");
 export const Failed = localize('Failed', "Failed");
