@@ -307,22 +307,31 @@ export class Project implements ISqlProject {
 	/**
 	 * Adds a folder to the project, and saves the project file
 	 * @param relativeFolderPath Relative path of the folder
+	 * @param ignoreDuplicate
+	 *	Flag that indicates whether duplicate entries should be ignored. If flag is set to `true` and item already
+	 *	exists in the project file, then existing entry will be returned.
 	 */
-	public async addFolderItem(relativeFolderPath: string): Promise<FileProjectEntry> {
+	public async addFolderItem(relativeFolderPath: string, ignoreDuplicate?: boolean): Promise<FileProjectEntry> {
 		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
+		const normalizedRelativeFolderPath = utils.convertSlashesForSqlProj(relativeFolderPath);
 
 		// check if folder already has been added to sqlproj
-		if (this.files.find(f => f.relativePath.toLowerCase() === relativeFolderPath.toLowerCase())) {
-			throw new Error(constants.folderAlreadyAddedToProject((relativeFolderPath)));
+		const existingEntry = this._files.find(f => f.relativePath.toUpperCase() === normalizedRelativeFolderPath.toUpperCase());
+		if (existingEntry) {
+			if (!ignoreDuplicate) {
+				throw new Error(constants.folderAlreadyAddedToProject((relativeFolderPath)));
+			}
+
+			return existingEntry;
 		}
 
-		//If folder doesn't exist, create it
+		// If folder doesn't exist, create it
 		let exists = await utils.exists(absoluteFolderPath);
 		if (!exists) {
 			await fs.mkdir(absoluteFolderPath, { recursive: true });
 		}
 
-		const folderEntry = this.createFileProjectEntry(relativeFolderPath, EntryType.Folder);
+		const folderEntry = this.createFileProjectEntry(normalizedRelativeFolderPath, EntryType.Folder);
 		this._files.push(folderEntry);
 
 		await this.addToProjFile(folderEntry);
@@ -333,8 +342,12 @@ export class Project implements ISqlProject {
 	 * Writes a file to disk if contents are provided, adds that file to the project, and writes it to disk
 	 * @param relativeFilePath Relative path of the file
 	 * @param contents Contents to be written to the new file
+	 * @param itemType Type of the project entry to add. This maps to the build action for the item.
+	 * @param ignoreDuplicate
+	 *	Flag that indicates whether duplicate entries should be ignored. If flag is set to `true` and item already
+	 *	exists in the project file, then existing entry will be returned.
 	 */
-	public async addScriptItem(relativeFilePath: string, contents?: string, itemType?: string): Promise<FileProjectEntry> {
+	public async addScriptItem(relativeFilePath: string, contents?: string, itemType?: string, ignoreDuplicate?: boolean): Promise<FileProjectEntry> {
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
 
 		// check if file already exists if content was passed to write to a new file
@@ -342,9 +355,16 @@ export class Project implements ISqlProject {
 			throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
 		}
 
+		const normalizedRelativeFilePath = utils.convertSlashesForSqlProj(relativeFilePath);
+
 		// check if file already has been added to sqlproj
-		if (this.files.find(f => f.relativePath.toLowerCase() === relativeFilePath.toLowerCase())) {
-			throw new Error(constants.fileAlreadyAddedToProject((relativeFilePath)));
+		const existingEntry = this._files.find(f => f.relativePath.toUpperCase() === normalizedRelativeFilePath.toUpperCase());
+		if (existingEntry) {
+			if (!ignoreDuplicate) {
+				throw new Error(constants.fileAlreadyAddedToProject((relativeFilePath)));
+			}
+
+			return existingEntry;
 		}
 
 		// create the file if contents were passed in
@@ -360,7 +380,7 @@ export class Project implements ISqlProject {
 		}
 
 		// update sqlproj XML
-		const fileEntry = this.createFileProjectEntry(relativeFilePath, EntryType.File);
+		const fileEntry = this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
 
 		let xmlTag;
 		switch (itemType) {
@@ -553,7 +573,11 @@ export class Project implements ISqlProject {
 
 	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string): FileProjectEntry {
 		let platformSafeRelativePath = utils.getPlatformSafeFileEntryPath(relativePath);
-		return new FileProjectEntry(Uri.file(path.join(this.projectFolderPath, platformSafeRelativePath)), relativePath, entryType, sqlObjectType);
+		return new FileProjectEntry(
+			Uri.file(path.join(this.projectFolderPath, platformSafeRelativePath)),
+			utils.convertSlashesForSqlProj(relativePath),
+			entryType,
+			sqlObjectType);
 	}
 
 	private findOrCreateItemGroup(containedTag?: string, prePostScriptExist?: { scriptExist: boolean; }): any {
@@ -981,8 +1005,9 @@ export class Project implements ISqlProject {
 	/**
 	 * Adds the list of sql files and directories to the project, and saves the project file
 	 * @param list list of files and folder Uris. Files and folders must already exist. No files or folders will be added if any do not exist.
+	 * @param ignoreDuplicates Flag that indicates whether duplicate entries should be ignored.
 	 */
-	public async addToProject(list: Uri[]): Promise<void> {
+	public async addToProject(list: Uri[], ignoreDuplicates?: boolean): Promise<void> {
 		// verify all files/folders exist. If not all exist, none will be added
 		for (let file of list) {
 			const exists = await utils.exists(file.fsPath);
@@ -999,9 +1024,9 @@ export class Project implements ISqlProject {
 				const fileStat = await fs.stat(file.fsPath);
 
 				if (fileStat.isFile() && file.fsPath.toLowerCase().endsWith(constants.sqlFileExtension)) {
-					await this.addScriptItem(relativePath);
+					await this.addScriptItem(relativePath, undefined, undefined, ignoreDuplicates);
 				} else if (fileStat.isDirectory()) {
-					await this.addFolderItem(relativePath);
+					await this.addFolderItem(relativePath, ignoreDuplicates);
 				}
 			}
 		}
