@@ -1,0 +1,137 @@
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: "12.13.0"
+
+- task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
+  inputs:
+    versionSpec: "1.x"
+
+- task: AzureKeyVault@1
+  displayName: 'Azure Key Vault: Get Secrets'
+  inputs:
+    azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
+    KeyVaultName: ado-secrets
+
+- script: |
+    set -e
+    cat << EOF > ~/.netrc
+    machine github.com
+    login azuredatastudio
+    password $(github-distro-mixin-password)
+    EOF
+
+    git config user.email "sqltools@service.microsoft.com"
+    git config user.name "AzureDataStudio"
+  displayName: Prepare tooling
+
+- script: |
+    set -e
+    git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
+    git fetch distro
+    git merge $(node -p "require('./package.json').distro")
+  displayName: Merge distro
+
+- script: |
+    mkdir -p .build
+    node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js > .build/yarnlockhash
+  displayName: Prepare yarn cache key
+
+- task: Cache@2
+  inputs:
+    key: 'nodeModules | $(Agent.OS) | .build/yarnlockhash'
+    path: .build/node_modules_cache
+    cacheHitVar: NODE_MODULES_RESTORED
+  displayName: Restore Cache - Node Modules
+
+- script: |
+    set -e
+    tar -xzf .build/node_modules_cache/cache.tgz
+  condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
+  displayName: Extract node_modules archive
+
+- script: |
+    set -e
+    CHILD_CONCURRENCY=1 yarn --frozen-lockfile
+  displayName: Install dependencies
+  condition: and(succeeded(), ne(variables['NODE_MODULES_RESTORED'], 'true'))
+
+- script: |
+    set -e
+    node build/azure-pipelines/common/listNodeModules.js .build/node_modules_list.txt
+    mkdir -p .build/node_modules_cache
+    tar -czf .build/node_modules_cache/cache.tgz --files-from .build/node_modules_list.txt
+  condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+  displayName: Create node_modules archive
+
+- script: |
+    set -e
+    yarn postinstall
+  displayName: Run postinstall scripts
+  condition: and(succeeded(), eq(variables['NODE_MODULES_RESTORED'], 'true'))
+
+# Mixin must run before optimize, because the CSS loader will
+# inline small SVGs
+- script: |
+    set -e
+    node build/azure-pipelines/mixin
+  displayName: Mix in quality
+
+- script: |
+    set -e
+    yarn sqllint
+    yarn gulp hygiene
+    yarn strict-vscode
+    yarn valid-layers-check
+  displayName: Run hygiene, eslint
+  condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
+
+- script: |
+    set -e
+    yarn gulp compile-build
+    yarn gulp compile-extensions-build
+    yarn gulp minify-vscode
+    yarn gulp vscode-reh-linux-x64-min
+    yarn gulp vscode-reh-web-linux-x64-min
+  displayName: Compile
+
+ script: |
+    set -e
+    yarn gulp refresh-langpack-extension de --location '.resources\xlf'
+    yarn gulp refresh-langpack-extension es --location '.resources\xlf'
+    yarn gulp refresh-langpack-extension fr --location '.resources\xlf'
+    yarn gulp refresh-langpack-extension it --location '.resources\xlf'
+    yarn gulp refresh-langpack-extension ja --location '.resources\xlf'
+  displayName: Refresh Langpacks.
+
+
+- script: |
+    set -e
+    AZURE_STORAGE_ACCOUNT="$(sourcemap-storage-account)" \
+    AZURE_STORAGE_ACCESS_KEY="$(sourcemap-storage-key)" \
+      node build/azure-pipelines/upload-sourcemaps
+  displayName: Upload sourcemaps
+
+- script: |
+    set -e
+
+    VERSION=$(node -p "require(\"./package.json\").version")
+
+    echo -e "{  \"version\": \"$VERSION\", \"quality\": \"$VSCODE_QUALITY\", \"commit\": \"$BUILD_SOURCEVERSION\" }" > ".build/version.json"
+
+    node build/azure-pipelines/common/copyArtifacts.js
+  displayName: Write Version Information
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+
+- script: |
+    set -e
+    tar -czf $(Build.ArtifactStagingDirectory)/compilation.tar.gz .build out-*
+  displayName: Compress compilation artifact
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: $(Build.ArtifactStagingDirectory)/compilation.tar.gz
+    artifactName: Compilation
+  displayName: Publish compilation artifact
