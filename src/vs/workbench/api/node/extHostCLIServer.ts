@@ -34,6 +34,14 @@ export interface StatusPipeArgs {
 }
 
 
+export interface ExtensionManagementPipeArgs {
+	type: 'extensionManagement';
+	list?: { showVersions?: boolean, category?: string; };
+	install?: string[];
+	uninstall?: string[];
+	force?: boolean;
+}
+
 export type PipeCommand = OpenCommandPipeArgs | StatusPipeArgs | OpenExternalCommandPipeArgs;
 
 export interface ICommandsExecuter {
@@ -86,6 +94,10 @@ export class CLIServerBase {
 				case 'status':
 					this.getStatus(data, res);
 					break;
+				case 'extensionManagement':
+					this.manageExtensions(data, res)
+						.catch(this.logService.error);
+					break;
 				default:
 					res.writeHead(404);
 					res.write(`Unknown message type: ${data.type}`, err => {
@@ -134,11 +146,31 @@ export class CLIServerBase {
 		res.end();
 	}
 
-	private openExternal(data: OpenExternalCommandPipeArgs, res: http.ServerResponse) {
+	private async openExternal(data: OpenExternalCommandPipeArgs, res: http.ServerResponse) {
 		for (const uri of data.uris) {
-			this._commands.executeCommand('_workbench.openExternal', URI.parse(uri), { allowTunneling: true });
+			await this._commands.executeCommand('_remoteCLI.openExternal', URI.parse(uri), { allowTunneling: true });
 		}
 		res.writeHead(200);
+		res.end();
+	}
+
+	private async manageExtensions(data: ExtensionManagementPipeArgs, res: http.ServerResponse) {
+		console.log('server: manageExtensions');
+		try {
+			const toExtOrVSIX = (inputs: string[] | undefined) => inputs?.map(input => /\.vsix$/i.test(input) ? URI.parse(input) : input);
+			const commandArgs = {
+				list: data.list,
+				install: toExtOrVSIX(data.install),
+				uninstall: toExtOrVSIX(data.uninstall),
+				force: data.force
+			};
+			const output = await this._commands.executeCommand('_remoteCLI.manageExtensions', commandArgs, { allowTunneling: true });
+			res.writeHead(200);
+			res.write(output);
+		} catch (e) {
+			res.writeHead(500);
+			res.write(String(e));
+		}
 		res.end();
 	}
 

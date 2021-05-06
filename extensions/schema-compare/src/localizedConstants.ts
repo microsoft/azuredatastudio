@@ -17,7 +17,6 @@ export const DatabaseRadioButtonLabel: string = localize('schemaCompare.database
 export const RadioButtonsLabel: string = localize('schemaCompare.radioButtonsLabel', "Type");
 export const ServerDropdownLabel: string = localize('schemaCompareDialog.serverDropdownTitle', "Server");
 export const DatabaseDropdownLabel: string = localize('schemaCompareDialog.databaseDropdownTitle', "Database");
-export const NoActiveConnectionsLabel: string = localize('schemaCompare.noActiveConnectionsText', "No active connections");
 export const SchemaCompareLabel: string = localize('schemaCompare.dialogTitle', "Schema Compare");
 export const differentSourceMessage: string = localize('schemaCompareDialog.differentSourceMessage', "A different source schema has been selected. Compare to see the comparison?");
 export const differentTargetMessage: string = localize('schemaCompareDialog.differentTargetMessage', "A different target schema has been selected. Compare to see the comparison?");
@@ -82,6 +81,7 @@ export const saveScmp: string = localize('schemaCompare.saveScmpButton', "Save .
 export const saveScmpDescription: string = localize('schemaCompare.saveScmpButtonTitle', "Save source and target, options, and excluded elements");
 export const save: string = localize('schemaCompare.saveFile', "Save");
 export function getConnectionString(caller: string): string { return localize('schemaCompare.GetConnectionString', "Do you want to connect to {0}?", caller); }
+export const selectConnection: string = localize('schemaCompare.selectConnection', "Select connection");
 
 // options
 export const IgnoreTableOptions: string = localize('SchemaCompare.IgnoreTableOptions', "Ignore Table Options");
