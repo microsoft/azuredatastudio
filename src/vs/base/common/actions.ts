@@ -14,8 +14,8 @@ export interface ITelemetryData {
 }
 
 export type WorkbenchActionExecutedClassification = {
-	id: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	from: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+	id: { classification: 'SystemMetaData', purpose: 'FeatureInsight'; };
+	from: { classification: 'SystemMetaData', purpose: 'FeatureInsight'; };
 };
 
 export type WorkbenchActionExecutedEvent = {
@@ -65,7 +65,7 @@ export interface IActionChangeEvent {
 export class Action extends Disposable implements IAction {
 
 	protected _onDidChange = this._register(new Emitter<IActionChangeEvent>());
-	readonly onDidChange: Event<IActionChangeEvent> = this._onDidChange.event;
+	readonly onDidChange = this._onDidChange.event;
 
 	protected readonly _id: string;
 	protected _label: string;
@@ -198,10 +198,10 @@ export interface IRunEvent {
 export class ActionRunner extends Disposable implements IActionRunner {
 
 	private _onBeforeRun = this._register(new Emitter<IRunEvent>());
-	readonly onBeforeRun: Event<IRunEvent> = this._onBeforeRun.event;
+	readonly onBeforeRun = this._onBeforeRun.event;
 
 	private _onDidRun = this._register(new Emitter<IRunEvent>());
-	readonly onDidRun: Event<IRunEvent> = this._onDidRun.event;
+	readonly onDidRun = this._onDidRun.event;
 
 	async run(action: IAction, context?: any): Promise<any> {
 		if (!action.enabled) {
@@ -265,14 +265,43 @@ export class ActionWithMenuAction extends Action {
 	}
 }
 
-export class SubmenuAction extends Action {
+export class SubmenuAction implements IAction {
 
-	get actions(): IAction[] {
+	readonly id: string;
+	readonly label: string;
+	readonly class: string | undefined;
+	readonly tooltip: string = '';
+	readonly enabled: boolean = true;
+	readonly checked: boolean = false;
+
+	private readonly _actions: readonly IAction[];
+
+	constructor(id: string, label: string, actions: readonly IAction[], cssClass?: string) {
+		this.id = id;
+		this.label = label;
+		this.class = cssClass;
+		this._actions = actions;
+	}
+
+	dispose(): void {
+		// there is NOTHING to dispose and the SubmenuAction should
+		// never have anything to dispose as it is a convenience type
+		// to bridge into the rendering world.
+	}
+
+	get actions(): readonly IAction[] {
 		return this._actions;
 	}
 
-	constructor(id: string, label: string, private _actions: IAction[], cssClass?: string) {
-		super(id, label, cssClass, !!_actions?.length);
+	async run(): Promise<any> { }
+
+	// {{SQL CARBON EDIT}}
+	get expanded(): boolean {
+		return false;
+	}
+	set expanded(value: boolean) {
+	}
+	protected _setExpanded(value: boolean): void {
 	}
 }
 
@@ -281,4 +310,19 @@ export class EmptySubmenuAction extends Action {
 	constructor() {
 		super(EmptySubmenuAction.ID, nls.localize('submenu.empty', '(empty)'), undefined, false);
 	}
+}
+
+export function toAction(props: { id: string, label: string, enabled?: boolean, checked?: boolean, run: Function; }): IAction {
+	return {
+		id: props.id,
+		label: props.label,
+		class: undefined,
+		// {{SQL CARBON EDIT}} - add expanded type
+		expanded: false,
+		enabled: props.enabled ?? true,
+		checked: props.checked ?? false,
+		run: async () => props.run(),
+		tooltip: props.label,
+		dispose: () => { }
+	};
 }

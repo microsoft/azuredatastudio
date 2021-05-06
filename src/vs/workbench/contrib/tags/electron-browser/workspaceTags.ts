@@ -94,7 +94,7 @@ export class WorkspaceTags implements IWorkbenchContribution {
 				]
 			}
 		*/
-		this.telemetryService.publicLog('workspce.tags', tags);
+		// this.telemetryService.publicLog('workspce.tags', tags); {{SQL CARBON EDIT}} We don't need this event
 	}
 
 	private reportRemoteDomains(workspaceUris: URI[]): void {

@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as dataworkspace from 'dataworkspace';
 import * as path from 'path';
+import * as git from '../../../git/src/api/git';
 import * as constants from '../common/constants';
 import * as glob from 'fast-glob';
 import { IWorkspaceService } from '../common/interfaces';
@@ -193,7 +194,7 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 
 		for (const folder of workspaceFolders) {
-			const results = await this.getAllProjectsInWorkspaceFolder(folder);
+			const results = await this.getAllProjectsInFolder(folder.uri);
 
 			let containsNotAddedProject = false;
 			for (const projFile of results) {
@@ -218,12 +219,12 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 	}
 
-	async getAllProjectsInWorkspaceFolder(folder: vscode.WorkspaceFolder): Promise<string[]> {
+	async getAllProjectsInFolder(folder: vscode.Uri): Promise<string[]> {
 		// get the unique supported project extensions
 		const supportedProjectExtensions = [...new Set((await this.getAllProjectTypes()).map(p => { return p.projectFileExtension; }))];
 
 		// path needs to use forward slashes for glob to work
-		const escapedPath = glob.escapePath(folder.uri.fsPath.replace(/\\/g, '/'));
+		const escapedPath = glob.escapePath(folder.fsPath.replace(/\\/g, '/'));
 
 		// can filter for multiple file extensions using folder/**/*.{sqlproj,csproj} format, but this notation doesn't work if there's only one extension
 		// so the filter needs to be in the format folder/**/*.sqlproj if there's only one supported projectextension
@@ -268,6 +269,31 @@ export class WorkspaceService implements IWorkspaceService {
 			return projectFile;
 		} else {
 			throw new Error(constants.ProviderNotFoundForProjectTypeError(projectTypeId));
+		}
+	}
+
+	async gitCloneProject(url: string, localClonePath: string, workspaceFile: vscode.Uri): Promise<void> {
+		const gitApi: git.API = (<git.GitExtension>vscode.extensions.getExtension('vscode.git')!.exports).getAPI(1);
+		const opts = {
+			location: vscode.ProgressLocation.Notification,
+			title: constants.gitCloneMessage(url),
+			cancellable: true
+		};
+
+		try {
+			// show git output channel
+			vscode.commands.executeCommand('git.showOutput');
+			const repositoryPath = await vscode.window.withProgress(
+				opts,
+				(progress, token) => gitApi.clone(url!, { parentPath: localClonePath!, progress, recursive: true }, token)
+			);
+
+			// get all the project files in the cloned repo and add them to workspace
+			const repoProjects = (await this.getAllProjectsInFolder(vscode.Uri.file(repositoryPath))).map(p => { return vscode.Uri.file(p); });
+			this.addProjectsToWorkspace(repoProjects, workspaceFile);
+		} catch (e) {
+			vscode.window.showErrorMessage(constants.gitCloneError);
+			console.error(e);
 		}
 	}
 

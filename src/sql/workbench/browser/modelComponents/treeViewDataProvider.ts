@@ -62,7 +62,7 @@ export class TreeViewDataProvider extends vsTreeView.TreeViewDataProvider implem
 		if (elements) {
 			for (const element of elements) {
 				const resolvable = new ResolvableTreeComponentItem(element, hasResolve ? () => {
-					return this._proxy.$resolve(this.treeViewId, element.handle);
+					return this._proxy.$resolve(this.treeViewId, element.handle, undefined);
 				} : undefined);
 				this.itemsMap.set(element.handle, resolvable);
 				result.push(resolvable);

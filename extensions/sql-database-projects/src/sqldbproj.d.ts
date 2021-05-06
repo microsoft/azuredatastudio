@@ -23,10 +23,96 @@ declare module 'sqldbproj' {
 		createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
 
 		/**
-		* Adds the list of files and directories to the project, and saves the project file
-		* @param projectFile The Uri of the project file
-		* @param list list of uris of files and folders to add. Files and folders must already exist. No files or folders will be added if any do not exist.
-		*/
-		addToProject(projectFile: vscode.Uri, list: vscode.Uri[]): Promise<void>;
+		 * Opens and loads a .sqlproj file
+		 */
+		openProject(projectFilePath: string): Promise<ISqlProject>;
+	}
+
+	export interface ISqlProject {
+		/**
+		 * Reads the project setting and contents from the file
+		 */
+		readProjFile(): Promise<void>;
+
+		/**
+		 * Adds the list of sql files and directories to the project, and saves the project file
+		 * @param list list of files and folder Uris. Files and folders must already exist. No files or folders will be added if any do not exist.
+		 */
+		addToProject(list: vscode.Uri[]): Promise<void>;
+
+		/**
+		 * Adds a folder to the project, and saves the project file
+		 * @param relativeFolderPath Relative path of the folder
+		 */
+		addFolderItem(relativeFolderPath: string): Promise<IFileProjectEntry>;
+
+		/**
+		 * Writes a file to disk if contents are provided, adds that file to the project, and writes it to disk
+		 * @param relativeFilePath Relative path of the file
+		 * @param contents Contents to be written to the new file
+		 */
+		addScriptItem(relativeFilePath: string, contents?: string, itemType?: string): Promise<IFileProjectEntry>;
+
+		/**
+		 * Adds a SQLCMD variable to the project
+		 * @param name name of the variable
+		 * @param defaultValue
+		 */
+		addSqlCmdVariable(name: string, defaultValue: string): Promise<void>;
+
+		/**
+		 * Excludes entry from project by removing it from the project file
+		 * @param entry
+		 */
+		exclude(entry: IFileProjectEntry): Promise<void>;
+
+		/**
+		 * Deletes file or folder and removes it from the project file
+		 * @param entry
+		 */
+		deleteFileFolder(entry: IFileProjectEntry): Promise<void>;
+
+		/**
+		 * returns the sql version the project is targeting
+		 */
+		getProjectTargetVersion(): string;
+
+		/**
+		 * Path where dacpac is output to after a successful build
+		 */
+		readonly dacpacOutputPath: string;
+
+		/**
+		 * Path to folder containing the project file
+		 */
+		readonly projectFolderPath: string;
+
+		/**
+		 * Project file path
+		 */
+		readonly projectFilePath: string;
+
+		/**
+		 * Project file name
+		 */
+		readonly projectFileName: string;
+
+		/**
+		 * Files and folders that are included in the project
+		 */
+		readonly files: IFileProjectEntry[];
+
+		/**
+		 * SqlCmd variables and their values
+		 */
+		readonly sqlCmdVariables: Record<string, string>;
+	}
+
+	/**
+	 * Represents an entry in a project file
+	 */
+	export interface IFileProjectEntry {
+		fsUri: vscode.Uri;
+		relativePath: string;
 	}
 }

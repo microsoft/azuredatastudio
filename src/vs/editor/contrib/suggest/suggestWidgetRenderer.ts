@@ -33,7 +33,7 @@ export const suggestMoreInfoIcon = registerIcon('suggest-more-info', Codicon.che
 
 const _completionItemColor = new class ColorExtractor {
 
-	private static _regexRelaxed = /(#([\da-f]{3}){1,2}|(rgb|hsl)a\(\s*(\d{1,3}%?\s*,\s*){3}(1|0?\.\d+)\)|(rgb|hsl)\(\s*\d{1,3}%?(\s*,\s*\d{1,3}%?){2}\s*\))/;
+	private static _regexRelaxed = /(#([\da-fA-F]{3}){1,2}|(rgb|hsl)a\(\s*(\d{1,3}%?\s*,\s*){3}(1|0?\.\d+)\)|(rgb|hsl)\(\s*\d{1,3}%?(\s*,\s*\d{1,3}%?){2}\s*\))/;
 	private static _regexStrict = new RegExp(`^${ColorExtractor._regexRelaxed.source}$`, 'i');
 
 	extract(item: CompletionItem, out: string[]): boolean {
@@ -117,7 +117,7 @@ export class ItemRenderer implements IListRenderer<CompletionItem, ISuggestionTe
 		data.left = append(main, $('span.left'));
 		data.right = append(main, $('span.right'));
 
-		data.iconLabel = new IconLabel(data.left, { supportHighlights: true, supportCodicons: true });
+		data.iconLabel = new IconLabel(data.left, { supportHighlights: true, supportIcons: true });
 		data.disposables.add(data.iconLabel);
 
 		data.parametersLabel = append(data.left, $('span.signature-label'));

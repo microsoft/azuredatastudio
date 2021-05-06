@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ResourceType } from 'arc';
+import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import { ConnectionMode, IconPath, IconPathHelper } from '../constants';
@@ -298,6 +299,13 @@ export function convertToGibibyteString(value: string): string {
 	}
 
 	return String(floatValue);
+}
+
+/**
+ * Used to confirm if object is an azdata CheckBoxComponent
+ */
+export function instanceOfCheckBox(object: any): object is azdata.CheckBoxComponent {
+	return 'checked' in object;
 }
 
 /*

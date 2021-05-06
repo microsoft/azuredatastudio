@@ -27,12 +27,6 @@ export interface IDisposableDataProvider<T> extends Slick.DataProvider<T> {
 	getColumnValues(column: Slick.Column<T>): Promise<string[]>;
 
 	/**
-	 * Gets the unique values of the filtered cells in the given column
-	 * @param column
-	 */
-	getFilteredColumnValues(column: Slick.Column<T>): Promise<string[]>;
-
-	/**
 	 * Filters the data
 	 * @param columns columns to be filtered, the
 	 */
@@ -58,4 +52,12 @@ export interface IDisposableDataProvider<T> extends Slick.DataProvider<T> {
 	 * Gets a boolean value indicating whether the data is current in memory
 	 */
 	readonly isDataInMemory: boolean;
+}
+
+/**
+ * Check whether the object is an instance of IDisposableDataProvider
+ */
+export function instanceOfIDisposableDataProvider<T>(obj: any): obj is IDisposableDataProvider<T> {
+	const provider = obj as IDisposableDataProvider<T>;
+	return obj && provider.dispose && provider.sort && provider.isDataInMemory !== undefined;
 }

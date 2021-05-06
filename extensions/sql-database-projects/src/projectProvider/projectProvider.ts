@@ -78,6 +78,13 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	}
 
 	/**
+	 * Opens and loads a .sqlproj file
+	 */
+	openProject(projectFilePath: string): Promise<sqldbproj.ISqlProject> {
+		return Project.openProject(projectFilePath);
+	}
+
+	/**
 	 * Gets the supported project types
 	 */
 	get projectActions(): (dataworkspace.IProjectAction | dataworkspace.IProjectActionGroup)[] {
@@ -116,40 +123,32 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 		return [group, changeTargetPlatformAction];
 	}
 
-	/** Adds the list of files and directories to the project, and saves the project file
-	* @param projectFile The Uri of the project file
-	* @param list list of uris of files and folders to add. Files and folders must already exist. Files and folders must already exist. No files or folders will be added if any do not exist.
-	*/
-	async addToProject(projectFile: vscode.Uri, list: vscode.Uri[]): Promise<void> {
-		const project = await Project.openProject(projectFile.fsPath);
-		await project.addToProject(list);
-	}
-
 	/**
 	 * Gets the data to be displayed in the project dashboard
 	 */
 	getDashboardComponents(projectFile: string): dataworkspace.IDashboardTable[] {
-		const deployInfo: dataworkspace.IDashboardTable = {
-			name: constants.Deployments,
-			columns: [{ displayName: constants.ID, width: 100 },
-			{ displayName: constants.Status, width: 250, type: 'icon' },
-			{ displayName: constants.Target, width: 250 },
-			{ displayName: constants.Time, width: 250 },
-			{ displayName: constants.Date, width: 250 }],
-			data: this.projectController.getDashboardDeployData(projectFile)
+		const width = 200;
+		const publishInfo: dataworkspace.IDashboardTable = {
+			name: constants.PublishHistory,
+			columns: [{ displayName: constants.Status, width: width, type: 'icon' },
+			{ displayName: constants.Date, width: width },
+			{ displayName: constants.Time, width: width },
+			{ displayName: constants.TargetPlatform, width: width },
+			{ displayName: constants.TargetServer, width: width },
+			{ displayName: constants.TargetDatabase, width: width }],
+			data: this.projectController.getDashboardPublishData(projectFile)
 		};
 
 		const buildInfo: dataworkspace.IDashboardTable = {
-			name: constants.Builds,
-			columns: [{ displayName: constants.ID, width: 100 },
-			{ displayName: constants.Status, width: 250, type: 'icon' },
-			{ displayName: constants.Target, width: 250 },
-			{ displayName: constants.Time, width: 250 },
-			{ displayName: constants.Date, width: 250 }],
+			name: constants.BuildHistory,
+			columns: [{ displayName: constants.Status, width: width, type: 'icon' },
+			{ displayName: constants.Date, width: width },
+			{ displayName: constants.Time, width: width },
+			{ displayName: constants.TargetPlatform, width: width }],
 			data: this.projectController.getDashboardBuildData(projectFile)
 		};
 
-		return [deployInfo, buildInfo];
+		return [publishInfo, buildInfo];
 	}
 
 	get image(): ThemedIconPath {

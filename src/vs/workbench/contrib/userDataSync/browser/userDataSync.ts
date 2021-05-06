@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Action } from 'vs/base/common/actions';
-import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
 import { Event } from 'vs/base/common/event';
 import { Disposable, DisposableStore, dispose, MutableDisposable, toDisposable, IDisposable } from 'vs/base/common/lifecycle';
@@ -21,7 +20,7 @@ import { localize } from 'vs/nls';
 import { MenuId, MenuRegistry, registerAction2, Action2 } from 'vs/platform/actions/common/actions';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ContextKeyExpr, IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyEqualsExpr, ContextKeyExpr, IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -32,7 +31,7 @@ import {
 	SyncResource, SyncStatus, UserDataSyncError, UserDataSyncErrorCode, USER_DATA_SYNC_SCHEME, IUserDataSyncResourceEnablementService,
 	getSyncResourceFromLocalPreview, IResourcePreview, IUserDataSyncStoreManagementService, UserDataSyncStoreType, IUserDataSyncStore, IUserDataAutoSyncEnablementService
 } from 'vs/platform/userDataSync/common/userDataSync';
-import { FloatingClickWidget } from 'vs/workbench/browser/parts/editor/editorWidgets';
+import { FloatingClickWidget } from 'vs/workbench/browser/codeeditor';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IEditorInput, EditorResourceAccessor, SideBySideEditor } from 'vs/workbench/common/editor';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
@@ -51,8 +50,10 @@ import { IAuthenticationService } from 'vs/workbench/services/authentication/bro
 import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { ViewContainerLocation, IViewContainersRegistry, Extensions, ViewContainer } from 'vs/workbench/common/views';
-import { UserDataSyncViewPaneContainer, UserDataSyncDataViews } from 'vs/workbench/contrib/userDataSync/browser/userDataSyncViews';
+import { UserDataSyncDataViews } from 'vs/workbench/contrib/userDataSync/browser/userDataSyncViews';
 import { IUserDataSyncWorkbenchService, getSyncAreaLabel, AccountStatus, CONTEXT_SYNC_STATE, CONTEXT_SYNC_ENABLEMENT, CONTEXT_ACCOUNT_STATE, CONFIGURE_SYNC_COMMAND_ID, SHOW_SYNC_LOG_COMMAND_ID, SYNC_VIEW_CONTAINER_ID, SYNC_TITLE, SYNC_VIEW_ICON } from 'vs/workbench/services/userDataSync/common/userDataSync';
+import { Codicon } from 'vs/base/common/codicons';
+import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 
 const CONTEXT_CONFLICTS_SOURCES = new RawContextKey<string>('conflictsSources', '');
 
@@ -152,7 +153,8 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 			textModelResolverService.registerTextModelContentProvider(USER_DATA_SYNC_SCHEME, instantiationService.createInstance(UserDataRemoteContentProvider));
 			registerEditorContribution(AcceptChangesContribution.ID, AcceptChangesContribution);
 
-			this._register(Event.any(userDataSyncService.onDidChangeStatus, userDataAutoSyncEnablementService.onDidChangeEnablement)(() => this.turningOnSync = !userDataAutoSyncEnablementService.isEnabled() && userDataSyncService.status !== SyncStatus.Idle));
+			this._register(Event.any(userDataSyncService.onDidChangeStatus, userDataAutoSyncEnablementService.onDidChangeEnablement)
+				(() => this.turningOnSync = !userDataAutoSyncEnablementService.isEnabled() && userDataSyncService.status !== SyncStatus.Idle));
 		}
 	}
 
@@ -204,17 +206,17 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 					const handle = this.notificationService.prompt(Severity.Warning, localize('conflicts detected', "Unable to sync due to conflicts in {0}. Please resolve them to continue.", conflictsArea.toLowerCase()),
 						[
 							{
-								label: localize('accept remote', "Accept Remote"),
-								run: () => {
-									this.telemetryService.publicLog2<{ source: string, action: string }, SyncConflictsClassification>('sync/handleConflicts', { source: syncResource, action: 'acceptRemote' });
-									this.acceptRemote(syncResource, conflicts);
-								}
-							},
-							{
-								label: localize('accept local', "Accept Local"),
+								label: localize('replace remote', "Replace Remote"),
 								run: () => {
 									this.telemetryService.publicLog2<{ source: string, action: string }, SyncConflictsClassification>('sync/handleConflicts', { source: syncResource, action: 'acceptLocal' });
 									this.acceptLocal(syncResource, conflicts);
+								}
+							},
+							{
+								label: localize('replace local', "Replace Local"),
+								run: () => {
+									this.telemetryService.publicLog2<{ source: string, action: string }, SyncConflictsClassification>('sync/handleConflicts', { source: syncResource, action: 'acceptRemote' });
+									this.acceptRemote(syncResource, conflicts);
 								}
 							},
 							{
@@ -258,7 +260,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 				await this.userDataSyncService.accept(syncResource, conflict.remoteResource, undefined, this.userDataAutoSyncEnablementService.isEnabled());
 			}
 		} catch (e) {
-			this.notificationService.error(e);
+			this.notificationService.error(localize('accept failed', "Error while accepting changes. Please check [logs]({0}) for more details.", `command:${SHOW_SYNC_LOG_COMMAND_ID}`));
 		}
 	}
 
@@ -268,7 +270,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 				await this.userDataSyncService.accept(syncResource, conflict.localResource, undefined, this.userDataAutoSyncEnablementService.isEnabled());
 			}
 		} catch (e) {
-			this.notificationService.error(e);
+			this.notificationService.error(localize('accept failed', "Error while accepting changes. Please check [logs]({0}) for more details.", `command:${SHOW_SYNC_LOG_COMMAND_ID}`));
 		}
 	}
 
@@ -733,6 +735,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 		this.registerConfigureSyncAction();
 		this.registerShowSettingsAction();
 		this.registerShowLogAction();
+		this.registerResetSyncDataAction();
 	}
 
 	private registerTurnOnSyncAction(): void {
@@ -1050,7 +1053,7 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 					await that.turnOff();
 				} catch (e) {
 					if (!isPromiseCanceledError(e)) {
-						that.notificationService.error(localize('turn off failed', "Error while turning off sync: {0}", toErrorMessage(e)));
+						that.notificationService.error(localize('turn off failed', "Error while turning off Settings Sync. Please check [logs]({0}) for more details.", `command:${SHOW_SYNC_LOG_COMMAND_ID}`));
 					}
 				}
 			}
@@ -1065,10 +1068,17 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 				super({
 					id: configureSyncCommand.id,
 					title: configureSyncCommand.title,
-					menu: {
+					icon: Codicon.settingsGear,
+					tooltip: localize('configure', "Configure..."),
+					menu: [{
 						id: MenuId.CommandPalette,
 						when
-					}
+					}, {
+						id: MenuId.ViewContainerTitle,
+						when: ContextKeyEqualsExpr.create('viewContainer', SYNC_VIEW_CONTAINER_ID),
+						group: 'navigation',
+						order: 2
+					}]
 				});
 			}
 			run(): any { return that.configureSyncOptions(); }
@@ -1082,10 +1092,17 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 				super({
 					id: SHOW_SYNC_LOG_COMMAND_ID,
 					title: localize('show sync log title', "{0}: Show Log", SYNC_TITLE),
-					menu: {
+					tooltip: localize('show sync log toolrip', "Show Log"),
+					icon: Codicon.output,
+					menu: [{
 						id: MenuId.CommandPalette,
 						when: ContextKeyExpr.and(CONTEXT_SYNC_STATE.notEqualsTo(SyncStatus.Uninitialized)),
-					},
+					}, {
+						id: MenuId.ViewContainerTitle,
+						when: ContextKeyEqualsExpr.create('viewContainer', SYNC_VIEW_CONTAINER_ID),
+						group: 'navigation',
+						order: 1
+					}],
 				});
 			}
 			run(): any { return that.showSyncActivity(); }
@@ -1119,14 +1136,31 @@ export class UserDataSyncWorkbenchContribution extends Disposable implements IWo
 		return Registry.as<IViewContainersRegistry>(Extensions.ViewContainersRegistry).registerViewContainer(
 			{
 				id: SYNC_VIEW_CONTAINER_ID,
-				name: SYNC_TITLE,
+				title: SYNC_TITLE,
 				ctorDescriptor: new SyncDescriptor(
-					UserDataSyncViewPaneContainer,
-					[SYNC_VIEW_CONTAINER_ID]
+					ViewPaneContainer,
+					[SYNC_VIEW_CONTAINER_ID, { mergeViewWithContainerWhenSingleView: true }]
 				),
 				icon: SYNC_VIEW_ICON,
 				hideIfEmpty: true,
 			}, ViewContainerLocation.Sidebar);
+	}
+
+	private registerResetSyncDataAction(): void {
+		const that = this;
+		this._register(registerAction2(class extends Action2 {
+			constructor() {
+				super({
+					id: 'workbench.actions.syncData.reset',
+					title: localize('workbench.actions.syncData.reset', "Clear Data in Cloud..."),
+					menu: [{
+						id: MenuId.ViewContainerTitle,
+						when: ContextKeyEqualsExpr.create('viewContainer', SYNC_VIEW_CONTAINER_ID)
+					}],
+				});
+			}
+			run(): any { return that.userDataSyncWorkbenchService.resetSyncedData(); }
+		}));
 	}
 
 	private registerDataViews(container: ViewContainer): void {
@@ -1254,7 +1288,7 @@ class AcceptChangesContribution extends Disposable implements IEditorContributio
 									this.notificationService.warn(localize('update conflicts', "Could not resolve conflicts as there is new local version available. Please try again."));
 								}
 							} else {
-								this.notificationService.error(e);
+								this.notificationService.error(localize('accept failed', "Error while accepting changes. Please check [logs]({0}) for more details.", `command:${SHOW_SYNC_LOG_COMMAND_ID}`));
 							}
 						}
 					}
