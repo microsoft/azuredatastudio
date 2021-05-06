@@ -191,14 +191,14 @@ function registerCommandsAndActions(): void {
 function registerDebugMenu(): void {
 	// View menu
 
-	/*MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
+	MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
 		group: '3_views',
 		command: {
 			id: VIEWLET_ID,
 			title: nls.localize({ key: 'miViewRun', comment: ['&& denotes a mnemonic'] }, "&&Run")
 		},
 		order: 4
-	}); {{SQL CARBON EDIT}} - Disable unusued menus */
+	});
 
 	// Debug menu
 
@@ -377,7 +377,7 @@ function registerDebugView(): void {
 		ctorDescriptor: new SyncDescriptor(DebugViewPaneContainer),
 		icon: icons.runViewIcon,
 		alwaysUseContainerInfo: true,
-		order: 13 // {{SQL CARBON EDIT}}
+		order: 13 // set to something
 	}, ViewContainerLocation.Sidebar);
 
 	// Register default debug views
