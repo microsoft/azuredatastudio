@@ -3,12 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as es from 'event-stream';
 import * as path from 'path';
 import * as fs from 'fs';
 
 import { through, ThroughStream } from 'event-stream';
+import { createStatsStream } from './stats';
 import * as File from 'vinyl';
 import i18n = require('./i18n');
+import { Stream } from 'stream';
+import * as glob from 'glob';
+import rename = require('gulp-rename');
+const root = path.dirname(path.dirname(__dirname));
 
 interface Map<V> {
 	[key: string]: V;
@@ -79,6 +85,45 @@ function updateMainI18nFile(existingTranslationFilePath: string, originalFilePat
 
 		contents: Buffer.from(content, 'utf8'),
 	})
+}
+
+export function packageLangpacksStream(): NodeJS.ReadWriteStream {
+	const extenalExtensionDescriptions = (<string[]>glob.sync('extensions/*/package.json'))
+		.map(manifestPath => {
+			const extensionPath = path.dirname(path.join(root, manifestPath));
+			const extensionName = path.basename(extensionPath);
+			return { name: extensionName, path: extensionPath };
+		})
+
+	const builtExtensions = extenalExtensionDescriptions.map(extension => {
+		return fromLocalNormal(extension.path)
+			.pipe(rename(p => p.dirname = `langpacks/${extension.name}/${p.dirname}`));
+	});
+
+	return es.merge(builtExtensions);
+}
+
+function fromLocalNormal(extensionPath: string): Stream {
+	const result = es.through();
+
+	const vsce = require('vsce') as typeof import('vsce');
+
+	vsce.listFiles({ cwd: extensionPath, packageManager: vsce.PackageManager.Yarn })
+		.then(fileNames => {
+			const files = fileNames
+				.map(fileName => path.join(extensionPath, fileName))
+				.map(filePath => new File({
+					path: filePath,
+					stat: fs.statSync(filePath),
+					base: extensionPath,
+					contents: fs.createReadStream(filePath) as any
+				}));
+
+			es.readArray(files).pipe(result);
+		})
+		.catch(err => result.emit('error', err));
+
+	return result.pipe(createStatsStream(path.basename(extensionPath)));
 }
 
 export function modifyI18nPackFiles(existingTranslationFolder: string, adsExtensions: Map<string>, resultingTranslationPaths: i18n.TranslationPath[], pseudo = false): NodeJS.ReadWriteStream {

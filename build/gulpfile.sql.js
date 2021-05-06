@@ -115,6 +115,31 @@ gulp.task('package-external-extensions', task.series(
 	})
 ));
 
+gulp.task('package-langpacks', task.series(
+	task.define('bundle-external-langpack-build', () => ext.packageExternalExtensionsStream().pipe(gulp.dest('.build/external'))),
+	task.define('create-external-langpack-vsix-build', () => {
+		const vsixes = glob.sync('.build/external/langpacks/*/package.json').map(manifestPath => {
+			const extensionPath = path.dirname(path.join(root, manifestPath));
+			const extensionName = path.basename(extensionPath);
+			return { name: extensionName, path: extensionPath };
+		}).map(element => {
+			const pkgJson = require(path.join(element.path, 'package.json'));
+			const vsixDirectory = path.join(root, '.build', 'extensions');
+			mkdirp.sync(vsixDirectory);
+			const packagePath = path.join(vsixDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
+			console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
+			return vsce.createVSIX({
+				cwd: element.path,
+				packagePath: packagePath,
+				useYarn: true
+			});
+		});
+
+		return Promise.all(vsixes);
+	})
+));
+
+
 gulp.task('package-rebuild-extensions', task.series(
 	task.define('clean-rebuild-extensions', () => ext.cleanRebuildExtensions('.build/extensions')),
 	task.define('rebuild-extensions-build', () => ext.packageRebuildExtensionsStream().pipe(gulp.dest('.build'))),
