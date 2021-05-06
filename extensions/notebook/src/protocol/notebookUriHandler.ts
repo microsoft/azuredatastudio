@@ -79,13 +79,12 @@ export class NotebookUriHandler implements vscode.UriHandler {
 			url = decodeURI(url);
 			let uri = vscode.Uri.parse(url);
 			switch (uri.scheme) {
+				case 'file':
 				case 'http':
 				case 'https':
 					break;
-				case 'file':
-					break;
 				default:
-					vscode.window.showErrorMessage(localize('unsupportedScheme', "Cannot open link {0} as only HTTP and HTTPS links are supported", url));
+					vscode.window.showErrorMessage(localize('unsupportedScheme', "Cannot open link {0} as only HTTP, HTTPS, and File links are supported", url));
 					return;
 			}
 

@@ -13,6 +13,7 @@ import * as path from 'path';
 import { promises as fs } from 'fs';
 import * as loc from '../../common/localizedConstants';
 import * as constants from '../../common/constants';
+import { mkdtemp } from 'fs-extra';
 
 import { NotebookUriHandler } from '../../protocol/notebookUriHandler';
 
@@ -55,7 +56,7 @@ describe('Notebook URI Handler', function (): void {
 	});
 
 	it('should show error message when file uri scheme is not https or http', async function (): Promise<void> {
-		await notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/open?file://hello.ipynb'));
+		await notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/open?//hello.ipynb'));
 		sinon.assert.calledOnce(showErrorMessageSpy);
 	});
 
@@ -116,7 +117,8 @@ describe('Notebook URI Handler', function (): void {
 
 	it('should open notebook when file is uri is valid', async function (): Promise<void> {
 		let showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(Promise.resolve(loc.msgYes) as any);
-		const notebookPath = path.join(os.tmpdir(),'hello.ipynb');
+		let notebookDir = await mkdtemp(os.tmpdir());
+		let notebookPath = path.join(notebookDir,'hello.ipynb');
 		let fileURI = 'azuredatastudio://microsoft.notebook/open?url=file:///'+ notebookPath;
 		let fileNotebookUri = vscode.Uri.parse(fileURI);
 
