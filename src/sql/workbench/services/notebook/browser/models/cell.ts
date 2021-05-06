@@ -162,6 +162,7 @@ export class CellModel extends Disposable implements ICellModel {
 			}
 			// TO DO: Check if name already exists and message the user?
 			this._attachments[name] = attachment;
+			this.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
 		}
 	}
 
