@@ -100,8 +100,8 @@ export class SchemaCompareDialog {
 				connectionDetails: undefined
 			};
 		} else {
-			const ownerUri = await azdata.connection.getUriForConnection((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
 			const sourceServerDropdownValue = this.sourceServerDropdown.value as ConnectionDropdownValue;
+			const ownerUri = await azdata.connection.getUriForConnection(sourceServerDropdownValue.connection.connectionId);
 
 			this.schemaCompareMainWindow.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
@@ -125,8 +125,8 @@ export class SchemaCompareDialog {
 				connectionDetails: undefined
 			};
 		} else {
-			const ownerUri = await azdata.connection.getUriForConnection((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
 			const targetServerDropdownValue = this.targetServerDropdown.value as ConnectionDropdownValue;
+			const ownerUri = await azdata.connection.getUriForConnection(targetServerDropdownValue.connection.connectionId);
 
 			this.schemaCompareMainWindow.targetEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
