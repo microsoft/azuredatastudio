@@ -105,12 +105,13 @@ export class SchemaCompareDialog {
 
 			this.schemaCompareMainWindow.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
-				serverDisplayName: sourceServerDropdownValue.connection.options.connectionName !== '' ? sourceServerDropdownValue.connection.options.connectionName : sourceServerDropdownValue.name,
+				serverDisplayName: sourceServerDropdownValue.displayName,
 				serverName: sourceServerDropdownValue.name,
 				databaseName: this.sourceDatabaseDropdown.value.toString(),
 				ownerUri: ownerUri,
 				packageFilePath: '',
-				connectionDetails: undefined
+				connectionDetails: undefined,
+				connectionName: sourceServerDropdownValue.connection.options.connectionName
 			};
 		}
 
@@ -130,12 +131,13 @@ export class SchemaCompareDialog {
 
 			this.schemaCompareMainWindow.targetEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
-				serverDisplayName: targetServerDropdownValue.connection.options.connectionName !== '' ? targetServerDropdownValue.connection.options.connectionName : targetServerDropdownValue.name,
+				serverDisplayName: targetServerDropdownValue.displayName,
 				serverName: targetServerDropdownValue.name,
 				databaseName: this.targetDatabaseDropdown.value.toString(),
 				ownerUri: ownerUri,
 				packageFilePath: '',
-				connectionDetails: undefined
+				connectionDetails: undefined,
+				connectionName: targetServerDropdownValue.connection.options.connectionName
 			};
 		}
 
