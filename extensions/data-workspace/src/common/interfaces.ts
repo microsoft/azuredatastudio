@@ -81,6 +81,14 @@ export interface IWorkspaceService {
 	 */
 	createProject(name: string, location: vscode.Uri, projectTypeId: string, workspaceFile?: vscode.Uri): Promise<vscode.Uri>;
 
+	/**
+	 * Clones git repository and adds projects to workspace
+	 * @param url The url to clone from
+	 * @param localClonePath local path to clone repository to
+	 * @param workspaceFile workspace file to add the projects to
+	 */
+	gitCloneProject(url: string, localClonePath: string, workspaceFile: vscode.Uri): Promise<void>;
+
 	readonly isProjectProviderAvailable: boolean;
 
 	/**

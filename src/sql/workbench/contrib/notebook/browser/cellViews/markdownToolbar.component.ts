@@ -22,6 +22,7 @@ import { IEditor } from 'vs/editor/common/editorCommon';
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import { escape } from 'vs/base/common/strings';
+import { IImageCalloutDialogOptions, ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
@@ -225,6 +226,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		let triggerElement = event.target as HTMLElement;
 		let needsTransform = true;
 		let linkCalloutResult: ILinkCalloutDialogOptions;
+		let imageCalloutResult: IImageCalloutDialogOptions;
 
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
 			linkCalloutResult = await this.createCallout(type, triggerElement);
@@ -251,6 +253,12 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				document.execCommand('insertHTML', false, `<a href="${escape(linkUrl)}">${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
 				return;
 			}
+		} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
+			imageCalloutResult = await this.createCallout(type, triggerElement);
+			// If cell edit mode isn't WYSIWYG, use result from callout. No need for further transformation.
+			if (this.cellModel.currentMode !== CellEditModes.WYSIWYG) {
+				needsTransform = false;
+			}
 		}
 
 		const transformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
@@ -259,6 +267,14 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		} else if (!needsTransform) {
 			if (type === MarkdownButtonType.LINK_PREVIEW) {
 				await insertFormattedMarkdown(linkCalloutResult?.insertEscapedMarkdown, this.getCellEditorControl());
+			} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
+				if (imageCalloutResult.embedImage) {
+					let base64String = await this.getFileContentBase64(URI.file(imageCalloutResult.imagePath));
+					let mimeType = await this.getFileMimeType(URI.file(imageCalloutResult.imagePath));
+					this.cellModel.addAttachment(mimeType, base64String, path.basename(imageCalloutResult.imagePath).replace(' ', ''));
+					await insertFormattedMarkdown(imageCalloutResult.insertEscapedMarkdown, this.getCellEditorControl());
+				}
+				await insertFormattedMarkdown(imageCalloutResult.insertEscapedMarkdown, this.getCellEditorControl());
 			}
 		}
 	}
@@ -304,6 +320,10 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogPosition, dialogProperties, defaultLabel, defaultLinkUrl);
 			this._linkCallout.render();
 			calloutOptions = await this._linkCallout.open();
+		} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
+			const imageCallout = this._instantiationService.createInstance(ImageCalloutDialog, this.insertImageHeading, dialogPosition, dialogProperties);
+			imageCallout.render();
+			calloutOptions = await imageCallout.open();
 		}
 		return calloutOptions;
 	}
@@ -353,5 +373,27 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			return this._cellEditor.getEditor()?.getControl();
 		}
 		return undefined;
+	}
+
+	public async getFileContentBase64(fileUri: URI): Promise<string> {
+		return new Promise<string>(async resolve => {
+			let response = await fetch(fileUri.toString());
+			let blob = await response.blob();
+
+			let file = new File([blob], fileUri.toString());
+			let reader = new FileReader();
+			// Read file content on file loaded event
+			reader.onload = function (event) {
+				resolve(event.target.result.toString());
+			};
+			// Convert data to base64
+			reader.readAsDataURL(file);
+		});
+	}
+
+	public async getFileMimeType(fileUri: URI): Promise<string> {
+		let response = await fetch(fileUri.toString());
+		let blob = await response.blob();
+		return blob.type;
 	}
 }

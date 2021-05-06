@@ -43,6 +43,7 @@ import { Action2, registerAction2 } from 'vs/platform/actions/common/actions';
 import { CATEGORIES } from 'vs/workbench/common/actions';
 import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
 import { StringSHA1 } from 'vs/base/common/hash';
+import { AccountsActionViewItem } from 'sql/workbench/browser/parts/activitybar/activitybarActions'; // {{SQL CARBON EDIT}} - use the ADS account management action
 
 interface IPlaceholderViewContainer {
 	readonly id: string;
@@ -620,7 +621,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 				}
 
 				if (action.id === 'workbench.actions.accounts') {
-					return this.instantiationService.createInstance(AccountsActivityActionViewItem, action as ActivityAction, () => this.compositeBar.getContextMenuActions(), (theme: IColorTheme) => this.getActivitybarItemColors(theme));
+					return this.instantiationService.createInstance(AccountsActionViewItem, action as ActivityAction, (theme: IColorTheme) => this.getActivitybarItemColors(theme)); // {{ SQL CARBON EDIT }}
 				}
 
 				throw new Error(`No view item for action '${action.id}'`);

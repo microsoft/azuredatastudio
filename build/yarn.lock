@@ -542,6 +542,11 @@
   dependencies:
     eslint-visitor-keys "^1.1.0"
 
+acorn@^7.1.0:
+  version "7.4.1"
+  resolved "https://registry.yarnpkg.com/acorn/-/acorn-7.4.1.tgz#feaed255973d2e77555b83dbc08851a6c63520fa"
+  integrity sha512-nQyp0o1/mNdbTO1PO6kHkwSrmgZ0MT/jCCpNiwbUjGoRN4dlBhqJtoQuCnEOKzgTVwg0ZWiCoQy6SxMebQVh8A==
+
 ajv@^6.12.3:
   version "6.12.6"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.12.6.tgz#baf5a62e802b07d977034586f8c3baf5adf26df4"
@@ -645,6 +650,11 @@ bcrypt-pbkdf@^1.0.0:
   integrity sha1-pDAdOJtqQ/m2f/PKEaP2Y342Dp4=
   dependencies:
     tweetnacl "^0.14.3"
+
+binary-search-bounds@2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/binary-search-bounds/-/binary-search-bounds-2.0.3.tgz#5ff8616d6dd2ca5388bc85b2d6266e2b9da502dc"
+  integrity sha1-X/hhbW3SylOIvIWy1iZuK52lAtw=
 
 bluebird@^3.5.0:
   version "3.7.2"
@@ -867,6 +877,16 @@ dir-compare@^2.4.0:
     colors "1.0.3"
     commander "2.9.0"
     minimatch "3.0.4"
+
+documentdb@1.13.0:
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/documentdb/-/documentdb-1.13.0.tgz#bba6f03150b2f42498cec4261bc439d834a33f8b"
+  integrity sha1-u6bwMVCy9CSYzsQmG8Q52DSjP4s=
+  dependencies:
+    binary-search-bounds "2.0.3"
+    priorityqueuejs "1.0.0"
+    semaphore "1.0.5"
+    underscore "1.8.3"
 
 dom-serializer@^1.0.1, dom-serializer@~1.2.0:
   version "1.2.0"
@@ -1485,7 +1505,7 @@ plist@^3.0.1:
     xmlbuilder "^9.0.7"
     xmldom "0.1.x"
 
-priorityqueuejs@^1.0.0:
+priorityqueuejs@1.0.0, priorityqueuejs@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/priorityqueuejs/-/priorityqueuejs-1.0.0.tgz#2ee4f23c2560913e08c07ce5ccdd6de3df2c5af8"
   integrity sha1-LuTyPCVgkT4IwHzlzN1t498sWvg=
@@ -1611,6 +1631,15 @@ rollup-pluginutils@^2.8.1:
   dependencies:
     estree-walker "^0.6.1"
 
+rollup@^1.20.3:
+  version "1.32.1"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-1.32.1.tgz#4480e52d9d9e2ae4b46ba0d9ddeaf3163940f9c4"
+  integrity sha512-/2HA0Ec70TvQnXdzynFffkjA6XN+1e2pEv/uKS5Ulca40g2L7KuOE3riasHoNVHOsFD5KKZgDsMk1CP3Tw9s+A==
+  dependencies:
+    "@types/estree" "*"
+    "@types/node" "*"
+    acorn "^7.1.0"
+
 safe-buffer@^5.0.1, safe-buffer@^5.1.2, safe-buffer@^5.2.0, safe-buffer@~5.2.0:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.2.1.tgz#1eaf9fa9bdb1fdd4ec75f58f9cdb4e6b7827eec6"
@@ -1630,6 +1659,11 @@ sax@>=0.6.0:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
   integrity sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==
+
+semaphore@1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/semaphore/-/semaphore-1.0.5.tgz#b492576e66af193db95d65e25ec53f5f19798d60"
+  integrity sha1-tJJXbmavGT25XWXiXsU/Xxl5jWA=
 
 semaphore@^1.0.5:
   version "1.1.0"
