@@ -67,6 +67,7 @@ describe('Publish Database Dialog', () => {
 		dialog.setup(x => x.getTargetDatabaseName()).returns(() => 'MockDatabaseName');
 		dialog.setup(x => x.getSqlCmdVariablesForPublish()).returns(() => proj.sqlCmdVariables);
 		dialog.setup(x => x.getDeploymentOptions()).returns(() => { return Promise.resolve(mockDacFxOptionsResult.deploymentOptions); });
+		dialog.setup(x => x.getServerName()).returns(() => 'MockServer');
 		dialog.callBase = true;
 
 		let profile: IPublishSettings | IGenerateScriptSettings | undefined;

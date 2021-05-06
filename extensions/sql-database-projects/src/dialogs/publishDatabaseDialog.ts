@@ -204,7 +204,7 @@ export class PublishDatabaseDialog {
 		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
 		const settings: IGenerateScriptSettings = {
 			databaseName: this.getTargetDatabaseName(),
-			serverName: this.serverName!,
+			serverName: this.getServerName(),
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars,
 			deploymentOptions: await this.getDeploymentOptions(),
@@ -250,6 +250,10 @@ export class PublishDatabaseDialog {
 
 	public getDefaultDatabaseName(): string {
 		return this.project.projectFileName;
+	}
+
+	public getServerName(): string {
+		return this.serverName!;
 	}
 
 	private createRadioButtons(view: azdata.ModelView): azdata.Component {
