@@ -174,7 +174,7 @@ const RESTART_JUPYTER_NOTEBOOK_SESSIONS = 'notebook.action.restartJupyterNoteboo
 
 CommandsRegistry.registerCommand({
 	id: RESTART_JUPYTER_NOTEBOOK_SESSIONS,
-	handler: async (accessor: ServicesAccessor) => {
+	handler: async (accessor: ServicesAccessor, restartJupyterServer: boolean = true) => {
 		const editorService: IEditorService = accessor.get(IEditorService);
 		const editors: readonly IEditorInput[] = editorService.editors;
 		let jupyterServerRestarted: boolean = false;
@@ -184,7 +184,7 @@ CommandsRegistry.registerCommand({
 				let model: INotebookModel = editor.notebookModel;
 				if (model.providerId === 'jupyter' && model.clientSession.isReady) {
 					// Jupyter server needs to be restarted so that the correct Python installation is used
-					if (!jupyterServerRestarted) {
+					if (!jupyterServerRestarted && restartJupyterServer) {
 						let jupyterNotebookManager: INotebookManager = model.notebookManagers.find(x => x.providerId === 'jupyter');
 						// Shutdown all current Jupyter sessions before stopping the server
 						await jupyterNotebookManager.sessionManager.shutdownAll();
@@ -198,6 +198,29 @@ CommandsRegistry.registerCommand({
 
 					// Start a new session for each Jupyter notebook
 					await model.restartSession();
+				}
+			}
+		}
+	}
+});
+
+const STOP_JUPYTER_NOTEBOOK_SESSIONS = 'notebook.action.stopJupyterNotebookSessions';
+
+CommandsRegistry.registerCommand({
+	id: STOP_JUPYTER_NOTEBOOK_SESSIONS,
+	handler: async (accessor: ServicesAccessor) => {
+		const editorService: IEditorService = accessor.get(IEditorService);
+		const editors: readonly IEditorInput[] = editorService.editors;
+
+		for (let editor of editors) {
+			if (editor instanceof NotebookInput) {
+				let model: INotebookModel = editor.notebookModel;
+				if (model?.providerId === 'jupyter') {
+					let jupyterNotebookManager: INotebookManager = model.notebookManagers.find(x => x.providerId === 'jupyter');
+					await jupyterNotebookManager.sessionManager.shutdownAll();
+					jupyterNotebookManager.sessionManager.dispose();
+					await jupyterNotebookManager.serverManager.stopServer();
+					return;
 				}
 			}
 		}

@@ -32,6 +32,7 @@ const msgInstallPkgStart = localize('msgInstallPkgStart', "Installing Notebook d
 const msgInstallPkgFinish = localize('msgInstallPkgFinish', "Notebook dependencies installation is complete");
 const msgPythonRunningError = localize('msgPythonRunningError', "Cannot overwrite an existing Python installation while python is running. Please close any active notebooks before proceeding.");
 const msgWaitingForInstall = localize('msgWaitingForInstall', "Another Python installation is currently in progress. Waiting for it to complete.");
+const msgShutdownJupyterNotebookSessions = localize('msgShutdownNotebookSessions', "Active Python notebook sessions will be shutdown in order to update. Would you like to proceed now?");
 function msgPythonVersionUpdatePrompt(pythonVersion: string): string { return localize('msgPythonVersionUpdatePrompt', "Python {0} is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python {0} now?", pythonVersion); }
 function msgPythonVersionUpdateWarning(pythonVersion: string): string { return localize('msgPythonVersionUpdateWarning', "Python {0} will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?", pythonVersion); }
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
@@ -115,6 +116,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private _usingExistingPython: boolean;
 	private _usingConda: boolean;
 	private _installedPythonVersion: string;
+
+	private _upgradeInProcess: boolean = false;
 	private _oldPythonExecutable: string | undefined;
 	private _oldPythonInstallationPath: string | undefined;
 	private _oldUserInstalledPipPackages: PythonPkgDetails[] = [];
@@ -180,8 +183,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 				upgradePython = await vscode.window.showInformationMessage(msgPythonVersionUpdateWarning(constants.pythonVersion), yes, no) === yes;
 				if (upgradePython) {
 					if (await this.isPythonRunning(this._oldPythonExecutable)) {
-						vscode.window.showErrorMessage(msgPythonRunningError);
-						return;
+						let proceed = await vscode.window.showInformationMessage(msgShutdownJupyterNotebookSessions, yes, no) === yes;
+						if (!proceed) {
+							throw Error('Python update failed due to active Python notebook sessions.');
+						}
+						await vscode.commands.executeCommand('notebook.action.stopJupyterNotebookSessions');
 					}
 
 					this._oldUserInstalledPipPackages = await this.getInstalledPipPackages(this._oldPythonExecutable, true);
@@ -191,9 +197,9 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 						this._pythonExecutable = path.join(this._pythonInstallationPath, process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 					}
 					await fs.remove(this._oldPythonInstallationPath).catch(err => {
-						vscode.window.showErrorMessage(localize('notebook.removePythonError', "Failed to remove old Python installation due to Error: {0}", err));
-						return;
+						throw (err);
 					});
+					this._upgradeInProcess = true;
 				}
 			}
 
@@ -454,10 +460,16 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 						this._installCompletion.resolve();
 						this._installInProgress = false;
-						await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions');
+						if (this._upgradeInProcess) {
+							// Pass in false for rstartJupyterServer parameter since the jupyter server has already been shutdown
+							// when removing the old Python version.
+							await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions', false);
 
-						if (this._oldUserInstalledPipPackages.length !== 0) {
-							await this.createInstallPipPackagesHelpNotebook(this._oldUserInstalledPipPackages);
+							if (this._oldUserInstalledPipPackages.length !== 0) {
+								await this.createInstallPipPackagesHelpNotebook(this._oldUserInstalledPipPackages);
+							}
+						} else {
+							await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions');
 						}
 					})
 					.catch(err => {
