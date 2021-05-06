@@ -100,12 +100,13 @@ export class SchemaCompareDialog {
 				connectionDetails: undefined
 			};
 		} else {
-			let ownerUri = await azdata.connection.getUriForConnection((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
+			const ownerUri = await azdata.connection.getUriForConnection((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
+			const sourceServerDropdownValue = this.sourceServerDropdown.value as ConnectionDropdownValue;
 
 			this.schemaCompareMainWindow.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
-				serverDisplayName: (this.sourceServerDropdown.value as ConnectionDropdownValue).displayName,
-				serverName: (this.sourceServerDropdown.value as ConnectionDropdownValue).name,
+				serverDisplayName: sourceServerDropdownValue.connection.options.connectionName !== '' ? sourceServerDropdownValue.connection.options.connectionName : sourceServerDropdownValue.name,
+				serverName: sourceServerDropdownValue.name,
 				databaseName: this.sourceDatabaseDropdown.value.toString(),
 				ownerUri: ownerUri,
 				packageFilePath: '',
@@ -124,12 +125,13 @@ export class SchemaCompareDialog {
 				connectionDetails: undefined
 			};
 		} else {
-			let ownerUri = await azdata.connection.getUriForConnection((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
+			const ownerUri = await azdata.connection.getUriForConnection((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
+			const targetServerDropdownValue = this.targetServerDropdown.value as ConnectionDropdownValue;
 
 			this.schemaCompareMainWindow.targetEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
-				serverDisplayName: (this.targetServerDropdown.value as ConnectionDropdownValue).displayName,
-				serverName: (this.targetServerDropdown.value as ConnectionDropdownValue).name,
+				serverDisplayName: targetServerDropdownValue.connection.options.connectionName !== '' ? targetServerDropdownValue.connection.options.connectionName : targetServerDropdownValue.name,
+				serverName: targetServerDropdownValue.name,
 				databaseName: this.targetDatabaseDropdown.value.toString(),
 				ownerUri: ownerUri,
 				packageFilePath: '',
