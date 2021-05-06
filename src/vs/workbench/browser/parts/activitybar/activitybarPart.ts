@@ -82,6 +82,9 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 	private static readonly ACTION_HEIGHT = 48;
 	private static readonly ACCOUNTS_ACTION_INDEX = 0;
 
+	// {{SQL CARBON EDIT}}
+	private static readonly DEBUG_VIEWLET_ID = 'workbench.view.debug';
+
 	private static readonly GEAR_ICON = settingsViewBarIcon; // registerIcon('settings-view-bar-icon', Codicon.settingsGear, localize('settingsViewBarIcon', "Settings icon in the view bar.")); // {{SQL CARBON EDIT}} exporting to use it in getting started tour
 	private static readonly ACCOUNTS_ICON = registerIcon('accounts-view-bar-icon', Codicon.account, localize('accountsViewBarIcon', "Accounts icon in the view bar."));
 
@@ -121,6 +124,11 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 
 	private readonly location = ViewContainerLocation.Sidebar;
 	private hasExtensionsRegistered: boolean = false;
+
+	// {{SQL CARBON EDIT}}
+	// Only show debugger if there's an extension that contributes a debugger
+	private hasDebuggerContributedExtensions: boolean = false;
+	private debugViewContainer: ViewContainer;
 
 	private readonly enabledViewContainersContextKeys: Map<string, IContextKey<boolean>> = new Map<string, IContextKey<boolean>>();
 
@@ -272,9 +280,12 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 
 		// Extension registration
 		let disposables = this._register(new DisposableStore());
-		this._register(this.extensionService.onDidRegisterExtensions(() => {
+
+		// {{SQL CARBON EDIT}}
+		// check if any extension contributes debugging capabilities
+		this._register(this.extensionService.onDidRegisterExtensions(async () => {
 			disposables.clear();
-			this.onDidRegisterExtensions();
+			await this.onDidRegisterExtensions();
 			this.compositeBar.onDidChange(() => this.saveCachedViewContainers(), this, disposables);
 			this.storageService.onDidChangeValue(e => this.onDidStorageValueChange(e), this, disposables);
 		}));
@@ -322,9 +333,9 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 		}
 	}
 
-	private onDidRegisterExtensions(): void {
+	//{{SQL CARBON EDIT}}
+	private async onDidRegisterExtensions(): Promise<void> {
 		this.hasExtensionsRegistered = true;
-
 		// show/hide/remove composites
 		for (const { id } of this.cachedViewContainers) {
 			const viewContainer = this.getViewContainer(id);
@@ -340,6 +351,16 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 		}
 
 		this.saveCachedViewContainers();
+
+		// Set flag for debugger viewlet based on debugging contributed extensions
+		const extensions = await this.extensionService.getExtensions();
+		for (let extension of extensions) {
+			if (extension.contributes?.debuggers) {
+				this.hasDebuggerContributedExtensions = true;
+				break;
+			}
+		}
+		this.showOrHideViewContainer(this.debugViewContainer);
 	}
 
 	private onDidViewContainerVisible(id: string): void {
@@ -697,6 +718,12 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 		for (const viewContainer of viewContainers) {
 			this.addComposite(viewContainer);
 
+			// {{SQL CARBON EDIT}}
+			// set the debuger view model
+			if (viewContainer.id === ActivitybarPart.DEBUG_VIEWLET_ID) {
+				this.debugViewContainer = viewContainer;
+			}
+
 			// Pin it by default if it is new
 			const cachedViewContainer = this.cachedViewContainers.filter(({ id }) => id === viewContainer.id)[0];
 			if (!cachedViewContainer) {
@@ -785,6 +812,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 		}
 	}
 
+
 	private shouldBeHidden(viewContainerOrId: string | ViewContainer, cachedViewContainer?: ICachedViewContainer): boolean {
 		const viewContainer = isString(viewContainerOrId) ? this.getViewContainer(viewContainerOrId) : viewContainerOrId;
 		const viewContainerId = isString(viewContainerOrId) ? viewContainerOrId : viewContainerOrId.id;
@@ -794,6 +822,8 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 				if (this.viewDescriptorService.getViewContainerModel(viewContainer).activeViewDescriptors.length > 0) {
 					return false;
 				}
+			} else if (viewContainerId === ActivitybarPart.DEBUG_VIEWLET_ID) { //{{SQL CARBON EDIT}} show debug only if extensions contribute a debugger
+				return !this.hasDebuggerContributedExtensions;
 			} else {
 				return false;
 			}
