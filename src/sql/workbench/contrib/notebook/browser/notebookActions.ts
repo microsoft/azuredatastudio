@@ -45,6 +45,8 @@ const msgLocalHost = localize('localhost', "localhost");
 export const noKernel: string = localize('noKernel', "No Kernel");
 const baseIconClass = 'codicon';
 const maskedIconClass = 'masked-icon';
+export const noParameterCell: string = localize('noParametersCell', "This notebook cannot run with parameters until a parameter cell is added. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
+export const noParametersInCell: string = localize('noParametersInCell', "This notebook cannot run with parameters until there are parameters added to the parameter cell. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
 
 // Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {
@@ -308,14 +310,29 @@ export class RunParametersAction extends TooltipFromLabelAction {
 		const editor = this._notebookService.findNotebookEditor(context);
 		// Set defaultParameters to the parameter values in parameter cell
 		let defaultParameters = new Map<string, string>();
-		editor.cells.forEach(cell => {
+		for (let cell of editor?.cells) {
 			if (cell.isParameter) {
+				// Check if parameter cell is empty
+				const cellSource = typeof cell.source === 'string' ? [cell.source] : cell.source;
+				// Check to see if every line in the cell is empty or contains whitespace
+				const emptyParameterCell = cellSource.every(s => /^\s*$/.test(s));
+				if (emptyParameterCell) {
+					// If there is no parameters in the cell indicate to user to add them
+					this.notificationService.notify({
+						severity: Severity.Info,
+						message: noParametersInCell,
+					});
+					return;
+				}
 				for (let parameter of cell.source) {
-					let param = parameter.split('=', 2);
-					defaultParameters.set(param[0].trim(), param[1].trim());
+					// Only add parameters that contain the proper parameters format (ex. x = 1) shown in the Parameterization Doc.
+					if (parameter.includes('=')) {
+						let param = parameter.split('=', 2);
+						defaultParameters.set(param[0].trim(), param[1].trim());
+					}
 				}
 			}
-		});
+		}
 
 		// Store new parameters values the user inputs
 		let inputParameters = new Map<string, string>();
@@ -325,7 +342,7 @@ export class RunParametersAction extends TooltipFromLabelAction {
 			// If there is no parameter cell indicate to user to create one
 			this.notificationService.notify({
 				severity: Severity.Info,
-				message: localize('noParametersCell', "This notebook cannot run with parameters until a parameter cell is added. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)."),
+				message: noParameterCell,
 			});
 			return;
 		} else {
