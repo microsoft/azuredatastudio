@@ -93,30 +93,12 @@ steps:
     yarn gulp refresh-langpack-extension ja --location '.resources\xlf'
   displayName: Refresh Langpacks.
 
-
 - bash: |
     set -e
     # Push branch
     git push origin langpack-update
 
     displayName: Push changes to langpack-update branch.
-
-- script: |
-    set -e
-    AZURE_STORAGE_ACCOUNT="$(sourcemap-storage-account)" \
-    AZURE_STORAGE_ACCESS_KEY="$(sourcemap-storage-key)" \
-      node build/azure-pipelines/upload-sourcemaps
-  displayName: Upload sourcemaps
-
-- script: |
-    set -e
-
-    VERSION=$(node -p "require(\"./package.json\").version")
-
-    echo -e "{  \"version\": \"$VERSION\", \"quality\": \"$VSCODE_QUALITY\", \"commit\": \"$BUILD_SOURCEVERSION\" }" > ".build/version.json"
-
-    node build/azure-pipelines/common/copyArtifacts.js
-  displayName: Write Version Information
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
