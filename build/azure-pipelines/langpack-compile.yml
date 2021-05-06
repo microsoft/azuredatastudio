@@ -27,10 +27,8 @@ steps:
 
 - script: |
     set -e
-    git remote add distro "https://github.com/$(VSCODE_MIXIN_REPO).git"
-    git fetch distro
-    git merge $(node -p "require('./package.json').distro")
-  displayName: Merge distro
+    git checkout langpack-update
+  displayName: Create new branch for committing lang pack changes.
 
 - script: |
     mkdir -p .build
@@ -88,15 +86,6 @@ steps:
 
 - script: |
     set -e
-    yarn gulp compile-build
-    yarn gulp compile-extensions-build
-    yarn gulp minify-vscode
-    yarn gulp vscode-reh-linux-x64-min
-    yarn gulp vscode-reh-web-linux-x64-min
-  displayName: Compile
-
-- script: |
-    set -e
     yarn gulp refresh-langpack-extension de --location '.resources\xlf'
     yarn gulp refresh-langpack-extension es --location '.resources\xlf'
     yarn gulp refresh-langpack-extension fr --location '.resources\xlf'
@@ -104,6 +93,13 @@ steps:
     yarn gulp refresh-langpack-extension ja --location '.resources\xlf'
   displayName: Refresh Langpacks.
 
+
+- bash: |
+    set -e
+    # Push branch
+    git push origin langpack-update
+
+    displayName: Push changes to langpack-update branch.
 
 - script: |
     set -e
