@@ -184,7 +184,7 @@ export class PublishDatabaseDialog {
 	public async publishClick(): Promise<void> {
 		const settings: IPublishSettings = {
 			databaseName: this.getTargetDatabaseName(),
-			serverName: this.serverName!,
+			serverName: this.getServerName(),
 			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
