@@ -4,12 +4,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.modifyI18nPackFiles = void 0;
+exports.modifyI18nPackFiles = exports.packageLangpacksStream = void 0;
+const es = require("event-stream");
 const path = require("path");
 const fs = require("fs");
 const event_stream_1 = require("event-stream");
+const stats_1 = require("./stats");
 const File = require("vinyl");
 const i18n = require("./i18n");
+const glob = require("glob");
+const rename = require("gulp-rename");
+const root = path.dirname(path.dirname(__dirname));
 const extensionsProject = 'extensions';
 const i18nPackVersion = '1.0.0';
 function createI18nFile(originalFilePath, messages) {
@@ -58,14 +63,47 @@ function updateMainI18nFile(existingTranslationFilePath, originalFilePath, messa
         contents: Buffer.from(content, 'utf8'),
     });
 }
-function modifyI18nPackFiles(existingTranslationFolder, adsExtensions, resultingTranslationPaths, pseudo = false) {
+function packageLangpacksStream() {
+    const extenalExtensionDescriptions = glob.sync('extensions/*/package.json')
+        .map(manifestPath => {
+        const extensionPath = path.dirname(path.join(root, manifestPath));
+        const extensionName = path.basename(extensionPath);
+        return { name: extensionName, path: extensionPath };
+    });
+    const builtExtensions = extenalExtensionDescriptions.map(extension => {
+        return fromLocalNormal(extension.path)
+            .pipe(rename(p => p.dirname = `langpacks/${extension.name}/${p.dirname}`));
+    });
+    return es.merge(builtExtensions);
+}
+exports.packageLangpacksStream = packageLangpacksStream;
+function fromLocalNormal(extensionPath) {
+    const result = es.through();
+    const vsce = require('vsce');
+    vsce.listFiles({ cwd: extensionPath, packageManager: vsce.PackageManager.Yarn })
+        .then(fileNames => {
+        const files = fileNames
+            .map(fileName => path.join(extensionPath, fileName))
+            .map(filePath => new File({
+            path: filePath,
+            stat: fs.statSync(filePath),
+            base: extensionPath,
+            contents: fs.createReadStream(filePath)
+        }));
+        es.readArray(files).pipe(result);
+    })
+        .catch(err => result.emit('error', err));
+    return result.pipe(stats_1.createStatsStream(path.basename(extensionPath)));
+}
+function modifyI18nPackFiles(languageId, existingTranslationFolder, adsExtensions, resultingTranslationPaths, pseudo = false) {
     let parsePromises = [];
     let mainPack = { version: i18nPackVersion, contents: {} };
     let extensionsPacks = {};
     let errors = [];
     return event_stream_1.through(function (xlf) {
         let project = path.basename(path.dirname(xlf.relative));
-        let resource = path.basename(xlf.relative, '.xlf').replace(/\.[a-zA-Z-]*\./, '.');
+        let regex = new RegExp(`.${languageId}`, 'i');
+        let resource = path.basename(xlf.relative, '.xlf').replace(regex, '');
         let contents = xlf.contents.toString();
         let parsePromise = pseudo ? i18n.XLF.parsePseudo(contents) : i18n.XLF.parse(contents);
         parsePromises.push(parsePromise);
