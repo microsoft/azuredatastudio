@@ -106,6 +106,11 @@ declare module 'sqldbproj' {
 		 * SqlCmd variables and their values
 		 */
 		readonly sqlCmdVariables: Record<string, string>;
+
+		/**
+		 * Event that's fired whenever a file or folder is added or removed from the project
+		 */
+		readonly onDidFilesChange: vscode.Event<IFileProjectEntry[]>;
 	}
 
 	/**

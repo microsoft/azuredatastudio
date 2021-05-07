@@ -11,7 +11,7 @@ import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
 import * as templates from '../templates/templates';
 
-import { Uri, window } from 'vscode';
+import { Uri, window, EventEmitter } from 'vscode';
 import { IFileProjectEntry, ISqlProject } from 'sqldbproj';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
@@ -33,6 +33,9 @@ export class Project implements ISqlProject {
 	private _preDeployScripts: FileProjectEntry[] = [];
 	private _postDeployScripts: FileProjectEntry[] = [];
 	private _noneDeployScripts: FileProjectEntry[] = [];
+
+	private _onDidFilesChange = new EventEmitter<IFileProjectEntry[]>();
+	readonly onDidFilesChange = this._onDidFilesChange.event;
 
 	public get dacpacOutputPath(): string {
 		return path.join(this.projectFolderPath, 'bin', 'Debug', `${this._projectFileName}.dacpac`);
@@ -326,6 +329,7 @@ export class Project implements ISqlProject {
 		this._files.push(folderEntry);
 
 		await this.addToProjFile(folderEntry);
+		this._onDidFilesChange.fire(this.files);
 		return folderEntry;
 	}
 
@@ -385,18 +389,20 @@ export class Project implements ISqlProject {
 		}
 
 		await this.addToProjFile(fileEntry, xmlTag, attributes);
+		this._onDidFilesChange.fire(this.files);
 
 		return fileEntry;
 	}
 
 	public async exclude(entry: FileProjectEntry): Promise<void> {
 		const toExclude: FileProjectEntry[] = this._files.concat(this._preDeployScripts).concat(this._postDeployScripts).concat(this._noneDeployScripts).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
-		await this.removeFromProjFile(toExclude);
 
 		this._files = this._files.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
 		this._preDeployScripts = this._preDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
 		this._postDeployScripts = this._postDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
 		this._noneDeployScripts = this._noneDeployScripts.filter(x => !x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
+
+		await this.removeFromProjFile(toExclude);
 	}
 
 	public async deleteFileFolder(entry: FileProjectEntry): Promise<void> {
@@ -627,6 +633,7 @@ export class Project implements ISqlProject {
 			deleted = this.removeNode(path, nodes[i]);
 
 			if (deleted) {
+				this._onDidFilesChange.fire(this.files);
 				return;
 			}
 		}
@@ -670,6 +677,8 @@ export class Project implements ISqlProject {
 		if (!deleted) {
 			throw new Error(constants.unableToFindObject(path, constants.folderObject));
 		}
+
+		this._onDidFilesChange.fire(this.files);
 	}
 
 	private removeSqlCmdVariableFromProjFile(variableName: string): void {
