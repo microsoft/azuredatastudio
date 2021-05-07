@@ -10,6 +10,7 @@ const es = require('event-stream');
 const filter = require('gulp-filter');
 const path = require('path');
 const ext = require('./lib/extensions');
+const loc = require('./lib/locFunc');
 const task = require('./lib/task');
 const glob = require('glob');
 const vsce = require('vsce');
@@ -116,7 +117,7 @@ gulp.task('package-external-extensions', task.series(
 ));
 
 gulp.task('package-langpacks', task.series(
-	task.define('bundle-external-langpack-build', () => ext.packageExternalExtensionsStream().pipe(gulp.dest('.build/external'))),
+	task.define('bundle-external-langpack-build', () => loc.packageLangpacksStream().pipe(gulp.dest('.build/external'))),
 	task.define('create-external-langpack-vsix-build', () => {
 		const vsixes = glob.sync('.build/external/langpacks/*/package.json').map(manifestPath => {
 			const extensionPath = path.dirname(path.join(root, manifestPath));
@@ -124,7 +125,7 @@ gulp.task('package-langpacks', task.series(
 			return { name: extensionName, path: extensionPath };
 		}).map(element => {
 			const pkgJson = require(path.join(element.path, 'package.json'));
-			const vsixDirectory = path.join(root, '.build', 'extensions');
+			const vsixDirectory = path.join(root, '.build', 'langpacks');
 			mkdirp.sync(vsixDirectory);
 			const packagePath = path.join(vsixDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
 			console.info('Creating vsix for ' + element.path + ' result:' + packagePath);

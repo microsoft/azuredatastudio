@@ -88,21 +88,22 @@ function updateMainI18nFile(existingTranslationFilePath: string, originalFilePat
 }
 
 export function packageLangpacksStream(): NodeJS.ReadWriteStream {
-	const extenalExtensionDescriptions = (<string[]>glob.sync('extensions/*/package.json'))
+	const langpackDescriptions = (<string[]>glob.sync('i18n/*/package.json'))
 		.map(manifestPath => {
-			const extensionPath = path.dirname(path.join(root, manifestPath));
-			const extensionName = path.basename(extensionPath);
-			return { name: extensionName, path: extensionPath };
+			const langpackPath = path.dirname(path.join(root, manifestPath));
+			const langpackName = path.basename(langpackPath);
+			return { name: langpackName, path: langpackPath };
 		})
 
-	const builtExtensions = extenalExtensionDescriptions.map(extension => {
-		return fromLocalNormal(extension.path)
-			.pipe(rename(p => p.dirname = `langpacks/${extension.name}/${p.dirname}`));
+	const builtLangpacks = langpackDescriptions.map(langpack => {
+		return fromLocalNormal(langpack.path)
+			.pipe(rename(p => p.dirname = `langpacks/${langpack.name}/${p.dirname}`));
 	});
 
-	return es.merge(builtExtensions);
+	return es.merge(builtLangpacks);
 }
 
+//copied from extensions.
 function fromLocalNormal(extensionPath: string): Stream {
 	const result = es.through();
 

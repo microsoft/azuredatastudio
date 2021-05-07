@@ -64,19 +64,20 @@ function updateMainI18nFile(existingTranslationFilePath, originalFilePath, messa
     });
 }
 function packageLangpacksStream() {
-    const extenalExtensionDescriptions = glob.sync('extensions/*/package.json')
+    const langpackDescriptions = glob.sync('i18n/*/package.json')
         .map(manifestPath => {
-        const extensionPath = path.dirname(path.join(root, manifestPath));
-        const extensionName = path.basename(extensionPath);
-        return { name: extensionName, path: extensionPath };
+        const langpackPath = path.dirname(path.join(root, manifestPath));
+        const langpackName = path.basename(langpackPath);
+        return { name: langpackName, path: langpackPath };
     });
-    const builtExtensions = extenalExtensionDescriptions.map(extension => {
-        return fromLocalNormal(extension.path)
-            .pipe(rename(p => p.dirname = `langpacks/${extension.name}/${p.dirname}`));
+    const builtLangpacks = langpackDescriptions.map(langpack => {
+        return fromLocalNormal(langpack.path)
+            .pipe(rename(p => p.dirname = `langpacks/${langpack.name}/${p.dirname}`));
     });
-    return es.merge(builtExtensions);
+    return es.merge(builtLangpacks);
 }
 exports.packageLangpacksStream = packageLangpacksStream;
+//copied from extensions.
 function fromLocalNormal(extensionPath) {
     const result = es.through();
     const vsce = require('vsce');
