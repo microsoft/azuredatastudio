@@ -108,6 +108,11 @@ steps:
 
   - script: |
       set -e
+      yarn gulp package-external-extensions
+    displayName: Package Langpacks
+
+  - script: |
+      set -e
       service xvfb start
     displayName: Start xvfb
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
@@ -190,7 +195,7 @@ steps:
     inputs:
       ConnectedServiceName: 'Code Signing'
       FolderPath: '$(Build.SourcesDirectory)/.build'
-      Pattern: 'extensions/*.vsix'
+      Pattern: 'extensions/*.vsix,langpacks/*.vsix'
       signConfigType: inlineSignParams
       inlineOperation: |
         [
@@ -215,7 +220,7 @@ steps:
           }
         ]
       SessionTimeout: 120
-    displayName: 'Signing Extensions'
+    displayName: 'Signing Extensions and Langpacks'
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
