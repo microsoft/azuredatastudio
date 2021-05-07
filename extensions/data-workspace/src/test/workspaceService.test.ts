@@ -423,7 +423,6 @@ suite('WorkspaceService Tests', function (): void {
 			onWorkspaceProjectsChangedStub();
 		});
 		stubGetConfigurationValue(getConfigurationStub, updateConfigurationStub);
-		// sinon.stub(dataworkspace.IProjectProvider, 'RemoveProject').resolves();
 		await service.removeProject(vscode.Uri.file('/test/folder/folder1/proj2.sqlproj'));
 		should.strictEqual(updateConfigurationStub.calledWith('projects', sinon.match.array.deepEquals([
 			processPath('folder2/proj3.sqlproj')

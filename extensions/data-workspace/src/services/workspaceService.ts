@@ -251,8 +251,12 @@ export class WorkspaceService implements IWorkspaceService {
 				currentProjects.splice(projectIdx, 1);
 
 				// call project provider's remove project in case open projects are also tracked there
-				const projectProvider = await this.getProjectProvider(projectFile);
-				await projectProvider?.RemoveProject(projectFile);
+				try {
+					const projectProvider = await this.getProjectProvider(projectFile);
+					await projectProvider?.RemoveProject(projectFile);
+				} catch (e) {
+					console.error(e);
+				}
 
 				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectRemovedFromWorkspace)
 					.withAdditionalProperties({
