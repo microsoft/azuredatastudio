@@ -22,17 +22,29 @@ const textFields = {
 	"updateText": 'cd ../vscode && npm run update-localization-extension '
 }
 
+//ADS language pack folder length
+const adsLangPackFolderLength = 17;
+
 //Extensions for ADS
 const currentADSJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../../i18nExtensions/ADSExtensions.json'), 'utf8'));
 const currentADSExtensions = currentADSJson.ADSExtensions;
 const vscodeExtensions = currentADSJson.VSCODEExtensions;
 
-function update(options) {
-	let idOrPath = options._;
+function runUpdateOnLanguages(){
+	let i18nPath =  path.join('.', 'i18n');
+	let i18nFolders = fs.readdirSync(i18nPath).filter(folderName => folderName.match(/ads-language-pack-[A-z]+/));
+	let langIds = i18nFolders.map(folderName => {return folderName.substring(adsLangPackFolderLength + 1);});
+	for(let langId in langIds){
+		update(langId);
+	}
+}
+
+function update(langId) {
+	let idOrPath = langId;
 	if (!idOrPath) {
 		throw new Error('Argument must be the location of the localization extension.');
 	}
-	let location = options.location;
+	let location = path.join('.', 'resources', 'xlf');
 	if (location !== undefined && !fs.existsSync(location)) {
 		throw new Error(`${location} doesn't exist.`);
 	}
@@ -78,7 +90,7 @@ function update(options) {
 		if (fs.existsSync(translationDataFolder)) {
 			let totalExtensions = fs.readdirSync(path.join(translationDataFolder, 'extensions'));
 			for (let extensionTag in totalExtensions) {
-				let extensionName = totalExtensions[extensionTag].replace('.i18n.json', '');
+				let extensionName = totalExtensions[extensionTag].replace('i18n.json', '');
 				if (!(currentADSExtensions[extensionName] !== undefined || vscodeExtensions.indexOf(extensionName) !== -1)) {
 					let filePath = path.join(translationDataFolder, 'extensions', extensionName + '.i18n.json')
 					rimraf.sync(filePath);
@@ -90,7 +102,7 @@ function update(options) {
 		console.log(`Importing translations for ${languageId} form '${location}' to '${translationDataFolder}' ...`);
 		let translationPaths = [];
 		gulp.src(path.join(location, languageId, '**', '*.xlf'))
-			.pipe(locFunc.modifyI18nPackFiles(translationDataFolder, currentADSExtensions, translationPaths, languageId === 'ps'))
+			.pipe(locFunc.modifyI18nPackFiles(languageId, translationDataFolder, currentADSExtensions, translationPaths, languageId === 'ps'))
 			.on('error', (error) => {
 				console.log(`Error occurred while importing translations:`);
 				translationPaths = undefined;
@@ -166,8 +178,5 @@ function incrementVersion(version) {
 }
 
 if (path.basename(process.argv[1]) === 'refresh-langpack-extension.js') {
-	var options = minimist(process.argv.slice(2), {
-		string: 'location'
-	});
-	update(options);
+	runUpdateOnLanguages();
 }

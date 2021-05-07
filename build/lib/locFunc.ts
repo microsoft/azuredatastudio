@@ -126,14 +126,15 @@ function fromLocalNormal(extensionPath: string): Stream {
 	return result.pipe(createStatsStream(path.basename(extensionPath)));
 }
 
-export function modifyI18nPackFiles(existingTranslationFolder: string, adsExtensions: Map<string>, resultingTranslationPaths: i18n.TranslationPath[], pseudo = false): NodeJS.ReadWriteStream {
+export function modifyI18nPackFiles(languageId: string, existingTranslationFolder: string, adsExtensions: Map<string>, resultingTranslationPaths: i18n.TranslationPath[], pseudo = false): NodeJS.ReadWriteStream {
 	let parsePromises: Promise<ParsedXLF[]>[] = [];
 	let mainPack: I18nPack = { version: i18nPackVersion, contents: {} };
 	let extensionsPacks: Map<I18nPack> = {};
 	let errors: any[] = [];
 	return through(function (this: ThroughStream, xlf: File) {
 		let project = path.basename(path.dirname(xlf.relative));
-		let resource = path.basename(xlf.relative, '.xlf').replace(/\.[a-zA-Z-]*\./, '.');
+		let regex = new RegExp(`.${languageId}`, 'i');
+		let resource = path.basename(xlf.relative, '.xlf').replace(regex, '');
 		let contents = xlf.contents.toString();
 		let parsePromise = pseudo ? i18n.XLF.parsePseudo(contents) : i18n.XLF.parse(contents);
 		parsePromises.push(parsePromise);
