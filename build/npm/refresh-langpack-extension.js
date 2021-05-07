@@ -35,7 +35,7 @@ function runUpdateOnLanguages(){
 	let i18nFolders = fs.readdirSync(i18nPath).filter(folderName => folderName.match(/ads-language-pack-[A-z]+/));
 	let langIds = i18nFolders.map(folderName => {return folderName.substring(adsLangPackFolderLength + 1);});
 	for(let langId in langIds){
-		update(langId);
+		update(langIds[langId]);
 	}
 }
 
