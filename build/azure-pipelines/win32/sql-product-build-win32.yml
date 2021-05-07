@@ -115,7 +115,7 @@ steps:
       vstsFeed: '2191dd5f-4aec-491b-ac50-568bbc331c8a'
       vstsFeedPackage: '2e355f03-a97e-499a-949b-f02d62b6160c'
       vstsPackageVersion: '*'
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'))
+    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'), eq(variables['SPYTHON'], true))
 
   - powershell: |
       # Install SAW specific extensions
@@ -129,7 +129,7 @@ steps:
       Move-Item $tempFilePath $zipFilePath
       Expand-Archive $zipFilePath -DestinationPath $adsExtensionPath
     displayName: Install SAW Extensions
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'))
+    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'), eq(variables['SPYTHON'], true))
 
   # - powershell: | @anthonydresser unit tests timeout never existing the node process
   #     . build/azure-pipelines/win32/exec.ps1
