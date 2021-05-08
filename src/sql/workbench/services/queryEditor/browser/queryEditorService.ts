@@ -105,6 +105,10 @@ export class QueryEditorService implements IQueryEditorService {
 			return this.createPrefixedSqlFilePath(providerName + 'Query');
 		}
 
+		if (providerName === 'LogAnalytics') {
+			return this.createPrefixedSqlFilePath('KQLQuery');
+		}
+
 		return this.createPrefixedSqlFilePath('SQLQuery');
 	}
 
