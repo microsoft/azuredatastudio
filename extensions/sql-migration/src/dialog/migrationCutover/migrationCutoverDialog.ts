@@ -41,8 +41,6 @@ export class MigrationCutoverDialog {
 
 	private fileTable!: azdata.TableComponent;
 
-	private _startCutover!: boolean;
-
 	constructor(migration: MigrationContext) {
 		this._model = new MigrationCutoverDialogModel(migration);
 		this._dialogObject = azdata.window.createModelViewDialog('', 'MigrationCutoverDialog', 1000);
@@ -340,15 +338,8 @@ export class MigrationCutoverDialog {
 		}).component();
 
 		this._cutoverButton.onDidClick(async (e) => {
-			if (this._startCutover) {
-				await this._model.startCutover();
-				this.refreshStatus();
-			} else {
-				this._dialogObject.message = {
-					text: loc.CANNOT_START_CUTOVER_ERROR,
-					level: azdata.window.MessageLevel.Error
-				};
-			}
+			await this._model.startCutover();
+			this.refreshStatus();
 		});
 
 		headerActions.addItem(this._cutoverButton, {
@@ -537,9 +528,6 @@ export class MigrationCutoverDialog {
 					row.lastLSN
 				];
 			});
-			if (this._model.migrationStatus.properties.migrationStatusDetails?.isFullBackupRestored) {
-				this._startCutover = true;
-			}
 
 			if (migrationStatusTextValue === MigrationStatus.InProgress) {
 				const fileNotRestored = await tableData.some(file => file.status !== 'Restored' && file.status !== 'Ignored');
