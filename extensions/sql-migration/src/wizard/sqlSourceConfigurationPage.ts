@@ -58,14 +58,18 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 			this._view,
 			constants.ENTER_YOUR_SQL_CREDS,
 			{
-				'width': '600px'
+				'width': '600px',
+				'font-size': '13px',
 			}
 		);
 
 		const serverLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SERVER,
-			requiredIndicator: true,
-			width: WIZARD_INPUT_COMPONENT_WIDTH
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '13px',
+				'font-weight': 'bold',
+			}
 		}).component();
 
 		const server = this._view.modelBuilder.inputBox().withProps({
@@ -76,8 +80,11 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 
 		const authenticationTypeLable = this._view.modelBuilder.text().withProps({
 			value: constants.AUTHENTICATION_TYPE,
-			requiredIndicator: true,
-			width: WIZARD_INPUT_COMPONENT_WIDTH
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '13px',
+				'font-weight': 'bold',
+			}
 		}).component();
 
 		const authenticationTypeInput = this._view.modelBuilder.inputBox().withProps({
@@ -88,8 +95,11 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 
 		const usernameLable = this._view.modelBuilder.text().withProps({
 			value: constants.USERNAME,
-			requiredIndicator: true,
-			width: WIZARD_INPUT_COMPONENT_WIDTH
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '13px',
+				'font-weight': 'bold',
+			}
 		}).component();
 		this._usernameInput = this._view.modelBuilder.inputBox().withProps({
 			value: username,
@@ -103,8 +113,11 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 
 		const passwordLabel = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_LABEL,
-			requiredIndicator: true,
-			width: WIZARD_INPUT_COMPONENT_WIDTH
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '13px',
+				'font-weight': 'bold',
+			}
 		}).component();
 		this._password = this._view.modelBuilder.inputBox().withProps({
 			value: (await azdata.connection.getCredentials(this.migrationStateModel.sourceConnectionId)).password,
