@@ -45,6 +45,12 @@ export const SUBSCRIPTION_SELECTION_PAGE_TITLE = localize('sql.migration.wizard.
 export const SUBSCRIPTION_SELECTION_AZURE_ACCOUNT_TITLE = localize('sql.migration.wizard.subscription.azure.account.title', "Azure Account");
 export const SUBSCRIPTION_SELECTION_AZURE_SUBSCRIPTION_TITLE = localize('sql.migration.wizard.subscription.azure.subscription.title', "Azure Subscription");
 export const SUBSCRIPTION_SELECTION_AZURE_PRODUCT_TITLE = localize('sql.migration.wizard.subscription.azure.product.title', "Azure Product");
+export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI = localize('sql.migration.sku.recommendation.view.assessment.mi', "View assessment results and select one or more  database(s) to migrate to Azure SQL Managed Instance (PaaS)");
+export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM = localize('sql.migration.sku.recommendation.view.assessment.vm', "View assessment results and select one or more  database(s) to migrate to SQL Server on Azure Virtual Machine (IaaS)");
+export const VIEW_SELECT_BUTTON_LABEL = localize('sql.migration.view.select.button.label', "View/Select");
+export function TOTAL_DATABASES_SELECTED(selectedDbCount: number, totalDbCount: number): string {
+	return localize('total.databases.selected', "{0} of {1} Database(s) selected.", selectedDbCount, totalDbCount);
+}
 
 export const ASSESSMENT_COMPLETED = (serverName: string): string => {
 	return localize('sql.migration.generic.congratulations', "We have completed the assessment of your SQL Server Instance '{0}'.", serverName);

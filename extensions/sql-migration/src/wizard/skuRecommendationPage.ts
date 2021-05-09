@@ -20,7 +20,6 @@ export interface Product {
 }
 
 export class SKURecommendationPage extends MigrationWizardPage {
-
 	private _view!: azdata.ModelView;
 	private _igComponent!: azdata.TextComponent;
 	private _assessmentStatusIcon!: azdata.ImageComponent;
@@ -42,12 +41,17 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _formContainer!: azdata.ComponentBuilder<azdata.FormContainer, azdata.ComponentProperties>;
 	private _assessmentLoader!: azdata.LoadingComponent;
 	private _rootContainer!: azdata.FlexContainer;
+	private _viewAssessmentsHelperText!: azdata.TextComponent;
+	private _databaseSelectedHelperText!: azdata.TextComponent;
+	private assessmentGroupContainer!: azdata.FlexContainer;
+	private _targetContainer!: azdata.FlexContainer;
 
 	private _supportedProducts: Product[] = [
 		{
 			type: MigrationTargetType.SQLMI,
 			name: constants.SKU_RECOMMENDATION_MI_CARD_TEXT,
-			icon: IconPathHelper.sqlMiLogo
+			icon: IconPathHelper.sqlMiLogo,
+
 		},
 		{
 			type: MigrationTargetType.SQLVM,
@@ -81,112 +85,27 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
 
+		const chooseYourTargetText = this._view.modelBuilder.text().withProps({
+			value: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
+			CSSStyles: {
+				'font-size': '13px',
+				'font-weight': 'bold',
+				'margin-top': '16px'
+			}
+		}).component();
+
 		const statusContainer = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
 		}).withItems(
 			[
 				igContainer,
-				this._detailsComponent
+				this._detailsComponent,
+				chooseYourTargetText
 			]
 		).component();
 		this._chooseTargetComponent = await this.createChooseTargetComponent(view);
-		this._azureSubscriptionText = this.createAzureSubscriptionText(view);
-
-
-		const managedInstanceSubscriptionDropdownLabel = view.modelBuilder.text().withProps({
-			value: constants.SUBSCRIPTION,
-			width: WIZARD_INPUT_COMPONENT_WIDTH
-		}).component();
-		this._managedInstanceSubscriptionDropdown = view.modelBuilder.dropDown().withProps({
-			width: WIZARD_INPUT_COMPONENT_WIDTH,
-			editable: true
-		}).component();
-		this._managedInstanceSubscriptionDropdown.onValueChanged((e) => {
-			if (e) {
-				const selectedIndex = (<azdata.CategoryValue[]>this._managedInstanceSubscriptionDropdown.values)?.findIndex(v => v.displayName === e);
-				this.migrationStateModel._targetSubscription = this.migrationStateModel.getSubscription(selectedIndex);
-				this.migrationStateModel._targetServerInstance = undefined!;
-				this.migrationStateModel._sqlMigrationService = undefined!;
-				this.populateLocationAndResourceGroupDropdown();
-			}
-		});
-		this._resourceDropdownLabel = view.modelBuilder.text().withProps({
-			value: constants.MANAGED_INSTANCE,
-			width: WIZARD_INPUT_COMPONENT_WIDTH
-		}).component();
-
-		const azureLocationLabel = view.modelBuilder.text().withProps({
-			value: constants.LOCATION,
-			width: WIZARD_INPUT_COMPONENT_WIDTH
-		}).component();
-		this._azureLocationDropdown = view.modelBuilder.dropDown().withProps({
-			width: WIZARD_INPUT_COMPONENT_WIDTH
-		}).component();
-		this._azureLocationDropdown.onValueChanged((e) => {
-			if (e.selected) {
-				this.migrationStateModel._location = this.migrationStateModel.getLocation(e.index);
-				this.populateResourceInstanceDropdown();
-			}
-		});
-		this._resourceDropdownLabel = view.modelBuilder.text().withProps({
-			value: constants.MANAGED_INSTANCE,
-			width: WIZARD_INPUT_COMPONENT_WIDTH
-		}).component();
-
-
-		const azureResourceGroupLabel = view.modelBuilder.text().withProps({
-			value: constants.RESOURCE_GROUP,
-			width: WIZARD_INPUT_COMPONENT_WIDTH
-		}).component();
-		this._azureResourceGroupDropdown = view.modelBuilder.dropDown().withProps({
-			width: WIZARD_INPUT_COMPONENT_WIDTH
-		}).component();
-		this._azureResourceGroupDropdown.onValueChanged((e) => {
-			if (e.selected) {
-				this.migrationStateModel._resourceGroup = this.migrationStateModel.getAzureResourceGroup(e.index);
-				this.populateResourceInstanceDropdown();
-			}
-		});
-		this._resourceDropdownLabel = view.modelBuilder.text().withProps({
-			value: constants.MANAGED_INSTANCE,
-			width: WIZARD_INPUT_COMPONENT_WIDTH
-		}).component();
-
-		this._resourceDropdown = view.modelBuilder.dropDown().withProps({
-			width: WIZARD_INPUT_COMPONENT_WIDTH
-		}).component();
-		this._resourceDropdown.onValueChanged((e) => {
-			if (e.selected &&
-				e.selected !== constants.NO_MANAGED_INSTANCE_FOUND &&
-				e.selected !== constants.NO_VIRTUAL_MACHINE_FOUND) {
-				this.migrationStateModel._sqlMigrationServices = undefined!;
-				if (this._rbg.selectedCardId === MigrationTargetType.SQLVM) {
-					this.migrationStateModel._targetServerInstance = this.migrationStateModel.getVirtualMachine(e.index);
-				} else {
-					this.migrationStateModel._targetServerInstance = this.migrationStateModel.getManagedInstance(e.index);
-				}
-			}
-		});
-
-		const targetContainer = view.modelBuilder.flexContainer().withItems(
-			[
-				managedInstanceSubscriptionDropdownLabel,
-				this._managedInstanceSubscriptionDropdown,
-				azureLocationLabel,
-				this._azureLocationDropdown,
-				azureResourceGroupLabel,
-				this._azureResourceGroupDropdown,
-				this._resourceDropdownLabel,
-				this._resourceDropdown
-			]
-		).withLayout({
-			flexFlow: 'column'
-		}).component();
-
-
-
-
-
+		this.assessmentGroupContainer = await this.createViewAssessmentsContainer();
+		this._targetContainer = this.createTargetDropdownContainer();
 		this._formContainer = view.modelBuilder.formContainer().withFormItems(
 			[
 				{
@@ -194,14 +113,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					component: statusContainer
 				},
 				{
-					title: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
 					component: this._chooseTargetComponent
 				},
 				{
-					component: this._azureSubscriptionText
+					component: this.assessmentGroupContainer
 				},
 				{
-					component: targetContainer
+					component: this._targetContainer
 				}
 			]
 		).withProps({
@@ -237,7 +155,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			CSSStyles: {
 				'font-size': '14px',
 				'margin': '0 0 0 8px',
-				'line-height': '20px'
+				'line-height': '20px',
+				'font-weight': 'bold'
 			}
 		}).component();
 		return component;
@@ -256,86 +175,45 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._rbg = this._view!.modelBuilder.radioCardGroup().withProps({
 			cards: [],
-			cardWidth: '600px',
-			cardHeight: '40px',
-			orientation: azdata.Orientation.Vertical,
-			iconHeight: '30px',
-			iconWidth: '30px'
+			iconHeight: '35px',
+			iconWidth: '35px',
+			cardWidth: '250px',
+			cardHeight: '130px',
+			iconPosition: 'left',
+			CSSStyles: {
+				'margin-top': '0px'
+			}
 		}).component();
 
 		this._supportedProducts.forEach((product) => {
-			const descriptions: azdata.RadioCardDescription[] = [
-				{
-					textValue: product.name,
-					textStyles: {
-						'font-size': '14px',
-						'font-weight': 'bold',
-						'line-height': '20px'
-					},
-					linkDisplayValue: 'Learn more',
-					linkStyles: {
-						'font-size': '14px',
-						'line-height': '20px'
-					},
-					displayLinkCodicon: true,
-					linkCodiconStyles: {
-						'font-size': '14px',
-						'line-height': '20px'
-					},
-				},
-				{
-					textValue: '0 selected',
-					textStyles: {
-						'font-size': '13px',
-						'line-height': '18px'
-					},
-					linkStyles: {
-						'font-size': '14px',
-						'line-height': '20px'
-					},
-					linkDisplayValue: 'View/Change',
-					displayLinkCodicon: true,
-					linkCodiconStyles: {
-						'font-size': '13px',
-						'line-height': '18px'
-					}
-				}
-			];
 
 			this._rbg.cards.push({
 				id: product.type,
 				icon: product.icon,
-				descriptions
+				descriptions: [
+					{
+						textValue: product.name,
+						textStyles: {
+							'font-size': '14px',
+							'font-weight': 'bold'
+						}
+					},
+					{
+						textValue: '',
+						textStyles: {
+							'font-size': '13px',
+						}
+					}
+				]
 			});
 		});
 
-		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
-		let miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(serverName), this, MigrationTargetType.SQLMI);
-		let vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(serverName), this, MigrationTargetType.SQLVM);
-
-		this._rbg.onLinkClick(async (value) => {
-			if (value.cardId === MigrationTargetType.SQLVM) {
-				this._rbg.selectedCardId = MigrationTargetType.SQLVM;
-				if (value.description.linkDisplayValue === 'View/Change') {
-					await vmDialog.openDialog();
-				} else if (value.description.linkDisplayValue === 'Learn more') {
-					vscode.env.openExternal(vscode.Uri.parse('https://docs.microsoft.com/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview'));
-				}
-			} else if (value.cardId === MigrationTargetType.SQLMI) {
-				this._rbg.selectedCardId = MigrationTargetType.SQLMI;
-				if (value.description.linkDisplayValue === 'View/Change') {
-					await miDialog.openDialog();
-				} else if (value.description.linkDisplayValue === 'Learn more') {
-					vscode.env.openExternal(vscode.Uri.parse('https://docs.microsoft.com/azure/azure-sql/managed-instance/sql-managed-instance-paas-overview '));
-				}
+		this._rbg.onSelectionChanged((value) => {
+			if (value) {
+				this.assessmentGroupContainer.display = 'inline';
+				this.changeTargetType(value.cardId);
 			}
 		});
-
-		this._rbg.onSelectionChanged((value) => {
-			this.changeTargetType(value.cardId);
-		});
-
-		this._rbg.selectedCardId = MigrationTargetType.SQLMI;
 
 		this._rbgLoader = this._view.modelBuilder.loadingComponent().withItem(
 			this._rbg
@@ -349,17 +227,180 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		return component;
 	}
 
+	private async createViewAssessmentsContainer(): Promise<azdata.FlexContainer> {
+		this._viewAssessmentsHelperText = this._view.modelBuilder.text().withProps({
+			value: constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI,
+			CSSStyles: {
+				'font-size': '13px',
+				'font-weight': 'bold',
+			},
+			width: WIZARD_INPUT_COMPONENT_WIDTH
+		}).component();
+
+		const button = this._view.modelBuilder.button().withProps({
+			label: constants.VIEW_SELECT_BUTTON_LABEL,
+			width: 100
+		}).component();
+
+		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+		let miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(serverName), this, MigrationTargetType.SQLMI);
+		let vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(serverName), this, MigrationTargetType.SQLVM);
+
+		button.onDidClick(async (e) => {
+			if (this._rbg.selectedCardId === MigrationTargetType.SQLVM) {
+				this._rbg.selectedCardId = MigrationTargetType.SQLVM;
+				await vmDialog.openDialog();
+			} else if (this._rbg.selectedCardId === MigrationTargetType.SQLMI) {
+				this._rbg.selectedCardId = MigrationTargetType.SQLMI;
+				await miDialog.openDialog();
+			}
+		});
+
+		this._databaseSelectedHelperText = this._view.modelBuilder.text().withProps({
+			CSSStyles: {
+				'font-size': '13px',
+			}
+		}).component();
+
+		const container = this._view.modelBuilder.flexContainer().withItems([
+			this._viewAssessmentsHelperText,
+			button,
+			this._databaseSelectedHelperText
+		]).withProps({
+			'display': 'none'
+		}).component();
+		return container;
+	}
+
+	private createTargetDropdownContainer(): azdata.FlexContainer {
+		this._azureSubscriptionText = this._view.modelBuilder.text().withProps({
+			CSSStyles: {
+				'font-size': '13px',
+				'line-height': '18px'
+			}
+		}).component();
+
+
+		const managedInstanceSubscriptionDropdownLabel = this._view.modelBuilder.text().withProps({
+			value: constants.SUBSCRIPTION,
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '13px',
+				'font-weight': 'bold',
+			}
+		}).component();
+		this._managedInstanceSubscriptionDropdown = this._view.modelBuilder.dropDown().withProps({
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			editable: true
+		}).component();
+		this._managedInstanceSubscriptionDropdown.onValueChanged((e) => {
+			if (e) {
+				const selectedIndex = (<azdata.CategoryValue[]>this._managedInstanceSubscriptionDropdown.values)?.findIndex(v => v.displayName === e);
+				this.migrationStateModel._targetSubscription = this.migrationStateModel.getSubscription(selectedIndex);
+				this.migrationStateModel._targetServerInstance = undefined!;
+				this.migrationStateModel._sqlMigrationService = undefined!;
+				this.populateLocationAndResourceGroupDropdown();
+			}
+		});
+
+		const azureLocationLabel = this._view.modelBuilder.text().withProps({
+			value: constants.LOCATION,
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '13px',
+				'font-weight': 'bold',
+			}
+		}).component();
+		this._azureLocationDropdown = this._view.modelBuilder.dropDown().withProps({
+			width: WIZARD_INPUT_COMPONENT_WIDTH
+		}).component();
+		this._azureLocationDropdown.onValueChanged((e) => {
+			if (e.selected) {
+				this.migrationStateModel._location = this.migrationStateModel.getLocation(e.index);
+				this.populateResourceInstanceDropdown();
+			}
+		});
+
+		const azureResourceGroupLabel = this._view.modelBuilder.text().withProps({
+			value: constants.RESOURCE_GROUP,
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '13px',
+				'font-weight': 'bold',
+			}
+		}).component();
+		this._azureResourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
+			width: WIZARD_INPUT_COMPONENT_WIDTH
+		}).component();
+		this._azureResourceGroupDropdown.onValueChanged((e) => {
+			if (e.selected) {
+				this.migrationStateModel._resourceGroup = this.migrationStateModel.getAzureResourceGroup(e.index);
+				this.populateResourceInstanceDropdown();
+			}
+		});
+		this._resourceDropdownLabel = this._view.modelBuilder.text().withProps({
+			value: constants.MANAGED_INSTANCE,
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '13px',
+				'font-weight': 'bold',
+			}
+		}).component();
+
+		this._resourceDropdown = this._view.modelBuilder.dropDown().withProps({
+			width: WIZARD_INPUT_COMPONENT_WIDTH
+		}).component();
+		this._resourceDropdown.onValueChanged((e) => {
+			if (e.selected &&
+				e.selected !== constants.NO_MANAGED_INSTANCE_FOUND &&
+				e.selected !== constants.NO_VIRTUAL_MACHINE_FOUND) {
+				this.migrationStateModel._sqlMigrationServices = undefined!;
+				if (this._rbg.selectedCardId === MigrationTargetType.SQLVM) {
+					this.migrationStateModel._targetServerInstance = this.migrationStateModel.getVirtualMachine(e.index);
+				} else {
+					this.migrationStateModel._targetServerInstance = this.migrationStateModel.getManagedInstance(e.index);
+				}
+			}
+		});
+
+		return this._view.modelBuilder.flexContainer().withItems(
+			[
+				this._azureSubscriptionText,
+				managedInstanceSubscriptionDropdownLabel,
+				this._managedInstanceSubscriptionDropdown,
+				azureLocationLabel,
+				this._azureLocationDropdown,
+				azureResourceGroupLabel,
+				this._azureResourceGroupDropdown,
+				this._resourceDropdownLabel,
+				this._resourceDropdown
+			]
+		).withLayout({
+			flexFlow: 'column',
+		}).withProps({
+			CSSStyles: {
+				'display': 'none'
+			}
+		}).component();
+
+	}
+
 	private changeTargetType(newTargetType: string) {
 		if (newTargetType === MigrationTargetType.SQLMI) {
+			this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI;
+			this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel._miDbs.length, this.migrationStateModel._serverDatabases.length);
 			this.migrationStateModel._targetType = MigrationTargetType.SQLMI;
 			this._azureSubscriptionText.value = constants.SELECT_AZURE_MI;
 			this.migrationStateModel._migrationDbs = this.migrationStateModel._miDbs;
 		} else {
+			this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM;
+			this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel._vmDbs.length, this.migrationStateModel._serverDatabases.length);
 			this.migrationStateModel._targetType = MigrationTargetType.SQLVM;
 			this._azureSubscriptionText.value = constants.SELECT_AZURE_VM;
 			this.migrationStateModel._migrationDbs = this.migrationStateModel._vmDbs;
 		}
 		this.migrationStateModel.refreshDatabaseBackupPage = true;
+		this._targetContainer.display = (this.migrationStateModel._migrationDbs.length === 0) ? 'none' : 'inline';
 		this.populateResourceInstanceDropdown();
 	}
 
@@ -376,17 +417,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this.refreshCardText();
 		this._assessmentLoader.loading = false;
-	}
-
-	private createAzureSubscriptionText(view: azdata.ModelView): azdata.TextComponent {
-		const component = view.modelBuilder.text().withProps({
-			CSSStyles: {
-				'font-size': '13px',
-				'line-height': '18px'
-			}
-		}).component();
-
-		return component;
 	}
 
 	private async populateSubscriptionDropdown(): Promise<void> {
@@ -518,22 +548,24 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			text: '',
 			level: azdata.window.MessageLevel.Error
 		};
-
 		if (this._rbg.selectedCardId === MigrationTargetType.SQLMI) {
 			this.migrationStateModel._migrationDbs = this.migrationStateModel._miDbs;
 		} else {
 			this.migrationStateModel._migrationDbs = this.migrationStateModel._vmDbs;
 		}
 
+		this._azureResourceGroupDropdown.display = (!this._rbg.selectedCardId) ? 'none' : 'inline';
+		this._targetContainer.display = (this.migrationStateModel._migrationDbs.length === 0) ? 'none' : 'inline';
+
 
 		if (this.migrationStateModel._assessmentResults) {
 			const dbCount = this.migrationStateModel._assessmentResults.databaseAssessments.length;
 
 			const dbWithoutIssuesCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter(db => db.issues.length === 0).length;
-			const miCardText = `${dbWithoutIssuesCount} out of ${dbCount} databases can be migrated (${this.migrationStateModel._miDbs.length} selected)`;
+			const miCardText = `${dbWithoutIssuesCount} out of ${dbCount} databases can be migrated`;
 			this._rbg.cards[0].descriptions[1].textValue = miCardText;
 
-			const vmCardText = `${dbCount} out of ${dbCount} databases can be migrated (${this.migrationStateModel._vmDbs.length} selected)`;
+			const vmCardText = `${dbCount} out of ${dbCount} databases can be migrated`;
 			this._rbg.cards[1].descriptions[1].textValue = vmCardText;
 
 			this._rbg.updateProperties({
@@ -541,10 +573,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			});
 		} else {
 
-			const miCardText = `${this.migrationStateModel._miDbs.length} selected`;
+			const miCardText = ``;
 			this._rbg.cards[0].descriptions[1].textValue = miCardText;
 
-			const vmCardText = `${this.migrationStateModel._vmDbs.length} selected`;
+			const vmCardText = ``;
 			this._rbg.cards[1].descriptions[1].textValue = vmCardText;
 
 			this._rbg.updateProperties({
