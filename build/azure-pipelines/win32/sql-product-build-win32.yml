@@ -129,7 +129,7 @@ steps:
       Move-Item $tempFilePath $zipFilePath
       Expand-Archive $zipFilePath -DestinationPath $adsExtensionPath
     displayName: Install SAW Extensions
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'), eq(variables['SPYTHON'], true))
+    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'))
 
   # - powershell: | @anthonydresser unit tests timeout never existing the node process
   #     . build/azure-pipelines/win32/exec.ps1
