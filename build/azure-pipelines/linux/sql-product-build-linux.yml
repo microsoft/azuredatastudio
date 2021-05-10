@@ -108,7 +108,7 @@ steps:
 
   - script: |
       set -e
-      yarn gulp package-external-extensions
+      yarn gulp package-langpacks
     displayName: Package Langpacks
 
   - script: |
