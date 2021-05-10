@@ -306,9 +306,9 @@ export function ACTIVE_BACKUP_FILES_ITEMS(fileCount: number) {
 }
 export const COPY_MIGRATION_DETAILS = localize('sql.migration.copy.migration.details', "Copy Migration Details");
 export const DETAILS_COPIED = localize('sql.migration.details.copied', "Details copied");
-export const ARE_YOU_SURE_CANCEL = localize('sql.migration.cancel.confirmation', "Are you sure you want to cancel this migration?");
+export const CANCEL_MIGRATION_CONFIRMATION = localize('sql.cancel.migration.confirmation', "Are you sure you want to cancel this migration?");
 export const YES = localize('sql.migration.yes', "Yes");
-export const NO = localize('sql.migration.NO', "No");
+export const NO = localize('sql.migration.no', "No");
 
 //Migration confirm cutover dialog
 export const BUSINESS_CRITICAL_INFO = localize('sql.migration.bc.info', "Managed Instance migration cutover for Business Critical service tier can take significantly longer than General Purpose as three secondary replicas have to be seeded for Always On High Availability group. This operation duration depends on the size of data. Seeding speed in 90% of cases is 220 GB/hour or higher.");
