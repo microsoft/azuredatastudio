@@ -47,6 +47,7 @@ export interface IAccountManagementService {
 	readonly updateAccountListEvent: Event<UpdateAccountListEventParams>;
 }
 
+// API sqlExtHostTypes.ts > AzureResource should also be updated
 // Enum matching the AzureResource enum from azdata.d.ts
 export enum AzureResource {
 	ResourceManagement = 0,
