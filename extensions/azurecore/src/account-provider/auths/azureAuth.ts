@@ -73,6 +73,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 			this.resources = this.resources.concat(this.metadata.settings.azureDevOpsResource);
 		}
 
+		if (this.metadata.settings.azureLogAnalyticsResource) {
+			this.resources = this.resources.concat(this.metadata.settings.azureLogAnalyticsResource);
+		}
+
 		this.scopes = [...this.metadata.settings.scopes];
 		this.scopesString = this.scopes.join(' ');
 	}
