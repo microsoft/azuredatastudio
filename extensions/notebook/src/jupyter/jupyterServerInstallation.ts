@@ -182,12 +182,18 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			if (!this._usingExistingPython && this._oldPythonExecutable && utils.compareVersions(await this.getInstalledPythonVersion(this._oldPythonExecutable), constants.pythonVersion) < 0) {
 				upgradePython = await vscode.window.showInformationMessage(msgPythonVersionUpdateWarning(constants.pythonVersion), yes, no) === yes;
 				if (upgradePython) {
+					this._upgradeInProcess = true;
 					if (await this.isPythonRunning(this._oldPythonExecutable)) {
 						let proceed = await vscode.window.showInformationMessage(msgShutdownJupyterNotebookSessions, yes, no) === yes;
 						if (!proceed) {
 							throw Error('Python update failed due to active Python notebook sessions.');
 						}
+						// Temporarily change the pythonExecutable to the old Python path so that the
+						// correct path is used to shutdown the old Python server.
+						let newPythonExecutable = this._pythonExecutable;
+						this._pythonExecutable = this._oldPythonExecutable;
 						await vscode.commands.executeCommand('notebook.action.stopJupyterNotebookSessions');
+						this._pythonExecutable = newPythonExecutable;
 					}
 
 					this._oldUserInstalledPipPackages = await this.getInstalledPipPackages(this._oldPythonExecutable, true);
@@ -199,7 +205,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 					await fs.remove(this._oldPythonInstallationPath).catch(err => {
 						throw (err);
 					});
-					this._upgradeInProcess = true;
 				}
 			}
 
@@ -461,13 +466,14 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 						this._installCompletion.resolve();
 						this._installInProgress = false;
 						if (this._upgradeInProcess) {
-							// Pass in false for rstartJupyterServer parameter since the jupyter server has already been shutdown
+							// Pass in false for restartJupyterServer parameter since the jupyter server has already been shutdown
 							// when removing the old Python version.
 							await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions', false);
 
 							if (this._oldUserInstalledPipPackages.length !== 0) {
 								await this.createInstallPipPackagesHelpNotebook(this._oldUserInstalledPipPackages);
 							}
+							this._upgradeInProcess = false;
 						} else {
 							await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions');
 						}
