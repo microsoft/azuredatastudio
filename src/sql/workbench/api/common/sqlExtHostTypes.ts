@@ -425,6 +425,7 @@ export class TreeComponentItem extends vsExtTypes.TreeItem {
 	checked?: boolean;
 }
 
+// Accounts interfaces.ts > AzureResource should also be updated
 export enum AzureResource {
 	ResourceManagement = 0,
 	Sql = 1,

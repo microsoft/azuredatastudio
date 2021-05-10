@@ -35,9 +35,12 @@ describe('utils: Tests to verify getEndpointName @DacFx@', function (): void {
 
 	it('Should get only database information from ConnectionInfo if connection', () => {
 		const testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
-		testDatabaseEndpoint.serverDisplayName = 'My Connection';
 		testDatabaseEndpoint.connectionDetails = { ...mockConnectionInfo };
 
+		should(getEndpointName(testDatabaseEndpoint)).equal('My Server.My Database');
+
+		// set connection name and connection name should be used in endpoint name
+		testDatabaseEndpoint.connectionName = 'My Connection';
 		should(getEndpointName(testDatabaseEndpoint)).equal('My Connection.My Database');
 	});
 
@@ -50,11 +53,14 @@ describe('utils: Tests to verify getEndpointName @DacFx@', function (): void {
 
 	it('Should get correct endpoint information from SchemaCompareEndpointInfo', () => {
 		const dbName = 'My Database';
-		const serverDisplayName = 'My Connection';
+		const serverName = 'My Server';
 		const testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
 		testDatabaseEndpoint.databaseName = dbName;
-		testDatabaseEndpoint.serverDisplayName = serverDisplayName;
+		testDatabaseEndpoint.serverName = serverName;
+		should(getEndpointName(testDatabaseEndpoint)).equal('My Server.My Database');
 
+		// set connection name and verify endpoint name uses connection name
+		testDatabaseEndpoint.connectionName = 'My Connection';
 		should(getEndpointName(testDatabaseEndpoint)).equal('My Connection.My Database');
 	});
 });
