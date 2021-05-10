@@ -14,15 +14,8 @@ let vfs = require("vinyl-fs");
 let rimraf = require('rimraf');
 let minimist = require('minimist');
 
-const textFields = {
-	"nameText": 'ads',
-	"displayNameText": 'Azure Data Studio',
-	"publisherText": 'Microsoft',
-	"licenseText": 'SEE SOURCE EULA LICENSE IN LICENSE.txt',
-	"updateText": 'cd ../vscode && npm run update-localization-extension '
-}
 
-//ADS language pack folder length
+//Length of "ads-language-pack-", used to isolate ID.
 const adsLangPackFolderLength = 17;
 
 //Extensions for ADS
@@ -30,11 +23,11 @@ const currentADSJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../../i1
 const currentADSExtensions = currentADSJson.ADSExtensions;
 const vscodeExtensions = currentADSJson.VSCODEExtensions;
 
-function runUpdateOnLanguages(){
-	let i18nPath =  path.join('.', 'i18n');
+function runUpdateOnLanguages() {
+	let i18nPath = path.join('.', 'i18n');
 	let i18nFolders = fs.readdirSync(i18nPath).filter(folderName => folderName.match(/ads-language-pack-[A-z]+/));
-	let langIds = i18nFolders.map(folderName => {return folderName.substring(adsLangPackFolderLength + 1);});
-	for(let langId in langIds){
+	let langIds = i18nFolders.map(folderName => { return folderName.substring(adsLangPackFolderLength + 1); });
+	for (let langId in langIds) {
 		update(langIds[langId]);
 	}
 }
@@ -57,12 +50,7 @@ function update(langId) {
 		throw new Error('No directory found at ' + idOrPath);
 	}
 	let packageJSON = JSON.parse(fs.readFileSync(path.join(locExtFolder, 'package.json')).toString());
-	//processing extension fields, version and folder name must be changed manually.
-	packageJSON['name'] = packageJSON['name'].replace('vscode', textFields.nameText);
-	packageJSON['displayName'] = packageJSON['displayName'].replace('Visual Studio Code', textFields.displayNameText);
-	packageJSON['publisher'] = textFields.publisherText;
-	packageJSON['license'] = textFields.licenseText;
-	packageJSON['scripts']['update'] = textFields.updateText + idOrPath;
+	//Increment version automatically.
 	packageJSON['version'] = incrementVersion(packageJSON['version']);
 
 	let contributes = packageJSON['contributes'];
