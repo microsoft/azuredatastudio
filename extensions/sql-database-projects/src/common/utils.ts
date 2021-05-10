@@ -110,18 +110,24 @@ function getQuotedNonWindowsPath(filePath: string): string {
  * Get safe relative path for Windows and non-Windows Platform
  * This is needed to read sqlproj entried created on SSDT and opened in MAC
  * '/' in tree is recognized all platforms but "\\" only by windows
+ *
+ * @param filePath Path to the file or folder.
  */
 export function getPlatformSafeFileEntryPath(filePath: string): string {
-	const parts = filePath.split('\\');
-	return parts.join('/');
+	return filePath.includes('\\')
+		? filePath.split('\\').join('/')
+		: filePath;
 }
 
 /**
  * Standardizes slashes to be "\\" for consistency between platforms and compatibility with SSDT
+ *
+ * @param filePath Path to the file of folder.
  */
 export function convertSlashesForSqlProj(filePath: string): string {
-	const parts = filePath.split('/');
-	return parts.join('\\');
+	return filePath.includes('/')
+		? filePath.split('/').join('\\')
+		: filePath;
 }
 
 /**
