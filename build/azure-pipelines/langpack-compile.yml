@@ -86,16 +86,7 @@ steps:
 
 - script: |
     set -e
-    yarn gulp refresh-langpack-extension de --location '.resources\xlf'
-    yarn gulp refresh-langpack-extension es --location '.resources\xlf'
-    yarn gulp refresh-langpack-extension fr --location '.resources\xlf'
-    yarn gulp refresh-langpack-extension it --location '.resources\xlf'
-    yarn gulp refresh-langpack-extension ja --location '.resources\xlf'
-    yarn gulp refresh-langpack-extension ko --location '.resources\xlf'
-    yarn gulp refresh-langpack-extension pt-br --location '.resources\xlf'
-    yarn gulp refresh-langpack-extension ru --location '.resources\xlf'
-    yarn gulp refresh-langpack-extension zh-hans --location '.resources\xlf'
-    yarn gulp refresh-langpack-extension zh-hant --location '.resources\xlf'
+    yarn gulp refresh-langpack-extension
   displayName: Refresh Langpacks.
 
 - bash: |
