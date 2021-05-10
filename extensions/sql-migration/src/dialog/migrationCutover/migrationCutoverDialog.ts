@@ -539,8 +539,7 @@ export class MigrationCutoverDialog {
 			});
 
 			if (migrationStatusTextValue === MigrationStatus.InProgress) {
-				const fileNotRestored = await tableData.some(file => file.status !== 'Restored' && file.status !== 'Ignored');
-				this._cutoverButton.enabled = !fileNotRestored && tableData.length > 0;
+				this._cutoverButton.enabled = tableData.length > 0;
 			} else {
 				this._cutoverButton.enabled = false;
 				this._cancelButton.enabled = false;
