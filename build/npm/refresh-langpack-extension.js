@@ -92,6 +92,7 @@ function update(langId) {
 			for (let extensionTag in totalExtensions) {
 				let extensionName = totalExtensions[extensionTag].replace('i18n.json', '');
 				if (!(currentADSExtensions[extensionName] !== undefined || vscodeExtensions.indexOf(extensionName) !== -1)) {
+					// Extension is not recognized as a valid ADS extension, must be removed. (Used when converting vscode-langpacks).
 					let filePath = path.join(translationDataFolder, 'extensions', extensionName + '.i18n.json')
 					rimraf.sync(filePath);
 				}
