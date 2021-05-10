@@ -10,7 +10,7 @@
   "aiKey": "06ba2446-fa56-40aa-853a-26b73255b723",
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.27.0"
+    "azdata": ">=1.29.0"
   },
   "activationEvents": [
     "onDashboardOpen",
