@@ -276,6 +276,7 @@ export const EASTUS2EUAP = localize('sql.migration.eastus2euap', 'East US 2 EUAP
 
 //Migration cutover dialog
 export const MIGRATION_CUTOVER = localize('sql.migration.cutover', "Migration cutover");
+export const COMPLETE_CUTOVER = localize('sql.migration.complete.cutover', "Complete cutover");
 export const SOURCE_DATABASE = localize('sql.migration.source.database', "Source database name");
 export const SOURCE_SERVER = localize('sql.migration.source.server', "Source server");
 export const SOURCE_VERSION = localize('sql.migration.source.version', "Source version");
@@ -305,8 +306,23 @@ export function ACTIVE_BACKUP_FILES_ITEMS(fileCount: number) {
 }
 export const COPY_MIGRATION_DETAILS = localize('sql.migration.copy.migration.details', "Copy Migration Details");
 export const DETAILS_COPIED = localize('sql.migration.details.copied', "Details copied");
+export const ARE_YOU_SURE_CANCEL = localize('sql.migration.cancel.confirmation', "Are you sure you want to cancel this migration?");
+export const YES = localize('sql.migration.yes', "Yes");
+export const NO = localize('sql.migration.NO', "No");
 
-
+//Migration confirm cutover dialog
+export const BUSINESS_CRITICAL_INFO = localize('sql.migration.bc.info', "Managed Instance migration cutover for Business Critical service tier can take significantly longer than General Purpose as three secondary replicas have to be seeded for Always On High Availability group. This operation duration depends on the size of data. Seeding speed in 90% of cases is 220 GB/hour or higher.");
+export const CUTOVER_HELP_MAIN = localize('sql.migration.cutover.help.main', "When you are ready to do the migration cutover, perform the following steps to complete the database migration. Please note that the database is ready for cutover only after a full backup has been restored on the target Azure SQL Database Managed Instance.");
+export const CUTOVER_HELP_STEP1 = localize('sql.migration.cutover.step.1', "1. Stop all the incoming transactions coming to the source database.");
+export const CUTOVER_HELP_STEP2 = localize('sql.migration.cutover.step.2', "2. Take the final transaction log backup and provide backup file in the SMB network share.");
+export const CUTOVER_HELP_STEP3 = localize('sql.migration.cutover.step.3', "3. Make sure all the pending log backups are restored on the target. At that point, “Pending log backups” counter shows zero and then perform the cutover. Performing cutover operation without applying all the transaction log backup files may result in loss of data.");
+export function PENDING_BACKUPS(count: number): string {
+	return localize('sql.migartion.cutover.pending.backup', "Pending log backups: {0}", count);
+}
+export const CONFIRM_CUTOVER_CHECKBOX = localize('sql.migration.confirm.checkbox.message', "Confirm all pending log backups are restored");
+export function CUTOVER_IN_PROGRESS(dbName: string): string {
+	return localize('sql.migration.cutover.in.progress', "Cutover in progress for database '{0}'", dbName);
+}
 //Migration status dialog
 export const SEARCH_FOR_MIGRATIONS = localize('sql.migration.search.for.migration', "Search for migrations");
 export const ONLINE = localize('sql.migration.online', "Online");
