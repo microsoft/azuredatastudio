@@ -49,7 +49,6 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 
 	ngOnInit() {
 		this.initActionBar();
-		this._register(this.cell.onExecutionStateChange(e => this.executionState = e));
 	}
 
 	ngOnChanges() {
@@ -128,8 +127,6 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	public set executionState(state: CellExecutionState) {
 		if (this._executionState !== state) {
 			this._executionState = state;
-			this.detectChanges();
-			this.changed('execution');
 		}
 	}
 
@@ -162,7 +159,7 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	}
 
 	public get display(): boolean {
-		if (!this._metadata || !this._activeView || this.awaitingInput) {
+		if (!this._metadata || !this._activeView) {
 			return true;
 		}
 
@@ -170,7 +167,7 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	}
 
 	public get awaitingInput(): boolean {
-		return this.cell.future && this.cell.future.inProgress && (this.cell.outputs.length > 0 || this.cell.stdInVisible);
+		return this.cell.future && this.cell.future.inProgress;// && (this.cell.outputs.length > 0 || this.cell.stdInVisible);
 	}
 
 	public get showActionBar(): boolean {

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./notebookViewsGrid';
 import { Component, Input, ViewChildren, QueryList, ChangeDetectorRef, forwardRef, Inject, ViewChild, ElementRef, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
-import { ICellModel, INotebookModel, ISingleNotebookEditOperation, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, INotebookModel, ISingleNotebookEditOperation, } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { ICellEditorProvider, INotebookParams, INotebookService, INotebookEditor, NotebookRange, INotebookSection, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
@@ -24,7 +24,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { CellType, CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
+import { CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
@@ -59,7 +59,6 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 	public previewFeaturesEnabled: boolean = false;
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 	private _runAllCellsAction: RunAllCellsAction;
-	private _cellsAwaitingInput: Map<string, ICellModel> = new Map<string, ICellModel>();
 	private _scrollTop: number;
 
 	constructor(
@@ -170,7 +169,6 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		this.setScrollPosition();
 
 		this.doLoad().then(() => {
-			this.model.contentChanged((e: NotebookContentChange) => this.handleContentChanged(e));
 		}).catch(e => onUnexpectedError(e));
 	}
 
@@ -180,25 +178,6 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 
 	ngOnChanges() {
 		this.initViewsToolbar();
-	}
-
-	handleContentChanged(e: NotebookContentChange) {
-		if (e.changeType === NotebookChangeType.CellExecutionStarted) {
-			const cell: ICellModel = e.cells[0];
-			if (cell.future.inProgress && (cell.outputs.length || cell.stdInVisible)) {
-				this._cellsAwaitingInput[cell.id] = cell;
-			}
-		}
-
-		if (e.changeType === NotebookChangeType.CellExecuted) {
-			const cell: ICellModel = e.cells[0];
-
-			if (this._cellsAwaitingInput.has(cell.id)) {
-				this._cellsAwaitingInput.delete(cell.id);
-			}
-		}
-
-		this.detectChanges();
 	}
 
 	private async doLoad(): Promise<void> {

@@ -27,6 +27,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { Deferred } from 'sql/base/common/promise';
+import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 
 export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 
@@ -190,6 +191,10 @@ export class NotebookEditorComponent extends AngularDisposable {
 
 	private handleContentChanged(change: NotebookContentChange) {
 		// Note: for now we just need to set dirty state and refresh the UI.
+		if (change.changeType === NotebookChangeType.MetadataChanged) {
+			this.handleActiveViewChanged();
+		}
+
 		this.detectChanges();
 	}
 

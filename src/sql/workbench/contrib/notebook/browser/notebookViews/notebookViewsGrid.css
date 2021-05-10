@@ -27,13 +27,6 @@
 	position: absolute;
 	padding: 0;
 }
-.grid-stack > .grid-stack-item .modal{
-	display: block;
-	position: absolute;
-	z-index: 999;
-	height: 100%;
-	width: 100%;
-}
 
 .grid-stack > .grid-stack-item > .grid-stack-item-content {
 	margin: 0;
@@ -426,4 +419,14 @@
 
 .nb-grid-stack.grid-stack output-area-component .notebook-output {
 	padding: 0px 0px 0px;
+}
+
+.nb-grid-stack.grid-stack .modal{
+	display: block;
+	position: absolute;
+	z-index: 999;
+	height: 100%;
+	width: 100%;
+	background: #fff;
+	border: 1px solid rgb(244, 244, 244);
 }

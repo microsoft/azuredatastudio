@@ -8,13 +8,11 @@
 	<div
 		*ngIf="display"
 		class="grid-stack-item"
-		[class.modal]="modal"
 		attr.data-cell-id="{{cell.cellGuid}}"
 		attr.gs-w="{{width}}"
 		attr.gs-h="{{height}}"
 		attr.gs-x="{{x}}"
 		attr.gs-y="{{y}}"
-		attr.gs-exec="{{executionState}}"
 		(click)="selectCell(cell, $event)"
 	>
 		<div
@@ -32,5 +30,8 @@
 				</div>
 			</div>
 		</div>
+	</div>
+	<div *ngIf="!display && modal">
+		<views-code-cell-component *ngIf="cell.cellType === 'code'" [class.modal]="modal" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId"></views-code-cell-component>
 	</div>
 </ng-template>

@@ -19,6 +19,7 @@ export const CODE_SELECTOR: string = 'views-code-cell-component';
 
 export class NotebookViewsCodeCellComponent extends CodeCellComponent implements OnChanges {
 	@Input() display: boolean;
+	@Input() modal: boolean;
 
 	public stdIn: nb.IStdinMessage;
 
