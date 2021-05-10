@@ -125,6 +125,10 @@ function update(langId) {
 								//handle edge case where 'theme-seti' has a different id.
 								curr.id = 'vscode.vscode-theme-seti';
 							}
+							else if (curr.id === 'vscode.markdown-basics') {
+								//handle edge case where 'markdown-basics' has a different id.
+								curr.id = 'vscode.markdown';
+							}
 							fs.statSync(path.join(translationDataFolder, curr.path.replace('./translations', '')));
 						}
 						catch {

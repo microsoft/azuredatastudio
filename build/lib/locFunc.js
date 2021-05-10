@@ -103,7 +103,7 @@ function modifyI18nPackFiles(languageId, existingTranslationFolder, adsExtension
     let errors = [];
     return event_stream_1.through(function (xlf) {
         let project = path.basename(path.dirname(xlf.relative));
-        let regex = new RegExp(`.${languageId}`, 'i');
+        let regex = new RegExp(`\\.${languageId}`, 'i');
         let resource = path.basename(xlf.relative, '.xlf').replace(regex, '');
         let contents = xlf.contents.toString();
         let parsePromise = pseudo ? i18n.XLF.parsePseudo(contents) : i18n.XLF.parse(contents);

@@ -134,7 +134,7 @@ export function modifyI18nPackFiles(languageId: string, existingTranslationFolde
 	let errors: any[] = [];
 	return through(function (this: ThroughStream, xlf: File) {
 		let project = path.basename(path.dirname(xlf.relative));
-		let regex = new RegExp(`.${languageId}`, 'i');
+		let regex = new RegExp(`\\.${languageId}`, 'i');
 		let resource = path.basename(xlf.relative, '.xlf').replace(regex, '');
 		let contents = xlf.contents.toString();
 		let parsePromise = pseudo ? i18n.XLF.parsePseudo(contents) : i18n.XLF.parse(contents);
@@ -177,7 +177,6 @@ export function modifyI18nPackFiles(languageId: string, existingTranslationFolde
 				for (let extension in extensionsPacks) {
 					const translatedExtFile = createI18nFile(`extensions/${extension}`, extensionsPacks[extension]);
 					this.queue(translatedExtFile);
-
 					const adsExtensionId = adsExtensions[extension];
 					if (adsExtensionId) {
 						resultingTranslationPaths.push({ id: adsExtensionId, resourceName: `extensions/${extension}.i18n.json` });
