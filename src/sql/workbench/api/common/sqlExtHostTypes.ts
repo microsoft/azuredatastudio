@@ -425,6 +425,7 @@ export class TreeComponentItem extends vsExtTypes.TreeItem {
 	checked?: boolean;
 }
 
+// Accounts interfaces.ts > AzureResource should also be updated
 export enum AzureResource {
 	ResourceManagement = 0,
 	Sql = 1,
@@ -433,7 +434,8 @@ export enum AzureResource {
 	Graph = 4,
 	MicrosoftResourceManagement = 5,
 	AzureDevOps = 6,
-	MsGraph = 7
+	MsGraph = 7,
+	AzureLogAnalytics = 8
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {

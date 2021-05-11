@@ -98,12 +98,13 @@ export class SchemaCompareMainWindow {
 
 			this.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
-				serverDisplayName: profile.connectionName ? profile.connectionName : profile.serverName,
+				serverDisplayName: `${profile.serverName} (${usr})`,
 				serverName: profile.serverName,
 				databaseName: profile.databaseName,
 				ownerUri: ownerUri,
 				packageFilePath: '',
-				connectionDetails: undefined
+				connectionDetails: undefined,
+				connectionName: profile.connectionName
 			};
 		} else if (sourceDacpac) {
 			this.sourceEndpointInfo = {

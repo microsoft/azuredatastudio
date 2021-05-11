@@ -49,14 +49,17 @@ export function getEndpointName(endpoint: mssql.SchemaCompareEndpointInfo): stri
 	}
 
 	if (endpoint.endpointType === mssql.SchemaCompareEndpointType.Database) {
-		if (!endpoint.serverDisplayName && endpoint.connectionDetails) {
-			endpoint.serverDisplayName = endpoint.connectionDetails['serverName'];
+		if (!endpoint.serverName && endpoint.connectionDetails) {
+			endpoint.serverName = endpoint.connectionDetails['serverName'];
 		}
 		if (!endpoint.databaseName && endpoint.connectionDetails) {
 			endpoint.databaseName = endpoint.connectionDetails['databaseName'];
 		}
-		if (endpoint.serverDisplayName && endpoint.databaseName) {
-			return `${endpoint.serverDisplayName}.${endpoint.databaseName}`;
+		if (endpoint.connectionName && endpoint.databaseName) {
+			return `${endpoint.connectionName}.${endpoint.databaseName}`;
+		}
+		if (endpoint.serverName && endpoint.databaseName) {
+			return `${endpoint.serverName}.${endpoint.databaseName}`;
 		} else {
 			return ' ';
 		}

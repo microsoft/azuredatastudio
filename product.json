@@ -61,7 +61,6 @@
 		"Microsoft.machine-learning",
 		"Redgate.sql-prompt",
 		"Redgate.sql-search",
-		"IDERA.sqldm-performance-insights",
 		"SentryOne.plan-explorer"
 	],
 	"recommendedExtensionsByScenario": {

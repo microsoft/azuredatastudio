@@ -100,16 +100,18 @@ export class SchemaCompareDialog {
 				connectionDetails: undefined
 			};
 		} else {
-			let ownerUri = await azdata.connection.getUriForConnection((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
+			const sourceServerDropdownValue = this.sourceServerDropdown.value as ConnectionDropdownValue;
+			const ownerUri = await azdata.connection.getUriForConnection(sourceServerDropdownValue.connection.connectionId);
 
 			this.schemaCompareMainWindow.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
-				serverDisplayName: (this.sourceServerDropdown.value as ConnectionDropdownValue).displayName,
-				serverName: (this.sourceServerDropdown.value as ConnectionDropdownValue).name,
+				serverDisplayName: sourceServerDropdownValue.displayName,
+				serverName: sourceServerDropdownValue.name,
 				databaseName: this.sourceDatabaseDropdown.value.toString(),
 				ownerUri: ownerUri,
 				packageFilePath: '',
-				connectionDetails: undefined
+				connectionDetails: undefined,
+				connectionName: sourceServerDropdownValue.connection.options.connectionName
 			};
 		}
 
@@ -124,16 +126,18 @@ export class SchemaCompareDialog {
 				connectionDetails: undefined
 			};
 		} else {
-			let ownerUri = await azdata.connection.getUriForConnection((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
+			const targetServerDropdownValue = this.targetServerDropdown.value as ConnectionDropdownValue;
+			const ownerUri = await azdata.connection.getUriForConnection(targetServerDropdownValue.connection.connectionId);
 
 			this.schemaCompareMainWindow.targetEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
-				serverDisplayName: (this.targetServerDropdown.value as ConnectionDropdownValue).displayName,
-				serverName: (this.targetServerDropdown.value as ConnectionDropdownValue).name,
+				serverDisplayName: targetServerDropdownValue.displayName,
+				serverName: targetServerDropdownValue.name,
 				databaseName: this.targetDatabaseDropdown.value.toString(),
 				ownerUri: ownerUri,
 				packageFilePath: '',
-				connectionDetails: undefined
+				connectionDetails: undefined,
+				connectionName: targetServerDropdownValue.connection.options.connectionName
 			};
 		}
 
