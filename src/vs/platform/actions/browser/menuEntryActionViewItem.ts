@@ -44,8 +44,7 @@ function asDisposable(groups: ReadonlyArray<[string, ReadonlyArray<MenuItemActio
 	return disposables;
 }
 
-// {{SQL CARBON EDIT}} add export modifier
-export function fillInActions(groups: ReadonlyArray<[string, ReadonlyArray<MenuItemAction | SubmenuItemAction>]>, target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, useAlternativeActions: boolean, isPrimaryGroup: (group: string) => boolean = group => group === 'navigation', primaryMaxCount: number = Number.MAX_SAFE_INTEGER): void {
+export function fillInActions(groups: ReadonlyArray<[string, ReadonlyArray<MenuItemAction | SubmenuItemAction>]>, target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, useAlternativeActions: boolean, isPrimaryGroup: (group: string) => boolean = group => group === 'navigation', primaryMaxCount: number = Number.MAX_SAFE_INTEGER): void { // {{SQL CARBON EDIT}} add export modifier
 
 	let primaryBucket: IAction[];
 	let secondaryBucket: IAction[];
