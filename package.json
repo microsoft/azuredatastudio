@@ -225,7 +225,7 @@
     "typemoq": "^0.3.2",
     "typescript": "4.2.0-dev.20201207",
     "typescript-formatter": "7.1.0",
-    "underscore": "^1.8.2",
+    "underscore": "^1.12.1",
     "vinyl": "^2.0.0",
     "vinyl-fs": "^3.0.0",
     "vscode-debugprotocol": "1.44.0",
