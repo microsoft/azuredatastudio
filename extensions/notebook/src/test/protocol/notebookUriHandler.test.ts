@@ -16,6 +16,7 @@ import * as constants from '../../common/constants';
 import { mkdtemp } from 'fs-extra';
 
 import { NotebookUriHandler } from '../../protocol/notebookUriHandler';
+import { CellTypes } from '../../contracts/content';
 
 describe('Notebook URI Handler', function (): void {
 	let notebookUriHandler: NotebookUriHandler;
@@ -119,10 +120,27 @@ describe('Notebook URI Handler', function (): void {
 		let showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(Promise.resolve(loc.msgYes) as any);
 		let notebookDir = await mkdtemp(os.tmpdir());
 		let notebookPath = path.join(notebookDir,'hello.ipynb');
-		let fileURI = 'azuredatastudio://microsoft.notebook/open?url=file:///'+ notebookPath;
+		let fileURI = 'azuredatastudio://microsoft.notebook/open?url=file://'+ notebookPath;
 		let fileNotebookUri = vscode.Uri.parse(fileURI);
+		let notebookContent: azdata.nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: ['x = 1 \ny = 2'],
+				metadata: { language: 'python', tags: ['parameters'] },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python3',
+					language: 'python',
+					display_name: 'Python 3'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
 
-		await fs.writeFile(notebookPath, notebookContent);
+		await fs.writeFile(notebookPath, JSON.stringify(notebookContent));
 
 		await notebookUriHandler.handleUri(fileNotebookUri);
 
