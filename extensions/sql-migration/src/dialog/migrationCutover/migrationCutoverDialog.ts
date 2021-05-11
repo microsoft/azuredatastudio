@@ -11,6 +11,7 @@ import * as loc from '../../constants/strings';
 import { getSqlServerName } from '../../api/utils';
 import { EOL } from 'os';
 import * as vscode from 'vscode';
+import { ConfirmCutoverDialog } from './confirmCutoverDialog';
 
 export class MigrationCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
@@ -40,8 +41,6 @@ export class MigrationCutoverDialog {
 	private _fileCount!: azdata.TextComponent;
 
 	private fileTable!: azdata.TableComponent;
-
-	private _startCutover!: boolean;
 
 	constructor(migration: MigrationContext) {
 		this._model = new MigrationCutoverDialogModel(migration);
@@ -333,22 +332,17 @@ export class MigrationCutoverDialog {
 			iconPath: IconPathHelper.cutover,
 			iconHeight: '14px',
 			iconWidth: '12px',
-			label: 'Start Cutover',
+			label: loc.COMPLETE_CUTOVER,
 			height: '20px',
-			width: '100px',
+			width: '130px',
 			enabled: false
 		}).component();
 
 		this._cutoverButton.onDidClick(async (e) => {
-			if (this._startCutover) {
-				await this._model.startCutover();
-				this.refreshStatus();
-			} else {
-				this._dialogObject.message = {
-					text: loc.CANNOT_START_CUTOVER_ERROR,
-					level: azdata.window.MessageLevel.Error
-				};
-			}
+			await this.refreshStatus();
+			const dialog = new ConfirmCutoverDialog(this._model);
+			await dialog.initialize();
+			await this.refreshStatus();
 		});
 
 		headerActions.addItem(this._cutoverButton, {
@@ -365,7 +359,12 @@ export class MigrationCutoverDialog {
 		}).component();
 
 		this._cancelButton.onDidClick((e) => {
-			this.cancelMigration();
+			vscode.window.showInformationMessage(loc.CANCEL_MIGRATION_CONFIRMATION, loc.YES, loc.NO).then(async (v) => {
+				if (v === loc.YES) {
+					await this.cancelMigration();
+					await this.refreshStatus();
+				}
+			});
 		});
 
 		headerActions.addItem(this._cancelButton, {
@@ -537,14 +536,9 @@ export class MigrationCutoverDialog {
 					row.lastLSN
 				];
 			});
-			if (this._model.migrationStatus.properties.migrationStatusDetails?.isFullBackupRestored) {
-				this._startCutover = true;
-			}
 
 			if (migrationStatusTextValue === MigrationStatus.InProgress) {
-				const fileNotRestored = await tableData.some(file => file.status !== 'Restored' && file.status !== 'Ignored');
-				this._cutoverButton.enabled = !fileNotRestored;
-				this._cancelButton.enabled = true;
+				this._cutoverButton.enabled = tableData.length > 0;
 			} else {
 				this._cutoverButton.enabled = false;
 				this._cancelButton.enabled = false;

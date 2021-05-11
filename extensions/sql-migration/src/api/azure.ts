@@ -291,7 +291,7 @@ function sortResourceArrayByName(resourceArray: SortableAzureResources[]): void 
 	});
 }
 
-function getResourceGroupFromId(id: string): string {
+export function getResourceGroupFromId(id: string): string {
 	return id.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '').toLowerCase();
 }
 

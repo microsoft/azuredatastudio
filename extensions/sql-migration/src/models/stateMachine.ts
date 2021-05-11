@@ -108,7 +108,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _resourceGroup!: azureResource.AzureResourceResourceGroup;
 	public _targetManagedInstances!: SqlManagedInstance[];
 	public _targetSqlVirtualMachines!: SqlVMServer[];
-	public _targetServerInstance!: SqlManagedInstance;
+	public _targetServerInstance!: SqlManagedInstance | SqlVMServer;
 	public _databaseBackup!: DatabaseBackupModel;
 	public _migrationDbs: string[] = [];
 	public _storageAccounts!: StorageAccount[];
@@ -444,7 +444,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async getManagedDatabases(): Promise<string[]> {
 		return (await getSqlManagedInstanceDatabases(this._azureAccount,
 			this._targetSubscription,
-			this._targetServerInstance)).map(t => t.name);
+			<SqlManagedInstance>this._targetServerInstance)).map(t => t.name);
 	}
 
 	public async getSqlVirtualMachineValues(subscription: azureResource.AzureResourceSubscription, location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
