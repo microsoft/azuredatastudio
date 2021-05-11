@@ -228,6 +228,29 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test | Test | Test |\n| --- | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with no thead failed');
 	});
 
+	test('Should transform table with only tbody - typical Office scenario', () => {
+		htmlString = '<table><tbody><tr>\n<td>test1</td>\n<td>test2</td>\n<td>test3</td>\n</tr></tbody></table>\n';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `|  |  |  |\n| --- | --- | --- |\n| test1 | test2 | test3 |`, 'One row test with only tbody failed');
+		htmlString = '<table><tbody><tr>\n<td>test1</td>\n</tr></tbody></table>\n';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `|  |\n| --- |\n| test1 |`, 'One row one cell test with only tbody failed');
+		htmlString = '<table><tbody><tr>\n<td>test1</td>\n<td>test2</td>\n<td>test3</td>\n</tr>\n<tr>\n<td>test4</td>\n<td>test5</td>\n<td>test6</td>\n</tr>\n<tr>\n<td>test7</td>\n<td>test8</td>\n<td>test9</td>\n</tr>\n<tr>\n<td>test10</td>\n<td>test11</td>\n<td>test12</td>\n</tr>\n</tbody></table>\n';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `|  |  |  |\n| --- | --- | --- |\n| test1 | test2 | test3 |\n| test4 | test5 | test6 |\n| test7 | test8 | test9 |\n| test10 | test11 | test12 |`, 'Table with no thead failed');
+	});
+
+	test('Should transform table with paragraph cell correctly', () => {
+		htmlString = '<table><thead><tr><th>Test</th><th>Test2</th></tr></thead><tbody><tr><td><p>testP</p></td><td>test</td></tr></tbody></table>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test | Test2 |\n| --- | --- |\n| testP | test |`, 'Table with simple nested paragraph failed');
+		htmlString = '<table><thead><tr><th><p>Test</p></th><th><p>Test2</p></th></tr></thead><tbody><tr><td><p>testP</p></td><td><p>test</p></td></tr></tbody></table>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test | Test2 |\n| --- | --- |\n| testP | test |`, 'Table with every element with nested paragraph failed');
+	});
+
+	test('Should keep highlight and link tags in tables', () => {
+		htmlString = '<table><thead><tr><th><mark>Test</mark></th><th>Test2</th></tr></thead><tbody><tr><td><p>testP</p></td><td>test</td></tr></tbody></table>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `| <mark>Test</mark> | Test2 |\n| --- | --- |\n| testP | test |`, 'Table with simple nested paragraph failed');
+		htmlString = '<table><thead><tr><th><p><a href="https://www.microsoft.com/">Test</a></p></th><th><p>Test2</p></th></tr></thead><tbody><tr><td><p>testP</p></td><td><p>test</p></td></tr></tbody></table>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `| [Test](https://www.microsoft.com/) | Test2 |\n| --- | --- |\n| testP | test |`, 'Table with link in cell failed');
+	});
+
 	test('Should transform <b> and <strong> tags', () => {
 		htmlString = '<b>test string</b>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '**test string**', 'Basic bold test failed');
