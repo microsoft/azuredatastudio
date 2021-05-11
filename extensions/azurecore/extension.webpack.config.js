@@ -16,6 +16,8 @@ const externals = {
 	'bufferutil': 'commonjs bufferutil',
 	'utf-8-validate': 'commonjs utf-8-validate',
 	'keytar': 'commonjs keytar',
+	'@azure/arm-subscriptions': 'commonjs @azure/arm-subscriptions',
+	'@azure/arm-resourcegraph': 'commonjs @azure/arm-resourcegraph'
 };
 
 // conditionally add ws if we are going to be running in a node environment
