@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import { MigrationCutoverDialogModel } from './migrationCutoverDialogModel';
 import * as constants from '../../constants/strings';
 import * as vscode from 'vscode';
+import { SqlManagedInstance } from '../../api/azure';
 
 export class ConfirmCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
@@ -42,7 +43,7 @@ export class ConfirmCutoverDialog {
 
 			let infoDisplay = 'none';
 			if (this.migrationCutoverModel._migration.targetManagedInstance.id.toLocaleLowerCase().includes('managedinstances')
-				&& this.migrationCutoverModel._migration.targetManagedInstance?.sku?.tier === 'BusinessCritical') {
+				&& (<SqlManagedInstance>this.migrationCutoverModel._migration.targetManagedInstance)?.sku?.tier === 'BusinessCritical') {
 				infoDisplay = 'inline';
 			}
 
