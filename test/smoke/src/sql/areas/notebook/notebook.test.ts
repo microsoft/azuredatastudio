@@ -60,7 +60,7 @@ export function setup() {
 			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
 		});
 
-		it('can perform basic text cell functionality', async function () {
+		it.skip('can perform basic text cell functionality', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
