@@ -36,6 +36,7 @@ interface I18nPack {
 const extensionsProject: string = 'extensions';
 const i18nPackVersion = '1.0.0';
 
+//function copied from "i18n.ts"
 function createI18nFile(originalFilePath: string, messages: any): File {
 	let result = Object.create(null);
 	result[''] = [
@@ -59,6 +60,11 @@ function createI18nFile(originalFilePath: string, messages: any): File {
 	});
 }
 
+/**
+ * This function is a modified version of createI18nFile that gets the content of the current main.i18n.json file
+ * then merges it with the content of the core SQL XLF file (which does not include vscode core strings).
+ * This allows for most of the main ADS product to be localized.
+*/
 function updateMainI18nFile(existingTranslationFilePath: string, originalFilePath: string, messages: any): File {
 	let currFilePath = path.join(existingTranslationFilePath + '.i18n.json');
 	let currentContent = fs.readFileSync(currFilePath);
@@ -87,6 +93,7 @@ function updateMainI18nFile(existingTranslationFilePath: string, originalFilePat
 	})
 }
 
+// Modified packageLocalExtensionsStream from extensions.ts, but for langpacks.
 export function packageLangpacksStream(): NodeJS.ReadWriteStream {
 	const langpackDescriptions = (<string[]>glob.sync('i18n/*/package.json'))
 		.map(manifestPath => {
@@ -127,6 +134,12 @@ function fromLocalNormal(extensionPath: string): Stream {
 	return result.pipe(createStatsStream(path.basename(extensionPath)));
 }
 
+/**
+ * Main function for modifying the lang pack i18n files, based on prepareI18nPackFiles from i18n.ts
+ * Function grabs contents of XLF files parsed in and processes their paths.
+ * The function then adds the strings and paths into the i18n files for both core parts and extensions.
+ * The i18n IDs and file paths are then pushed to be added to the package.json manifest.
+*/
 export function modifyI18nPackFiles(languageId: string, existingTranslationFolder: string, adsExtensions: Map<string>, resultingTranslationPaths: i18n.TranslationPath[], pseudo = false): NodeJS.ReadWriteStream {
 	let parsePromises: Promise<ParsedXLF[]>[] = [];
 	let mainPack: I18nPack = { version: i18nPackVersion, contents: {} };

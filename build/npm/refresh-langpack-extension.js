@@ -32,6 +32,7 @@ function runUpdateOnLanguages() {
 	}
 }
 
+//Function that updates the lang pack with strings from associated XLFs in the resources folder.
 function update(langId) {
 	let idOrPath = langId;
 	if (!idOrPath) {

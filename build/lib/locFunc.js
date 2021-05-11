@@ -17,6 +17,7 @@ const rename = require("gulp-rename");
 const root = path.dirname(path.dirname(__dirname));
 const extensionsProject = 'extensions';
 const i18nPackVersion = '1.0.0';
+//function copied from "i18n.ts"
 function createI18nFile(originalFilePath, messages) {
     let result = Object.create(null);
     result[''] = [
@@ -38,6 +39,11 @@ function createI18nFile(originalFilePath, messages) {
         contents: Buffer.from(content, 'utf8')
     });
 }
+/**
+ * This function is a modified version of createI18nFile that gets the content of the current main.i18n.json file
+ * then merges it with the content of the core SQL XLF file (which does not include vscode core strings).
+ * This allows for most of the main ADS product to be localized.
+*/
 function updateMainI18nFile(existingTranslationFilePath, originalFilePath, messages) {
     let currFilePath = path.join(existingTranslationFilePath + '.i18n.json');
     let currentContent = fs.readFileSync(currFilePath);
@@ -63,6 +69,7 @@ function updateMainI18nFile(existingTranslationFilePath, originalFilePath, messa
         contents: Buffer.from(content, 'utf8'),
     });
 }
+// Modified packageLocalExtensionsStream from extensions.ts, but for langpacks.
 function packageLangpacksStream() {
     const langpackDescriptions = glob.sync('i18n/*/package.json')
         .map(manifestPath => {
@@ -96,6 +103,12 @@ function fromLocalNormal(extensionPath) {
         .catch(err => result.emit('error', err));
     return result.pipe(stats_1.createStatsStream(path.basename(extensionPath)));
 }
+/**
+ * Main function for modifying the lang pack i18n files, based on prepareI18nPackFiles from i18n.ts
+ * Function grabs contents of XLF files parsed in and processes their paths.
+ * The function then adds the strings and paths into the i18n files for both core parts and extensions.
+ * The i18n IDs and file paths are then pushed to be added to the package.json manifest.
+*/
 function modifyI18nPackFiles(languageId, existingTranslationFolder, adsExtensions, resultingTranslationPaths, pseudo = false) {
     let parsePromises = [];
     let mainPack = { version: i18nPackVersion, contents: {} };
