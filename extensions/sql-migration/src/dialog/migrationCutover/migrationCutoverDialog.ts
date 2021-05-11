@@ -341,9 +341,8 @@ export class MigrationCutoverDialog {
 		this._cutoverButton.onDidClick(async (e) => {
 			await this.refreshStatus();
 			const dialog = new ConfirmCutoverDialog(this._model);
-			await dialog.initialize().then((v) => {
-				this.refreshStatus();
-			});
+			await dialog.initialize();
+			await this.refreshStatus();
 		});
 
 		headerActions.addItem(this._cutoverButton, {

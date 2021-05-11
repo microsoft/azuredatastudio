@@ -42,7 +42,7 @@ export class ConfirmCutoverDialog {
 
 			let infoDisplay = 'none';
 			if (this.migrationCutoverModel._migration.targetManagedInstance.id.toLocaleLowerCase().includes('managedinstances')
-				&& (<any>this.migrationCutoverModel._migration.targetManagedInstance)?.sku?.tier.toLowerCase().includes('BusinessCritical')) {
+				&& this.migrationCutoverModel._migration.targetManagedInstance?.sku?.tier === 'BusinessCritical') {
 				infoDisplay = 'inline';
 			}
 
@@ -124,8 +124,7 @@ export class ConfirmCutoverDialog {
 				}
 			);
 			const form = formBuilder.withLayout({ width: '100%' }).component();
-			return view.initializeModel(form).then((value) => {
-			});
+			return view.initializeModel(form);
 		});
 		this._dialogObject.content = [tab];
 		azdata.window.openDialog(this._dialogObject);

@@ -58,6 +58,9 @@ export const ASSESSMENT_COMPLETED = (serverName: string): string => {
 export function ASSESSMENT_TILE(serverName: string): string {
 	return localize('sql.migration.assessment', "Assessment Dialog for '{0}'", serverName);
 }
+export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number): string {
+	return localize('sql.migration.can.be.migrated', "{0} out of {1} databases can be migrated", eligibleDbs, totalDbs);
+}
 
 // Accounts page
 export const ACCOUNTS_SELECTION_PAGE_TITLE = localize('sql.migration.wizard.account.title', "Azure Account");

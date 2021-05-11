@@ -91,6 +91,32 @@ declare module 'azureResource' {
 		}
 
 		export interface AzureSqlManagedInstance extends AzureGraphResource {
+			sku: {
+				capacity: number;
+				family: string;
+				name: string;
+				tier: 'GeneralPurpose' | 'BusinessCritical';
+			},
+			properties: {
+				provisioningState: string,
+				storageAccountType: string,
+				maintenanceConfigurationId: string,
+				state: string,
+				licenseType: string,
+				zoneRedundant: false,
+				fullyQualifiedDomainName: string,
+				collation: string,
+				administratorLogin: string,
+				minimalTlsVersion: string,
+				subnetId: string,
+				publicDataEndpointEnabled: boolean,
+				storageSizeInGB: number,
+				timezoneId: string,
+				proxyOverride: string,
+				vCores: number,
+				dnsZone: string,
+			  }
+
 		}
 
 		export interface ManagedDatabase {

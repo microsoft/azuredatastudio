@@ -351,7 +351,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
 		this._resourceDropdown.onValueChanged((e) => {
-			if (e.selected &&
+			if (e?.selected &&
 				e.selected !== constants.NO_MANAGED_INSTANCE_FOUND &&
 				e.selected !== constants.NO_VIRTUAL_MACHINE_FOUND) {
 				this.migrationStateModel._sqlMigrationServices = undefined!;
@@ -562,22 +562,18 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			const dbCount = this.migrationStateModel._assessmentResults.databaseAssessments.length;
 
 			const dbWithoutIssuesCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter(db => db.issues.length === 0).length;
-			const miCardText = `${dbWithoutIssuesCount} out of ${dbCount} databases can be migrated`;
+			const miCardText = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
 			this._rbg.cards[0].descriptions[1].textValue = miCardText;
 
-			const vmCardText = `${dbCount} out of ${dbCount} databases can be migrated`;
+			const vmCardText = constants.CAN_BE_MIGRATED(dbCount, dbCount);
 			this._rbg.cards[1].descriptions[1].textValue = vmCardText;
 
 			this._rbg.updateProperties({
 				cards: this._rbg.cards
 			});
 		} else {
-
-			const miCardText = ``;
-			this._rbg.cards[0].descriptions[1].textValue = miCardText;
-
-			const vmCardText = ``;
-			this._rbg.cards[1].descriptions[1].textValue = vmCardText;
+			this._rbg.cards[0].descriptions[1].textValue = '';
+			this._rbg.cards[1].descriptions[1].textValue = '';
 
 			this._rbg.updateProperties({
 				cards: this._rbg.cards
