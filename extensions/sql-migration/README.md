@@ -4,7 +4,7 @@ Azure SQL Migration extension can be used to determine readiness of your SQL Ser
 ## Installation
 From Azure Data Studio extension gallery, install the latest version of “Azure SQL Migration” extension and launch the wizard as shown below.
 
-![migration-animation](https://github.com/microsoft/azuredatastudio/blob/main/extensions/sql-migration/images/ADSMigration.gif)
+![migration-animation](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-migration/images/ADSMigration.gif)
 
 
 ## Things you need before starting Azure SQL migration
