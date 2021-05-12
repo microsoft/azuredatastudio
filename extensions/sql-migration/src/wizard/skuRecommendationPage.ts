@@ -64,7 +64,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._view = view;
 		this._igComponent = this.createStatusComponent(view); // The first component giving basic information
 		this._detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
-		this._chooseTargetComponent = this.createChooseTargetComponent(view);
+		this._chooseTargetComponent = await this.createChooseTargetComponent(view);
 		this._azureSubscriptionText = this.createAzureSubscriptionText(view);
 
 
@@ -223,7 +223,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		return component;
 	}
 
-	private createChooseTargetComponent(view: azdata.ModelView): azdata.DivContainer {
+	private async createChooseTargetComponent(view: azdata.ModelView): Promise<azdata.DivContainer> {
 
 		this._rbg = this._view!.modelBuilder.radioCardGroup().withProps({
 			cards: [],
@@ -279,8 +279,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				descriptions
 			});
 		});
-		let miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE, this, MigrationTargetType.SQLMI);
-		let vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE, this, MigrationTargetType.SQLVM);
+
+		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+		let miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(serverName), this, MigrationTargetType.SQLMI);
+		let vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(serverName), this, MigrationTargetType.SQLVM);
 
 		this._rbg.onLinkClick(async (value) => {
 			if (value.cardId === MigrationTargetType.SQLVM) {

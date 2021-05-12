@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as os from 'os';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationSourceAuthenticationType, MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
@@ -47,24 +46,11 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 	private async createSourceCredentialContainer(): Promise<azdata.FormComponent> {
 
 		const connectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
-
-		let username;
-		switch (connectionProfile.authenticationType) {
-			case 'SqlLogin':
-				username = connectionProfile.userName;
-				this.migrationStateModel._authenticationType = MigrationSourceAuthenticationType.Sql;
-				break;
-			case 'Integrated':
-				if (process.env.USERDOMAIN && process.env.USERNAME) {
-					username = process.env.USERDOMAIN + '\\' + process.env.USERNAME;
-				} else {
-					username = os.userInfo().username;
-				}
-				this.migrationStateModel._authenticationType = MigrationSourceAuthenticationType.Integrated;
-				break;
-			default:
-				username = '';
-		}
+		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>((await this.migrationStateModel.getSourceConnectionProfile()).providerId, azdata.DataProviderType.QueryProvider);
+		const query = 'select SUSER_NAME()';
+		const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId)), query);
+		const username = results.rows[0][0].displayValue;
+		this.migrationStateModel._authenticationType = connectionProfile.authenticationType === 'SqlLogin' ? MigrationSourceAuthenticationType.Sql : connectionProfile.authenticationType === 'Integrated' ? MigrationSourceAuthenticationType.Integrated : undefined!;
 
 		const sourceCredText = createHeadingTextComponent(this._view, constants.SOURCE_CREDENTIALS);
 
