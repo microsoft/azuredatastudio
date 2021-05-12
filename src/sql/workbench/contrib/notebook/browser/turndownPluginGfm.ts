@@ -68,23 +68,7 @@ rules['tableCell'] = {
 rules['tableRow'] = {
 	filter: 'tr',
 	replacement: function (content, node) {
-		let borderCells = '';
-		let alignMap = { left: ':--', right: '--:', center: ':-:' };
-
-		if (isHeadingRow(node)) {
-			for (let i = 0; i < node.childNodes.length; i++) {
-				let border = '---';
-				let align = (
-					node.childNodes[i].getAttribute('align') || ''
-				).toLowerCase();
-
-				if (align) {
-					border = alignMap[align] || border;
-				}
-
-				borderCells += cell(border, node.childNodes[i]);
-			}
-		}
+		const borderCells = isHeadingRow(node) ? constructBorderCells(node) : '';
 		return '\n' + content + (borderCells ? '\n' + borderCells : '');
 	}
 };
@@ -100,13 +84,8 @@ rules['table'] = {
 		content = content.replace('\n\n', '\n');
 		// if the headings are empty, add border line and headings to keep table format
 		if (!isHeadingRow(node.rows[0])) {
-			let emptyHeader = '\n\n|';
-			let border = '\n|';
-			for (let i = 0; i < node.rows[0].childNodes.length; i++) {
-				emptyHeader += '  |';
-				border += ' --- |';
-			}
-			return emptyHeader + border + content + '\n\n';
+			let emptyHeader = '\n\n|' + '  |'.repeat(node.rows[0].childNodes.length) + '\n';
+			return emptyHeader + constructBorderCells(node.rows[0]) + content + '\n\n';
 		}
 		return '\n\n' + content + '\n\n';
 	}
@@ -156,6 +135,24 @@ function cell(content, node) {
 		prefix = '| ';
 	}
 	return prefix + content + ' |';
+}
+
+function constructBorderCells(node): string {
+	const alignMap = { left: ':--', right: '--:', center: ':-:' };
+	let borderCells = '';
+	for (let i = 0; i < node.childNodes.length; i++) {
+		let border = '---';
+		let align = (
+			node.childNodes[i].getAttribute('align') || ''
+		).toLowerCase();
+
+		if (align) {
+			border = alignMap[align] || border;
+		}
+
+		borderCells += cell(border, node.childNodes[i]);
+	}
+	return borderCells;
 }
 
 export function tables(turndownService) {

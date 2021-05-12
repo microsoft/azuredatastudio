@@ -251,6 +251,15 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `| [Test](https://www.microsoft.com/) | Test2 |\n| --- | --- |\n| testP | test |`, 'Table with link in cell failed');
 	});
 
+	test('Should transform table with column alignment', () => {
+		htmlString = '<table>\n<thead>\n<tr>\n<th align=right>Test</th>\n<th>Test</th>\n<th>Test</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test | Test | Test |\n| --: | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with right align column header failed');
+		htmlString = '<table>\n<thead>\n<tr>\n<th align=left>Test</th>\n<th>Test</th>\n<th>Test</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test | Test | Test |\n| :-- | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with left align column header failed');
+		htmlString = '<table>\n<thead>\n<tr>\n<th align=center>Test</th>\n<th>Test</th>\n<th>Test</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n<tr>\n<td>test</td>\n<td>test</td>\n<td>test</td>\n</tr>\n</tbody></table>\n';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test | Test | Test |\n| :-: | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with center align column header failed');
+	});
+
 	test('Should transform <b> and <strong> tags', () => {
 		htmlString = '<b>test string</b>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '**test string**', 'Basic bold test failed');
