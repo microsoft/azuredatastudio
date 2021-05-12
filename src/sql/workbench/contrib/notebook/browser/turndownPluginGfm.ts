@@ -74,8 +74,6 @@ rules['tableRow'] = {
 };
 
 rules['table'] = {
-	// Only convert tables with a heading row.
-	// Tables with no heading row are kept using `keep` (see below).
 	filter: function (node) {
 		return node.nodeName === 'TABLE';
 	},
