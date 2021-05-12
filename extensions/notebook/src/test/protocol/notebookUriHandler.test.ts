@@ -11,9 +11,10 @@ import * as nock from 'nock';
 import * as os from 'os';
 import * as path from 'path';
 import { promises as fs } from 'fs';
-import { exists } from '../../common/utils';
 import * as rimraf from 'rimraf';
 import { promisify } from 'util';
+import uuid = require('uuid');
+
 
 import * as loc from '../../common/localizedConstants';
 import * as constants from '../../common/constants';
@@ -55,7 +56,10 @@ describe('Notebook URI Handler', function (): void {
 	});
 
 	it('should show error message when no query passed into open', async function (): Promise<void> {
+		let showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(Promise.resolve(loc.msgYes) as any);
 		await notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/open'));
+
+		sinon.assert.calledOnce(showQuickPickStub);
 		sinon.assert.calledOnce(showErrorMessageSpy);
 	});
 
@@ -121,40 +125,43 @@ describe('Notebook URI Handler', function (): void {
 
 	it('should open notebook when file uri is valid', async function (): Promise<void> {
 		let showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(Promise.resolve(loc.msgYes) as any);
-		let notebookDir: string = path.join(os.tmpdir(),'notebook');
-		let notebookPath: string = path.join(notebookDir,'hello.ipynb');
-		// Need to remove temp file if it exists
-		if(await exists(notebookDir)){
+		let notebookDir: string = path.join(os.tmpdir(), `notebook_${uuid.v4()}`);
+		let notebookPath: string = path.join(notebookDir, 'hello.ipynb');
+
+		try {
+			// Remove file if it exists
 			await promisify(rimraf)(notebookDir);
+			await fs.mkdir(notebookDir);
+			let fileURI = 'azuredatastudio://microsoft.notebook/open?url=file://' + notebookPath;
+			let fileNotebookUri = vscode.Uri.parse(fileURI);
+			let notebookContent: azdata.nb.INotebookContents = {
+				cells: [{
+					cell_type: CellTypes.Code,
+					source: ['x = 1 \ny = 2'],
+					metadata: { language: 'python', tags: ['parameters'] },
+					execution_count: 1
+				}],
+				metadata: {
+					kernelspec: {
+						name: 'python3',
+						language: 'python',
+						display_name: 'Python 3'
+					}
+				},
+				nbformat: 4,
+				nbformat_minor: 5
+			};
+
+			await fs.writeFile(notebookPath, JSON.stringify(notebookContent));
+
+			await notebookUriHandler.handleUri(fileNotebookUri);
+
+			sinon.assert.calledOnce(showQuickPickStub);
+			sinon.assert.calledWith(showNotebookDocumentStub, sinon.match.any, sinon.match({ initialContent: notebookContent }));
+			sinon.assert.callCount(showErrorMessageSpy, 0);
+
+		} catch (error) {
+			// No-op
 		}
-
-		await fs.mkdir(notebookDir);
-		let fileURI = 'azuredatastudio://microsoft.notebook/open?url=file://'+ notebookPath;
-		let fileNotebookUri = vscode.Uri.parse(fileURI);
-		let notebookContent: azdata.nb.INotebookContents = {
-			cells: [{
-				cell_type: CellTypes.Code,
-				source: ['x = 1 \ny = 2'],
-				metadata: { language: 'python', tags: ['parameters'] },
-				execution_count: 1
-			}],
-			metadata: {
-				kernelspec: {
-					name: 'python3',
-					language: 'python',
-					display_name: 'Python 3'
-				}
-			},
-			nbformat: 4,
-			nbformat_minor: 5
-		};
-
-		await fs.writeFile(notebookPath, JSON.stringify(notebookContent));
-
-		await notebookUriHandler.handleUri(fileNotebookUri);
-
-		sinon.assert.calledOnce(showQuickPickStub);
-		sinon.assert.calledWith(showNotebookDocumentStub, sinon.match.any, sinon.match({ initialContent: notebookContent }));
-		sinon.assert.callCount(showErrorMessageSpy, 0);
 	});
 });
