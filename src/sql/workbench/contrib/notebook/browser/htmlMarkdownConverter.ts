@@ -270,6 +270,7 @@ export class HTMLMarkdownConverter {
 		this.turndownService.addRule('p', {
 			filter: 'p',
 			replacement: function (content, node) {
+				// If inside of a table cell, extra newlines would break table rendering
 				return isInsideTable(node) ? content : '\n\n' + content + '\n\n';
 			}
 		});
