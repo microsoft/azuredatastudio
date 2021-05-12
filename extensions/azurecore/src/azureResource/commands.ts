@@ -185,7 +185,7 @@ export function registerAzureResourceCommands(appContext: AppContext, azureViewT
 		if (!node) {
 			return;
 		}
-		let connectionProfile: azdata.IConnectionProfile = null;
+		let connectionProfile: azdata.IConnectionProfile = undefined;
 
 		if (node instanceof TreeNode) {
 			const treeItem: azdata.TreeItem = await node.getTreeItem();
