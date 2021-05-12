@@ -68,7 +68,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				book && // The notebook is part of a book in the viewlet (otherwise nothing to reveal)
 				(this._openAsUntitled ? notebookPath?.scheme === 'untitled' : notebookPath?.scheme !== 'untitled')) // The notebook is of the correct type for this tree view
 			{
-				await this.revealDocumentInTreeView(notebookPath);
+				await this.revealDocumentInTreeView(notebookPath, true, true);
 			}
 		});
 		this._extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
@@ -391,7 +391,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async revealDocumentInTreeView(uri?: vscode.Uri, shouldReveal: boolean = true): Promise<BookTreeItem | undefined> {
+	async revealDocumentInTreeView(uri: vscode.Uri | undefined, shouldReveal: boolean, shouldFocus: boolean): Promise<BookTreeItem | undefined> {
 		let bookItem: BookTreeItem;
 		let notebookPath: string;
 		// If no uri is passed in, try to use the current active notebook editor
@@ -404,23 +404,19 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			notebookPath = uri.fsPath;
 		}
 
-		if (this._bookViewer?.visible) {
-			bookItem = notebookPath ? await this.findAndExpandParentNode(notebookPath) : undefined;
+		if (shouldReveal || this._bookViewer?.visible) {
+			bookItem = notebookPath ? await this.findAndExpandParentNode(notebookPath, shouldFocus) : undefined;
+			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
 			if (bookItem?.contextValue && bookItem.contextValue !== 'pinnedNotebook') {
-				if (shouldReveal) {
-					// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
-					// Note: 3 is the maximum number of levels that the vscode APIs let you expand to
-					await this._bookViewer.reveal(bookItem, { select: true, focus: true, expand: true });
-				} else {
-					// Do not focus on item if element is already visible in the Tree View.
-					await this._bookViewer.reveal(bookItem, { select: true, focus: false, expand: true });
-				}
+				// Note: 3 is the maximum number of levels that the vscode APIs let you expand to
+				await this._bookViewer.reveal(bookItem, { select: true, focus: shouldFocus, expand: true });
 			}
 		}
+
 		return bookItem;
 	}
 
-	async findAndExpandParentNode(notebookPath: string): Promise<BookTreeItem | undefined> {
+	async findAndExpandParentNode(notebookPath: string, shouldFocus: boolean): Promise<BookTreeItem | undefined> {
 		notebookPath = notebookPath.replace(/\\/g, '/');
 		const parentBook = this.books.find(b => notebookPath.indexOf(b.bookPath) > -1);
 		if (!parentBook) {
@@ -475,7 +471,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 			try {
 				// TO DO: Check why the reveal fails during initial load with 'TreeError [bookTreeView] Tree element not found'
-				await this._bookViewer.reveal(bookItemToExpand, { select: false, focus: true, expand: true });
+				await this._bookViewer.reveal(bookItemToExpand, { select: false, focus: shouldFocus, expand: true });
 			}
 			catch (e) {
 				console.error(e);
