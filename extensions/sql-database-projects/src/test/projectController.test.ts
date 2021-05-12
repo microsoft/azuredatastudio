@@ -409,7 +409,9 @@ describe('ProjectsController', function (): void {
 
 				projController.setup(x => x.getDaxFxService()).returns(() => Promise.resolve(testContext.dacFxService.object));
 
-				await projController.object.publishProjectCallback(new Project(''), { connectionUri: '', databaseName: '' });
+				const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
+
+				await projController.object.publishProjectCallback(proj, { connectionUri: '', databaseName: '' });
 
 				should(builtDacpacPath).not.equal('', 'built dacpac path should be set');
 				should(publishedDacpacPath).not.equal('', 'published dacpac path should be set');
