@@ -11,8 +11,6 @@ import * as nock from 'nock';
 import * as os from 'os';
 import * as path from 'path';
 import { promises as fs } from 'fs';
-import * as rimraf from 'rimraf';
-import { promisify } from 'util';
 import uuid = require('uuid');
 
 
@@ -128,40 +126,33 @@ describe('Notebook URI Handler', function (): void {
 		let notebookDir: string = path.join(os.tmpdir(), `notebook_${uuid.v4()}`);
 		let notebookPath: string = path.join(notebookDir, 'hello.ipynb');
 
-		try {
-			// Remove file if it exists
-			await promisify(rimraf)(notebookDir);
-			await fs.mkdir(notebookDir);
-			let fileURI = 'azuredatastudio://microsoft.notebook/open?url=file://' + notebookPath;
-			let fileNotebookUri = vscode.Uri.parse(fileURI);
-			let notebookContent: azdata.nb.INotebookContents = {
-				cells: [{
-					cell_type: CellTypes.Code,
-					source: ['x = 1 \ny = 2'],
-					metadata: { language: 'python', tags: ['parameters'] },
-					execution_count: 1
-				}],
-				metadata: {
-					kernelspec: {
-						name: 'python3',
-						language: 'python',
-						display_name: 'Python 3'
-					}
-				},
-				nbformat: 4,
-				nbformat_minor: 5
-			};
+		await fs.mkdir(notebookDir);
+		let fileURI = 'azuredatastudio://microsoft.notebook/open?url=file://' + notebookPath;
+		let fileNotebookUri = vscode.Uri.parse(fileURI);
+		let notebookContent: azdata.nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: ['x = 1 \ny = 2'],
+				metadata: { language: 'python', tags: ['parameters'] },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python3',
+					language: 'python',
+					display_name: 'Python 3'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
 
-			await fs.writeFile(notebookPath, JSON.stringify(notebookContent));
+		await fs.writeFile(notebookPath, JSON.stringify(notebookContent));
 
-			await notebookUriHandler.handleUri(fileNotebookUri);
+		await notebookUriHandler.handleUri(fileNotebookUri);
 
-			sinon.assert.calledOnce(showQuickPickStub);
-			sinon.assert.calledWith(showNotebookDocumentStub, sinon.match.any, sinon.match({ initialContent: notebookContent }));
-			sinon.assert.callCount(showErrorMessageSpy, 0);
-
-		} catch (error) {
-			// No-op
-		}
+		sinon.assert.calledOnce(showQuickPickStub);
+		sinon.assert.calledWith(showNotebookDocumentStub, sinon.match.any, sinon.match({ initialContent: notebookContent }));
+		sinon.assert.callCount(showErrorMessageSpy, 0);
 	});
 });
