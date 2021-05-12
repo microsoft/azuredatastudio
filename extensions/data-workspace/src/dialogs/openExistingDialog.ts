@@ -37,7 +37,7 @@ export class OpenExistingDialog extends DialogBase {
 	];
 
 	constructor(private workspaceService: IWorkspaceService, private extensionContext: vscode.ExtensionContext) {
-		super(constants.OpenExistingDialogTitle, 'OpenProject');
+		super(constants.OpenExistingDialogTitle, 'OpenProject', constants.OpenButtonText);
 
 		// dialog launched from Welcome message button (only visible when no current workspace) vs. "add project" button
 		TelemetryReporter.createActionEvent(TelemetryViews.OpenExistingDialog, TelemetryActions.OpenExistingDialogLaunched)
