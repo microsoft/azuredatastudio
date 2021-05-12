@@ -11,9 +11,12 @@ import * as nock from 'nock';
 import * as os from 'os';
 import * as path from 'path';
 import { promises as fs } from 'fs';
+import { exists } from '../../common/utils';
+import * as rimraf from 'rimraf';
+import { promisify } from 'util';
+
 import * as loc from '../../common/localizedConstants';
 import * as constants from '../../common/constants';
-import { mkdtemp } from 'fs-extra';
 
 import { NotebookUriHandler } from '../../protocol/notebookUriHandler';
 import { CellTypes } from '../../contracts/content';
@@ -56,8 +59,8 @@ describe('Notebook URI Handler', function (): void {
 		sinon.assert.calledOnce(showErrorMessageSpy);
 	});
 
-	it('should show error message when file uri scheme is not https or http', async function (): Promise<void> {
-		await notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/open?//hello.ipynb'));
+	it('should show error message when uri scheme is not https, http, or file', async function (): Promise<void> {
+		await notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/open?//url=aaa%3A%2F%2Fhello.ipynb'));
 		sinon.assert.calledOnce(showErrorMessageSpy);
 	});
 
@@ -80,7 +83,7 @@ describe('Notebook URI Handler', function (): void {
 
 	});
 
-	it('should open the notebook when file uri is valid', async function (): Promise<void> {
+	it('should open the notebook when https uri file is valid', async function (): Promise<void> {
 		let showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(Promise.resolve(loc.msgYes) as any);
 		nock('https://127.0.0.1')
 			.get(`/Hello.ipynb`)
@@ -116,10 +119,16 @@ describe('Notebook URI Handler', function (): void {
 		});
 	});
 
-	it('should open notebook when file is uri is valid', async function (): Promise<void> {
+	it('should open notebook when file uri is valid', async function (): Promise<void> {
 		let showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(Promise.resolve(loc.msgYes) as any);
-		let notebookDir = await mkdtemp(os.tmpdir());
-		let notebookPath = path.join(notebookDir,'hello.ipynb');
+		let notebookDir: string = path.join(os.tmpdir(),'notebook');
+		let notebookPath: string = path.join(notebookDir,'hello.ipynb');
+		// Need to remove temp file if it exists
+		if(await exists(notebookDir)){
+			await promisify(rimraf)(notebookDir);
+		}
+
+		await fs.mkdir(notebookDir);
 		let fileURI = 'azuredatastudio://microsoft.notebook/open?url=file://'+ notebookPath;
 		let fileNotebookUri = vscode.Uri.parse(fileURI);
 		let notebookContent: azdata.nb.INotebookContents = {
