@@ -41,7 +41,7 @@ export class BookTreeItem extends vscode.TreeItem {
 	private _uri: string | undefined;
 	private _previousUri: string;
 	private _nextUri: string;
-	public readonly version: string;
+	public readonly version: BookVersion;
 	public command: vscode.Command;
 	public resourceUri: vscode.Uri;
 	private _rootContentPath: string;
@@ -71,7 +71,7 @@ export class BookTreeItem extends vscode.TreeItem {
 				this.contextValue = BookTreeItemType.ExternalLink;
 
 			} else {
-				this.contextValue = book.type === BookTreeItemType.Notebook ? (isBookItemPinned(book.contentPath) ? BookTreeItemType.pinnedNotebook : getNotebookType(book)) : BookTreeItemType.section;
+				this.contextValue = book.type === BookTreeItemType.Notebook ? (isBookItemPinned(book.contentPath) ? BookTreeItemType.pinnedNotebook : getNotebookType(book)) : BookTreeItemType.Markdown;
 			}
 			this.setPageVariables();
 			this.setCommand();
@@ -84,7 +84,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		}
 		else {
 			// if it's a section, book or a notebook's book then we set the table of contents path.
-			if (this.book.type === BookTreeItemType.Book || this.contextValue === BookTreeItemType.section || (book.tableOfContents.sections && book.type === BookTreeItemType.Notebook)) {
+			if (this.book.type === BookTreeItemType.Book || this.contextValue === BookTreeItemType.section || this.contextValue === BookTreeItemType.savedBookNotebook || book.tableOfContents.sections && book.type === BookTreeItemType.Markdown) {
 				this._tableOfContentsPath = getTocPath(this.book.version, this.book.root);
 			}
 			this._rootContentPath = getContentPath(this.book.version, this.book.root, '');
