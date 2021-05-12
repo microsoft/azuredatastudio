@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
-import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus, AzureAsyncOperationResource, getMigrationAsyncOperationDetails } from '../api/azure';
+import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus, AzureAsyncOperationResource, getMigrationAsyncOperationDetails, SqlVMServer } from '../api/azure';
 import * as azdata from 'azdata';
 
 
@@ -62,7 +62,7 @@ export class MigrationLocalStorage {
 	public static saveMigration(
 		connectionProfile: azdata.connection.ConnectionProfile,
 		migrationContext: DatabaseMigration,
-		targetMI: SqlManagedInstance,
+		targetMI: SqlManagedInstance | SqlVMServer,
 		azureAccount: azdata.Account,
 		subscription: azureResource.AzureResourceSubscription,
 		controller: SqlMigrationService,
@@ -93,7 +93,7 @@ export class MigrationLocalStorage {
 export interface MigrationContext {
 	sourceConnectionProfile: azdata.connection.ConnectionProfile,
 	migrationContext: DatabaseMigration,
-	targetManagedInstance: SqlManagedInstance,
+	targetManagedInstance: SqlManagedInstance | SqlVMServer,
 	azureAccount: azdata.Account,
 	subscription: azureResource.AzureResourceSubscription,
 	controller: SqlMigrationService,

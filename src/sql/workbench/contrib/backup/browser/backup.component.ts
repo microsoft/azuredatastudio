@@ -440,6 +440,9 @@ export class BackupComponent extends AngularDisposable {
 
 			// Set backup type
 			this.backupTypeSelectBox!.setOptions(this.backupTypeOptions, 0);
+			// The above call does not set the private variable for selectedOption variable in select box
+			// Doing a point fix for backup since select box changes have wider unwanted impact
+			this.backupTypeSelectBox!.select(0);
 
 			this.setDefaultBackupName();
 			this.backupNameBox!.focus();
