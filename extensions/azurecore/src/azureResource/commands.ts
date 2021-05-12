@@ -194,7 +194,7 @@ export function registerAzureResourceCommands(appContext: AppContext, azureViewT
 			// Ensure connection is saved to the Connections list, then open connection dialog
 			connectionProfile = Object.assign({}, treeItem.payload, { saveProfile: true });
 		} else if (node.isConnectionNode) {
-			node.connectionProfile = connectionProfile;
+			connectionProfile = node.connectionProfile;
 		}
 
 		const conn = await azdata.connection.openConnectionDialog(undefined, connectionProfile, { saveConnection: true, showDashboard: true });
