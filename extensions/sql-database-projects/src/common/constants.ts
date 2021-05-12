@@ -111,6 +111,7 @@ export const databaseNameServerNameVariableRequired = localize('databaseNameServ
 export const otherServer = 'OtherServer';
 export const otherSeverVariable = 'OtherServer';
 export const databaseProject = localize('databaseProject', "Database project");
+export const dacpacNotOnSameDrive = (projectLocation: string): string => { return localize('dacpacNotOnSameDrive', "Dacpac references need to be located on the same drive as the project file. The project file is located at {0}", projectLocation); };
 
 // Create Project From Database dialog strings
 

@@ -580,7 +580,10 @@ export class ProjectsController {
 			} else if ((<ISystemDatabaseReferenceSettings>settings).systemDb !== undefined) {
 				await project.addSystemDatabaseReference(<ISystemDatabaseReferenceSettings>settings);
 			} else {
-				await project.addDatabaseReference(<IDacpacReferenceSettings>settings);
+				// update dacpacFileLocation to relative path to project file
+				const dacpacRefSettings = settings as IDacpacReferenceSettings;
+				dacpacRefSettings.dacpacFileLocation = vscode.Uri.file(path.relative(project.projectFolderPath, dacpacRefSettings.dacpacFileLocation.fsPath));
+				await project.addDatabaseReference(dacpacRefSettings);
 			}
 
 			this.refreshProjectsTree(context);
