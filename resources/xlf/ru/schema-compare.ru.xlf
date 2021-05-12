@@ -44,7 +44,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.SchemaCompareOptionsDialogLabel">
         <source xml:lang="en">Schema Compare Options</source>
-        <target state="translated">Параметры сравнения схем</target>
+        <target state="translated">Параметры Сравнения схем</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.GeneralOptionsLabel">
         <source xml:lang="en">General Options</source>
@@ -1156,7 +1156,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.updateErrorMessage">
         <source xml:lang="en">Schema Compare Apply failed '{0}'</source>
-        <target state="translated">Сбой при применении сравнения схем "{0}"</target>
+        <target state="translated">Сбой при применении Сравнения схем "{0}"</target>
       </trans-unit>
       <trans-unit id="schemaCompare.switchDirectionButton">
         <source xml:lang="en">Switch direction</source>

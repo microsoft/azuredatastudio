@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/sql-database-projects/package" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="title.projectsView">
+      <source xml:lang="en">Projects</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.displayName">
+      <source xml:lang="en">Database Projects</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.description">
+      <source xml:lang="en">Design and publish SQL database schemas</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.new">
+      <source xml:lang="en">New Database Project</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.open">
+      <source xml:lang="en">Open Database Project</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.close">
+      <source xml:lang="en">Close Database Project</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.build">
+      <source xml:lang="en">Build</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.publish">
+      <source xml:lang="en">Publish</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.createProjectFromDatabase">
+      <source xml:lang="en">Create Project From Database</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.properties">
+      <source xml:lang="en">Properties</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.schemaCompare">
+      <source xml:lang="en">Schema Compare</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.delete">
+      <source xml:lang="en">Delete</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.exclude">
+      <source xml:lang="en">Exclude from project</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.validateExternalStreamingJob">
+      <source xml:lang="en">Validate External Streaming Job</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.newScript">
+      <source xml:lang="en">Add Script</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.newPreDeploymentScript">
+      <source xml:lang="en">Add Pre-Deployment Script</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.newPostDeploymentScript">
+      <source xml:lang="en">Add Post-Deployment Script</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.newTable">
+      <source xml:lang="en">Add Table</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.newView">
+      <source xml:lang="en">Add View</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.newStoredProcedure">
+      <source xml:lang="en">Add Stored Procedure</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.newExternalStreamingJob">
+      <source xml:lang="en">Add External Streaming Job</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.newItem">
+      <source xml:lang="en">Add Item...</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.newFolder">
+      <source xml:lang="en">Add Folder</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.addDatabaseReference">
+      <source xml:lang="en">Add Database Reference</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.openContainingFolder">
+      <source xml:lang="en">Open Containing Folder</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.editProjectFile">
+      <source xml:lang="en">Edit .sqlproj File</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.changeTargetPlatform">
+      <source xml:lang="en">Change Target Platform</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.Settings">
+      <source xml:lang="en">Database Projects</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
+      <source xml:lang="en">Full path to .Net Core SDK on the machine.</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.welcome">
+      <source xml:lang="en">No database projects currently open.
+[New Project](command:sqlDatabaseProjects.new)
+[Open Project](command:sqlDatabaseProjects.open)
+[Create Project From Database](command:sqlDatabaseProjects.importDatabase)</source>
+    </trans-unit>
+  </body></file>
+</xliff>

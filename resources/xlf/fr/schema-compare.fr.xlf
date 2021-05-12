@@ -4,15 +4,15 @@
     <body>
       <trans-unit id="displayName">
         <source xml:lang="en">SQL Server Schema Compare</source>
-        <target state="translated">Comparaison de schémas SQL Server</target>
+        <target state="translated">Comparer les schémas SQL Server</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">SQL Server Schema Compare for Azure Data Studio supports comparing the schemas of databases and dacpacs.</source>
-        <target state="translated">La comparaison de schémas SQL Server pour Azure Data Studio prend en charge la comparaison des schémas de bases de données et de fichiers dacpac.</target>
+        <target state="translated">Comparer les schémas SQL Server pour Azure Data Studio prend en charge la comparaison des schémas de bases de données et de fichiers dacpac.</target>
       </trans-unit>
       <trans-unit id="schemaCompare.start">
         <source xml:lang="en">Schema Compare</source>
-        <target state="translated">Comparaison de schémas</target>
+        <target state="translated">Comparer les schémas</target>
       </trans-unit>
     </body>
   </file>
@@ -44,7 +44,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.SchemaCompareOptionsDialogLabel">
         <source xml:lang="en">Schema Compare Options</source>
-        <target state="translated">Options de comparaison de schémas</target>
+        <target state="translated">Options Comparer les schémas</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.GeneralOptionsLabel">
         <source xml:lang="en">General Options</source>
@@ -976,7 +976,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.dialogTitle">
         <source xml:lang="en">Schema Compare</source>
-        <target state="translated">Comparaison de schémas</target>
+        <target state="translated">Comparer les schémas</target>
       </trans-unit>
       <trans-unit id="schemaCompareDialog.differentSourceMessage">
         <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
@@ -1052,7 +1052,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.Title">
         <source xml:lang="en">Schema Compare</source>
-        <target state="translated">Comparaison de schémas</target>
+        <target state="translated">Comparer les schémas</target>
       </trans-unit>
       <trans-unit id="schemaCompare.sourceLabel">
         <source xml:lang="en">Source</source>
@@ -1080,7 +1080,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.compareErrorMessage">
         <source xml:lang="en">Schema Compare failed: {0}</source>
-        <target state="translated">La comparaison de schémas a échoué : {0}</target>
+        <target state="translated">Comparer les schémas a échoué : {0}</target>
       </trans-unit>
       <trans-unit id="schemaCompare.typeColumn">
         <source xml:lang="en">Type</source>
@@ -1128,7 +1128,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.cancelErrorMessage">
         <source xml:lang="en">Cancel schema compare failed: '{0}'</source>
-        <target state="translated">L'annulation de la comparaison de schémas a échoué : '{0}'</target>
+        <target state="translated">L'annulation de Comparer les schémas a échoué : « {0} »</target>
       </trans-unit>
       <trans-unit id="schemaCompare.generateScriptButton">
         <source xml:lang="en">Generate script</source>
@@ -1156,7 +1156,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.updateErrorMessage">
         <source xml:lang="en">Schema Compare Apply failed '{0}'</source>
-        <target state="translated">L'application de la comparaison de schémas a échoué '{0}'</target>
+        <target state="translated">Échec d'application de Comparer les schémas « {0} »</target>
       </trans-unit>
       <trans-unit id="schemaCompare.switchDirectionButton">
         <source xml:lang="en">Switch direction</source>

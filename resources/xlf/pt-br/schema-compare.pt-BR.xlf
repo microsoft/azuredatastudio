@@ -1080,7 +1080,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.compareErrorMessage">
         <source xml:lang="en">Schema Compare failed: {0}</source>
-        <target state="translated">Falha na comparação de esquema: {0}</target>
+        <target state="translated">Falha na Comparação de Esquemas: {0}</target>
       </trans-unit>
       <trans-unit id="schemaCompare.typeColumn">
         <source xml:lang="en">Type</source>
@@ -1128,7 +1128,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.cancelErrorMessage">
         <source xml:lang="en">Cancel schema compare failed: '{0}'</source>
-        <target state="translated">Falha no cancelamento da comparação de esquema: '{0}'</target>
+        <target state="translated">Falha no cancelamento da comparação de esquemas: '{0}'</target>
       </trans-unit>
       <trans-unit id="schemaCompare.generateScriptButton">
         <source xml:lang="en">Generate script</source>
@@ -1156,7 +1156,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.updateErrorMessage">
         <source xml:lang="en">Schema Compare Apply failed '{0}'</source>
-        <target state="translated">Falha ao aplicar a comparação de esquema '{0}'</target>
+        <target state="translated">Falha ao Aplicar a Comparação de Esquemas '{0}'</target>
       </trans-unit>
       <trans-unit id="schemaCompare.switchDirectionButton">
         <source xml:lang="en">Switch direction</source>

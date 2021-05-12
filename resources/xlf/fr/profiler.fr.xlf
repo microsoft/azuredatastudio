@@ -12,7 +12,7 @@
       </trans-unit>
       <trans-unit id="createSessionDialog.title">
         <source xml:lang="en">Start New Profiler Session</source>
-        <target state="translated">Démarrer une nouvelle session du profileur</target>
+        <target state="translated">Démarrer une nouvelle session Profiler</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.templatesInvalid">
         <source xml:lang="en">Invalid templates list, cannot open dialog</source>

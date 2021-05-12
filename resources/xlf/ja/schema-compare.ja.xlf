@@ -4,15 +4,15 @@
     <body>
       <trans-unit id="displayName">
         <source xml:lang="en">SQL Server Schema Compare</source>
-        <target state="translated">SQL Server スキーマ比較</target>
+        <target state="translated">SQL Server Schema Compare</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">SQL Server Schema Compare for Azure Data Studio supports comparing the schemas of databases and dacpacs.</source>
-        <target state="translated">Azure Data Studio 用 SQL Server スキーマ比較では、データベースと dacpac のスキーマを比較できます。</target>
+        <target state="translated">Azure Data Studio 用 SQL Server Schema Compare では、データベースと dacpac のスキーマを比較できます。</target>
       </trans-unit>
       <trans-unit id="schemaCompare.start">
         <source xml:lang="en">Schema Compare</source>
-        <target state="translated">スキーマ比較</target>
+        <target state="translated">Schema Compare</target>
       </trans-unit>
     </body>
   </file>
@@ -44,7 +44,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.SchemaCompareOptionsDialogLabel">
         <source xml:lang="en">Schema Compare Options</source>
-        <target state="translated">スキーマ比較のオプション</target>
+        <target state="translated">Schema Compare のオプション</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.GeneralOptionsLabel">
         <source xml:lang="en">General Options</source>
@@ -976,7 +976,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.dialogTitle">
         <source xml:lang="en">Schema Compare</source>
-        <target state="translated">スキーマ比較</target>
+        <target state="translated">Schema Compare</target>
       </trans-unit>
       <trans-unit id="schemaCompareDialog.differentSourceMessage">
         <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
@@ -1052,7 +1052,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.Title">
         <source xml:lang="en">Schema Compare</source>
-        <target state="translated">スキーマ比較</target>
+        <target state="translated">Schema Compare</target>
       </trans-unit>
       <trans-unit id="schemaCompare.sourceLabel">
         <source xml:lang="en">Source</source>
@@ -1080,7 +1080,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.compareErrorMessage">
         <source xml:lang="en">Schema Compare failed: {0}</source>
-        <target state="translated">スキーマ比較に失敗しました: {0}</target>
+        <target state="translated">Schema Compare に失敗しました: {0}</target>
       </trans-unit>
       <trans-unit id="schemaCompare.typeColumn">
         <source xml:lang="en">Type</source>
@@ -1156,7 +1156,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.updateErrorMessage">
         <source xml:lang="en">Schema Compare Apply failed '{0}'</source>
-        <target state="translated">スキーマ比較を適用できませんでした '{0}'</target>
+        <target state="translated">Schema Compare を適用できませんでした '{0}'</target>
       </trans-unit>
       <trans-unit id="schemaCompare.switchDirectionButton">
         <source xml:lang="en">Switch direction</source>
