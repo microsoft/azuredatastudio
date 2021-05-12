@@ -34,6 +34,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _rbg!: azdata.RadioCardGroupComponent;
 	private eventListener!: vscode.Disposable;
 	private _rbgLoader!: azdata.LoadingComponent;
+	private _progressContainer!: azdata.FlexContainer;
+	private _assessmentComponent!: azdata.FlexContainer;
+	private _assessmentProgress!: azdata.TextComponent;
+	private _assessmentInfo!: azdata.TextComponent;
+	private _formContainer!: azdata.ComponentBuilder<azdata.FormContainer, azdata.ComponentProperties>;
+	private _assessmentLoader!: azdata.LoadingComponent;
+	private _rootContainer!: azdata.FlexContainer;
 
 	private _supportedProducts: Product[] = [
 		{
@@ -47,6 +54,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			icon: IconPathHelper.sqlVmLogo
 		}
 	];
+
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.SKU_RECOMMENDATION_PAGE_TITLE), migrationStateModel);
@@ -150,8 +158,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 
 
-		this._view = view;
-		const formContainer = view.modelBuilder.formContainer().withFormItems(
+
+
+		this._formContainer = view.modelBuilder.formContainer().withFormItems(
 			[
 				{
 					title: '',
@@ -172,8 +181,32 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					component: targetContainer
 				}
 			]
-		);
-		await view.initializeModel(formContainer.component());
+		).withProps({
+			CSSStyles: {
+				display: 'none'
+			}
+		});
+
+		this._assessmentComponent = this._view.modelBuilder.flexContainer().withLayout({
+			height: '100%',
+			flexFlow: 'column'
+		}).withProps({
+			CSSStyles: {
+				'margin-left': '30px'
+			}
+		}).component();
+
+		this._assessmentComponent.addItem(this.createAssessmentProgress(), { flex: '0 0 auto' });
+		this._assessmentComponent.addItem(await this.createAssessmentInfo(), { flex: '0 0 auto' });
+
+		this._rootContainer = this._view.modelBuilder.flexContainer().withLayout({
+			height: '100%',
+			flexFlow: 'column'
+		}).component();
+		this._rootContainer.addItem(this._assessmentComponent, { flex: '0 0 auto' });
+		this._rootContainer.addItem(this._formContainer.component(), { flex: '0 0 auto' });
+
+		await this._view.initializeModel(this._rootContainer);
 	}
 
 	private createStatusComponent(view: azdata.ModelView): azdata.TextComponent {
@@ -300,6 +333,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private async constructDetails(): Promise<void> {
+		this._assessmentLoader.loading = true;
 		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 		this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
 		try {
@@ -308,7 +342,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		} catch (e) {
 			console.log(e);
 		}
+
 		this.refreshCardText();
+		this._assessmentLoader.loading = false;
 	}
 
 	private createAzureSubscriptionText(view: azdata.ModelView): azdata.TextComponent {
@@ -370,8 +406,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 
 	public async onPageEnter(): Promise<void> {
-		this.constructDetails();
-		this.populateSubscriptionDropdown();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			const errors: string[] = [];
 			this.wizard.message = {
@@ -412,6 +446,19 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 			return true;
 		});
+		this.wizard.nextButton.enabled = false;
+		if (!this.migrationStateModel._assessmentResults) {
+			await this.constructDetails();
+		}
+		this._assessmentComponent.updateCssStyles({
+			display: 'none'
+		});
+		this._formContainer.component().updateCssStyles({
+			display: 'block'
+		});
+
+		this.populateSubscriptionDropdown();
+		this.wizard.nextButton.enabled = true;
 	}
 
 	public async onPageLeave(): Promise<void> {
@@ -473,6 +520,40 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			});
 		}
 		this._rbgLoader.loading = false;
+	}
+
+	private createAssessmentProgress(): azdata.FlexContainer {
+
+		this._assessmentLoader = this._view.modelBuilder.loadingComponent().component();
+		this._assessmentProgress = this._view.modelBuilder.text().withProps({
+			value: constants.ASSESSMENT_IN_PROGRESS,
+			CSSStyles: {
+				'font-size': '18px',
+				'line-height': '24px',
+				'margin-right': '20px'
+			}
+		}).component();
+
+		this._progressContainer = this._view.modelBuilder.flexContainer().withLayout({
+			height: '100%',
+			flexFlow: 'row'
+		}).component();
+
+		this._progressContainer.addItem(this._assessmentProgress, { flex: '0 0 auto' });
+		this._progressContainer.addItem(this._assessmentLoader, { flex: '0 0 auto' });
+		return this._progressContainer;
+	}
+
+	private async createAssessmentInfo(): Promise<azdata.TextComponent> {
+		this._assessmentInfo = this._view.modelBuilder.text().withProps({
+			value: constants.ASSESSMENT_IN_PROGRESS_CONTENT((await this.migrationStateModel.getSourceConnectionProfile()).serverName),
+			CSSStyles: {
+				'font-size': '13px',
+				'line-height': '18px',
+				'font-weight': '600',
+			}
+		}).component();
+		return this._assessmentInfo;
 	}
 }
 
