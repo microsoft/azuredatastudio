@@ -47,7 +47,10 @@
       <source xml:lang="en">The user will not be prompted for installation of the Azure Data CLI</source>
     </trans-unit>
     <trans-unit id="azdata.update.description">
-      <source xml:lang="en">Choose how update of Azure Data CLI tool is done</source>
+      <source xml:lang="en">Choose whether you will be prompted when an update of the Azure Data CLI is available.</source>
+    </trans-unit>
+    <trans-unit id="azdata.requiredUpdate.description">
+      <source xml:lang="en">Choose whether you will be prompted when a required update of the Azure Data CLI is available.</source>
     </trans-unit>
     <trans-unit id="azdata.update.prompt.description">
       <source xml:lang="en">The user will be prompted for update of the Azure Data CLI</source>
@@ -148,7 +151,7 @@
       <source xml:lang="en">This extension requires Azure Data CLI &gt;= {0} to be installed, but the current version available is only {1}. Install the correct version manually from [here](https://docs.microsoft.com/sql/azdata/install/deploy-install-azdata) and then restart Azure Data Studio.</source>
     </trans-unit>
     <trans-unit id="azdata.missingRequiredVersion">
-      <source xml:lang="en">Azure Data CLI &gt;= {0} is required for this extension to function, some features may not work correctly until that version or higher is installed.</source>
+      <source xml:lang="en">Azure Data CLI &gt;= {0} is required for this feature. Run the 'Azure Data CLI: Check for Update' command to install this and then try again.</source>
     </trans-unit>
     <trans-unit id="azdata.downloadError">
       <source xml:lang="en">Error while downloading</source>
@@ -179,6 +182,9 @@
     </trans-unit>
     <trans-unit id="azdata.skipUpdate">
       <source xml:lang="en">Skipping update of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}</source>
+    </trans-unit>
+    <trans-unit id="azdata.skipRequiredUpdate">
+      <source xml:lang="en">Skipping required update of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}</source>
     </trans-unit>
     <trans-unit id="azdata.noReleaseVersion">
       <source xml:lang="en">No release version available for platform '{0}'

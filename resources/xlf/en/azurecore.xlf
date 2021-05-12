@@ -382,6 +382,12 @@
     <trans-unit id="azure.resource.tree.accountTreeNode.credentialError">
       <source xml:lang="en">Failed to get credential for account {0}. Please go to the accounts dialog and refresh the account.</source>
     </trans-unit>
+    <trans-unit id="azure.resource.throttleerror">
+      <source xml:lang="en">Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.</source>
+    </trans-unit>
+    <trans-unit id="azure.resource.tree.loadresourceerror">
+      <source xml:lang="en">An error occured while loading Azure resources: {0}</source>
+    </trans-unit>
   </body></file>
   <file original="extensions/azurecore/dist/azureResource/tree/accountNotSignedInTreeNode" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.tree.accountNotSignedInTreeNode.signInLabel">

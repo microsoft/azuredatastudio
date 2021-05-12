@@ -63,6 +63,12 @@
           "CopyOption": "LangIDOnName",
           "OutputPath": "resources\\xlf\\Localized"
         },
+    {
+          "SourceFile": "resources\\xlf\\en\\data-workspace.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\data-workspace.xlf.lcl",
+          "CopyOption": "LangIDOnName",
+          "OutputPath": "resources\\xlf\\Localized"
+        },
 		{
           "SourceFile": "resources\\xlf\\en\\import.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\import.xlf.lcl",

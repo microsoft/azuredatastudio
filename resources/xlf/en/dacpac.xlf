@@ -9,6 +9,48 @@
     </trans-unit>
   </body></file>
   <file original="extensions/dacpac/out/localizedConstants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="dacFx.targetServer">
+      <source xml:lang="en">Target Server</source>
+    </trans-unit>
+    <trans-unit id="dacFx.sourceServer">
+      <source xml:lang="en">Source Server</source>
+    </trans-unit>
+    <trans-unit id="dacFx.sourceDatabase">
+      <source xml:lang="en">Source Database</source>
+    </trans-unit>
+    <trans-unit id="dacFx.targetDatabase">
+      <source xml:lang="en">Target Database</source>
+    </trans-unit>
+    <trans-unit id="dacfx.fileLocation">
+      <source xml:lang="en">File Location</source>
+    </trans-unit>
+    <trans-unit id="dacfx.selectFile">
+      <source xml:lang="en">Select file</source>
+    </trans-unit>
+    <trans-unit id="dacfx.summaryTableTitle">
+      <source xml:lang="en">Summary of settings</source>
+    </trans-unit>
+    <trans-unit id="dacfx.version">
+      <source xml:lang="en">Version</source>
+    </trans-unit>
+    <trans-unit id="dacfx.setting">
+      <source xml:lang="en">Setting</source>
+    </trans-unit>
+    <trans-unit id="dacfx.value">
+      <source xml:lang="en">Value</source>
+    </trans-unit>
+    <trans-unit id="dacFx.databaseName">
+      <source xml:lang="en">Database Name</source>
+    </trans-unit>
+    <trans-unit id="dacFxDeploy.openFile">
+      <source xml:lang="en">Open</source>
+    </trans-unit>
+    <trans-unit id="dacFx.upgradeExistingDatabase">
+      <source xml:lang="en">Upgrade Existing Database</source>
+    </trans-unit>
+    <trans-unit id="dacFx.newDatabase">
+      <source xml:lang="en">New Database</source>
+    </trans-unit>
     <trans-unit id="dacfx.dataLossTextWithCount">
       <source xml:lang="en">{0} of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
     </trans-unit>
@@ -48,14 +90,8 @@
     <trans-unit id="dacfx.save">
       <source xml:lang="en">Save</source>
     </trans-unit>
-    <trans-unit id="dacfx.fileLocation">
-      <source xml:lang="en">File Location</source>
-    </trans-unit>
     <trans-unit id="dacFx.versionText">
       <source xml:lang="en">Version (use x.x.x.x where x is a number)</source>
-    </trans-unit>
-    <trans-unit id="dacFxDeploy.openFile">
-      <source xml:lang="en">Open</source>
     </trans-unit>
     <trans-unit id="dacFx.deployDescription">
       <source xml:lang="en">Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]</source>
@@ -69,38 +105,8 @@
     <trans-unit id="dacFx.exportDescription">
       <source xml:lang="en">Export the schema and data from a database to the logical .bacpac file format [Export Bacpac]</source>
     </trans-unit>
-    <trans-unit id="dacFx.databaseName">
-      <source xml:lang="en">Database Name</source>
-    </trans-unit>
-    <trans-unit id="dacFx.upgradeExistingDatabase">
-      <source xml:lang="en">Upgrade Existing Database</source>
-    </trans-unit>
-    <trans-unit id="dacFx.newDatabase">
-      <source xml:lang="en">New Database</source>
-    </trans-unit>
-    <trans-unit id="dacFx.targetDatabase">
-      <source xml:lang="en">Target Database</source>
-    </trans-unit>
-    <trans-unit id="dacFx.targetServer">
-      <source xml:lang="en">Target Server</source>
-    </trans-unit>
-    <trans-unit id="dacFx.sourceServer">
-      <source xml:lang="en">Source Server</source>
-    </trans-unit>
-    <trans-unit id="dacFx.sourceDatabase">
-      <source xml:lang="en">Source Database</source>
-    </trans-unit>
-    <trans-unit id="dacfx.version">
-      <source xml:lang="en">Version</source>
-    </trans-unit>
-    <trans-unit id="dacfx.setting">
-      <source xml:lang="en">Setting</source>
-    </trans-unit>
-    <trans-unit id="dacfx.value">
-      <source xml:lang="en">Value</source>
-    </trans-unit>
-    <trans-unit id="dacfx.default">
-      <source xml:lang="en">default</source>
+    <trans-unit id="dacfx.wizardTitle">
+      <source xml:lang="en">Data-tier Application Wizard</source>
     </trans-unit>
     <trans-unit id="dacFx.selectOperationPageName">
       <source xml:lang="en">Select an Operation</source>
@@ -138,14 +144,50 @@
     <trans-unit id="dacFx.generateScriptButton">
       <source xml:lang="en">Generate Script</source>
     </trans-unit>
+    <trans-unit id="dacfx.scriptGeneratingMessage">
+      <source xml:lang="en">You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.</source>
+    </trans-unit>
+    <trans-unit id="dacfx.default">
+      <source xml:lang="en">default</source>
+    </trans-unit>
+    <trans-unit id="dacfx.deployPlanTableTitle">
+      <source xml:lang="en">Deploy plan operations</source>
+    </trans-unit>
+    <trans-unit id="dacfx.databaseNameExistsErrorMessage">
+      <source xml:lang="en">A database with the same name already exists on the instance of SQL Server</source>
+    </trans-unit>
+    <trans-unit id="dacfx.undefinedFilenameErrorMessage">
+      <source xml:lang="en">Undefined name</source>
+    </trans-unit>
+    <trans-unit id="dacfx.filenameEndingInPeriodErrorMessage">
+      <source xml:lang="en">File name cannot end with a period</source>
+    </trans-unit>
+    <trans-unit id="dacfx.whitespaceFilenameErrorMessage">
+      <source xml:lang="en">File name cannot be whitespace</source>
+    </trans-unit>
+    <trans-unit id="dacfx.invalidFileCharsErrorMessage">
+      <source xml:lang="en">Invalid file characters</source>
+    </trans-unit>
+    <trans-unit id="dacfx.reservedWindowsFilenameErrorMessage">
+      <source xml:lang="en">This file name is reserved for use by Windows. Choose another name and try again</source>
+    </trans-unit>
+    <trans-unit id="dacfx.reservedValueErrorMessage">
+      <source xml:lang="en">Reserved file name. Choose another name and try again</source>
+    </trans-unit>
+    <trans-unit id="dacfx.trailingWhitespaceErrorMessage">
+      <source xml:lang="en">File name cannot end with a whitespace</source>
+    </trans-unit>
+    <trans-unit id="dacfx.tooLongFilenameErrorMessage">
+      <source xml:lang="en">File name is over 255 characters</source>
+    </trans-unit>
     <trans-unit id="dacfx.deployPlanErrorMessage">
       <source xml:lang="en">Generating deploy plan failed '{0}'</source>
     </trans-unit>
+    <trans-unit id="dacfx.generateDeployErrorMessage">
+      <source xml:lang="en">Generating deploy script failed '{0}'</source>
+    </trans-unit>
     <trans-unit id="dacfx.operationErrorMessage">
       <source xml:lang="en">{0} operation failed '{1}'</source>
-    </trans-unit>
-    <trans-unit id="dacfx.scriptGeneratingMessage">
-      <source xml:lang="en">You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.</source>
     </trans-unit>
   </body></file>
 </xliff>

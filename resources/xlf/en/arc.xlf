@@ -604,9 +604,6 @@
     <trans-unit id="arc.workerNodesDescription">
       <source xml:lang="en">Expand your server group and scale your database by adding worker nodes.</source>
     </trans-unit>
-    <trans-unit id="arc.postgres.configurationInformation">
-      <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to both worker nodes and coordinator node. Each worker node will have the same configuration. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
-    </trans-unit>
     <trans-unit id="arc.workerNodesConfigurationInformation">
       <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to all worker nodes. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
     </trans-unit>
