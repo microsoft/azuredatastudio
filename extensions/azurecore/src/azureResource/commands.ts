@@ -15,7 +15,7 @@ import { TreeNode } from './treeNode';
 import { AzureResourceCredentialError } from './errors';
 import { AzureResourceTreeProvider } from './tree/treeProvider';
 import { AzureResourceAccountTreeNode } from './tree/accountTreeNode';
-import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService, ObjectExplorerActionsContext } from '../azureResource/interfaces';
+import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService } from '../azureResource/interfaces';
 import { AzureResourceServiceNames } from './constants';
 import { AzureAccount, Tenant } from 'azurecore';
 import { FlatAccountTreeNode } from './tree/flatAccountTreeNode';
@@ -181,12 +181,11 @@ export function registerAzureResourceCommands(appContext: AppContext, azureViewT
 		vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
 	});
 
-	vscode.commands.registerCommand('azure.resource.connectsqlserver', async (node?: TreeNode | ObjectExplorerActionsContext) => {
+	vscode.commands.registerCommand('azure.resource.connectsqlserver', async (node?: TreeNode | azdata.ObjectExplorerContext) => {
 		if (!node) {
 			return;
 		}
 		let connectionProfile: azdata.IConnectionProfile = undefined;
-
 		if (node instanceof TreeNode) {
 			const treeItem: azdata.TreeItem = await node.getTreeItem();
 			if (!treeItem.payload) {
@@ -194,9 +193,8 @@ export function registerAzureResourceCommands(appContext: AppContext, azureViewT
 			}
 			// Ensure connection is saved to the Connections list, then open connection dialog
 			connectionProfile = Object.assign({}, treeItem.payload, { saveProfile: true });
-
 		} else if (node.isConnectionNode) {
-			connectionProfile = node.connectionProfile;
+			node.connectionProfile = connectionProfile;
 		}
 
 		const conn = await azdata.connection.openConnectionDialog(undefined, connectionProfile, { saveConnection: true, showDashboard: true });
