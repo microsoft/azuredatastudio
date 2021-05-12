@@ -5,7 +5,7 @@
 
 import * as msRest from '@azure/ms-rest-js';
 
-import { Account } from 'azdata';
+import { Account, ObjectExplorerContext, IConnectionProfile, NodeInfo } from 'azdata';
 
 import { azureResource } from 'azureResource';
 import { AzureAccount, Tenant } from 'azurecore';
@@ -39,4 +39,10 @@ export interface IAzureResourceNodeWithProviderId {
 
 export interface IAzureResourceService<T extends azureResource.AzureResource> {
 	getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: msRest.ServiceClientCredentials, account: Account): Promise<T[]>;
+}
+
+export class ObjectExplorerActionsContext implements ObjectExplorerContext {
+	public connectionProfile?: IConnectionProfile;
+	public nodeInfo?: NodeInfo;
+	public isConnectionNode: boolean = false;
 }
