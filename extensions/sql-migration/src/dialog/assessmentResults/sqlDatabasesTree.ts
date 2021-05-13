@@ -40,6 +40,12 @@ const headerRight: azdata.CssStyles = {
 	'border-bottom': '1px solid'
 };
 
+const blockingIssues: Array<string> = [
+	'MultipleLogFiles',
+	'FileStream',
+	'MIDatabaseSize'
+];
+
 export class SqlDatabaseTree {
 	private _view!: azdata.ModelView;
 	private _instanceTable!: azdata.DeclarativeTableComponent;
@@ -802,15 +808,19 @@ export class SqlDatabaseTree {
 			// Reset the dbName list so that it is in sync with the table
 			this._dbNames = this._model._assessmentResults.databaseAssessments.map(da => da.name);
 			this._model._assessmentResults.databaseAssessments.forEach((db) => {
+				let selectable = true;
+				if (db.issues.find(item => blockingIssues.includes(item.ruleId))) {
+					selectable = false;
+				}
 				this._databaseTableValues.push(
 					[
 						{
 							value: selectedDbs.includes(db.name),
-							enabled: db.issues.length === 0,
-							style: styleLeft
+							style: styleLeft,
+							enabled: selectable
 						},
 						{
-							value: this.createIconTextCell((db.issues.length === 0) ? IconPathHelper.sqlDatabaseLogo : IconPathHelper.sqlDatabaseWarningLogo, db.name),
+							value: this.createIconTextCell((selectable) ? IconPathHelper.sqlDatabaseLogo : IconPathHelper.sqlDatabaseWarningLogo, db.name),
 							style: styleLeft
 						},
 						{
