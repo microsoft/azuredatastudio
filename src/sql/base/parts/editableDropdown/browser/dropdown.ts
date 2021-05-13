@@ -13,7 +13,6 @@ import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IListVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { IListStyles, List } from 'vs/base/browser/ui/list/listWidget';
 import { Color } from 'vs/base/common/color';
-import { onUnexpectedError } from 'vs/base/common/errors';
 import { Emitter, Event } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -221,7 +220,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		}));
 
 		this._input.onDidChange(e => {
-			if (this._dataSource.values?.length > 0) {
+			if (this._dataSource.values.length > 0) {
 				this._dataSource.filter = e;
 				if (this._isDropDownVisible) {
 					this._updateDropDownList();
@@ -297,25 +296,21 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	}
 
 	private _updateDropDownList(): void {
-		try {
-			this._selectList.splice(0, this._selectList.length, this._dataSource.filteredValues.map(v => { return { text: v }; }));
-		} catch (e) {
-			onUnexpectedError(e);
-		}
+		this._selectList.splice(0, this._selectList.length, this._dataSource.filteredValues.map(v => { return { text: v }; }));
 
 		let width = this._inputContainer.clientWidth;
-		if (this._dataSource && this._dataSource.filteredValues) {
-			const longestOption = this._dataSource.filteredValues.reduce((previous, current) => {
-				return previous.length > current.length ? previous : current;
-			}, '');
-			this._widthControlElement.innerText = longestOption;
 
-			const inputContainerWidth = DOM.getContentWidth(this._inputContainer);
-			const longestOptionWidth = DOM.getTotalWidth(this._widthControlElement);
-			width = clamp(longestOptionWidth, inputContainerWidth, 500);
-		}
+		// Find the longest option in the list and set our width to that (max 500px)
+		const longestOption = this._dataSource.filteredValues.reduce((previous, current) => {
+			return previous.length > current.length ? previous : current;
+		}, '');
+		this._widthControlElement.innerText = longestOption;
 
-		const height = Math.min((this._dataSource.filteredValues?.length ?? 0) * this.getHeight(), this._options.maxHeight ?? 500);
+		const inputContainerWidth = DOM.getContentWidth(this._inputContainer);
+		const longestOptionWidth = DOM.getTotalWidth(this._widthControlElement);
+		width = clamp(longestOptionWidth, inputContainerWidth, 500);
+
+		const height = Math.min(this._dataSource.filteredValues.length * this.getHeight(), this._options.maxHeight ?? 500);
 		this._selectListContainer.style.width = `${width}px`;
 		this._selectListContainer.style.height = `${height}px`;
 		this._selectList.layout(height, width);
@@ -361,7 +356,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	}
 
 	private _inputValidator(value: string): IMessage | null {
-		if (!this._input.hasFocus() && !this._selectList.isDOMFocused() && this._dataSource.values && !this._dataSource.values.some(i => i === value)) {
+		if (!this._input.hasFocus() && this._input.isEnabled() && !this._selectList.isDOMFocused() && !this._dataSource.values.some(i => i === value)) {
 			if (this._options.strictSelection && this._options.errorMessage) {
 				return {
 					content: this._options.errorMessage,
