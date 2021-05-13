@@ -38,6 +38,9 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 		@IQueryEditorService private readonly queryEditorService: IQueryEditorService) { }
 
 	async convertInput(activeEditor: IEditorInput): Promise<QueryEditorInput | undefined> {
+		if (!(activeEditor instanceof FileEditorInput) && !(activeEditor instanceof UntitledTextEditorInput)) {
+			return undefined;
+		}
 		const queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, activeEditor.resource.toString(true));
 		let queryEditorInput: QueryEditorInput;
 		if (activeEditor instanceof FileEditorInput) {
@@ -45,8 +48,6 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
 			const content = (await activeEditor.resolve()).textEditorModel.getValue();
 			queryEditorInput = await this.queryEditorService.newSqlEditor({ resource: this.editorService.isOpen(activeEditor) ? activeEditor.resource : undefined, open: false, initalContent: content }) as UntitledQueryEditorInput;
-		} else {
-			return undefined;
 		}
 
 		const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);

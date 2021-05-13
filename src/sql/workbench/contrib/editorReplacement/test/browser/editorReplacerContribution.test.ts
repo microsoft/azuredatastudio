@@ -32,6 +32,10 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { TestQueryEditorService } from 'sql/workbench/services/queryEditor/test/common/testQueryEditorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
+import { DiffNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/diffNotebookInput';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 
 const languageAssociations = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -47,6 +51,9 @@ suite('Editor Replacer Contribution', () => {
 		const editorService = new MockEditorService(instantiationService);
 		instantiationService.stub(IEditorService, editorService);
 		instantiationService.stub(IQueryEditorService, instantiationService.createInstance(TestQueryEditorService));
+		const configService = new TestConfigurationService();
+		configService.setUserConfiguration('notebook', { showRenderedNotebookInDiffEditor: true });
+		instantiationService.stub(IConfigurationService, configService);
 		instantiationService.invokeFunction(accessor => {
 			languageAssociations.start(accessor);
 		});
@@ -123,6 +130,34 @@ suite('Editor Replacer Contribution', () => {
 
 		assert(newinput instanceof NotebookInput);
 
+		contrib.dispose();
+	});
+
+	test('does replace notebook file diff input using input extension ipynb', async () => {
+		const instantiationService = workbenchInstantiationService();
+		const editorService = new MockEditorService(instantiationService);
+		instantiationService.stub(IEditorService, editorService);
+		const contrib = instantiationService.createInstance(EditorReplacementContribution);
+		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.ipynb'), undefined, undefined, undefined, undefined, undefined);
+		const input2 = instantiationService.createInstance(FileEditorInput, URI.file('/test/file2.ipynb'), undefined, undefined, undefined, undefined, undefined);
+		const diffInput = instantiationService.createInstance(DiffEditorInput, undefined, undefined, input, input2, undefined);
+		const response = editorService.fireOpenEditor(diffInput, undefined, undefined as IEditorGroup, OpenEditorContext.NEW_EDITOR);
+		const newinput = await response.override; // our test service returns this so we are fine to cast this
+		assert(newinput instanceof DiffNotebookInput);
+		contrib.dispose();
+	});
+
+	test('does not replace sql file diff input using input extension sql', async () => {
+		const instantiationService = workbenchInstantiationService();
+		const editorService = new MockEditorService(instantiationService);
+		instantiationService.stub(IEditorService, editorService);
+		const contrib = instantiationService.createInstance(EditorReplacementContribution);
+		const input = instantiationService.createInstance(FileEditorInput, URI.file('/test/file.sql'), undefined, undefined, undefined, undefined, undefined);
+		const input2 = instantiationService.createInstance(FileEditorInput, URI.file('/test/file2.sql'), undefined, undefined, undefined, undefined, undefined);
+		const diffInput = instantiationService.createInstance(DiffEditorInput, undefined, undefined, input, input2, undefined);
+		const response = editorService.fireOpenEditor(diffInput, undefined, undefined as IEditorGroup, OpenEditorContext.NEW_EDITOR);
+		const newinput = await response.override;
+		assert(newinput instanceof DiffEditorInput);
 		contrib.dispose();
 	});
 
