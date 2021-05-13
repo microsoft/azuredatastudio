@@ -60,7 +60,7 @@ const opts = minimist(args, {
 	}
 });
 
-const testRepoUrl = 'https://github.com/kburtram/azuredatastudio-smoke-test-repo.git';
+const testRepoUrl = 'https://github.com/Microsoft/azuredatastudio-smoke-test-repo.git';
 const workspacePath = path.join(testDataPath, 'azuredatastudio-smoke-test-repo');
 const extensionsPath = path.join(testDataPath, 'extensions-dir');
 mkdirp.sync(extensionsPath);
