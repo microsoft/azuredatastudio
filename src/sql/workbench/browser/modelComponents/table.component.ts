@@ -15,7 +15,7 @@ import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBa
 
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { attachTableFilterStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension, isAncestor } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
@@ -34,7 +34,6 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { TableCellClickEventArgs } from 'sql/base/browser/ui/table/plugins/tableColumn';
 import { HyperlinkCellValue, HyperlinkColumn } from 'sql/base/browser/ui/table/plugins/hyperlinkColumn.plugin';
-import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 
 export enum ColumnSizingMode {
@@ -503,7 +502,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 	private registerFilterPlugin() {
 		const filterPlugin = new HeaderFilter<Slick.SlickData>(this.contextViewService);
-		this._register(attachButtonStyler(filterPlugin, this.themeService));
+		this._register(attachTableFilterStyler(filterPlugin, this.themeService));
 		this._filterPlugin = filterPlugin;
 		this._filterPlugin.onFilterApplied.subscribe((e, args) => {
 			let filterValues = (<any>args).column.filterValues;
