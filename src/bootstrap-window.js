@@ -97,7 +97,7 @@
 		window['MonacoEnvironment'] = {};
 
 		const baseUrl = useCustomProtocol ?
-			`${bootstrapLib.fileUriFromPath(configuration.appRoot, { isWindows: safeProcess.platform === 'win32', scheme: 'azuredatastudio-file', fallbackAuthority: 'azuredatastudio-app' })}/out` :
+			`${bootstrapLib.fileUriFromPath(configuration.appRoot, { isWindows: safeProcess.platform === 'win32', scheme: 'vscode-file', fallbackAuthority: 'vscode-app' })}/out` :
 			`${bootstrapLib.fileUriFromPath(configuration.appRoot, { isWindows: safeProcess.platform === 'win32' })}/out`;
 
 		const loaderConfig = {
