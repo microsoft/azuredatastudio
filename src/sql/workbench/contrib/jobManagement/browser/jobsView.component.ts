@@ -21,7 +21,7 @@ import { IJobManagementService } from 'sql/workbench/services/jobManagement/comm
 import { JobManagementView, JobActionContext } from 'sql/workbench/contrib/jobManagement/browser/jobManagementView';
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -107,7 +107,8 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService,
-		@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService
+		@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService,
+		@Inject(IContextViewService) private _contextViewService: IContextViewService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
@@ -181,7 +182,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
-		let filterPlugin = new HeaderFilter<IItem>();
+		let filterPlugin = new HeaderFilter<IItem>(this._contextViewService);
 		this._register(attachButtonStyler(filterPlugin, this._themeService));
 		this.filterPlugin = filterPlugin;
 		jQuery(this._gridEl.nativeElement).empty();

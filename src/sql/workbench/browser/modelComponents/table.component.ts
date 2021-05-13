@@ -35,6 +35,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { TableCellClickEventArgs } from 'sql/base/browser/ui/table/plugins/tableColumn';
 import { HyperlinkCellValue, HyperlinkColumn } from 'sql/base/browser/ui/table/plugins/hyperlinkColumn.plugin';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -81,7 +82,8 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(ILogService) logService: ILogService) {
+		@Inject(ILogService) logService: ILogService,
+		@Inject(IContextViewService) private contextViewService: IContextViewService) {
 		super(changeRef, el, logService);
 	}
 
@@ -500,7 +502,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 
 	private registerFilterPlugin() {
-		const filterPlugin = new HeaderFilter<Slick.SlickData>();
+		const filterPlugin = new HeaderFilter<Slick.SlickData>(this.contextViewService);
 		this._register(attachButtonStyler(filterPlugin, this.themeService));
 		this._filterPlugin = filterPlugin;
 		this._filterPlugin.onFilterApplied.subscribe((e, args) => {

@@ -22,7 +22,7 @@ import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additio
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 import { GridTable as HighPerfGridTable } from 'sql/workbench/contrib/query/browser/highPerfGridPanel';
 
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -385,7 +385,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		@IUntitledTextEditorService private readonly untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService protected readonly configurationService: IConfigurationService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
-		@IThemeService private readonly themeService: IThemeService
+		@IThemeService private readonly themeService: IThemeService,
+		@IContextViewService private readonly contextViewService: IContextViewService
 	) {
 		super();
 		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
@@ -527,7 +528,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.table.rerenderGrid();
 		}));
 		if (this.enableFilteringFeature) {
-			this.filterPlugin = new HeaderFilter();
+			this.filterPlugin = new HeaderFilter(this.contextViewService);
 			attachButtonStyler(this.filterPlugin, this.themeService);
 			this.table.registerPlugin(this.filterPlugin);
 		}
@@ -861,13 +862,14 @@ class GridTable<T> extends GridTableBase<T> {
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IQueryModelService queryModelService: IQueryModelService,
-		@IThemeService themeService: IThemeService
+		@IThemeService themeService: IThemeService,
+		@IContextViewService contextViewService: IContextViewService
 	) {
 		super(state, resultSet, {
 			actionOrientation: ActionsOrientation.VERTICAL,
 			inMemoryDataProcessing: true,
 			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 	}
 
