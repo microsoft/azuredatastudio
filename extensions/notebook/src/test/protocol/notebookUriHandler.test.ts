@@ -8,10 +8,17 @@ import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import * as azdata from 'azdata';
 import * as nock from 'nock';
+import * as os from 'os';
+import * as path from 'path';
+import { promises as fs } from 'fs';
+import uuid = require('uuid');
+
+
 import * as loc from '../../common/localizedConstants';
 import * as constants from '../../common/constants';
 
 import { NotebookUriHandler } from '../../protocol/notebookUriHandler';
+import { CellTypes } from '../../contracts/content';
 
 describe('Notebook URI Handler', function (): void {
 	let notebookUriHandler: NotebookUriHandler;
@@ -47,18 +54,20 @@ describe('Notebook URI Handler', function (): void {
 	});
 
 	it('should show error message when no query passed into open', async function (): Promise<void> {
+		let showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(Promise.resolve(loc.msgYes) as any);
 		await notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/open'));
+
+		sinon.assert.calledOnce(showQuickPickStub);
 		sinon.assert.calledOnce(showErrorMessageSpy);
 	});
 
-	it('should show error message when file uri scheme is not https or http', async function (): Promise<void> {
-		await notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/open?file://hello.ipynb'));
+	it('should show error message when uri scheme is not https, http, or file', async function (): Promise<void> {
+		await notebookUriHandler.handleUri(vscode.Uri.parse('azuredatastudio://microsoft.notebook/open?//url=aaa%3A%2F%2Fhello.ipynb'));
 		sinon.assert.calledOnce(showErrorMessageSpy);
 	});
 
 	it('should show error when file is not found given file uri scheme https', async function (): Promise<void> {
 		let showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(Promise.resolve(loc.msgYes) as any);
-		
 		await notebookUriHandler.handleUri(notebookUri);
 
 		sinon.assert.calledOnce(showQuickPickStub);
@@ -76,7 +85,7 @@ describe('Notebook URI Handler', function (): void {
 
 	});
 
-	it('should open the notebook when file uri is valid', async function (): Promise<void> {
+	it('should open the notebook when https uri file is valid', async function (): Promise<void> {
 		let showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(Promise.resolve(loc.msgYes) as any);
 		nock('https://127.0.0.1')
 			.get(`/Hello.ipynb`)
@@ -107,9 +116,43 @@ describe('Notebook URI Handler', function (): void {
 				.reply(httpErrorCode);
 
 			await notebookUriHandler.handleUri(notebookUri);
-			
 			sinon.assert.callCount(showErrorMessageSpy, 1);
 			sinon.assert.notCalled(showNotebookDocumentStub);
 		});
+	});
+
+	it('should open notebook when file uri is valid', async function (): Promise<void> {
+		let showQuickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(Promise.resolve(loc.msgYes) as any);
+		let notebookDir: string = path.join(os.tmpdir(), `notebook_${uuid.v4()}`);
+		let notebookPath: string = path.join(notebookDir, 'hello.ipynb');
+
+		await fs.mkdir(notebookDir);
+		let fileURI = 'azuredatastudio://microsoft.notebook/open?url=file://' + notebookPath;
+		let fileNotebookUri = vscode.Uri.parse(fileURI);
+		let notebookContent: azdata.nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: ['x = 1 \ny = 2'],
+				metadata: { language: 'python', tags: ['parameters'] },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python3',
+					language: 'python',
+					display_name: 'Python 3'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+
+		await fs.writeFile(notebookPath, JSON.stringify(notebookContent));
+
+		await notebookUriHandler.handleUri(fileNotebookUri);
+
+		sinon.assert.calledOnce(showQuickPickStub);
+		sinon.assert.calledWith(showNotebookDocumentStub, sinon.match.any, sinon.match({ initialContent: notebookContent }));
+		sinon.assert.callCount(showErrorMessageSpy, 0);
 	});
 });
