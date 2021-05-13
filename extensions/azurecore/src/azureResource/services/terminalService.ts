@@ -174,8 +174,13 @@ class AzureTerminal implements vscode.Pseudoterminal {
 		}
 	}
 
+	private areSameDimensions(oldDimensions: vscode.TerminalDimensions, newDimensions: vscode.TerminalDimensions): boolean {
+		return (oldDimensions && (oldDimensions.columns === newDimensions.columns &&
+			oldDimensions.rows === newDimensions.rows));
+	}
+
 	async setDimensions(dimensions: vscode.TerminalDimensions): Promise<void> {
-		if (!dimensions || this.terminalDimensions) {
+		if (!dimensions || this.areSameDimensions(this.terminalDimensions, dimensions)) {
 			return;
 		}
 		this.terminalDimensions = dimensions;
