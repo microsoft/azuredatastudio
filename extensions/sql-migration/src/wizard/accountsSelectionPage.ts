@@ -103,6 +103,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			this.wizard.message = {
 				text: ''
 			};
+			this._azureAccountsDropdown.validate();
 		});
 
 		const flexContainer = view.modelBuilder.flexContainer()

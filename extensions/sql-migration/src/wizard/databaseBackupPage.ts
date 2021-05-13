@@ -271,7 +271,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}).withValidation((component) => {
 			if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
 				if (component.value) {
-					if (!/(?<=\\\\)[^\\]*/.test(component.value)) {
+					if (!/^[\\\/]{2,}[^\\\/]+[\\\/]+[^\\\/]+/.test(component.value)) {
 						return false;
 					}
 				}
@@ -304,7 +304,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withValidation((component) => {
 				if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
 					if (component.value) {
-						if (!/(?<=\\).*$/.test(component.value)) {
+						if (!/^[A-Za-z0-9\\\._-]{7,}$/.test(component.value)) {
 							return false;
 						}
 					}
@@ -512,10 +512,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						c.validationErrorMessage = constants.DATABASE_ALREADY_EXISTS_MI(this.migrationStateModel._targetServerInstance.name);
 						return false;
 					}
+					if (c.value!.length < 1 || c.value!.length > 128 || !/[^<>*%&:\\\/?]/.test(c.value!)) {
+						c.validationErrorMessage = constants.INVALID_TARGET_NAME_ERROR;
+						return false;
+					}
 					return true;
 				}).component();
 				targetNameNetworkInputBox.onTextChanged((value) => {
-					this.migrationStateModel._targetDatabaseNames[index] = value;
+					this.migrationStateModel._targetDatabaseNames[index] = value.trim();
 				});
 				this._targetDatabaseNames.push(targetNameNetworkInputBox);
 
