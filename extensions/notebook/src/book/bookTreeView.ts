@@ -42,20 +42,34 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	private _bookViewer: vscode.TreeView<BookTreeItem>;
 	public viewId: string;
-	public books: BookModel[];
+	public books: BookModel[] = [];
 	public currentBook: BookModel;
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
-		this.books = [];
 		this.bookPinManager = new BookPinManager();
 		this.viewId = view;
 		this.initialize(workspaceFolders).catch(e => console.error(e));
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books);
 		this.bookTocManager = new BookTocManager();
-
+		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
+		this._bookViewer.onDidChangeVisibility(async e => {
+			// Whenever the viewer changes visibility then try and reveal the currently active document
+			// in the tree view
+			let openDocument = azdata.nb.activeNotebookEditor;
+			let notebookPath = openDocument?.document.uri;
+			// Find the book that this notebook belongs to
+			const book = this.books.find(book => notebookPath?.fsPath.replace(/\\/g, '/').indexOf(book.bookPath) >= -1);
+			// Only reveal if...
+			if (e.visible && // If the view is currently visible - if not then we'll just wait until this is called when the view is made visible
+				book && // The notebook is part of a book in the viewlet (otherwise nothing to reveal)
+				(this._openAsUntitled ? notebookPath?.scheme === 'untitled' : notebookPath?.scheme !== 'untitled')) // The notebook is of the correct type for this tree view
+			{
+				await this.revealDocumentInTreeView(notebookPath);
+			}
+		});
 		this._extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
 	}
 
@@ -216,10 +230,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				this.currentBook = existingBook;
 			} else {
 				await this.createAndAddBookModel(bookPath, !!isNotebook);
-				this.currentBook = this.books.find(book => book.bookPath === bookPath);
 			}
 
 			if (showPreview) {
+				this.currentBook = this.books.find(book => book.bookPath === bookPath);
 				this._bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
 				await this.showPreviewFile(urlToOpen);
 			}
@@ -310,15 +324,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (!this.currentBook) {
 				this.currentBook = book;
 			}
-			this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
-			this._bookViewer.onDidChangeVisibility(e => {
-				let openDocument = azdata.nb.activeNotebookEditor;
-				let notebookPath = openDocument?.document.uri;
-				// call reveal only once on the correct view
-				if (e.visible && ((!this._openAsUntitled && notebookPath?.scheme !== 'untitled') || (this._openAsUntitled && notebookPath?.scheme === 'untitled'))) {
-					this.revealActiveDocumentInViewlet();
-				}
-			});
+			this._onDidChangeTreeData.fire(undefined);
 		}
 	}
 
@@ -383,17 +389,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async revealActiveDocumentInViewlet(uri?: vscode.Uri, shouldReveal: boolean = true): Promise<BookTreeItem | undefined> {
+	async revealDocumentInTreeView(uri?: vscode.Uri, shouldReveal: boolean = true): Promise<BookTreeItem | undefined> {
 		let bookItem: BookTreeItem;
 		let notebookPath: string;
 		// If no uri is passed in, try to use the current active notebook editor
 		if (!uri) {
 			let openDocument = azdata.nb.activeNotebookEditor;
 			if (openDocument) {
-				notebookPath = openDocument.document.uri.fsPath;
+				notebookPath = openDocument.document.uri.fsPath.replace(/\\/g, '/');
 			}
 		} else if (uri.fsPath) {
-			notebookPath = uri.fsPath;
+			notebookPath = uri.fsPath.replace(/\\/g, '/');
 		}
 
 		if (shouldReveal || this._bookViewer?.visible) {
@@ -407,24 +413,51 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return bookItem;
 	}
 
-	async findAndExpandParentNode(notebookPath: string): Promise<BookTreeItem> {
-		let bookItem: BookTreeItem = this.currentBook?.getNotebook(notebookPath);
-		// if the node is not expanded getNotebook returns undefined, try to expand the parent node or getChildren of
-		// the root node.
-		if (!bookItem) {
-			// get the parent node and expand it if it's not already
-			let allNodes = this.currentBook?.getAllNotebooks();
-			let book = allNodes ? Array.from(allNodes?.keys())?.filter(x => x.indexOf(notebookPath.substring(0, notebookPath.lastIndexOf(path.sep))) > -1) : undefined;
-			let bookNode = book?.length > 0 ? this.currentBook?.getNotebook(book.find(x => x.substring(0, x.lastIndexOf(path.sep)) === notebookPath.substring(0, notebookPath.lastIndexOf(path.sep)))) : undefined;
-			if (bookNode) {
-				if (this._bookViewer?.visible) {
-					await this._bookViewer.reveal(bookNode, { select: true, focus: false, expand: 3 });
-				} else {
-					await this.getChildren(bookNode);
-				}
-
-				bookItem = this.currentBook?.getNotebook(notebookPath);
+	async findAndExpandParentNode(notebookPath: string): Promise<BookTreeItem | undefined> {
+		const parentBook = this.books.find(b => notebookPath.indexOf(b.bookPath) > -1);
+		if (!parentBook) {
+			// No parent book, likely because the Notebook is at the top level and not under a Notebook.
+			// Nothing to expand in that case so just return immediately
+			return undefined;
+		}
+		this.currentBook = parentBook;
+		let bookItem: BookTreeItem = parentBook.getNotebook(notebookPath);
+		if (bookItem) {
+			// We already have the Notebook loaded so just return it immediately
+			return bookItem;
+		}
+		// We couldn't find the Notebook which may mean that we don't have it loaded yet, starting from
+		// the top we'll expand nodes until we find the parent of the Notebook we're looking for
+		// get the children of root node and expand the nodes to the notebook level.
+		await this.getChildren(parentBook.rootNode);
+		// The path to the parent of the Notebook we're looking for (this is the node we're looking to expand)
+		const parentPath = notebookPath.substring(0, notebookPath.lastIndexOf(path.posix.sep));
+		// Find number of directories between the Notebook path and the root of the book it's contained in
+		// so we know how many parent nodes to expand
+		let depthOfNotebookInBook: number = path.relative(notebookPath, parentBook.bookPath).split(path.sep).length;
+		// Walk the tree, expanding parent nodes as needed to load the child nodes until
+		// we find the one for our Notebook
+		while (depthOfNotebookInBook > 0) {
+			// check if the notebook is available in already expanded levels.
+			bookItem = parentBook.bookItems.find(b => b.tooltip === notebookPath);
+			if (bookItem) {
+				return bookItem;
 			}
+			// Search for the parent item
+			// notebook can be inside the same folder as parent and can be in a different folder as well
+			// so check for both scenarios.
+			let bookItemToExpand = parentBook.bookItems.find(b => b.tooltip.indexOf(parentPath) > -1) ??
+				parentBook.bookItems.find(b => path.relative(notebookPath, b.tooltip)?.split(path.sep)?.length === depthOfNotebookInBook);
+			if (!bookItemToExpand) {
+				break;
+			}
+			if (!bookItemToExpand.children) {
+				// We haven't loaded children of this node yet so do that now so we can
+				// continue expanding and search its children
+				await this.getChildren(bookItemToExpand);
+			}
+			await this._bookViewer.reveal(bookItemToExpand, { select: false, focus: true, expand: 3 });
+			depthOfNotebookInBook--;
 		}
 		return bookItem;
 	}
@@ -548,7 +581,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	public async loadNotebooksInFolder(folderPath: string, urlToOpen?: string, showPreview?: boolean) {
+	public async loadNotebooksInFolder(folderPath: string, urlToOpen?: string, showPreview?: boolean): Promise<void> {
 		let bookCollection = await this.getNotebooksInTree(folderPath);
 		for (let i = 0; i < bookCollection.bookPaths.length; i++) {
 			await this.openBook(bookCollection.bookPaths[i], urlToOpen, showPreview);
@@ -604,23 +637,19 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	getTreeItem(element: BookTreeItem): vscode.TreeItem {
+	async getTreeItem(element: BookTreeItem): Promise<vscode.TreeItem> {
 		return element;
 	}
 
 	getChildren(element?: BookTreeItem): Thenable<BookTreeItem[]> {
 		if (element) {
 			if (element.sections) {
-				return Promise.resolve(this.currentBook.getSections(element.tableOfContents, element.sections, element.root, element.book).then(sections => { return sections; }));
+				return Promise.resolve(this.currentBook.getSections(element));
 			} else {
 				return Promise.resolve([]);
 			}
 		} else {
-			let bookItems: BookTreeItem[] = [];
-			this.books.map(book => {
-				bookItems = bookItems.concat(book.bookItems);
-			});
-			return Promise.resolve(bookItems);
+			return Promise.resolve(this.books.map(book => book.rootNode));
 		}
 	}
 
@@ -630,8 +659,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 * throwing error if it is not implemented.
 	 */
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
-		// Remove it for perf issues.
-		return undefined;
+		return element?.parent;
 	}
 
 	getUntitledNotebookUri(resource: string): vscode.Uri {
