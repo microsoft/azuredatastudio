@@ -341,7 +341,6 @@ export const SERVER = localize('sql.migration.server', "Server");
 export const USERNAME = localize('sql.migration.username', "Username");
 
 //Assessment Dialog
-export const DATABASES = localize('sql.migration.databases', "Databases");
 export const ISSUES = localize('sql.migration.issues', "Issues");
 export const SEARCH = localize('sql.migration.search', "Search");
 export const INSTANCE = localize('sql.migration.instance', "Instance");
@@ -355,12 +354,22 @@ export const RECOMMENDATION = localize('sql.migration.recommendation', "Recommen
 export const MORE_INFO = localize('sql.migration.more.info', "More Info");
 export const TARGET_PLATFORM = localize('sql.migration.target.platform', "Target Platform");
 export const WARNINGS_DETAILS = localize('sql.migration.warnings.details', "Warnings Details");
+export const ISSUES_DETAILS = localize('sql.migration.issues.details', "Issue Details");
 export const SELECT_DB_PROMPT = localize('sql.migration.select.prompt', "Click on SQL Server Instance or any of the databases on the left to view its details.");
 export function IMPACT_OBJECT_TYPE(objectType: string): string {
 	return localize('sql.migration.impact.object.type', "Type: {0}", objectType);
 }
 export function IMPACT_OBJECT_NAME(objectName: string): string {
 	return localize('sql.migration.impact.object.name', "Name: {0}", objectName);
+}
+export function DATABASES(selectedCount: number, totalCount: number): string {
+	return localize('sql.migration.databases', "Databases ({0}/{1})", selectedCount, totalCount);
+}
+export function ISSUES_COUNT(totalCount: number): string {
+	return localize('sql.migration.issues.count', "Issues ({0})", totalCount);
+}
+export function WARNINGS_COUNT(totalCount: number): string {
+	return localize('sql.migration.warnings.count', "Warnings ({0})", totalCount);
 }
 export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type', "Authentication Type");
 export const SQL_LOGIN = localize('sql.migration.sql.login', "SQL Login");
