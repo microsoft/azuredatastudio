@@ -528,7 +528,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}));
 		if (this.enableFilteringFeature) {
 			this.filterPlugin = new HeaderFilter(this.contextViewService);
-			attachTableFilterStyler(this.filterPlugin, this.themeService);
+			this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
 			this.table.registerPlugin(this.filterPlugin);
 		}
 		if (this.styles) {
