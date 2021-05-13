@@ -13,8 +13,8 @@ import { createRemoteURITransformer } from 'vs/server/remoteUriTransformer';
 import { RemoteAgentConnectionContext } from 'vs/platform/remote/common/remoteAgentEnvironment';
 import { DiskFileSystemProvider, IWatcherOptions } from 'vs/platform/files/node/diskFileSystemProvider';
 import { VSBuffer } from 'vs/base/common/buffer';
-import { posix } from 'vs/base/common/path';
-import { ServerEnvironmentService } from 'vs/server/serverEnvironmentService';
+import { posix, delimiter } from 'vs/base/common/path';
+import { IServerEnvironmentService } from 'vs/server/serverEnvironmentService';
 import { ReadableStreamEventPayload } from 'vs/base/common/stream';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 
@@ -24,7 +24,7 @@ class SessionFileWatcher extends Disposable {
 
 	constructor(
 		private readonly logService: ILogService,
-		private readonly environmentService: ServerEnvironmentService,
+		private readonly environmentService: IServerEnvironmentService,
 		private readonly uriTransformer: IURITransformer,
 		emitter: Emitter<IFileChange[] | string>
 	) {
@@ -51,9 +51,13 @@ class SessionFileWatcher extends Disposable {
 
 	private getWatcherOptions(): IWatcherOptions | undefined {
 		const fileWatcherPolling = this.environmentService.args['fileWatcherPolling'];
-		const pollingInterval = Number(fileWatcherPolling);
-		if (pollingInterval > 0) {
-			return { usePolling: true, pollingInterval };
+		if (fileWatcherPolling) {
+			const segments = fileWatcherPolling.split(delimiter);
+			const pollingInterval = Number(segments[0]);
+			if (pollingInterval > 0) {
+				//const usePolling: boolean = segments.length > 1 ? segments.slice(1) : true;
+				return { usePolling: true, pollingInterval };
+			}
 		}
 
 		return undefined;
@@ -94,7 +98,7 @@ export class RemoteAgentFileSystemChannel extends Disposable implements IServerC
 
 	constructor(
 		private readonly logService: ILogService,
-		private readonly environmentService: ServerEnvironmentService
+		private readonly environmentService: IServerEnvironmentService
 	) {
 		super();
 	}

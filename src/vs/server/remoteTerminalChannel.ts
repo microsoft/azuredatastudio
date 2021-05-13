@@ -161,7 +161,7 @@ export class RemoteTerminalChannel implements IServerChannel<RemoteAgentConnecti
 			env: args.shellLaunchConfig.env
 		};
 
-		const newEnv = await buildUserEnvironment(args.resolverEnv, platform.language, this._environmentService, this._logService);
+		const newEnv = await buildUserEnvironment(args.resolverEnv, platform.language, false, this._environmentService, this._logService);
 
 		const reviveWorkspaceFolder = (workspaceData: IWorkspaceFolderData): IWorkspaceFolder => {
 			return {

@@ -2,35 +2,12 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *--------------------------------------------------------------------------------------------*/
 
-import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 import { PersistentProtocol, ProtocolConstants, ISocket } from 'vs/base/parts/ipc/common/ipc.net';
-import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { getLogLevel, ILogService } from 'vs/platform/log/common/log';
-import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { ConfigurationService } from 'vs/platform/configuration/common/configurationService';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IRequestService } from 'vs/platform/request/common/request';
-import { RequestService } from 'vs/platform/request/node/requestService';
-import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IExtensionGalleryService, IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
-import { ExtensionManagementService } from 'vs/platform/extensionManagement/node/extensionManagementService';
+import { ILogService } from 'vs/platform/log/common/log';
 import { Emitter, Event } from 'vs/base/common/event';
-import { main as CliMain } from 'vs/code/node/cliProcessMain';
 import { VSBuffer } from 'vs/base/common/buffer';
-import product from 'vs/platform/product/common/product';
-import { DisposableStore } from 'vs/base/common/lifecycle';
-import { FileService } from 'vs/platform/files/common/fileService';
-import { DiskFileSystemProvider } from 'vs/platform/files/node/diskFileSystemProvider';
-import { Schemas } from 'vs/base/common/network';
-import { IFileService } from 'vs/platform/files/common/files';
-import { IProductService } from 'vs/platform/product/common/productService';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
-import { SpdLogService } from 'vs/platform/log/node/spdlogService';
-import { RemoteExtensionLogFileName } from 'vs/workbench/services/remote/common/remoteAgentService';
-import { ServerEnvironmentService, ServerParsedArgs } from 'vs/server/serverEnvironmentService';
 
 export interface IExtensionsManagementProcessInitData {
 	args: NativeParsedArgs;
@@ -94,7 +71,7 @@ export class ManagementConnection {
 			this._cleanResources();
 		}, this._reconnectionShortGraceTime);
 
-		this.protocol.onSocketClose(() => {
+		this.protocol.onDidDispose(() => {
 			this._log(`The client has disconnected gracefully, so the connection will be disposed.`);
 			this._cleanResources();
 		});
@@ -146,62 +123,4 @@ export class ManagementConnection {
 		this.protocol.beginAcceptReconnection(socket, initialDataChunk);
 		this.protocol.endAcceptReconnection();
 	}
-}
-
-function eventuallyExit(code: number): void {
-	setTimeout(() => process.exit(code), 0);
-}
-
-export function run(args: ServerParsedArgs, REMOTE_DATA_FOLDER: string): void {
-	const environmentService = new ServerEnvironmentService(args);
-	const logService: ILogService = new SpdLogService(RemoteExtensionLogFileName, environmentService.logsPath, getLogLevel(environmentService));
-	logService.trace(`Remote configuration data at ${REMOTE_DATA_FOLDER}`);
-	logService.trace('process arguments:', args);
-
-	_run(args, environmentService, logService)
-		.then(() => eventuallyExit(0))
-		.then(null, err => {
-			logService.error(err.message || err.stack || err);
-			eventuallyExit(1);
-		});
-}
-
-async function _run(argv: ServerParsedArgs, environmentService: ServerEnvironmentService, logService: ILogService): Promise<boolean> {
-	const disposables = new DisposableStore();
-	const services = new ServiceCollection();
-
-	services.set(IEnvironmentService, environmentService);
-	services.set(INativeEnvironmentService, environmentService);
-
-	services.set(ILogService, logService);
-	services.set(IProductService, { _serviceBrand: undefined, ...product });
-
-	// Files
-	const fileService = new FileService(logService);
-	disposables.add(fileService);
-	services.set(IFileService, fileService);
-
-	const diskFileSystemProvider = new DiskFileSystemProvider(logService);
-	disposables.add(diskFileSystemProvider);
-	fileService.registerProvider(Schemas.file, diskFileSystemProvider);
-
-	const configurationService = new ConfigurationService(environmentService.settingsResource, fileService);
-	disposables.add(configurationService);
-	await configurationService.initialize();
-	services.set(IConfigurationService, configurationService);
-
-	// const instantiationService: IInstantiationService = new InstantiationService(services);
-
-	services.set(IRequestService, new SyncDescriptor(RequestService));
-	services.set(ITelemetryService, NullTelemetryService);
-	services.set(IExtensionGalleryService, new SyncDescriptor(ExtensionGalleryService));
-	services.set(IExtensionManagementService, new SyncDescriptor(ExtensionManagementService));
-
-	try {
-		// await instantiationService.createInstance(CliMain, argv).run(argv);
-		CliMain(argv);
-	} finally {
-		disposables.dispose();
-	}
-	return true;
 }
