@@ -40,7 +40,8 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 				extensions: [{ name: '' }],
 				settings: {
 					default: { ['']: '' }
-				}
+				},
+				version: ''
 			},
 			scale: {
 				shards: 0,
@@ -114,7 +115,7 @@ describe('PostgresModel', function (): void {
 		controllerModel = new FakeControllerModel();
 
 		//Stub calling azdata login and acquiring session
-		sinon.stub(controllerModel, 'acquireAzdataSession').returns(Promise.resolve(vscode.Disposable.from()));
+		sinon.stub(controllerModel, 'login').returns(Promise.resolve());
 
 		// Stub the azdata CLI API
 		azdataApi = new FakeAzdataApi();
