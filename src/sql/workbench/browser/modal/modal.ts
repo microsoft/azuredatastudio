@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/calloutDialog';
 import 'vs/css!./media/modal';
-import { getFocusableElements } from 'sql/base/browser/dom';
+import { getFocusableElements, trapKeyboardNavigation } from 'sql/base/browser/dom';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
@@ -13,7 +13,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { Color } from 'vs/base/common/color';
-import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { KeyCode } from 'vs/base/common/keyCodes';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Schemas } from 'vs/base/common/network';
 import { mixin } from 'vs/base/common/objects';
@@ -120,8 +120,6 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _messageDetailText?: string;
 
 	private _spinnerElement?: HTMLElement;
-	private _firstTabbableElement?: HTMLElement; // The first element in the dialog the user could tab to
-	private _lastTabbableElement?: HTMLElement; // The last element in the dialog the user could tab to
 	private _focusedElementBeforeOpen?: HTMLElement;
 
 	private _dialogForeground?: Color;
@@ -347,22 +345,6 @@ export abstract class Modal extends Disposable implements IThemable {
 		this.hide('ok');
 	}
 
-	private handleBackwardTab(e: KeyboardEvent) {
-		this.setFirstLastTabbableElement(); // called every time to get the current elements
-		if (this._firstTabbableElement && this._lastTabbableElement && document.activeElement === this._firstTabbableElement) {
-			e.preventDefault();
-			this._lastTabbableElement.focus();
-		}
-	}
-
-	private handleForwardTab(e: KeyboardEvent) {
-		this.setFirstLastTabbableElement(); // called everytime to get the current elements
-		if (this._firstTabbableElement && this._lastTabbableElement && document.activeElement === this._lastTabbableElement) {
-			e.preventDefault();
-			this._firstTabbableElement.focus();
-		}
-	}
-
 	private getTextForClipboard(): string {
 		const eol = this.textResourcePropertiesService.getEOL(URI.from({ scheme: Schemas.untitled }));
 		return this._messageDetailText === '' ? this._messageSummaryText! : `${this._messageSummaryText}${eol}========================${eol}${this._messageDetailText}`;
@@ -394,17 +376,6 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	private get shouldShowExpandMessageButton(): boolean {
 		return this._messageDetailText !== '' || this._messageSummary!.scrollWidth > this._messageSummary!.offsetWidth;
-	}
-
-	/**
-	 * Figures out the first and last elements which the user can tab to in the dialog
-	 */
-	public setFirstLastTabbableElement() {
-		const tabbableElements = getFocusableElements(this._bodyContainer!);
-		if (tabbableElements && tabbableElements.length > 0) {
-			this._firstTabbableElement = <HTMLElement>tabbableElements[0];
-			this._lastTabbableElement = <HTMLElement>tabbableElements[tabbableElements.length - 1];
-		}
 	}
 
 	/**
@@ -485,13 +456,10 @@ export abstract class Modal extends Disposable implements IThemable {
 				} else if (event.equals(KeyCode.Escape)) {
 					DOM.EventHelper.stop(e, true);
 					this.onClose(event);
-				} else if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
-					this.handleBackwardTab(e);
-				} else if (event.equals(KeyCode.Tab)) {
-					this.handleForwardTab(e);
 				}
 			}
 		}));
+		this.disposableStore.add(trapKeyboardNavigation(this._modalDialog!));
 		this.disposableStore.add(DOM.addDisposableListener(window, DOM.EventType.RESIZE, (e: Event) => {
 			this.layout(DOM.getTotalHeight(this._modalBodySection!));
 		}));
