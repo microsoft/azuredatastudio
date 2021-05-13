@@ -282,6 +282,12 @@ export class RemoteTerminalProcess extends Disposable implements ITerminalChildP
 
 	private async _execCommand(event: IRemoteTerminalProcessExecCommandEvent): Promise<void> {
 		const reqId = event.reqId;
+		const commandId = event.commandId;
+		const allowedCommands = ['_remoteCLI.openExternal', '_remoteCLI.windowOpen', '_remoteCLI.getSystemStatus', '_remoteCLI.manageExtensions'];
+		if (!allowedCommands.includes(commandId)) {
+			this._remoteTerminalChannel.sendCommandResultToTerminalProcess(this._remoteTerminalId, reqId, true, 'Invalid remote cli command: ' + commandId);
+			return;
+		}
 		const commandArgs = event.commandArgs.map(arg => revive(arg));
 		try {
 			const result = await this._commandService.executeCommand(event.commandId, ...commandArgs);
