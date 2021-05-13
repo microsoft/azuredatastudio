@@ -383,7 +383,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		@IInstantiationService protected readonly instantiationService: IInstantiationService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IUntitledTextEditorService private readonly untitledEditorService: IUntitledTextEditorService,
-		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IConfigurationService protected readonly configurationService: IConfigurationService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IThemeService private readonly themeService: IThemeService
 	) {

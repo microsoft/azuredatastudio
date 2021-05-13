@@ -518,4 +518,7 @@ import 'sql/workbench/contrib/extensions/browser/extensions.contribution';
 // Azure
 import 'sql/workbench/contrib/azure/browser/azure.contribution';
 
+// Charts
+import 'sql/workbench/contrib/charts/browser/charts.contribution';
+
 //#endregion
