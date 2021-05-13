@@ -772,6 +772,9 @@ export class SqlDatabaseTree {
 					}
 				]
 			];
+			this._model._assessmentResults.databaseAssessments.sort((db1, db2) => {
+				return db2.issues.length - db1.issues.length;
+			});
 			this._model._assessmentResults.databaseAssessments.forEach((db) => {
 				databaseTableValues.push(
 					[
