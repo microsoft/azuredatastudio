@@ -28,6 +28,8 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { URI } from 'vs/base/common/uri';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 const msgLoading = localize('loading', "Loading kernels...");
@@ -49,7 +51,8 @@ export class AddCellAction extends Action {
 
 	constructor(
 		id: string, label: string, cssClass: string,
-		@INotebookService private _notebookService: INotebookService
+		@INotebookService private _notebookService: INotebookService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 		super(id, label, cssClass);
 	}
@@ -71,6 +74,9 @@ export class AddCellAction extends Action {
 			const index = editor.cells?.findIndex(cell => cell.active) ?? 0;
 			editor.addCell(this.cellType, index);
 		}
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.AddCell)
+			.withAdditionalProperties({ cell_type: this.cellType })
+			.send();
 	}
 }
 
@@ -212,12 +218,14 @@ export class RunAllCellsAction extends Action {
 	constructor(
 		id: string, label: string, cssClass: string,
 		@INotificationService private notificationService: INotificationService,
-		@INotebookService private _notebookService: INotebookService
+		@INotebookService private _notebookService: INotebookService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 		super(id, label, cssClass);
 	}
 	public async run(context: URI): Promise<boolean> {
 		try {
+			this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunAll);
 			const editor = this._notebookService.findNotebookEditor(context);
 			await editor.runAllCells();
 			return true;
@@ -372,7 +380,8 @@ const kernelDropdownElementId = 'kernel-dropdown';
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	private _showAllKernels: boolean = false;
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService) {
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>, @IConfigurationService private _configurationService: IConfigurationService,
+	) {
 		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel, id: kernelDropdownElementId } as ISelectBoxOptionsWithLabel);
 
 		if (modelReady) {
@@ -641,13 +650,17 @@ export class NewNotebookAction extends Action {
 		id: string,
 		label: string,
 		@ICommandService private commandService: ICommandService,
-		@IObjectExplorerService private objectExplorerService: IObjectExplorerService
+		@IObjectExplorerService private objectExplorerService: IObjectExplorerService,
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 		super(id, label);
 		this.class = 'notebook-action new-notebook';
 	}
 
 	async run(context?: azdata.ObjectExplorerContext): Promise<void> {
+		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.NewNotebookFromConnections)
+			.withConnectionInfo(context?.connectionProfile)
+			.send();
 		let connProfile: azdata.IConnectionProfile;
 		if (context && context.nodeInfo) {
 			let node = await this.objectExplorerService.getTreeNode(context.connectionProfile.id, context.nodeInfo.nodePath);

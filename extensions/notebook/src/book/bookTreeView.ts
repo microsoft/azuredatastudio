@@ -122,7 +122,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						}
 					});
 				}
-				TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.TrustNotebook).send();
+				TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.TrustNotebook);
 				vscode.window.showInformationMessage(loc.msgBookTrusted);
 			} else {
 				vscode.window.showInformationMessage(loc.msgBookAlreadyTrusted);
@@ -134,7 +134,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		let bookPathToUpdate = bookTreeItem.book?.contentPath;
 		if (bookPathToUpdate) {
 			let pinStatusChanged = await this.bookPinManager.pinNotebook(bookTreeItem);
-			TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.PinNotebook).send();
+			TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.PinNotebook);
 			if (pinStatusChanged) {
 				bookTreeItem.contextValue = 'pinnedNotebook';
 			}
@@ -154,7 +154,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async createBook(): Promise<void> {
 		const dialog = new CreateBookDialog(this.bookTocManager);
 		dialog.createDialog();
-		TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.CreateBook).send();
+		TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.CreateBook);
 	}
 
 	async getSelectionQuickPick(movingElement: BookTreeItem): Promise<quickPickResults> {
@@ -207,6 +207,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async editBook(movingElement: BookTreeItem): Promise<void> {
+		TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.MoveNotebook);
 		const selectionResults = await this.getSelectionQuickPick(movingElement);
 		if (selectionResults) {
 			const pickedSection = selectionResults.quickPickSection;
@@ -238,7 +239,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				await this.showPreviewFile(urlToOpen);
 			}
 
-			TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.OpenBook).send();
+			TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.OpenBook);
 		} catch (e) {
 			// if there is an error remove book from context
 			const index = this.books.findIndex(book => book.bookPath === bookPath);
@@ -298,7 +299,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				}
 				this._onDidChangeTreeData.fire(undefined);
 			}
-			TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.CloseBook).send();
+			TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.CloseBook);
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.closeBookError(book.root, e instanceof Error ? e.message : e));
 		} finally {
@@ -383,7 +384,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					this._visitedNotebooks = this._visitedNotebooks.concat([normalizedResource]);
 				}
 			}
-			TelemetryReporter.createActionEvent(BookTelemetryView, NbTelemetryActions.OpenNotebookFromBook);
+			TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.OpenNotebookFromBook);
 		} catch (e) {
 			vscode.window.showErrorMessage(loc.openNotebookError(resource, e instanceof Error ? e.message : e));
 		}
