@@ -127,7 +127,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		const buttonContainer = document.createElement('div');
 		menu.appendChild(buttonContainer);
 		const button = new Button(buttonContainer);
-		button.icon = { classNames: `slick-header-menuicon ${iconClass}` };
+		button.icon = { id: `slick-header-menuicon ${iconClass}` };
 		button.label = title;
 		button.onDidClick(async () => {
 			await this.handleMenuItemClick(command, columnDef);

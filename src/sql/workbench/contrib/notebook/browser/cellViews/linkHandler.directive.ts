@@ -80,7 +80,7 @@ export class LinkHandlerDirective {
 					this.openerService.open(uri, { openExternal: true }).catch(onUnexpectedError);
 				}
 				else {
-					this.openerService.open(uri).catch(onUnexpectedError);
+					this.openerService.open(uri, { allowCommands: true }).catch(onUnexpectedError);
 				}
 			}
 		}
