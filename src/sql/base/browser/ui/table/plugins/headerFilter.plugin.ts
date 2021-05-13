@@ -10,7 +10,7 @@ import { escape } from 'sql/base/common/strings';
 import { addDisposableListener } from 'vs/base/browser/dom';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { withNullAsUndefined } from 'vs/base/common/types';
-import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
+import { instanceOfIDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { trapKeyboardNavigation } from 'sql/base/browser/dom';
@@ -224,13 +224,13 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 		let filterItems: Array<string>;
 
-		const provider = this.grid.getData() as IDisposableDataProvider<T>;
+		const dataView = this.grid.getData() as Slick.DataProvider<T>;
 
-		if (provider.getColumnValues) {
+		if (instanceOfIDisposableDataProvider(dataView)) {
 			if (this.workingFilters.length === 0) {
-				filterItems = await provider.getColumnValues(this.columnDef);
+				filterItems = await dataView.getColumnValues(this.columnDef);
 			} else {
-				filterItems = await provider.getFilteredColumnValues(this.columnDef);
+				filterItems = await dataView.getFilteredColumnValues(this.columnDef);
 			}
 		} else {
 			if (this.workingFilters.length === 0) {
@@ -287,7 +287,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		this.clearButton.label = localize('headerFilter.clear', "Clear");
 		this.clearButton.title = localize('headerFilter.clear', "Clear");
 		this.clearButton.element.id = 'filter-clear-button';
-		this.okButton.onDidClick(() => {
+		this.clearButton.onDidClick(() => {
 			this.columnDef.filterValues!.length = 0;
 			this.setButtonImage($menuButton, false);
 			this.handleApply(this.columnDef);
@@ -378,10 +378,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 	private handleApply(columnDef: Slick.Column<T>) {
 		this.hideMenu();
-		const provider = this.grid.getData() as IDisposableDataProvider<T>;
-
-		if (provider.filter) {
-			provider.filter(this.grid.getColumns());
+		const dataView = this.grid.getData();
+		if (instanceOfIDisposableDataProvider(dataView)) {
+			dataView.filter(this.grid.getColumns());
 			this.grid.invalidateAllRows();
 			this.grid.updateRowCount();
 			this.grid.render();
@@ -401,11 +400,11 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	}
 
 	private async getFilterValuesByInput(column: Slick.Column<T>, filter: string): Promise<Array<string>> {
-		const dataView = this.grid.getData() as IDisposableDataProvider<T>,
+		const dataView = this.grid.getData() as Slick.DataProvider<T>,
 			seen: Set<any> = new Set();
 
 		let columnValues: any[];
-		if (dataView.getColumnValues) {
+		if (instanceOfIDisposableDataProvider(dataView)) {
 			columnValues = await dataView.getColumnValues(this.columnDef);
 		} else {
 			columnValues = dataView.getItems().map(item => item[column.field]);
@@ -442,10 +441,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 	private async handleMenuItemClick(command: HeaderFilterCommands, columnDef: Slick.Column<T>) {
 		this.hideMenu();
-		const provider = this.grid.getData() as IDisposableDataProvider<T>;
-
-		if (provider.sort && (command === 'sort-asc' || command === 'sort-desc')) {
-			await provider.sort({
+		const dataView = this.grid.getData();
+		if (instanceOfIDisposableDataProvider<T>(dataView) && (command === 'sort-asc' || command === 'sort-desc')) {
+			await dataView.sort({
 				grid: this.grid,
 				multiColumnSort: false,
 				sortCol: this.columnDef,
@@ -455,6 +453,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			this.grid.updateRowCount();
 			this.grid.render();
 		}
+
 		this.onCommand.notify({
 			grid: this.grid,
 			column: columnDef,
