@@ -256,7 +256,7 @@ export class NotebookSearchView extends SearchView {
 		const onComplete = async (completed?: ISearchComplete) => {
 			let end = new Date().getTime();
 			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.SearchCompleted)
-				.withAdditionalProperties({ resultsReturned: completed.results.length })
+				.withAdditionalProperties({ resultsReturned: completed?.results.length })
 				.withAdditionalMeasurements({ timeTakenMs: end - start })
 				.send();
 
