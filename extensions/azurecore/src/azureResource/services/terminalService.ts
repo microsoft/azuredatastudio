@@ -103,7 +103,7 @@ export class AzureTerminalService implements IAzureTerminalService {
 			}
 		}
 
-		const shells = [new ShellType('PowerShell', 'pwsh'), new ShellType('Bash', 'bash'),];
+		const shells = [new ShellType('PowerShell', 'pwsh'), new ShellType('Bash', 'bash')];
 		const idx = shells.findIndex(s => s.value === preferredShell);
 
 		const prefShell = shells.splice(idx, 1);
@@ -157,7 +157,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 	}
 
 	async open(initialDimensions: vscode.TerminalDimensions): Promise<void> {
-		this.setDimensions(initialDimensions);
+		await this.setDimensions(initialDimensions);
 	}
 
 	close(): void {
@@ -167,14 +167,19 @@ class AzureTerminal implements vscode.Pseudoterminal {
 		this.socket.removeAllListeners('message');
 		this.socket.removeAllListeners('close');
 
-		this.socket.terminate();
+		this.socket.close();
+
 		if (this.intervalTimer) {
 			clearInterval(this.intervalTimer);
 		}
 	}
 
+	private areSameDimensions(oldDimensions: vscode.TerminalDimensions | undefined, newDimensions: vscode.TerminalDimensions): boolean {
+		return oldDimensions?.columns === newDimensions.columns && oldDimensions?.rows === newDimensions.rows;
+	}
+
 	async setDimensions(dimensions: vscode.TerminalDimensions): Promise<void> {
-		if (!dimensions) {
+		if (!dimensions || this.areSameDimensions(this.terminalDimensions, dimensions)) {
 			return;
 		}
 		this.terminalDimensions = dimensions;
