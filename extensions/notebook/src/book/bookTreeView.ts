@@ -391,6 +391,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
+	/**
+	 * Reveals the given uri in the tree view.
+	 * @param uri The path to the notebook. If it's undefined then the current active notebook is revealed in the Tree View.
+	 * @param shouldReveal A boolean to expand the parent node.
+	 * @param shouldFocus A boolean to focus on the tree item.
+	 */
 	async revealDocumentInTreeView(uri: vscode.Uri | undefined, shouldReveal: boolean, shouldFocus: boolean): Promise<BookTreeItem | undefined> {
 		let bookItem: BookTreeItem;
 		let notebookPath: string;
