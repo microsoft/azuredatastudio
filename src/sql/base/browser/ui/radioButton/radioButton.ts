@@ -6,6 +6,7 @@
 import { Event, Emitter } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { withNullAsUndefined } from 'vs/base/common/types';
+import { generateUuid } from 'vs/base/common/uuid';
 
 export interface IRadioButtonOptions {
 	label: string;
@@ -25,13 +26,16 @@ export class RadioButton extends Widget {
 
 	constructor(container: HTMLElement, opts: IRadioButtonOptions) {
 		super();
+		const id = generateUuid();
 		this.inputElement = document.createElement('input');
 		this.inputElement.type = 'radio';
 		this.inputElement.style.verticalAlign = 'middle';
 		this.inputElement.style.margin = '3px';
+		this.inputElement.id = id;
 
-		this._label = document.createElement('span');
+		this._label = document.createElement('label');
 		this._label.style.verticalAlign = 'middle';
+		this._label.setAttribute('for', id);
 
 		this.label = opts.label;
 		this.enabled = opts.enabled || true;
