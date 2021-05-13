@@ -266,6 +266,15 @@ export class HTMLMarkdownConverter {
 				return delimiter + leadingSpace + content + trailingSpace + delimiter;
 			}
 		});
+
+		this.turndownService.addRule('p', {
+			filter: 'p',
+			replacement: function (content, node) {
+				// If inside of a table cell, extra newlines would break table rendering
+				return isInsideTable(node) ? content : '\n\n' + content + '\n\n';
+			}
+		});
+
 		this.turndownService.escape = escapeMarkdown;
 	}
 }
@@ -281,8 +290,14 @@ function blankReplacement(content, node) {
 	// When outdenting a nested list, an empty list will still remain. Need to handle this case.
 	if (node.nodeName === 'UL' || node.nodeName === 'OL') {
 		return '\n';
+	} else if (isInsideTable(node)) {
+		return '  ';
 	}
 	return node.isBlock ? '\n\n' : '';
+}
+
+function isInsideTable(node): boolean {
+	return node.parentNode?.nodeName === 'TH' || node.parentNode?.nodeName === 'TD';
 }
 
 export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined): string {
