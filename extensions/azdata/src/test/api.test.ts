@@ -51,7 +51,7 @@ describe('api', function (): void {
 		it('succeed when azdata present and EULA accepted', async function (): Promise<void> {
 			const mementoMock = TypeMoq.Mock.ofType<vscode.Memento>();
 			mementoMock.setup(x => x.get(TypeMoq.It.isAny())).returns(() => true);
-			const azdataTool = new AzdataTool('', '1.0.0');
+			const azdataTool = new AzdataTool('', '99.0.0');
 			const azdataToolService = new AzdataToolService();
 			azdataToolService.localAzdata = azdataTool;
 			// Not using a mock here because it'll hang when resolving mocked objects
@@ -60,7 +60,7 @@ describe('api', function (): void {
 			sinon.stub(childProcess, 'executeCommand').callsFake(async (_command, args) => {
 				// Version needs to be valid so it can be parsed correctly
 				if (args[0] === '--version') {
-					return { stdout: `1.0.0`, stderr: '' };
+					return { stdout: `99.0.0`, stderr: '' };
 				}
 				console.log(args[0]);
 				return { stdout: `{ }`, stderr: '' };
