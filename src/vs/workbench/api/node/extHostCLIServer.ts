@@ -34,6 +34,14 @@ export interface StatusPipeArgs {
 }
 
 
+export interface ExtensionManagementPipeArgs {
+	type: 'extensionManagement';
+	list?: { showVersions?: boolean, category?: string; };
+	install?: string[];
+	uninstall?: string[];
+	force?: boolean;
+}
+
 export type PipeCommand = OpenCommandPipeArgs | StatusPipeArgs | OpenExternalCommandPipeArgs;
 
 export interface ICommandsExecuter {
@@ -85,6 +93,10 @@ export class CLIServerBase {
 					break;
 				case 'status':
 					this.getStatus(data, res);
+					break;
+				case 'extensionManagement':
+					this.manageExtensions(data, res)
+						.catch(this.logService.error);
 					break;
 				default:
 					res.writeHead(404);
