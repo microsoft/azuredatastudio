@@ -167,8 +167,8 @@ class AzureTerminal implements vscode.Pseudoterminal {
 		this.socket.removeAllListeners('message');
 		this.socket.removeAllListeners('close');
 
-		this.socket.terminate();
 		this.socket.close();
+
 		if (this.intervalTimer) {
 			clearInterval(this.intervalTimer);
 		}
