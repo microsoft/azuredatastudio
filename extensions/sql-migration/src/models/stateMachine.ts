@@ -648,7 +648,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		});
 
 		const requestBody: StartDatabaseMigrationRequest = {
-			location: this._sqlMigrationService?.properties.location!,
+			location: this._sqlMigrationService?.location!,
 			properties: {
 				sourceDatabaseName: '',
 				migrationService: this._sqlMigrationService?.id!,
@@ -682,7 +682,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				const response = await startDatabaseMigration(
 					this._azureAccount,
 					this._targetSubscription,
-					this._sqlMigrationService?.properties.location!,
+					this._sqlMigrationService?.location!,
 					this._targetServerInstance,
 					this._targetDatabaseNames[i],
 					requestBody
