@@ -561,6 +561,14 @@ suite.skip('NotebookService:', function (): void {
 		mock.verifyAll();
 
 	});
+
+	test('verify getUntitledUriPath gets the proper next title', () => {
+		let getUntitledUriPathSpy = sinon.spy(notebookService, 'getUntitledUriPath');
+		notebookService.getUntitledUriPath('title.ipynb');
+		sinon.assert.calledOnce(getUntitledUriPathSpy);
+		assert.equal(getUntitledUriPathSpy, 'title-0.ipynb');
+	});
+
 });
 
 function unRegisterProviders(notebookService: NotebookService) {
