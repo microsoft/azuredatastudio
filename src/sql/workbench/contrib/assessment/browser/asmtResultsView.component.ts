@@ -586,7 +586,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		return seen.sort((v) => { return v; });
 	}
 
-	private getFilterValuesByInput($input: JQuery<HTMLElement>): Array<string> {
+	private async getFilterValuesByInput($input: JQuery<HTMLElement>): Promise<Array<string>> {
 		const column = $input.data('column'),
 			filter = $input.val() as string,
 			dataView = this['grid'].getData() as Slick.DataProvider<Slick.SlickData>,

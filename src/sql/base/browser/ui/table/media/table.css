@@ -99,6 +99,8 @@
 	white-space: nowrap;
 	width: 200px;
 	align-content: flex-start;
+	display: flex;
+	flex-direction: column;
 }
 
 .slick-header-menu .filter .filter-option {
