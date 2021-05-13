@@ -155,10 +155,17 @@ export class PostgresModel extends ResourceModel {
 			const provider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this._connectionProfile!.providerName, azdata.DataProviderType.QueryProvider);
 			const ownerUri = await azdata.connection.getUriForConnection(this._activeConnectionId);
 
-			const engineSettings = await provider.runQueryAndReturn(ownerUri, 'select name, setting, short_desc,min_val, max_val, enumvals, vartype from pg_settings');
-			if (!engineSettings) {
+			const engineSettingsCoordinator = await provider.runQueryAndReturn(ownerUri, 'select name, setting, short_desc,min_val, max_val, enumvals, vartype from pg_settings');
+			if (!engineSettingsCoordinator) {
 				throw new Error('Could not fetch engine settings');
 			}
+
+			const engineSettingsWorker = await provider.runQueryAndReturn(ownerUri, `select result from run_command_on_workers('select json_agg(pg_settings) from pg_settings') where success limit 1;`);
+			if (!engineSettingsWorker) {
+				throw new Error('Could not fetch engine settings');
+			}
+
+			let engineSettingsWorkerJSON = JSON.parse(engineSettingsWorker.rows[0][0].displayValue);
 
 			const skippedEngineSettings: String[] = [
 				'archive_command', 'archive_timeout', 'log_directory', 'log_file_mode', 'log_filename', 'restore_command',
@@ -167,8 +174,29 @@ export class PostgresModel extends ResourceModel {
 
 			this.workerNodesEngineSettings = [];
 
-			engineSettings.rows.forEach(row => {
-				let rowValues = row.map(c => c.displayValue);
+			for (let i = 0; i < 20; i++) {
+				let rowValues = engineSettingsWorkerJSON[i];
+				let name = rowValues.name;
+				if (!skippedEngineSettings.includes(name!)) {
+					let result: EngineSettingsModel = {
+						parameterName: name,
+						value: rowValues.setting,
+						description: rowValues.short_desc,
+						min: rowValues.min_val,
+						max: rowValues.max_val,
+						options: rowValues.enumvals,
+						type: rowValues.vartype
+					};
+
+					this.workerNodesEngineSettings.push(result);
+				}
+
+			}
+
+			this.coordinatorNodeEngineSettings = [];
+
+			for (let i = 0; i < 20; i++) {
+				let rowValues = engineSettingsCoordinator.rows[i].map(c => c.displayValue);
 				let name = rowValues.shift();
 				if (!skippedEngineSettings.includes(name!)) {
 					let result: EngineSettingsModel = {
@@ -181,10 +209,10 @@ export class PostgresModel extends ResourceModel {
 						type: rowValues.shift()
 					};
 
-					this.workerNodesEngineSettings.push(result);
+					this.coordinatorNodeEngineSettings.push(result);
 				}
-			});
 
+			}
 
 			this.engineSettingsLastUpdated = new Date();
 			this._engineSettingsPromise.resolve();

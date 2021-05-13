@@ -437,11 +437,15 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		let valueComponent: azdata.Component;
 		if (engineSetting.type === 'enum') {
 			// If type is enum, component should be drop down menu
-			let options = engineSetting.options?.slice(1, -1).split(',');
 			let values: string[] = [];
-			options!.forEach(option => {
-				values.push(option.slice(option.indexOf('"') + 1, -1));
-			});
+			if (typeof engineSetting.options === 'string') {
+				let options = engineSetting.options?.slice(1, -1).split(',');
+				options!.forEach(option => {
+					values.push(option.slice(option.indexOf('"') + 1, -1));
+				});
+			} else if (engineSetting.options) {
+				values = engineSetting.options;
+			}
 
 			let valueBox = this.modelView.modelBuilder.dropDown().withProps({
 				values: values,
