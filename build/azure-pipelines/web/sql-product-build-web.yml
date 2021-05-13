@@ -92,10 +92,10 @@ steps:
       node build/azure-pipelines/upload-sourcemaps out-vscode-web-min out-vscode-web-min/vs/workbench/workbench.web.api.js.map
   displayName: Upload sourcemaps (Web)
 
-# - script: |
-#     set -e
-#     AZURE_DOCUMENTDB_MASTERKEY="$(builds-docdb-key-readwrite)" \
-#     AZURE_STORAGE_ACCESS_KEY_2="$(vscode-storage-key)" \
-#     VSCODE_MIXIN_PASSWORD="$(github-distro-mixin-password)" \
-#     ./build/azure-pipelines/web/publish.sh
-#   displayName: Publish
+- script: |
+    set -e
+    AZURE_DOCUMENTDB_MASTERKEY="$(builds-docdb-key-readwrite)" \
+    AZURE_STORAGE_ACCESS_KEY_2="$(vscode-storage-key)" \
+    VSCODE_MIXIN_PASSWORD="$(github-distro-mixin-password)" \
+    ./build/azure-pipelines/web/publish.sh
+  displayName: Publish
