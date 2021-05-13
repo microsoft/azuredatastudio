@@ -701,6 +701,7 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 		undefined,
 		undefined,
 		undefined,
+		undefined,
 	);
 
 	instantiationService.stub(INotebookService, notebookService);
