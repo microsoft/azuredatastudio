@@ -58,8 +58,8 @@ export class PostgresModel extends ResourceModel {
 
 	/** Returns the IP address and port of Postgres */
 	public get endpoint(): { ip: string, port: string } | undefined {
-		return this._config?.status.externalEndpoint
-			? parseIpAndPort(this._config.status.externalEndpoint)
+		return this._config?.status.primaryEndpoint
+			? parseIpAndPort(this._config.status.primaryEndpoint)
 			: undefined;
 	}
 
@@ -73,9 +73,9 @@ export class PostgresModel extends ResourceModel {
 		const ramLimit = this._config.spec.scheduling?.default?.resources?.limits?.memory;
 		const cpuRequest = this._config.spec.scheduling?.default?.resources?.requests?.cpu;
 		const ramRequest = this._config.spec.scheduling?.default?.resources?.requests?.memory;
-		const dataStorage = this._config.spec.storage?.data?.size;
-		const logStorage = this._config.spec.storage?.logs?.size;
-		const backupsStorage = this._config.spec.storage?.backups?.size;
+		const dataStorage = this._config.spec.storage?.data?.volumes?.[0]?.size;
+		const logStorage = this._config.spec.storage?.logs?.volumes?.[0]?.size;
+		const backupsStorage = this._config.spec.storage?.backups?.volumes?.[0]?.size;
 
 		// scale.shards was renamed to scale.workers. Check both for backwards compatibility.
 		const scale = this._config.spec.scale;
@@ -184,7 +184,7 @@ export class PostgresModel extends ResourceModel {
 	}
 
 	protected createConnectionProfile(): azdata.IConnectionProfile {
-		const ipAndPort = parseIpAndPort(this.config?.status.externalEndpoint || '');
+		const ipAndPort = parseIpAndPort(this.config?.status.primaryEndpoint || '');
 		return {
 			serverName: `${ipAndPort.ip},${ipAndPort.port}`,
 			databaseName: '',

@@ -114,6 +114,21 @@ declare module 'azdata-ext' {
 		}
 	}
 
+	export interface StorageVolume {
+		className?: string, // "local-storage"
+		size: string // "5Gi"
+	}
+
+	export interface SchedulingOptions {
+		memory?: string // "10Gi"
+		cpu?: string // "4"
+	}
+
+	export interface ServiceSpec {
+		type: string, // "NodePort"
+		port?: number // 5432
+	}
+
 	export interface SqlMiShowResult {
 		apiVersion: string, // "sql.arcdata.microsoft.com/v1alpha1"
 		kind: string, // "sqlmanagedinstance"
@@ -127,25 +142,23 @@ declare module 'azdata-ext' {
 			uid: string // "cea737aa-3f82-4f6a-9bed-2b51c2c33dff"
 		},
 		spec: {
-			limits?: {
-				memory?: string // "10Gi"
-				vcores?: string // "4"
-			},
-			requests?: {
-				memory?: string // "10Gi"
-				vcores?: string // "4"
+			scheduling?: {
+				default?: {
+					resources?: {
+						limits?: SchedulingOptions,
+						requests?: SchedulingOptions
+					}
+				}
 			}
-			service: {
-				type: string // "NodePort"
+			services: {
+				primary: ServiceSpec
 			}
 			storage: {
 				data: {
-					className: string, // "local-storage"
-					size: string // "5Gi"
+					volumes: StorageVolume[]
 				},
 				logs: {
-					className: string, // "local-storage"
-					size: string // "5Gi"
+					volumes: StorageVolume[]
 				}
 			}
 		},
@@ -154,7 +167,7 @@ declare module 'azdata-ext' {
 			state: string, // "Ready",
 			logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:miaa1'))
 			metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
-			externalEndpoint?: string // "10.91.86.39:32718"
+			primaryEndpoint?: string // "10.91.86.39:32718"
 		}
 	}
 
@@ -184,41 +197,45 @@ declare module 'azdata-ext' {
 				shards: number, // 1 (shards was renamed to workers, kept here for backwards compatibility)
 				workers: number // 1
 			},
-			scheduling: {
+			scheduling: { // If no roles are specified, settings will apply to all nodes of the PostgreSQL Hyperscale server group.
 				default: {
 					resources: {
-						requests: {
-							cpu: string, // "1.5"
-							memory: string // "256Mi"
-						},
-						limits: {
-							cpu: string, // "1.5"
-							memory: string // "256Mi"
+						requests: SchedulingOptions,
+						limits: SchedulingOptions
+					}
+				},
+				roles: {
+					coordinator: {
+						resources: {
+							requests: SchedulingOptions,
+							limits: SchedulingOptions
+						}
+					},
+					worker: {
+						resources: {
+							requests: SchedulingOptions,
+							limits: SchedulingOptions
 						}
 					}
 				}
 			},
-			service: {
-				type: string, // "NodePort"
-				port: number // 5432
+			services: {
+				primary: ServiceSpec
 			},
 			storage: {
 				data: {
-					className: string, // "local-storage"
-					size: string // "5Gi"
+					volumes: StorageVolume[]
 				},
 				logs: {
-					className: string, // "local-storage"
-					size: string // "5Gi"
+					volumes: StorageVolume[]
 				},
 				backups: {
-					className: string, // "local-storage"
-					size: string // "5Gi"
+					volumes: StorageVolume[]
 				}
 			}
 		},
 		status: {
-			externalEndpoint: string, // "10.130.12.136:26630"
+			primaryEndpoint: string, // "10.130.12.136:26630"
 			readyPods: string, // "1/1",
 			state: string, // "Ready"
 			logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:pg1'))
