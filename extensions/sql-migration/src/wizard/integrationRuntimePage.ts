@@ -33,6 +33,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _refresh1!: azdata.ButtonComponent;
 	private _refresh2!: azdata.ButtonComponent;
 
+	private _firstEnter: boolean = true;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.IR_PAGE_TITLE), migrationStateModel);
@@ -75,7 +76,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
-		this.populateMigrationService();
+		if (this._firstEnter) {
+			this.populateMigrationService();
+			this._firstEnter = false;
+		}
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				this.wizard.message = {

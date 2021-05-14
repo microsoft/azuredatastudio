@@ -51,7 +51,8 @@ export const VIEW_SELECT_BUTTON_LABEL = localize('sql.migration.view.select.butt
 export function TOTAL_DATABASES_SELECTED(selectedDbCount: number, totalDbCount: number): string {
 	return localize('total.databases.selected', "{0} of {1} Database(s) selected.", selectedDbCount, totalDbCount);
 }
-
+export const SELECT_TARGET_TO_CONTINUE = localize('sql.migration.select.target.to.continue', "Please select a target to continue");
+export const SELECT_DATABASE_TO_MIGRATE = localize('sql.migration.select.database.to.migrate', "Please select databases to migrate");
 export const ASSESSMENT_COMPLETED = (serverName: string): string => {
 	return localize('sql.migration.generic.congratulations', "We have completed the assessment of your SQL Server Instance '{0}'.", serverName);
 };
@@ -83,6 +84,8 @@ export const DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL = localize('sql.migrat
 export const DATABASE_BACKUP_NC_BLOB_STORAGE_RADIO_LABEL = localize('sql.migration.nc.blob.storage.radio.label', "My database backups are in an Azure Storage Blob Container (Coming soon)");
 export const DATABASE_BACKUP_NC_FILE_SHARE_RADIO_LABEL = localize('sql.migration.nc.file.share.radio.label', "My database backups are in an Azure Storage File Share (Coming soon)");
 
+
+
 export const DATABASE_BACKUP_NETWORK_SHARE_HEADER_TEXT = localize('sql.migration.network.share.header.text', "Network share details");
 export const DATABASE_BACKUP_NC_NETWORK_SHARE_HELP_TEXT = localize('sql.migration.network.share.help.text', "Provide the network share location that contains backups and the user credentials that has read access to the share");
 export const DATABASE_BACKUP_NETWORK_SHARE_LOCATION_LABEL = localize('sql.migration.network.share.location.label', "Network share location that contains backups.");
@@ -97,8 +100,8 @@ export const DATABASE_BACKUP_SUBSCRIPTION_PLACEHOLDER = localize('sql.migration.
 export const DATABASE_BACKUP_NETWORK_SHARE_NETWORK_STORAGE_ACCOUNT_LABEL = localize('sql.migration.network.share.storage.account.label', "Select the storage account where backup files will be copied.");
 export const DATABASE_BACKUP_STORAGE_ACCOUNT_PLACEHOLDER = localize('sql.migration.network.share.storage.account.placeholder', "Select account");
 export const DUPLICATE_NAME_ERROR = localize('sql.migration.unique.name', "Select a unique name for this target database");
-export function DATABASE_ALREADY_EXISTS_MI(targetName: string): string {
-	return localize('sql.migration.database.already.exists', "Database with the same name already exists on target Managed Instance '{0}'", targetName);
+export function DATABASE_ALREADY_EXISTS_MI(dbName: string, targetName: string): string {
+	return localize('sql.migration.database.already.exists', "Database '{0}' already exists on target Managed Instance '{1}'.", dbName, targetName);
 }
 export const DATABASE_BACKUP_BLOB_STORAGE_SUBSCRIPTION_LABEL = localize('sql.migration.blob.storage.subscription.label', "Select the subscription that contains the storage account.");
 export const DATABASE_BACKUP_BLOB_STORAGE_ACCOUNT_LABEL = localize('sql.migration.blob.storage.account.label', "Select the storage account that contains the backup files.");
@@ -128,9 +131,6 @@ export const INVALID_FILESHARE_ERROR = localize('sql.migration.invalid.fileShare
 export const INVALID_BLOBCONTAINER_ERROR = localize('sql.migration.invalid.blobContainer.error', "Please select a valid blob container to proceed.");
 export const INVALID_NETWORK_SHARE_LOCATION = localize('sql.migration.invalid.network.share.location', "Invalid network share location format. Example: {0}", '\\\\Servername.domainname.com\\Backupfolder');
 export const INVALID_USER_ACCOUNT = localize('sql.migration.invalid.user.account', "Invalid user account format. Example: {0}", 'Domain\\username');
-export function TARGET_NAME_FOR_DATABASE(dbName: string): string {
-	return localize('sql.migration.target.name.for.database', 'Target name for database ‘{0}’', dbName);
-}
 export function TARGET_NETWORK_SHARE_LOCATION(dbName: string): string {
 	return localize('sql.migration.network.share.location', "Network share location to read backups for database ‘{0}’", dbName);
 }
@@ -236,6 +236,7 @@ export const MODE = localize('sql.migration.mode', "Mode");
 export const BACKUP_LOCATION = localize('sql.migration.backup.location', "Backup Location");
 export const AZURE_STORAGE_ACCOUNT_TO_UPLOAD_BACKUPS = localize('sql.migration.azure.storage.account.to.upload.backups', "Azure Storage Account to Upload Backups");
 export const SHIR = localize('sql.migration.shir', "Self-hosted Integration Runtime node");
+export const TARGET_NAME = localize('sql.migration.summary.target.name', "Target Databases:");
 
 // Open notebook quick pick string
 export const NOTEBOOK_QUICK_PICK_PLACEHOLDER = localize('sql.migration.quick.pick.placeholder', "Select the operation you'd like to perform");
