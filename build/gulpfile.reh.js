@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -299,11 +299,11 @@ function packageTask(type, platform, arch, sourceFolderName, destinationFolderNa
 					.pipe(replace('@@COMMIT@@', commit))
 					.pipe(replace('@@APPNAME@@', product.applicationName))
 					.pipe(rename(`bin/${product.applicationName}.cmd`)),
-				gulp.src('resources/server/bin/helpers/browser.cmd', { base: '.' })
-					.pipe(replace('@@VERSION@@', version))
-					.pipe(replace('@@COMMIT@@', commit))
-					.pipe(replace('@@APPNAME@@', product.applicationName))
-					.pipe(rename(`bin/helpers/browser.cmd`)),
+				// gulp.src('resources/server/bin/helpers/browser.cmd', { base: '.' })
+				// 	.pipe(replace('@@VERSION@@', version))
+				// 	.pipe(replace('@@COMMIT@@', commit))
+				// 	.pipe(replace('@@APPNAME@@', product.applicationName))
+				// 	.pipe(rename(`bin/helpers/browser.cmd`)),
 				gulp.src('resources/server/bin/server.cmd', { base: '.' })
 					.pipe(rename(`server.cmd`))
 			);
