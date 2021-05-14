@@ -347,11 +347,11 @@ export interface StartDatabaseMigrationRequest {
 		sourceDatabaseName: string,
 		migrationService: string,
 		backupConfiguration: {
-			targetLocation: {
+			targetLocation?: {
 				storageAccountResourceId: string,
 				accountKey: string,
 			},
-			sourceLocation: SourceLocation
+			sourceLocation?: SourceLocation
 		},
 		sourceSqlConnection: {
 			authentication: string,
@@ -416,8 +416,8 @@ export interface SqlConnectionInfo {
 }
 
 export interface BackupConfiguration {
-	sourceLocation: SourceLocation;
-	targetLocation: TargetLocation;
+	sourceLocation?: SourceLocation;
+	targetLocation?: TargetLocation;
 }
 
 export interface AutoCutoverConfiguration {
@@ -454,7 +454,7 @@ export interface TargetLocation {
 
 export interface BackupFileInfo {
 	fileName: string;
-	status: string;
+	status: 'Arrived' | 'Uploading' | 'Uploaded' | 'Restoring' | 'Restored' | 'Cancelled' | 'Ignored';
 }
 
 export interface DatabaseMigrationFileShare {
