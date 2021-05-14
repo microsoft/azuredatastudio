@@ -399,6 +399,9 @@ export class RemoteTerminalChannelClient {
 	}
 
 	public getTerminalLayoutInfo(): Promise<ITerminalsLayoutInfo | undefined> {
+		// {{SQL CARBON EDIT}} - temp disable this code since it refers to non-implemented method
+		//                     - currently remote code is ahead of OSS code and they need to catch-up (karlb 5/13/2021)
+
 		// const workspace = this._workspaceContextService.getWorkspace();
 		// const args: IGetTerminalLayoutInfoArgs = {
 		// 	workspaceId: workspace.id,
