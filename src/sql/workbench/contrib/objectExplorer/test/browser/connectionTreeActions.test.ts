@@ -30,7 +30,6 @@ import { UNSAVED_GROUP_ID, mssqlProviderName } from 'sql/platform/connection/com
 import { $ } from 'vs/base/browser/dom';
 import { OEManageConnectionAction } from 'sql/workbench/contrib/dashboard/browser/dashboardActions';
 import { IViewsService, IView, ViewContainerLocation, ViewContainer, IViewPaneContainer } from 'vs/workbench/common/views';
-import { ConsoleLogService } from 'vs/platform/log/common/log';
 import { IProgressIndicator } from 'vs/platform/progress/common/progress';
 import { IPaneComposite } from 'vs/workbench/common/panecomposite';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
@@ -39,6 +38,7 @@ import { TestConfigurationService } from 'sql/platform/connection/test/common/te
 import { ServerTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/serverTreeDataSource';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { ConsoleLogger, LogService } from 'vs/platform/log/common/log';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -49,7 +49,7 @@ suite('SQL Connection Tree Action tests', () => {
 		callStack: undefined
 	};
 	let capabilitiesService = new TestCapabilitiesService();
-	const logService = new ConsoleLogService();
+	const logService = new LogService(new ConsoleLogger());
 
 	setup(() => {
 		errorMessageService = TypeMoq.Mock.ofType(TestErrorMessageService, TypeMoq.MockBehavior.Loose);
