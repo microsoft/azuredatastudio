@@ -215,7 +215,7 @@ export class PostgresModel extends ResourceModel {
 		let engineSettingsWorkerJSON = JSON.parse(engineSettingsWorker.rows[0][0].displayValue);
 		this.workerNodesEngineSettings = [];
 
-		for (let i = 0; i < 20; i++) {
+		for (let i = 0; i < engineSettingsWorkerJSON.length; i++) {
 			let rowValues = engineSettingsWorkerJSON[i];
 			let name = rowValues.name;
 			if (!skip.includes(name!)) {
