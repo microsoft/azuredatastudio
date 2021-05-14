@@ -193,7 +193,7 @@ abstract class ControllerDialogBase extends InitializingComponent {
 		return {
 			id: this.id,
 			endpoint: url || undefined,
-			namespace: this.namespaceInputBox.value!,
+			namespace: this.namespaceInputBox.value!.trim(),
 			kubeConfigFilePath: this.kubeConfigInputBox.value!,
 			kubeClusterContext: this.clusterContextRadioGroup.value!,
 			name: this.nameInputBox.value ?? '',
@@ -237,7 +237,7 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 		if (!this.namespaceInputBox.value || !this.usernameInputBox.value || !this.passwordInputBox.value) {
 			return false;
 		}
-		let url = this.urlInputBox.value || '';
+		let url = this.urlInputBox.value?.trim() || '';
 		if (url) {
 			// Only support https connections
 			if (url.toLowerCase().startsWith('http://')) {
