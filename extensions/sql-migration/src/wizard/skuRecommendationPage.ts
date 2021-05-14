@@ -477,9 +477,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
 			}
-			if (this.migrationStateModel._migrationDbs.length === 0) {
-				errors.push('Please select databases to migrate');
 
+			if (this._rbg.selectedCardId === undefined || this._rbg.selectedCardId === '') {
+				errors.push(constants.SELECT_TARGET_TO_CONTINUE);
+			}
+			if (this.migrationStateModel._migrationDbs.length === 0) {
+				errors.push(constants.SELECT_DATABASE_TO_MIGRATE);
 			}
 			if ((<azdata.CategoryValue>this._managedInstanceSubscriptionDropdown.value)?.displayName === constants.NO_SUBSCRIPTIONS_FOUND) {
 				errors.push(constants.INVALID_SUBSCRIPTION_ERROR);
