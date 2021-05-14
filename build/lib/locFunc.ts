@@ -6,7 +6,6 @@
 import * as es from 'event-stream';
 import * as path from 'path';
 import * as fs from 'fs';
-
 import { createStatsStream } from './stats';
 import * as File from 'vinyl';
 import { Stream } from 'stream';
@@ -14,8 +13,6 @@ import * as glob from 'glob';
 import rename = require('gulp-rename');
 
 const root = path.dirname(path.dirname(__dirname));
-
-
 
 // Modified packageLocalExtensionsStream from extensions.ts, but for langpacks.
 export function packageLangpacksStream(): NodeJS.ReadWriteStream {
@@ -57,13 +54,3 @@ function fromLocalNormal(extensionPath: string): Stream {
 
 	return result.pipe(createStatsStream(path.basename(extensionPath)));
 }
-
-
-
-
-
-
-
-
-
-
