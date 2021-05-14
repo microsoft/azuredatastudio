@@ -4105,14 +4105,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.0.12",
-							"lastUpdated": "05/11/2021",
+							"version": "0.0.13",
+							"lastUpdated": "05/14/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-0.0.12.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-0.0.13.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
