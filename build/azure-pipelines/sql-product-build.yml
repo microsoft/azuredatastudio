@@ -79,7 +79,7 @@ jobs:
   - Compile
   steps:
   - template: win32/sql-product-build-win32.yml
-  timeoutInMinutes: 70
+  timeoutInMinutes: 300
 
 - job: Windows_Test
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
