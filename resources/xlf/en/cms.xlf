@@ -317,11 +317,6 @@
       <source xml:lang="en">Indicates which server type system then provider will expose through the DataReader</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/cms/out/cmsResource/tree/treeProvider" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="cms.resource.tree.treeProvider.loadingLabel">
-      <source xml:lang="en">Loading ...</source>
-    </trans-unit>
-  </body></file>
   <file original="extensions/cms/out/cmsResource/tree/cmsResourceTreeNode" source-language="en" datatype="plaintext"><body>
     <trans-unit id="cms.resource.cmsResourceTreeNode.noResourcesLabel">
       <source xml:lang="en">No resources found</source>
@@ -332,12 +327,20 @@
       <source xml:lang="en">Add Central Management Server...</source>
     </trans-unit>
   </body></file>
+  <file original="extensions/cms/out/cmsResource/tree/treeProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="cms.resource.tree.treeProvider.loadError">
+      <source xml:lang="en">Unexpected error occurred while loading saved servers {0}</source>
+    </trans-unit>
+    <trans-unit id="cms.resource.tree.treeProvider.loadingLabel">
+      <source xml:lang="en">Loading ...</source>
+    </trans-unit>
+  </body></file>
   <file original="extensions/cms/out/cmsResource/cmsResourceCommands" source-language="en" datatype="plaintext"><body>
     <trans-unit id="cms.errors.sameCmsServerName">
       <source xml:lang="en">Central Management Server Group already has a Registered Server with the name {0}</source>
     </trans-unit>
     <trans-unit id="cms.errors.azureNotAllowed">
-      <source xml:lang="en">Azure SQL Database Servers cannot be used as Central Management Servers</source>
+      <source xml:lang="en">Azure SQL Servers cannot be used as Central Management Servers</source>
     </trans-unit>
     <trans-unit id="cms.confirmDeleteServer">
       <source xml:lang="en">Are you sure you want to delete</source>

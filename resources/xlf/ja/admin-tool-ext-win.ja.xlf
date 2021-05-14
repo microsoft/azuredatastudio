@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="adminToolExtWin.displayName">
         <source xml:lang="en">Database Administration Tool Extensions for Windows</source>
-        <target state="translated">Windows 用データベース管理ツール拡張機能</target>
+        <target state="translated">Database Administration Tool Extensions for Windows</target>
       </trans-unit>
       <trans-unit id="adminToolExtWin.description">
         <source xml:lang="en">Adds additional Windows-specific functionality to Azure Data Studio</source>

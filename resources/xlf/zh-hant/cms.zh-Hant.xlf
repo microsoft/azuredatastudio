@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/cms/package" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/cms/package" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="cms.displayName">
         <source xml:lang="en">SQL Server Central Management Servers</source>
@@ -424,7 +424,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/cms/out/cmsResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="cms.resource.tree.treeProvider.loadingLabel">
         <source xml:lang="en">Loading ...</source>
@@ -432,7 +432,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/tree/cmsResourceTreeNode" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/cms/out/cmsResource/tree/cmsResourceTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="cms.resource.cmsResourceTreeNode.noResourcesLabel">
         <source xml:lang="en">No resources found</source>
@@ -440,7 +440,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/tree/cmsResourceEmptyTreeNode" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/cms/out/cmsResource/tree/cmsResourceEmptyTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="cms.resource.tree.CmsTreeNode.addCmsServerLabel">
         <source xml:lang="en">Add Central Management Server...</source>
@@ -448,7 +448,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/cmsResourceCommands" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/cms/out/cmsResource/cmsResourceCommands" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="cms.errors.sameCmsServerName">
         <source xml:lang="en">Central Management Server Group already has a Registered Server with the name {0}</source>
@@ -500,7 +500,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsUtils" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/cms/out/cmsUtils" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="cms.errors.sameServerUnderCms">
         <source xml:lang="en">You cannot add a shared registered server with the same name as the Configuration Server</source>
