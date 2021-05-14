@@ -5,6 +5,8 @@
 import * as nls from 'vs/nls';
 import { NativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { OPTIONS, OptionDescriptions } from 'vs/platform/environment/node/argv';
+// import { refineServiceDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { /*IEnvironmentService,*/ INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 
 export const serverOptions: OptionDescriptions<ServerParsedArgs> = {
 	'port': { type: 'string' },
@@ -15,11 +17,14 @@ export const serverOptions: OptionDescriptions<ServerParsedArgs> = {
 	'driver': { type: 'string' },
 	'start-server': { type: 'boolean' },
 	'print-startup-performance': { type: 'boolean' },
+	'print-ip-address': { type: 'boolean' },
 
 	'fileWatcherPolling': { type: 'string' },
 
 	'enable-remote-auto-shutdown': { type: 'boolean' },
 	'remote-auto-shutdown-without-delay': { type: 'boolean' },
+
+	'without-browser-env-var': { type: 'boolean' },
 
 	'disable-telemetry': OPTIONS['disable-telemetry'],
 
@@ -31,6 +36,8 @@ export const serverOptions: OptionDescriptions<ServerParsedArgs> = {
 	'locate-extension': OPTIONS['locate-extension'],
 	'list-extensions': OPTIONS['list-extensions'],
 	'force': OPTIONS['force'],
+	'show-versions': OPTIONS['show-versions'],
+	'category': OPTIONS['category'],
 	'do-not-sync': OPTIONS['do-not-sync'],
 
 	'force-disable-user-env': OPTIONS['force-disable-user-env'],
@@ -39,6 +46,9 @@ export const serverOptions: OptionDescriptions<ServerParsedArgs> = {
 	'workspace': { type: 'string' },
 	'web-user-data-dir': { type: 'string' },
 	'use-host-proxy': { type: 'string' },
+	'enable-sync': { type: 'boolean' },
+	'github-auth': { type: 'string' },
+	'log': { type: 'string' },
 
 	_: OPTIONS['_']
 };
@@ -60,6 +70,7 @@ export interface ServerParsedArgs {
 	'socket-path'?: string;
 	driver?: string;
 	'print-startup-performance'?: boolean;
+	'print-ip-address'?: boolean;
 	'disable-telemetry'?: boolean;
 	fileWatcherPolling?: string;
 	'start-server'?: boolean;
@@ -74,9 +85,13 @@ export interface ServerParsedArgs {
 	'uninstall-extension'?: string[];
 	'list-extensions'?: boolean;
 	'locate-extension'?: string[];
+	'show-versions'?: boolean;
+	'category'?: string;
 
 	'force-disable-user-env'?: boolean;
 	'use-host-proxy'?: string;
+
+	'without-browser-env-var'?: boolean;
 
 	force?: boolean; // used by install-extension
 	'do-not-sync'?: boolean; // used by install-extension
@@ -88,6 +103,9 @@ export interface ServerParsedArgs {
 	workspace: string;
 	folder: string;
 	'web-user-data-dir'?: string;
+	'enable-sync'?: boolean;
+	'github-auth'?: string;
+	'log'?: string;
 
 	_: string[];
 }
@@ -95,3 +113,18 @@ export interface ServerParsedArgs {
 export class ServerEnvironmentService extends NativeEnvironmentService {
 	get args(): ServerParsedArgs { return super.args as ServerParsedArgs; }
 }
+
+export interface IServerEnvironmentService extends INativeEnvironmentService {
+	readonly args: ServerParsedArgs;
+}
+
+
+// export const IServerEnvironmentService = refineServiceDecorator<IEnvironmentService, IServerEnvironmentService>(IEnvironmentService);
+
+// export interface IServerEnvironmentService extends INativeEnvironmentService {
+// 	readonly args: ServerParsedArgs;
+// }
+
+// export class ServerEnvironmentService extends NativeEnvironmentService implements IServerEnvironmentService {
+// 	/*override*/ get args(): ServerParsedArgs { return super.args as ServerParsedArgs; }
+// }

@@ -4,16 +4,17 @@
 
 import * as os from 'os';
 import * as fs from 'fs';
+import * as net from 'net';
 import { FileAccess } from 'vs/base/common/network';
-import { run as runCli } from 'vs/server/remoteExtensionManagement';
-import { runServer } from 'vs/server/remoteExtensionHostAgentServer';
+import { run as runCli } from 'vs/server/remoteExtensionHostAgentCli';
+import { createServer as doCreateServer, IServerAPI } from 'vs/server/remoteExtensionHostAgentServer';
 import { parseArgs, ErrorReporter } from 'vs/platform/environment/node/argv';
 import { join, dirname } from 'vs/base/common/path';
 import { performance } from 'perf_hooks';
 import { serverOptions } from 'vs/server/serverEnvironmentService';
 import * as perf from 'vs/base/common/performance';
 
-perf.mark('vscodeServerCodeLoaded');
+perf.mark('code/server/codeLoaded');
 (<any>global).vscodeServerCodeLoadedTime = performance.now();
 
 const errorReporter: ErrorReporter = {
@@ -47,16 +48,23 @@ args['extensions-dir'] = args['extensions-dir'] || join(REMOTE_DATA_FOLDER, 'ext
 	} catch (err) { console.error(err); }
 });
 
+/**
+ * invoked by vs/server/main.js
+ */
 export function spawnCli() {
 	runCli(args, REMOTE_DATA_FOLDER);
 }
-export function spawnServer() {
-	runServer(args, REMOTE_DATA_FOLDER);
+
+/**
+ * invoked by vs/server/main.js
+ */
+export function createServer(address: string | net.AddressInfo | null): Promise<IServerAPI> {
+	return doCreateServer(address, args, REMOTE_DATA_FOLDER);
 }
 
 
 // function reportStartupTimes(): void {
 // 	// use telemetry instead...
-// 	console.log(JSON.stringify(perf.getEntries(), undefined, 2));
+// 	console.log(JSON.stringify(perf.getMarks(), undefined, 2));
 // }
 // setTimeout(reportStartupTimes, 3000);

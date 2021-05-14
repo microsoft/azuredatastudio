@@ -15,9 +15,11 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import { createRemoteURITransformer } from 'vs/server/remoteUriTransformer';
 import { ILogService } from 'vs/platform/log/common/log';
 import product from 'vs/platform/product/common/product';
-import { ServerEnvironmentService } from 'vs/server/serverEnvironmentService';
+import { IServerEnvironmentService } from 'vs/server/serverEnvironmentService';
 import { extname, dirname, join, normalize } from 'vs/base/common/path';
 import { FileAccess } from 'vs/base/common/network';
+import { generateUuid } from 'vs/base/common/uuid';
+import { cwd } from 'vs/base/common/process';
 
 const textMimeType = {
 	'.html': 'text/html',
@@ -77,7 +79,7 @@ export class WebClientServer {
 
 	constructor(
 		private readonly _connectionToken: string,
-		private readonly _environmentService: ServerEnvironmentService,
+		private readonly _environmentService: IServerEnvironmentService,
 		private readonly _logService: ILogService
 	) { }
 
@@ -151,7 +153,7 @@ export class WebClientServer {
 			// tkn came in via a query string
 			// => set a cookie and redirect to url without tkn
 			const responseHeaders: Record<string, string> = Object.create(null);
-			responseHeaders['Set-Cookie'] = cookie.serialize('vscode-tkn', queryTkn, { maxAge: 60 * 60 * 24 * 7 /* 1 week */ });
+			responseHeaders['Set-Cookie'] = cookie.serialize('vscode-tkn', queryTkn, { sameSite: 'strict', maxAge: 60 * 60 * 24 * 7 /* 1 week */ });
 
 			const newQuery = Object.create(null);
 			for (let key in parsedUrl.query) {
@@ -186,6 +188,12 @@ export class WebClientServer {
 		}
 
 		const filePath = FileAccess.asFileUri(this._environmentService.isBuilt ? 'vs/code/browser/workbench/workbench.html' : 'vs/code/browser/workbench/workbench-dev.html', require).fsPath;
+		const authSessionInfo = !this._environmentService.isBuilt && this._environmentService.args['github-auth'] ? {
+			id: generateUuid(),
+			providerId: 'github',
+			accessToken: this._environmentService.args['github-auth'],
+			scopes: [['user:email'], ['repo']]
+		} : undefined;
 		const data = (await util.promisify(fs.readFile)(filePath)).toString()
 			.replace('{{WORKBENCH_WEB_CONFIGURATION}}', escapeAttribute(JSON.stringify({
 				folderUri: (workspacePath && isFolder) ? transformer.transformOutgoing(URI.file(workspacePath)) : undefined,
@@ -193,8 +201,10 @@ export class WebClientServer {
 				remoteAuthority,
 				webviewEndpoint: this._webviewEndpoint,
 				_wrapWebWorkerExtHostInIframe,
-				driver: this._environmentService.driverHandle === 'web' ? true : undefined
-			})));
+				developmentOptions: { enableSmokeTestDriver: this._environmentService.driverHandle === 'web' ? true : undefined },
+				settingsSyncOptions: !this._environmentService.isBuilt && this._environmentService.args['enable-sync'] ? { enabled: true } : undefined,
+			})))
+			.replace('{{WORKBENCH_AUTH_SESSION}}', () => authSessionInfo ? escapeAttribute(JSON.stringify(authSessionInfo)) : '');
 
 		const cspDirectives = [
 			'default-src \'self\';',
@@ -215,7 +225,7 @@ export class WebClientServer {
 			// At this point we know the client has a valid cookie
 			// and we want to set it prolong it to ensure that this
 			// client is valid for another 1 week at least
-			'Set-Cookie': cookie.serialize('vscode-tkn', this._connectionToken, { maxAge: 60 * 60 * 24 * 7 /* 1 week */ }),
+			'Set-Cookie': cookie.serialize('vscode-tkn', this._connectionToken, { sameSite: 'strict', maxAge: 60 * 60 * 24 * 7 /* 1 week */ }),
 			'Content-Security-Policy': cspDirectives
 		});
 		return res.end(data);
@@ -241,12 +251,11 @@ export class WebClientServer {
 	}
 
 	private async _getWorkspaceFromCLI(): Promise<{ workspacePath?: string, isFolder?: boolean }> {
-		const cwd = process.env['VSCODE_CWD'] || process.cwd();
 
 		// check for workspace argument
 		const workspaceCandidate = this._environmentService.args['workspace'];
 		if (workspaceCandidate && workspaceCandidate.length > 0) {
-			const workspace = sanitizeFilePath(workspaceCandidate, cwd);
+			const workspace = sanitizeFilePath(workspaceCandidate, cwd());
 			if (await util.promisify(fs.exists)(workspace)) {
 				return { workspacePath: workspace };
 			}
@@ -255,7 +264,7 @@ export class WebClientServer {
 		// check for folder argument
 		const folderCandidate = this._environmentService.args['folder'];
 		if (folderCandidate && folderCandidate.length > 0) {
-			const folder = sanitizeFilePath(folderCandidate, cwd);
+			const folder = sanitizeFilePath(folderCandidate, cwd());
 			if (await util.promisify(fs.exists)(folder)) {
 				return { workspacePath: folder, isFolder: true };
 			}

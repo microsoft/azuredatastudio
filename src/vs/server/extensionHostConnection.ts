@@ -16,10 +16,10 @@ import { resolveShellEnv } from 'vs/code/node/shellEnv';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IRemoteExtensionHostStartParams } from 'vs/platform/remote/common/remoteAgentConnection';
 import { IExtHostReadyMessage, IExtHostSocketMessage, IExtHostReduceGraceTimeMessage } from 'vs/workbench/services/extensions/common/extensionHostProtocol';
-import { ServerEnvironmentService } from 'vs/server/serverEnvironmentService';
+import { IServerEnvironmentService } from 'vs/server/serverEnvironmentService';
 import { IProcessEnvironment, isWindows } from 'vs/base/common/platform';
 
-export async function buildUserEnvironment(startParamsEnv: { [key: string]: string | null } = {}, language: string, environmentService: ServerEnvironmentService, logService: ILogService): Promise<IProcessEnvironment> {
+export async function buildUserEnvironment(startParamsEnv: { [key: string]: string | null } = {}, language: string, isDebug: boolean, environmentService: IServerEnvironmentService, logService: ILogService): Promise<IProcessEnvironment> {
 	const nlsConfig = await getNLSConfiguration(language, environmentService.userDataPath);
 	const userShellEnv = await resolveShellEnv(logService, environmentService.args, process.env);
 	const binFolder = environmentService.isBuilt ? join(environmentService.appRoot, 'bin') : join(environmentService.appRoot, 'resources', 'server', 'bin-dev');
@@ -30,26 +30,51 @@ export async function buildUserEnvironment(startParamsEnv: { [key: string]: stri
 	} else {
 		PATH = binFolder;
 	}
+
 	const env: IProcessEnvironment = {
 		...processEnv,
 		...userShellEnv,
 		...{
-			AMD_ENTRYPOINT: 'vs/server/remoteExtensionHostProcess',
-			PIPE_LOGGING: 'true',
-			VERBOSE_LOGGING: 'true',
+			VSCODE_LOG_NATIVE: String(isDebug),
+			VSCODE_AMD_ENTRYPOINT: 'vs/server/remoteExtensionHostProcess',
+			VSCODE_PIPE_LOGGING: 'true',
+			VSCODE_VERBOSE_LOGGING: 'true',
 			VSCODE_EXTHOST_WILL_SEND_SOCKET: 'true',
 			VSCODE_HANDLES_UNCAUGHT_ERRORS: 'true',
 			VSCODE_LOG_STACK: 'false',
-			VSCODE_NLS_CONFIG: JSON.stringify(nlsConfig, undefined, 0),
-			BROWSER: join(binFolder, 'helpers', isWindows ? 'browser.cmd' : 'browser.sh')
+			VSCODE_NLS_CONFIG: JSON.stringify(nlsConfig, undefined, 0)
 		},
 		...startParamsEnv
 	};
+	if (!environmentService.args['without-browser-env-var']) {
+		env.BROWSER = join(binFolder, 'helpers', isWindows ? 'browser.cmd' : 'browser.sh');
+	}
 
 	setCaseInsensitive(env, 'PATH', PATH);
 	removeNulls(env);
 
 	return env;
+}
+
+class ConnectionData {
+	constructor(
+		public readonly socket: net.Socket,
+		public readonly socketDrain: Promise<void>,
+		public readonly initialDataChunk: VSBuffer,
+		public readonly skipWebSocketFrames: boolean,
+		public readonly permessageDeflate: boolean,
+		public readonly inflateBytes: VSBuffer,
+	) { }
+
+	public toIExtHostSocketMessage(): IExtHostSocketMessage {
+		return {
+			type: 'VSCODE_EXTHOST_IPC_SOCKET',
+			initialDataChunk: (<Buffer>this.initialDataChunk.buffer).toString('base64'),
+			skipWebSocketFrames: this.skipWebSocketFrames,
+			permessageDeflate: this.permessageDeflate,
+			inflateBytes: (<Buffer>this.inflateBytes.buffer).toString('base64'),
+		};
+	}
 }
 
 export class ExtensionHostConnection {
@@ -60,12 +85,10 @@ export class ExtensionHostConnection {
 	private _disposed: boolean;
 	private _remoteAddress: string;
 	private _extensionHostProcess: cp.ChildProcess | null;
-	private _rendererConnection: net.Socket | null;
-	private _initialDataChunk: VSBuffer | null;
-	private _skipWebSocketFrames: boolean;
+	private _connectionData: ConnectionData | null;
 
 	constructor(
-		private readonly _environmentService: ServerEnvironmentService,
+		private readonly _environmentService: IServerEnvironmentService,
 		private readonly _logService: ILogService,
 		private readonly _reconnectionToken: string,
 		remoteAddress: string,
@@ -75,11 +98,8 @@ export class ExtensionHostConnection {
 		this._disposed = false;
 		this._remoteAddress = remoteAddress;
 		this._extensionHostProcess = null;
-		const { skipWebSocketFrames, socket } = this._getUnderlyingSocket(_socket);
-		this._skipWebSocketFrames = skipWebSocketFrames;
-		this._rendererConnection = socket;
-		this._rendererConnection.pause();
-		this._initialDataChunk = initialDataChunk;
+		this._connectionData = ExtensionHostConnection._toConnectionData(_socket, initialDataChunk);
+		this._connectionData.socket.pause();
 
 		this._log(`New connection established.`);
 	}
@@ -92,18 +112,19 @@ export class ExtensionHostConnection {
 		this._logService.error(`[${this._remoteAddress}][${this._reconnectionToken.substr(0, 8)}][ExtensionHostConnection] ${_str}`);
 	}
 
-	private _getUnderlyingSocket(socket: NodeSocket | WebSocketNodeSocket): { skipWebSocketFrames: boolean; socket: net.Socket; } {
+	private static _toConnectionData(socket: NodeSocket | WebSocketNodeSocket, initialDataChunk: VSBuffer): ConnectionData {
 		if (socket instanceof NodeSocket) {
-			return {
-				skipWebSocketFrames: true,
-				socket: socket.socket
-			};
+			return new ConnectionData(socket.socket, socket.drain(), initialDataChunk, true, false, VSBuffer.alloc(0));
 		} else {
-			return {
-				skipWebSocketFrames: false,
-				socket: socket.socket.socket
-			};
+			return new ConnectionData(socket.socket.socket, socket.drain(), initialDataChunk, false, socket.permessageDeflate, socket.recordedInflateBytes);
 		}
+	}
+
+	private async _sendSocketToExtensionHost(extensionHostProcess: cp.ChildProcess, connectionData: ConnectionData): Promise<void> {
+		// Make sure all outstanding writes have been drained before sending the socket
+		await connectionData.socketDrain;
+		const msg = connectionData.toIExtHostSocketMessage();
+		extensionHostProcess.send(msg, connectionData.socket);
 	}
 
 	public shortenReconnectionGraceTimeIfNecessary(): void {
@@ -119,26 +140,16 @@ export class ExtensionHostConnection {
 	public acceptReconnection(remoteAddress: string, _socket: NodeSocket | WebSocketNodeSocket, initialDataChunk: VSBuffer): void {
 		this._remoteAddress = remoteAddress;
 		this._log(`The client has reconnected.`);
-		const { skipWebSocketFrames, socket } = this._getUnderlyingSocket(_socket);
+		const connectionData = ExtensionHostConnection._toConnectionData(_socket, initialDataChunk);
+		connectionData.socket.pause();
 
 		if (!this._extensionHostProcess) {
 			// The extension host didn't even start up yet
-			this._skipWebSocketFrames = skipWebSocketFrames;
-			this._rendererConnection = socket;
-			this._rendererConnection.pause();
-			this._initialDataChunk = initialDataChunk;
+			this._connectionData = connectionData;
 			return;
 		}
 
-		socket.pause();
-		const msg: IExtHostSocketMessage = {
-			type: 'VSCODE_EXTHOST_IPC_SOCKET',
-			initialDataChunk: (<Buffer>initialDataChunk.buffer).toString('base64'),
-			skipWebSocketFrames: skipWebSocketFrames,
-			permessageDeflate: false,
-			inflateBytes: 'false'
-		};
-		this._extensionHostProcess.send(msg, socket);
+		this._sendSocketToExtensionHost(this._extensionHostProcess, connectionData);
 	}
 
 	private _cleanResources(): void {
@@ -147,9 +158,9 @@ export class ExtensionHostConnection {
 			return;
 		}
 		this._disposed = true;
-		if (this._rendererConnection) {
-			this._rendererConnection.end();
-			this._rendererConnection = null;
+		if (this._connectionData) {
+			this._connectionData.socket.end();
+			this._connectionData = null;
 		}
 		if (this._extensionHostProcess) {
 			this._extensionHostProcess.kill();
@@ -165,7 +176,7 @@ export class ExtensionHostConnection {
 				execArgv = [`--inspect${startParams.break ? '-brk' : ''}=0.0.0.0:${startParams.port}`];
 			}
 
-			const env = await buildUserEnvironment(startParams.env, startParams.language, this._environmentService, this._logService);
+			const env = await buildUserEnvironment(startParams.env, startParams.language, !!startParams.debugId, this._environmentService, this._logService);
 			const opts = {
 				env,
 				execArgv,
@@ -215,16 +226,8 @@ export class ExtensionHostConnection {
 			const messageListener = (msg: IExtHostReadyMessage) => {
 				if (msg.type === 'VSCODE_EXTHOST_IPC_READY') {
 					this._extensionHostProcess!.removeListener('message', messageListener);
-					const reply: IExtHostSocketMessage = {
-						type: 'VSCODE_EXTHOST_IPC_SOCKET',
-						initialDataChunk: (<Buffer>this._initialDataChunk!.buffer).toString('base64'),
-						skipWebSocketFrames: this._skipWebSocketFrames,
-						inflateBytes: 'false',
-						permessageDeflate: false
-					};
-					this._extensionHostProcess!.send(reply, this._rendererConnection!);
-					this._initialDataChunk = null;
-					this._rendererConnection = null;
+					this._sendSocketToExtensionHost(this._extensionHostProcess!, this._connectionData!);
+					this._connectionData = null;
 				}
 			};
 			this._extensionHostProcess.on('message', messageListener);
@@ -238,13 +241,13 @@ export class ExtensionHostConnection {
 	}
 }
 
-function setCaseInsensitive(env: { [key: string]: string }, key: string, value: string): void {
+function setCaseInsensitive(env: { [key: string]: unknown }, key: string, value: string): void {
 	const pathKeys = Object.keys(env).filter(k => k.toLowerCase() === key.toLowerCase());
 	const pathKey = pathKeys.length > 0 ? pathKeys[0] : key;
 	env[pathKey] = value;
 }
 
-function removeNulls(env: { [key: string]: string | null }): void {
+function removeNulls(env: { [key: string]: unknown | null }): void {
 	// Don't delete while iterating the object itself
 	for (let key of Object.keys(env)) {
 		if (env[key] === null) {

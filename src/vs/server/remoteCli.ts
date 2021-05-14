@@ -7,7 +7,8 @@ import * as _url from 'url';
 import * as _cp from 'child_process';
 import * as _http from 'http';
 import * as _os from 'os';
-import { dirname, extname, resolve } from 'vs/base/common/path';
+import { cwd } from 'vs/base/common/process';
+import { dirname, extname, resolve, join } from 'vs/base/common/path';
 import { parseArgs, buildHelpMessage, buildVersionMessage, OPTIONS, OptionDescriptions } from 'vs/platform/environment/node/argv';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 import { createWaitMarkerFile } from 'vs/platform/environment/node/waitMarkerFile';
@@ -21,29 +22,26 @@ interface ProductDescription {
 	executableName: string;
 }
 
+interface RemoteParsedArgs extends NativeParsedArgs { 'gitCredential'?: string; 'openExternal'?: boolean; }
 
-const isSupportedForCmd = (optionId: keyof NativeParsedArgs) => {
+
+const isSupportedForCmd = (optionId: keyof RemoteParsedArgs) => {
 	switch (optionId) {
 		case 'user-data-dir':
 		case 'extensions-dir':
-		case 'list-extensions':
-		case 'install-extension':
-		case 'uninstall-extension':
-		case 'show-versions':
 		case 'export-default-configuration':
 		case 'install-source':
 		case 'driver':
 		case 'extensions-download-dir':
 		case 'builtin-extensions-dir':
 		case 'telemetry':
-		case 'category':
 			return false;
 		default:
 			return true;
 	}
 };
 
-const isSupportedForPipe = (optionId: keyof NativeParsedArgs) => {
+const isSupportedForPipe = (optionId: keyof RemoteParsedArgs) => {
 	switch (optionId) {
 		case 'version':
 		case 'help':
@@ -56,6 +54,12 @@ const isSupportedForPipe = (optionId: keyof NativeParsedArgs) => {
 		case 'reuse-window':
 		case 'new-window':
 		case 'status':
+		case 'install-extension':
+		case 'uninstall-extension':
+		case 'list-extensions':
+		case 'force':
+		case 'show-versions':
+		case 'category':
 			return true;
 		default:
 			return false;
@@ -68,7 +72,6 @@ const cliCommandCwd = process.env['VSCODE_CLIENT_COMMAND_CWD'] as string;
 const remoteAuthority = process.env['VSCODE_CLI_AUTHORITY'] as string;
 const cliStdInFilePath = process.env['VSCODE_STDIN_FILE_PATH'] as string;
 
-interface RemoteParsedArgs extends NativeParsedArgs { 'gitCredential'?: string; 'openExternal'?: boolean; }
 
 export function main(desc: ProductDescription, args: string[]): void {
 	if (!cliPipe && !cliCommand) {
@@ -80,14 +83,13 @@ export function main(desc: ProductDescription, args: string[]): void {
 	const options: OptionDescriptions<RemoteParsedArgs> = { ...OPTIONS };
 	const isSupported = cliCommand ? isSupportedForCmd : isSupportedForPipe;
 	for (const optionId in OPTIONS) {
-		const optId = <keyof NativeParsedArgs>optionId;
+		const optId = <keyof RemoteParsedArgs>optionId;
 		if (!isSupported(optId)) {
 			delete options[optId];
 		}
 	}
 
 	if (cliPipe) {
-		options['gitCredential'] = { type: 'string' };
 		options['openExternal'] = { type: 'boolean' };
 	}
 
@@ -113,10 +115,6 @@ export function main(desc: ProductDescription, args: string[]): void {
 		return;
 	}
 	if (cliPipe) {
-		if (parsedArgs['gitCredential']) {
-			getCredential(parsedArgs['gitCredential']);
-			return;
-		}
 		if (parsedArgs['openExternal']) {
 			openInBrowser(parsedArgs['_']);
 			return;
@@ -173,7 +171,7 @@ export function main(desc: ProductDescription, args: string[]): void {
 	}
 
 	const crashReporterDirectory = parsedArgs['crash-reporter-directory'];
-	if (crashReporterDirectory !== undefined && !crashReporterDirectory.match(/^([a-zA-Z]:[\\\/]))/)) {
+	if (crashReporterDirectory !== undefined && !crashReporterDirectory.match(/^([a-zA-Z]:[\\\/])/)) {
 		console.log(`The crash reporter directory '${crashReporterDirectory}' must be an absolute Windows path (e.g. c:/crashes)`);
 		return;
 	}
@@ -183,6 +181,22 @@ export function main(desc: ProductDescription, args: string[]): void {
 	}
 
 	if (cliCommand) {
+		if (parsedArgs['install-extension'] !== undefined || parsedArgs['uninstall-extension'] !== undefined || parsedArgs['list-extensions']) {
+			const cmdLine: string[] = [];
+			parsedArgs['install-extension']?.forEach(id => cmdLine.push('--install-extension', id));
+			parsedArgs['uninstall-extension']?.forEach(id => cmdLine.push('--uninstall-extension', id));
+			['list-extensions', 'force', 'show-versions', 'category'].forEach(opt => {
+				const value = parsedArgs[<keyof NativeParsedArgs>opt];
+				if (value !== undefined) {
+					cmdLine.push(`--${opt}=${value}`);
+				}
+			});
+			const cp = _cp.fork(join(__dirname, 'main.js'), cmdLine, { stdio: 'inherit' });
+			cp.on('error', err => console.log(err));
+			return;
+		}
+
+
 		let newCommandline: string[] = [];
 		for (let key in parsedArgs) {
 			let val = parsedArgs[key as keyof typeof parsedArgs];
@@ -201,22 +215,22 @@ export function main(desc: ProductDescription, args: string[]): void {
 
 		const ext = extname(cliCommand);
 		if (ext === '.bat' || ext === '.cmd') {
-			const cwd = cliCommandCwd || process.cwd();
+			const processCwd = cliCommandCwd || cwd();
 			if (parsedArgs['verbose']) {
-				console.log(`Invoking: cmd.exe /C ${cliCommand} ${newCommandline.join(' ')} in ${cwd}`);
+				console.log(`Invoking: cmd.exe /C ${cliCommand} ${newCommandline.join(' ')} in ${processCwd}`);
 			}
 			_cp.spawn('cmd.exe', ['/C', cliCommand, ...newCommandline], {
 				stdio: 'inherit',
-				cwd
+				cwd: processCwd
 			});
 		} else {
-			const cwd = dirname(cliCommand);
+			const cliCwd = dirname(cliCommand);
 			const env = { ...process.env, ELECTRON_RUN_AS_NODE: '1' };
 			newCommandline.unshift('resources/app/out/cli.js');
 			if (parsedArgs['verbose']) {
-				console.log(`Invoking: ${cliCommand} ${newCommandline.join(' ')} in ${cwd}`);
+				console.log(`Invoking: ${cliCommand} ${newCommandline.join(' ')} in ${cliCwd}`);
 			}
-			_cp.spawn(cliCommand, newCommandline, { cwd, env, stdio: ['inherit'] });
+			_cp.spawn(cliCommand, newCommandline, { cwd: cliCwd, env, stdio: ['inherit'] });
 		}
 	} else {
 		if (args.length === 0) {
@@ -231,6 +245,19 @@ export function main(desc: ProductDescription, args: string[]): void {
 			});
 			return;
 		}
+
+		// if (parsedArgs['install-extension'] !== undefined || parsedArgs['uninstall-extension'] !== undefined || parsedArgs['list-extensions']) {
+		// 	sendToPipe({
+		// 		type: 'extensionManagement',
+		// 		list: parsedArgs['list-extensions'] ? { showVersions: parsedArgs['show-versions'], category: parsedArgs['category'] } : undefined,
+		// 		install: asExtensionIdOrVSIX(parsedArgs['install-extension']),
+		// 		uninstall: asExtensionIdOrVSIX(parsedArgs['uninstall-extension']),
+		// 		force: parsedArgs['force']
+		// 	}).then((res: string) => {
+		// 		console.log(res);
+		// 	});
+		// 	return;
+		// }
 
 		if (!fileURIs.length && !folderURIs.length) {
 			console.log('At least one file or folder must be provided.');
@@ -291,47 +318,6 @@ function openInBrowser(args: string[]) {
 	}
 }
 
-function getCredential(cmd: string) {
-	const command = ({ get: 'fill', store: 'approve', erase: 'reject' } as { [cmd: string]: 'fill' | 'approve' | 'reject' | undefined })[cmd];
-	if (command === undefined) {
-		console.log('Expected get, store or erase.');
-		return;
-	}
-	let stdin = '';
-	process.stdin.setEncoding('utf8');
-	process.stdin.on('data', chunk => {
-		stdin += chunk;
-		if (stdin === '\n' || stdin.indexOf('\n\n', stdin.length - 2) !== -1) {
-			process.stdin.pause();
-			sendGetCredential(command, stdin)
-				.catch(console.error);
-		}
-	});
-	process.stdin.on('end', () => {
-		sendGetCredential(command, stdin)
-			.catch(console.error);
-	});
-}
-
-async function sendGetCredential(command: 'fill' | 'approve' | 'reject', stdin: string) {
-	// const json = await sendToPipe({
-	// 	type: 'commaopennd',
-	// 	command: 'git.credential',
-	// 	args: [{ command, stdin }]
-	// });
-	// const { stdout, stderr, code } = JSON.parse(json);
-	// if (stdout) {
-	// 	process.stdout.write(stdout);
-	// }
-	// if (stderr) {
-	// 	process.stderr.write(stderr);
-	// }
-	// if (code) {
-	// 	process.exit(code);
-	// }
-}
-
-
 function sendToPipe(args: PipeCommand): Promise<any> {
 	return new Promise<string>(resolve => {
 		const message = JSON.stringify(args);
@@ -365,17 +351,21 @@ function sendToPipe(args: PipeCommand): Promise<any> {
 	});
 }
 
+// function asExtensionIdOrVSIX(inputs: string[] | undefined) {
+// 	return inputs?.map(input => /\.vsix$/i.test(input) ? pathToURI(input).href : input);
+// }
+
 function fatal(err: any): void {
 	console.error('Unable to connect to VS Code server.');
 	console.error(err);
 	process.exit(1);
 }
 
-const cwd = process.env.PWD || process.cwd(); // prefer process.env.PWD as it does not follow symlinks
+const preferredCwd = process.env.PWD || cwd(); // prefer process.env.PWD as it does not follow symlinks
 
 function pathToURI(input: string): _url.URL {
 	input = input.trim();
-	input = resolve(cwd, input);
+	input = resolve(preferredCwd, input);
 
 	return _url.pathToFileURL(input);
 }
