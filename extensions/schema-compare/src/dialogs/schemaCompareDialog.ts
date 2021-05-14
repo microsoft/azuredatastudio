@@ -221,8 +221,8 @@ export class SchemaCompareDialog {
 			this.sourceDacpacComponent = this.createFileBrowser(false, this.schemaCompareMainWindow.sourceEndpointInfo);
 			this.targetDacpacComponent = this.createFileBrowser(true, this.schemaCompareMainWindow.targetEndpointInfo);
 
-			let sourceRadioButtons = this.createSourceRadiobuttons();
-			let targetRadioButtons = this.createTargetRadiobuttons();
+			let sourceRadioButtons = this.createSourceRadioButtons();
+			let targetRadioButtons = this.createTargetRadioButtons();
 
 			let sourceComponents = [];
 			let targetComponents = [];
@@ -336,7 +336,7 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	private createSourceRadiobuttons(): azdata.FormComponent {
+	private createSourceRadioButtons(): azdata.FormComponent {
 		this.sourceDacpacRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'source',
@@ -365,8 +365,7 @@ export class SchemaCompareDialog {
 			this.formBuilder.insertFormItem(this.sourceDatabaseComponent, 3, { horizontal: true, titleFontSize: titleFontSize });
 			this.formBuilder.removeFormItem(this.sourceDacpacComponent);
 
-			this.populateServerDropdown(false);
-			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
+			await this.populateServerDropdown(false);
 		});
 
 		// if source is currently a db, show it in the server and db dropdowns
@@ -389,7 +388,7 @@ export class SchemaCompareDialog {
 		};
 	}
 
-	private createTargetRadiobuttons(): azdata.FormComponent {
+	private createTargetRadioButtons(): azdata.FormComponent {
 		let dacpacRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'target',
@@ -418,8 +417,7 @@ export class SchemaCompareDialog {
 			this.formBuilder.addFormItem(this.targetServerComponent, { horizontal: true, titleFontSize: titleFontSize });
 			this.formBuilder.addFormItem(this.targetDatabaseComponent, { horizontal: true, titleFontSize: titleFontSize });
 
-			this.populateServerDropdown(true);
-			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
+			await this.populateServerDropdown(true);
 		});
 
 		// if target is currently a db, show it in the server and db dropdowns
@@ -445,7 +443,6 @@ export class SchemaCompareDialog {
 	}
 
 	private async shouldEnableOkayButton(): Promise<boolean> {
-
 		let sourcefilled = (this.sourceIsDacpac && await this.existsDacpac(this.sourceTextBox.value))
 			|| (!this.sourceIsDacpac && !isNullOrUndefined(this.sourceDatabaseDropdown.value) && this.sourceDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.sourceDbEditable)) !== -1);
 		let targetfilled = (this.targetIsDacpac && await this.existsDacpac(this.targetTextBox.value))
@@ -720,6 +717,7 @@ export class SchemaCompareDialog {
 			});
 		}
 
+		this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		currentDropdown.loading = false;
 	}
 
