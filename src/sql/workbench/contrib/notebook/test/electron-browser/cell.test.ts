@@ -1152,4 +1152,59 @@ suite('Cell Model', function (): void {
 		await onIopub.handle({ channel: 'iopub', content: { data: 'Hello' }, type: 'execute_reply', metadata: contents.outputs[0].metadata, header: { msg_type: 'execute_result' } });
 		assert.deepEqual(cellModel.previousChartState, contents.outputs[0].metadata.azdata_chartOptions, 'Previous chart state should exist after output is generated');
 	});
+
+	test('Should read attachments from cell contents', async function () {
+		const testImageAttachment: nb.ICellAttachment = { ['image/png']: 'iVBORw0KGgoAAAANSUhEUgAAAHI' };
+		const attachments: nb.ICellAttachments = { 'test.png': testImageAttachment };
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: '',
+			metadata: {},
+			attachments: attachments
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		assert.equal(model.attachments, attachments);
+	});
+
+	test('addAttachment should add a valid attachment to cell', async function () {
+		let imageFilebase64Value = 'data:application/octet-stream;base64,iVBORw0KGgoAAAANSU';
+		let index = imageFilebase64Value.indexOf('base64,');
+		const testImageAttachment: nb.ICellAttachment = { ['image/png']: imageFilebase64Value.substring(index + 7) };
+		const attachments: nb.ICellAttachments = { 'test.png': testImageAttachment };
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: '',
+			metadata: {}
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		model.addAttachment('image/png', imageFilebase64Value, 'test.png');
+		assert.deepEqual(model.attachments, attachments);
+	});
+
+	test('addAttachment should not add an invalid attachment to cell', async function () {
+		let imageFilebase64Value = 'base64,test';
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: '',
+			metadata: {}
+		};
+		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		cellModel.addAttachment('image/png', imageFilebase64Value, 'test.png');
+		assert.equal(cellModel.attachments, undefined);
+	});
 });
