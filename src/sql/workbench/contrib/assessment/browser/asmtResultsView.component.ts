@@ -335,7 +335,6 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		// we need to be able to show distinct array values in filter dialog for columns with array data
 		filterPlugin['getFilterValues'] = this.getFilterValues;
 		filterPlugin['getAllFilterValues'] = this.getAllFilterValues;
-		filterPlugin['getFilterValuesByInput'] = this.getFilterValuesByInput;
 
 		dom.clearNode(this._gridEl.nativeElement);
 		dom.clearNode(this.actionBarContainer.nativeElement);
@@ -581,52 +580,6 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			} else {
 				if (!seen.some(x => x === value)) {
 					seen.push(value);
-				}
-			}
-		}
-
-		return seen.sort((v) => { return v; });
-	}
-
-	private async getFilterValuesByInput(column: Slick.Column<any>, filter: string): Promise<Array<string>> {
-		const dataView = this['grid'].getData() as Slick.DataProvider<Slick.SlickData>,
-			seen: Array<any> = [];
-
-		for (let i = 0; i < dataView.getLength(); i++) {
-			const value = dataView.getItem(i)[column.field];
-			if (value instanceof Array) {
-				if (filter.length > 0) {
-					const itemValue = !value ? [] : value;
-					const lowercaseFilter = filter.toString().toLowerCase();
-					const lowercaseVals = itemValue.map(v => v.toLowerCase());
-					for (let valIdx = 0; valIdx < value.length; valIdx++) {
-						if (!seen.some(x => x === value[valIdx]) && lowercaseVals[valIdx].indexOf(lowercaseFilter) > -1) {
-							seen.push(value[valIdx]);
-						}
-					}
-				}
-				else {
-					for (let item = 0; item < value.length; item++) {
-						if (!seen.some(x => x === value[item])) {
-							seen.push(value[item]);
-						}
-					}
-				}
-
-			} else {
-				if (filter.length > 0) {
-					const itemValue = !value ? '' : value;
-					const lowercaseFilter = filter.toString().toLowerCase();
-					const lowercaseVal = itemValue.toString().toLowerCase();
-
-					if (!seen.some(x => x === value) && lowercaseVal.indexOf(lowercaseFilter) > -1) {
-						seen.push(value);
-					}
-				}
-				else {
-					if (!seen.some(x => x === value)) {
-						seen.push(value);
-					}
 				}
 			}
 		}
