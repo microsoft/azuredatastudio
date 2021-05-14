@@ -22,7 +22,6 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { escapeLabel, escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
-import { KeyCode } from 'vs/base/common/keyCodes';
 
 export interface ILinkCalloutDialogOptions {
 	insertTitle?: string,
