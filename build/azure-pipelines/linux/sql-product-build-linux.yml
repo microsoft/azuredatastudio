@@ -219,10 +219,10 @@ steps:
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
-    set -e
-    cd ./extensions/mssql/node_modules/@microsoft/ads-kerberos
-    npx node-gyp rebuild
-  displayName: Recompile native node modules
+      set -e
+      cd ./extensions/mssql/node_modules/@microsoft/ads-kerberos
+      npx node-gyp rebuild
+    displayName: Recompile native node modules
 
   - script: |
       set -e
