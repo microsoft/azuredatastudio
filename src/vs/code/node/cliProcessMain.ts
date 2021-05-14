@@ -151,7 +151,7 @@ class CliMain extends Disposable {
 		const appenders: AppInsightsAppender[] = [];
 		if (isBuilt && !extensionDevelopmentLocationURI && !environmentService.disableTelemetry && product.enableTelemetry) {
 			if (product.aiConfig && product.aiConfig.asimovKey) {
-				appenders.push(new AppInsightsAppender('monacoworkbench', null, product.aiConfig.asimovKey));
+				appenders.push(new AppInsightsAppender('adsworkbench', null, product.aiConfig.asimovKey)); // {{SQL CARBON EDIT}} Use our own event prefix
 			}
 
 			const config: ITelemetryServiceConfig = {

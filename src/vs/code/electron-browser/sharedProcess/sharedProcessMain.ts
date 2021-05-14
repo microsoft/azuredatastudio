@@ -207,7 +207,7 @@ class SharedProcessMain extends Disposable {
 
 			// Application Insights
 			if (product.aiConfig && product.aiConfig.asimovKey && isBuilt) {
-				const appInsightsAppender = new AppInsightsAppender('monacoworkbench', null, product.aiConfig.asimovKey);
+				const appInsightsAppender = new AppInsightsAppender('adsworkbench', null, product.aiConfig.asimovKey); // {{SQL CARBON EDIT}} Use our own event prefix
 				this._register(toDisposable(() => appInsightsAppender.flush())); // Ensure the AI appender is disposed so that it flushes remaining data
 				telemetryAppender = combinedAppender(appInsightsAppender, telemetryAppender);
 			}
