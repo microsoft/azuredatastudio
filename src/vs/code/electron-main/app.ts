@@ -473,7 +473,7 @@ export class CodeApplication extends Disposable {
 		}
 
 		// Setup Auth Handler
-		this._register(appInstantiationService.createInstance(ProxyAuthHandler));
+		this._register(appInstantiationService.createInstance(<any>ProxyAuthHandler)); // {{SQL CARBON EDIT}} Cast here to avoid compilation error (not finding constructor?)
 
 		// Open Windows
 		const windows = appInstantiationService.invokeFunction(accessor => this.openFirstWindow(accessor, electronIpcServer, sharedProcessClient, fileProtocolHandler));

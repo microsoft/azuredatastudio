@@ -17,7 +17,7 @@ import { WalkThroughInput } from 'vs/workbench/contrib/welcome/walkThrough/brows
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, optional } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { localize } from 'vs/nls';
 import { IStorageService } from 'vs/platform/storage/common/storage';
@@ -39,6 +39,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { domEvent } from 'vs/base/browser/event';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
+import { ITASExperimentService } from 'vs/workbench/services/experiment/common/experimentService';
 
 export const WALK_THROUGH_FOCUS = new RawContextKey<boolean>('interactivePlaygroundFocus', false);
 
@@ -80,6 +81,7 @@ export class WalkThroughPart extends EditorPane {
 		@INotificationService private readonly notificationService: INotificationService,
 		@IExtensionService private readonly extensionService: IExtensionService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
+		@optional(ITASExperimentService) tasExperimentService: ITASExperimentService,
 	) {
 		super(WalkThroughPart.ID, telemetryService, themeService, storageService);
 		this.editorFocus = WALK_THROUGH_FOCUS.bindTo(this.contextKeyService);

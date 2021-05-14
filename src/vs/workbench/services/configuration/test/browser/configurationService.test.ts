@@ -611,7 +611,7 @@ suite.skip('WorkspaceService - Initialization', () => { // {{SQL CARBON EDIT}} s
 
 });
 
-suite('WorkspaceConfigurationService - Folder', () => {
+suite.skip('WorkspaceConfigurationService - Folder', () => { // {{SQL CARBON EDIT}} skip suite
 
 	let testObject: IConfigurationService, workspaceService: WorkspaceService, fileService: IFileService, environmentService: BrowserWorkbenchEnvironmentService;
 	const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
@@ -1105,7 +1105,7 @@ suite('WorkspaceConfigurationService - Folder', () => {
 	});
 });
 
-suite('WorkspaceConfigurationService-Multiroot', () => {
+suite.skip('WorkspaceConfigurationService-Multiroot', () => { // {{SQL CARBON EDIT}} skip suite
 
 	let workspaceContextService: IWorkspaceContextService, jsonEditingServce: IJSONEditingService, testObject: IConfigurationService, fileService: IFileService, environmentService: BrowserWorkbenchEnvironmentService;
 	const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);

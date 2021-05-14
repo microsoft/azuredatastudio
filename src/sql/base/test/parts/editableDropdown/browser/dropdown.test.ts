@@ -26,7 +26,7 @@ suite('Editable dropdown tests', () => {
 
 	test('default value for editable dropdown is empty', () => {
 		const dropdown = new Dropdown(container, undefined, options);
-		assert(dropdown.value === '');
+		assert.strictEqual(dropdown.value, '');
 	});
 
 	test('changing value through code fires onValueChange event', () => {
@@ -37,11 +37,11 @@ suite('Editable dropdown tests', () => {
 		});
 		dropdown.value = options.values[0];
 
-		assert(count === 1, 'onValueChange event was not fired');
+		assert.strictEqual(count, 1, 'onValueChange event was not fired');
 		dropdown.value = options.values[0];
-		assert(count === 1, 'onValueChange event should not be fired for setting the same value again');
+		assert.strictEqual(count, 1, 'onValueChange event should not be fired for setting the same value again');
 		dropdown.value = options.values[1];
-		assert(<number>count === 2, 'onValueChange event was not fired for setting a new value of the dropdown');
+		assert.strictEqual(count, 2, 'onValueChange event was not fired for setting a new value of the dropdown');
 	});
 
 	test('changing value through input text fires onValue Change event', () => {
@@ -54,18 +54,18 @@ suite('Editable dropdown tests', () => {
 		dropdown.fireOnTextChange = true;
 		dropdown.setDropdownVisibility(true);
 		dropdown.input.value = options.values[0];
-		assert(count === 1, 'onValueChange event was not fired for an option from the dropdown list');
+		assert.strictEqual(count, 1, 'onValueChange event was not fired for an option from the dropdown list');
 		dropdown.input.value = 'foo';
-		assert(<number>count === 2, 'onValueChange event was not fired for a value not in dropdown list');
-		assert(dropdown.selectList.length === 4, 'list does not have all the values that are matching the input box text');
-		assert(dropdown.value = 'foo');
+		assert.strictEqual(count, 2, 'onValueChange event was not fired for a value not in dropdown list');
+		assert.strictEqual(dropdown.selectList.length, 4, 'list does not have all the values that are matching the input box text');
+		assert.strictEqual(dropdown.value, 'foo');
 		dropdown.input.value = 'foobar';
-		assert(<number>count === 3, 'onValueChange event was not fired for a value not in dropdown list');
-		assert(<number>(dropdown.selectList.length) === 2, 'list does not have all the values that are matching the input box text');
-		assert(dropdown.value = 'foobar');
+		assert.strictEqual(count, 3, 'onValueChange event was not fired for a value not in dropdown list');
+		assert.strictEqual(dropdown.selectList.length, 2, 'list does not have all the values that are matching the input box text');
+		assert.strictEqual(dropdown.value, 'foobar');
 
 		dropdown.fireOnTextChange = false;
 		dropdown.input.value = options.values[0];
-		assert(<number>count === 3, 'onValueChange event was fired with input box value change even after setting the fireOnTextChange to false');
+		assert.strictEqual(count, 3, 'onValueChange event was fired with input box value change even after setting the fireOnTextChange to false');
 	});
 });

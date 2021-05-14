@@ -1719,7 +1719,7 @@ export class TabsTitleControl extends TitleControl {
 	// {{SQL CARBON EDIT}} -- Display the editor's tab color
 	private setEditorTabColor(editor: IEditorInput, tabContainer: HTMLElement, isTabActive: boolean) {
 		let sqlEditor = editor as any;
-		const tabColorMode = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').tabColorMode;
+		const tabColorMode = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor')?.tabColorMode ?? 'off';
 		if (tabColorMode === 'off' || (tabColorMode !== 'border' && tabColorMode !== 'fill')
 			|| this.themeService.getColorTheme().type === ColorScheme.HIGH_CONTRAST || !sqlEditor.tabColor) {
 			tabContainer.style.borderTopColor = '';
