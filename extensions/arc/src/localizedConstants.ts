@@ -179,6 +179,7 @@ export const condition = localize('arc.condition', "Condition");
 export const details = localize('arc.details', "Details");
 export const lastTransition = localize('arc.lastTransition', "Last transition");
 export const noExternalEndpoint = localize('arc.noExternalEndpoint', "No External Endpoint has been configured so this information isn't available.");
+export const noWorkerPods = localize('arc.noWorkerPods', "No worker pods in this configuration.");
 export const podsReady = localize('arc.podsReady', "pods ready");
 export const podsPresent = localize('arc.podsPresent', "Pods Present");
 export const podsUsedDescription = localize('arc.podsUsedDescription', "Select a pod in the dropdown below for detailed health information.");

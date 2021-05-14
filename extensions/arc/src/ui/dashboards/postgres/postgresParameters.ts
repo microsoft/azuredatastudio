@@ -272,7 +272,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 				let scale = this._postgresModel.config?.spec.scale;
 				let nodes = (scale?.workers ?? scale?.shards ?? 0);
 				if (this.title === loc.workerNodeParameters && nodes === 0) {
-					vscode.window.showInformationMessage('No workers in this configuration');
+					vscode.window.showInformationMessage(loc.noWorkerPods);
 					return;
 				}
 
@@ -447,9 +447,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			let values: string[] = [];
 			if (typeof engineSetting.options === 'string') {
 				let options = engineSetting.options?.slice(1, -1).split(',');
-				options!.forEach(option => {
-					values.push(option.slice(option.indexOf('"') + 1, -1));
-				});
+				values = options.map(option => option.slice(option.indexOf('"') + 1, -1));
 			} else if (engineSetting.options) {
 				values = engineSetting.options;
 			}
