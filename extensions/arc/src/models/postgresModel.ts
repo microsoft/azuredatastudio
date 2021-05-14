@@ -155,63 +155,17 @@ export class PostgresModel extends ResourceModel {
 			const provider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this._connectionProfile!.providerName, azdata.DataProviderType.QueryProvider);
 			const ownerUri = await azdata.connection.getUriForConnection(this._activeConnectionId);
 
-			const engineSettingsCoordinator = await provider.runQueryAndReturn(ownerUri, 'select name, setting, short_desc,min_val, max_val, enumvals, vartype from pg_settings');
-			if (!engineSettingsCoordinator) {
-				throw new Error('Could not fetch engine settings');
-			}
-
-			const engineSettingsWorker = await provider.runQueryAndReturn(ownerUri, `select result from run_command_on_workers('select json_agg(pg_settings) from pg_settings') where success limit 1;`);
-			if (!engineSettingsWorker) {
-				throw new Error('Could not fetch engine settings');
-			}
-
-			let engineSettingsWorkerJSON = JSON.parse(engineSettingsWorker.rows[0][0].displayValue);
-
 			const skippedEngineSettings: String[] = [
 				'archive_command', 'archive_timeout', 'log_directory', 'log_file_mode', 'log_filename', 'restore_command',
 				'shared_preload_libraries', 'synchronous_commit', 'ssl', 'unix_socket_permissions', 'wal_level'
 			];
 
-			this.workerNodesEngineSettings = [];
+			await this.createCoordinatorEngineSettings(provider, ownerUri, skippedEngineSettings);
 
-			for (let i = 0; i < 20; i++) {
-				let rowValues = engineSettingsWorkerJSON[i];
-				let name = rowValues.name;
-				if (!skippedEngineSettings.includes(name!)) {
-					let result: EngineSettingsModel = {
-						parameterName: name,
-						value: rowValues.setting,
-						description: rowValues.short_desc,
-						min: rowValues.min_val,
-						max: rowValues.max_val,
-						options: rowValues.enumvals,
-						type: rowValues.vartype
-					};
-
-					this.workerNodesEngineSettings.push(result);
-				}
-
-			}
-
-			this.coordinatorNodeEngineSettings = [];
-
-			for (let i = 0; i < 20; i++) {
-				let rowValues = engineSettingsCoordinator.rows[i].map(c => c.displayValue);
-				let name = rowValues.shift();
-				if (!skippedEngineSettings.includes(name!)) {
-					let result: EngineSettingsModel = {
-						parameterName: name,
-						value: rowValues.shift(),
-						description: rowValues.shift(),
-						min: rowValues.shift(),
-						max: rowValues.shift(),
-						options: rowValues.shift(),
-						type: rowValues.shift()
-					};
-
-					this.coordinatorNodeEngineSettings.push(result);
-				}
-
+			const scale = this._config?.spec.scale;
+			const nodes = (scale?.workers ?? scale?.shards ?? 0);
+			if (nodes !== 0) {
+				await this.createWorkerEngineSettings(provider, ownerUri, skippedEngineSettings);
 			}
 
 			this.engineSettingsLastUpdated = new Date();
@@ -222,6 +176,63 @@ export class PostgresModel extends ResourceModel {
 		} finally {
 			this._engineSettingsPromise = undefined;
 		}
+	}
+
+	private async createCoordinatorEngineSettings(provider: azdata.QueryProvider, ownerUri: string, skip: String[]): Promise<void> {
+		const engineSettingsCoordinator = await provider.runQueryAndReturn(ownerUri, 'select name, setting, short_desc,min_val, max_val, enumvals, vartype from pg_settings');
+
+		this.coordinatorNodeEngineSettings = [];
+		engineSettingsCoordinator.rows.forEach(row => {
+			let rowValues = row.map(c => c.displayValue);
+			let name = rowValues.shift();
+			if (!skip.includes(name!)) {
+				let result: EngineSettingsModel = {
+					parameterName: name,
+					value: rowValues.shift(),
+					description: rowValues.shift(),
+					min: rowValues.shift(),
+					max: rowValues.shift(),
+					options: rowValues.shift(),
+					type: rowValues.shift()
+				};
+
+				this.coordinatorNodeEngineSettings.push(result);
+			}
+		});
+
+	}
+
+	private async createWorkerEngineSettings(provider: azdata.QueryProvider, ownerUri: string, skip: String[]): Promise<void> {
+
+		let engineSettingsWorker4 = await provider.runQueryAndReturn(ownerUri, `select count(result) from run_command_on_workers('select json_agg(pg_settings) from pg_settings') where success;`);
+		if (engineSettingsWorker4.rows[0][0].displayValue === '0') {
+			engineSettingsWorker4 = await provider.runQueryAndReturn(ownerUri, `select result from run_command_on_workers('select json_agg(pg_settings) from pg_settings') limit 1;`);
+			throw new Error(engineSettingsWorker4.rows[0][0].displayValue);
+		}
+
+		const engineSettingsWorker = await provider.runQueryAndReturn(ownerUri, `select result from run_command_on_workers('select json_agg(pg_settings) from pg_settings') where success limit 1;`);
+
+		let engineSettingsWorkerJSON = JSON.parse(engineSettingsWorker.rows[0][0].displayValue);
+		this.workerNodesEngineSettings = [];
+
+		for (let i = 0; i < 20; i++) {
+			let rowValues = engineSettingsWorkerJSON[i];
+			let name = rowValues.name;
+			if (!skip.includes(name!)) {
+				let result: EngineSettingsModel = {
+					parameterName: name,
+					value: rowValues.setting,
+					description: rowValues.short_desc,
+					min: rowValues.min_val,
+					max: rowValues.max_val,
+					options: rowValues.enumvals,
+					type: rowValues.vartype
+				};
+
+				this.workerNodesEngineSettings.push(result);
+			}
+		}
+
 	}
 
 	protected createConnectionProfile(): azdata.IConnectionProfile {

@@ -269,6 +269,13 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 		this.disposables.push(
 			this.connectToServerButton.onDidClick(async () => {
+				let scale = this._postgresModel.config?.spec.scale;
+				let nodes = (scale?.workers ?? scale?.shards ?? 0);
+				if (this.title === loc.workerNodeParameters && nodes === 0) {
+					vscode.window.showInformationMessage('No workers in this configuration');
+					return;
+				}
+
 				this.connectToServerButton!.enabled = false;
 				if (!vscode.extensions.getExtension(loc.postgresExtension)) {
 					const response = await vscode.window.showErrorMessage(loc.missingExtension('PostgreSQL'), loc.yes, loc.no);
