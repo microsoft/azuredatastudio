@@ -43,7 +43,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { StandaloneThemeServiceImpl } from 'vs/editor/standalone/browser/standaloneThemeServiceImpl';
 import { splitLines } from 'vs/base/common/strings';
 import { IModelService } from 'vs/editor/common/services/modelService';
-import { NullLogService } from 'vs/platform/log/common/log';
+import { ILogService } from 'vs/platform/log/common/log';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
@@ -57,8 +57,7 @@ function withAllStandaloneServices<T extends IEditor>(domElement: HTMLElement, o
 	}
 
 	if (!services.has(IOpenerService)) {
-		// {{SQL CARBON EDIT}} - add null log service
-		services.set(IOpenerService, new OpenerService(services.get(ICodeEditorService), services.get(ICommandService), new NullLogService()));
+		services.set(IOpenerService, new OpenerService(services.get(ICodeEditorService), services.get(ICommandService), services.get(ILogService)));
 	}
 
 	let result = callback(services);
