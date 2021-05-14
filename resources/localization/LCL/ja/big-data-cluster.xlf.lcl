@@ -1600,7 +1600,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Microsoft Privacy Statement]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Microsoft のプライバシーに関する声明]]></Val>
+            <Val><![CDATA[Microsoft プライバシー ステートメント]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
