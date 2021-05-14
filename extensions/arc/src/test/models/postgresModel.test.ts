@@ -462,29 +462,6 @@ describe('PostgresModel', function (): void {
 			should(postgresModel.engineSettingsLastUpdated).be.Date();
 		});
 
-		it('Calls onEngineSettingsUpdated event after populating engine settings', async function (): Promise<void> {
-			const connectionResultMock = TypeMoq.Mock.ofType<azdata.ConnectionResult>();
-			connectionResultMock.setup(x => x.connected).returns(() => true);
-			connectionResultMock.setup((x: any) => x.then).returns(() => undefined);
-			sinon.stub(azdata.connection, 'connect').returns(Promise.resolve(connectionResultMock.object));
-
-			const array: azdata.DbCellValue[][] = [];
-
-			const executeMock = TypeMoq.Mock.ofType<azdata.SimpleExecuteResult>();
-			executeMock.setup(x => x.rows).returns(() => array);
-			executeMock.setup((x: any) => x.then).returns(() => undefined);
-
-			const providerMock = TypeMoq.Mock.ofType<azdata.QueryProvider>();
-			providerMock.setup(x => x.runQueryAndReturn(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => executeMock.object);
-			providerMock.setup((x: any) => x.then).returns(() => undefined);
-			sinon.stub(azdata.dataprotocol, 'getProvider').returns(providerMock.object);
-
-			const onEngineSettingsUpdated = sinon.spy(vscode.EventEmitter.prototype, 'fire');
-
-			await postgresModel.getEngineSettings();
-			sinon.assert.calledOnceWithExactly(onEngineSettingsUpdated, postgresModel.workerNodesEngineSettings);
-		});
-
 		it('Populating engine settings skips certain parameters', async function (): Promise<void> {
 			const connectionResultMock = TypeMoq.Mock.ofType<azdata.ConnectionResult>();
 			connectionResultMock.setup(x => x.connected).returns(() => true);

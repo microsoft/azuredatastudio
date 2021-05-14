@@ -11,7 +11,7 @@ import { UserCancelledError } from '../../../common/api';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { EngineSettingsModel, PostgresModel } from '../../../models/postgresModel';
-import { debounce } from '../../../common/utils';
+import { debounce, instanceOfCheckBox } from '../../../common/utils';
 
 export type ParametersModel = {
 	parameterName: string,
@@ -47,8 +47,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		this.initializeSearchBox();
 
 		this.disposables.push(
-			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated())),
-			this._postgresModel.onEngineSettingsUpdated(() => this.eventuallyRunOnInitialized(() => this.refreshParametersTable()))
+			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleServiceUpdated()))
 		);
 	}
 
@@ -160,9 +159,9 @@ export abstract class PostgresParametersPage extends DashboardPage {
 								throw err;
 							}
 							try {
-								await this._postgresModel.refresh();
+								await this.callGetEngineSettings();
 							} catch (error) {
-								vscode.window.showErrorMessage(loc.refreshFailed(error));
+								vscode.window.showErrorMessage(loc.fetchEngineSettingsFailed(this._postgresModel.info.name, error));
 							}
 						}
 					);
@@ -238,9 +237,9 @@ export abstract class PostgresParametersPage extends DashboardPage {
 							}
 							this.changedComponentValues.clear();
 							try {
-								await this._postgresModel.refresh();
+								await this.callGetEngineSettings();
 							} catch (error) {
-								vscode.window.showErrorMessage(loc.refreshFailed(error));
+								vscode.window.showErrorMessage(loc.fetchEngineSettingsFailed(this._postgresModel.info.name, error));
 							}
 						}
 					);
@@ -321,13 +320,19 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			this.searchBox.enabled = true;
 			this.resetAllButton.enabled = true;
 			this.parameterContainer.addItem(this._parametersTable!);
-			this.refreshParametersTable();
+			this.refreshParametersTableValues();
 		}
 	}
 
 	private async callGetEngineSettings(): Promise<void> {
 		try {
-			await this._postgresModel.getEngineSettings();
+			await this._postgresModel.getEngineSettings().then(() => {
+				if (this._parametersTable.data?.length !== 0) {
+					this.refreshParametersTableValues();
+				} else {
+					this.populateParametersTable();
+				}
+			});
 		} catch (error) {
 			if (error instanceof UserCancelledError) {
 				vscode.window.showWarningMessage(loc.pgConnectionRequired);
@@ -415,9 +420,9 @@ export abstract class PostgresParametersPage extends DashboardPage {
 						async (_progress, _token): Promise<void> => {
 							await this.resetParameter(engineSetting.parameterName!);
 							try {
-								await this._postgresModel.refresh();
+								await this.callGetEngineSettings();
 							} catch (error) {
-								vscode.window.showErrorMessage(loc.refreshFailed(error));
+								vscode.window.showErrorMessage(loc.fetchEngineSettingsFailed(this._postgresModel.info.name, error));
 							}
 						}
 					);
@@ -573,10 +578,6 @@ export abstract class PostgresParametersPage extends DashboardPage {
 	}
 
 	private discardParametersTableChanges(): void {
-		let instanceOfCheckBox = function (object: any): object is azdata.CheckBoxComponent {
-			return 'checked' in object;
-		};
-
 		this.changedComponentValues.forEach(v => {
 			let param = this._parameters.find(p => p.parameterName === v);
 			if (instanceOfCheckBox(param!.valueComponent)) {
@@ -591,7 +592,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		});
 	}
 
-	private refreshParametersTable(): void {
+	private populateParametersTable(): void {
 		this._parameters = this.engineSettings.map(parameter => this.createParameterComponents(parameter));
 
 		this._parametersTable.data = this._parameters.map(p => {
@@ -607,14 +608,37 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		});
 	}
 
+	/**
+	 * Checks if exisiting parameter values needs to be updated.
+	 * Only updates exisiting parameters, will not add/remove parameters from the table.
+	 */
+	private refreshParametersTableValues(): void {
+		this.engineSettings.map(parameter => {
+			let param = this._parameters.find(p => p.parameterName === parameter.parameterName);
+			if (param) {
+				if (parameter.value !== param.originalValue) {
+					param.originalValue = parameter.value!;
+
+					if (instanceOfCheckBox(param.valueComponent)) {
+						if (param.originalValue === 'on') {
+							param.valueComponent.checked = true;
+						} else {
+							param.valueComponent.checked = false;
+						}
+					} else {
+						param.valueComponent.value = parameter.value;
+					}
+				}
+			}
+		});
+	}
+
 	private async handleServiceUpdated(): Promise<void> {
 		if (this._postgresModel.configLastUpdated && !this._postgresModel.engineSettingsLastUpdated) {
 			this.connectToServerButton!.enabled = true;
 			this.parametersTableLoading!.loading = false;
 		} else if (this._postgresModel.engineSettingsLastUpdated) {
 			await this.callGetEngineSettings();
-			this.discardButton.enabled = false;
-			this.saveButton.enabled = false;
 		}
 	}
 
