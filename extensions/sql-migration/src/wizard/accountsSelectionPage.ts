@@ -49,7 +49,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			})
 			.withValidation((c) => {
 				if (c.value) {
-					if ((<azdata.CategoryValue>c.value).displayName === constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR) {
+					if ((<azdata.CategoryValue>c.value)?.displayName === constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR) {
 						this.wizard.message = {
 							text: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR,
 							level: azdata.window.MessageLevel.Error
