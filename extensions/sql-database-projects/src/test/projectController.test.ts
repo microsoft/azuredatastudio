@@ -411,7 +411,7 @@ describe('ProjectsController', function (): void {
 
 				const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
 
-				await projController.object.publishProjectCallback(proj, { connectionUri: '', databaseName: '' });
+				await projController.object.publishProjectCallback(proj, { connectionUri: '', databaseName: '' , serverName: ''});
 
 				should(builtDacpacPath).not.equal('', 'built dacpac path should be set');
 				should(publishedDacpacPath).not.equal('', 'published dacpac path should be set');
