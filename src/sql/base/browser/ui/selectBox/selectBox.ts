@@ -216,11 +216,9 @@ export class SelectBox extends vsSelectBox {
 		let selectOptions: SelectOptionItemSQL[] = SelectBox.createOptions(options);
 		this.populateOptionsDictionary(selectOptions);
 		super.setOptions(selectOptions, selected);
-		// Adding following since setOptions from super alone is not setting this._selectedOption
-		let selectedOptionIndex = this._optionsDictionary.get(this._selectedOption);
-		if (selectedOptionIndex === selected) {
-			return;
-		}
+		// Calling super.setOptions even with a value selected doesn't fire the onSelected event and doesn't update this._selectedOption,
+		// So manually updating it here to ensure that the value is kept in sync.
+		// Currently we're not firing the onDidSelect event in this case to align with the base implementation, but that can change if there's a need for that to happen
 		if (this._dialogOptions !== undefined) {
 			this._selectedOption = this._dialogOptions[selected]?.value;
 		}
