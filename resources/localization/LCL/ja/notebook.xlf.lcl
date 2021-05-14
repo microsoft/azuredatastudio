@@ -84,8 +84,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.book" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブック]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブック]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book]]></Val>
@@ -96,14 +96,17 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.bookDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Books are used to organize Notebooks.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter　ブックは、ノートブックを整理するために使用されます。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.bookInitializeFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to find a Table of Contents file in the specified Jupyter Book.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[指定されたブックに目次ファイルが見つかりませんでした。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[指定された Jupyter ブックに目次ファイルが見つかりませんでした。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Failed to find a Table of Contents file in the specified book.]]></Val>
@@ -114,8 +117,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.booksNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Jupyter Books are currently available on the provided link]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[指定されたリンクで現在利用可能なブックがありません]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[指定されたリンクで現在利用可能な Jupyter ブックがありません]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No books are currently available on the provided link]]></Val>
@@ -144,8 +147,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.closeBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Close Jupyter Book {0} failed: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブック {0} を閉じられませんでした: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブック {0} を閉じることができませんでした: {1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Close book {0} failed: {1}]]></Val>
@@ -165,6 +168,9 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.confirmOverwrite" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File already exists. Are you sure you want to overwrite this file?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ファイルは既に存在します。このファイルを上書きしますか?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -207,8 +213,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.editBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while editing Jupyter Book {0}: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブック {0} の編集中にエラーが発生しました: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブック {0} の編集中にエラーが発生しました: {1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error while editing book {0}: {1}]]></Val>
@@ -264,8 +270,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.labelBookFolder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブックの選択]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブックの選択]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Select Book]]></Val>
@@ -276,8 +282,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.labelBookSection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Jupyter Book Section]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブック セクションの選択]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブックのセクションを選択]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Select Book Section]]></Val>
@@ -342,8 +348,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookAlreadyTrusted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book is already trusted in this workspace.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブックはこのワークスペースで既に信頼されています。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブックはこのワークスペースで既に信頼されています。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book is already trusted in this workspace.]]></Val>
@@ -354,8 +360,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookAlreadyUntrusted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book is already untrusted in this workspace.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブックは既にこのワークスペースで信頼されていません。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブックは既にこのワークスペースで信頼されていません。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book is already untrusted in this workspace.]]></Val>
@@ -366,8 +372,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Books not Found]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブックが見つかりません]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブックが見つかりません]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Books not Found]]></Val>
@@ -378,8 +384,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookPinned" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book {0} is now pinned in the workspace.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブック {0} はワークスペースにピン留めされました。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブック {0} はワークスペースにピン留めされました。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book {0} is now pinned in the workspace.]]></Val>
@@ -390,8 +396,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookTrusted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book is now trusted in the workspace.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブックはワークスペースで信頼されるようになりました。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブックはワークスペースで信頼されるようになりました。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book is now trusted in the workspace.]]></Val>
@@ -402,8 +408,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookUnpinned" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book {0} is no longer pinned in this workspace]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブック {0} はこのワークスペースにピン留めされなくなりました]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブック {0} はもうこのワークスペースにピン留めされていません]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book {0} is no longer pinned in this workspace]]></Val>
@@ -414,8 +420,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookUntrusted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book is no longer trusted in this workspace]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブックはこのワークスペースで信頼されなくなりました]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブックはこのワークスペースで信頼されなくなりました]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book is no longer trusted in this workspace]]></Val>
@@ -435,6 +441,9 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgCreateBookWarningMsg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while trying to access: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[アクセスしようとしているときにエラーが発生しました: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -450,12 +459,18 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgDuplicadFileName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File {0} already exists in the destination folder]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[移動先のフォルダーにファイル {0} が既に存在します]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgInvalidSaveFolder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save location path is not valid.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[保存場所のパスが無効です。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -480,8 +495,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookDirectoryError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while creating remote Jupyter Book directory]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[リモート ブック ディレクトリの作成中にエラーが発生しました]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[リモート Jupyter ブック ディレクトリの作成中にエラーが発生しました]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error while creating remote Book directory]]></Val>
@@ -492,8 +507,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookDownloadComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remote Jupyter Book download is complete]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[リモート ブックのダウンロードが完了しました]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[リモート Jupyter ブックのダウンロードが完了しました]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Remote Book download is complete]]></Val>
@@ -504,8 +519,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookDownloadError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while downloading remote Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[リモート ブックのダウンロード中にエラーが発生しました]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[リモート Jupyter ブックのダウンロード中にエラーが発生しました]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error while downloading remote Book]]></Val>
@@ -516,8 +531,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookDownloadProgress" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remote Jupyter Book download is in progress]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[リモート ブックのダウンロードが進行中です]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[リモート Jupyter ブックのダウンロードが進行中です]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Remote Book download is in progress]]></Val>
@@ -528,8 +543,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookUnpackingError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while decompressing remote Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[リモート ブックの圧縮解除中にエラーが発生しました]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[リモート Jupyter ブックの圧縮解除中にエラーが発生しました]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error while decompressing remote Book]]></Val>
@@ -558,8 +573,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgSaveFolderError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save location path does not exist.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[保存場所のパスが存在しません]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[保存場所のパスが存在しません。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Save location path does not exist]]></Val>
@@ -570,8 +585,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgTaskName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Downloading Remote Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[リモート ブックをダウンロードしています]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[リモート Jupyter ブックのダウンロード]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Downloading Remote Book]]></Val>
@@ -582,8 +597,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgUndefinedAssetError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The selected Jupyter Book is not valid]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[選択したブックは無効です]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[選択した Jupyter ブックは無効です]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[The selected book is not valid]]></Val>
@@ -612,18 +627,27 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.newBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Jupyter Book (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[新しい Jupyter ブック (プレビュー)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.newMarkdown" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Markdown (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[新しいマークダウン (プレビュー)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.newNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Notebook (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[新しいノートブック (プレビュー)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -639,8 +663,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.noBooksSelected" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Jupyter Books are currently selected in the viewlet.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ビューレットに現在選択されているブックがありません。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ビューレットに現在選択されている Jupyter ブックがありません。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No books are currently selected in the viewlet.]]></Val>
@@ -669,8 +693,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.openBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Jupyter Book {0} failed: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブック {0} を開けませんでした: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブック {0} を開くことができませんでした: {1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Open book {0} failed: {1}]]></Val>
@@ -753,8 +777,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.readBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to read Jupyter Book {0}: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブック {0} の読み取りに失敗しました: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブック {0} を読み取ることができませんでした: {1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Failed to read book {0}: {1}]]></Val>
@@ -801,14 +825,17 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.sectionNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to find section {0} in {1}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{1} にセクション {0} が見つかりませんでした。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.selectBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while selecting a Jupyter Book or a section to edit: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[編集するブックまたはセクションの選択中にエラーが発生しました: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[編集する Jupyter ブックまたはセクションの選択中にエラーが発生しました: {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error while selecting a book or a section to edit: {0}]]></Val>
@@ -2004,8 +2031,8 @@
       <Item ItemId=";extensions/notebook/package.title.ProvidedBooks" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Provided Jupyter Books]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[指定されたブック]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[提供されている Jupyter ブック]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Provided Books]]></Val>
@@ -2037,12 +2064,18 @@
       <Item ItemId=";extensions/notebook/package.title.addMarkdown" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Markdown File]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[マークダウン ファイルの追加]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/package.title.addNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Notebook]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ノートブックの追加]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2067,6 +2100,9 @@
       <Item ItemId=";extensions/notebook/package.title.closeNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Close Notebook]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ノートブックを閉じる]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2082,8 +2118,8 @@
       <Item ItemId=";extensions/notebook/package.title.createJupyterBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブックの作成 (プレビュー)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブックの作成]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Create Book (Preview)]]></Val>
@@ -2193,6 +2229,9 @@
       <Item ItemId=";extensions/notebook/package.title.removeNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remove Notebook]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ノートブックの削除]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2208,8 +2247,8 @@
       <Item ItemId=";extensions/notebook/package.title.saveJupyterBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブックの保存]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブックの保存]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Save Book]]></Val>
@@ -2220,8 +2259,8 @@
       <Item ItemId=";extensions/notebook/package.title.searchJupyterBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Search Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ブックの検索]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブックの検索]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Search Book]]></Val>
@@ -2232,8 +2271,8 @@
       <Item ItemId=";extensions/notebook/package.title.trustBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Trust Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[信頼ブック]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter ブックの信頼]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Trust Book]]></Val>

@@ -2613,6 +2613,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceDeployment.extensionRequiredPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The '{0}' extension is required to deploy this resource, do you want to install it now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[이 리소스를 배포하려면 '{0}' 확장이 필요합니다. 지금 설치하시겠습니까?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2628,6 +2631,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceDeployment.installingExtension" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing extension '{0}'...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['{0}' 확장을 설치하는 중...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2643,6 +2649,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceDeployment.unknownExtension" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unknown extension '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['{0}'은(는) 알 수 없는 확장입니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2949,6 +2958,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.deploy.azdataExtMissing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The Azure Data CLI extension must be installed to deploy this resource. Please install it through the extension gallery and try again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[이 리소스를 배포하려면 Azure Data CLI 확장을 설치해야 합니다. 확장 갤러리를 통해 설치한 후 다시 시도하세요.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

@@ -80,10 +80,13 @@
       </Item>
       <Item ItemId=";extensions/cms/out/cmsResource/cmsResourceCommands.cms.errors.azureNotAllowed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL Database Servers cannot be used as Central Management Servers]]></Val>
+          <Val><![CDATA[Azure SQL Servers cannot be used as Central Management Servers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL Database サーバーは、Central Management Servers として使用できません]]></Val>
+            <Val><![CDATA[Azure SQL サーバーは、Central Management Servers として使用できません]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure SQL Database Servers cannot be used as Central Management Servers]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -137,6 +140,15 @@
           <Val><![CDATA[No resources found]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[リソースは見つかりませんでした]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/cms/out/cmsResource/tree/treeProvider.cms.resource.tree.treeProvider.loadError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unexpected error occurred while loading saved servers {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[保存されたサーバー {0} の読み込み中に予期しないエラーが発生しました。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

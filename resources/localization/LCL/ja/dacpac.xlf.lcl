@@ -288,6 +288,9 @@
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.databaseNameExistsErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A database with the same name already exists on the instance of SQL Server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server のインスタンスに同じ名前のデータベースが既に存在します。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -312,6 +315,9 @@
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.deployPlanTableTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy plan operations]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[デプロイ プランの操作]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -327,18 +333,27 @@
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.filenameEndingInPeriodErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File name cannot end with a period]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ファイル名の末尾をピリオドにすることはできません]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.generateDeployErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Generating deploy script failed '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[デプロイ スクリプトの生成に失敗しました '{0}']]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.invalidFileCharsErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid file characters]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ファイル文字が無効です]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -399,12 +414,18 @@
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.reservedValueErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Reserved file name. Choose another name and try again]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[予約済みのファイル名です。別の名前を選択して、もう一度お試しください]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.reservedWindowsFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This file name is reserved for use by Windows. Choose another name and try again]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[このファイル名は Windows による使用のために予約されています。別の名前を選んで再実行してください]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -430,7 +451,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Select file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ファイルを選択します]]></Val>
+            <Val><![CDATA[ファイルの選択]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -456,12 +477,18 @@
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.tooLongFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File name is over 255 characters]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ファイル名が 255 文字を超えています]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.trailingWhitespaceErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File name cannot end with a whitespace]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ファイル名の末尾を空白にすることはできません]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -486,6 +513,9 @@
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.undefinedFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Undefined name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[未定義の名前]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -510,24 +540,36 @@
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.whitespaceFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File name cannot be whitespace]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ファイル名を空白にすることはできません]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.wizardTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data-tier Application Wizard]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[データ層アプリケーション ウィザード]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/dacpac/package.dacFx.defaultSaveLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Full path to folder where .DACPAC and .BACPAC files are saved by default]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[既定で、.DACPAC と .BACPAC ファイルが保存されるフォルダーの完全パス]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/dacpac/package.dacFx.settings" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Dacpac]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[データ層アプリケーション パッケージ]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

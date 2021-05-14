@@ -905,12 +905,18 @@
         <Item ItemId=";(...) .arg.name" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Extension id]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[拡張機能 ID]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) .description" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Gets extension information from the gallery]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[ギャラリーから拡張機能情報を取得します]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -3342,8 +3348,8 @@
       <Item ItemId=";src/sql/workbench/contrib/backup/browser/backupActions.backup.commandNotSupportedForServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Backup command is not supported outside of a database context. Please select a database and try again.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[バックアップ コマンドは、サーバー コンテキストではサポートされていません。データベースを選択して、もう一度お試しください。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[バックアップ コマンドは、データベース コンテキストの外ではサポートされていません。データベースを選択して、もう一度お試しください。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Backup command is not supported in Server Context. Please select a Database and try again.]]></Val>
@@ -3858,12 +3864,18 @@
       <Item ItemId=";src/sql/workbench/contrib/charts/browser/charts.contribution.builtinCharts.maxRowCountDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The maximum number of rows for charts to display. Warning: increasing this may impact performance.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[グラフに表示する最大の行数です。警告: これを大きくするとパフォーマンスに影響が及ぶ場合があります。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/charts/browser/charts.contribution.builtinChartsConfigurationTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Built-in Charts]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[組み込みグラフ]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3897,6 +3909,9 @@
       <Item ItemId=";src/sql/workbench/contrib/charts/browser/utils.charts.maxAllowedRowsExceeded" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Maximum row count for built-in charts has been exceeded, only the first {0} rows are used. To configure the value, you can open user settings and search for: 'builtinCharts.maxRowCount'.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[組み込みグラフの最大行カウントを超過しました。最初の {0} 行だけが使用されます。値を構成するには、ユーザー設定を開き、'builtinCharts.maxRowCount' を検索してください。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7536,6 +7551,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.showRenderedNotebookinDiffEditor" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[(Preview) Show rendered notebook in diff editor.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(プレビュー) レンダリングされたノートブックを差分エディターで表示します。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8007,6 +8025,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookActions.noParametersCell" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This notebook cannot run with parameters until a parameter cell is added. [Learn more]5D;(https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[パラメーター セルが追加されるまで、パラメーターを指定してこのノートブックを実行することはできません。[詳細情報]5D;(https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8031,6 +8052,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookActions.runParameters" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Run with Parameters]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[パラメーターを指定して実行]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8370,6 +8394,9 @@
       <Item ItemId=";src/sql/workbench/contrib/preferences/browser/sqlSettingsLayout.builtinCharts" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Built-in Charts]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[組み込みグラフ]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9207,6 +9234,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.inMemoryDataProcessingThreshold" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls the max number of rows allowed to do filtering and sorting in memory. If the number is exceeded, sorting and filtering will be disabled.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[メモリ内でフィルター処理と並べ替えが許可される最大の行数を制御します。この数値を超過すると、並べ替えとフィルター処理は無効になります。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9411,8 +9441,8 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryShortcutDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call or query execution. Any selected text in the query editor will be passed as a parameter at the end of your query, or you can reference it with {arg}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ショートカット テキストをプロシージャ呼び出しとして実行するにはキーバインド workbench.action.query.shortcut{0} を設定します。クエリ エディターで選択したテキストはパラメーターとして渡されます]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ショートカット テキストをプロシージャ呼び出しまたはクエリ実行として実行するにはキー バインド workbench.action.query.shortcut{0} を設定します。クエリ エディターで選択したテキストはクエリの末尾でパラメーターとして渡されます。または、これを {arg} で参照することができます。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call. Any selected text in the query editor will be passed as a parameter]]></Val>
@@ -10107,6 +10137,9 @@
       <Item ItemId=";src/sql/workbench/contrib/restore/browser/restoreActions.restore.commandNotSupportedOutsideContext" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Restore command is not supported outside of a server context. Please select a server or database and try again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[復元コマンドは、サーバー コンテキストの外ではサポートされていません。サーバーまたはデータベースを選択して、もう一度お試しください。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -11253,12 +11286,18 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.welcomePage.sqlServerDacpac" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server Dacpac]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server DACPAC]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.welcomePage.sqlServerImport" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server Import]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server のインポート]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
