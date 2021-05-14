@@ -26,7 +26,18 @@ const ext = require('./lib/extensions');
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 // {{SQL CARBON EDIT}}
 const sqlLocalizedExtensions = [
+	'admin-tool-ext-win',
+	'agent',
+	'azdata',
+	'cms',
 	'dacpac',
+	'import',
+	'machine-learning',
+	'profiler',
+	'query-history',
+	'server-report',
+	'sql-assessment',
+	'sql-database-projects',
 	'schema-compare'
 ];
 // {{SQL CARBON EDIT}}
