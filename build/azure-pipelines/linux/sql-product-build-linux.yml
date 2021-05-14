@@ -221,7 +221,8 @@ steps:
   - script: |
       set -e
       cd ./extensions/mssql/node_modules/@microsoft/ads-kerberos
-      npx node-gyp rebuild
+      # npx node-gyp rebuild
+      yarn install
     displayName: Recompile native node modules
 
   - script: |
