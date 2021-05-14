@@ -204,10 +204,10 @@ export class PostgresModel extends ResourceModel {
 
 	private async createWorkerEngineSettings(provider: azdata.QueryProvider, ownerUri: string, skip: String[]): Promise<void> {
 
-		let engineSettingsWorker4 = await provider.runQueryAndReturn(ownerUri, `select count(result) from run_command_on_workers('select json_agg(pg_settings) from pg_settings') where success;`);
-		if (engineSettingsWorker4.rows[0][0].displayValue === '0') {
-			engineSettingsWorker4 = await provider.runQueryAndReturn(ownerUri, `select result from run_command_on_workers('select json_agg(pg_settings) from pg_settings') limit 1;`);
-			throw new Error(engineSettingsWorker4.rows[0][0].displayValue);
+		let querySuccessCheck = await provider.runQueryAndReturn(ownerUri, `select count(result) from run_command_on_workers('select json_agg(pg_settings) from pg_settings') where success;`);
+		if (querySuccessCheck.rows[0][0].displayValue === '0') {
+			querySuccessCheck = await provider.runQueryAndReturn(ownerUri, `select result from run_command_on_workers('select json_agg(pg_settings) from pg_settings') limit 1;`);
+			throw new Error(querySuccessCheck.rows[0][0].displayValue);
 		}
 
 		const engineSettingsWorker = await provider.runQueryAndReturn(ownerUri, `select result from run_command_on_workers('select json_agg(pg_settings) from pg_settings') where success limit 1;`);
