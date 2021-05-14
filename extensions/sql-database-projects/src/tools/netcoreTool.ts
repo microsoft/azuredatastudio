@@ -18,8 +18,8 @@ export const NetCoreInstallLocationKey: string = 'netCoreSDKLocation';
 export const NetCoreDoNotAskAgainKey: string = 'netCoreDoNotAsk';
 export const NextCoreNonWindowsDefaultPath = '/usr/local/share';
 export const NetCoreInstallationConfirmation: string = localize('sqlDatabaseProjects.NetCoreInstallationConfirmation', "The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .Net Core SDK location in settings if already installed.");
-export const UpdateNetCoreLocation: string = localize('sqlDatabaseProjects.UpdateNetCoreLocation', "Update .Net Core location");
-export const InstallNetCore: string = localize('sqlDatabaseProjects.InstallNetCore', "Install .Net Core SDK");
+export const UpdateNetCoreLocation: string = localize('sqlDatabaseProjects.UpdateNetCoreLocation', "Update Location");
+export const InstallNetCore: string = localize('sqlDatabaseProjects.InstallNetCore', "Install");
 export const DoNotAskAgain: string = localize('sqlDatabaseProjects.doNotAskAgain', "Don't Ask Again");
 
 const projectsOutputChannel = localize('sqlDatabaseProjects.outputChannel', "Database Projects");
