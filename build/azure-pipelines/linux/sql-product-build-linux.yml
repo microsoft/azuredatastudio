@@ -219,6 +219,18 @@ steps:
     condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
+    set -e
+    cd ./extensions/mssql/node_modules/@microsoft/ads-kerberos
+    npx node-gyp rebuild
+  displayName: Recompile native node modules
+
+  - script: |
+      set -e
+      VSCODE_MIXIN_PASSWORD="$(github-distro-mixin-password)" \
+          yarn gulp vscode-reh-web-linux-x64-min
+    displayName: Build web server
+
+  - script: |
       set -e
       ./build/azure-pipelines/linux/createDrop.sh
     displayName: Create Drop

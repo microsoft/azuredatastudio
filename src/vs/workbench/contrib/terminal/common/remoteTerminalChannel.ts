@@ -399,10 +399,11 @@ export class RemoteTerminalChannelClient {
 	}
 
 	public getTerminalLayoutInfo(): Promise<ITerminalsLayoutInfo | undefined> {
-		const workspace = this._workspaceContextService.getWorkspace();
-		const args: IGetTerminalLayoutInfoArgs = {
-			workspaceId: workspace.id,
-		};
-		return this._channel.call<ITerminalsLayoutInfo>('$getTerminalLayoutInfo', args);
+		// const workspace = this._workspaceContextService.getWorkspace();
+		// const args: IGetTerminalLayoutInfoArgs = {
+		// 	workspaceId: workspace.id,
+		// };
+		// return this._channel.call<ITerminalsLayoutInfo>('$getTerminalLayoutInfo', args);
+		return Promise.resolve(undefined);
 	}
 }
