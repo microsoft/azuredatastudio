@@ -14,8 +14,8 @@
     circle:nth-child(8) { animation-delay: 0.525s; }
 
     @keyframes ball {
-      from { opacity: 1; }
-      to { opacity: 0.3; }
+      0% { opacity: 1; }
+      100% { opacity: 0.3; }
     }
 	</style>
 	<g>
