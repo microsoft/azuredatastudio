@@ -2613,6 +2613,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceDeployment.extensionRequiredPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The '{0}' extension is required to deploy this resource, do you want to install it now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L’extension «{0}» est nécessaire pour déployer cette ressource. Voulez-vous l’installer maintenant ?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2628,6 +2631,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceDeployment.installingExtension" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing extension '{0}'...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Installation de l'extension '{0}'...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2643,6 +2649,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceDeployment.unknownExtension" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unknown extension '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Extension inconnue '{0}']]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2949,6 +2958,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.deploy.azdataExtMissing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The Azure Data CLI extension must be installed to deploy this resource. Please install it through the extension gallery and try again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L’extension CLI de données Azure doit être installée pour déployer cette ressource. Veuillez l’installer via la galerie d’extensions et essayer à nouveau.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

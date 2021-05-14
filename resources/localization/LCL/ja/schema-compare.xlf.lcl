@@ -2061,6 +2061,9 @@
       <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.GetConnectionString" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Do you want to connect to {0}?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} に接続しますか?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2139,24 +2142,36 @@
       <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.cannotExcludeMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot exclude {0}. Included dependents exist]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} を除外することはできません。対象の依存関係が存在します]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.cannotExcludeMessageWithDependent" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot exclude {0}. Included dependents exist, such as {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} を除外することはできません。対象の依存関係が存在します ({1} など)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.cannotIncludeMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot include {0}. Excluded dependents exist]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} を含めることはできません。対象外の依存関係が存在します]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.cannotIncludeMessageWithDependent" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot include {0}. Excluded dependents exist, such as {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} を含めることはできません。対象外の依存関係が存在します ({1} など)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2226,6 +2241,9 @@
       <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.differencesTableTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Comparison between Source and Target]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ソースとターゲットの比較]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2286,6 +2304,9 @@
       <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.includeExcludeInfoMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please note that include/exclude operations can take a moment to calculate affected dependencies]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[対象の依存関係を計算するために、包含/除外操作に少し時間がかかる場合があることにご注意ください]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2391,18 +2412,27 @@
       <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.selectConnection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select connection]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[接続の選択]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.selectSourceFile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select source file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ソース ファイルの選択]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.selectTargetFile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select target file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ターゲット ファイルの選択]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2643,6 +2673,9 @@
       <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.sourceTextBox" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ソース ファイル]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2667,6 +2700,9 @@
       <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.targetTextBox" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ターゲット ファイル]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

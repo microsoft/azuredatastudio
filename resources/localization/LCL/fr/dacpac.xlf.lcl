@@ -288,6 +288,9 @@
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.databaseNameExistsErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A database with the same name already exists on the instance of SQL Server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Une base de données portant le même nom existe déjà sur l'instance de SQL Server]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -312,6 +315,9 @@
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.deployPlanTableTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy plan operations]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Déployer des opérations de plan]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -405,6 +411,9 @@
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.reservedWindowsFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This file name is reserved for use by Windows. Choose another name and try again]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ce nom de fichier est réservé à l’utilisation par Windows. Choisissez un autre nom et essayez à nouveau]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -486,6 +495,9 @@
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.undefinedFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Undefined name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nom non indéfini]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -510,24 +522,36 @@
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.whitespaceFilenameErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File name cannot be whitespace]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Un nom de fichier ne peut pas être un espace blanc]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/dacpac/out/localizedConstants.dacfx.wizardTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data-tier Application Wizard]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Assistant de l'application de la couche Données]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/dacpac/package.dacFx.defaultSaveLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Full path to folder where .DACPAC and .BACPAC files are saved by default]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Chemin d’accès complet du dossier dans lequel . DACPAC et . Les fichiers BACPAC sont enregistrés par défaut]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/dacpac/package.dacFx.settings" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Dacpac]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Espacement]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
