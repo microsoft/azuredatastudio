@@ -562,7 +562,7 @@ describe('PostgresModel', function (): void {
 			sinon.stub(azdata.dataprotocol, 'getProvider').returns(providerMock.object);
 
 			await postgresModel.getEngineSettings();
-			should(postgresModel.workerNodesEngineSettings.pop()).be.match(engineSettingsModelCompare);
+			should(postgresModel.coordinatorNodeEngineSettings.pop()).be.match(engineSettingsModelCompare);
 		});
 
 	});
