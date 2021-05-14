@@ -6,6 +6,7 @@
 import { parseNumAsTimeString } from 'sql/platform/connection/common/utils';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { ICellValue } from 'sql/workbench/services/query/common/query';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { IntervalTimer } from 'vs/base/common/async';
@@ -277,8 +278,8 @@ export class QueryResultSelectionSummaryStatusBarContribution extends Disposable
 		this._register(editorService.onDidActiveEditorChange(() => { this.hide(); }, this));
 		this._register(queryModelService.onRunQueryStart(() => { this.hide(); }));
 		this._register(notebookService.onCodeCellExecutionStart(() => { this.hide(); }));
-		this._register(queryModelService.onCellSelectionChanged((data: string[]) => {
-			this.onCellSelectionChanged(data);
+		this._register(queryModelService.onCellSelectionChanged((selectedCells: ICellValue[]) => {
+			this.onCellSelectionChanged(selectedCells);
 		}));
 	}
 
@@ -290,15 +291,15 @@ export class QueryResultSelectionSummaryStatusBarContribution extends Disposable
 		this.statusbarService.updateEntryVisibility(QueryResultSelectionSummaryStatusBarContribution.ID, true);
 	}
 
-	private onCellSelectionChanged(data: string[]): void {
-		const numericValues = data?.filter(value => !Number.isNaN(Number(value))).map(value => Number(value));
+	private onCellSelectionChanged(selectedCells: ICellValue[]): void {
+		const numericValues = selectedCells?.map(cell => cell.invariantCultureDisplayValue || cell.displayValue).filter(value => !Number.isNaN(Number(value))).map(value => Number(value));
 		if (numericValues?.length < 2) {
 			this.hide();
 			return;
 		}
 
 		const sum = numericValues.reduce((previous, current, idx, array) => previous + current);
-		const summaryText = localize('status.query.summaryText', "Average: {0}  Count: {1}  Sum: {2}", Number((sum / numericValues.length).toFixed(3)), data.length, sum);
+		const summaryText = localize('status.query.summaryText', "Average: {0}  Count: {1}  Sum: {2}", Number((sum / numericValues.length).toFixed(3)), selectedCells.length, sum);
 		this.statusItem.update({
 			text: summaryText,
 			ariaLabel: summaryText
