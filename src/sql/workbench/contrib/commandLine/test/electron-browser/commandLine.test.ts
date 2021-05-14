@@ -386,6 +386,7 @@ suite('commandLineService tests', () => {
 			}).verifiable(TypeMoq.Times.once());
 		connectionManagementService.setup(c => c.getConnectionProfileById(TypeMoq.It.isAnyString())).returns(() => originalProfile);
 		connectionManagementService.setup(c => c.onDisconnect).returns(() => Event.None);
+		connectionManagementService.setup(c => c.onConnectionChanged).returns(() => Event.None);
 		connectionManagementService.setup(c => c.ensureDefaultLanguageFlavor(TypeMoq.It.isAny()));
 		const configurationService = getConfigurationServiceMock(true);
 		const querymodelService = TypeMoq.Mock.ofType<IQueryModelService>(TestQueryModelService, TypeMoq.MockBehavior.Strict);
