@@ -244,7 +244,7 @@ describe('BooksTreeViewTests', function () {
 
 			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb').replace(/\\/g, '/');
-				let currentSelection = await bookTreeViewProvider.findAndExpandParentNode(notebook1Path);
+				let currentSelection = await bookTreeViewProvider.findAndExpandParentNode(notebook1Path, true);
 				should(currentSelection).not.be.undefined();
 				equalBookItems(currentSelection, expectedNotebook1);
 			});
@@ -329,7 +329,7 @@ describe('BooksTreeViewTests', function () {
 
 			it('revealActiveDocumentInViewlet should return correct bookItem for highlight', async () => {
 				let notebook1Path = path.join(rootFolderPath, 'Book', 'content', 'notebook1.ipynb').replace(/\\/g, '/');
-				let currentSelection = await providedbookTreeViewProvider.findAndExpandParentNode(notebook1Path);
+				let currentSelection = await providedbookTreeViewProvider.findAndExpandParentNode(notebook1Path, true);
 				should(currentSelection).not.be.undefined();
 				equalBookItems(currentSelection, expectedNotebook1);
 			});
