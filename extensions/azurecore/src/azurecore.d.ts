@@ -119,6 +119,11 @@ declare module 'azurecore' {
 		azureDevOpsResource?: Resource;
 
 		/**
+		 * Information that describes the Azure Log Analytics resource
+		 */
+		azureLogAnalyticsResource?: Resource;
+
+		/**
 		 * A list of tenant IDs to authenticate against. If defined, then these IDs will be used
 		 * instead of querying the tenants endpoint of the armResource
 		 */
