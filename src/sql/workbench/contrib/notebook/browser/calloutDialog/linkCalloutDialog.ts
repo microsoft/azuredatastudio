@@ -22,6 +22,7 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { escapeLabel, escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export interface ILinkCalloutDialogOptions {
 	insertTitle?: string,
@@ -100,6 +101,13 @@ export class LinkCalloutDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
+		this._register(DOM.addDisposableListener(document, DOM.EventType.KEY_UP, (e: KeyboardEvent) => {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyCode.Enter)) {
+				DOM.EventHelper.stop(e, true);
+				this.hide('ok');
+			}
+		}));
 		let linkContentColumn = DOM.$('.column.insert-link');
 		DOM.append(container, linkContentColumn);
 
@@ -147,7 +155,8 @@ export class LinkCalloutDialog extends Modal {
 	protected onAccept(e?: StandardKeyboardEvent) {
 		// EventHelper.stop() will call preventDefault. Without it, text cell will insert an extra newline when pressing enter on dialog
 		DOM.EventHelper.stop(e, true);
-		this.insert();
+		const keyboardEventExists = !!e;
+		this.insert(keyboardEventExists);
 	}
 
 	protected onClose(e?: StandardKeyboardEvent) {
@@ -155,8 +164,10 @@ export class LinkCalloutDialog extends Modal {
 		this.cancel();
 	}
 
-	public insert(): void {
-		this.hide('ok');
+	public insert(willHideByKeyboardEvent = false): void {
+		if (!willHideByKeyboardEvent) {
+			this.hide('ok');
+		}
 		let escapedLabel = escapeLabel(this._linkTextInputBox.value);
 		let escapedUrl = escapeUrl(this._linkUrlInputBox.value);
 
