@@ -14,6 +14,8 @@ import i18n = require('./i18n');
 import { Stream } from 'stream';
 import * as glob from 'glob';
 import rename = require('gulp-rename');
+let vfs = require("vinyl-fs");
+
 const root = path.dirname(path.dirname(__dirname));
 
 interface Map<V> {
@@ -205,6 +207,15 @@ export function modifyI18nPackFiles(languageId: string, existingTranslationFolde
 			});
 	});
 }
+
+export function determineLocation(languageId: string, existingTranslationFolder: string): NodeJS.ReadWriteStream {
+	return through(function (this: ThroughStream, i18nJson: File) {
+		let extensionname = path.basename(i18nJson.relative, '.i18n.json');
+		console.log('extension name is ' + extensionname);
+		vfs.dest(existingTranslationFolder);
+	});
+}
+
 
 
 

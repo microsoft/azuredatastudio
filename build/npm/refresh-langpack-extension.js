@@ -13,6 +13,7 @@ let gulp = require('gulp');
 let vfs = require("vinyl-fs");
 let rimraf = require('rimraf');
 let minimist = require('minimist');
+let nlsDev = require('vscode-nls-dev');
 
 
 //Length of "ads-language-pack-", used to isolate ID.
@@ -42,6 +43,12 @@ function update(langId) {
 	if (location !== undefined && !fs.existsSync(location)) {
 		throw new Error(`${location} doesn't exist.`);
 	}
+
+	let extensionsSourceFolder = path.join('.', 'extensions');
+	if (extensionsSourceFolder !== undefined && !fs.existsSync(extensionsSourceFolder)) {
+		throw new Error(`${extensionsSourceFolder} doesn't exist.`);
+	}
+
 	let locExtFolder = idOrPath;
 	if (/^\w{2}(-\w+)?$/.test(idOrPath)) {
 		locExtFolder = path.join('.', 'i18n', `ads-language-pack-${idOrPath}`);
@@ -89,7 +96,7 @@ function update(langId) {
 		}
 
 
-		console.log(`Importing translations for ${languageId} form '${location}' to '${translationDataFolder}' ...`);
+		console.log(`Importing translations for ${languageId} from '${location}' to '${translationDataFolder}' ...`);
 		let translationPaths = [];
 		gulp.src(path.join(location, languageId, '**', '*.xlf'))
 			.pipe(locFunc.modifyI18nPackFiles(languageId, translationDataFolder, currentADSExtensions, translationPaths, languageId === 'ps'))
@@ -104,7 +111,7 @@ function update(langId) {
 					console.log('Unknown error');
 				}
 			})
-			.pipe(vfs.dest(translationDataFolder))
+			.pipe(locFunc.determineLocation(languageId, translationDataFolder))
 			.on('end', function () {
 				if (translationPaths !== undefined) {
 					let nonExistantExtensions = [];
