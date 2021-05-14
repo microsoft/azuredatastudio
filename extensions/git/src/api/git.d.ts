@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Uri, Event, Disposable, ProviderResult } from 'vscode';
+import { Uri, Event, Disposable, ProviderResult, CancellationToken, Progress } from 'vscode'; // {{SQL CARBON EDIT}} add CancellationToken
 export { ProviderResult } from 'vscode';
 
 export interface Git {
@@ -251,6 +251,14 @@ export interface API {
 	readonly onDidOpenRepository: Event<Repository>;
 	readonly onDidCloseRepository: Event<Repository>;
 
+	/**
+	 * clones the repository at the specified url locally
+	 * @param url url of repository to clone
+	 * @param options
+	 * @param cancellationToken
+	 * @returns a promise to the string location where the repository was cloned to
+	 */
+	clone(url: string, options: ICloneOptions, cancellationToken?: CancellationToken): Promise<string>; // {{SQL CARBON EDIT}}
 	toGitUri(uri: Uri, ref: string): Uri;
 	getRepository(uri: Uri): Repository | null;
 	init(root: Uri): Promise<Repository | null>;
@@ -315,4 +323,11 @@ export const enum GitErrorCodes {
 	PatchDoesNotApply = 'PatchDoesNotApply',
 	NoPathFound = 'NoPathFound',
 	UnknownPath = 'UnknownPath',
+}
+
+// {{SQL CARBON EDIT}} move ICloneOptions from git.ts to here since it's used in clone()
+export interface ICloneOptions {
+	readonly parentPath: string;
+	readonly progress: Progress<{ increment: number }>;
+	readonly recursive?: boolean;
 }
