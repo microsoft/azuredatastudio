@@ -40,6 +40,7 @@ import { URI } from 'vs/base/common/uri';
 import { TreeViewPane } from 'vs/workbench/browser/parts/views/treeView';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 
 export const VIEWLET_ID = 'workbench.view.notebooks';
 
@@ -435,6 +436,11 @@ export const NOTEBOOK_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(View
 	id: VIEWLET_ID,
 	title: localize('notebookExplorer.name', "Notebooks"),
 	ctorDescriptor: new SyncDescriptor(NotebookExplorerViewPaneContainer),
+	openCommandActionDescriptor: {
+		id: VIEWLET_ID,
+		keybindings: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_B },
+		order: 0
+	},
 	icon: { id: notebookIconId },
 	order: 6,
 	storageId: `${VIEWLET_ID}.state`
