@@ -788,6 +788,7 @@ export class NotebookViewStub implements INotebookView {
 	onDeleted: vsEvent.Event<INotebookView>;
 	cells: readonly ICellModel[];
 	hiddenCells: readonly ICellModel[];
+	displayedCells: readonly ICellModel[];
 	name: string;
 
 	initialize(): void {
@@ -812,6 +813,9 @@ export class NotebookViewStub implements INotebookView {
 		throw new Error('Method not implemented.');
 	}
 	insertCell(cell: ICellModel): void {
+		throw new Error('Method not implemented.');
+	}
+	compactCells() {
 		throw new Error('Method not implemented.');
 	}
 	save(): void {

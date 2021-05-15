@@ -11,6 +11,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 
 export const DEFAULT_VIEW_CARD_HEIGHT = 4;
 export const DEFAULT_VIEW_CARD_WIDTH = 12;
+export const GRID_COLUMNS = 12;
 
 export class ViewNameTakenError extends Error { }
 
@@ -51,6 +52,8 @@ export class NotebookViewModel implements INotebookView {
 			hidden: false,
 			y: idx * DEFAULT_VIEW_CARD_HEIGHT,
 			x: 0,
+			width: DEFAULT_VIEW_CARD_WIDTH,
+			height: DEFAULT_VIEW_CARD_HEIGHT
 		});
 	}
 
@@ -78,6 +81,10 @@ export class NotebookViewModel implements INotebookView {
 		return this.cells.filter(cell => this.getCellMetadata(cell)?.hidden);
 	}
 
+	public get displayedCells(): Readonly<ICellModel[]> {
+		return this.cells.filter(cell => !this.getCellMetadata(cell)?.hidden);
+	}
+
 	public get cells(): Readonly<ICellModel[]> {
 		return this._notebookViews.notebook.cells;
 	}
@@ -100,6 +107,33 @@ export class NotebookViewModel implements INotebookView {
 
 	public resizeCell(cell: ICellModel, width: number, height: number) {
 		this._notebookViews.updateCell(cell, this, { width, height });
+	}
+
+	public compactCells() {
+		let cellsPlaced: INotebookViewCell[] = [];
+
+		this.displayedCells.forEach((cell: ICellModel) => {
+			const c1 = this.getCellMetadata(cell);
+
+			for (let i = 0; ; i++) {
+				const row = i % GRID_COLUMNS;
+				const column = Math.floor(i / GRID_COLUMNS);
+
+				if (row + c1.width > GRID_COLUMNS) {
+					continue;
+				}
+
+				if (!cellsPlaced.find((c2) => this.cellCollides(c2, { ...c1, x: row, y: column }))) {
+					this._notebookViews.updateCell(cell, this, { x: row, y: column });
+					cellsPlaced.push({ ...c1, x: row, y: column });
+					break;
+				}
+			}
+		});
+	}
+
+	private cellCollides(c1: INotebookViewCell, c2: INotebookViewCell): boolean {
+		return !((c1.y + c1.height <= c2.y) || (c1.x + c1.width <= c2.x) || (c1.x + c1.width <= c2.x) || (c2.x + c2.width <= c1.x));
 	}
 
 	public save() {
