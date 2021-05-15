@@ -77,14 +77,22 @@ const serverResources = [
 	'!**/test/**'
 ];
 
-const serverWithWebResources = [
+let serverWithWebResources = undefined;
+try {
+	serverWithWebResources = [
 
-	// Include all of server...
-	...serverResources,
+		// Include all of server...
+		...serverResources,
 
-	// ...and all of web
-	...vscodeWebResourceIncludes
-];
+		// ...and all of web
+		...vscodeWebResourceIncludes
+	];
+} catch (err) {
+	serverWithWebResources = [
+		// Include all of server...
+		...serverResources
+	];
+}
 
 const serverEntryPoints = [
 	{
@@ -109,14 +117,22 @@ const serverEntryPoints = [
 	}
 ];
 
-const serverWithWebEntryPoints = [
+let serverWithWebEntryPoints = undefined;
+try {
+	serverWithWebEntryPoints = [
 
-	// Include all of server
-	...serverEntryPoints,
+		// Include all of server
+		...serverEntryPoints,
 
-	// Include workbench web
-	...vscodeWebEntryPoints
-];
+		// Include workbench web
+		...vscodeWebEntryPoints
+		];
+} catch (err) {
+	serverWithWebEntryPoints = [
+		// Include all of server
+		...serverEntryPoints
+	];
+}
 
 function getNodeVersion() {
 	const yarnrc = fs.readFileSync(path.join(REPO_ROOT, 'remote', '.yarnrc'), 'utf8');
@@ -390,7 +406,7 @@ function packagePkgTask(platform, arch, pkgTarget) {
 			out: `out-vscode-${type}`,
 			inlineAmdImages: true,
 			bundleInfo: undefined,
-			fileContentMapper: createVSCodeWebFileContentMapper('.build/extensions')
+			fileContentMapper: createVSCodeWebFileContentMapper ? createVSCodeWebFileContentMapper('.build/extensions') : undefined
 		})
 	));
 
