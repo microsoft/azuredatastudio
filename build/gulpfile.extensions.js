@@ -28,7 +28,6 @@ const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 const sqlLocalizedExtensions = [
 	'admin-tool-ext-win',
 	'agent',
-	'azdata',
 	'cms',
 	'dacpac',
 	'import',
