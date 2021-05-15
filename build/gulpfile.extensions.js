@@ -33,11 +33,10 @@ const sqlLocalizedExtensions = [
 	'import',
 	'machine-learning',
 	'profiler',
-	'query-history',
+	'schema-compare',
 	'server-report',
 	'sql-assessment',
-	'sql-database-projects',
-	'schema-compare'
+	'sql-database-projects'
 ];
 // {{SQL CARBON EDIT}}
 
