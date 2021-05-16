@@ -72,3 +72,7 @@
 .connection-dialog .monaco-list .monaco-list-row:hover .actions {
 	display: block;
 }
+
+.connection-dialog .monaco-list .monaco-list-row .actions .action-label {
+	display: flex;
+}

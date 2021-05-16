@@ -37,12 +37,14 @@ export const buildAction = localize('buildAction', "Build");
 export const publishAction = localize('publishAction', "Publish");
 export const changeTargetPlatformAction = localize('changeTargetPlatformAction', "Change Target Platform");
 
-export const ID = localize('ID', "ID");
 export const Status = localize('Status', "Status");
 export const Time = localize('Time', "Time");
 export const Date = localize('Date', "Date");
-export const Builds = localize('Builds', "Builds");
-export const Deployments = localize('Deployments', "Deployments");
+export const TargetPlatform = localize('TargetPlatform', "Target Platform");
+export const TargetServer = localize('TargetServer', "Target Server");
+export const TargetDatabase = localize('TargetDatabase', "Target Database");
+export const BuildHistory = localize('BuildHistory', "Build History");
+export const PublishHistory = localize('PublishHistory', "Publish History");
 
 export const Success = localize('Success', "Success");
 export const Failed = localize('Failed', "Failed");
@@ -338,6 +340,7 @@ export const sqlServer2016 = 'SQL Server 2016';
 export const sqlServer2017 = 'SQL Server 2017';
 export const sqlServer2019 = 'SQL Server 2019';
 export const sqlAzure = 'Microsoft Azure SQL Database';
+export const sqlDW = 'Microsoft Azure SQL Data Warehouse';
 
 export const targetPlatformToVersion: Map<string, string> = new Map<string, string>([
 	[sqlServer2005, '90'],
@@ -347,7 +350,8 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[sqlServer2016, '130'],
 	[sqlServer2017, '140'],
 	[sqlServer2019, '150'],
-	[sqlAzure, 'AzureV12']
+	[sqlAzure, 'AzureV12'],
+	[sqlDW, 'Dw']
 ]);
 
 export function getTargetPlatformFromVersion(version: string): string {

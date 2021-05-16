@@ -789,6 +789,13 @@ declare module 'azdata' {
 		delete?: boolean;
 	}
 
+	export enum AzureResource {
+		/**
+		 * Azure Log Analytics
+		 */
+		AzureLogAnalytics = 8
+	}
+
 	export interface ButtonProperties {
 		/**
 		* Specifies whether to use expanded layout or not.

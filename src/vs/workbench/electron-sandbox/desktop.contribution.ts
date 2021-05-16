@@ -24,7 +24,7 @@ import { IJSONContributionRegistry, Extensions as JSONExtensions } from 'vs/plat
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 
 // eslint-disable-next-line code-import-patterns
-import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions'; // {{SQL CARBON EDIT}} add import
+import { SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID } from 'vs/workbench/contrib/extensions/common/extensions';
 
 // Actions
 (function registerActions(): void {
@@ -99,15 +99,15 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 
 // Menu
 (function registerMenu(): void {
-	if (InstallVSIXAction.AVAILABLE) {
-		MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, { // {{SQL CARBON EDIT}} - Add install VSIX menu item
-			group: '5.1_installExtension',
-			command: {
-				id: InstallVSIXAction.ID,
-				title: localize({ key: 'miinstallVsix', comment: ['&& denotes a mnemonic'] }, "Install Extension from VSIX Package")
-			}
-		});
-	}
+
+	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, { // {{SQL CARBON EDIT}} - Add install VSIX menu item
+		group: '5.1_installExtension',
+		command: {
+			id: SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID,
+			title: localize({ key: 'miinstallVsix', comment: ['&& denotes a mnemonic'] }, "Install Extension from VSIX Package")
+		}
+	});
+
 
 	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 		group: '6_close',

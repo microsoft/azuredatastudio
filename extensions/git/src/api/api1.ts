@@ -5,8 +5,8 @@
 
 import { Model } from '../model';
 import { Repository as BaseRepository, Resource } from '../repository';
-import { InputBox, Git, API, Repository, Remote, RepositoryState, Branch, ForcePushMode, Ref, Submodule, Commit, Change, RepositoryUIState, Status, LogOptions, APIState, CommitOptions, RefType, RemoteSourceProvider, CredentialsProvider, BranchQuery, PushErrorHandler, PublishEvent } from './git';
-import { Event, SourceControlInputBox, Uri, SourceControl, Disposable, commands } from 'vscode';
+import { InputBox, Git, API, Repository, Remote, RepositoryState, Branch, ForcePushMode, Ref, Submodule, Commit, Change, RepositoryUIState, Status, LogOptions, APIState, CommitOptions, RefType, RemoteSourceProvider, CredentialsProvider, BranchQuery, PushErrorHandler, PublishEvent, ICloneOptions } from './git'; // {{SQL CARBON EDIT}} add ICloneOptions
+import { Event, SourceControlInputBox, Uri, SourceControl, Disposable, commands, CancellationToken } from 'vscode'; // {{SQL CARBON EDIT}} add CancellationToken
 import { mapEvent } from '../util';
 import { toGitUri } from '../uri';
 import { pickRemoteSource, PickRemoteSourceOptions } from '../remoteSource';
@@ -251,6 +251,11 @@ export class ApiImpl implements API {
 
 	get repositories(): Repository[] {
 		return this._model.repositories.map(r => new ApiRepository(r));
+	}
+
+	// {{SQL CARBON EDIT}}
+	async clone(url: string, options: ICloneOptions, cancellationToken?: CancellationToken): Promise<string> {
+		return this._model.git.clone(url, options, cancellationToken);
 	}
 
 	toGitUri(uri: Uri, ref: string): Uri {

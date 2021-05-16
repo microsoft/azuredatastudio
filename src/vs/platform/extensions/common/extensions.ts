@@ -155,24 +155,25 @@ export interface IExtensionIdentifier {
 	uuid?: string;
 }
 
+// {{SQL CARBON EDIT}} - ADS only implemented language pack filtering
 export const EXTENSION_CATEGORIES = [
-	'Azure',
-	'Data Science',
-	'Debuggers',
-	'Extension Packs',
-	'Formatters',
-	'Keymaps',
+	// 'Azure',
+	// 'Data Science',
+	// 'Debuggers',
+	// 'Extension Packs',
+	// 'Formatters',
+	// 'Keymaps',
 	'Language Packs',
-	'Linters',
-	'Machine Learning',
-	'Notebooks',
-	'Programming Languages',
-	'SCM Providers',
-	'Snippets',
-	'Testing',
-	'Themes',
-	'Visualization',
-	'Other',
+	// 'Linters',
+	// 'Machine Learning',
+	// 'Notebooks',
+	// 'Programming Languages',
+	// 'SCM Providers',
+	// 'Snippets',
+	// 'Testing',
+	// 'Themes',
+	// 'Visualization',
+	// 'Other',
 ];
 
 export interface IExtensionManifest {

@@ -127,27 +127,28 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * Gets the data to be displayed in the project dashboard
 	 */
 	getDashboardComponents(projectFile: string): dataworkspace.IDashboardTable[] {
-		const deployInfo: dataworkspace.IDashboardTable = {
-			name: constants.Deployments,
-			columns: [{ displayName: constants.ID, width: 100 },
-			{ displayName: constants.Status, width: 250, type: 'icon' },
-			{ displayName: constants.Target, width: 250 },
-			{ displayName: constants.Time, width: 250 },
-			{ displayName: constants.Date, width: 250 }],
-			data: this.projectController.getDashboardDeployData(projectFile)
+		const width = 200;
+		const publishInfo: dataworkspace.IDashboardTable = {
+			name: constants.PublishHistory,
+			columns: [{ displayName: constants.Status, width: width, type: 'icon' },
+			{ displayName: constants.Date, width: width },
+			{ displayName: constants.Time, width: width },
+			{ displayName: constants.TargetPlatform, width: width },
+			{ displayName: constants.TargetServer, width: width },
+			{ displayName: constants.TargetDatabase, width: width }],
+			data: this.projectController.getDashboardPublishData(projectFile)
 		};
 
 		const buildInfo: dataworkspace.IDashboardTable = {
-			name: constants.Builds,
-			columns: [{ displayName: constants.ID, width: 100 },
-			{ displayName: constants.Status, width: 250, type: 'icon' },
-			{ displayName: constants.Target, width: 250 },
-			{ displayName: constants.Time, width: 250 },
-			{ displayName: constants.Date, width: 250 }],
+			name: constants.BuildHistory,
+			columns: [{ displayName: constants.Status, width: width, type: 'icon' },
+			{ displayName: constants.Date, width: width },
+			{ displayName: constants.Time, width: width },
+			{ displayName: constants.TargetPlatform, width: width }],
 			data: this.projectController.getDashboardBuildData(projectFile)
 		};
 
-		return [deployInfo, buildInfo];
+		return [publishInfo, buildInfo];
 	}
 
 	get image(): ThemedIconPath {

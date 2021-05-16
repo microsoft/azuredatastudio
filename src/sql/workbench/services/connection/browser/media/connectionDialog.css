@@ -35,16 +35,6 @@
 	flex-direction: column;
 }
 
-.connection-recent, .connection-saved {
-	flex: 1 1;
-	overflow-y: auto;
-}
-
-.no-recent-connections, .no-saved-connections {
-	font-size: 12px;
-	padding-top: 5px;
-}
-
 .connection-history-label {
 	font-size: 15px;
 	display: inline;
@@ -77,10 +67,6 @@
 	table-layout: fixed;
 }
 
-.connection-saved-content {
-	height: 100%;
-}
-
 .connection-type {
 	flex: 0 0 auto;
 	overflow: hidden;
@@ -92,14 +78,6 @@
 }
 
 .connection-recent {
-	height: 100%;
-}
-
-.connection-saved-tab {
-	height: 100%;
-}
-
-.connection-saved {
 	height: 100%;
 }
 

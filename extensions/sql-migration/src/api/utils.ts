@@ -43,6 +43,23 @@ export function getSqlServerName(majorVersion: number): string | undefined {
 	}
 }
 
+export interface IPackageInfo {
+	name: string;
+	version: string;
+	aiKey: string;
+}
+
+export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
+	if (packageJson) {
+		return {
+			name: packageJson.name,
+			version: packageJson.version,
+			aiKey: packageJson.aiKey
+		};
+	}
+	return undefined;
+}
+
 /**
  * Generates a wordy time difference between start and end time.
  * @returns stringified duration like '10.0 days', '12.0 hrs', '1.0 min'

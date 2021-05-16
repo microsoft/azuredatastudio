@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/agent/out/dialogs/scheduleDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/agent/out/dialogs/scheduleDialog" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="scheduleDialog.newSchedule">
         <source xml:lang="en">New Schedule</source>
@@ -24,7 +24,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/proxyDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/agent/out/dialogs/proxyDialog" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="createProxy.createProxy">
         <source xml:lang="en">Create Proxy</source>
@@ -100,7 +100,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/pickScheduleDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/agent/out/dialogs/pickScheduleDialog" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="pickSchedule.jobSchedules">
         <source xml:lang="en">Job Schedules</source>
@@ -132,7 +132,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/operatorDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/agent/out/dialogs/operatorDialog" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="createOperator.createOperator">
         <source xml:lang="en">Create Operator</source>
@@ -224,7 +224,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/jobStepDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/agent/out/dialogs/jobStepDialog" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="jobStepDialog.fileBrowserTitle">
         <source xml:lang="en">Locate Database Files - </source>
@@ -416,7 +416,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/jobDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/agent/out/dialogs/jobDialog" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="jobDialog.general">
         <source xml:lang="en">General</source>
@@ -568,7 +568,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/alertDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/agent/out/dialogs/alertDialog" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="alertDialog.createAlert">
         <source xml:lang="en">Create Alert</source>
@@ -792,7 +792,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/dialogs/agentDialog" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/agent/out/dialogs/agentDialog" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="agentDialog.OK">
         <source xml:lang="en">OK</source>
@@ -804,7 +804,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/data/proxyData" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/agent/out/data/proxyData" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="proxyData.saveErrorMessage">
         <source xml:lang="en">Proxy update failed '{0}'</source>
@@ -820,7 +820,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/data/jobStepData" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/agent/out/data/jobStepData" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="jobStepData.saveErrorMessage">
         <source xml:lang="en">Step update failed '{0}'</source>
@@ -836,7 +836,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/data/jobData" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/agent/out/data/jobData" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="jobData.whenJobCompletes">
         <source xml:lang="en">When the job completes</source>
@@ -872,7 +872,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/data/alertData" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/agent/out/data/alertData" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="alertData.saveErrorMessage">
         <source xml:lang="en">Alert update failed '{0}'</source>
@@ -892,7 +892,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/agent/out/mainController" source-language="en" datatype="plaintext" target-language="zh-HANT">
+  <file original="extensions/agent/out/mainController" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="mainController.notImplemented">
         <source xml:lang="en">This feature is under development.  Check-out the latest insiders build if you'd like to try out the most recent changes!</source>

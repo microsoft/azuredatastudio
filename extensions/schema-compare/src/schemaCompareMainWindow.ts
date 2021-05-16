@@ -98,12 +98,13 @@ export class SchemaCompareMainWindow {
 
 			this.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
-				serverDisplayName: profile.connectionName ? profile.connectionName : profile.serverName,
+				serverDisplayName: `${profile.serverName} (${usr})`,
 				serverName: profile.serverName,
 				databaseName: profile.databaseName,
 				ownerUri: ownerUri,
 				packageFilePath: '',
-				connectionDetails: undefined
+				connectionDetails: undefined,
+				connectionName: profile.connectionName
 			};
 		} else if (sourceDacpac) {
 			this.sourceEndpointInfo = {
@@ -899,7 +900,7 @@ export class SchemaCompareMainWindow {
 
 		this.selectSourceButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSelectSource');
-			this.schemaCompareDialog = new SchemaCompareDialog(this);
+			this.schemaCompareDialog = new SchemaCompareDialog(this, undefined, this.extensionContext);
 			this.promise = this.schemaCompareDialog.openDialog();
 			await this.promise;
 		});
@@ -913,7 +914,7 @@ export class SchemaCompareMainWindow {
 
 		this.selectTargetButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareSelectTarget');
-			this.schemaCompareDialog = new SchemaCompareDialog(this);
+			this.schemaCompareDialog = new SchemaCompareDialog(this, undefined, this.extensionContext);
 			this.promise = await this.schemaCompareDialog.openDialog();
 			await this.promise;
 		});

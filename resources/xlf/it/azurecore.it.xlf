@@ -42,6 +42,10 @@
         <source xml:lang="en">Select Subscriptions</source>
         <target state="translated">Seleziona sottoscrizioni</target>
       </trans-unit>
+      <trans-unit id="azure.resource.startterminal.title">
+        <source xml:lang="en">Start Cloud Shell</source>
+        <target state="translated">Avvia Cloud Shell</target>
+      </trans-unit>
       <trans-unit id="azure.resource.connectsqlserver.title">
         <source xml:lang="en">Connect</source>
         <target state="translated">Connetti</target>
@@ -50,9 +54,25 @@
         <source xml:lang="en">Add to Servers</source>
         <target state="translated">Aggiungi ai server</target>
       </trans-unit>
+      <trans-unit id="azure.resource.view.title">
+        <source xml:lang="en">Azure (Preview)</source>
+        <target state="translated">Azure (anteprima)</target>
+      </trans-unit>
+      <trans-unit id="azure.tenant.config.filter.description">
+        <source xml:lang="en">The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.</source>
+        <target state="translated">Elenco di ID tenant da ignorare durante l'esecuzione di query sulle risorse di Azure. Ogni elemento è un ID tenant.</target>
+      </trans-unit>
       <trans-unit id="accounts.clearTokenCache">
         <source xml:lang="en">Clear Azure Account Token Cache</source>
         <target state="translated">Cancella la cache dei token dell'account Azure</target>
+      </trans-unit>
+      <trans-unit id="azure.openInAzurePortal.title">
+        <source xml:lang="en">Open in Azure Portal</source>
+        <target state="translated">Apri nel portale di Azure</target>
+      </trans-unit>
+      <trans-unit id="config.azureAccountConfigurationSection">
+        <source xml:lang="en">Azure Account Configuration</source>
+        <target state="translated">Configurazione dell'account Azure</target>
       </trans-unit>
       <trans-unit id="config.enablePublicCloudDescription">
         <source xml:lang="en">Should Azure public cloud integration be enabled</source>
@@ -62,6 +82,10 @@
         <source xml:lang="en">Should US Government Azure cloud (Fairfax) integration be enabled</source>
         <target state="translated">Consente di indicare se l'integrazione del cloud US Government Azure (Fairfax) deve essere abilitata</target>
       </trans-unit>
+      <trans-unit id="config.enableUsNatCloudDescription">
+        <source xml:lang="en">Should US National Azure cloud integration be enabled</source>
+        <target state="translated">Consente di indicare se l'integrazione del cloud Azure US National deve essere abilitata</target>
+      </trans-unit>
       <trans-unit id="config.enableChinaCloudDescription">
         <source xml:lang="en">Should Azure China integration be enabled</source>
         <target state="translated">Consente di indicare se l'integrazione di Azure Cina deve essere abilitata</target>
@@ -69,6 +93,26 @@
       <trans-unit id="config.enableGermanyCloudDescription">
         <source xml:lang="en">Should Azure Germany integration be enabled</source>
         <target state="translated">Consente di indicare se l'integrazione di Azure Germania deve essere abilitata</target>
+      </trans-unit>
+      <trans-unit id="config.azureAuthMethodConfigurationSection">
+        <source xml:lang="en">Azure Authentication Method</source>
+        <target state="translated">Metodo di autenticazione di Azure</target>
+      </trans-unit>
+      <trans-unit id="config.azureCodeGrantMethod">
+        <source xml:lang="en">Code Grant Method</source>
+        <target state="translated">Metodo di concessione codice</target>
+      </trans-unit>
+      <trans-unit id="config.azureDeviceCodeMethod">
+        <source xml:lang="en">Device Code Method</source>
+        <target state="translated">Metodo del codice del dispositivo</target>
+      </trans-unit>
+      <trans-unit id="config.noSystemKeychain">
+        <source xml:lang="en">Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.</source>
+        <target state="translated">Disabilitare l'integrazione del keychain di sistema. Le credenziali verranno archiviate in un file flat nella home directory dell'utente.</target>
+      </trans-unit>
+      <trans-unit id="config.piiLogging">
+        <source xml:lang="en">Should Personally Identifiable Information (PII) be logged in the console view locally</source>
+        <target state="translated">Indicare se le informazioni personali devono essere registrate nella visualizzazione della console in locale</target>
       </trans-unit>
     </body>
   </file>
@@ -78,13 +122,357 @@
         <source xml:lang="en">Error: {0}</source>
         <target state="translated">Errore: {0}</target>
       </trans-unit>
+      <trans-unit id="azure.accounts.getResourceGroups.queryError">
+        <source xml:lang="en">Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}</source>
+        <target state="translated">Errore durante il recupero dei gruppi di risorse per l'account {0} ({1}) sottoscrizione {2} ({3}) tenant {4}: {5}</target>
+      </trans-unit>
+      <trans-unit id="azure.accounts.runResourceQuery.errors.invalidQuery">
+        <source xml:lang="en">Invalid query</source>
+        <target state="translated">Query non valida</target>
+      </trans-unit>
+      <trans-unit id="azure.accounts.getSubscriptions.queryError">
+        <source xml:lang="en">Error fetching subscriptions for account {0} tenant {1} : {2}</source>
+        <target state="translated">Errore durante il recupero delle sottoscrizioni per l'account {0} tenant {1}: {2}</target>
+      </trans-unit>
+      <trans-unit id="azure.accounts.getSelectedSubscriptions.queryError">
+        <source xml:lang="en">Error fetching subscriptions for account {0} : {1}</source>
+        <target state="translated">Errore durante il recupero delle sottoscrizioni per l'account {0}: {1}</target>
+      </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/constants" source-language="en" datatype="plaintext" target-language="it">
+  <file original="extensions/azurecore/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="extensionName">
+      <trans-unit id="azurecore.extensionName">
         <source xml:lang="en">Azure Accounts</source>
         <target state="translated">Account Azure</target>
+      </trans-unit>
+      <trans-unit id="azurecore.requiresReload">
+        <source xml:lang="en">Modifying this setting requires reloading the window for all changes to take effect.</source>
+        <target state="translated">Se si modifica questa impostazione, è necessario ricaricare la finestra per rendere effettive tutte le modifiche.</target>
+      </trans-unit>
+      <trans-unit id="azurecore.reload">
+        <source xml:lang="en">Reload</source>
+        <target state="translated">Ricarica</target>
+      </trans-unit>
+      <trans-unit id="azurecore.australiacentral">
+        <source xml:lang="en">Australia Central</source>
+        <target state="translated">Australia centrale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.australiacentral2">
+        <source xml:lang="en">Australia Central 2</source>
+        <target state="translated">Australia centrale 2</target>
+      </trans-unit>
+      <trans-unit id="azurecore.australiaeast">
+        <source xml:lang="en">Australia East</source>
+        <target state="translated">Australia orientale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.australiasoutheast">
+        <source xml:lang="en">Australia Southeast</source>
+        <target state="translated">Australia sud-orientale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.brazilsouth">
+        <source xml:lang="en">Brazil South</source>
+        <target state="translated">Brasile meridionale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.brazilsoutheast">
+        <source xml:lang="en">Brazil Southeast</source>
+        <target state="translated">Brasile sud-orientale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.canadacentral">
+        <source xml:lang="en">Canada Central</source>
+        <target state="translated">Canada centrale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.canadaeast">
+        <source xml:lang="en">Canada East</source>
+        <target state="translated">Canada orientale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.centralindia">
+        <source xml:lang="en">Central India</source>
+        <target state="translated">India centrale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.centralus">
+        <source xml:lang="en">Central US</source>
+        <target state="translated">Stati Uniti centrali</target>
+      </trans-unit>
+      <trans-unit id="azurecore.centraluseuap">
+        <source xml:lang="en">Central US EUAP</source>
+        <target state="translated">Stati Uniti centrali EUAP</target>
+      </trans-unit>
+      <trans-unit id="azurecore.eastasia">
+        <source xml:lang="en">East Asia</source>
+        <target state="translated">Asia orientale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.eastus">
+        <source xml:lang="en">East US</source>
+        <target state="translated">Stati Uniti orientali</target>
+      </trans-unit>
+      <trans-unit id="azurecore.eastus2">
+        <source xml:lang="en">East US 2</source>
+        <target state="translated">Stati Uniti orientali 2</target>
+      </trans-unit>
+      <trans-unit id="azurecore.eastus2euap">
+        <source xml:lang="en">East US 2 EUAP</source>
+        <target state="translated">Stati Uniti orientali 2 EUAP</target>
+      </trans-unit>
+      <trans-unit id="azurecore.francecentral">
+        <source xml:lang="en">France Central</source>
+        <target state="translated">Francia centrale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.francesouth">
+        <source xml:lang="en">France South</source>
+        <target state="translated">Francia meridionale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.germanynorth">
+        <source xml:lang="en">Germany North</source>
+        <target state="translated">Germania settentrionale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.germanywestcentral">
+        <source xml:lang="en">Germany West Central</source>
+        <target state="translated">Germania centro-occidentale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.japaneast">
+        <source xml:lang="en">Japan East</source>
+        <target state="translated">Giappone orientale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.japanwest">
+        <source xml:lang="en">Japan West</source>
+        <target state="translated">Giappone occidentale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.koreacentral">
+        <source xml:lang="en">Korea Central</source>
+        <target state="translated">Corea centrale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.koreasouth">
+        <source xml:lang="en">Korea South</source>
+        <target state="translated">Corea meridionale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.northcentralus">
+        <source xml:lang="en">North Central US</source>
+        <target state="translated">Stati Uniti centro-settentrionali</target>
+      </trans-unit>
+      <trans-unit id="azurecore.northeurope">
+        <source xml:lang="en">North Europe</source>
+        <target state="translated">Europa settentrionale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.norwayeast">
+        <source xml:lang="en">Norway East</source>
+        <target state="translated">Norvegia orientale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.norwaywest">
+        <source xml:lang="en">Norway West</source>
+        <target state="translated">Norvegia occidentale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.southafricanorth">
+        <source xml:lang="en">South Africa North</source>
+        <target state="translated">Sudafrica settentrionale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.southafricawest">
+        <source xml:lang="en">South Africa West</source>
+        <target state="translated">Sudafrica occidentale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.southcentralus">
+        <source xml:lang="en">South Central US</source>
+        <target state="translated">Stati Uniti centro-meridionali</target>
+      </trans-unit>
+      <trans-unit id="azurecore.southeastasia">
+        <source xml:lang="en">Southeast Asia</source>
+        <target state="translated">Asia sud-orientale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.southindia">
+        <source xml:lang="en">South India</source>
+        <target state="translated">India meridionale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.switzerlandnorth">
+        <source xml:lang="en">Switzerland North</source>
+        <target state="translated">Svizzera settentrionale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.switzerlandwest">
+        <source xml:lang="en">Switzerland West</source>
+        <target state="translated">Svizzera occidentale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.uaecentral">
+        <source xml:lang="en">UAE Central</source>
+        <target state="translated">Emirati Arabi Uniti centrali</target>
+      </trans-unit>
+      <trans-unit id="azurecore.uaenorth">
+        <source xml:lang="en">UAE North</source>
+        <target state="translated">Emirati Arabi Uniti settentrionali</target>
+      </trans-unit>
+      <trans-unit id="azurecore.uksouth">
+        <source xml:lang="en">UK South</source>
+        <target state="translated">Regno Unito meridionale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.ukwest">
+        <source xml:lang="en">UK West</source>
+        <target state="translated">Regno Unito occidentale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.westcentralus">
+        <source xml:lang="en">West Central US</source>
+        <target state="translated">Stati Uniti centro-occidentali</target>
+      </trans-unit>
+      <trans-unit id="azurecore.westeurope">
+        <source xml:lang="en">West Europe</source>
+        <target state="translated">Europa occidentale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.westindia">
+        <source xml:lang="en">West India</source>
+        <target state="translated">India occidentale</target>
+      </trans-unit>
+      <trans-unit id="azurecore.westus">
+        <source xml:lang="en">West US</source>
+        <target state="translated">Stati Uniti occidentali</target>
+      </trans-unit>
+      <trans-unit id="azurecore.westus2">
+        <source xml:lang="en">West US 2</source>
+        <target state="translated">Stati Uniti occidentali 2</target>
+      </trans-unit>
+      <trans-unit id="azurecore.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Nome</target>
+      </trans-unit>
+      <trans-unit id="azurecore.resourceType">
+        <source xml:lang="en">Resource type</source>
+        <target state="translated">Tipo di risorsa</target>
+      </trans-unit>
+      <trans-unit id="azurecore.resourceGroup">
+        <source xml:lang="en">Resource group</source>
+        <target state="translated">Gruppo di risorse</target>
+      </trans-unit>
+      <trans-unit id="azurecore.location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">Posizione</target>
+      </trans-unit>
+      <trans-unit id="azurecore.subscription">
+        <source xml:lang="en">Subscription</source>
+        <target state="translated">Sottoscrizione</target>
+      </trans-unit>
+      <trans-unit id="azurecore.typeIcon">
+        <source xml:lang="en">Type Icon</source>
+        <target state="translated">Icona tipo</target>
+      </trans-unit>
+      <trans-unit id="azurecore.sqlServer">
+        <source xml:lang="en">SQL server</source>
+        <target state="translated">SQL Server</target>
+      </trans-unit>
+      <trans-unit id="azurecore.sqlDatabase">
+        <source xml:lang="en">SQL database</source>
+        <target state="translated">Database SQL</target>
+      </trans-unit>
+      <trans-unit id="azurecore.postgresServer">
+        <source xml:lang="en">Azure Database for PostgreSQL server</source>
+        <target state="translated">Server di Database di Azure per PostgreSQL</target>
+      </trans-unit>
+      <trans-unit id="azurecore.sqlManagedInstance">
+        <source xml:lang="en">SQL managed instance</source>
+        <target state="translated">Istanza gestita di SQL</target>
+      </trans-unit>
+      <trans-unit id="azurecore.azureArcsqlManagedInstance">
+        <source xml:lang="en">SQL managed instance - Azure Arc</source>
+        <target state="translated">Istanza gestita di SQL- Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="azurecore.azureArcService">
+        <source xml:lang="en">Data Service - Azure Arc</source>
+        <target state="translated">Servizio dati - Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="azurecore.sqlServerArc">
+        <source xml:lang="en">SQL Server - Azure Arc</source>
+        <target state="translated">SQL Server - Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="azurecore.azureArcPostgres">
+        <source xml:lang="en">Azure Arc enabled PostgreSQL Hyperscale</source>
+        <target state="translated">PostgreSQL Hyperscale con abilitazione di Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="azure.unableToOpenAzureLink">
+        <source xml:lang="en">Unable to open link, missing required values</source>
+        <target state="translated">Non è possibile aprire il collegamento, mancano i valori richiesti</target>
+      </trans-unit>
+      <trans-unit id="azure.azureResourcesGridTitle">
+        <source xml:lang="en">Azure Resources (Preview)</source>
+        <target state="translated">Risorse di Azure (anteprima)</target>
+      </trans-unit>
+      <trans-unit id="azurecore.invalidAzureAccount">
+        <source xml:lang="en">Invalid account</source>
+        <target state="translated">Account non valido</target>
+      </trans-unit>
+      <trans-unit id="azurecore.invalidTenant">
+        <source xml:lang="en">Invalid tenant for subscription</source>
+        <target state="translated">Tenant non valido per la sottoscrizione</target>
+      </trans-unit>
+      <trans-unit id="azurecore.unableToFetchToken">
+        <source xml:lang="en">Unable to get token for tenant {0}</source>
+        <target state="translated">Non è possibile ottenere il token per il tenant {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/account-provider/auths/azureAuth" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="azureAuth.unidentifiedError">
+        <source xml:lang="en">Unidentified error with azure authentication</source>
+        <target state="translated">Errore non identificato con l'autenticazione di Azure</target>
+      </trans-unit>
+      <trans-unit id="azure.tenantNotFound">
+        <source xml:lang="en">Specifed tenant with ID '{0}' not found.</source>
+        <target state="translated">Il tenant specificato con ID '{0}' non è stato trovato.</target>
+      </trans-unit>
+      <trans-unit id="azure.noBaseToken">
+        <source xml:lang="en">Something failed with the authentication, or your tokens have been deleted from the system. Please try adding your account to Azure Data Studio again.</source>
+        <target state="translated">Si è verificato un errore durante l'autenticazione oppure i token sono stati eliminati dal sistema. Provare ad aggiungere di nuovo l'account ad Azure Data Studio.</target>
+      </trans-unit>
+      <trans-unit id="azure.responseError">
+        <source xml:lang="en">Token retrival failed with an error. Open developer tools to view the error</source>
+        <target state="translated">Il recupero del token non è riuscito con un errore. Aprire gli strumenti di sviluppo per visualizzare l'errore</target>
+      </trans-unit>
+      <trans-unit id="azure.accessTokenEmpty">
+        <source xml:lang="en">No access token returned from Microsoft OAuth</source>
+        <target state="translated">Nessun token di accesso restituito da Microsoft OAuth</target>
+      </trans-unit>
+      <trans-unit id="azure.noUniqueIdentifier">
+        <source xml:lang="en">The user had no unique identifier within AAD</source>
+        <target state="translated">L'utente non ha un identificatore univoco in AAD</target>
+      </trans-unit>
+      <trans-unit id="azureWorkAccountDisplayName">
+        <source xml:lang="en">Work or school account</source>
+        <target state="translated">Account aziendale o dell'istituto di istruzione</target>
+      </trans-unit>
+      <trans-unit id="azure.cacheErrorAdd">
+        <source xml:lang="en">Error when adding your account to the cache.</source>
+        <target state="translated">Si è verificato un errore durante l'aggiunta dell'account alla cache.</target>
+      </trans-unit>
+      <trans-unit id="azure.cacheErrorGet">
+        <source xml:lang="en">Error when getting your account from the cache</source>
+        <target state="translated">Si è verificato un errore durante il recupero dell'account dalla cache</target>
+      </trans-unit>
+      <trans-unit id="azure.cacheErrorParse">
+        <source xml:lang="en">Error when parsing your account from the cache</source>
+        <target state="translated">Si è verificato un errore durante l'analisi dell'account dalla cache</target>
+      </trans-unit>
+      <trans-unit id="azurecore.consentDialog.open">
+        <source xml:lang="en">Open</source>
+        <target state="translated">Apri</target>
+      </trans-unit>
+      <trans-unit id="azurecore.consentDialog.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Annulla</target>
+      </trans-unit>
+      <trans-unit id="azurecore.consentDialog.ignore">
+        <source xml:lang="en">Ignore Tenant</source>
+        <target state="translated">Ignora tenant</target>
+      </trans-unit>
+      <trans-unit id="azurecore.consentDialog.body">
+        <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
+        <target state="translated">Il tenant '{0} ({1})' richiede una nuova autenticazione per accedere alle risorse {2}. Premere Apri per avviare il processo di autenticazione.</target>
+      </trans-unit>
+      <trans-unit id="azure.microsoftCorpAccount">
+        <source xml:lang="en">Microsoft Corp</source>
+        <target state="translated">Microsoft Corp</target>
+      </trans-unit>
+      <trans-unit id="azure.microsoftAccountDisplayName">
+        <source xml:lang="en">Microsoft Account</source>
+        <target state="translated">Account Microsoft</target>
+      </trans-unit>
+      <trans-unit id="azure.cacheErrrorRemove">
+        <source xml:lang="en">Error when removing your account from the cache.</source>
+        <target state="translated">Si è verificato un errore durante la rimozione dell'account dalla cache.</target>
       </trans-unit>
     </body>
   </file>
@@ -97,6 +485,41 @@
       <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
         <source xml:lang="en">No Subscriptions found.</source>
         <target state="translated">Non sono state trovate sottoscrizioni.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/resourceTreeNode" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="azure.resource.resourceTreeNode.noResourcesLabel">
+        <source xml:lang="en">No Resources found</source>
+        <target state="translated">Non sono state trovate risorse</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="azure.resource.tree.accountTreeNode.titleLoading">
+        <source xml:lang="en">{0} - Loading...</source>
+        <target state="translated">{0} - Caricamento...</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tree.accountTreeNode.title">
+        <source xml:lang="en">{0} ({1}/{2} subscriptions)</source>
+        <note>{0} is the display name of the azure account
+{1} is the number of selected subscriptions in this account
+{2} is the number of total subscriptions in this account</note>
+        <target state="translated">{0} ({1}/{2} sottoscrizioni)</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tree.accountTreeNode.credentialError">
+        <source xml:lang="en">Failed to get credential for account {0}. Please go to the accounts dialog and refresh the account.</source>
+        <target state="translated">Non è stato possibile ottenere le credenziali per l'account {0}. Passare alla finestra di dialogo degli account e aggiornare l'account.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/tree/accountNotSignedInTreeNode" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="azure.resource.tree.accountNotSignedInTreeNode.signInLabel">
+        <source xml:lang="en">Sign in to Azure...</source>
+        <target state="translated">Accedi ad Azure...</target>
       </trans-unit>
     </body>
   </file>
@@ -118,50 +541,130 @@
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
       </trans-unit>
+      <trans-unit id="usGovCloudDisplayName">
+        <source xml:lang="en">Azure (US Government)</source>
+        <target state="translated">Azure (US Government)</target>
+      </trans-unit>
+      <trans-unit id="usNatCloudDisplayName">
+        <source xml:lang="en">Azure (US National)</source>
+        <target state="translated">Azure (US National)</target>
+      </trans-unit>
+      <trans-unit id="germanyCloud">
+        <source xml:lang="en">Azure (Germany)</source>
+        <target state="translated">Azure (Germania)</target>
+      </trans-unit>
+      <trans-unit id="chinaCloudDisplayName">
+        <source xml:lang="en">Azure (China)</source>
+        <target state="translated">Azure (Cina)</target>
+      </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/account-provider/azureAccountProvider" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="accountProviderNotInitialized">
-        <source xml:lang="en">Account provider not initialized, cannot perform action</source>
-        <target state="translated">Il provider di account non è inizializzato. Non è possibile eseguire l'azione</target>
+      <trans-unit id="azure.deprecatedGetSecurityToken">
+        <source xml:lang="en">A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead.</source>
+        <target state="translated">È stata effettuata una chiamata ad azdata.accounts.getSecurityToken. Questo metodo è deprecato e verrà rimosso nelle versioni future. Usare getAccountSecurityToken.</target>
       </trans-unit>
+      <trans-unit id="azure.NoAuthMethod.Selected">
+        <source xml:lang="en">No Azure auth method selected. You must select what method of authentication you want to use.</source>
+        <target state="translated">Non è stato selezionato alcun metodo di autenticazione di Azure. È necessario selezionare il metodo di autenticazione che si vuole usare.</target>
+      </trans-unit>
+      <trans-unit id="azure.NoAuthMethod.Available">
+        <source xml:lang="en">No Azure auth method available. You must enable the auth methods in ADS configuration.</source>
+        <target state="translated">Nessun metodo di autenticazione di Azure disponibile. È necessario abilitare i metodi di autenticazione nella configurazione di ADS.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/account-provider/auths/azureAuthCodeGrant" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="azure.serverCouldNotStart">
+        <source xml:lang="en">Server could not start. This could be a permissions error or an incompatibility on your system. You can try enabling device code authentication from settings.</source>
+        <target state="translated">Non è stato possibile avviare il server. Questo problema potrebbe essere dovuto a un errore di autorizzazioni o a un'incompatibilità nel sistema. È possibile provare ad abilitare l'autenticazione del codice del dispositivo dalle impostazioni.</target>
+      </trans-unit>
+      <trans-unit id="azureAuth.nonceError">
+        <source xml:lang="en">Authentication failed due to a nonce mismatch, please close Azure Data Studio and try again.</source>
+        <target state="translated">L'autenticazione non è riuscita a causa di una mancata corrispondenza dei nonce. Chiudere Azure Data Studio e riprovare.</target>
+      </trans-unit>
+      <trans-unit id="azureAuth.stateError">
+        <source xml:lang="en">Authentication failed due to a state mismatch, please close ADS and try again.</source>
+        <target state="translated">L'autenticazione non è riuscita a causa di una mancata corrispondenza degli stati. Chiudere ADS e riprovare.</target>
+      </trans-unit>
+      <trans-unit id="azure.azureAuthCodeGrantName">
+        <source xml:lang="en">Azure Auth Code Grant</source>
+        <target state="translated">Concessione codice di autenticazione di Azure</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/account-provider/auths/azureDeviceCode" source-language="en" datatype="plaintext" target-language="it">
+    <body>
       <trans-unit id="addAccount">
         <source xml:lang="en">Add {0} account</source>
         <target state="translated">Aggiungi l'account {0}</target>
       </trans-unit>
-      <trans-unit id="refreshAccount">
-        <source xml:lang="en">Refresh {0} account</source>
-        <target state="translated">Aggiorna l'account {0}</target>
+      <trans-unit id="azure.timeoutDeviceCode">
+        <source xml:lang="en">Timed out when waiting for device code login.</source>
+        <target state="translated">Timeout durante l'attesa dell'accesso al codice del dispositivo.</target>
       </trans-unit>
-      <trans-unit id="azureWorkAccountDisplayName">
-        <source xml:lang="en">Work or school account</source>
-        <target state="translated">Account aziendale o dell'istituto di istruzione</target>
+      <trans-unit id="azure.deviceCodeCheckFail">
+        <source xml:lang="en">Error encountered when trying to check for login results</source>
+        <target state="translated">Si è verificato un errore durante il tentativo di verificare la presenza di risultati di accesso</target>
       </trans-unit>
-      <trans-unit id="microsoftAccountDisplayName">
-        <source xml:lang="en">Microsoft Account</source>
-        <target state="translated">Account Microsoft</target>
+      <trans-unit id="azure.azureDeviceCodeAuth">
+        <source xml:lang="en">Azure Device Code</source>
+        <target state="translated">Codice dispositivo di Azure</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
-        <source xml:lang="en">SQL Servers</source>
-        <target state="translated">Istanze di SQL Server</target>
+        <source xml:lang="en">SQL server</source>
+        <target state="translated">SQL Server</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/database/databaseTreeDataProvider" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
-        <source xml:lang="en">SQL Databases</source>
+        <source xml:lang="en">SQL database</source>
         <target state="translated">Database SQL</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/commands" source-language="en" datatype="plaintext" target-language="it">
     <body>
+      <trans-unit id="azure.cloudTerminalPreview">
+        <source xml:lang="en">You must enable preview features in order to use Azure Cloud Shell.</source>
+        <target state="translated">Per usare Azure Cloud Shell, è necessario abilitare le funzionalità di anteprima.</target>
+      </trans-unit>
+      <trans-unit id="azure.signIn">
+        <source xml:lang="en">Sign in</source>
+        <target state="translated">Accedi</target>
+      </trans-unit>
+      <trans-unit id="azure.noAccountError">
+        <source xml:lang="en">You are not currently signed into any Azure accounts, Please sign in and then try again.</source>
+        <target state="translated">Non è stato al momento eseguito l'accesso ad alcun account Azure. Eseguire l'accesso e quindi riprovare.</target>
+      </trans-unit>
+      <trans-unit id="azure.pickAnAzureAccount">
+        <source xml:lang="en">Select an Azure account</source>
+        <target state="translated">Seleziona un account Azure</target>
+      </trans-unit>
+      <trans-unit id="azure.accountNotSelectedError">
+        <source xml:lang="en">You must select an Azure account for this feature to work.</source>
+        <target state="translated">Per usare questa funzionalità, è necessario selezionare un account Azure.</target>
+      </trans-unit>
+      <trans-unit id="azure.noTenants">
+        <source xml:lang="en">A tenant is required for this feature. Your Azure subscription seems to have no tenants.</source>
+        <target state="translated">Per questa funzionalità è necessario un tenant. La sottoscrizione di Azure in uso non sembra avere tenant.</target>
+      </trans-unit>
+      <trans-unit id="azure.startingCloudShell">
+        <source xml:lang="en">Starting cloud shell…</source>
+        <target state="translated">Avvio di Cloud Shell…</target>
+      </trans-unit>
+      <trans-unit id="azure.mustPickTenant">
+        <source xml:lang="en">You must select a tenant for this feature to work.</source>
+        <target state="translated">Per usare questa funzionalità, è necessario selezionare un tenant.</target>
+      </trans-unit>
       <trans-unit id="azure.resource.selectsubscriptions.credentialError">
         <source xml:lang="en">Failed to get credential for account {0}. Please refresh the account.</source>
         <target state="translated">Non è stato possibile ottenere le credenziali per l'account {0}. Aggiornare l'account.</target>
@@ -176,14 +679,6 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/azureResource/resourceTreeNode" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="azure.resource.resourceTreeNode.noResourcesLabel">
-        <source xml:lang="en">No Resources found</source>
-        <target state="translated">Non sono state trovate risorse</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/azurecore/dist/azureResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="azure.resource.tree.treeProvider.loadingLabel">
@@ -192,27 +687,93 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/azureResource/tree/accountNotSignedInTreeNode" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="azure.resource.tree.accountNotSignedInTreeNode.signInLabel">
-        <source xml:lang="en">Sign in to Azure...</source>
-        <target state="translated">Accedi ad Azure...</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/azurecore/dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="azure.resource.providers.sqlInstanceContainerLabel">
-        <source xml:lang="en">SQL Managed Instances</source>
-        <target state="translated">Istanze gestite di SQL</target>
+        <source xml:lang="en">Azure SQL DB managed instance</source>
+        <target state="translated">Istanza gestita di database SQL di Azure</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/kusto/kustoTreeDataProvider" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="azure.resource.providers.KustoContainerLabel">
+        <source xml:lang="en">Azure Data Explorer Cluster</source>
+        <target state="translated">Cluster di Esplora dati di Azure</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel">
-        <source xml:lang="en">Azure Database for PostgreSQL Servers</source>
+        <source xml:lang="en">Azure Database for PostgreSQL server</source>
         <target state="translated">Server di Database di Azure per PostgreSQL</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/services/terminalService" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="azure.coudTerminal.neverUsed">
+        <source xml:lang="en">If you have not launched Azure Cloud Shell from this account before, please visit https://shell.azure.com/ to get started. Once you are set up, you can use AzureCloud Shell directly in Azure Data Studio.</source>
+        <target state="translated">Se Azure Cloud Shell non è stato ancora avviato da questo account, vedere https://shell.azure.com/ per iniziare. Dopo la configurazione, è possibile usare Azure Cloud Shell direttamente in Azure Data Studio.</target>
+      </trans-unit>
+      <trans-unit id="azure.cloudTerminal.openAzureShell">
+        <source xml:lang="en">Open Azure Shell</source>
+        <target state="translated">Apri Azure Shell</target>
+      </trans-unit>
+      <trans-unit id="azure.cloudTerminal.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="azure.selectShellType">
+        <source xml:lang="en">Select Bash or PowerShell for Azure Cloud Shell</source>
+        <target state="translated">Seleziona Bash o PowerShell per Azure Cloud Shell</target>
+      </trans-unit>
+      <trans-unit id="azure.shellTypeRequired">
+        <source xml:lang="en">You must pick a shell type</source>
+        <target state="translated">È necessario selezionare un tipo di shell</target>
+      </trans-unit>
+      <trans-unit id="azure.cloudShell">
+        <source xml:lang="en">Azure Cloud Shell (Preview) {0} ({1})</source>
+        <target state="translated">Azure Cloud Shell (anteprima) {0} ({1})</target>
+      </trans-unit>
+      <trans-unit id="azure.shellClosed">
+        <source xml:lang="en">Shell closed.
+</source>
+        <target state="translated">Shell chiusa.
+</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="azure.resource.providers.sqlInstanceArcContainerLabel">
+        <source xml:lang="en">SQL managed instance – Azure Arc</source>
+        <target state="translated">Istanza gestita di SQL - Azure Arc</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel">
+        <source xml:lang="en">PostgreSQL Hyperscale – Azure Arc</source>
+        <target state="translated">PostgreSQL Hyperscale – Azure Arc</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/tree/connectionDialogTreeProvider" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="azure.resource.tree.treeProvider.loadingLabel">
+        <source xml:lang="en">Loading ...</source>
+        <target state="translated">Caricamento...</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tree.treeProvider.openAccountsDialog">
+        <source xml:lang="en">Show Azure accounts</source>
+        <target state="translated">Mostra account Azure</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tree.treeProvider.accountLoadError">
+        <source xml:lang="en">Failed to load some Azure accounts. {0}</source>
+        <target state="translated">Non è stato possibile caricare alcuni account Azure. {0}</target>
       </trans-unit>
     </body>
   </file>

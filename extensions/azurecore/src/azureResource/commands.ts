@@ -181,17 +181,22 @@ export function registerAzureResourceCommands(appContext: AppContext, azureViewT
 		vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
 	});
 
-	vscode.commands.registerCommand('azure.resource.connectsqlserver', async (node?: TreeNode) => {
+	vscode.commands.registerCommand('azure.resource.connectsqlserver', async (node?: TreeNode | azdata.ObjectExplorerContext) => {
 		if (!node) {
 			return;
 		}
-
-		const treeItem: azdata.TreeItem = await node.getTreeItem();
-		if (!treeItem.payload) {
-			return;
+		let connectionProfile: azdata.IConnectionProfile = undefined;
+		if (node instanceof TreeNode) {
+			const treeItem: azdata.TreeItem = await node.getTreeItem();
+			if (!treeItem.payload) {
+				return;
+			}
+			// Ensure connection is saved to the Connections list, then open connection dialog
+			connectionProfile = Object.assign({}, treeItem.payload, { saveProfile: true });
+		} else if (node.isConnectionNode) {
+			connectionProfile = Object.assign({}, node.connectionProfile, { saveProfile: true });
 		}
-		// Ensure connection is saved to the Connections list, then open connection dialog
-		let connectionProfile = Object.assign({}, treeItem.payload, { saveProfile: true });
+
 		const conn = await azdata.connection.openConnectionDialog(undefined, connectionProfile, { saveConnection: true, showDashboard: true });
 		if (conn) {
 			vscode.commands.executeCommand('workbench.view.connections');

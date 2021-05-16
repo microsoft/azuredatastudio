@@ -12,9 +12,9 @@ import { EventEmitter } from 'events';
 import * as iconv from 'iconv-lite-umd';
 import * as filetype from 'file-type';
 import { assign, groupBy, IDisposable, toDisposable, dispose, mkdirp, readBytes, detectUnicodeEncoding, Encoding, onceEvent, splitInChunks, Limiter } from './util';
-import { CancellationToken, Progress, Uri } from 'vscode';
+import { CancellationToken, Uri } from 'vscode';
 import { detectEncoding } from './encoding';
-import { Ref, RefType, Branch, Remote, ForcePushMode, GitErrorCodes, LogOptions, Change, Status, CommitOptions, BranchQuery } from './api/git';
+import { Ref, RefType, Branch, Remote, ForcePushMode, GitErrorCodes, LogOptions, Change, Status, CommitOptions, BranchQuery, ICloneOptions } from './api/git'; // {{SQL CARBON EDIT}} add ICloneOptions
 import * as byline from 'byline';
 import { StringDecoder } from 'string_decoder';
 
@@ -354,11 +354,11 @@ function sanitizePath(path: string): string {
 
 const COMMIT_FORMAT = '%H%n%aN%n%aE%n%at%n%ct%n%P%n%B';
 
-export interface ICloneOptions {
+/*export interface ICloneOptions { {{SQL CARBON EDIT}} moved to git.d.ts
 	readonly parentPath: string;
 	readonly progress: Progress<{ increment: number }>;
 	readonly recursive?: boolean;
-}
+}*/
 
 export class Git {
 

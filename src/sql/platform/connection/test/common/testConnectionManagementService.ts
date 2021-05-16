@@ -24,7 +24,6 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	_serviceBrand: undefined;
 	onAddConnectionProfile = undefined!;
 	onDeleteConnectionProfile = undefined!;
-	onConnectionChanged = undefined!;
 	onLanguageFlavorChanged = undefined!;
 
 	public get onConnect(): Event<any> {
@@ -32,6 +31,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	public get onDisconnect(): Event<any> {
+		return Event.None;
+	}
+
+	public get onConnectionChanged(): Event<any> {
 		return Event.None;
 	}
 

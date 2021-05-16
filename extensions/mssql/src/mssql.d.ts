@@ -129,6 +129,7 @@ export interface SchemaCompareEndpointInfo {
 	databaseName: string;
 	ownerUri: string;
 	connectionDetails: azdata.ConnectionInfo;
+	connectionName?: string;
 }
 
 export interface SchemaCompareObjectId {
