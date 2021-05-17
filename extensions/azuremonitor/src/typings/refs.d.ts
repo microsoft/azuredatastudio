@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-export const serviceName = 'AzureMonitor Tools Service';
-export const providerId = 'LogAnalytics';
-export const serviceCrashLink = 'https://github.com/Microsoft/vscode-kusto/wiki/SqlToolsService-Known-Issues';
-export const extensionConfigSectionName = 'azuremonitor';
+
+/// <reference path='../../../../src/sql/azdata.d.ts'/>
+/// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
+/// <reference path='../../../../src/vs/vscode.d.ts'/>

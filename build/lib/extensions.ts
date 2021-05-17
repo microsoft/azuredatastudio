@@ -251,6 +251,7 @@ const externalExtensions = [
 	'asde-deployment',
 	'azdata',
 	'azurehybridtoolkit',
+	'azuremonitor',
 	'cms',
 	'dacpac',
 	'import',

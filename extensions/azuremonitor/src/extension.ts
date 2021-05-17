@@ -3,13 +3,14 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { SqlOpsDataClient, ClientOptions, ConnectionFeature, ObjectExplorerFeature, ScriptingFeature, QueryFeature } from 'dataprotocol-client';
+import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import { localize } from './localization';
 import * as Constants from './constants';
 import * as Strings from './strings';
 import { output } from './ui-references';
 import { ClientErrorHandler } from './client-error-handler';
+import { SerializationFeature } from './features/serializationFeature';
 
 let isActivated = false;
 
@@ -53,24 +54,22 @@ function launchServiceClient(executablePath: string, context: vscode.ExtensionCo
 function getServerOptions(executablePath: string): ServerOptions {
 	return {
 		command: executablePath,
-		args: [],
+		args: ['--service-name', 'AzureMonitor'],
 		transport: TransportKind.stdio
 	};
 }
 
 function getClientOptions(): ClientOptions {
 	return {
-		providerId: Constants.PROVIDER_ID,
-		errorHandler: new ClientErrorHandler(),
 		documentSelector: ['kusto'],
+		providerId: Constants.providerId,
+		errorHandler: new ClientErrorHandler(),
 		synchronize: {
 			configurationSection: 'azuremonitor'
 		},
 		features: [
-			ConnectionFeature,
-			ObjectExplorerFeature,
-			ScriptingFeature,
-			QueryFeature
+			...SqlOpsDataClient.defaultFeatures,
+			SerializationFeature
 		]
 	};
 }
