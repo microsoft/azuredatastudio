@@ -28,6 +28,16 @@
       "displayName": "Azure Monitor Logs",
       "notebookKernelAlias": "Kusto",
       "azureResource": "AzureLogAnalytics",
+      "iconPath": [
+        {
+          "id": "azuremonitor:cloud",
+          "path": {
+            "light": "resources/light/azure_monitor_light.svg",
+            "dark": "resources/dark/azure_monitor_dark.svg"
+          },
+          "default": true
+        }
+      ],
       "connectionOptions": [
         {
           "specialValueType": "serverName",
