@@ -204,15 +204,16 @@ export class PostgresModel extends ResourceModel {
 
 	private async createWorkerEngineSettings(provider: azdata.QueryProvider, ownerUri: string, skip: String[]): Promise<void> {
 
-		let querySuccessCheck = await provider.runQueryAndReturn(ownerUri, `select count(result) from run_command_on_workers('select json_agg(pg_settings) from pg_settings') where success;`);
-		if (querySuccessCheck.rows[0][0].displayValue === '0') {
-			querySuccessCheck = await provider.runQueryAndReturn(ownerUri, `select result from run_command_on_workers('select json_agg(pg_settings) from pg_settings') limit 1;`);
-			throw new Error(querySuccessCheck.rows[0][0].displayValue);
+		const engineSettingsWorker = await provider.runQueryAndReturn(ownerUri,
+			`with settings as (select nodename, success, result from run_command_on_workers('select json_agg(pg_settings) from pg_settings') order by success desc, nodename asc)
+			select * from settings limit case when exists(select 1 from settings where success) then 1 end`);
+
+		if (engineSettingsWorker.rows[0][1].displayValue === 'False') {
+			let errorString = engineSettingsWorker.rows.map(row => row[2].displayValue);
+			throw new Error(errorString.join('\n'));
 		}
 
-		const engineSettingsWorker = await provider.runQueryAndReturn(ownerUri, `select result from run_command_on_workers('select json_agg(pg_settings) from pg_settings') where success limit 1;`);
-
-		let engineSettingsWorkerJSON = JSON.parse(engineSettingsWorker.rows[0][0].displayValue);
+		let engineSettingsWorkerJSON = JSON.parse(engineSettingsWorker.rows[0][2].displayValue);
 		this.workerNodesEngineSettings = [];
 
 		for (let i = 0; i < engineSettingsWorkerJSON.length; i++) {
