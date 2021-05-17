@@ -39,6 +39,10 @@
           "sqlDatabaseProjects.netCoreSDKLocation": {
             "type": "string",
             "description": "%sqlDatabaseProjects.netCoreInstallLocation%"
+          },
+          "sqlDatabaseProjects.netCoreDoNotAsk": {
+            "type": "boolean",
+            "description": "%sqlDatabaseProjects.netCoreDoNotAsk%"
           }
         }
       }

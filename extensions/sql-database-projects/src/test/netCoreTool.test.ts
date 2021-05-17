@@ -42,7 +42,7 @@ describe('NetCoreTool: Net core tests', function (): void {
 		if (os.platform() === 'win32') {
 			// check that path should start with c:\program files
 			let result = isNullOrUndefined(netcoreTool.netcoreInstallLocation) || netcoreTool.netcoreInstallLocation.toLowerCase().startsWith('c:\\program files');
-			should(result).true('dotnet is either not present or in pogramfiles by default');
+			should(result).true('dotnet is either not present or in programfiles by default');
 		}
 
 		if (os.platform() === 'linux' || os.platform() === 'darwin') {

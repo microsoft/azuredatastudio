@@ -427,7 +427,7 @@ suite('WorkspaceService Tests', function (): void {
 			description: '',
 			icon: ''
 		}]);
-		const infoMessageStub = sinon.stub(vscode.window, 'showInformationMessage').resolves(<any>constants.DoNotShowAgain);
+		const infoMessageStub = sinon.stub(vscode.window, 'showInformationMessage').resolves(<any>constants.DoNotAskAgain);
 		const getProjectsInwWorkspaceFolderStub = sinon.stub(service, 'getAllProjectsInFolder').resolves([vscode.Uri.file('abc.sqlproj').fsPath, vscode.Uri.file('folder1/abc1.sqlproj').fsPath]);
 
 		await service.checkForProjectsNotAddedToWorkspace();
