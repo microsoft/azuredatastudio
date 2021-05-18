@@ -80,6 +80,7 @@ import { isWorkspaceFolder, TaskQuickPickEntry, QUICKOPEN_DETAIL_CONFIG, TaskQui
 import { ILogService } from 'vs/platform/log/common/log';
 import { once } from 'vs/base/common/functional';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
+import { IWorkspaceTrustService } from 'vs/platform/workspace/common/workspaceTrust';
 
 // {{SQL CARBON EDIT}}
 // integration with tasks view panel
@@ -231,8 +232,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 	private _waitForSupportedExecutions: Promise<void>;
 	private _onDidRegisterSupportedExecutions: Emitter<void> = new Emitter();
 
-	// {{SQL CARBON EDIT}}
-	private lastRunTasksViewTask: TaskInfo;
+	private lastRunTasksViewTask: TaskInfo; // {{SQL CARBON EDIT}}
 
 	constructor(
 		@IConfigurationService private readonly configurationService: IConfigurationService,
@@ -264,8 +264,9 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		@ITextModelService private readonly textModelResolverService: ITextModelService,
 		@IPreferencesService private readonly preferencesService: IPreferencesService,
 		@IViewDescriptorService private readonly viewDescriptorService: IViewDescriptorService,
+		@IWorkspaceTrustService private readonly workspaceTrustService: IWorkspaceTrustService,
 		@ILogService private readonly logService: ILogService,
-		@ISqlTaskService private readonly sqlTaskService: ISqlTaskService
+		@ISqlTaskService private readonly sqlTaskService: ISqlTaskService // {{SQL CARBON EDIT}}
 	) {
 		super();
 
@@ -920,7 +921,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		}).then((value) => {
 			if (runSource === TaskRunSource.User) {
 				this.getWorkspaceTasks().then(workspaceTasks => {
-					RunAutomaticTasks.promptForPermission(this, this.storageService, this.notificationService, workspaceTasks);
+					RunAutomaticTasks.promptForPermission(this, this.storageService, this.notificationService, this.workspaceTrustService, this.openerService, workspaceTasks);
 				});
 			}
 			return value;

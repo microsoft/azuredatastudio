@@ -288,6 +288,20 @@ export class MarkersFilterActionViewItem extends BaseActionViewItem {
 		}
 	}
 
+	blur(): void {
+		if (this.filterInputBox) {
+			this.filterInputBox.blur();
+		}
+	}
+
+	setFocusable(): void {
+		// noop input elements are focusable by default
+	}
+
+	get trapsArrowNavigation(): boolean {
+		return true;
+	}
+
 	private clearFilterText(): void {
 		if (this.filterInputBox) {
 			this.filterInputBox.value = '';

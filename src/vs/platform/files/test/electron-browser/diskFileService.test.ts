@@ -1584,6 +1584,20 @@ suite.skip('Disk File Service', function () { // {{SQL CARBON EDIT}} Disable occ
 		assert.strictEqual(error!.fileOperationResult, FileOperationResult.FILE_TOO_LARGE);
 	}
 
+	(isWindows ? test.skip /* windows: cannot create file symbolic link without elevated context */ : test)('readFile - dangling symbolic link - https://github.com/microsoft/vscode/issues/116049', async () => {
+		const link = URI.file(join(testDir, 'small.js-link'));
+		await promises.symlink(join(testDir, 'small.js'), link.fsPath);
+
+		let error: FileOperationError | undefined = undefined;
+		try {
+			await service.readFile(link);
+		} catch (err) {
+			error = err;
+		}
+
+		assert.ok(error);
+	});
+
 	test('createFile', async () => {
 		return assertCreateFile(contents => VSBuffer.fromString(contents));
 	});

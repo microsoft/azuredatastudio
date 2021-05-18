@@ -14,7 +14,6 @@ import { EditorOption } from 'vs/editor/common/config/editorOptions';
 import { IRange } from 'vs/editor/common/core/range';
 import { IEditorContribution } from 'vs/editor/common/editorCommon';
 import { IModelDeltaDecoration, OverviewRulerLane, TrackedRangeStickiness } from 'vs/editor/common/model';
-import { Location as ModeLocation } from 'vs/editor/common/modes';
 import { overviewRulerError, overviewRulerInfo, overviewRulerWarning } from 'vs/editor/common/view/editorColorRegistry';
 import { localize } from 'vs/nls';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -27,18 +26,20 @@ import { BREAKPOINT_EDITOR_CONTRIBUTION_ID, IBreakpointEditorContribution } from
 import { testingRunAllIcon, testingRunIcon, testingStatesToIcons } from 'vs/workbench/contrib/testing/browser/icons';
 import { TestingOutputPeekController } from 'vs/workbench/contrib/testing/browser/testingOutputPeek';
 import { testMessageSeverityColors } from 'vs/workbench/contrib/testing/browser/theme';
-import { IncrementalTestCollectionItem, ITestMessage } from 'vs/workbench/contrib/testing/common/testCollection';
-import { maxPriority } from 'vs/workbench/contrib/testing/common/testingStates';
+import { IncrementalTestCollectionItem, IRichLocation, ITestMessage } from 'vs/workbench/contrib/testing/common/testCollection';
 import { buildTestUri, TestUriType } from 'vs/workbench/contrib/testing/common/testingUri';
+import { ITestResultService, TestResultItem } from 'vs/workbench/contrib/testing/common/testResultService';
 import { IMainThreadTestCollection, ITestService } from 'vs/workbench/contrib/testing/common/testService';
 
 export class TestingDecorations extends Disposable implements IEditorContribution {
 	private collection = this._register(new MutableDisposable<IReference<IMainThreadTestCollection>>());
+	private currentUri?: URI;
 	private lastDecorations: ITestDecoration[] = [];
 
 	constructor(
 		private readonly editor: ICodeEditor,
 		@ITestService private readonly testService: ITestService,
+		@ITestResultService private readonly results: ITestResultService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 	) {
 		super();
@@ -52,9 +53,22 @@ export class TestingDecorations extends Disposable implements IEditorContributio
 				}
 			}
 		}));
+
+		this._register(this.results.onTestChanged(({ item: result }) => {
+			if (this.currentUri && result.item.location?.uri.toString() === this.currentUri.toString()) {
+				this.setDecorations(this.currentUri);
+			}
+		}));
+		this._register(this.results.onResultsChanged(() => {
+			if (this.currentUri) {
+				this.setDecorations(this.currentUri);
+			}
+		}));
 	}
 
 	private attachModel(uri?: URI) {
+		this.currentUri = uri;
+
 		if (!uri) {
 			this.collection.value = undefined;
 			this.clearDecorations();
@@ -74,19 +88,25 @@ export class TestingDecorations extends Disposable implements IEditorContributio
 		this.editor.changeDecorations(accessor => {
 			const newDecorations: ITestDecoration[] = [];
 			for (const test of ref.object.all) {
+				const stateLookup = this.results.getStateByExtId(test.item.extId);
 				if (hasValidLocation(uri, test.item)) {
 					newDecorations.push(this.instantiationService.createInstance(
-						RunTestDecoration, test, ref.object, test.item.location, this.editor));
+						RunTestDecoration, test, ref.object, test.item.location, this.editor, stateLookup?.[1]));
 				}
 
-				for (let i = 0; i < test.item.state.messages.length; i++) {
-					const m = test.item.state.messages[i];
+				if (!stateLookup) {
+					continue;
+				}
+
+				const [result, stateItem] = stateLookup;
+				for (let i = 0; i < stateItem.state.messages.length; i++) {
+					const m = stateItem.state.messages[i];
 					if (hasValidLocation(uri, m)) {
 						const uri = buildTestUri({
-							type: TestUriType.LiveMessage,
+							type: TestUriType.ResultActualOutput,
 							messageIndex: i,
-							providerId: test.providerId,
-							testId: test.id,
+							resultId: result.id,
+							testExtId: stateItem.item.extId,
 						});
 
 						newDecorations.push(this.instantiationService.createInstance(TestMessageDecoration, m, uri, m.location, this.editor));
@@ -128,7 +148,7 @@ interface ITestDecoration extends IDisposable {
 	click(e: IEditorMouseEvent): boolean;
 }
 
-const hasValidLocation = <T extends { location?: ModeLocation }>(editorUri: URI, t: T): t is T & { location: ModeLocation } =>
+const hasValidLocation = <T extends { location?: IRichLocation }>(editorUri: URI, t: T): t is T & { location: IRichLocation } =>
 	t.location?.uri.toString() === editorUri.toString();
 
 const firstLineRange = (originalRange: IRange) => ({
@@ -138,7 +158,7 @@ const firstLineRange = (originalRange: IRange) => ({
 	endColumn: 1,
 });
 
-class RunTestDecoration implements ITestDecoration {
+class RunTestDecoration extends Disposable implements ITestDecoration {
 	/**
 	 * @inheritdoc
 	 */
@@ -154,33 +174,31 @@ class RunTestDecoration implements ITestDecoration {
 	constructor(
 		private readonly test: IncrementalTestCollectionItem,
 		private readonly collection: IMainThreadTestCollection,
-		private readonly location: ModeLocation,
+		private readonly location: IRichLocation,
 		private readonly editor: ICodeEditor,
+		stateItem: TestResultItem | undefined,
 		@ITestService private readonly testService: ITestService,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@ICommandService private readonly commandService: ICommandService,
 	) {
+		super();
 		this.line = location.range.startLineNumber;
 
-		const queue = [test.children];
-		let state = this.test.item.state.runState;
-		while (queue.length) {
-			for (const child of queue.pop()!) {
-				const node = collection.getNodeById(child);
-				if (node) {
-					state = maxPriority(node.item.state.runState, state);
-				}
-			}
-		}
-
-		const icon = state !== TestRunState.Unset
-			? testingStatesToIcons.get(state)!
+		const icon = stateItem?.computedState !== undefined && stateItem.computedState !== TestRunState.Unset
+			? testingStatesToIcons.get(stateItem.computedState)!
 			: test.children.size > 0 ? testingRunAllIcon : testingRunIcon;
+
+		const hoverMessage = new MarkdownString('', true).appendText(localize('failedHoverMessage', '{0} has failed. ', test.item.label));
+		if (stateItem?.state.messages.length) {
+			const args = encodeURIComponent(JSON.stringify([test.item.extId]));
+			hoverMessage.appendMarkdown(`[${localize('failedPeekAction', 'Peek Error')}](command:vscode.peekTestError?${args})`);
+		}
 
 		this.editorDecoration = {
 			range: firstLineRange(this.location.range),
 			options: {
 				isWholeLine: true,
+				hoverMessage,
 				glyphMarginClassName: ThemeIcon.asClassName(icon) + ' testing-run-glyph',
 				stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 				glyphMarginHoverMessage: new MarkdownString().appendText(localize('testing.clickToRun', 'Click to run tests, right click for more options')),
@@ -268,7 +286,7 @@ class TestMessageDecoration implements ITestDecoration {
 	constructor(
 		{ message, severity }: ITestMessage,
 		private readonly messageUri: URI,
-		location: ModeLocation,
+		location: IRichLocation,
 		private readonly editor: ICodeEditor,
 		@ICodeEditorService private readonly editorService: ICodeEditorService,
 		@IThemeService themeService: IThemeService,

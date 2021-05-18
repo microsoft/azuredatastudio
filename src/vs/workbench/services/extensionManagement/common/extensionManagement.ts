@@ -35,6 +35,7 @@ export interface IWorkbenchExtensioManagementService extends IExtensionManagemen
 }
 
 export const enum EnablementState {
+	DisabledByTrustRequirement,
 	DisabledByExtensionKind,
 	DisabledByEnvironment,
 	DisabledGlobally,

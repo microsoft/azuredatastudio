@@ -178,7 +178,7 @@ abstract class AbstractCellRenderer {
 		configurationService: IConfigurationService,
 		private readonly keybindingService: IKeybindingService,
 		private readonly notificationService: INotificationService,
-		protected readonly contextKeyServiceProvider: (container?: HTMLElement) => IContextKeyService,
+		protected readonly contextKeyServiceProvider: (container: HTMLElement) => IContextKeyService,
 		language: string,
 		protected readonly dndController: CellDragAndDropController
 	) {
@@ -375,7 +375,7 @@ export class MarkdownCellRenderer extends AbstractCellRenderer implements IListR
 		notebookEditor: INotebookEditor,
 		dndController: CellDragAndDropController,
 		private renderedEditors: Map<ICellViewModel, ICodeEditor | undefined>,
-		contextKeyServiceProvider: (container?: HTMLElement) => IContextKeyService,
+		contextKeyServiceProvider: (container: HTMLElement) => IContextKeyService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IContextMenuService contextMenuService: IContextMenuService,
@@ -401,6 +401,7 @@ export class MarkdownCellRenderer extends AbstractCellRenderer implements IListR
 		deleteToolbar.setActions([this.instantiationService.createInstance(DeleteCellAction)]);
 
 		const focusIndicatorLeft = DOM.append(container, DOM.$('.cell-focus-indicator.cell-focus-indicator-side.cell-focus-indicator-left'));
+		const focusIndicatorRight = DOM.append(container, DOM.$('.cell-focus-indicator.cell-focus-indicator-side.cell-focus-indicator-right'));
 
 		const codeInnerContent = DOM.append(container, $('.cell.code'));
 		const editorPart = DOM.append(codeInnerContent, $('.cell-editor-part'));
@@ -414,6 +415,7 @@ export class MarkdownCellRenderer extends AbstractCellRenderer implements IListR
 
 		const bottomCellContainer = DOM.append(container, $('.cell-bottom-toolbar-container'));
 		const betweenCellToolbar = disposables.add(this.createBetweenCellToolbar(bottomCellContainer, disposables, contextKeyService));
+		const focusIndicatorBottom = DOM.append(container, $('.cell-focus-indicator.cell-focus-indicator-bottom'));
 
 		const statusBar = disposables.add(this.instantiationService.createInstance(CellEditorStatusBar, editorPart));
 		DOM.hide(statusBar.durationContainer);
@@ -432,6 +434,8 @@ export class MarkdownCellRenderer extends AbstractCellRenderer implements IListR
 			editorPart,
 			editorContainer,
 			focusIndicatorLeft,
+			focusIndicatorBottom,
+			focusIndicatorRight,
 			foldingIndicator,
 			disposables,
 			elementDisposables: new DisposableStore(),
@@ -524,6 +528,11 @@ export class MarkdownCellRenderer extends AbstractCellRenderer implements IListR
 
 		elementDisposables.add(new CellContextKeyManager(templateData.contextKeyService, this.notebookEditor, this.notebookEditor.viewModel.notebookDocument!, element));
 
+		this.updateForLayout(element, templateData);
+		elementDisposables.add(element.onDidChangeLayout(() => {
+			this.updateForLayout(element, templateData);
+		}));
+
 		// render toolbar first
 		this.setupCellToolbarActions(templateData, elementDisposables);
 
@@ -543,6 +552,11 @@ export class MarkdownCellRenderer extends AbstractCellRenderer implements IListR
 		elementDisposables.add(markdownCell);
 
 		templateData.statusBar.update(toolbarContext);
+	}
+
+	private updateForLayout(element: MarkdownCellViewModel, templateData: MarkdownCellRenderTemplate): void {
+		// templateData.focusIndicatorLeft.style.height = `${element.layoutInfo.indicatorHeight}px`;
+		templateData.focusIndicatorBottom.style.top = `${element.layoutInfo.totalHeight - BOTTOM_CELL_TOOLBAR_GAP - CELL_BOTTOM_MARGIN}px`;
 	}
 
 	disposeTemplate(templateData: MarkdownCellRenderTemplate): void {
@@ -678,7 +692,7 @@ export class CodeCellRenderer extends AbstractCellRenderer implements IListRende
 		protected notebookEditor: INotebookEditor,
 		private renderedEditors: Map<ICellViewModel, ICodeEditor | undefined>,
 		dndController: CellDragAndDropController,
-		contextKeyServiceProvider: (container?: HTMLElement) => IContextKeyService,
+		contextKeyServiceProvider: (container: HTMLElement) => IContextKeyService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IInstantiationService instantiationService: IInstantiationService,

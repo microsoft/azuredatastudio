@@ -9,7 +9,7 @@
 	"colors": {
 		"dropdown.background": "#414339",
 		"list.activeSelectionBackground": "#75715E",
-		"list.focusBackground": "#414339",
+		"quickInput.list.focusBackground": "#414339",
 		"dropdown.listBackground": "#1e1f1c",
 		"settings.textInputBackground": "#32342d",
 		"settings.numberInputBackground": "#32342d",

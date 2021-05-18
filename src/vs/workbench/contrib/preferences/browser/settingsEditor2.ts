@@ -62,7 +62,7 @@ export const enum SettingsFocusContext {
 	SettingControl
 }
 
-function createGroupIterator(group: SettingsTreeGroupElement): Iterable<ITreeElement<SettingsTreeGroupChild>> {
+export function createGroupIterator(group: SettingsTreeGroupElement): Iterable<ITreeElement<SettingsTreeGroupChild>> {
 	return Iterable.map(group.children, g => {
 		return {
 			element: g,
@@ -307,6 +307,10 @@ export class SettingsEditor2 extends EditorPane {
 		// {{SQL CARBON EDIT}} - return if options is undefined to avoid nullref @todo anthonydresser 8/17/19 investigate
 		if (!options) {
 			return;
+		}
+
+		if (options.focusSearch) {
+			this.focusSearch();
 		}
 
 		if (options.query) {

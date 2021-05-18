@@ -9,11 +9,11 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { Disposable, toDisposable } from 'vs/base/common/lifecycle';
 import { Schemas } from 'vs/base/common/network';
 import { URI, UriComponents } from 'vs/base/common/uri';
-import { createChannelSender } from 'vs/base/parts/ipc/common/ipc';
+import { ProxyChannel } from 'vs/base/parts/ipc/common/ipc';
 import { ipcRenderer } from 'vs/base/parts/sandbox/electron-sandbox/globals';
 import * as modes from 'vs/editor/common/modes';
 import { IFileService } from 'vs/platform/files/common/files';
-import { IMainProcessService } from 'vs/platform/ipc/electron-sandbox/mainProcessService';
+import { IMainProcessService } from 'vs/platform/ipc/electron-sandbox/services';
 import { ILogService } from 'vs/platform/log/common/log';
 import { INativeHostService } from 'vs/platform/native/electron-sandbox/native';
 import { IRemoteAuthorityResolverService } from 'vs/platform/remote/common/remoteAuthorityResolver';
@@ -71,7 +71,7 @@ export class WebviewResourceRequestManager extends Disposable {
 
 		this._logService.debug(`WebviewResourceRequestManager(${this.id}): init`);
 
-		this._webviewManagerService = createChannelSender<IWebviewManagerService>(mainProcessService.getChannel('webview'));
+		this._webviewManagerService = ProxyChannel.toService<IWebviewManagerService>(mainProcessService.getChannel('webview'));
 
 		this._localResourceRoots = initialContentOptions.localResourceRoots || [];
 		this._portMappings = initialContentOptions.portMapping || [];

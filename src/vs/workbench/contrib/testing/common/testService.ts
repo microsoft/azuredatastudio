@@ -9,13 +9,14 @@ import { IDisposable, IReference } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { ExtHostTestingResource } from 'vs/workbench/api/common/extHost.protocol';
-import { AbstractIncrementalTestCollection, IncrementalTestCollectionItem, InternalTestItem, RunTestForProviderRequest, RunTestsRequest, RunTestsResult, TestIdWithProvider, TestsDiff } from 'vs/workbench/contrib/testing/common/testCollection';
+import { AbstractIncrementalTestCollection, IncrementalTestCollectionItem, InternalTestItem, RunTestForProviderRequest, RunTestsRequest, TestIdWithProvider, TestsDiff } from 'vs/workbench/contrib/testing/common/testCollection';
+import { ITestResult } from 'vs/workbench/contrib/testing/common/testResultService';
 
 export const ITestService = createDecorator<ITestService>('testService');
 
 export interface MainTestController {
 	lookupTest(test: TestIdWithProvider): Promise<InternalTestItem | undefined>;
-	runTests(request: RunTestForProviderRequest, token: CancellationToken): Promise<RunTestsResult>;
+	runTests(request: RunTestForProviderRequest, token: CancellationToken): Promise<void>;
 }
 
 export type TestDiffListener = (diff: TestsDiff) => void;
@@ -73,6 +74,23 @@ export const waitForAllRoots = (collection: IMainThreadTestCollection, timeout =
 	}).finally(() => listener.dispose());
 };
 
+export const waitForAllTests = (collection: IMainThreadTestCollection, timeout = 3000) => {
+	if (collection.busyProviders === 0) {
+		return Promise.resolve();
+	}
+
+	let listener: IDisposable;
+	return new Promise<void>(resolve => {
+		listener = collection.onBusyProvidersChange(count => {
+			if (count === 0) {
+				resolve();
+			}
+		});
+
+		setTimeout(resolve, timeout);
+	}).finally(() => listener.dispose());
+};
+
 export interface ITestService {
 	readonly _serviceBrand: undefined;
 	readonly onShouldSubscribe: Event<{ resource: ExtHostTestingResource, uri: URI; }>;
@@ -84,7 +102,7 @@ export interface ITestService {
 
 	registerTestController(id: string, controller: MainTestController): void;
 	unregisterTestController(id: string): void;
-	runTests(req: RunTestsRequest, token?: CancellationToken): Promise<RunTestsResult>;
+	runTests(req: RunTestsRequest, token?: CancellationToken): Promise<ITestResult>;
 	cancelTestRun(req: RunTestsRequest): void;
 	publishDiff(resource: ExtHostTestingResource, uri: URI, diff: TestsDiff): void;
 	subscribeToDiffs(resource: ExtHostTestingResource, uri: URI, acceptDiff?: TestDiffListener): IReference<IMainThreadTestCollection>;

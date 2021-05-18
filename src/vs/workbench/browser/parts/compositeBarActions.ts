@@ -9,7 +9,7 @@ import * as dom from 'vs/base/browser/dom';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { dispose, toDisposable, MutableDisposable } from 'vs/base/common/lifecycle';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
+import { IThemeService, IColorTheme, ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { TextBadge, NumberBadge, IBadge, IconBadge, ProgressBadge } from 'vs/workbench/services/activity/common/activity';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
@@ -19,8 +19,8 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { Emitter, Event } from 'vs/base/common/event';
 import { CompositeDragAndDropObserver, ICompositeDragAndDrop, Before2D, toggleDropEffect } from 'vs/workbench/browser/dnd';
 import { Color } from 'vs/base/common/color';
-import { Codicon } from 'vs/base/common/codicons';
 import { IBaseActionViewItemOptions, BaseActionViewItem } from 'vs/base/browser/ui/actionbar/actionViewItems';
+import { Codicon } from 'vs/base/common/codicons';
 
 export interface ICompositeActivity {
 	badge: IBadge;
@@ -125,6 +125,7 @@ export interface ICompositeBarColors {
 export interface IActivityActionViewItemOptions extends IBaseActionViewItemOptions {
 	icon?: boolean;
 	colors: (theme: IColorTheme) => ICompositeBarColors;
+	hasPopup?: boolean;
 }
 
 export class ActivityActionViewItem extends BaseActionViewItem {
@@ -199,9 +200,12 @@ export class ActivityActionViewItem extends BaseActionViewItem {
 
 		this.container = container;
 
-		// Make the container tab-able for keyboard navigation
-		this.container.tabIndex = 0;
-		this.container.setAttribute('role', 'tab');
+		if (this.options.hasPopup) {
+			this.container.setAttribute('role', 'button');
+			this.container.setAttribute('aria-haspopup', 'true');
+		} else {
+			this.container.setAttribute('role', 'tab');
+		}
 
 		// Try hard to prevent keyboard only focus feedback when using mouse
 		this._register(dom.addDisposableListener(this.container, dom.EventType.MOUSE_DOWN, () => {
@@ -288,8 +292,10 @@ export class ActivityActionViewItem extends BaseActionViewItem {
 				dom.show(this.badge);
 			}
 
-			// Text
+			// Icon
 			else if (badge instanceof IconBadge) {
+				const clazzList = ThemeIcon.asClassNameArray(badge.icon);
+				this.badgeContent.classList.add(...clazzList);
 				dom.show(this.badge);
 			}
 
@@ -386,7 +392,7 @@ export class CompositeOverflowActivityActionViewItem extends ActivityActionViewI
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IThemeService themeService: IThemeService
 	) {
-		super(action, { icon: true, colors }, themeService);
+		super(action, { icon: true, colors, hasPopup: true }, themeService);
 	}
 
 	showMenu(): void {
@@ -643,10 +649,6 @@ export class CompositeActionViewItem extends ActivityActionViewItem {
 			getActions: () => actions,
 			getActionsContext: () => this.activity.id
 		});
-	}
-
-	focus(): void {
-		this.container.focus();
 	}
 
 	protected updateChecked(): void {

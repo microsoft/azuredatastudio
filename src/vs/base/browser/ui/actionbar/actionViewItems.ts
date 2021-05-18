@@ -14,7 +14,7 @@ import { EventType as TouchEventType, Gesture } from 'vs/base/browser/touch';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { DataTransfers } from 'vs/base/browser/dnd';
 import { isFirefox } from 'vs/base/browser/browser';
-import { $, addDisposableListener, append, EventHelper, EventLike, EventType, removeTabIndexAndUpdateFocus } from 'vs/base/browser/dom';
+import { $, addDisposableListener, append, EventHelper, EventLike, EventType } from 'vs/base/browser/dom';
 
 export interface IBaseActionViewItemOptions {
 	draggable?: boolean;
@@ -168,8 +168,11 @@ export class BaseActionViewItem extends Disposable implements IActionViewItem {
 		this.actionRunner.run(this._action, context);
 	}
 
+	// Only set the tabIndex on the element once it is about to get focused
+	// That way this element wont be a tab stop when it is not needed #106441
 	focus(): void {
 		if (this.element) {
+			this.element.tabIndex = 0;
 			this.element.focus();
 			this.element.classList.add('focused');
 		}
@@ -178,8 +181,19 @@ export class BaseActionViewItem extends Disposable implements IActionViewItem {
 	blur(): void {
 		if (this.element) {
 			this.element.blur();
+			this.element.tabIndex = -1;
 			this.element.classList.remove('focused');
 		}
+	}
+
+	setFocusable(focusable: boolean): void {
+		if (this.element) {
+			this.element.tabIndex = focusable ? 0 : -1;
+		}
+	}
+
+	get trapsArrowNavigation(): boolean {
+		return false;
 	}
 
 	protected updateEnabled(): void {
@@ -269,11 +283,24 @@ export class ActionViewItem extends BaseActionViewItem {
 		this.updateChecked();
 	}
 
+	// Only set the tabIndex on the element once it is about to get focused
+	// That way this element wont be a tab stop when it is not needed #106441
 	focus(): void {
-		super.focus();
-
 		if (this.label) {
+			this.label.tabIndex = 0;
 			this.label.focus();
+		}
+	}
+
+	blur(): void {
+		if (this.label) {
+			this.label.tabIndex = -1;
+		}
+	}
+
+	setFocusable(focusable: boolean): void {
+		if (this.label) {
+			this.label.tabIndex = focusable ? 0 : -1;
 		}
 	}
 
@@ -342,7 +369,6 @@ export class ActionViewItem extends BaseActionViewItem {
 			if (this.label) {
 				this.label.removeAttribute('aria-disabled');
 				this.label.classList.remove('disabled');
-				this.label.tabIndex = 0;
 			}
 
 			if (this.element) {
@@ -352,7 +378,6 @@ export class ActionViewItem extends BaseActionViewItem {
 			if (this.label) {
 				this.label.setAttribute('aria-disabled', 'true');
 				this.label.classList.add('disabled');
-				removeTabIndexAndUpdateFocus(this.label);
 			}
 
 			if (this.element) {

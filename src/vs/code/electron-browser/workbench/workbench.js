@@ -6,9 +6,9 @@
 /// <reference path="../../../../typings/require.d.ts" />
 
 //@ts-check
-'use strict';
-
 (function () {
+	'use strict';
+
 	const bootstrapWindow = bootstrapWindowLib();
 
 	// Add a perf entry right from the top
@@ -180,5 +180,4 @@
 	}
 
 	//#endregion
-
 }());

@@ -30,6 +30,8 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { IWillActivateEvent, IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { TestExtensionService } from 'vs/workbench/test/common/workbenchTestServices';
 import { OS } from 'vs/base/common/platform';
+import { IWorkspaceTrustService } from 'vs/platform/workspace/common/workspaceTrust';
+import { TestWorkspaceTrustService } from 'vs/workbench/services/workspaces/test/common/testWorkspaceTrustService';
 
 interface ExperimentSettings {
 	enabled?: boolean;
@@ -93,6 +95,7 @@ suite('Experiment Service', () => {
 		instantiationService.stub(IConfigurationService, testConfigurationService);
 		instantiationService.stub(ILifecycleService, new TestLifecycleService());
 		instantiationService.stub(IStorageService, <Partial<IStorageService>>{ get: (a: string, b: StorageScope, c?: string) => c, getBoolean: (a: string, b: StorageScope, c?: boolean) => c, store: () => { }, remove: () => { } });
+		instantiationService.stub(IWorkspaceTrustService, new TestWorkspaceTrustService());
 
 		setup(() => {
 			instantiationService.stub(IProductService, {});
