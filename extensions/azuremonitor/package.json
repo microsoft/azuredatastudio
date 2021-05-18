@@ -128,7 +128,16 @@
               "value": true
             }
           ],
-          "databaseProperties": [],
+          "databaseProperties": [
+            {
+              "displayName": "%azuremonitor.cloud.workspaceProperties.name%",
+              "value": "name"
+            },
+            {
+              "displayName": "%azuremonitor.cloud.workspaceProperties.id%",
+              "value": "id"
+            }
+          ],
           "serverProperties": [],
           "databasesListProperties": [
             {

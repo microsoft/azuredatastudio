@@ -1,6 +1,6 @@
 {
-	"azuremonitor.cloud.databaseProperties.name": "Database Name",
-	"azuremonitor.cloud.databaseProperties.size": "Size (MB)",
+	"azuremonitor.cloud.workspaceProperties.name": "Workspace Name",
+	"azuremonitor.cloud.workspaceProperties.id": "Workspace ID",
 	"azuremonitor.databasesListProperties.name": "Name",
 	"azuremonitor.databasesListProperties.size": "Size (MB)",
 	"azuremonitor.objectsListProperties.name": "Name",
