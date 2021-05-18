@@ -199,7 +199,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 					this._oldUserInstalledPipPackages = await this.getInstalledPipPackages(this._oldPythonExecutable, true);
 
 					if (await this.getInstalledPythonVersion(this._oldPythonExecutable) === '3.6.6') {
-						// Remove '0.0.1' from python executable path since the bundle version is removed from the path for ADS-Python 3.8.8+.
+						// Remove '0.0.1' from python executable path since the bundle version is removed from the path for ADS-Python 3.8.10+.
 						this._pythonExecutable = path.join(this._pythonInstallationPath, process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 					}
 					await fs.remove(this._oldPythonInstallationPath).catch(err => {
@@ -776,7 +776,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public static getPythonExePath(pythonInstallPath: string): string {
-		// The bundle version (0.0.1) is removed from the path for ADS-Python 3.8.8+.
+		// The bundle version (0.0.1) is removed from the path for ADS-Python 3.8.10+.
 		// Only ADS-Python 3.6.6 contains the bundle version in the path.
 		let oldPythonPath = path.join(
 			pythonInstallPath,
