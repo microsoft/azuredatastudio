@@ -250,16 +250,22 @@ export class RemoteBookDialog {
 	}
 
 	public async fillVersionDropdown(): Promise<void> {
-		let filtered_assets = (await this.controller.getAssets()).filter(asset => asset.book === this.bookDropdown.value);
-		this.versionDropdown.values = ['-'].concat(filtered_assets.map(asset => asset.version));
-		this.checkValues();
+		const assets = await this.controller.getAssets();
+		if (assets) {
+			let filtered_assets = assets.filter(asset => asset.book === this.bookDropdown.value);
+			this.versionDropdown.values = ['-'].concat(filtered_assets.map(asset => asset.version));
+			this.checkValues();
+		}
 	}
 
 	public async fillLanguageDropdown(): Promise<void> {
-		let filtered_assets = (await this.controller.getAssets()).filter(asset => asset.book === this.bookDropdown.value &&
-			asset.version === this.versionDropdown.value);
-		this.languageDropdown.values = ['-'].concat(filtered_assets.map(asset => asset.language));
-		this.checkValues();
+		const assets = await this.controller.getAssets();
+		if (assets) {
+			let filtered_assets = assets.filter(asset => asset.book === this.bookDropdown.value &&
+				asset.version === this.versionDropdown.value);
+			this.languageDropdown.values = ['-'].concat(filtered_assets.map(asset => asset.language));
+			this.checkValues();
+		}
 	}
 
 	public async getSelectedAsset(): Promise<IAsset> {
