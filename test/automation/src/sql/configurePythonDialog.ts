@@ -5,13 +5,12 @@
 
 import { Code } from '../code';
 import { Dialog } from './dialog';
-import { NotificationToast } from './notificationToast';
 
 const CONFIGURE_PYTHON_DIALOG_TITLE = 'Configure Python to run Python 3 kernel';
 
 export class ConfigurePythonDialog extends Dialog {
 
-	constructor(code: Code, private notificationToast: NotificationToast) {
+	constructor(code: Code) {
 		super(CONFIGURE_PYTHON_DIALOG_TITLE, code);
 	}
 
@@ -32,13 +31,9 @@ export class ConfigurePythonDialog extends Dialog {
 		const pythonInstallLocationDropdownValue = `${dialog} select[aria-label="Python Install Location"] option`;
 		await this.code.waitForElement(pythonInstallLocationDropdownValue);
 
-		await this.notificationToast.closeNotificationToasts();
-
 		const nextButton = '.modal-dialog .modal-content .modal-footer .right-footer .footer-button a[aria-label="Next"][aria-disabled="false"]';
 		await this.code.waitAndClick(dialog);
 		await this.code.waitAndClick(nextButton);
-
-		await this.notificationToast.closeNotificationToasts();
 
 		const installButton = '.modal-dialog .modal-content .modal-footer .right-footer .footer-button a[aria-label="Install"][aria-disabled="false"]';
 		await this.code.waitAndClick(dialog);
