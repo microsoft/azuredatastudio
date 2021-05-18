@@ -81,6 +81,12 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	// tslint:disable:no-unused-variable
 	private readonly homeTabTitle: string = nls.localize('home', "Home");
 	private readonly homeTabId: string = 'homeTab';
+
+	//list of tasks that are from extensions that will need to have their labels replaced due to localization issues.
+	private readonly extensionTasks = {
+		'mssqlCluster.task.newNotebook': nls.localize('notebook.command.new', "New Notebook")
+	};
+
 	private tabToolbarActionsConfig = new Map<string, any[]>();
 	private tabContents = new Map<string, string>();
 
@@ -255,7 +261,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		let toolbarActions = [];
 		_tasks.forEach(a => {
 			let iconClassName = TaskRegistry.getOrCreateTaskIconClassName(a);
-			toolbarActions.push(new ToolbarAction(a.id, a.title.toString(), iconClassName, this.runAction, this, this.logService));
+			toolbarActions.push(new ToolbarAction(a.id, this.extensionTasks[a.id] ? this.extensionTasks[a.id] : a.title.toString(), iconClassName, this.runAction, this, this.logService));
 		});
 
 		let content: ITaskbarContent[] = [];
