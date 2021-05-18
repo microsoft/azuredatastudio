@@ -85,9 +85,9 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	}
 
 	/**
-	 * Gets the supported project types
+	 * Gets the project actions to be placed on the dashboard toolbar
 	 */
-	get projectActions(): (dataworkspace.IProjectAction | dataworkspace.IProjectActionGroup)[] {
+	get projectToolbarActions(): (dataworkspace.IProjectAction | dataworkspace.IProjectActionGroup)[] {
 		const addItemAction: dataworkspace.IProjectAction = {
 			id: constants.addItemAction,
 			icon: IconPathHelper.add,

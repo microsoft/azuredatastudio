@@ -32,7 +32,7 @@ export function createProjectProvider(projectTypes: IProjectType[], projectActio
 		createProject: (name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri> => {
 			return Promise.resolve(location);
 		},
-		projectActions: projectActions,
+		projectToolbarActions: projectActions,
 		getDashboardComponents: (projectFile: string): IDashboardTable[] => {
 			return dashboardComponents;
 		}
