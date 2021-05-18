@@ -23,6 +23,7 @@ import { WIDGETS_CONTAINER } from 'sql/workbench/contrib/dashboard/browser/conta
 import { GRID_CONTAINER } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardGridContainer.contribution';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import * as Constants from 'sql/platform/connection/common/constants';
+import { language } from 'vs/base/common/platform';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
@@ -261,7 +262,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		let toolbarActions = [];
 		_tasks.forEach(a => {
 			let iconClassName = TaskRegistry.getOrCreateTaskIconClassName(a);
-			toolbarActions.push(new ToolbarAction(a.id, this.extensionTasks[a.id] ? this.extensionTasks[a.id] : a.title.toString(), iconClassName, this.runAction, this, this.logService));
+			toolbarActions.push(new ToolbarAction(a.id, (this.extensionTasks[a.id] && (language !== 'en')) ? this.extensionTasks[a.id] : a.title.toString(), iconClassName, this.runAction, this, this.logService));
 		});
 
 		let content: ITaskbarContent[] = [];
