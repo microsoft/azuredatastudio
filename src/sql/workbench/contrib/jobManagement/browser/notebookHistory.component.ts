@@ -402,7 +402,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		if (history.materializedNotebookName && history.materializedNotebookName !== '') {
 			tooltipString = history.materializedNotebookName;
 		}
-		let dateOptions = {
+		let dateOptions: Intl.DateTimeFormatOptions = {
 			weekday: 'long',
 			year: 'numeric',
 			month: 'long',
