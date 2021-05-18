@@ -115,6 +115,47 @@
           "isArray": false
         }
       ]
+    },
+    "dashboard": {
+      "provider": "LogAnalytics",
+      "flavors": [
+        {
+          "flavor": "cloud",
+          "conditions": [
+            {
+              "field": "isCloud",
+              "operator": "==",
+              "value": true
+            }
+          ],
+          "databaseProperties": [],
+          "serverProperties": [],
+          "databasesListProperties": [
+            {
+              "displayName": "%azuremonitor.databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%azuremonitor.databasesListProperties.size%",
+              "value": "sizeInMB",
+              "widthWeight": 20
+            }
+          ],
+          "objectsListProperties": [
+            {
+              "displayName": "%azuremonitor.objectsListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%azuremonitor.objectsListProperties.metadataTypeName%",
+              "value": "metadataTypeName",
+              "widthWeight": 20
+            }
+          ]
+        }
+      ]
     }
   },
   "scripts": {

@@ -1,4 +1,10 @@
 {
+	"azuremonitor.cloud.databaseProperties.name": "Database Name",
+	"azuremonitor.cloud.databaseProperties.size": "Size (MB)",
+	"azuremonitor.databasesListProperties.name": "Name",
+	"azuremonitor.databasesListProperties.size": "Size (MB)",
+	"azuremonitor.objectsListProperties.name": "Name",
+	"azuremonitor.objectsListProperties.metadataTypeName": "Type",
 	"azuremonitor.connectionProperties.connectionName.displayName": "Name (optional)",
 	"azuremonitor.connectionProperties.connectionName.description": "Custom name of the connection",
 	"azuremonitor.connectionProperties.userName.displayName": "User name",
