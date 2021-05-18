@@ -99,7 +99,7 @@ suite('OpenerService', function () {
 	});
 
 	test('delegate to commandsService, command:someid', async function () {
-		const openerService = new OpenerService(editorService, commandService, new NullLogService());
+		const openerService = new OpenerService(editorService, commandService);
 
 		const id = `aCommand${Math.random()}`;
 		CommandsRegistry.registerCommand(id, function () { });

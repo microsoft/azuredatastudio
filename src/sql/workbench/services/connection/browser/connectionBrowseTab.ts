@@ -42,7 +42,7 @@ import { createAndFillInContextMenuActions, MenuEntryActionViewItem } from 'vs/p
 import { IMenuService, MenuId, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { FileKind } from 'vs/platform/files/common/files';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -602,9 +602,9 @@ class ConnectionBrowseTreeMenuProvider {
 			return [];
 		}
 
-		const contextKeyService = this.contextKeyService.createScoped();
-		const contextKey = new ContextKey(contextKeyService);
-		contextKey.set(context);
+		const contextKeyService = context instanceof ConnectionDialogTreeProviderElement ?
+			this.contextKeyService.createOverlay([['treeId', context.id]]) :
+			this.contextKeyService.createOverlay([['contextValue', context.contextValue]]);
 		const menu = this.menuService.createMenu(MenuId.ConnectionDialogBrowseTreeContext, contextKeyService);
 		const primary: IAction[] = [];
 		const secondary: IAction[] = [];
@@ -723,39 +723,5 @@ class TreeItemRenderer extends Disposable implements ITreeRenderer<ITreeItemFrom
 		templateData.resourceLabel.dispose();
 		templateData.actionBar.dispose();
 		templateData.elementDisposable.dispose();
-	}
-}
-
-type ContextValueType = ITreeItem | ConnectionDialogTreeProviderElement;
-
-class ContextKey extends Disposable implements IContextKey<ContextValueType> {
-	static readonly ContextValue = new RawContextKey<string | undefined>('contextValue', undefined);
-	static readonly TreeId = new RawContextKey<string | undefined>('treeId', undefined);
-	private _contextValueKey: IContextKey<string | undefined>;
-	private _treeIdKey: IContextKey<string | undefined>;
-	private _item: ContextValueType;
-
-	constructor(
-		@IContextKeyService contextKeyService: IContextKeyService
-	) {
-		super();
-		this._contextValueKey = ContextKey.ContextValue.bindTo(contextKeyService);
-		this._treeIdKey = ContextKey.TreeId.bindTo(contextKeyService);
-	}
-	set(value: ContextValueType): void {
-		this.reset();
-		this._item = value;
-		if (value instanceof ConnectionDialogTreeProviderElement) {
-			this._treeIdKey.set(value.id);
-		} else {
-			this._contextValueKey.set(value.contextValue);
-		}
-	}
-	reset(): void {
-		this._contextValueKey.reset();
-		this._treeIdKey.reset();
-	}
-	get(): ContextValueType {
-		return this._item;
 	}
 }

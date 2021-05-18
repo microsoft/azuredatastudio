@@ -135,7 +135,7 @@ export class ServerTreeActionProvider {
 	}
 
 	private getContextKeyService(context: ObjectExplorerContext): IContextKeyService {
-		let scopedContextService = this._contextKeyService.createScoped();
+		let scopedContextService = this._contextKeyService.createScoped(context.tree.getHTMLElement());
 		let connectionContextKey = new ConnectionContextKey(scopedContextService, this._queryManagementService);
 		let connectionProfile = context && context.profile;
 		connectionContextKey.set(connectionProfile);

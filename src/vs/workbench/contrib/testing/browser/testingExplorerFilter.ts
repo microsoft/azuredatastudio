@@ -214,6 +214,7 @@ class FiltersDropdownMenuActionViewItem extends DropdownMenuActionViewItem {
 				checked: this.filters.stateFilter.value === v,
 				class: undefined,
 				enabled: true,
+				expanded: undefined, // {{SQL CARBON EDIT}} We added expanded
 				id: v,
 				label,
 				run: async () => this.filters.stateFilter.value = v,
@@ -225,6 +226,7 @@ class FiltersDropdownMenuActionViewItem extends DropdownMenuActionViewItem {
 				checked: this.filters.currentDocumentOnly.value,
 				class: undefined,
 				enabled: true,
+				expanded: undefined, // {{SQL CARBON EDIT}} We added expanded
 				id: 'currentDocument',
 				label: localize('testing.filters.currentFile', "Show in Active File Only"),
 				run: async () => this.filters.currentDocumentOnly.value = !this.filters.currentDocumentOnly.value,

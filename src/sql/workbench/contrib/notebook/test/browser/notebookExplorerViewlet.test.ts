@@ -7,21 +7,23 @@ import * as assert from 'assert';
 import * as Platform from 'vs/platform/registry/common/platform';
 import { ViewletDescriptor, Extensions, ViewletRegistry, Viewlet } from 'vs/workbench/browser/viewlet';
 import * as Types from 'vs/base/common/types';
-import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
 import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry } from 'vs/workbench/common/views';
 import { NotebookExplorerViewPaneContainer, NOTEBOOK_VIEW_CONTAINER } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 
 suite('Notebook Explorer Views', () => {
 
 	class NotebookExplorerTestViewlet extends Viewlet {
-
 		constructor() {
-			const instantiationService = workbenchInstantiationService();
-			super('notebookExplorer', instantiationService.createInstance(NotebookExplorerViewPaneContainer), undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+			super('notebookExplorer', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
 		}
 
 		public layout(dimension: any): void {
+			throw new Error('Method not implemented.');
+		}
+
+		protected createViewPaneContainer(parent: HTMLElement): ViewPaneContainer {
 			throw new Error('Method not implemented.');
 		}
 

@@ -849,7 +849,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 					return undefined; // {{SQL CARBON EDIT}} strict-null-check
 				}
 
-				this._activeKernelResolvePromise = (this.activeKernel as INotebookKernelInfo2).resolve(this.viewModel!.uri, this.getId(), tokenSource.token);
+				this._activeKernelResolvePromise = this.activeKernel.resolve(this.viewModel!.uri, this.getId(), tokenSource.token);
 				await this._activeKernelResolvePromise;
 
 				if (tokenSource.token.isCancellationRequested) {

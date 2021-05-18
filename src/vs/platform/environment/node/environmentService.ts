@@ -208,7 +208,7 @@ export class NativeEnvironmentService implements INativeEnvironmentService {
 		//                     break functionality. ADS code should always use ADS_LOGS when referring to the log path
 		if (!process.env['ADS_LOGS']) {
 			const key = toLocalISOString(new Date()).replace(/-|:|\.\d+Z$/g, '');
-			process.env['ADS_LOGS'] = path.join(this.userDataPath, 'logs', key);
+			process.env['ADS_LOGS'] = join(this.userDataPath, 'logs', key);
 		}
 
 		this.logsPath = process.env['ADS_LOGS']!;

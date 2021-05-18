@@ -116,7 +116,7 @@ class Menu implements IMenu {
 			}
 			// keep toggled keys for event if applicable
 			if (item.command.toggled) {
-				const toggledExpression: ContextKeyExpression = (item.command.toggled as { condition: ContextKeyExpression }).condition || item.command.toggled;
+				const toggledExpression: ContextKeyExpression = (item.command.toggled as { condition: ContextKeyExpression }).condition || item.command.toggled as ContextKeyExpression;
 				Menu._fillInKbExprKeys(toggledExpression, this._contextKeys);
 			}
 

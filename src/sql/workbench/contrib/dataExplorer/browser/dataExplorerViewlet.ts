@@ -25,7 +25,6 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ViewPane } from 'vs/workbench/browser/parts/views/viewPane';
 import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { Viewlet } from 'vs/workbench/browser/viewlet';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 
 export const VIEWLET_ID = 'workbench.view.connections';
@@ -51,22 +50,6 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 			canToggleVisibility: true,
 			order: 0
 		};
-	}
-}
-
-export class DataExplorerViewlet extends Viewlet {
-	constructor(
-		@ITelemetryService telemetryService: ITelemetryService,
-		@IStorageService protected storageService: IStorageService,
-		@IInstantiationService protected instantiationService: IInstantiationService,
-		@IThemeService themeService: IThemeService,
-		@IContextMenuService protected contextMenuService: IContextMenuService,
-		@IExtensionService protected extensionService: IExtensionService,
-		@IWorkspaceContextService protected contextService: IWorkspaceContextService,
-		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
-		@IConfigurationService protected configurationService: IConfigurationService
-	) {
-		super(VIEWLET_ID, instantiationService.createInstance(DataExplorerViewPaneContainer), telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService, layoutService, configurationService);
 	}
 }
 
