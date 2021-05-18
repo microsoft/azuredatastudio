@@ -82,12 +82,12 @@ export class Workbench {
 		this.terminal = new Terminal(code, this.quickaccess);
 		// {{SQL CARBON EDIT}}
 		this.notificationToast = new NotificationToast(code);
-		this.connectionDialog = new ConnectionDialog(code, this.notificationToast);
+		this.connectionDialog = new ConnectionDialog(code);
 		this.profiler = new Profiler(code, this.quickaccess);
 		this.queryEditors = new QueryEditors(code, this.editors);
 		this.queryEditor = new QueryEditor(code);
 		this.sqlNotebook = new SqlNotebook(code, this.quickaccess, this.quickinput, this.editors);
-		this.configurePythonDialog = new ConfigurePythonDialog(code, this.notificationToast);
+		this.configurePythonDialog = new ConfigurePythonDialog(code);
 		// {{END}}
 		this.notebook = new Notebook(this.quickaccess, code);
 	}
