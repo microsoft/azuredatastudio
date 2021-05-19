@@ -47,11 +47,12 @@ import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewIt
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { NAV_SECTION } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { DASHBOARD_BORDER, EDITOR_PANE_BACKGROUND, TOOLBAR_OVERFLOW_SHADOW } from 'vs/workbench/common/theme';
+import { EDITOR_PANE_BACKGROUND } from 'vs/workbench/common/theme';
 import { IColorTheme, registerThemingParticipant, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { focusBorder } from 'vs/platform/theme/common/colorRegistry';
 import { LabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
+import { DASHBOARD_BORDER, TOOLBAR_OVERFLOW_SHADOW } from 'sql/workbench/common/theme';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 const homeTabGroupId = 'home';

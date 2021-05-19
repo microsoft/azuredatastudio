@@ -17,10 +17,10 @@ import { DashboardWidgetWrapper } from 'sql/workbench/contrib/dashboard/browser/
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
+import { DASHBOARD_BORDER } from 'sql/workbench/common/theme';
 
 @Component({
 	selector: 'dashboard-home-container',
