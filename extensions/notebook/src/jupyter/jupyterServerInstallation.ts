@@ -467,9 +467,12 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 						this._installInProgress = false;
 						if (this._upgradeInProcess) {
 							// Pass in false for restartJupyterServer parameter since the jupyter server has already been shutdown
-							// when removing the old Python version.
-							await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions', false);
-
+							// when removing the old Python version on Windows.
+							if (process.platform === constants.winPlatform) {
+								await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions', false);
+							} else {
+								await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions');
+							}
 							if (this._oldUserInstalledPipPackages.length !== 0) {
 								await this.createInstallPipPackagesHelpNotebook(this._oldUserInstalledPipPackages);
 							}
