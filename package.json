@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.29.0",
-  "distro": "60affbaa87aad493d53be9930fcff46d377320ae",
+  "distro": "99c64148d3393e4f67e531240b870f4cee111e06",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -76,6 +76,7 @@
     "chart.js": "^2.9.4",
     "chokidar": "3.5.1",
     "graceful-fs": "4.2.3",
+    "gridstack": "^3.1.3",
     "html-query-plan": "git://github.com/kburtram/html-query-plan.git#2.6",
     "http-proxy-agent": "^2.1.0",
     "https-proxy-agent": "^2.2.3",
@@ -225,7 +226,7 @@
     "typemoq": "^0.3.2",
     "typescript": "4.2.0-dev.20201207",
     "typescript-formatter": "7.1.0",
-    "underscore": "^1.8.2",
+    "underscore": "^1.12.1",
     "vinyl": "^2.0.0",
     "vinyl-fs": "^3.0.0",
     "vscode-debugprotocol": "1.44.0",

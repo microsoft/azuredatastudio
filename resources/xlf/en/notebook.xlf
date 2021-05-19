@@ -104,19 +104,19 @@
       <source xml:lang="en">Jupyter Books</source>
     </trans-unit>
     <trans-unit id="title.saveJupyterBook">
-      <source xml:lang="en">Save Book</source>
+      <source xml:lang="en">Save Jupyter Book</source>
     </trans-unit>
     <trans-unit id="title.trustBook">
-      <source xml:lang="en">Trust Book</source>
+      <source xml:lang="en">Trust Jupyter Book</source>
     </trans-unit>
     <trans-unit id="title.searchJupyterBook">
-      <source xml:lang="en">Search Book</source>
+      <source xml:lang="en">Search Jupyter Book</source>
     </trans-unit>
     <trans-unit id="title.SavedBooks">
       <source xml:lang="en">Notebooks</source>
     </trans-unit>
     <trans-unit id="title.ProvidedBooks">
-      <source xml:lang="en">Provided Books</source>
+      <source xml:lang="en">Provided Jupyter Books</source>
     </trans-unit>
     <trans-unit id="title.PinnedBooks">
       <source xml:lang="en">Pinned notebooks</source>
@@ -130,14 +130,23 @@
     <trans-unit id="title.closeJupyterBook">
       <source xml:lang="en">Close Jupyter Book</source>
     </trans-unit>
-    <trans-unit id="title.closeJupyterNotebook">
-      <source xml:lang="en">Close Jupyter Notebook</source>
+    <trans-unit id="title.closeNotebook">
+      <source xml:lang="en">Close Notebook</source>
+    </trans-unit>
+    <trans-unit id="title.removeNotebook">
+      <source xml:lang="en">Remove Notebook</source>
+    </trans-unit>
+    <trans-unit id="title.addNotebook">
+      <source xml:lang="en">Add Notebook</source>
+    </trans-unit>
+    <trans-unit id="title.addMarkdown">
+      <source xml:lang="en">Add Markdown File</source>
     </trans-unit>
     <trans-unit id="title.revealInBooksViewlet">
       <source xml:lang="en">Reveal in Books</source>
     </trans-unit>
     <trans-unit id="title.createJupyterBook">
-      <source xml:lang="en">Create Book (Preview)</source>
+      <source xml:lang="en">Create Jupyter Book</source>
     </trans-unit>
     <trans-unit id="title.openNotebookFolder">
       <source xml:lang="en">Open Notebooks in Folder</source>
@@ -194,7 +203,7 @@
       <source xml:lang="en">Select Folder</source>
     </trans-unit>
     <trans-unit id="labelBookFolder">
-      <source xml:lang="en">Select Book</source>
+      <source xml:lang="en">Select Jupyter Book</source>
     </trans-unit>
     <trans-unit id="confirmReplace">
       <source xml:lang="en">Folder already exists. Are you sure you want to delete and replace this folder?</source>
@@ -209,31 +218,31 @@
       <source xml:lang="en">Open External Link</source>
     </trans-unit>
     <trans-unit id="msgBookTrusted">
-      <source xml:lang="en">Book is now trusted in the workspace.</source>
+      <source xml:lang="en">Jupyter Book is now trusted in the workspace.</source>
     </trans-unit>
     <trans-unit id="msgBookAlreadyTrusted">
-      <source xml:lang="en">Book is already trusted in this workspace.</source>
+      <source xml:lang="en">Jupyter Book is already trusted in this workspace.</source>
     </trans-unit>
     <trans-unit id="msgBookUntrusted">
-      <source xml:lang="en">Book is no longer trusted in this workspace</source>
+      <source xml:lang="en">Jupyter Book is no longer trusted in this workspace</source>
     </trans-unit>
     <trans-unit id="msgBookAlreadyUntrusted">
-      <source xml:lang="en">Book is already untrusted in this workspace.</source>
+      <source xml:lang="en">Jupyter Book is already untrusted in this workspace.</source>
     </trans-unit>
     <trans-unit id="msgBookPinned">
-      <source xml:lang="en">Book {0} is now pinned in the workspace.</source>
+      <source xml:lang="en">Jupyter Book {0} is now pinned in the workspace.</source>
     </trans-unit>
     <trans-unit id="msgBookUnpinned">
-      <source xml:lang="en">Book {0} is no longer pinned in this workspace</source>
+      <source xml:lang="en">Jupyter Book {0} is no longer pinned in this workspace</source>
     </trans-unit>
     <trans-unit id="bookInitializeFailed">
-      <source xml:lang="en">Failed to find a Table of Contents file in the specified book.</source>
+      <source xml:lang="en">Failed to find a Table of Contents file in the specified Jupyter Book.</source>
     </trans-unit>
     <trans-unit id="noBooksSelected">
-      <source xml:lang="en">No books are currently selected in the viewlet.</source>
+      <source xml:lang="en">No Jupyter Books are currently selected in the viewlet.</source>
     </trans-unit>
     <trans-unit id="labelBookSection">
-      <source xml:lang="en">Select Book Section</source>
+      <source xml:lang="en">Select Jupyter Book Section</source>
     </trans-unit>
     <trans-unit id="labelAddToLevel">
       <source xml:lang="en">Add to this level</source>
@@ -251,10 +260,10 @@
       <source xml:lang="en">Configuration file missing</source>
     </trans-unit>
     <trans-unit id="openBookError">
-      <source xml:lang="en">Open book {0} failed: {1}</source>
+      <source xml:lang="en">Open Jupyter Book {0} failed: {1}</source>
     </trans-unit>
     <trans-unit id="readBookError">
-      <source xml:lang="en">Failed to read book {0}: {1}</source>
+      <source xml:lang="en">Failed to read Jupyter Book {0}: {1}</source>
     </trans-unit>
     <trans-unit id="openNotebookError">
       <source xml:lang="en">Open notebook {0} failed: {1}</source>
@@ -269,17 +278,20 @@
       <source xml:lang="en">Open link {0} failed: {1}</source>
     </trans-unit>
     <trans-unit id="closeBookError">
-      <source xml:lang="en">Close book {0} failed: {1}</source>
+      <source xml:lang="en">Close Jupyter Book {0} failed: {1}</source>
     </trans-unit>
     <trans-unit id="duplicateFileError">
       <source xml:lang="en">File {0} already exists in the destination folder {1} 
  The file has been renamed to {2} to prevent data loss.</source>
     </trans-unit>
     <trans-unit id="editBookError">
-      <source xml:lang="en">Error while editing book {0}: {1}</source>
+      <source xml:lang="en">Error while editing Jupyter Book {0}: {1}</source>
     </trans-unit>
     <trans-unit id="selectBookError">
-      <source xml:lang="en">Error while selecting a book or a section to edit: {0}</source>
+      <source xml:lang="en">Error while selecting a Jupyter Book or a section to edit: {0}</source>
+    </trans-unit>
+    <trans-unit id="sectionNotFound">
+      <source xml:lang="en">Failed to find section {0} in {1}.</source>
     </trans-unit>
     <trans-unit id="url">
       <source xml:lang="en">URL</source>
@@ -291,7 +303,7 @@
       <source xml:lang="en">Location</source>
     </trans-unit>
     <trans-unit id="addRemoteBook">
-      <source xml:lang="en">Add Remote Book</source>
+      <source xml:lang="en">Add Remote Jupyter Book</source>
     </trans-unit>
     <trans-unit id="onGitHub">
       <source xml:lang="en">GitHub</source>
@@ -303,7 +315,7 @@
       <source xml:lang="en">Releases</source>
     </trans-unit>
     <trans-unit id="book">
-      <source xml:lang="en">Book</source>
+      <source xml:lang="en">Jupyter Book</source>
     </trans-unit>
     <trans-unit id="version">
       <source xml:lang="en">Version</source>
@@ -312,7 +324,7 @@
       <source xml:lang="en">Language</source>
     </trans-unit>
     <trans-unit id="booksNotFound">
-      <source xml:lang="en">No books are currently available on the provided link</source>
+      <source xml:lang="en">No Jupyter Books are currently available on the provided link</source>
     </trans-unit>
     <trans-unit id="urlGithubError">
       <source xml:lang="en">The url provided is not a Github release url</source>
@@ -330,34 +342,34 @@
       <source xml:lang="en">-</source>
     </trans-unit>
     <trans-unit id="msgRemoteBookDownloadProgress">
-      <source xml:lang="en">Remote Book download is in progress</source>
+      <source xml:lang="en">Remote Jupyter Book download is in progress</source>
     </trans-unit>
     <trans-unit id="msgRemoteBookDownloadComplete">
-      <source xml:lang="en">Remote Book download is complete</source>
+      <source xml:lang="en">Remote Jupyter Book download is complete</source>
     </trans-unit>
     <trans-unit id="msgRemoteBookDownloadError">
-      <source xml:lang="en">Error while downloading remote Book</source>
+      <source xml:lang="en">Error while downloading remote Jupyter Book</source>
     </trans-unit>
     <trans-unit id="msgRemoteBookUnpackingError">
-      <source xml:lang="en">Error while decompressing remote Book</source>
+      <source xml:lang="en">Error while decompressing remote Jupyter Book</source>
     </trans-unit>
     <trans-unit id="msgRemoteBookDirectoryError">
-      <source xml:lang="en">Error while creating remote Book directory</source>
+      <source xml:lang="en">Error while creating remote Jupyter Book directory</source>
     </trans-unit>
     <trans-unit id="msgTaskName">
-      <source xml:lang="en">Downloading Remote Book</source>
+      <source xml:lang="en">Downloading Remote Jupyter Book</source>
     </trans-unit>
     <trans-unit id="msgResourceNotFound">
       <source xml:lang="en">Resource not Found</source>
     </trans-unit>
     <trans-unit id="msgBookNotFound">
-      <source xml:lang="en">Books not Found</source>
+      <source xml:lang="en">Jupyter Books not Found</source>
     </trans-unit>
     <trans-unit id="msgReleaseNotFound">
       <source xml:lang="en">Releases not Found</source>
     </trans-unit>
     <trans-unit id="msgUndefinedAssetError">
-      <source xml:lang="en">The selected book is not valid</source>
+      <source xml:lang="en">The selected Jupyter Book is not valid</source>
     </trans-unit>
     <trans-unit id="httpRequestError">
       <source xml:lang="en">Http Request failed with error: {0} {1}</source>
@@ -365,11 +377,14 @@
     <trans-unit id="msgDownloadLocation">
       <source xml:lang="en">Downloading to {0}</source>
     </trans-unit>
-    <trans-unit id="newGroup">
-      <source xml:lang="en">New Group</source>
+    <trans-unit id="newBook">
+      <source xml:lang="en">New Jupyter Book (Preview)</source>
     </trans-unit>
-    <trans-unit id="groupDescription">
-      <source xml:lang="en">Groups are used to organize Notebooks.</source>
+    <trans-unit id="bookDescription">
+      <source xml:lang="en">Jupyter Books are used to organize Notebooks.</source>
+    </trans-unit>
+    <trans-unit id="learnMore">
+      <source xml:lang="en">Learn more.</source>
     </trans-unit>
     <trans-unit id="locationBrowser">
       <source xml:lang="en">Browse locations...</source>
@@ -396,7 +411,34 @@
       <source xml:lang="en">Content folder path does not exist</source>
     </trans-unit>
     <trans-unit id="msgSaveFolderError">
-      <source xml:lang="en">Save location path does not exist</source>
+      <source xml:lang="en">Save location path does not exist.</source>
+    </trans-unit>
+    <trans-unit id="msgCreateBookWarningMsg">
+      <source xml:lang="en">Error while trying to access: {0}</source>
+    </trans-unit>
+    <trans-unit id="newNotebook">
+      <source xml:lang="en">New Notebook (Preview)</source>
+    </trans-unit>
+    <trans-unit id="newMarkdown">
+      <source xml:lang="en">New Markdown (Preview)</source>
+    </trans-unit>
+    <trans-unit id="fileExtension">
+      <source xml:lang="en">File Extension</source>
+    </trans-unit>
+    <trans-unit id="confirmOverwrite">
+      <source xml:lang="en">File already exists. Are you sure you want to overwrite this file?</source>
+    </trans-unit>
+    <trans-unit id="title">
+      <source xml:lang="en">Title</source>
+    </trans-unit>
+    <trans-unit id="fileName">
+      <source xml:lang="en">File Name</source>
+    </trans-unit>
+    <trans-unit id="msgInvalidSaveFolder">
+      <source xml:lang="en">Save location path is not valid.</source>
+    </trans-unit>
+    <trans-unit id="msgDuplicadFileName">
+      <source xml:lang="en">File {0} already exists in the destination folder</source>
     </trans-unit>
   </body></file>
   <file original="extensions/notebook/dist/jupyter/jupyterServerInstallation" source-language="en" datatype="plaintext"><body>

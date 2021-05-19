@@ -14,6 +14,7 @@ import { IQuestion, QuestionTypes } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
 import { getErrorMessage, isEditorTitleFree } from '../common/utils';
 import * as constants from '../common/constants';
+import { readJson } from 'fs-extra';
 
 
 export class NotebookUriHandler implements vscode.UriHandler {
@@ -78,11 +79,12 @@ export class NotebookUriHandler implements vscode.UriHandler {
 			url = decodeURI(url);
 			let uri = vscode.Uri.parse(url);
 			switch (uri.scheme) {
+				case 'file':
 				case 'http':
 				case 'https':
 					break;
 				default:
-					vscode.window.showErrorMessage(localize('unsupportedScheme', "Cannot open link {0} as only HTTP and HTTPS links are supported", url));
+					vscode.window.showErrorMessage(localize('unsupportedScheme', "Cannot open link {0} as only HTTP, HTTPS, and File links are supported", url));
 					return;
 			}
 
@@ -94,8 +96,12 @@ export class NotebookUriHandler implements vscode.UriHandler {
 			if (!doOpen) {
 				return;
 			}
-
-			let contents = await this.download(url);
+			let contents: string;
+			if (uri.scheme === 'file') {
+				contents = await readJson(uri.fsPath);
+			} else {
+				contents = await this.download(url);
+			}
 			let untitledUriPath = this.getUntitledUriPath(path.basename(uri.fsPath));
 			let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: untitledUriPath });
 			if (path.extname(uri.fsPath) === '.ipynb') {

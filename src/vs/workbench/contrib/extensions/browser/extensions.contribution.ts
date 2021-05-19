@@ -14,7 +14,7 @@ import { IExtensionIgnoredRecommendationsService, IExtensionRecommendationsServi
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IOutputChannelRegistry, Extensions as OutputExtensions } from 'vs/workbench/services/output/common/output';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { VIEWLET_ID, IExtensionsWorkbenchService, IExtensionsViewPaneContainer, TOGGLE_IGNORE_EXTENSION_ACTION_ID, INSTALL_EXTENSION_FROM_VSIX_COMMAND_ID, DefaultViewsContext, ExtensionsSortByContext, WORKSPACE_RECOMMENDATIONS_VIEW_ID, IWorkspaceRecommendedExtensionsView, AutoUpdateConfigurationKey, HasOutdatedExtensionsContext, SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID } from 'vs/workbench/contrib/extensions/common/extensions';
+import { VIEWLET_ID, IExtensionsWorkbenchService, IExtensionsViewPaneContainer, TOGGLE_IGNORE_EXTENSION_ACTION_ID, INSTALL_EXTENSION_FROM_VSIX_COMMAND_ID, DefaultViewsContext, WORKSPACE_RECOMMENDATIONS_VIEW_ID, IWorkspaceRecommendedExtensionsView, AutoUpdateConfigurationKey, HasOutdatedExtensionsContext, SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID } from 'vs/workbench/contrib/extensions/common/extensions'; //{{SQL CARBON EDIT}}
 import { ReinstallAction, InstallSpecificVersionOfExtensionAction, ConfigureWorkspaceRecommendedExtensionsAction, ConfigureWorkspaceFolderRecommendedExtensionsAction, PromptExtensionInstallFailureAction, SearchExtensionsAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
 import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
 import { ExtensionEditor } from 'vs/workbench/contrib/extensions/browser/extensionEditor';
@@ -67,7 +67,7 @@ import { isArray } from 'vs/base/common/types';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { mnemonicButtonLabel } from 'vs/base/common/labels';
-import { Query } from 'vs/workbench/contrib/extensions/common/extensionQuery';
+// import { Query } from 'vs/workbench/contrib/extensions/common/extensionQuery'; {{SQL CARBON EDIT}}
 import { Promises } from 'vs/base/common/async';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 
@@ -762,6 +762,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 			icon: filterIcon,
 		});
 
+		/* {{SQL CARBON EDIT}} - Remove the menu items not applicable in ADS
 		const showFeaturedExtensionsId = 'extensions.filter.featured';
 		this.registerExtensionAction({
 			id: showFeaturedExtensionsId,
@@ -800,6 +801,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 			},
 			run: () => runAction(this.instantiationService.createInstance(SearchExtensionsAction, '@popular '))
 		});
+		*/
 
 		this.registerExtensionAction({
 			id: 'workbench.extensions.action.showRecommendedExtensions',
@@ -820,6 +822,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 			run: () => runAction(this.instantiationService.createInstance(SearchExtensionsAction, '@recommended '))
 		});
 
+		/* {{SQL CARBON EDIT}} - Remove the menu items not applicable in ADS
 		this.registerExtensionAction({
 			id: 'workbench.extensions.action.recentlyPublishedExtensions',
 			title: { value: localize('recentlyPublishedExtensions', "Show Recently Published Extensions"), original: 'Show Recently Published Extensions' },
@@ -838,6 +841,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 			},
 			run: () => runAction(this.instantiationService.createInstance(SearchExtensionsAction, '@sort:publishedDate '))
 		});
+		*/
 
 		const extensionsCategoryFilterSubMenu = new MenuId('extensionsCategoryFilterSubMenu');
 		MenuRegistry.appendMenuItem(extensionsFilterSubMenu, <ISubmenuItem>{
@@ -952,6 +956,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 			run: () => runAction(this.instantiationService.createInstance(SearchExtensionsAction, '@outdated '))
 		});
 
+		/* {{SQL CARBON EDIT}} - Remove the menu items not applicable in ADS
 		const extensionsSortSubMenu = new MenuId('extensionsSortSubMenu');
 		MenuRegistry.appendMenuItem(extensionsFilterSubMenu, <ISubmenuItem>{
 			submenu: extensionsSortSubMenu,
@@ -986,6 +991,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 				}
 			});
 		});
+		*/
 
 		this.registerExtensionAction({
 			id: 'workbench.extensions.action.clearExtensionsSearchResults',

@@ -4,15 +4,15 @@
     <body>
       <trans-unit id="cms.displayName">
         <source xml:lang="en">SQL Server Central Management Servers</source>
-        <target state="translated">SQL Server 中央管理サーバー</target>
+        <target state="translated">SQL Server Central Management Servers</target>
       </trans-unit>
       <trans-unit id="cms.description">
         <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>
-        <target state="translated">SQL Server 中央管理サーバーの管理のサポート</target>
+        <target state="translated">SQL Server Central Management Servers の管理のサポート</target>
       </trans-unit>
       <trans-unit id="cms.title">
         <source xml:lang="en">Central Management Servers</source>
-        <target state="translated">中央管理サーバー</target>
+        <target state="translated">Central Management Servers</target>
       </trans-unit>
       <trans-unit id="cms.connectionProvider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>
@@ -20,7 +20,7 @@
       </trans-unit>
       <trans-unit id="cms.resource.explorer.title">
         <source xml:lang="en">Central Management Servers</source>
-        <target state="translated">中央管理サーバー</target>
+        <target state="translated">Central Management Servers</target>
       </trans-unit>
       <trans-unit id="cms.resource.refresh.title">
         <source xml:lang="en">Refresh</source>
@@ -456,7 +456,7 @@
       </trans-unit>
       <trans-unit id="cms.errors.azureNotAllowed">
         <source xml:lang="en">Azure SQL Database Servers cannot be used as Central Management Servers</source>
-        <target state="translated">Azure SQL Database サーバーは、中央管理サーバーとして使用できません</target>
+        <target state="translated">Azure SQL Database サーバーは、Central Management Servers として使用できません</target>
       </trans-unit>
       <trans-unit id="cms.confirmDeleteServer">
         <source xml:lang="en">Are you sure you want to delete</source>

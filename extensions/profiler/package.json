@@ -14,7 +14,7 @@
 	"activationEvents": [
 		"*"
 	],
-	"main": "./client/out/main",
+	"main": "./out/main",
 	"scripts": {
 		"compile": "gulp compile-extension:profiler-client"
 	},

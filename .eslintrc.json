@@ -740,6 +740,8 @@
 					"angular2-grid",
 					"html-query-plan",
 					"turndown",
+					"gridstack",
+					"gridstack/**",
 					"mark.js",
 		            "vscode-textmate",
                     "vscode-oniguruma",

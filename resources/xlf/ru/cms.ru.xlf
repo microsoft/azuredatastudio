@@ -8,7 +8,7 @@
       </trans-unit>
       <trans-unit id="cms.description">
         <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>
-        <target state="translated">Поддержка управления центральными серверами управления SQL Server</target>
+        <target state="translated">Поддержка управления Центральными серверами управления SQL Server</target>
       </trans-unit>
       <trans-unit id="cms.title">
         <source xml:lang="en">Central Management Servers</source>
@@ -456,7 +456,7 @@
       </trans-unit>
       <trans-unit id="cms.errors.azureNotAllowed">
         <source xml:lang="en">Azure SQL Database Servers cannot be used as Central Management Servers</source>
-        <target state="translated">Серверы базы данных SQL Azure не могут использоваться в качестве центральных серверов управления.</target>
+        <target state="translated">Серверы базы данных SQL Azure не могут использоваться в качестве Центральных серверов управления.</target>
       </trans-unit>
       <trans-unit id="cms.confirmDeleteServer">
         <source xml:lang="en">Are you sure you want to delete</source>

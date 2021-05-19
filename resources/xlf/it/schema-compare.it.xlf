@@ -4,15 +4,15 @@
     <body>
       <trans-unit id="displayName">
         <source xml:lang="en">SQL Server Schema Compare</source>
-        <target state="translated">Confronto schema di SQL Server</target>
+        <target state="translated">Confronto schemi di SQL Server</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">SQL Server Schema Compare for Azure Data Studio supports comparing the schemas of databases and dacpacs.</source>
-        <target state="translated">La funzionalità Confronto schema di SQL Server per Azure Data Studio supporta il confronto degli schemi di database e pacchetti di applicazione livello dati.</target>
+        <target state="translated">La funzionalità Confronto schemi di SQL Server per Azure Data Studio supporta il confronto degli schemi di database e pacchetti di applicazione livello dati.</target>
       </trans-unit>
       <trans-unit id="schemaCompare.start">
         <source xml:lang="en">Schema Compare</source>
-        <target state="translated">Confronto schema</target>
+        <target state="translated">Confronto schemi</target>
       </trans-unit>
     </body>
   </file>
@@ -44,7 +44,7 @@
       </trans-unit>
       <trans-unit id="SchemaCompare.SchemaCompareOptionsDialogLabel">
         <source xml:lang="en">Schema Compare Options</source>
-        <target state="translated">Opzioni di confronto schema</target>
+        <target state="translated">Opzioni di confronto schemi</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.GeneralOptionsLabel">
         <source xml:lang="en">General Options</source>
@@ -976,7 +976,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.dialogTitle">
         <source xml:lang="en">Schema Compare</source>
-        <target state="translated">Confronto schema</target>
+        <target state="translated">Confronto schemi</target>
       </trans-unit>
       <trans-unit id="schemaCompareDialog.differentSourceMessage">
         <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
@@ -1052,7 +1052,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.Title">
         <source xml:lang="en">Schema Compare</source>
-        <target state="translated">Confronto schema</target>
+        <target state="translated">Confronto schemi</target>
       </trans-unit>
       <trans-unit id="schemaCompare.sourceLabel">
         <source xml:lang="en">Source</source>
@@ -1080,7 +1080,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.compareErrorMessage">
         <source xml:lang="en">Schema Compare failed: {0}</source>
-        <target state="translated">Il confronto schema non è riuscito: {0}</target>
+        <target state="translated">Il confronto schemi non è riuscito: {0}</target>
       </trans-unit>
       <trans-unit id="schemaCompare.typeColumn">
         <source xml:lang="en">Type</source>
@@ -1128,7 +1128,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.cancelErrorMessage">
         <source xml:lang="en">Cancel schema compare failed: '{0}'</source>
-        <target state="translated">L'annullamento del confronto schema non è riuscito: '{0}'</target>
+        <target state="translated">L'annullamento del confronto schemi non è riuscito: '{0}'</target>
       </trans-unit>
       <trans-unit id="schemaCompare.generateScriptButton">
         <source xml:lang="en">Generate script</source>
@@ -1156,7 +1156,7 @@
       </trans-unit>
       <trans-unit id="schemaCompare.updateErrorMessage">
         <source xml:lang="en">Schema Compare Apply failed '{0}'</source>
-        <target state="translated">L'applicazione del confronto schema non è riuscita: '{0}'</target>
+        <target state="translated">L'applicazione del confronto schemi non è riuscita: '{0}'</target>
       </trans-unit>
       <trans-unit id="schemaCompare.switchDirectionButton">
         <source xml:lang="en">Switch direction</source>

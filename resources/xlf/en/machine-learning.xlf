@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/machine-learning/package" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="displayName">
+      <source xml:lang="en">Machine Learning</source>
+    </trans-unit>
+    <trans-unit id="description">
+      <source xml:lang="en">Machine Learning</source>
+    </trans-unit>
+    <trans-unit id="title.tasks">
+      <source xml:lang="en">Tasks</source>
+    </trans-unit>
+    <trans-unit id="title.documents">
+      <source xml:lang="en">Documents</source>
+    </trans-unit>
+    <trans-unit id="title.configurations">
+      <source xml:lang="en">Configurations</source>
+    </trans-unit>
+    <trans-unit id="title.endpoints">
+      <source xml:lang="en">Endpoints</source>
+    </trans-unit>
+    <trans-unit id="ml.command.managePackages">
+      <source xml:lang="en">Manage packages in database</source>
+    </trans-unit>
+    <trans-unit id="ml.command.manageLanguages">
+      <source xml:lang="en">Manage external languages</source>
+    </trans-unit>
+    <trans-unit id="ml.command.predictModel">
+      <source xml:lang="en">Make prediction</source>
+    </trans-unit>
+    <trans-unit id="ml.command.manageModels">
+      <source xml:lang="en">Manage models</source>
+    </trans-unit>
+    <trans-unit id="ml.command.importModel">
+      <source xml:lang="en">Import model</source>
+    </trans-unit>
+    <trans-unit id="ml.configuration.title">
+      <source xml:lang="en">Machine Learning Configurations</source>
+    </trans-unit>
+    <trans-unit id="ml.pythonPath.description">
+      <source xml:lang="en">Local path to a preexisting Python installation used by Machine Learning.</source>
+    </trans-unit>
+    <trans-unit id="ml.enablePython.description">
+      <source xml:lang="en">Enable Python package management in database.</source>
+    </trans-unit>
+    <trans-unit id="ml.enableR.description">
+      <source xml:lang="en">Enable R package management in database.</source>
+    </trans-unit>
+    <trans-unit id="ml.rPath.description">
+      <source xml:lang="en">Local path to a preexisting R installation used by Machine Learning.</source>
+    </trans-unit>
+    <trans-unit id="ml.command.dependencies">
+      <source xml:lang="en">Install Machine Learning Dependencies</source>
+    </trans-unit>
+    <trans-unit id="ml.command.enableExternalScript">
+      <source xml:lang="en">Enable External script</source>
+    </trans-unit>
+  </body></file>
+</xliff>

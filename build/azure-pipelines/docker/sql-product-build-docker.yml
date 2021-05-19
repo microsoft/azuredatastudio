@@ -79,7 +79,7 @@ steps:
       set -e
       for f in $(Build.SourcesDirectory)/.build/drop/linux/server/*.tar.gz
       do
-        tar -C $(agent.builddirectory) -zxvf $f
+        tar -C $(Build.SourcesDirectory)/../ -zxvf $f
         rm $f
       done
     displayName: Unzip artifacts
