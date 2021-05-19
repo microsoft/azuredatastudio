@@ -216,6 +216,7 @@ export class CellModel extends Disposable implements ICellModel {
 	public set isEditMode(isEditMode: boolean) {
 		this._isEditMode = isEditMode;
 		if (this._isEditMode) {
+			this.showPreview = this._defaultTextEditMode !== TextCellEditMode.Markdown;
 			this.showMarkdown = this._defaultTextEditMode !== TextCellEditMode.RichText;
 		}
 		this._onCellModeChanged.fire(this._isEditMode);
@@ -1057,9 +1058,10 @@ export class CellModel extends Disposable implements ICellModel {
 		if (this._configurationService) {
 			const defaultTextModeKey = 'notebook.defaultTextEditMode';
 			this._defaultTextEditMode = this._configurationService.getValue(defaultTextModeKey);
-			if (this._defaultTextEditMode !== TextCellEditMode.RichText) {
-				this.showMarkdown = true;
-			}
+
+			this.showPreview = this._defaultTextEditMode !== TextCellEditMode.Markdown;
+			this.showMarkdown = this._defaultTextEditMode !== TextCellEditMode.RichText;
+
 			const allowADSCommandsKey = 'notebook.allowAzureDataStudioCommands';
 			this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
 			this._register(this._configurationService.onDidChangeConfiguration(e => {
