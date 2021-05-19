@@ -12,7 +12,7 @@ import { localize } from 'vs/nls';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes, TextCellEditMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -77,7 +77,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _showPreview: boolean = true;
 	private _showMarkdown: boolean = false;
 	private _cellSourceChanged: boolean = false;
-	private _defaultToWYSIWYG: boolean;
+	private _defaultTextEditMode: string;
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
 	private _isInjectedParameter: boolean;
@@ -216,7 +216,7 @@ export class CellModel extends Disposable implements ICellModel {
 	public set isEditMode(isEditMode: boolean) {
 		this._isEditMode = isEditMode;
 		if (this._isEditMode) {
-			this.showMarkdown = !this._defaultToWYSIWYG;
+			this.showMarkdown = this._defaultTextEditMode !== TextCellEditMode.RichText;
 		}
 		this._onCellModeChanged.fire(this._isEditMode);
 		// Note: this does not require a notebook update as it does not change overall state
@@ -383,8 +383,8 @@ export class CellModel extends Disposable implements ICellModel {
 		this._onCellMarkdownChanged.fire(this._showMarkdown);
 	}
 
-	public get defaultToWYSIWYG(): boolean {
-		return this._defaultToWYSIWYG;
+	public get defaultTextEditMode(): string {
+		return this._defaultTextEditMode;
 	}
 
 	public get cellSourceChanged(): boolean {
@@ -1055,9 +1055,9 @@ export class CellModel extends Disposable implements ICellModel {
 
 	private populatePropertiesFromSettings() {
 		if (this._configurationService) {
-			const enableWYSIWYGByDefaultKey = 'notebook.setRichTextViewByDefault';
-			this._defaultToWYSIWYG = this._configurationService.getValue(enableWYSIWYGByDefaultKey);
-			if (!this._defaultToWYSIWYG) {
+			const defaultTextModeKey = 'notebook.defaultTextEditMode';
+			this._defaultTextEditMode = this._configurationService.getValue(defaultTextModeKey);
+			if (this._defaultTextEditMode !== TextCellEditMode.RichText) {
 				this.showMarkdown = true;
 			}
 			const allowADSCommandsKey = 'notebook.allowAzureDataStudioCommands';
@@ -1065,8 +1065,8 @@ export class CellModel extends Disposable implements ICellModel {
 			this._register(this._configurationService.onDidChangeConfiguration(e => {
 				if (e.affectsConfiguration(allowADSCommandsKey)) {
 					this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
-				} else if (e.affectsConfiguration(enableWYSIWYGByDefaultKey)) {
-					this._defaultToWYSIWYG = this._configurationService.getValue(enableWYSIWYGByDefaultKey);
+				} else if (e.affectsConfiguration(defaultTextModeKey)) {
+					this._defaultTextEditMode = this._configurationService.getValue(defaultTextModeKey);
 				}
 			}));
 		}

@@ -23,6 +23,7 @@ import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvent
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICellValue, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
+import { localize } from 'vs/nls';
 
 export enum ViewMode {
 	Notebook,
@@ -487,6 +488,12 @@ export interface ITableUpdatedEvent {
 	rows: ICellValue[][];
 }
 
+export class TextCellEditMode {
+	public static readonly RichText = localize('notebook.richTextEditMode', 'Rich Text');
+	public static readonly SplitView = localize('notebook.splitViewEditMode', 'Split View');
+	public static readonly Markdown = localize('notebook.markdownEditMode', 'Markdown');
+}
+
 export interface ICellModel {
 	cellUri: URI;
 	id: string;
@@ -527,7 +534,7 @@ export interface ICellModel {
 	isEditMode: boolean;
 	showPreview: boolean;
 	showMarkdown: boolean;
-	defaultToWYSIWYG: boolean;
+	defaultTextEditMode: string;
 	readonly onCellPreviewModeChanged: Event<boolean>;
 	readonly onCellMarkdownModeChanged: Event<boolean>;
 	sendChangeToNotebook(change: NotebookChangeType): void;

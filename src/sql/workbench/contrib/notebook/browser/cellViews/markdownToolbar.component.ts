@@ -7,7 +7,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
 import { Component, Input, Inject, ViewChild, ElementRef } from '@angular/core';
 import { localize } from 'vs/nls';
-import { CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellEditModes, ICellModel, TextCellEditMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { TransformMarkdownAction, MarkdownTextTransformer, MarkdownButtonType, ToggleViewAction, insertFormattedMarkdown } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
@@ -138,8 +138,8 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		let heading3 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading3', this.optionHeading3, 'heading 3', this.optionHeading3, this.cellModel, MarkdownButtonType.HEADING3);
 		let paragraph = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.paragraph', this.optionParagraph, 'paragraph', this.optionParagraph, this.cellModel, MarkdownButtonType.PARAGRAPH);
 
-		this._toggleTextViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleTextView', '', this.cellModel.defaultToWYSIWYG ? 'masked-icon show-text active' : 'masked-icon show-text', this.richTextViewButton, true, false);
-		this._toggleSplitViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleSplitView', '', this.cellModel.defaultToWYSIWYG ? 'masked-icon split-toggle-on' : 'masked-icon split-toggle-on active', this.splitViewButton, true, true);
+		this._toggleTextViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleTextView', '', this.cellModel.defaultTextEditMode === TextCellEditMode.RichText ? 'masked-icon show-text active' : 'masked-icon show-text', this.richTextViewButton, true, false);
+		this._toggleSplitViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleSplitView', '', this.cellModel.defaultTextEditMode === TextCellEditMode.RichText ? 'masked-icon split-toggle-on' : 'masked-icon split-toggle-on active', this.splitViewButton, true, true);
 		this._toggleMarkdownViewAction = this._instantiationService.createInstance(ToggleViewAction, 'notebook.toggleMarkdownView', '', 'masked-icon show-markdown', this.markdownViewButton, false, true);
 
 		let taskbar = <HTMLElement>this.mdtoolbar.nativeElement;
