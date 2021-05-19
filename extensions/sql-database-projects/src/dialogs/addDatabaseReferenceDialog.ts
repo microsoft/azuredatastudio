@@ -247,6 +247,8 @@ export class AddDatabaseReferenceDialog {
 		this.formBuilder!.removeFormItem(<azdata.FormComponent>this.systemDatabaseFormComponent);
 		this.formBuilder!.insertFormItem(<azdata.FormComponent>this.projectFormComponent, 2);
 
+		this.locationDropdown!.values = constants.locationDropdownValues;
+
 		this.currentReferenceType = ReferenceType.project;
 		this.updateEnabledInputBoxes();
 		this.tryEnableAddReferenceButton();
@@ -274,7 +276,6 @@ export class AddDatabaseReferenceDialog {
 		this.formBuilder!.insertFormItem(<azdata.FormComponent>this.dacpacFormComponent, 2);
 
 		this.locationDropdown!.values = constants.locationDropdownValues;
-		this.locationDropdown!.value = constants.differentDbSameServer;
 
 		this.currentReferenceType = ReferenceType.dacpac;
 		this.updateEnabledInputBoxes();
@@ -303,7 +304,6 @@ export class AddDatabaseReferenceDialog {
 			title: constants.databaseProject
 		};
 	}
-
 
 	private createSystemDatabaseDropdown(): azdata.FormComponent {
 		this.systemDatabaseDropdown = this.view!.modelBuilder.dropDown().withProperties({
@@ -403,7 +403,6 @@ export class AddDatabaseReferenceDialog {
 
 	/**
 	 * Update the enabled input boxes based on what the location of the database reference selected in the dropdown is
-	 * @param isSystemDb
 	 */
 	public updateEnabledInputBoxes(): void {
 		const isSystemDb = this.currentReferenceType === ReferenceType.systemDb;
@@ -445,22 +444,27 @@ export class AddDatabaseReferenceDialog {
 		}
 	}
 
+	/**
+	 * Sets the default values in the database name and variable text boxes if they are enabled based
+	 */
 	private setDefaultDatabaseValues(): void {
-		switch (this.currentReferenceType) {
-			case ReferenceType.project: {
-				this.databaseNameTextbox!.value = <string>this.projectDropdown?.value;
-				this.databaseVariableTextbox!.value = `${this.projectDropdown?.value}`;
-				break;
-			}
-			case ReferenceType.systemDb: {
-				this.databaseNameTextbox!.value = <string>this.systemDatabaseDropdown?.value;
-				break;
-			}
-			case ReferenceType.dacpac: {
-				const dacpacName = this.dacpacTextbox!.value ? path.parse(this.dacpacTextbox!.value!).name : '';
-				this.databaseNameTextbox!.value = dacpacName;
-				this.databaseVariableTextbox!.value = dacpacName ? `${dacpacName}` : '';
-				break;
+		if (this.databaseNameTextbox!.enabled) {
+			switch (this.currentReferenceType) {
+				case ReferenceType.project: {
+					this.databaseNameTextbox!.value = <string>this.projectDropdown?.value;
+					this.databaseVariableTextbox!.value = `${this.projectDropdown?.value}`;
+					break;
+				}
+				case ReferenceType.systemDb: {
+					this.databaseNameTextbox!.value = <string>this.systemDatabaseDropdown?.value;
+					break;
+				}
+				case ReferenceType.dacpac: {
+					const dacpacName = this.dacpacTextbox!.value ? path.parse(this.dacpacTextbox!.value!).name : '';
+					this.databaseNameTextbox!.value = dacpacName;
+					this.databaseVariableTextbox!.value = dacpacName ? `${dacpacName}` : '';
+					break;
+				}
 			}
 		}
 	}
