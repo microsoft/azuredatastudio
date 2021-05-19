@@ -2,7 +2,7 @@
 	"name": "ads-language-pack-it",
 	"displayName": "Italian Language Pack for Azure Data Studio",
 	"description": "Language pack extension for Italian",
-	"version": "1.26.1",
+	"version": "1.29.0",
 	"publisher": "Microsoft",
 	"repository": {
 		"type": "git",
