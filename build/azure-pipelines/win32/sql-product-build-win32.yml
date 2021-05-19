@@ -128,7 +128,6 @@ steps:
       $zipFilePath = $tempFilePath + ".zip"
       $extensionUri = "$(standalone-extensions-uri)"
       $adsExtensionPath = "$(agent.builddirectory)\azuredatastudio-win32-x64\resources\app\extensions"
-
       Invoke-WebRequest -Uri $extensionUri -OutFile $tempFilePath
       Move-Item $tempFilePath $zipFilePath
       Expand-Archive $zipFilePath -DestinationPath $adsExtensionPath
