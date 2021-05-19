@@ -794,6 +794,7 @@ export interface MainThreadNotebookShape extends IDisposable {
 	$registerNotebookKernelProvider(extension: NotebookExtensionDescription, handle: number, documentFilter: INotebookDocumentFilter): Promise<void>;
 	$unregisterNotebookKernelProvider(handle: number): Promise<void>;
 	$onNotebookKernelChange(handle: number, uri: UriComponents | undefined): void;
+	$trySaveDocument(uri: UriComponents): Promise<boolean>;
 	$tryApplyEdits(viewType: string, resource: UriComponents, modelVersionId: number, edits: ICellEditOperation[]): Promise<boolean>;
 	$postMessage(editorId: string, forRendererId: string | undefined, value: any): Promise<boolean>;
 	$setStatusBarEntry(id: number, statusBarEntry: INotebookCellStatusBarEntryDto): Promise<void>;
@@ -1142,7 +1143,7 @@ export interface ExtHostAuthenticationShape {
 	$getSessions(id: string, scopes?: string[]): Promise<ReadonlyArray<modes.AuthenticationSession>>;
 	$createSession(id: string, scopes: string[]): Promise<modes.AuthenticationSession>;
 	$removeSession(id: string, sessionId: string): Promise<void>;
-	$onDidChangeAuthenticationSessions(id: string, label: string, event: modes.AuthenticationSessionsChangeEvent): Promise<void>;
+	$onDidChangeAuthenticationSessions(id: string, label: string): Promise<void>;
 	$onDidChangeAuthenticationProviders(added: modes.AuthenticationProviderInformation[], removed: modes.AuthenticationProviderInformation[]): Promise<void>;
 	$setProviders(providers: modes.AuthenticationProviderInformation[]): Promise<void>;
 }
@@ -1769,7 +1770,6 @@ export interface INotebookModelAddedData {
 	cells: IMainCellDto[],
 	viewType: string;
 	metadata?: NotebookDocumentMetadata;
-	attachedEditor?: { id: string; selections: number[]; visibleRanges: ICellRange[] }
 	contentOptions: { transientOutputs: boolean; transientMetadata: TransientMetadata; }
 }
 
@@ -1869,6 +1869,7 @@ export interface MainThreadTestingShape {
 	$publishDiff(resource: ExtHostTestingResource, uri: UriComponents, diff: TestsDiff): void;
 	$updateTestStateInRun(runId: string, testId: string, state: ITestState): void;
 	$runTests(req: RunTestsRequest, token: CancellationToken): Promise<string>;
+	$publishExtensionProvidedResults(results: ISerializedTestResults, persist: boolean): void;
 	$retireTest(extId: string): void;
 }
 

@@ -715,6 +715,7 @@ export class ExtHostNotebookController implements ExtHostNotebookShape, ExtHostN
 				const that = this;
 
 				const document = new ExtHostNotebookDocument(
+					this._proxy,
 					this._documentsAndEditors,
 					{
 						emitModelChange(event: vscode.NotebookCellsChangeEvent): void {
@@ -759,13 +760,6 @@ export class ExtHostNotebookController implements ExtHostNotebookShape, ExtHostN
 
 				this._documents.get(uri)?.dispose();
 				this._documents.set(uri, document);
-
-				// create editor if populated
-				if (modelData.attachedEditor) {
-					this._createExtHostEditor(document, modelData.attachedEditor.id, modelData.attachedEditor.selections, modelData.attachedEditor.visibleRanges.map(typeConverters.NotebookCellRange.to));
-					editorChanged = true;
-				}
-
 				this._documentsAndEditors.$acceptDocumentsAndEditorsDelta({ addedDocuments: addedCellDocuments });
 
 				this._onDidOpenNotebookDocument.fire(document.notebookDocument);
