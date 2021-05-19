@@ -236,7 +236,7 @@ export class TerminalProcessManager extends Disposable implements ITerminalProce
 		}, LAUNCHING_DURATION);
 
 		const result = await this._process.start();
-		if (result && 'persistentTerminalId' in result) {
+		if ('persistentTerminalId' in result) { // {{SQL CARBON EDIT}} Strict null fix
 			this._persistentTerminalId = result.persistentTerminalId;
 		} else if (result) {
 			// Error

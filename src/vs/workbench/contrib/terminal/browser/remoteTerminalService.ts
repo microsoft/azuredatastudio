@@ -284,7 +284,7 @@ export class RemoteTerminalProcess extends Disposable implements ITerminalChildP
 		const commandId = event.commandId;
 		const allowedCommands = ['_remoteCLI.openExternal', '_remoteCLI.windowOpen', '_remoteCLI.getSystemStatus', '_remoteCLI.manageExtensions'];
 		if (!allowedCommands.includes(commandId)) {
-			this._remoteTerminalChannel.sendCommandResultToTerminalProcess(this._remoteTerminalId, reqId, true, 'Invalid remote cli command: ' + commandId);
+			this._remoteTerminalChannel.sendCommandResultToTerminalProcess(this._persistentTerminalId, reqId, true, 'Invalid remote cli command: ' + commandId);
 			return;
 		}
 		const commandArgs = event.commandArgs.map(arg => revive(arg));
