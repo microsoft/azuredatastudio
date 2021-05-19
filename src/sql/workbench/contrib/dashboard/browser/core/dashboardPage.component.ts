@@ -254,8 +254,9 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 		let toolbarActions = [];
 		_tasks.forEach(a => {
-			let iconClassName = TaskRegistry.getOrCreateTaskIconClassName(a);
-			toolbarActions.push(new ToolbarAction(a.id, a.title.toString(), iconClassName, this.runAction, this, this.logService));
+			const iconClassName = TaskRegistry.getOrCreateTaskIconClassName(a);
+			const title = typeof a.title === 'string' ? a.title : a.title.value;
+			toolbarActions.push(new ToolbarAction(a.id, title, iconClassName, this.runAction, this, this.logService));
 		});
 
 		let content: ITaskbarContent[] = [];

@@ -2613,6 +2613,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceDeployment.extensionRequiredPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The '{0}' extension is required to deploy this resource, do you want to install it now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L'estensione "{0}" è necessaria per distribuire la risorsa, si vuole installarla subito?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2620,7 +2623,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Install]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Installa]]></Val>
+            <Val><![CDATA[Installare]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2628,6 +2631,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceDeployment.installingExtension" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing extension '{0}'...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Installazione dell'estensione "{0}" in corso...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2643,6 +2649,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/localizedConstants.resourceDeployment.unknownExtension" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unknown extension '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Estensione "{0}" sconosciuta]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2949,6 +2958,9 @@
       <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.deploy.azdataExtMissing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The Azure Data CLI extension must be installed to deploy this resource. Please install it through the extension gallery and try again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Per distribuire la risorsa, è necessario installare l'estensione AZURE Data CLI. Installare l'estensione tramite la raccolta estensioni e riprovare.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

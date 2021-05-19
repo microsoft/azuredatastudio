@@ -84,8 +84,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.book" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Book]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book]]></Val>
@@ -105,8 +105,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.bookInitializeFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to find a Table of Contents file in the specified Jupyter Book.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[지정한 Book에서 목차 파일을 찾지 못했습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[지정된 Jupyter Book에서 목차 파일을 찾지 못했습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Failed to find a Table of Contents file in the specified book.]]></Val>
@@ -117,8 +117,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.booksNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Jupyter Books are currently available on the provided link]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[제공된 링크에 현재 사용 가능한 Book이 없습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[제공된 링크에 현재 사용 가능한 Jupyter Book이 없습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No books are currently available on the provided link]]></Val>
@@ -147,8 +147,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.closeBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Close Jupyter Book {0} failed: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[{0} Book을 닫지 못했습니다. {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book {0} 닫기 실패: {1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Close book {0} failed: {1}]]></Val>
@@ -213,8 +213,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.editBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while editing Jupyter Book {0}: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[{0} Book을 편집하는 동안 오류 발생: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book {0}을(를) 편집하는 동안 오류 발생: {1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error while editing book {0}: {1}]]></Val>
@@ -270,8 +270,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.labelBookFolder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Book 선택]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book 선택]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Select Book]]></Val>
@@ -282,8 +282,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.labelBookSection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Jupyter Book Section]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Book 섹션 선택]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book 섹션 선택]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Select Book Section]]></Val>
@@ -348,8 +348,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookAlreadyTrusted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book is already trusted in this workspace.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Book은 이미 이 작업 영역에서 신뢰할 수 있습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book은 이미 이 작업 영역에서 신뢰할 수 있습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book is already trusted in this workspace.]]></Val>
@@ -360,8 +360,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookAlreadyUntrusted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book is already untrusted in this workspace.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Book은 이미 이 작업 영역에서 신뢰할 수 없습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book은 이미 이 작업 영역에서 신뢰할 수 없습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book is already untrusted in this workspace.]]></Val>
@@ -372,8 +372,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Books not Found]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Book을 찾을 수 없음]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book을 찾을 수 없음]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Books not Found]]></Val>
@@ -384,8 +384,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookPinned" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book {0} is now pinned in the workspace.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[이제 {0} Book은 작업 영역에 고정됩니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book {0}는 이제 작업 영역에 고정됩니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book {0} is now pinned in the workspace.]]></Val>
@@ -396,8 +396,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookTrusted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book is now trusted in the workspace.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[이제 Book은 작업 영역에서 신뢰할 수 있습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[이제 Jupyter Book은 작업 영역에서 신뢰할 수 있습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book is now trusted in the workspace.]]></Val>
@@ -408,8 +408,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookUnpinned" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book {0} is no longer pinned in this workspace]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[{0} Book은 더 이상 이 작업 영역에 고정되지 않습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book {0}은(는) 더 이상 이 작업 영역에 고정되지 않습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book {0} is no longer pinned in this workspace]]></Val>
@@ -420,8 +420,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookUntrusted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book is no longer trusted in this workspace]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Book은 더 이상 이 작업 영역에서 신뢰할 수 없습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book은 더 이상 이 작업 영역에서 신뢰할 수 없습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book is no longer trusted in this workspace]]></Val>
@@ -495,8 +495,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookDirectoryError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while creating remote Jupyter Book directory]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[원격 Book 디렉터리를 만드는 동안 오류 발생]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[원격 Jupyter Book 디렉터리를 만드는 동안 오류 발생]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error while creating remote Book directory]]></Val>
@@ -507,8 +507,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookDownloadComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remote Jupyter Book download is complete]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[원격 Book 다운로드가 완료되었습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[원격 Jupyter Book 다운로드가 완료되었습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Remote Book download is complete]]></Val>
@@ -519,8 +519,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookDownloadError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while downloading remote Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[원격 Book을 다운로드하는 동안 오류 발생]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[원격 Jupyter Book을 다운로드하는 동안 오류 발생]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error while downloading remote Book]]></Val>
@@ -531,8 +531,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookDownloadProgress" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remote Jupyter Book download is in progress]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[원격 Book 다운로드가 진행 중입니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[원격 Jupyter Book 다운로드가 진행 중입니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Remote Book download is in progress]]></Val>
@@ -543,8 +543,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookUnpackingError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while decompressing remote Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[원격 Book의 압축을 푸는 동안 오류 발생]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[원격 Jupyter Book의 압축을 푸는 동안 오류 발생]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error while decompressing remote Book]]></Val>
@@ -573,7 +573,7 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgSaveFolderError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save location path does not exist.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[저장 위치 경로가 없습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -585,8 +585,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgTaskName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Downloading Remote Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[원격 Book 다운로드]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[원격 Jupyter Book 다운로드]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Downloading Remote Book]]></Val>
@@ -597,8 +597,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgUndefinedAssetError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The selected Jupyter Book is not valid]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[선택한 Book이 유효하지 않습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[선택한 Jupyter Book이 유효하지 않습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[The selected book is not valid]]></Val>
@@ -663,8 +663,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.noBooksSelected" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Jupyter Books are currently selected in the viewlet.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[뷰렛에 현재 선택된 Book이 없습니다.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[뷰렛에 현재 선택된 Jupyter Book이 없습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No books are currently selected in the viewlet.]]></Val>
@@ -693,8 +693,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.openBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Jupyter Book {0} failed: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[{0} 책을 열지 못함: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book {0} 열기 실패: {1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Open book {0} failed: {1}]]></Val>
@@ -777,8 +777,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.readBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to read Jupyter Book {0}: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[{0} Book을 읽지 못함: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book {0}을(를) 읽지 못했습니다. {1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Failed to read book {0}: {1}]]></Val>
@@ -834,8 +834,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.selectBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while selecting a Jupyter Book or a section to edit: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[편집할 Book 또는 섹션을 선택하는 동안 오류 발생: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book 또는 편집할 섹션을 선택하는 동안 오류 발생: {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error while selecting a book or a section to edit: {0}]]></Val>
@@ -2031,8 +2031,8 @@
       <Item ItemId=";extensions/notebook/package.title.ProvidedBooks" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Provided Jupyter Books]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[제공된 Book]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book 제공]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Provided Books]]></Val>
@@ -2118,8 +2118,8 @@
       <Item ItemId=";extensions/notebook/package.title.createJupyterBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Book 만들기(미리 보기)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book 만들기]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Create Book (Preview)]]></Val>
@@ -2247,8 +2247,8 @@
       <Item ItemId=";extensions/notebook/package.title.saveJupyterBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[책 저장]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book 저장]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Save Book]]></Val>
@@ -2259,8 +2259,8 @@
       <Item ItemId=";extensions/notebook/package.title.searchJupyterBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Search Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[책 검색]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book 검색]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Search Book]]></Val>
@@ -2271,8 +2271,8 @@
       <Item ItemId=";extensions/notebook/package.title.trustBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Trust Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Book 신뢰]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book 신뢰]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Trust Book]]></Val>
