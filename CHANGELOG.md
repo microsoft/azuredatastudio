@@ -1,5 +1,15 @@
 # Change Log
 
+## Version 1.29.0
+* Release date: May 19, 2021
+* Release status: General Availability
+* New Notebook Features:
+    * Added runs with a parameters option.
+* Extension Updates:
+    * SQL Database Projects
+    * Schema Compare
+* Bug Fixes
+
 ## Version 1.28.0
 * Release date: April 16, 2021
 * Release status: General Availability
