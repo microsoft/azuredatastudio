@@ -192,6 +192,11 @@ const apiMenus: IAPIMenu[] = [
 		id: MenuId.TunnelContext,
 		description: localize('view.tunnelContext', "The Ports view item context menu")
 	},
+	{
+		key: 'ports/item/origin/inline',
+		id: MenuId.TunnelOriginInline,
+		description: localize('view.tunnelOriginInline', "The Ports view item origin inline menu")
+	},
 	// {{SQL CARBON EDIT}} start menu entries
 	{
 		key: 'dashboard/toolbar',
