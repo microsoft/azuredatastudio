@@ -32,12 +32,18 @@ export interface CommandEventArgs<T extends Slick.SlickData> {
 export interface ITableFilterStyles extends IButtonStyles, IInputBoxStyles, IListStyles, ICountBadgetyles {
 }
 
+interface NotificationProvider {
+	info(message: string): void;
+}
+
 const ShowFilterText: string = localize('headerFilter.showFilter', "Show Filter");
 
 export class HeaderFilter<T extends Slick.SlickData> {
 
 	public onFilterApplied = new Slick.Event<{ grid: Slick.Grid<T>, column: FilterableColumn<T> }>();
 	public onCommand = new Slick.Event<CommandEventArgs<T>>();
+	public enabled: boolean = true;
+	public disabledMessage: string | undefined = undefined;
 
 	private grid!: Slick.Grid<T>;
 	private handler = new Slick.EventHandler();
@@ -59,11 +65,10 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private columnDef!: FilterableColumn<T>;
 	private filterStyles?: ITableFilterStyles;
 	private disposableStore = new DisposableStore();
-	private _enabled: boolean = true;
 	private columnButtonMapping: Map<string, HTMLElement> = new Map<string, HTMLElement>();
 	private previouslyFocusedElement: HTMLElement;
 
-	constructor(private readonly contextViewProvider: IContextViewProvider) {
+	constructor(private readonly contextViewProvider: IContextViewProvider, private readonly notificationProvider?: NotificationProvider) {
 	}
 
 	public init(grid: Slick.Grid<T>): void {
@@ -104,7 +109,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			const cell = this.grid.getActiveCell();
 			if (cell) {
 				const column = this.grid.getColumns()[cell.cell] as FilterableColumn<T>;
-				if (column.filterable !== false && this.enabled && this.columnButtonMapping[column.id]) {
+				if (column.filterable !== false && this.columnButtonMapping[column.id]) {
 					await this.showFilter(this.columnButtonMapping[column.id]);
 					EventHelper.stop(e, true);
 				}
@@ -123,9 +128,6 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	}
 
 	private handleHeaderCellRendered(e: Event, args: Slick.OnHeaderCellRenderedEventArgs<T>) {
-		if (!this.enabled) {
-			return;
-		}
 		const column = args.column as FilterableColumn<T>;
 		if ((<FilterableColumn<T>>column).filterable === false) {
 			return;
@@ -305,6 +307,12 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	}
 
 	private async showFilter(filterButton: HTMLElement): Promise<void> {
+		if (!this.enabled) {
+			if (this.notificationProvider && this.disabledMessage) {
+				this.notificationProvider.info(this.disabledMessage);
+			}
+			return;
+		}
 		this.previouslyFocusedElement = document.activeElement as HTMLElement;
 		await this.createFilterMenu(filterButton);
 		// Get the absolute coordinates of the filter button
@@ -481,20 +489,6 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			column: columnDef,
 			command: command
 		});
-	}
-
-	public get enabled(): boolean {
-		return this._enabled;
-	}
-
-	public set enabled(value: boolean) {
-		if (this._enabled !== value) {
-			this._enabled = value;
-			// force the table header to redraw.
-			this.grid.getColumns().forEach((column) => {
-				this.grid.updateColumnHeader(column.id);
-			});
-		}
 	}
 }
 
