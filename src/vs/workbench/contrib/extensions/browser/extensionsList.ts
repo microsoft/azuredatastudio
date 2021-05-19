@@ -101,6 +101,7 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 				return undefined;
 			}
 		});
+		actionbar.setFocusable(false);
 		actionbar.onDidRun(({ error }) => error && this.notificationService.error(error));
 
 		const systemDisabledWarningAction = this.instantiationService.createInstance(SystemDisabledWarningAction);
@@ -135,7 +136,6 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 		const extensionContainers: ExtensionContainers = this.instantiationService.createInstance(ExtensionContainers, [...actions, ...widgets, extensionTooltipAction]);
 
 		actionbar.push(actions, actionOptions);
-		actionbar.setFocusable(false);
 		const disposable = combinedDisposable(...actions, ...widgets, actionbar, extensionContainers, extensionTooltipAction);
 
 		return {
