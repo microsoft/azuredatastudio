@@ -21,13 +21,6 @@
     normalize-path "^2.0.1"
     through2 "^2.0.3"
 
-"@types/azdata@^1.0.0":
-  version "1.25.0"
-  resolved "https://registry.yarnpkg.com/@types/azdata/-/azdata-1.25.0.tgz#ae353317408358669f6c27987422d5b56da12429"
-  integrity sha512-Q13MATghre9+C34/YnitHfAa01tbfZm6z/KJZwrMXJ+RjNAlpEb8ym6gazMS40WQCEr8YBfl3KRoi12dMCjdcg==
-  dependencies:
-    "@types/vscode" "*"
-
 "@types/node@*":
   version "13.11.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-13.11.0.tgz#390ea202539c61c8fa6ba4428b57e05bc36dc47b"
@@ -38,7 +31,7 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-7.10.9.tgz#4343e3b009f8cf5e1ed685e36097b74b4101e880"
   integrity sha512-usSpgoUsRtO5xNV5YEPU8PPnHisFx8u0rokj1BPVn/hDF7zwUDzVLiuKZM38B7z8V2111Fj6kd4rGtQFUZpNOw==
 
-"@types/vscode@*", "@types/vscode@^1.0.0":
+"@types/vscode@^1.0.0":
   version "1.52.0"
   resolved "https://registry.yarnpkg.com/@types/vscode/-/vscode-1.52.0.tgz#61917968dd403932127fc4004a21fd8d69e4f61c"
   integrity sha512-Kt3bvWzAvvF/WH9YEcrCICDp0Z7aHhJGhLJ1BxeyNP6yRjonWqWnAIh35/pXAjswAnWOABrYlF7SwXR9+1nnLA==

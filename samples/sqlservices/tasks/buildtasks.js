@@ -115,8 +115,3 @@ gulp.task('test', (done) => {
 		done();
 	});
 });
-
-gulp.task('copytypings', function () {
-	return gulp.src(config.paths.project.root + '/../../src/sql/azdata.proposed.d.ts')
-		.pipe(gulp.dest('typings/'));
-});
