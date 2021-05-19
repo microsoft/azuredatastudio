@@ -15,7 +15,7 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
-import { IAction, Action, IActionViewItem } from 'vs/base/common/actions';
+import { IAction, Action } from 'vs/base/common/actions';
 import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import * as DOM from 'vs/base/browser/dom';
@@ -52,6 +52,7 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
 import { MaskedLabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
+import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 

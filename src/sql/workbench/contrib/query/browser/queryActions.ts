@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/queryActions';
 import * as nls from 'vs/nls';
-import { Action, IActionViewItem, IActionRunner } from 'vs/base/common/actions';
+import { Action, IActionRunner } from 'vs/base/common/actions';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -45,6 +45,7 @@ import { IQueryManagementService } from 'sql/workbench/services/query/common/que
 import { ILogService } from 'vs/platform/log/common/log';
 import { IRange } from 'vs/editor/common/core/range';
 import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
+import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and

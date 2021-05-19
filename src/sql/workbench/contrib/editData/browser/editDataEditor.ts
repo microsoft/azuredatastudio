@@ -20,7 +20,7 @@ import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
-import { IAction, IActionViewItem } from 'vs/base/common/actions';
+import { IAction } from 'vs/base/common/actions';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { IEditorDescriptorService } from 'sql/workbench/services/queryEditor/browser/editorDescriptorService';
 import {
@@ -37,6 +37,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session

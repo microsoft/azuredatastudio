@@ -5,8 +5,9 @@
 
 import * as assert from 'assert';
 import { OverflowActionBar } from 'sql/base/browser/ui/taskbar/overflowActionbar';
-import { Action, IActionViewItem } from 'vs/base/common/actions';
+import { Action } from 'vs/base/common/actions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 
 
 suite('Overflow Actionbar tests', () => {

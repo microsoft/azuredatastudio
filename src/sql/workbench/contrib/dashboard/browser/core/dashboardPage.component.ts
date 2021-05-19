@@ -30,7 +30,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
 import * as objects from 'vs/base/common/objects';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Action, IAction, IActionViewItem } from 'vs/base/common/actions';
+import { Action, IAction } from 'vs/base/common/actions';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -53,6 +53,7 @@ import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { focusBorder } from 'vs/platform/theme/common/colorRegistry';
 import { LabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 import { DASHBOARD_BORDER, TOOLBAR_OVERFLOW_SHADOW } from 'sql/workbench/common/theme';
+import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 const homeTabGroupId = 'home';
