@@ -11,7 +11,7 @@
 		"package": {
 			"displayName": "Funzionalità del linguaggio JSON",
 			"description": "Fornisce supporto avanzato del linguaggio per i file JSON.",
-			"json.schemas.desc": "Associa schemi a file JSON nel progetto corrente",
+			"json.schemas.desc": "Associa schemi a file JSON nel progetto corrente.",
 			"json.schemas.url.desc": "URL di uno schema o percorso relativo di uno schema nella directory corrente",
 			"json.schemas.fileMatch.desc": "Durante la risoluzione di file JSON in schemi è possibile usare una matrice di criteri di file, oltre a `*` come carattere jolly per la ricerca. È anche possibile definire criteri di esclusione aggiungendo il prefisso '!'. Un file corrisponde quando è presente almeno un criterio di corrispondenza e l'ultimo criterio di corrispondenza non è un criterio di esclusione.",
 			"json.schemas.fileMatch.item.desc": "Criteri dei file che possono contenere '*' da usare per la ricerca durante la risoluzione di file JSON in schemi.",

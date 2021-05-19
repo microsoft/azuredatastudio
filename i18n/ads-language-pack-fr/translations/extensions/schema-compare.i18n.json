@@ -8,12 +8,12 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"extensions/schema-compare/package": {
+		"package": {
 			"displayName": "Comparer les schémas SQL Server",
 			"description": "Comparer les schémas SQL Server pour Azure Data Studio prend en charge la comparaison des schémas de bases de données et de fichiers dacpac.",
 			"schemaCompare.start": "Comparer les schémas"
 		},
-		"extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog": {
+		"out/dialogs/schemaCompareOptionsDialog": {
 			"SchemaCompareOptionsDialog.Ok": "OK",
 			"SchemaCompareOptionsDialog.Cancel": "Annuler",
 			"SchemaCompareOptionsDialog.Reset": "Réinitialiser",
@@ -242,7 +242,7 @@
 			"SchemaCompare.Description.DropObjectsNotInSource": "Spécifie si les objets qui n'existent pas dans le fichier d'instantané de base de données (.dacpac) doivent être supprimés de la base de données cible quand vous publiez dans une base de données. Cette valeur est prioritaire sur DropExtendedProperties.",
 			"SchemaCompare.Description.IgnoreColumnOrder": "Spécifie si les différences d'ordre des colonnes de table doivent être ignorées ou mises à jour quand vous publiez dans une base de données."
 		},
-		"extensions/schema-compare/out/dialogs/schemaCompareDialog": {
+		"out/dialogs/schemaCompareDialog": {
 			"schemaCompareDialog.ok": "OK",
 			"schemaCompareDialog.cancel": "Annuler",
 			"schemaCompareDialog.SourceTitle": "Source",
@@ -263,7 +263,7 @@
 			"schemaCompare.openFile": "Ouvrir",
 			"schemaCompareDialog.defaultUser": "par défaut"
 		},
-		"extensions/schema-compare/out/schemaCompareMainWindow": {
+		"out/schemaCompareMainWindow": {
 			"schemaCompare.CompareDetailsTitle": "Comparer les détails",
 			"schemaCompare.ApplyConfirmation": "Voulez-vous vraiment mettre à jour la cible ?",
 			"schemaCompare.RecompareToRefresh": "Appuyez sur Comparer pour actualiser la comparaison.",

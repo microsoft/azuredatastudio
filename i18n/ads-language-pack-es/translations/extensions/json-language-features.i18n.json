@@ -11,7 +11,7 @@
 		"package": {
 			"displayName": "Características del lenguaje JSON",
 			"description": "Proporciona un potente soporte de lenguaje para archivos JSON.",
-			"json.schemas.desc": "Asociar esquemas a archivos JSON en el proyecto actual",
+			"json.schemas.desc": "Asocia esquemas a archivos JSON en el proyecto actual.",
 			"json.schemas.url.desc": "Una dirección URL a un esquema o una ruta de acceso relativa a un esquema en el directorio actual",
 			"json.schemas.fileMatch.desc": "Una matriz de patrones de archivo con los que buscar correspondencia al resolver archivos JSON en esquemas. \"*\" se puede usar como comodín. Los patrones de exclusión también se pueden definir y comenzar con \"!\". Un archivo coincide cuando hay al menos un patrón coincidente y el último patrón coincidente no es un patrón de exclusión.",
 			"json.schemas.fileMatch.item.desc": "Un patrón de archivo que puede contener \"*\" con el cual coincidir cuando los archivos JSON se resuelvan en esquemas.",

@@ -17,18 +17,26 @@
 		},
 		"dist/publish": {
 			"pick folder": "Seleccionar una carpeta para publicar en GitHub",
-			"ignore": "Seleccione los archivos que se deben incluir en el repositorio."
+			"ignore": "Seleccione los archivos que se deben incluir en el repositorio.",
+			"publishing_private": "Publicando en un repositorio de GitHub privado",
+			"publishing_public": "Publicando en un repositorio de GitHub público",
+			"publishing_firstcommit": "Creando el primer \"commit\"",
+			"publishing_uploading": "Cargando archivos",
+			"openingithub": "Abrir en GitHub",
+			"publishing_done": "El repositorio \"{0}\" se ha publicado correctamente en GitHub."
 		},
 		"dist/pushErrorHandler": {
+			"ok": "Aceptar",
+			"fork unable": "No tiene permisos para aplicar \"push\" a \"{0}/{1}\" en GitHub.",
 			"create a fork": "Crear bifurcación",
 			"no": "No",
 			"fork": "No tiene permisos para realizar la inserción en \"{0}/{1}\" en GitHub. ¿Desea crear una bifurcación y realizar mejor en ella la inserción?",
 			"create fork": "Crear bifurcación de GitHub",
 			"forking": "Bifurcando \"{0}/{1}\"...",
-			"pushing": "Insertando cambios...",
+			"forking_pushing": "Insertando cambios...",
 			"openingithub": "Abrir en GitHub",
 			"createpr": "Crear PR",
-			"done": "La bifurcación \"{0}\" se creó correctamente en GitHub.",
+			"forking_done": "La bifurcación \"{0}\" se creó correctamente en GitHub.",
 			"createghpr": "Creando solicitud de incorporación de cambios de GitHub...",
 			"openpr": "Abrir PR",
 			"donepr": "La PR \"{0}/{1}#{2}\" se creó correctamente en GitHub."

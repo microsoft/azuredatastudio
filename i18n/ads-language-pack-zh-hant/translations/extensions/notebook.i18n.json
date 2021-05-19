@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"extensions/notebook/package": {
+		"package": {
 			"displayName": "Notebook 核心延伸模組",
 			"description": "定義以資料通訊協定為基礎的 Notebook 貢獻，以及許多 Notebook 命令和貢獻。",
 			"notebook.configuration.title": "Notebook 組態",
@@ -16,7 +16,11 @@
 			"notebook.useExistingPython.description": "Notebooks 所使用之現有 python 安裝的本機路徑。",
 			"notebook.overrideEditorTheming.description": "覆寫 Notebook 編輯器中的預設設定。設定包含背景色彩、目前的線條色彩和框線",
 			"notebook.maxTableRows.description": "Notebook 編輯器中每一資料表傳回的資料列數上限",
+			"notebook.trustedBooks.description": "將會自動信任包含在這些書籍中的筆記本。",
 			"notebook.maxBookSearchDepth.description": "用來搜尋書籍的子目錄最大深度 (輸入 0 表示無限)",
+			"notebook.collapseBookItems.description": "在 Notebooks Viewlet 中的根層級摺疊書籍項目",
+			"notebook.remoteBookDownloadTimeout.description": "GitHub 書籍的下載逾時 (毫秒)",
+			"notebook.pinnedNotebooks.description": "目前工作區之使用者所釘選的筆記本",
 			"notebook.command.new": "新增 Notebook",
 			"notebook.command.open": "開啟 Notebook",
 			"notebook.analyzeJupyterNotebook": "在 Notebook 中分析",
@@ -40,20 +44,109 @@
 			"title.SQL19PreviewBook": "SQL Server 2019 指南",
 			"books-preview-category": "Jupyter 書籍",
 			"title.saveJupyterBook": "儲存書籍",
+			"title.trustBook": "信任書籍",
 			"title.searchJupyterBook": "搜尋書籍",
-			"title.SavedBooks": "已儲存書籍",
-			"title.UntitledBooks": "未命名書籍"
+			"title.SavedBooks": "Notebooks",
+			"title.ProvidedBooks": "提供的書籍",
+			"title.PinnedBooks": "已釘選的筆記本",
+			"title.PreviewLocalizedBook": "取得當地語系化 SQL Server 2019 指南",
+			"title.openJupyterBook": "開啟 Jupyter 書籍",
+			"title.closeJupyterBook": "關閉 Jupyter 書籍",
+			"title.closeJupyterNotebook": "關閉 Jupyter Notebook",
+			"title.revealInBooksViewlet": "在書籍中顯示",
+			"title.createJupyterBook": "建立書籍 (預覽)",
+			"title.openNotebookFolder": "在資料夾中開啟 Notebooks",
+			"title.openRemoteJupyterBook": "新增遠端 Jupyter 書籍",
+			"title.pinNotebook": "釘選筆記本",
+			"title.unpinNotebook": "取消釘選筆記本",
+			"title.moveTo": "移至..."
 		},
-		"extensions/notebook/dist/common/utils": {
-			"mkdirOutputMsg": "... 正在建立 {0}",
-			"executeCommandProcessExited": "處理序已結束，代碼為 {0}"
+		"dist/common/utils": {
+			"ensureDirOutputMsg": "...正在確認 {0} 存在",
+			"executeCommandProcessExited": "處理序已結束。錯誤碼: {0}。StdErr 輸出: {1}"
 		},
-		"extensions/notebook/dist/common/localizedConstants": {
+		"dist/common/constants": {
+			"managePackages.localhost": "localhost",
+			"managePackages.packageNotFound": "找不到指定的套件"
+		},
+		"dist/common/localizedConstants": {
 			"msgYes": "是",
 			"msgNo": "否",
-			"msgSampleCodeDataFrame": "這個範例程式碼會將檔案載入資料框架，並顯示前 10 個結果。"
+			"msgSampleCodeDataFrame": "這個範例程式碼會將檔案載入資料框架，並顯示前 10 個結果。",
+			"noBDCConnectionError": "Spark 核心需要對 SQL Server 巨量資料叢集主要執行個體的連線。",
+			"providerNotValidError": "Spark 核心不支援非 MSSQL 提供者。",
+			"allFiles": "所有檔案",
+			"labelSelectFolder": "選取資料夾",
+			"labelBookFolder": "選取書籍",
+			"confirmReplace": "已有資料夾。確定要刪除並取代此資料夾嗎?",
+			"openNotebookCommand": "開啟 Notebook",
+			"openMarkdownCommand": "開啟 Markdown",
+			"openExternalLinkCommand": "開啟外部連結",
+			"msgBookTrusted": "書籍在此工作區現已受信任。",
+			"msgBookAlreadyTrusted": "書籍在此工作區已受信任。",
+			"msgBookUntrusted": "書籍在此工作區已不再受信任",
+			"msgBookAlreadyUntrusted": "書籍在此工作區未受信任。",
+			"msgBookPinned": "書籍 {0} 現已釘選在工作區中。",
+			"msgBookUnpinned": "書籍 {0} 已不再釘選於此工作區中",
+			"bookInitializeFailed": "找不到指定書籍中的目錄檔案。",
+			"noBooksSelected": "目前未在 Viewlet 中選取任何書籍。",
+			"labelBookSection": "選取書籍區段",
+			"labelAddToLevel": "新增至此層級",
+			"missingFileError": "缺少檔案: {1} 的 {0}",
+			"InvalidError.tocFile": "TOC 檔案無效",
+			"Invalid toc.yml": "錯誤: {0} 有不正確的 toc.yml 檔案",
+			"configFileError": "缺少組態檔",
+			"openBookError": "無法開啟書籍 {0}: {1}",
+			"readBookError": "無法讀取書籍 {0}: {1}",
+			"openNotebookError": "無法開啟筆記本 {0}: {1}",
+			"openMarkdownError": "開啟 Markdown {0} 失敗: {1}",
+			"openUntitledNotebookError": "無法將未命名的書籍 {0} 以未命名開啟: {1}",
+			"openExternalLinkError": "開啟連結 {0} 失敗: {1}",
+			"closeBookError": "無法關閉書籍 {0}: {1}",
+			"duplicateFileError": "檔案 {0} 已存在於目的地資料夾 {1} 中 \r\n 檔案已重新命名為 {2}，以避免資料遺失。",
+			"editBookError": "編輯書籍 {0} 時發生錯誤: {1}",
+			"selectBookError": "選取要編輯的書籍或區段時發生錯誤: {0}",
+			"url": "URL",
+			"repoUrl": "存放庫 URL",
+			"location": "位置",
+			"addRemoteBook": "新增遠端書籍",
+			"onGitHub": "GitHub",
+			"onsharedFile": "共用的檔案",
+			"releases": "版本",
+			"book": "書籍",
+			"version": "版本",
+			"language": "語言",
+			"booksNotFound": "提供的連結目前沒有任何書籍可供使用",
+			"urlGithubError": "提供的 URL 並非 Github 版本 URL",
+			"search": "搜尋",
+			"add": "新增",
+			"close": "關閉",
+			"invalidTextPlaceholder": "-",
+			"msgRemoteBookDownloadProgress": "正在下載遠端書籍",
+			"msgRemoteBookDownloadComplete": "遠端書籍下載已完成",
+			"msgRemoteBookDownloadError": "下載遠端書籍時發生錯誤",
+			"msgRemoteBookUnpackingError": "解壓縮遠端書籍時發生錯誤",
+			"msgRemoteBookDirectoryError": "建立遠端書籍目錄時發生錯誤",
+			"msgTaskName": "正在下載遠端書籍",
+			"msgResourceNotFound": "找不到資源",
+			"msgBookNotFound": "找不到書籍",
+			"msgReleaseNotFound": "找不到版本",
+			"msgUndefinedAssetError": "選取的書籍無效",
+			"httpRequestError": "Http 要求失敗。錯誤: {0} {1}",
+			"msgDownloadLocation": "正在下載至 {0}",
+			"newGroup": "新增群組",
+			"groupDescription": "群組可用於整理 Notebooks。",
+			"locationBrowser": "瀏覽位置...",
+			"selectContentFolder": "選取內容資料夾",
+			"browse": "瀏覽",
+			"create": "建立",
+			"name": "名稱",
+			"saveLocation": "儲存位置",
+			"contentFolder": "內容資料夾 (選擇性)",
+			"msgContentFolderError": "內容資料夾路徑不存在",
+			"msgSaveFolderError": "儲存位置路徑不存在"
 		},
-		"extensions/notebook/dist/jupyter/jupyterServerInstallation": {
+		"dist/jupyter/jupyterServerInstallation": {
 			"msgInstallPkgProgress": "正在安裝 Notebook 相依性",
 			"msgPythonDownloadComplete": "Python 下載完成",
 			"msgPythonDownloadError": "下載 python 設定時發生錯誤",
@@ -65,79 +158,96 @@
 			"msgInstallPkgStart": "正在安裝 Notebook 相依性，請參閱 [工作] 檢視以取得詳細資訊",
 			"msgInstallPkgFinish": "Notebook 相依性安裝完成",
 			"msgPythonRunningError": "當 Python 正在執行時，無法覆寫現有的 Python 安裝。請先關閉所有使用中的筆記本再繼續。",
-			"msgSkipPythonInstall": "Python 已經存在於特定位置。即將跳過安裝。",
 			"msgWaitingForInstall": "目前在進行另一個 Python 安裝。請等它完成。",
 			"msgDependenciesInstallationFailed": "安裝 Notebook 相依性失敗。錯誤: {0}",
 			"msgDownloadPython": "正在將平台的本機 python: {0} 下載至 {1}",
-			"confirmPackageUpgrade": "某些已安裝的 Python 套件需要升級。要立即升級嗎?",
-			"upgradePackages.pipInstall": "正在安裝 {0}",
-			"msgInstallStart": "正在安裝執行 Notebooks 所需的套件...",
-			"msgJupyterInstallDone": "... Jupyter 安裝完成。"
+			"msgPackageRetrievalFailed": "嘗試擷取已安裝套件的清單時發生錯誤: {0}",
+			"msgGetPythonUserDirFailed": "取得 Python 使用者路徑時發生錯誤: {0}"
 		},
-		"extensions/notebook/dist/dialog/configurePythonDialog": {
-			"configurePython.dialogName": "為 Notebooks 設定 Python",
+		"dist/dialog/configurePython/configurePythonWizard": {
 			"configurePython.okButtonText": "安裝",
-			"configurePython.cancelButtonText": "取消",
-			"configurePython.browseButtonText": "瀏覽",
-			"configurePython.locationTextBoxText": "Python 安裝位置",
-			"configurePython.selectFileLabel": "選擇",
-			"configurePython.installNote": "此安裝需要一些時間。建議不要在安裝完成前關閉應用程式。",
 			"configurePython.invalidLocationMsg": "指定的安裝位置無效。",
-			"configurePython.pythonNotFoundMsg": "未於指定的位置找到任何 python 安裝。",
-			"configurePython.pythonInstallDeclined": "Python 安裝已遭拒。",
-			"configurePython.installationType": "安裝類型",
-			"configurePython.newInstall": "新增 Python 安裝",
-			"configurePython.existingInstall": "使用現有的 Python 安裝"
+			"configurePython.pythonNotFoundMsg": "在指定的位置找不到任何 Python 安裝。",
+			"configurePython.wizardNameWithKernel": "將 Python 設定為執行 {0} 核心",
+			"configurePython.wizardNameWithoutKernel": "將 Python 設定為執行核心",
+			"configurePython.page0Name": "設定 Python 執行階段",
+			"configurePython.page1Name": "安裝相依性",
+			"configurePython.pythonInstallDeclined": "Python 安裝已遭拒。"
 		},
-		"extensions/notebook/dist/extension": {
-			"msgSampleCodeDataFrame": "這個範例程式碼會將檔案載入資料框架，並顯示前 10 個結果。",
-			"noNotebookVisible": "沒有任何正在使用的筆記本編輯器",
+		"dist/extension": {
 			"codeCellName": "程式碼",
 			"textCellName": "文字",
-			"selectCellType": "您要新增什麼類型的資料格?",
-			"notebookFiles": "Notebooks"
+			"selectCellType": "您要新增什麼類型的資料格?"
 		},
-		"extensions/notebook/dist/jupyter/jupyterController": {
+		"dist/jupyter/jupyterController": {
 			"notebookFileType": "Notebooks",
 			"unsupportedFileType": "僅支援 .ipynb Notebooks",
 			"confirmReinstall": "確定要重新安裝嗎?"
 		},
-		"extensions/notebook/dist/jupyter/jupyterServerManager": {
+		"dist/dialog/configurePython/configurePathPage": {
+			"configurePython.browseButtonText": "瀏覽",
+			"configurePython.selectFileLabel": "選取",
+			"configurePython.descriptionWithKernel": "{0} 核心需要設定 Python 執行階段並安裝相依性。",
+			"configurePython.descriptionWithoutKernel": "Notebook 核心需要設定 Python 執行階段並安裝相依性。",
+			"configurePython.installationType": "安裝類型",
+			"configurePython.locationTextBoxText": "Python 安裝位置",
+			"configurePython.pythonConfigured": "已設定 Python 執行階段!",
+			"configurePythyon.dropdownPathLabel": "{0} (Python {1})",
+			"configurePythyon.noVersionsFound": "找不到支援的 Python 版本。",
+			"configurePythyon.defaultPathLabel": "{0} (預設)",
+			"configurePython.newInstall": "新增 Python 安裝",
+			"configurePython.existingInstall": "使用現有的 Python 安裝",
+			"configurePythyon.customPathLabel": "{0} (自訂)"
+		},
+		"dist/dialog/configurePython/pickPackagesPage": {
+			"configurePython.pkgNameColumn": "名稱",
+			"configurePython.existingVersionColumn": "現有的版本",
+			"configurePython.requiredVersionColumn": "所需版本",
+			"configurePython.kernelLabel": "核心",
+			"configurePython.requiredDependencies": "安裝必要的核心相依性",
+			"msgUnsupportedKernel": "無法擷取核心 {0} 的套件"
+		},
+		"dist/jupyter/jupyterServerManager": {
 			"shutdownError": "無法關閉 Notebook 伺服器: {0}"
 		},
-		"extensions/notebook/dist/jupyter/serverInstance": {
+		"dist/jupyter/serverInstance": {
 			"serverStopError": "停止 Notebook 伺服器時發生錯誤: {0}",
-			"notebookStartProcessExitPremature": "Notebook 處理序提前結束。錯誤: {0}，StdErr 輸出: {1}",
+			"notebookStartProcessExitPremature": "Notebook 處理序提前結束。錯誤碼: {0}。StdErr 輸出: {1}",
 			"jupyterError": "從 Jupyter 傳送的錯誤: {0}",
 			"jupyterOutputMsgStartSuccessful": "... Jupyter 正在 {0} 中執行",
 			"jupyterOutputMsgStart": "... 正在啟動 Notebook 伺服器"
 		},
-		"extensions/notebook/dist/jupyter/jupyterNotebookProvider": {
+		"dist/jupyter/jupyterNotebookProvider": {
 			"errNotebookUriMissing": "筆記本路徑為必要項"
 		},
-		"extensions/notebook/dist/jupyter/jupyterSessionManager": {
+		"dist/jupyter/jupyterSessionManager": {
 			"errorStartBeforeReady": "無法啟動工作階段，管理員尚未初始化",
-			"connectionNotValid": "Spark 核心需要對 SQL Server 巨量資料叢集主要執行個體的連線。"
+			"notebook.couldNotFindKnoxGateway": "找不到 Knox 閘道端點",
+			"promptBDCUsername": "{0}請提供使用者名稱以連線至 BDC 控制器:",
+			"promptBDCPassword": "請提供密碼以連線至 BDC 控制器",
+			"bdcConnectError": "錯誤: {0}。 ",
+			"clusterControllerConnectionRequired": "必須連線至叢集控制器，才能執行 Spark 作業"
 		},
-		"extensions/notebook/dist/dialog/managePackages/managePackagesDialog": {
+		"dist/dialog/managePackages/managePackagesDialog": {
 			"managePackages.dialogName": "管理套件",
 			"managePackages.cancelButtonText": "關閉"
 		},
-		"extensions/notebook/dist/dialog/managePackages/installedPackagesTab": {
+		"dist/dialog/managePackages/installedPackagesTab": {
 			"managePackages.installedTabTitle": "已安裝",
 			"managePackages.pkgNameColumn": "名稱",
 			"managePackages.newPkgVersionColumn": "版本",
+			"managePackages.deleteColumn": "刪除",
 			"managePackages.uninstallButtonText": "將選取的套件解除安裝",
 			"managePackages.packageType": "套件類型",
+			"managePackages.location": "位置",
 			"managePackages.packageCount": "已找到 {0} 個 {1} 套件",
 			"managePackages.confirmUninstall": "確定要將指定的套件解除安裝嗎?",
 			"managePackages.backgroundUninstallStarted": "正在將 {0} 解除安裝",
 			"managePackages.backgroundUninstallComplete": "已解除安裝 {0}",
 			"managePackages.backgroundUninstallFailed": "無法將 {0} 解除安裝。錯誤: {1}"
 		},
-		"extensions/notebook/dist/dialog/managePackages/addNewPackageTab": {
+		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.invalidTextPlaceholder": "N/A",
-			"managePackages.packageNotFound": "找不到指定的套件",
 			"managePackages.searchBarPlaceholder": "搜尋 {0} 個套件",
 			"managePackages.addNewTabTitle": "新增",
 			"managePackages.searchButtonLabel": "搜尋",
@@ -146,37 +256,24 @@
 			"managePackages.packageVersionTitle": "套件版本",
 			"managePackages.packageSummaryTitle": "套件摘要",
 			"managePackages.noVersionsFound": "無法為指定的套件找到任何有效版本",
-			"managePackages.packageRequestError": "套件資訊要求失敗。錯誤: {0} {1}",
 			"managePackages.backgroundInstallStarted": "正在安裝 {0} {1}",
 			"managePackages.backgroundInstallComplete": "已完成 {0} {1} 的安裝",
 			"managePackages.backgroundInstallFailed": "無法安裝 {0} {1}。錯誤: {2}"
 		},
-		"extensions/notebook/dist/protocol/notebookUriHandler": {
+		"dist/jupyter/pypiClient": {
+			"managePackages.packageRequestError": "套件資訊要求失敗。錯誤: {0} {1}"
+		},
+		"dist/common/notebookUtils": {
+			"msgSampleCodeDataFrame": "這個範例程式碼會將檔案載入資料框架，並顯示前 10 個結果。",
+			"noNotebookVisible": "沒有任何正在使用的筆記本編輯器",
+			"notebookFiles": "Notebooks"
+		},
+		"dist/protocol/notebookUriHandler": {
 			"notebook.unsupportedAction": "這個處理常式不支援動作 {0}",
 			"unsupportedScheme": "因為只支援 HTTP 和 HTTPS 連結，所以無法開啟連結 {0}",
 			"notebook.confirmOpen": "要下載並開啟 '{0}' 嗎?",
 			"notebook.fileNotFound": "無法尋找指定的檔案",
 			"notebook.fileDownloadError": "檔案開啟要求失敗。錯誤: {0} {1}"
-		},
-		"extensions/notebook/dist/book/bookTreeView": {
-			"openBookError": "無法開啟書籍 {0}: {1}",
-			"openNotebookError": "無法開啟筆記本 {0}: {1}",
-			"openMarkdownError": "開啟 Markdown {0} 失敗: {1}",
-			"openUntitledNotebookError": "無法將未命名的書籍 {0} 以未命名開啟: {1}",
-			"allFiles": "所有檔案",
-			"labelPickFolder": "挑選資料夾",
-			"openExternalLinkError": "開啟連結 {0} 失敗: {1}",
-			"confirmReplace": "已有資料夾。確定要刪除並取代此資料夾嗎?"
-		},
-		"extensions/notebook/dist/book/bookModel": {
-			"missingFileError": "缺少檔案 : {0}",
-			"InvalidError.tocFile": "{0}",
-			"Invalid toc.yml": "錯誤: {0} 有不正確的 toc.yml 檔案"
-		},
-		"extensions/notebook/dist/book/bookTreeItem": {
-			"openNotebookCommand": "開啟 Notebook",
-			"openMarkdownCommand": "開啟 Markdown",
-			"openExternalLinkCommand": "開啟外部連結"
 		}
 	}
 }
