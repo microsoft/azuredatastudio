@@ -208,12 +208,13 @@ class DataResourceTable extends GridTableBase<any> {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IThemeService themeService: IThemeService,
-		@IContextViewService contextViewService: IContextViewService
+		@IContextViewService contextViewService: IContextViewService,
+		@INotificationService notificationService: INotificationService
 	) {
 		super(state, createResultSet(source), {
 			actionOrientation: ActionsOrientation.HORIZONTAL,
 			inMemoryDataProcessing: true
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel);
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 

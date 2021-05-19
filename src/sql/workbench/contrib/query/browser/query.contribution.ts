@@ -394,7 +394,7 @@ const queryEditorConfiguration: IConfigurationNode = {
 		'queryEditor.results.inMemoryDataProcessingThreshold': {
 			'type': 'number',
 			'default': 5000,
-			'description': localize('queryEditor.inMemoryDataProcessingThreshold', "Controls the max number of rows allowed to do filtering and sorting in memory. If the number is exceeded, sorting and filtering will be disabled.")
+			'description': localize('queryEditor.inMemoryDataProcessingThreshold', "Controls the max number of rows allowed to do filtering and sorting in memory. If the number is exceeded, sorting and filtering will be disabled. Warning: Increasing this may impact performance.")
 		},
 		'queryEditor.messages.showBatchTime': {
 			'type': 'boolean',
