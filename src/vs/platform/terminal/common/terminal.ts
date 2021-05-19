@@ -6,6 +6,45 @@
 import { Event } from 'vs/base/common/event';
 import { IProcessEnvironment } from 'vs/base/common/platform';
 import { URI } from 'vs/base/common/uri';
+import { IGetTerminalLayoutInfoArgs, IPtyHostProcessReplayEvent, ISetTerminalLayoutInfoArgs } from 'vs/platform/terminal/common/terminalProcess';
+
+export interface IRawTerminalInstanceLayoutInfo<T> {
+	relativeSize: number;
+	terminal: T;
+}
+export type ITerminalInstanceLayoutInfoById = IRawTerminalInstanceLayoutInfo<number>;
+export type ITerminalInstanceLayoutInfo = IRawTerminalInstanceLayoutInfo<IPtyHostAttachTarget>;
+
+export interface IRawTerminalTabLayoutInfo<T> {
+	isActive: boolean;
+	activeTerminalProcessId: number | undefined;
+	terminals: IRawTerminalInstanceLayoutInfo<T>[];
+}
+
+export type ITerminalTabLayoutInfoById = IRawTerminalTabLayoutInfo<number>;
+export type ITerminalTabLayoutInfo = IRawTerminalTabLayoutInfo<IPtyHostAttachTarget | null>;
+
+export interface IRawTerminalsLayoutInfo<T> {
+	tabs: IRawTerminalTabLayoutInfo<T>[];
+}
+
+export interface IPtyHostAttachTarget {
+	id: number;
+	pid: number;
+	title: string;
+	cwd: string;
+	workspaceId: string;
+	workspaceName: string;
+	isOrphan: boolean;
+}
+
+export type ITerminalsLayoutInfo = IRawTerminalsLayoutInfo<IPtyHostAttachTarget | null>;
+export type ITerminalsLayoutInfoById = IRawTerminalsLayoutInfo<number>;
+
+export interface IRawTerminalInstanceLayoutInfo<T> {
+	relativeSize: number;
+	terminal: T;
+}
 
 export enum TerminalIpcChannels {
 	/**
@@ -39,6 +78,11 @@ export interface IPtyService {
 	readonly onProcessTitleChanged: Event<{ id: number, event: string }>;
 	readonly onProcessOverrideDimensions: Event<{ id: number, event: ITerminalDimensionsOverride | undefined }>;
 	readonly onProcessResolvedShellLaunchConfig: Event<{ id: number, event: IShellLaunchConfig }>;
+	readonly onProcessReplay: Event<{ id: number, event: IPtyHostProcessReplayEvent }>;
+
+	restartPtyHost?(): Promise<void>;
+
+	shutdownAll?(): Promise<void>;
 
 	createProcess(
 		shellLaunchConfig: IShellLaunchConfig,
@@ -47,12 +91,14 @@ export interface IPtyService {
 		rows: number,
 		env: IProcessEnvironment,
 		executableEnv: IProcessEnvironment,
-		windowsEnableConpty: boolean
+		windowsEnableConpty: boolean,
+		workspaceId: string,
+		workspaceName: string
 	): Promise<number>;
 
-	shutdownAll?(): Promise<void>;
+	fetchPersistentTerminalProcess(id: number): Promise<number>;
 
-	start(id: number): Promise<ITerminalLaunchError | { remoteTerminalId: number; } | undefined>;
+	start(id: number): Promise<ITerminalLaunchError | { persistentTerminalId: number; } | undefined>;
 
 	shutdown(id: number, immediate: boolean): Promise<void>;
 
@@ -68,7 +114,9 @@ export interface IPtyService {
 
 	getLatency(id: number): Promise<number>;
 
-	restartPtyHost?(): Promise<void>;
+	setTerminalLayoutInfo(args: ISetTerminalLayoutInfoArgs): void;
+
+	getTerminalLayoutInfo(args: IGetTerminalLayoutInfoArgs): Promise<ITerminalsLayoutInfo | undefined>;
 }
 
 export enum HeartbeatConstants {
@@ -157,9 +205,9 @@ export interface IShellLaunchConfig {
 	extHostTerminalId?: string;
 
 	/**
-	 * This is a terminal that attaches to an already running remote terminal.
+	 * This is a terminal that attaches to an already running terminal.
 	 */
-	remoteAttach?: { id: number; pid: number; title: string; cwd: string; };
+	attachPersistentTerminal?: { id: number; pid: number; title: string; cwd: string; };
 
 	/**
 	 * Whether the terminal process environment should be exactly as provided in
@@ -218,7 +266,7 @@ export interface ITerminalChildProcess {
 	 * @returns undefined when the process was successfully started, otherwise an object containing
 	 * information on what went wrong.
 	 */
-	start(): Promise<ITerminalLaunchError | { remoteTerminalId: number } | undefined>;
+	start(): Promise<ITerminalLaunchError | { persistentTerminalId: number } | undefined>;
 
 	/**
 	 * Shutdown the terminal process.
@@ -241,6 +289,17 @@ export interface ITerminalChildProcess {
 	getInitialCwd(): Promise<string>;
 	getCwd(): Promise<string>;
 	getLatency(): Promise<number>;
+}
+
+export const enum LocalReconnectConstants {
+	/**
+	 * If there is no reconnection within this time-frame, consider the connection permanently closed...
+	*/
+	ReconnectionGraceTime = 5000, // 5 seconds
+	/**
+	 * Maximal grace time between the first and the last reconnection...
+	*/
+	ReconnectionShortGraceTime = 1000, // 1 second
 }
 
 export const enum FlowControlConstants {

@@ -42,11 +42,11 @@ import { XTermCore } from 'vs/workbench/contrib/terminal/browser/xterm-private';
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import { IViewsService, IViewDescriptorService, ViewContainerLocation } from 'vs/workbench/common/views';
 import { EnvironmentVariableInfoWidget } from 'vs/workbench/contrib/terminal/browser/widgets/environmentVariableInfoWidget';
-import { IEnvironmentVariableInfo } from 'vs/workbench/contrib/terminal/common/environmentVariable';
 import { TerminalLaunchHelpAction } from 'vs/workbench/contrib/terminal/browser/terminalActions';
 import { TypeAheadAddon } from 'vs/workbench/contrib/terminal/browser/terminalTypeAheadAddon';
 import { BrowserFeatures } from 'vs/base/browser/canIUse';
 import { IPreferencesService } from 'vs/workbench/services/preferences/common/preferences';
+import { IEnvironmentVariableInfo } from 'vs/workbench/contrib/terminal/common/environmentVariable';
 import { IProcessDataEvent, IShellLaunchConfig, ITerminalDimensionsOverride, ITerminalLaunchError } from 'vs/platform/terminal/common/terminal';
 
 // How long in milliseconds should an average frame take to render for a notification to appear
@@ -373,7 +373,7 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 		return TerminalInstance._lastKnownCanvasDimensions;
 	}
 
-	public get remoteTerminalId(): number | undefined { return this._processManager.remoteTerminalId; }
+	public get persistentTerminalId(): number | undefined { return this._processManager.persistentTerminalId; }
 
 	private async _getXtermConstructor(): Promise<typeof XTermTerminal> {
 		if (xtermConstructor) {
@@ -1210,7 +1210,7 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 			shell.initialText = ' ';
 		}
 
-		// Set the new shell launch config
+		// Set the new shell launch configinalService
 		this._shellLaunchConfig = shell; // Must be done before calling _createProcess()
 
 		// Kill and clear up the process, making the process manager ready for a new process

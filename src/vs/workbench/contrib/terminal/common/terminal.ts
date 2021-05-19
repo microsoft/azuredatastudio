@@ -9,9 +9,9 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { URI } from 'vs/base/common/uri';
 import { OperatingSystem } from 'vs/base/common/platform';
-import { IEnvironmentVariableInfo } from 'vs/workbench/contrib/terminal/common/environmentVariable';
 import { IExtensionPointDescriptor } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IProcessDataEvent, IShellLaunchConfig, ITerminalDimensions, ITerminalDimensionsOverride, ITerminalLaunchError } from 'vs/platform/terminal/common/terminal';
+import { IEnvironmentVariableInfo } from 'vs/workbench/contrib/terminal/common/environmentVariable';
 
 export const TERMINAL_VIEW_ID = 'terminal';
 
@@ -189,7 +189,7 @@ export type ITerminalInstanceLayoutInfo = IRawTerminalInstanceLayoutInfo<IRemote
 
 export interface IRawTerminalTabLayoutInfo<T> {
 	isActive: boolean;
-	activeTerminalProcessId: number;
+	activeTerminalProcessId: number | undefined;
 	terminals: IRawTerminalInstanceLayoutInfo<T>[];
 }
 
@@ -199,9 +199,6 @@ export type ITerminalTabLayoutInfo = IRawTerminalTabLayoutInfo<IRemoteTerminalAt
 export interface IRawTerminalsLayoutInfo<T> {
 	tabs: IRawTerminalTabLayoutInfo<T>[];
 }
-
-export type ITerminalsLayoutInfo = IRawTerminalsLayoutInfo<IRemoteTerminalAttachTarget | null>;
-export type ITerminalsLayoutInfoById = IRawTerminalsLayoutInfo<number>;
 
 /**
  * Provides access to native Windows calls that can be injected into non-native layers.
@@ -216,11 +213,6 @@ export interface ITerminalNativeWindowsDelegate {
 	 * @param path The Windows path.
 	 */
 	getWslPath(path: string): Promise<string>;
-}
-
-export interface IShellDefinition {
-	label: string;
-	path: string;
 }
 
 export interface ICommandTracker {
@@ -246,6 +238,27 @@ export interface IBeforeProcessDataEvent {
 	data: string;
 }
 
+export interface IShellDefinition {
+	label: string;
+	path: string;
+}
+
+export interface IAvailableShellsRequest {
+	callback: (shells: IShellDefinition[]) => void;
+}
+
+
+export interface IDefaultShellAndArgsRequest {
+	useAutomationShell: boolean;
+	callback: (shell: string, args: string[] | string | undefined) => void;
+}
+
+export interface IWindowsShellHelper extends IDisposable {
+	readonly onShellNameChange: Event<string>;
+
+	getShellName(): Promise<string>;
+}
+
 export interface ITerminalProcessManager extends IDisposable {
 	readonly processState: ProcessState;
 	readonly ptyProcessReady: Promise<void>;
@@ -254,7 +267,7 @@ export interface ITerminalProcessManager extends IDisposable {
 	readonly os: OperatingSystem | undefined;
 	readonly userHome: string | undefined;
 	readonly environmentVariableInfo: IEnvironmentVariableInfo | undefined;
-	readonly remoteTerminalId: number | undefined;
+	readonly persistentTerminalId: number | undefined;
 	/** Whether the process has had data written to it yet. */
 	readonly hasWrittenData: boolean;
 
@@ -365,6 +378,29 @@ export interface IWindowsShellHelper extends IDisposable {
 	readonly onShellNameChange: Event<string>;
 
 	getShellName(): Promise<string>;
+}
+
+export const enum FlowControlConstants {
+	/**
+	 * The number of _unacknowledged_ chars to have been sent before the pty is paused in order for
+	 * the client to catch up.
+	 */
+	HighWatermarkChars = 100000,
+	/**
+	 * After flow control pauses the pty for the client the catch up, this is the number of
+	 * _unacknowledged_ chars to have been caught up to on the client before resuming the pty again.
+	 * This is used to attempt to prevent pauses in the flowing data; ideally while the pty is
+	 * paused the number of unacknowledged chars would always be greater than 0 or the client will
+	 * appear to stutter. In reality this balance is hard to accomplish though so heavy commands
+	 * will likely pause as latency grows, not flooding the connection is the important thing as
+	 * it's shared with other core functionality.
+	 */
+	LowWatermarkChars = 5000,
+	/**
+	 * The number characters that are accumulated on the client side before sending an ack event.
+	 * This must be less than or equal to LowWatermarkChars or the terminal max never unpause.
+	 */
+	CharCountAckSize = 5000
 }
 
 export const enum TERMINAL_COMMAND_ID {

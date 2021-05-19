@@ -5,8 +5,9 @@
 
 import { Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IShellLaunchConfig, ITerminalLaunchError, ITerminalChildProcess, ITerminalDimensionsOverride, IProcessDataEvent } from 'vs/platform/terminal/common/terminal';
 import { ILocalPtyService } from 'vs/platform/terminal/electron-sandbox/terminal';
+import { IProcessDataEvent, IShellLaunchConfig, ITerminalChildProcess, ITerminalDimensionsOverride, ITerminalLaunchError } from 'vs/platform/terminal/common/terminal';
+import { IPtyHostProcessReplayEvent } from 'vs/platform/terminal/common/terminalProcess';
 
 /**
  * Responsible for establishing and maintaining a connection with an existing terminal process
@@ -15,6 +16,8 @@ import { ILocalPtyService } from 'vs/platform/terminal/electron-sandbox/terminal
 export class LocalPty extends Disposable implements ITerminalChildProcess {
 	private readonly _onProcessData = this._register(new Emitter<IProcessDataEvent | string>());
 	public readonly onProcessData = this._onProcessData.event;
+	private readonly _onProcessReplay = this._register(new Emitter<IPtyHostProcessReplayEvent>());
+	public readonly onProcessReplay = this._onProcessReplay.event;
 	private readonly _onProcessExit = this._register(new Emitter<number | undefined>());
 	public readonly onProcessExit = this._onProcessExit.event;
 	private readonly _onProcessReady = this._register(new Emitter<{ pid: number, cwd: string }>());
@@ -25,6 +28,7 @@ export class LocalPty extends Disposable implements ITerminalChildProcess {
 	public readonly onProcessOverrideDimensions = this._onProcessOverrideDimensions.event;
 	private readonly _onProcessResolvedShellLaunchConfig = this._register(new Emitter<IShellLaunchConfig>());
 	public readonly onProcessResolvedShellLaunchConfig = this._onProcessResolvedShellLaunchConfig.event;
+	private _inReplay = false;
 
 	constructor(
 		private readonly _localPtyId: number,
@@ -37,6 +41,31 @@ export class LocalPty extends Disposable implements ITerminalChildProcess {
 		this._localPtyService.onProcessTitleChanged(e => e.id === this._localPtyId && this._onProcessTitleChanged.fire(e.event));
 		this._localPtyService.onProcessOverrideDimensions(e => e.id === this._localPtyId && this._onProcessOverrideDimensions.fire(e.event));
 		this._localPtyService.onProcessResolvedShellLaunchConfig(e => e.id === this._localPtyId && this._onProcessResolvedShellLaunchConfig.fire(e.event));
+		this._localPtyService.onProcessReplay(event => {
+			if (event.id !== this._localPtyId) {
+				return;
+			}
+			try {
+				this._inReplay = true;
+
+				for (const e of event.event.events) {
+					if (e.cols !== 0 || e.rows !== 0) {
+						// never override with 0x0 as that is a marker for an unknown initial size
+						this._onProcessOverrideDimensions.fire({ cols: e.cols, rows: e.rows, forceExactSize: true });
+					}
+					this._onProcessData.fire({ data: e.data, sync: true });
+				}
+			} finally {
+				this._inReplay = false;
+			}
+
+			// remove size override
+			this._onProcessOverrideDimensions.fire(undefined);
+
+			return;
+		});
+
+
 		if (this._localPtyService.onPtyHostExit) {
 			this._localPtyService.onPtyHostExit(() => {
 				this._onProcessExit.fire(undefined);
@@ -44,7 +73,7 @@ export class LocalPty extends Disposable implements ITerminalChildProcess {
 		}
 	}
 
-	start(): Promise<ITerminalLaunchError | { remoteTerminalId: number; } | undefined> {
+	start(): Promise<ITerminalLaunchError | { persistentTerminalId: number; } | undefined> {
 		return this._localPtyService.start(this._localPtyId);
 	}
 
@@ -53,14 +82,23 @@ export class LocalPty extends Disposable implements ITerminalChildProcess {
 	}
 
 	input(data: string): void {
+		if (this._inReplay) {
+			return;
+		}
 		this._localPtyService.input(this._localPtyId, data);
 	}
 
 	resize(cols: number, rows: number): void {
+		if (this._inReplay) {
+			return;
+		}
 		this._localPtyService.resize(this._localPtyId, cols, rows);
 	}
 
 	acknowledgeDataEvent(charCount: number): void {
+		if (this._inReplay) {
+			return;
+		}
 		this._localPtyService.acknowledgeDataEvent(this._localPtyId, charCount);
 	}
 

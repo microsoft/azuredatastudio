@@ -7,11 +7,11 @@ import * as os from 'os';
 import * as fs from 'fs';
 import * as platform from 'vs/base/common/platform';
 import { SymlinkSupport } from 'vs/base/node/pfs';
-import { LinuxDistro, IShellDefinition } from 'vs/workbench/contrib/terminal/common/terminal';
 import { coalesce } from 'vs/base/common/arrays';
 import { normalize, basename } from 'vs/base/common/path';
 import { enumeratePowerShellInstallations } from 'vs/base/node/powershell';
 import { getWindowsBuildNumber } from 'vs/platform/terminal/node/terminalEnvironment';
+import { IShellDefinition, LinuxDistro } from 'vs/workbench/contrib/terminal/common/terminal';
 import * as processes from 'vs/base/node/processes'; // {{SQL CARBON EDIT}} - Add back getSystemShell for web build
 
 export function getSystemShell(p: platform.Platform, environment: platform.IProcessEnvironment = process.env as platform.IProcessEnvironment): string { // {{SQL CARBON EDIT}} - Add back getSystemShell for web build
