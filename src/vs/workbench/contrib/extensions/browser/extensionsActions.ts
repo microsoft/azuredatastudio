@@ -752,36 +752,6 @@ export interface IExtensionActionViewItemOptions extends IActionViewItemOptions 
 	tabOnlyOnFocus?: boolean;
 }
 
-export class ExtensionActionViewItem extends ActionViewItem {
-
-	constructor(context: any, action: IAction, options: IExtensionActionViewItemOptions = {}) {
-		super(context, action, options);
-	}
-
-	updateEnabled(): void {
-		super.updateEnabled();
-
-		if (this.label && (<IExtensionActionViewItemOptions>this.options).tabOnlyOnFocus && this.getAction().enabled && !this._hasFocus) {
-			DOM.removeTabIndexAndUpdateFocus(this.label);
-		}
-	}
-
-	private _hasFocus: boolean = false;
-	setFocus(value: boolean): void {
-		if (!(<IExtensionActionViewItemOptions>this.options).tabOnlyOnFocus || this._hasFocus === value) {
-			return;
-		}
-		this._hasFocus = value;
-		if (this.label && this.getAction().enabled) {
-			if (this._hasFocus) {
-				this.label.tabIndex = 0;
-			} else {
-				DOM.removeTabIndexAndUpdateFocus(this.label);
-			}
-		}
-	}
-}
-
 export class ExtensionActionWithDropdownActionViewItem extends ActionWithDropdownActionViewItem {
 
 	constructor(
@@ -805,29 +775,6 @@ export class ExtensionActionWithDropdownActionViewItem extends ActionWithDropdow
 		}
 	}
 
-	updateEnabled(): void {
-		super.updateEnabled();
-
-		if (this.label && (<IExtensionActionViewItemOptions>this.options).tabOnlyOnFocus && this.getAction().enabled && !this._hasFocus) {
-			DOM.removeTabIndexAndUpdateFocus(this.label);
-		}
-	}
-
-	private _hasFocus: boolean = false;
-	setFocus(value: boolean): void {
-		if (!(<IExtensionActionViewItemOptions>this.options).tabOnlyOnFocus || this._hasFocus === value) {
-			return;
-		}
-		this._hasFocus = value;
-		if (this.label && this.getAction().enabled) {
-			if (this._hasFocus) {
-				this.label.tabIndex = 0;
-			} else {
-				DOM.removeTabIndexAndUpdateFocus(this.label);
-			}
-		}
-	}
-
 }
 
 export abstract class ExtensionDropDownAction extends ExtensionAction {
@@ -837,7 +784,6 @@ export abstract class ExtensionDropDownAction extends ExtensionAction {
 		label: string,
 		cssClass: string,
 		enabled: boolean,
-		private readonly tabOnlyOnFocus: boolean,
 		@IInstantiationService protected instantiationService: IInstantiationService
 	) {
 		super(id, label, cssClass, enabled);
@@ -845,7 +791,7 @@ export abstract class ExtensionDropDownAction extends ExtensionAction {
 
 	private _actionViewItem: DropDownMenuActionViewItem | null = null;
 	createActionViewItem(): DropDownMenuActionViewItem {
-		this._actionViewItem = this.instantiationService.createInstance(DropDownMenuActionViewItem, this, this.tabOnlyOnFocus);
+		this._actionViewItem = this.instantiationService.createInstance(DropDownMenuActionViewItem, this);
 		return this._actionViewItem;
 	}
 
@@ -857,13 +803,12 @@ export abstract class ExtensionDropDownAction extends ExtensionAction {
 	}
 }
 
-export class DropDownMenuActionViewItem extends ExtensionActionViewItem {
+export class DropDownMenuActionViewItem extends ActionViewItem {
 
 	constructor(action: ExtensionDropDownAction,
-		tabOnlyOnFocus: boolean,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService
 	) {
-		super(null, action, { icon: true, label: true, tabOnlyOnFocus });
+		super(null, action, { icon: true, label: true });
 	}
 
 	public showMenu(menuActionGroups: IAction[][], disposeActionsOnHide: boolean): void {
@@ -937,7 +882,7 @@ export class ManageExtensionAction extends ExtensionDropDownAction {
 		@IWorkbenchThemeService private readonly workbenchThemeService: IWorkbenchThemeService,
 	) {
 
-		super(ManageExtensionAction.ID, '', '', true, true, instantiationService);
+		super(ManageExtensionAction.ID, '', '', true, instantiationService);
 
 		this.tooltip = localize('manage', "Manage");
 
@@ -1009,7 +954,7 @@ export class ExtensionEditorManageExtensionAction extends ExtensionDropDownActio
 	constructor(
 		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super('extensionEditor.manageExtension', '', `${ExtensionAction.ICON_ACTION_CLASS} manage ${ThemeIcon.asClassName(manageExtensionIcon)}`, true, true, instantiationService);
+		super('extensionEditor.manageExtension', '', `${ExtensionAction.ICON_ACTION_CLASS} manage ${ThemeIcon.asClassName(manageExtensionIcon)}`, true, instantiationService);
 		this.tooltip = localize('manage', "Manage");
 	}
 
@@ -2060,7 +2005,7 @@ export class ToggleSyncExtensionAction extends ExtensionDropDownAction {
 		@IUserDataAutoSyncEnablementService private readonly userDataAutoSyncEnablementService: IUserDataAutoSyncEnablementService,
 		@IInstantiationService instantiationService: IInstantiationService,
 	) {
-		super('extensions.sync', '', ToggleSyncExtensionAction.SYNC_CLASS, false, true, instantiationService);
+		super('extensions.sync', '', ToggleSyncExtensionAction.SYNC_CLASS, false, instantiationService);
 		this._register(Event.filter(this.configurationService.onDidChangeConfiguration, e => e.affectedKeys.includes('settingsSync.ignoredExtensions'))(() => this.update()));
 		this._register(userDataAutoSyncEnablementService.onDidChangeEnablement(() => this.update()));
 		this.update();
