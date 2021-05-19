@@ -529,8 +529,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.table.rerenderGrid();
 		}));
 		if (this.enableFilteringFeature) {
-			this.filterPlugin = new HeaderFilter(this.contextViewService, this.notificationService);
-			this.filterPlugin.disabledMessage = localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, you can go to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'");
+			this.filterPlugin = new HeaderFilter(this.contextViewService, this.notificationService, {
+				disabledFilterMessage: localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, you can go to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'")
+			});
 			this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
 			this.table.registerPlugin(this.filterPlugin);
 		}
