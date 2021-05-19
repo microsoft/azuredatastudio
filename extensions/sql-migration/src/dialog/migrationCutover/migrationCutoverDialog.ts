@@ -546,7 +546,7 @@ export class MigrationCutoverDialog {
 			});
 
 			if (migrationStatusTextValue === MigrationStatus.InProgress) {
-				const restoredCount = (this._model.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.filter(a => a.listOfBackupFiles[0].status === 'Restored'))?.length! ?? 0;
+				const restoredCount = (this._model.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.filter(a => a.listOfBackupFiles[0].status === 'Restored'))?.length ?? 0;
 				if (restoredCount > 0) {
 					this._cutoverButton.enabled = true;
 				}
