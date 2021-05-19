@@ -22,7 +22,6 @@ export class MigrationModePage extends MigrationWizardPage {
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
 		this._view = view;
-		this._businessCriticalFlexContainer = this.createBusinessCriticalInfo();
 		const form = view.modelBuilder.formContainer()
 			.withFormItems(
 				[
@@ -52,43 +51,6 @@ export class MigrationModePage extends MigrationWizardPage {
 		});
 	}
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
-	}
-
-	private createBusinessCriticalInfo(): azdata.FlexContainer {
-		const infoImage = this._view.modelBuilder.image().withProps({
-			iconPath: IconPathHelper.info,
-			iconHeight: '16px',
-			iconWidth: '16px',
-			width: '16px',
-			height: '16px',
-			CSSStyles: {
-				'margin': '15px 10px 0px 0px'
-			}
-		}).component();
-
-		const infoText = this._view.modelBuilder.text().withProps({
-			value: `${constants.BUSINESS_CRITICAL_INFO} {0}`,
-			links: [
-				{
-					text: constants.LEARN_MORE,
-					url: 'https://docs.microsoft.com/azure/azure-sql/managed-instance/management-operations-overview#duration'
-				}
-			],
-			CSSStyles: {
-				'font-size': '13px'
-			}
-		}).component();
-
-		const container = this._view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'row'
-		}).component();
-
-		container.addItem(infoImage, {
-			flex: '0'
-		});
-
-		container.addItem(infoText);
-		return container;
 	}
 
 	private migrationModeContainer(view: azdata.ModelView): azdata.FormComponent {
