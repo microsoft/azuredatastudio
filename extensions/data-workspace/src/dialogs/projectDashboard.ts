@@ -62,7 +62,7 @@ export class ProjectDashboard {
 	}
 
 	private createToolbarContainer(projectFilePath: string): azdata.ToolbarContainer {
-		const projectActions: (IProjectAction | IProjectActionGroup)[] = this.projectProvider!.projectActions;
+		const projectActions: (IProjectAction | IProjectActionGroup)[] = this.projectProvider!.projectToolbarActions;
 
 		// Add actions as buttons
 		const buttons: azdata.ToolbarComponent[] = [];
