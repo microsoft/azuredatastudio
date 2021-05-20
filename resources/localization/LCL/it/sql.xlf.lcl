@@ -905,12 +905,18 @@
         <Item ItemId=";(...) .arg.name" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Extension id]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[ID estensione]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) .description" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Gets extension information from the gallery]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Recupera informazioni sull'estensione dalla raccolta]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -3342,8 +3348,8 @@
       <Item ItemId=";src/sql/workbench/contrib/backup/browser/backupActions.backup.commandNotSupportedForServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Backup command is not supported outside of a database context. Please select a database and try again.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Il comando di backup non è supportato nel contesto server. Selezionare un database e riprovare.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Il comando Backup non è supportato all'esterno di un contesto di database. Selezionare un database e riprovare.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Backup command is not supported in Server Context. Please select a Database and try again.]]></Val>
@@ -3858,12 +3864,18 @@
       <Item ItemId=";src/sql/workbench/contrib/charts/browser/charts.contribution.builtinCharts.maxRowCountDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The maximum number of rows for charts to display. Warning: increasing this may impact performance.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Numero massimo di righe per i grafici da visualizzare. Avviso: l'aumento di questo valore può influire sulle prestazioni.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/charts/browser/charts.contribution.builtinChartsConfigurationTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Built-in Charts]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Grafici predefiniti]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3897,6 +3909,9 @@
       <Item ItemId=";src/sql/workbench/contrib/charts/browser/utils.charts.maxAllowedRowsExceeded" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Maximum row count for built-in charts has been exceeded, only the first {0} rows are used. To configure the value, you can open user settings and search for: 'builtinCharts.maxRowCount'.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[È stato superato il numero massimo di righe per i grafici predefiniti. Vengono usate solo {0} prime righe. Per configurare il valore, è possibile aprire le impostazioni utente e cercare: 'builtinCharts.maxRowCount'.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7536,6 +7551,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.showRenderedNotebookinDiffEditor" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[(Preview) Show rendered notebook in diff editor.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(Anteprima) Visualizzare il notebook di cui è eseguito il rendering nell'editor diff.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8007,6 +8025,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookActions.noParametersCell" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This notebook cannot run with parameters until a parameter cell is added. [Learn more]5D;(https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Il notebook non può essere eseguito con parametri finché non viene aggiunta una cella di parametri. [Altre informazioni]5D; (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8031,6 +8052,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookActions.runParameters" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Run with Parameters]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Esegui con parametri]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8370,6 +8394,9 @@
       <Item ItemId=";src/sql/workbench/contrib/preferences/browser/sqlSettingsLayout.builtinCharts" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Built-in Charts]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Grafici predefiniti]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9207,6 +9234,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.inMemoryDataProcessingThreshold" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls the max number of rows allowed to do filtering and sorting in memory. If the number is exceeded, sorting and filtering will be disabled.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controlla il numero massimo di righe consentite per l'applicazione di filtri e ordinamento in memoria. Se il numero viene superato, l'ordinamento e il filtro verranno disabilitati.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9411,8 +9441,8 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryShortcutDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call or query execution. Any selected text in the query editor will be passed as a parameter at the end of your query, or you can reference it with {arg}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Imposta il tasto di scelta rapida workbench.action.query.shortcut{0} in modo da eseguire il testo del tasto di scelta rapida come una chiamata di procedura. L'eventuale testo selezionato nell'editor di query verrà passato come parametro]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Impostare l'associazione dei tasti workbench.action.query.shortcut{0} per eseguire il testo del collegamento come chiamata di routine o esecuzione di query. Il testo selezionato nell'editor di query verrà passato come parametro alla fine della query oppure è possibile fare riferimento a esso con {arg}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call. Any selected text in the query editor will be passed as a parameter]]></Val>
@@ -10107,6 +10137,9 @@
       <Item ItemId=";src/sql/workbench/contrib/restore/browser/restoreActions.restore.commandNotSupportedOutsideContext" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Restore command is not supported outside of a server context. Please select a server or database and try again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Il comando Ripristina non è supportato all'esterno di un contesto del server. Selezionare un server o un database e riprovare.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -11253,12 +11286,18 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.welcomePage.sqlServerDacpac" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server Dacpac]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server Dacpac]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.welcomePage.sqlServerImport" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server Import]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Importazione di SQL Server]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

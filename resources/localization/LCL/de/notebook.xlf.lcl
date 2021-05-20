@@ -84,8 +84,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.book" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Buch]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book]]></Val>
@@ -96,14 +96,17 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.bookDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Books are used to organize Notebooks.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book-Instanzen werden zum Organisieren von Notebooks verwendet.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.bookInitializeFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to find a Table of Contents file in the specified Jupyter Book.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Bei der Suche im angegebenen Buch wurde keine Inhaltsverzeichnisdatei gefunden.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Bei der Suche im angegebenen Jupyter Book wurde keine Inhaltsverzeichnisdatei gefunden.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Failed to find a Table of Contents file in the specified book.]]></Val>
@@ -114,8 +117,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.booksNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Jupyter Books are currently available on the provided link]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Unter dem angegebenen Link sind zurzeit keine Bücher verfügbar.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Unter dem angegebenen Link sind zurzeit keine Jupyter Books verfügbar.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No books are currently available on the provided link]]></Val>
@@ -144,8 +147,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.closeBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Close Jupyter Book {0} failed: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Fehler beim Schließen des Buchs "{0}": {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Schließen von Jupyter Book "{0}": {1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Close book {0} failed: {1}]]></Val>
@@ -165,6 +168,9 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.confirmOverwrite" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File already exists. Are you sure you want to overwrite this file?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Datei ist bereits vorhanden. Möchten Sie diese Datei überschreiben?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -207,8 +213,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.editBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while editing Jupyter Book {0}: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Fehler beim Bearbeiten des Buchs "{0}": {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Bearbeiten von Jupyter Book "{0}": {1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error while editing book {0}: {1}]]></Val>
@@ -264,8 +270,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.labelBookFolder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Buch auswählen]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book auswählen]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Select Book]]></Val>
@@ -276,8 +282,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.labelBookSection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Jupyter Book Section]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Buchabschnitt auswählen]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book-Abschnitt auswählen]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Select Book Section]]></Val>
@@ -342,8 +348,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookAlreadyTrusted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book is already trusted in this workspace.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Das Buch gilt in diesem Arbeitsbereich bereits als vertrauenswürdig.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Dieses Jupyter Book gilt in diesem Arbeitsbereich bereits als vertrauenswürdig.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book is already trusted in this workspace.]]></Val>
@@ -354,8 +360,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookAlreadyUntrusted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book is already untrusted in this workspace.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Das Buch gilt in diesem Arbeitsbereich bereits als nicht vertrauenswürdig.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das Jupyter Book gilt in diesem Arbeitsbereich bereits als nicht vertrauenswürdig.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book is already untrusted in this workspace.]]></Val>
@@ -366,8 +372,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Books not Found]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Bücher nicht gefunden.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Books nicht gefunden.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Books not Found]]></Val>
@@ -378,8 +384,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookPinned" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book {0} is now pinned in the workspace.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Das Buch "{0}" ist jetzt im Arbeitsbereich angeheftet.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das Jupyter Book "{0}" ist jetzt im Arbeitsbereich angeheftet.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book {0} is now pinned in the workspace.]]></Val>
@@ -390,8 +396,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookTrusted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book is now trusted in the workspace.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Das Buch gilt im Arbeitsbereich jetzt als vertrauenswürdig.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das Jupyter Book gilt jetzt im Arbeitsbereich als vertrauenswürdig.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book is now trusted in the workspace.]]></Val>
@@ -402,8 +408,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookUnpinned" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book {0} is no longer pinned in this workspace]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Das Buch "{0}" ist in diesem Arbeitsbereich nicht mehr angeheftet.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das Jupyter Book "{0}" ist in diesem Arbeitsbereich nicht mehr angeheftet.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book {0} is no longer pinned in this workspace]]></Val>
@@ -414,8 +420,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgBookUntrusted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Book is no longer trusted in this workspace]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Das Buch gilt in diesem Arbeitsbereich nicht mehr als vertrauenswürdig.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das Jupyter Book gilt in diesem Arbeitsbereich nicht mehr als vertrauenswürdig.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Book is no longer trusted in this workspace]]></Val>
@@ -435,6 +441,9 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgCreateBookWarningMsg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while trying to access: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Zugriff auf: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -450,12 +459,18 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgDuplicadFileName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File {0} already exists in the destination folder]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Datei "{0}" ist im Zielordner bereits vorhanden.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgInvalidSaveFolder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save location path is not valid.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Pfad zum Speicherort ist ungültig.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -480,8 +495,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookDirectoryError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while creating remote Jupyter Book directory]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Fehler beim Erstellen des Remotebuchverzeichnisses.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Erstellen des Jupyter Book-Remoteverzeichnisses.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error while creating remote Book directory]]></Val>
@@ -492,8 +507,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookDownloadComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remote Jupyter Book download is complete]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Der Download des Remotebuchs ist abgeschlossen.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Remoteinstanz von Jupyter Book wurde vollständig heruntergeladen.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Remote Book download is complete]]></Val>
@@ -504,8 +519,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookDownloadError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while downloading remote Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Fehler beim Herunterladen des Remotebuchs.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Herunterladen der Remoteinstanz von Jupyter Book.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error while downloading remote Book]]></Val>
@@ -516,8 +531,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookDownloadProgress" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remote Jupyter Book download is in progress]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Das Remotebuch wird heruntergeladen.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Remoteinstanz von Jupyter Book wird heruntergeladen.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Remote Book download is in progress]]></Val>
@@ -528,8 +543,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgRemoteBookUnpackingError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while decompressing remote Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Fehler beim Dekomprimieren des Remotebuchs.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Dekomprimieren der Jupyter Book-Remoteinstanz.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error while decompressing remote Book]]></Val>
@@ -558,7 +573,7 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgSaveFolderError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save location path does not exist.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Der Speicherortpfad ist nicht vorhanden.]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -570,8 +585,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgTaskName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Downloading Remote Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Remotebuch wird heruntergeladen.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Remoteinstanz von Jupyter Book wird heruntergeladen.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Downloading Remote Book]]></Val>
@@ -582,8 +597,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgUndefinedAssetError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The selected Jupyter Book is not valid]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Das ausgewählte Book ist ungültig.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das ausgewählte Jupyter Book ist ungültig.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[The selected book is not valid]]></Val>
@@ -612,18 +627,27 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.newBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Jupyter Book (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Neue Jupyter Book-Instanz (Vorschau)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.newMarkdown" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Markdown (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Neuer Markdown (Vorschau)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.newNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Notebook (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Neues Notebook (Vorschau)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -639,8 +663,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.noBooksSelected" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Jupyter Books are currently selected in the viewlet.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Im Viewlet sind zurzeit keine Bücher ausgewählt.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Im Viewlet sind zurzeit keine Jupyter Books ausgewählt.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[No books are currently selected in the viewlet.]]></Val>
@@ -669,8 +693,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.openBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Jupyter Book {0} failed: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Fehler beim Öffnen von Book "{0}": {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Öffnen von Jupyter Book "{0}": {1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Open book {0} failed: {1}]]></Val>
@@ -753,8 +777,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.readBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to read Jupyter Book {0}: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Fehler beim Lesen von Book "{0}": {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Lesen von Jupyter Book "{0}": {1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Failed to read book {0}: {1}]]></Val>
@@ -801,14 +825,17 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.sectionNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to find section {0} in {1}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Abschnitt "{0}" wurde in "{1}" nicht gefunden.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.selectBookError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while selecting a Jupyter Book or a section to edit: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Fehler beim Auswählen eines Buchs oder eines Abschnitts zur Bearbeitung: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Auswählen eines Jupyter Books oder eines Abschnitts zur Bearbeitung: {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Error while selecting a book or a section to edit: {0}]]></Val>
@@ -2004,8 +2031,8 @@
       <Item ItemId=";extensions/notebook/package.title.ProvidedBooks" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Provided Jupyter Books]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Bereitgestellte Bücher]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Bereitgestellte Jupyter Books]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Provided Books]]></Val>
@@ -2037,12 +2064,18 @@
       <Item ItemId=";extensions/notebook/package.title.addMarkdown" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Markdown File]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Markdowndatei hinzufügen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/package.title.addNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Notebook]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Notebook hinzufügen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2067,6 +2100,9 @@
       <Item ItemId=";extensions/notebook/package.title.closeNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Close Notebook]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Notebook schließen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2082,8 +2118,8 @@
       <Item ItemId=";extensions/notebook/package.title.createJupyterBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Buch erstellen (Vorschau)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book erstellen]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Create Book (Preview)]]></Val>
@@ -2193,6 +2229,9 @@
       <Item ItemId=";extensions/notebook/package.title.removeNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remove Notebook]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Notebook entfernen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2208,8 +2247,8 @@
       <Item ItemId=";extensions/notebook/package.title.saveJupyterBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Book speichern]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book speichern]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Save Book]]></Val>
@@ -2220,8 +2259,8 @@
       <Item ItemId=";extensions/notebook/package.title.searchJupyterBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Search Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Book durchsuchen]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book durchsuchen]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Search Book]]></Val>
@@ -2232,8 +2271,8 @@
       <Item ItemId=";extensions/notebook/package.title.trustBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Trust Jupyter Book]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Buch als vertrauenswürdig einstufen]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book als vertrauenswürdig einstufen]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Trust Book]]></Val>
