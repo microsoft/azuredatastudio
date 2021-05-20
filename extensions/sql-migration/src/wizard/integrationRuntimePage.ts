@@ -57,6 +57,15 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		this._statusLoadingComponent = view.modelBuilder.loadingComponent().withItem(this.createDMSDetailsContainer()).component();
 
+		const dmsPortalInfo = this._view.modelBuilder.infoBox().withProps({
+			text: constants.DMS_PORTAL_INFO,
+			style: 'information',
+			CSSStyles: {
+				'font-size': '13px'
+			},
+			width: WIZARD_INPUT_COMPONENT_WIDTH
+		}).component();
+
 		this._form = view.modelBuilder.formContainer()
 			.withFormItems(
 				[
@@ -65,6 +74,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					},
 					{
 						component: createNewMigrationService
+					},
+					{
+						component: dmsPortalInfo
 					},
 					{
 						component: this._statusLoadingComponent
