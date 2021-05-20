@@ -50,10 +50,10 @@ import { NotebookExplorerViewletViewsContribution } from 'sql/workbench/contrib/
 import 'vs/css!./media/notebook.contribution';
 import { isMacintosh } from 'vs/base/common/platform';
 import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
-import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { ImageMimeTypes, TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
-import { INotebookModel, TextCellEditMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
@@ -299,8 +299,8 @@ configurationRegistry.registerConfiguration({
 		},
 		'notebook.defaultTextEditMode': {
 			'type': 'string',
-			'enum': [TextCellEditMode.RichText, TextCellEditMode.SplitView, TextCellEditMode.Markdown],
-			'default': TextCellEditMode.RichText,
+			'enum': [TextCellEditModes.RichText, TextCellEditModes.SplitView, TextCellEditModes.Markdown],
+			'default': TextCellEditModes.RichText,
 			'description': localize('notebook.defaultTextEditMode', "The default editing mode used for text cells")
 		},
 		'notebook.saveConnectionName': {

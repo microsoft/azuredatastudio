@@ -10,9 +10,9 @@ import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
-import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
+import { CellTypes, CellType, NotebookChangeType, TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes, TextCellEditMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -216,8 +216,8 @@ export class CellModel extends Disposable implements ICellModel {
 	public set isEditMode(isEditMode: boolean) {
 		this._isEditMode = isEditMode;
 		if (this._isEditMode) {
-			this.showPreview = this._defaultTextEditMode !== TextCellEditMode.Markdown;
-			this.showMarkdown = this._defaultTextEditMode !== TextCellEditMode.RichText;
+			this.showPreview = this._defaultTextEditMode !== TextCellEditModes.Markdown;
+			this.showMarkdown = this._defaultTextEditMode !== TextCellEditModes.RichText;
 		}
 		this._onCellModeChanged.fire(this._isEditMode);
 		// Note: this does not require a notebook update as it does not change overall state
