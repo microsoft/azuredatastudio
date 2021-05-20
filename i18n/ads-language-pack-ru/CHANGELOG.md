@@ -1,5 +1,5 @@
 # Change Log
-All notable changes to the "vscode-language-pack-ru" language pack will be documented in this file.
+All notable changes to the "ads-language-pack-ru" language pack will be documented in this file.
 
 ## [Released]
 * May 21, 2021 - Release for Azure Data Studio 1.29
