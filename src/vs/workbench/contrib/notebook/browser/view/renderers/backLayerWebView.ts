@@ -749,7 +749,7 @@ var requirejs = (function() {
 			}
 		}));
 
-		this._register(this.webview.onMessage((data: FromWebviewMessage | { readonly __vscode_notebook_message: undefined }) => {
+		this._register(this.webview.onMessage((data: FromWebviewMessage) => { // {{SQL CARBON EDIT}} Fix compile error | { readonly __vscode_notebook_message: undefined }) => {
 			if (this._disposed) {
 				return;
 			}
