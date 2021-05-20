@@ -45,6 +45,7 @@ const msgLocalHost = localize('localhost', "localhost");
 export const noKernel: string = localize('noKernel', "No Kernel");
 const baseIconClass = 'codicon';
 const maskedIconClass = 'masked-icon';
+export const cannotParameterize: string = localize('cannotParameterize', "This notebook cannot run with parameters. Please use supported kernels and format. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
 export const noParameterCell: string = localize('noParametersCell', "This notebook cannot run with parameters until a parameter cell is added. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
 export const noParametersInCell: string = localize('noParametersInCell', "This notebook cannot run with parameters until there are parameters added to the parameter cell. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
 
@@ -308,6 +309,16 @@ export class RunParametersAction extends TooltipFromLabelAction {
 	*/
 	public async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
+		// Only run action for kernels that are supported (Python, PySpark, PowerShell)
+		let kernelsNotSupported = ['sql', 'kusto'];
+		if (kernelsNotSupported.includes(editor.model.language)) {
+			// If there is no parameters in the cell indicate to user to add them
+			this.notificationService.notify({
+				severity: Severity.Info,
+				message: cannotParameterize,
+			});
+			return;
+		}
 		// Set defaultParameters to the parameter values in parameter cell
 		let defaultParameters = new Map<string, string>();
 		for (let cell of editor?.cells) {
@@ -327,6 +338,14 @@ export class RunParametersAction extends TooltipFromLabelAction {
 				for (let parameter of cell.source) {
 					// Only add parameters that contain the proper parameters format (ex. x = 1) shown in the Parameterization Doc.
 					if (parameter.includes('=')) {
+						// Multi-line parameters are currently not supported
+						if (parameter.includes(';')) {
+							this.notificationService.notify({
+								severity: Severity.Info,
+								message: cannotParameterize,
+							});
+							return;
+						}
 						let param = parameter.split('=', 2);
 						defaultParameters.set(param[0].trim(), param[1].trim());
 					}
