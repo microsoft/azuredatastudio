@@ -28,6 +28,13 @@ export class ResolvableTreeComponentItem extends ResolvableTreeItem implements I
 		this.onCheckedChanged = treeItem.onCheckedChanged;
 		this.children = deepClone(treeItem.children);
 	}
+
+	asTreeItem(): ITreeComponentItem {
+		const item = super.asTreeItem() as ITreeComponentItem;
+		item.checked = this.checked;
+		item.enabled = this.enabled;
+		return item;
+	}
 }
 
 export class TreeViewDataProvider extends vsTreeView.TreeViewDataProvider implements IModelViewTreeViewDataProvider {
