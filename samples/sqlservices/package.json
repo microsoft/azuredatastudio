@@ -96,7 +96,6 @@
   },
   "devDependencies": {
     "@types/node": "^7.0.43",
-    "@types/azdata": "^1.0.0",
     "@types/vscode": "^1.0.0",
     "braces": "^2.3.2",
     "child-process-promise": "^2.2.1",
