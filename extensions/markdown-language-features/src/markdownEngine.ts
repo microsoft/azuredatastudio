@@ -223,7 +223,7 @@ export class MarkdownEngine {
 
 			const src = token.attrGet('src');
 			if (src) {
-				env.containingImages.push({ src });
+				env.containingImages?.push({ src });
 				const imgHash = hash(src);
 				token.attrSet('id', `image-hash-${imgHash}`);
 			}
