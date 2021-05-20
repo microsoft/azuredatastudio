@@ -17,18 +17,26 @@
 		},
 		"dist/publish": {
 			"pick folder": "Seleziona una cartella da pubblicare in GitHub",
-			"ignore": "Selezionare i file da includere nel repository."
+			"ignore": "Selezionare i file da includere nel repository.",
+			"publishing_private": "Pubblicazione in un repository GitHub privato",
+			"publishing_public": "Pubblicazione in un repository GitHub pubblico",
+			"publishing_firstcommit": "Creazione del primo commit",
+			"publishing_uploading": "Caricamento dei file",
+			"openingithub": "Apri in GitHub",
+			"publishing_done": "Il repository '{0}' è stato pubblicato in GitHub."
 		},
 		"dist/pushErrorHandler": {
+			"ok": "OK",
+			"fork unable": "Non si è autorizzati a eseguire il push in '{0}/{1}' in GitHub.",
 			"create a fork": "Crea fork",
 			"no": "No",
 			"fork": "Non si hanno le autorizzazioni per eseguire il push in '{0}/{1}' in GitHub. Creare un fork in cui eseguire il push?",
 			"create fork": "Crea fork GitHub",
 			"forking": "Creazione del fork per '{0}/{1}'...",
-			"pushing": "Push delle modifiche...",
+			"forking_pushing": "Push delle modifiche...",
 			"openingithub": "Apri in GitHub",
 			"createpr": "Crea richiesta pull",
-			"done": "Il fork '{0}' è stato creato in GitHub.",
+			"forking_done": "Il fork '{0}' è stato creato in GitHub.",
 			"createghpr": "Creazione della richiesta pull GitHub...",
 			"openpr": "Apri richiesta pull",
 			"donepr": "La richiesta pull '{0}/{1}#{2}' è stata creata in GitHub."
