@@ -688,18 +688,20 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	}
 });
 
+// {{SQL CARBON EDIT}} Keep untitled plain file for opening txt file instead of new query
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	weight: KeybindingWeight.WorkbenchContrib,
 	when: null,
 	id: NEW_UNTITLED_PLAIN_FILE_COMMAND_ID,
-	handler: async (accessor, viewType?: string) => {
+	handler: async (accessor, args?: { viewType: string }) => {
 		const editorService = accessor.get(IEditorService);
 
-		if (viewType) {
+		if (typeof args?.viewType === 'string') {
 			const editorGroupsService = accessor.get(IEditorGroupsService);
+
 			const textInput = editorService.createEditorInput({ options: { pinned: true }, mode: 'txt' });
 			const group = editorGroupsService.activeGroup;
-			await openEditorWith(accessor, textInput, NEW_UNTITLED_PLAIN_FILE_COMMAND_ID, { pinned: true }, group);
+			await editorService.openEditor(textInput, { override: args.viewType, pinned: true }, group);
 		} else {
 			await editorService.openEditor({ options: { pinned: true }, mode: 'txt' }); // untitled are always pinned
 		}

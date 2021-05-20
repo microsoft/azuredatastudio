@@ -526,7 +526,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 				open: (editor: IEditorInput, options: IEditorOptions | ITextEditorOptions | undefined, group: IEditorGroup) => {
 					const resource = EditorResourceAccessor.getOriginalUri(editor);
 					if (!resource) {
-						return;
+						return undefined; // {{SQL CARBON EDIT}} Strict null
 					}
 
 					const fileEditorInput = this.createEditorInput({ resource, forceFile: true });
