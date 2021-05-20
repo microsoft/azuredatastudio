@@ -1043,7 +1043,8 @@
 							"TreeDataProvider",
 							"CustomEditorProvider",
 							"CustomReadonlyEditorProvider",
-							"TerminalLinkProvider"
+							"TerminalLinkProvider",
+							"AuthenticationProvider"
 						]
 					}
 				],
