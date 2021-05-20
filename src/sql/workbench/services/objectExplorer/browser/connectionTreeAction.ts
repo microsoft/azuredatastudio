@@ -10,7 +10,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { IObjectExplorerService, ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplorer/browser/objectExplorerActions';
@@ -19,6 +19,7 @@ import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ILogService } from 'vs/platform/log/common/log';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { SqlIconId } from 'sql/base/common/codicons';
 
 export interface IServerView {
 	showFilteredTree(filter: string): void;
@@ -158,8 +159,7 @@ export class AddServerAction extends Action {
 		label: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
-		super(id, label);
-		this.class = 'add-server-action';
+		super(id, label, SqlIconId.addServerAction);
 	}
 
 	public async run(element: ConnectionProfileGroup): Promise<boolean> {
@@ -187,7 +187,7 @@ export class AddServerAction extends Action {
 }
 
 /**
- * Actions to add a server to the group
+ * Action to open up the dialog to create a new server group
  */
 export class AddServerGroupAction extends Action {
 	public static ID = 'registeredServers.addServerGroup';
@@ -198,8 +198,7 @@ export class AddServerGroupAction extends Action {
 		label: string,
 		@IServerGroupController private readonly serverGroupController: IServerGroupController
 	) {
-		super(id, label);
-		this.class = 'add-server-group-action';
+		super(id, label, SqlIconId.addServerGroupAction);
 	}
 
 	public async run(): Promise<boolean> {
@@ -232,96 +231,33 @@ export class EditServerGroupAction extends Action {
 }
 
 /**
- * Display active connections in the tree
+ * Action to toggle filtering the server connections tree to only show
+ * active connections or not.
  */
 export class ActiveConnectionsFilterAction extends Action {
 	public static ID = 'registeredServers.recentConnections';
-	public static LABEL = localize('activeConnections', "Show Active Connections");
-	private static enabledClass = 'active-connections-action';
-	private static disabledClass = 'icon server-page';
-	private static showAllConnectionsLabel = localize('showAllConnections', "Show All Connections");
-	private _isSet: boolean = false;
+	public static SHOW_ACTIVE_CONNECTIONS_LABEL = localize('activeConnections', "Show Active Connections");
+	public static SHOW_ALL_CONNECTIONS_LABEL = localize('showAllConnections', "Show All Connections");
 	public static readonly ACTIVE = 'active';
-	public get isSet(): boolean {
-		return this._isSet;
-	}
-	public set isSet(value: boolean) {
-		this._isSet = value;
-		this.class = (!this._isSet) ?
-			ActiveConnectionsFilterAction.enabledClass : ActiveConnectionsFilterAction.disabledClass;
-	}
 
 	constructor(
 		id: string,
 		label: string,
-		private view: IServerView
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
 	) {
-		super(id, label);
-		this.class = ActiveConnectionsFilterAction.enabledClass;
+		super(id, label, SqlIconId.activeConnectionsAction);
 	}
 
-	public run(): Promise<boolean> {
-		if (!this.view) {
-			// return without doing anything
-			return Promise.resolve(true);
-		}
-		if (this.class === ActiveConnectionsFilterAction.enabledClass) {
+	public async run(): Promise<boolean> {
+		const serverTreeView = this._objectExplorerService.getServerTreeView();
+		if (serverTreeView.view !== ServerTreeViewView.active) {
 			// show active connections in the tree
-			this.view.showFilteredTree(ActiveConnectionsFilterAction.ACTIVE);
-			this.isSet = true;
-			this.label = ActiveConnectionsFilterAction.showAllConnectionsLabel;
+			serverTreeView.showFilteredTree(ServerTreeViewView.active);
 		} else {
 			// show full tree
-			this.view.refreshTree();
-			this.isSet = false;
-			this.label = ActiveConnectionsFilterAction.LABEL;
+			await serverTreeView.refreshTree();
 		}
-		return Promise.resolve(true);
-	}
-}
-
-/**
- * Display recent connections in the tree
- */
-export class RecentConnectionsFilterAction extends Action {
-	public static ID = 'registeredServers.recentConnections';
-	public static LABEL = localize('recentConnections', "Recent Connections");
-	private static enabledClass = 'recent-connections-action';
-	private static disabledClass = 'recent-connections-action-set';
-	private _isSet: boolean;
-	public get isSet(): boolean {
-		return this._isSet;
-	}
-	public set isSet(value: boolean) {
-		this._isSet = value;
-		this.class = (!this._isSet) ?
-			RecentConnectionsFilterAction.enabledClass : RecentConnectionsFilterAction.disabledClass;
-	}
-	constructor(
-		id: string,
-		label: string,
-		private view: IServerView
-	) {
-		super(id, label);
-		this.class = RecentConnectionsFilterAction.enabledClass;
-		this._isSet = false;
-	}
-
-	public run(): Promise<boolean> {
-		if (!this.view) {
-			// return without doing anything
-			return Promise.resolve(true);
-		}
-		if (this.class === RecentConnectionsFilterAction.enabledClass) {
-			// show recent connections in the tree
-			this.view.showFilteredTree('recent');
-			this.isSet = true;
-		} else {
-			// show full tree
-			this.view.refreshTree();
-			this.isSet = false;
-		}
-		return Promise.resolve(true);
+		return true;
 	}
 }
 
