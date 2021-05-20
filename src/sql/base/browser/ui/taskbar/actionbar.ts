@@ -38,6 +38,9 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 	protected _focusedItem?: number;
 	protected _focusTracker: DOM.IFocusTracker;
 
+	// Trigger Key Tracking
+	private _triggerKeyDown: boolean = false;
+
 	// Elements
 	protected _domNode: HTMLElement;
 	protected _actionsList: HTMLElement;
@@ -82,7 +85,7 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			} else if (event.equals(KeyCode.Escape)) {
 				this.cancel();
 			} else if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
-				// Nothing, just staying out of the else branch
+				this._triggerKeyDown = true;
 			} else {
 				eventHandled = false;
 			}
@@ -104,7 +107,10 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 
 			// Run action on Enter/Space
 			if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
-				this.doTrigger(event);
+				if (this._triggerKeyDown) {
+					this.doTrigger(event);
+					this._triggerKeyDown = false;
+				}
 				event.preventDefault();
 				event.stopPropagation();
 			}
