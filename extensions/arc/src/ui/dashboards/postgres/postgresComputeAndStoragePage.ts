@@ -244,6 +244,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		// Worker node count
 		this.workerCountBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
+			min: 0,
 			inputType: 'number',
 			placeHolder: loc.loading,
 			required: true
@@ -262,7 +263,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		// Worker nodes cores request
 		this.workerCoresRequestBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
-			min: 0,
+			min: 1,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
