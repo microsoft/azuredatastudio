@@ -262,7 +262,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		// Worker nodes cores request
 		this.workerCoresRequestBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
-			min: 1,
+			min: 0,
 			inputType: 'number',
 			placeHolder: loc.loading
 		}).component();
