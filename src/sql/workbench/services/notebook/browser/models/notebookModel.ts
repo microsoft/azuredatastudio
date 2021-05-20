@@ -964,14 +964,18 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private async updateKernelInfoOnKernelChange(kernel: nb.IKernel, kernelAlias?: string) {
 		await this.updateKernelInfo(kernel);
 		kernelAlias = this.kernelAliases.find(kernel => this._defaultLanguageInfo?.name === kernel.toLowerCase()) ?? kernelAlias;
+		// In order to change from kernel alias to other kernel, set kernelAlias to undefined in order to update to new kernel language info
+		if (this._selectedKernelDisplayName !== kernelAlias && this._selectedKernelDisplayName) {
+			kernelAlias = undefined;
+		}
+		// Sets the kernel alias language info properly in order to open the notebook with the kernel alias
 		if (kernelAlias) {
 			let aliasLanguageInfo: nb.ILanguageInfo = {
 				name: kernelAlias.toLowerCase(),
 				version: ''
 			};
 			this.updateLanguageInfo(aliasLanguageInfo);
-		}
-		else if (kernel.info) {
+		} else if (kernel.info) {
 			this.updateLanguageInfo(kernel.info.language_info);
 		}
 		this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.KernelChanged)
