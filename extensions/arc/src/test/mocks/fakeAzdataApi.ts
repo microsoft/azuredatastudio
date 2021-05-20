@@ -33,6 +33,7 @@ export class FakeAzdataApi implements azdataExt.IAzdataApi {
 						adminPassword?: boolean,
 						coresLimit?: string,
 						coresRequest?: string,
+						coordinatorEngineSettings?: string,
 						engineSettings?: string,
 						extensions?: string,
 						memoryLimit?: string,
@@ -40,6 +41,7 @@ export class FakeAzdataApi implements azdataExt.IAzdataApi {
 						noWait?: boolean,
 						port?: number,
 						replaceEngineSettings?: boolean,
+						workerEngineSettings?: string,
 						workers?: number
 					},
 					_additionalEnvVars?: azdataExt.AdditionalEnvVars

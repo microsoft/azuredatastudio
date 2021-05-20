@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AddServerAction } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { escape } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
 
@@ -18,7 +19,7 @@ export default () => `
 				<div class="section start">
 					<h2 class="caption">${escape(localize('welcomePage.start', "Start"))}</h2>
 					<ul>
-						<li><a href="command:registeredServers.addConnection">${escape(localize('welcomePage.newConnection', "New connection"))}</a></li>
+						<li><a href="command:${AddServerAction.ID}">${escape(localize('welcomePage.newConnection', "New connection"))}</a></li>
 						<li><a href="command:workbench.action.files.newUntitledFile">${escape(localize('welcomePage.newQuery', "New query"))}</a></li>
 						<li><a href="command:notebook.command.new">${escape(localize('welcomePage.newNotebook', "New notebook"))}</a></li>
 						<li class="mac-only"><a href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac', "Open file"))}</a></li>

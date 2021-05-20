@@ -125,6 +125,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 						adminPassword?: boolean,
 						coresLimit?: string,
 						coresRequest?: string,
+						coordinatorEngineSettings?: string,
 						engineSettings?: string,
 						extensions?: string,
 						memoryLimit?: string,
@@ -132,6 +133,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 						noWait?: boolean,
 						port?: number,
 						replaceEngineSettings?: boolean,
+						workerEngineSettings?: string,
 						workers?: number
 					},
 					additionalEnvVars?: azdataExt.AdditionalEnvVars,
@@ -140,6 +142,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 					if (args.adminPassword) { argsArray.push('--admin-password'); }
 					if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
 					if (args.coresRequest) { argsArray.push('--cores-request', args.coresRequest); }
+					if (args.coordinatorEngineSettings) { argsArray.push('--coordinator-engine-settings', args.coordinatorEngineSettings); }
 					if (args.engineSettings) { argsArray.push('--engine-settings', args.engineSettings); }
 					if (args.extensions) { argsArray.push('--extensions', args.extensions); }
 					if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
@@ -147,6 +150,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 					if (args.noWait) { argsArray.push('--no-wait'); }
 					if (args.port) { argsArray.push('--port', args.port.toString()); }
 					if (args.replaceEngineSettings) { argsArray.push('--replace-engine-settings'); }
+					if (args.workerEngineSettings) { argsArray.push('--worker-engine-settings', args.workerEngineSettings); }
 					if (args.workers) { argsArray.push('--workers', args.workers.toString()); }
 					return this.executeCommand<void>(argsArray, additionalEnvVars, azdataContext);
 				}

@@ -115,7 +115,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				name: buttonGroup,
 				label: constants.DATABASE_BACKUP_NC_BLOB_STORAGE_RADIO_LABEL,
-				enabled: false,
 				CSSStyles: {
 					'font-size': '13px'
 				}

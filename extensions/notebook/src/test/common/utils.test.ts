@@ -49,50 +49,50 @@ describe('Utils Tests', function () {
 		should(utils.getOSPlatformId()).not.throw();
 	});
 
-	describe('comparePackageVersions', () => {
+	describe('compareVersions', () => {
 		const version1 = '1.0.0.0';
 		const version1Revision = '1.0.0.1';
 		const version2 = '2.0.0.0';
 		const shortVersion1 = '1';
 
 		it('same id', () => {
-			should(utils.comparePackageVersions(version1, version1)).equal(0);
+			should(utils.compareVersions(version1, version1)).equal(0);
 		});
 
 		it('first version lower', () => {
-			should(utils.comparePackageVersions(version1, version2)).equal(-1);
+			should(utils.compareVersions(version1, version2)).equal(-1);
 		});
 
 		it('second version lower', () => {
-			should(utils.comparePackageVersions(version2, version1)).equal(1);
+			should(utils.compareVersions(version2, version1)).equal(1);
 		});
 
 		it('short first version is padded correctly', () => {
-			should(utils.comparePackageVersions(shortVersion1, version1)).equal(0);
+			should(utils.compareVersions(shortVersion1, version1)).equal(0);
 		});
 
 		it('short second version is padded correctly when', () => {
-			should(utils.comparePackageVersions(version1, shortVersion1)).equal(0);
+			should(utils.compareVersions(version1, shortVersion1)).equal(0);
 		});
 
 		it('correctly compares version with only minor version difference', () => {
-			should(utils.comparePackageVersions(version1Revision, version1)).equal(1);
+			should(utils.compareVersions(version1Revision, version1)).equal(1);
 		});
 
 		it('equivalent versions with wildcard characters', () => {
-			should(utils.comparePackageVersions('1.*.3', '1.5.3')).equal(0);
+			should(utils.compareVersions('1.*.3', '1.5.3')).equal(0);
 		});
 
 		it('lower version with wildcard characters', () => {
-			should(utils.comparePackageVersions('1.4.*', '1.5.3')).equal(-1);
+			should(utils.compareVersions('1.4.*', '1.5.3')).equal(-1);
 		});
 
 		it('higher version with wildcard characters', () => {
-			should(utils.comparePackageVersions('4.5.6', '3.*')).equal(1);
+			should(utils.compareVersions('4.5.6', '3.*')).equal(1);
 		});
 
 		it('all wildcard strings should be equal', () => {
-			should(utils.comparePackageVersions('*.*', '*.*.*')).equal(0);
+			should(utils.compareVersions('*.*', '*.*.*')).equal(0);
 		});
 	});
 

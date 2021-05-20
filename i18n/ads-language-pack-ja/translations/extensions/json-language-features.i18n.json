@@ -11,7 +11,7 @@
 		"package": {
 			"displayName": "JSON 言語機能",
 			"description": "JSON ファイルに豊富な言語サポートを提供。",
-			"json.schemas.desc": "スキーマを現在のプロジェクトの JSON ファイルに関連付けます",
+			"json.schemas.desc": "スキーマを現在のプロジェクトの JSON ファイルに関連付けます。",
 			"json.schemas.url.desc": "スキーマへの URL または現在のディレクトリ内のスキーマへの相対パス",
 			"json.schemas.fileMatch.desc": "JSON ファイルをスキーマに解決するときに照合するファイル パターンの配列。'*' をワイルドカードとして使用できます。除外パターンを定義して '!' で始めることもできます。一致するパターンが少なくとも 1 つあり、最後に一致するパターンが除外パターンでない場合、そのファイルは一致します。",
 			"json.schemas.fileMatch.item.desc": "JSON ファイルをスキーマに解決するときに突き合わせる、'*' を含められるファイル パターンです。",

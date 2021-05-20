@@ -269,6 +269,13 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 		this.disposables.push(
 			this.connectToServerButton.onDidClick(async () => {
+				let scale = this._postgresModel.config?.spec.scale;
+				let nodes = (scale?.workers ?? scale?.shards ?? 0);
+				if (this.title === loc.workerNodeParameters && nodes === 0) {
+					vscode.window.showInformationMessage(loc.noWorkerPods);
+					return;
+				}
+
 				this.connectToServerButton!.enabled = false;
 				if (!vscode.extensions.getExtension(loc.postgresExtension)) {
 					const response = await vscode.window.showErrorMessage(loc.missingExtension('PostgreSQL'), loc.yes, loc.no);
@@ -437,11 +444,13 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		let valueComponent: azdata.Component;
 		if (engineSetting.type === 'enum') {
 			// If type is enum, component should be drop down menu
-			let options = engineSetting.options?.slice(1, -1).split(',');
 			let values: string[] = [];
-			options!.forEach(option => {
-				values.push(option.slice(option.indexOf('"') + 1, -1));
-			});
+			if (typeof engineSetting.options === 'string') {
+				let options = engineSetting.options?.slice(1, -1).split(',');
+				values = options.map(option => option.slice(option.indexOf('"') + 1, -1));
+			} else if (engineSetting.options) {
+				values = engineSetting.options;
+			}
 
 			let valueBox = this.modelView.modelBuilder.dropDown().withProps({
 				values: values,

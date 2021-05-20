@@ -221,7 +221,8 @@
 			"view.workbench.scm.folder": "현재 열린 폴더에 Git 리포지토리가 없습니다. Git에서 제공하는 소스 제어 기능을 사용하도록 설정할 리포지토리를 초기화할 수 있습니다.\r\n[리포지토리 초기화](command:git.init?%5Btrue%5D)\r\nVS Code에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 읽어보세요.",
 			"view.workbench.scm.workspace": "현재 열린 작업 영역에 Git 리포지토리가 포함된 폴더가 없습니다. Git에서 제공하는 소스 제어 기능을 사용하도록 설정할 폴더의 리포지토리를 초기화할 수 있습니다.\r\n[리포지토리 초기화](command:git.init)\r\nVS Code에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 읽어보세요.",
 			"view.workbench.scm.emptyWorkspace": "현재 열린 작업 영역에 Git 리포지토리를 포함하는 폴더가 없습니다.\r\n[작업 영역에 폴더 추가](command:workbench.action.addRootFolder)\r\nVS Code에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 참조하세요.",
-			"view.workbench.cloneRepository": "URL에서 리포지토리를 복제할 수도 있습니다. VS Code에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 참조하세요.\r\n[리포지토리 복제](command:git.clone 'Git 확장이 활성화되면 리포지토리 복제')"
+			"view.workbench.cloneRepository": "리포지토리를 로컬에서 복제할 수 있습니다.\r\n[리포지토리 복제](command:git.clone 'Git 확장이 활성화되면 리포지토리 복제')",
+			"view.workbench.learnMore": "VS Code에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 참조하세요."
 		},
 		"dist/repository": {
 			"index modified": "인덱스 수정됨",

@@ -12,7 +12,8 @@
 			"displayName": "Markdown 语言功能",
 			"description": "为 Markdown 提供丰富的语言支持。",
 			"markdown.preview.breaks.desc": "设置换行符在 Markdown 预览中的呈现方式。如果将其设置为 \"true\"，则将为段落内的新行创建一个 <br>。",
-			"markdown.preview.linkify": "在 Markdown 预览中启用或禁用将类似 URL 的文本转换为链接。",
+			"markdown.preview.linkify": "在 Markdown 预览中启用或禁用将类似 URL 的文本转换为链接的操作。",
+			"markdown.preview.typographer": "在 Markdown 预览中启用或禁用一些与语言无关的替换和引文美化。",
 			"markdown.preview.doubleClickToSwitchToEditor.desc": "在 Markdown 预览中双击切换到编辑器。",
 			"markdown.preview.fontFamily.desc": "控制 Markdown 预览中使用的字体系列。",
 			"markdown.preview.fontSize.desc": "控制 Markdown 预览中使用的字号(以像素为单位)。",
@@ -29,10 +30,10 @@
 			"markdown.trace.desc": "对 Markdown 扩展启用调试日志记录。",
 			"markdown.preview.refresh.title": "刷新预览",
 			"markdown.preview.toggleLock.title": "切换开关锁定预览",
-			"configuration.markdown.preview.openMarkdownLinks.description": "控制如何打开markdown预览中其他markdown文件的链接。",
-			"configuration.markdown.preview.openMarkdownLinks.inEditor": "尝试在编辑器中打开链接",
-			"configuration.markdown.preview.openMarkdownLinks.inPreview": "尝试在 Markdown 预览中打开链接",
-			"configuration.markdown.links.openLocation.description": "控制应在何处打开markdown文件中的链接。",
+			"configuration.markdown.preview.openMarkdownLinks.description": "控制如何打开 Markdown 预览中其他 Markdown 文件的链接。",
+			"configuration.markdown.preview.openMarkdownLinks.inEditor": "尝试在编辑器中打开链接。",
+			"configuration.markdown.preview.openMarkdownLinks.inPreview": "尝试在 Markdown 预览中打开链接。",
+			"configuration.markdown.links.openLocation.description": "控制应在哪里打开 Markdown 文件中的链接。",
 			"configuration.markdown.links.openLocation.currentGroup": "打开活动编辑器组中的链接。",
 			"configuration.markdown.links.openLocation.beside": "打开活动编辑器旁边的链接。"
 		},
@@ -41,7 +42,7 @@
 		},
 		"dist/features/previewContentProvider": {
 			"preview.securityMessage.text": "已禁用此文档中的部分内容",
-			"preview.securityMessage.title": "已禁用此 Markdown 预览中的可能不安全的内容。更改 Markdown 预览安全设置以允许不安全内容或启用脚本。",
+			"preview.securityMessage.title": "已禁用此 Markdown 预览中的可能不安全的内容。更改 Markdown 预览安全设置以允许不安全内容或启用脚本",
 			"preview.securityMessage.label": "已禁用内容安全警告",
 			"preview.notFound": "找不到 {0}"
 		},

@@ -30,24 +30,6 @@
 			"config.diffViewPosition.current": "Abrir o modo de exibição de comparação no grupo do editor atual.",
 			"config.diffViewPosition.beside": "Abrir o modo de exibição de comparação próximo ao grupo do editor atual.",
 			"config.diffViewPosition.below": "Abrir o modo de exibição de comparação abaixo do grupo do editor atual."
-		},
-		"dist/codelensProvider": {
-			"acceptCurrentChange": "Aceitar Alteração Atual",
-			"acceptIncomingChange": "Aceitar Alteração de Entrada",
-			"acceptBothChanges": "Aceitar Ambas as Alterações",
-			"compareChanges": "Comparar Alterações"
-		},
-		"dist/commandHandler": {
-			"cursorNotInConflict": "O cursor do editor não está dentro de um conflito de mesclagem",
-			"compareChangesTitle": "{0}: Alterações Atuais ⟷ Alterações de Entrada",
-			"cursorOnCommonAncestorsRange": "O cursor do editor está dentro do bloco de ancestrais comuns, mova-o para o bloco \"current\" ou \"incoming\"",
-			"cursorOnSplitterRange": "O cursor do editor está dentro do divisor de conflitos de mesclagem, mova-o para o bloco \"current\" ou \"incoming\"",
-			"noConflicts": "Nenhum conflito de mesclagem encontrado neste arquivo",
-			"noOtherConflictsInThisFile": "Nenhum outro conflito de mesclagem neste arquivo"
-		},
-		"dist/mergeDecorator": {
-			"currentChange": "(Alteração Atual)",
-			"incomingChange": "(Alteração de Entrada)"
 		}
 	}
 }
