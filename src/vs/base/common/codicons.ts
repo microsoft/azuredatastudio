@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { SqlIconId } from 'sql/base/common/codicons';
 import { codiconStartMarker } from 'vs/base/common/codicon';
 import { Emitter, Event } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
@@ -91,9 +92,9 @@ export namespace CSSIcon {
 		let [, id, modifier] = match;
 
 		// {{SQL CARBON EDIT}} Modifying method to not add 'codicon' in front of sql carbon icons.
-		let sqlCarbonIcons = ['book', 'dataExplorer'];
+		let sqlCarbonIcons: string[] = [SqlIconId.book, SqlIconId.dataExplorer, SqlIconId.activeConnectionsAction, SqlIconId.addServerAction, SqlIconId.addServerGroupAction, SqlIconId.serverPage];
 		if (sqlCarbonIcons.includes(id)) {
-			return [id];
+			return ['codicon', id];
 			// {{SQL CARBON EDIT}} End of edit
 		} else {
 			const classNames = ['codicon', 'codicon-' + id];

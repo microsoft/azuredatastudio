@@ -54,6 +54,7 @@ import { ICommandAction, MenuItemAction } from 'vs/platform/actions/common/actio
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IExtensionRecommendationsService } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { AddServerAction } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
@@ -211,7 +212,7 @@ const extensionPackStrings = {
 const NewActionItems: ICommandAction[] = [
 	{
 		title: localize('welcomePage.newConnection', "New connection"),
-		id: 'registeredServers.addConnection'
+		id: AddServerAction.ID
 	}, {
 		title: localize('welcomePage.newQuery', "New query"),
 		id: 'workbench.action.files.newUntitledFile'
