@@ -544,7 +544,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		let scale = this._postgresModel.config?.spec.scale;
 		this.currentConfiguration.workers = scale?.workers ?? scale?.shards ?? 0;
 
-		this.workerCountBox.min = this.currentConfiguration.workers;
 		this.workerCountBox.placeHolder = '';
 		this.workerCountBox.value = this.currentConfiguration.workers.toString();
 		this.saveArgs.workers = undefined;
