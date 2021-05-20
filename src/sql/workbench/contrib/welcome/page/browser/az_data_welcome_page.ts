@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { AddServerAction } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { escape } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
 
@@ -37,7 +38,7 @@ export default () => `
 						</div>
 						<div class="row header-bottom-nav-tiles ads-grid">
 							<div class="col">
-								<a role="button" class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:registeredServers.addConnection">
+								<a role="button" class="header-bottom-nav-tile-link ads-welcome-page-link" href="command:${AddServerAction.ID}">
 									<div class="header-bottom-nav-tile tile tile-connection">
 										<h3>${escape(localize('welcomePage.createConnection', "Create a connection"))}</h3>
 										<p>${escape(localize('welcomePage.createConnectionBody', "Connect to a database instance through the connection dialog."))}</p>

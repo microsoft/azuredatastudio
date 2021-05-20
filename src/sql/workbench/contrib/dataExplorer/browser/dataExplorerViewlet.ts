@@ -27,6 +27,7 @@ import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneCont
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Viewlet } from 'vs/workbench/browser/viewlet';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { SqlIconId } from 'sql/base/common/codicons';
 
 export const VIEWLET_ID = 'workbench.view.connections';
 
@@ -132,8 +133,6 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 }
 
-export const dataExplorerIconId = 'dataExplorer';
-
 export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
 	title: localize('dataexplorer.name', "Connections"),
@@ -144,7 +143,7 @@ export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainer
 		keybindings: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_D },
 		order: 0
 	},
-	icon: { id: 'dataExplorer' },
+	icon: { id: SqlIconId.dataExplorer },
 	order: 0,
 	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Sidebar, { isDefault: true });
