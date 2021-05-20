@@ -189,7 +189,11 @@ declare module 'azdata-ext' {
 					name: string // "citus"
 				}[],
 				settings: {
-					default: { [key: string]: string } // { "max_connections": "101", "work_mem": "4MB" }
+					default: { [key: string]: string }, // { "max_connections": "101", "work_mem": "4MB" }
+					roles: {
+						coordinator: { [key: string]: string },
+						worker: { [key: string]: string }
+					}
 				},
 				version: string // "12"
 			},
@@ -289,6 +293,7 @@ declare module 'azdata-ext' {
 							adminPassword?: boolean,
 							coresLimit?: string,
 							coresRequest?: string,
+							coordinatorEngineSettings?: string,
 							engineSettings?: string,
 							extensions?: string,
 							memoryLimit?: string,
@@ -296,6 +301,7 @@ declare module 'azdata-ext' {
 							noWait?: boolean,
 							port?: number,
 							replaceEngineSettings?: boolean,
+							workerEngineSettings?: string,
 							workers?: number
 						},
 						additionalEnvVars?: AdditionalEnvVars,
