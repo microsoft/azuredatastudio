@@ -86,6 +86,13 @@ declare module 'sqldbproj' {
 		getProjectTargetVersion(): string;
 
 		/**
+		 * Gets the default database collation set in the project.
+		 *
+		 * @returns Default collation for the database set in the project.
+		 */
+		getDatabaseDefaultCollation(): string;
+
+		/**
 		 * Path where dacpac is output to after a successful build
 		 */
 		readonly dacpacOutputPath: string;

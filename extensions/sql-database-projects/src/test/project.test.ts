@@ -203,7 +203,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.msdbDacpac)).fsPath);
 		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '150', 'SqlSchemas', constants.msdbDacpac)).fsPath);
 
-		project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlServer2016)!);
+		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlServer2016)!);
 		uri = project.getSystemDacpacUri(constants.msdbDacpac);
 		ssdtUri = project.getSystemDacpacSsdtUri(constants.msdbDacpac);
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.msdbDacpac)).fsPath);
@@ -214,7 +214,9 @@ describe('Project: sqlproj content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		project.changeTargetPlatform('invalidPlatform');
+		// We use `changeTargetPlatform` to update the DSP value in the project for the purpose of this test.
+		// Even though it throws an error, it still updates the value before bailing out.
+		await testUtils.shouldThrowSpecificError(async () => await project.changeTargetPlatform('invalidPlatform'), constants.invalidDataSchemaProvider);
 		await testUtils.shouldThrowSpecificError(async () => await project.getSystemDacpacUri(constants.masterDacpac), constants.invalidDataSchemaProvider);
 	});
 
@@ -740,6 +742,55 @@ describe('Project: add SQLCMD Variables', function (): void {
 
 		const projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).equal(baselines.openSqlProjectWithAdditionalSqlCmdVariablesBaseline.trim());
+	});
+});
+
+describe('Project: properties', function (): void {
+	before(async function (): Promise<void> {
+		await baselines.loadBaselines();
+	});
+
+	it('Should read target database version', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(project.getProjectTargetVersion()).equal('150');
+	});
+
+	it('Should throw on missing target database version', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectMissingVersionBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(() => project.getProjectTargetVersion()).throw("Invalid DSP in .sqlproj file");
+	});
+
+	it('Should throw on invalid target database version', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidVersionBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(() => project.getProjectTargetVersion()).throw("Invalid DSP in .sqlproj file");
+	});
+
+	it('Should read default database collation', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectCustomCollationBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(project.getDatabaseDefaultCollation()).equal('SQL_Latin1_General_CP1255_CS_AS');
+	});
+
+	it('Should return default value when database collation is not specified', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(project.getDatabaseDefaultCollation()).equal('SQL_Latin1_General_CP1_CI_AS');
+	});
+
+	it('Should throw on invalid default database collation', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(() => project.getDatabaseDefaultCollation())
+			.throw("Invalid value specified for the property 'DefaultCollation' in .sqlproj file");
 	});
 });
 
