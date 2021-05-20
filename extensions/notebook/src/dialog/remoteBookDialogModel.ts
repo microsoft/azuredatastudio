@@ -9,7 +9,7 @@ import { IRelease, IAsset } from '../book/remoteBookController';
 export class RemoteBookDialogModel {
 	private _remoteLocation: string;
 	private _releases: IRelease[] = [];
-	private _assets: IAsset[];
+	private _assets: IAsset[] = [];
 	private _book: RemoteBook;
 
 	constructor() {
