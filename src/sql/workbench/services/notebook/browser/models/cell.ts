@@ -1059,9 +1059,6 @@ export class CellModel extends Disposable implements ICellModel {
 			const defaultTextModeKey = 'notebook.defaultTextEditMode';
 			this._defaultTextEditMode = this._configurationService.getValue(defaultTextModeKey);
 
-			this.showPreview = this._defaultTextEditMode !== TextCellEditMode.Markdown;
-			this.showMarkdown = this._defaultTextEditMode !== TextCellEditMode.RichText;
-
 			const allowADSCommandsKey = 'notebook.allowAzureDataStudioCommands';
 			this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
 			this._register(this._configurationService.onDidChangeConfiguration(e => {
