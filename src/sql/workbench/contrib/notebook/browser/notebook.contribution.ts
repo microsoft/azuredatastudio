@@ -300,6 +300,11 @@ configurationRegistry.registerConfiguration({
 		'notebook.defaultTextEditMode': {
 			'type': 'string',
 			'enum': [TextCellEditModes.RichText, TextCellEditModes.SplitView, TextCellEditModes.Markdown],
+			'enumDescriptions': [
+				localize('notebook.richTextModeDescription', 'Text is displayed as Rich Text (also known as WYSIWYG).'),
+				localize('notebook.splitViewModeDescription', 'Markdown is displayed on the left, with a preview of the rendered text on the right.'),
+				localize('notebook.markdownModeDescription', 'Text is displayed as Markdown.')
+			],
 			'default': TextCellEditModes.RichText,
 			'description': localize('notebook.defaultTextEditMode', "The default editing mode used for text cells")
 		},
