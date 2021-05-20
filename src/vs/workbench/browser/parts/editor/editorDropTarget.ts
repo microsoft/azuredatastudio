@@ -26,6 +26,7 @@ import { assertIsDefined, assertAllDefined } from 'vs/base/common/types';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
 import { ByteSize } from 'vs/platform/files/common/files';
+import { EditorOverride } from 'vs/platform/editor/common/editor';
 // {{SQL CARBON EDIT}}
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { SnippetController2 } from 'vs/editor/contrib/snippet/snippetController2';
@@ -288,7 +289,7 @@ class DropOverlay extends Themable {
 					const options = getActiveTextEditorOptions(sourceGroup, draggedEditor.editor, EditorOptions.create({
 						pinned: true,										// always pin dropped editor
 						sticky: sourceGroup.isSticky(draggedEditor.editor),	// preserve sticky state
-						override: false, // Use `draggedEditor.editor` as is. If it is already a custom editor, it will stay so.
+						override: EditorOverride.DISABLED 					// preserve editor type
 					}));
 					const copyEditor = this.isCopyOperation(event, draggedEditor);
 					targetGroup.openEditor(draggedEditor.editor, options, copyEditor ? OpenEditorContext.COPY_EDITOR : OpenEditorContext.MOVE_EDITOR);

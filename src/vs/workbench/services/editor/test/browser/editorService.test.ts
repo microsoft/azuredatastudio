@@ -391,8 +391,8 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} skip suite
 		const ed = instantiationService.createInstance(MyEditor, 'my.editor');
 
 		const inp = instantiationService.createInstance(ResourceEditorInput, URI.parse('my://resource-delegate'), 'name', 'description', undefined);
-		const delegate = instantiationService.createInstance(DelegatingEditorService, async (delegate, group, input) => {
-			assert.strictEqual(input, inp);
+		const delegate = instantiationService.createInstance(DelegatingEditorService, async (group, delegate) => {
+			assert.ok(group);
 
 			done();
 
