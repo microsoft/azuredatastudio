@@ -30,24 +30,6 @@
 			"config.diffViewPosition.current": "Apri la visualizzazione differenze nel gruppo di editor corrente.",
 			"config.diffViewPosition.beside": "Apri la visualizzazione differenze accanto al gruppo di editor corrente.",
 			"config.diffViewPosition.below": "Apri la visualizzazione differenze sotto il gruppo di editor corrente."
-		},
-		"dist/codelensProvider": {
-			"acceptCurrentChange": "Accetta modifica corrente",
-			"acceptIncomingChange": "Accetta modifica in ingresso",
-			"acceptBothChanges": "Accetta entrambe le modifiche",
-			"compareChanges": "Confronta le modifiche"
-		},
-		"dist/commandHandler": {
-			"cursorNotInConflict": "Il cursore dell'editor non si trova all'interno di un conflitto merge",
-			"compareChangesTitle": "{0}: modifiche correnti ⟷ modifiche in ingresso",
-			"cursorOnCommonAncestorsRange": "Il cursore dell'editor si trova all'interno del blocco di predecessori comuni. Spostarlo nel blocco \"corrente\" o \"in arrivo\"",
-			"cursorOnSplitterRange": "Il cursore dell'editor si trova all'interno della barra di divisione dei conflitti di merge. Spostarlo nel blocco \"corrente\" o \"in arrivo\"",
-			"noConflicts": "Conflitti merge non trovati in questo file",
-			"noOtherConflictsInThisFile": "Nessun altro conflitto merge trovato in questo file"
-		},
-		"dist/mergeDecorator": {
-			"currentChange": "(modifica corrente)",
-			"incomingChange": "(modifica in ingresso)"
 		}
 	}
 }

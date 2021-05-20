@@ -17,18 +17,26 @@
 		},
 		"dist/publish": {
 			"pick folder": "Choisir un dossier à publier sur GitHub",
-			"ignore": "Sélectionnez les fichiers à inclure dans le dépôt."
+			"ignore": "Sélectionnez les fichiers à inclure dans le dépôt.",
+			"publishing_private": "Publication sur un dépôt GitHub privé",
+			"publishing_public": "Publication sur un dépôt GitHub public",
+			"publishing_firstcommit": "Création du premier commit",
+			"publishing_uploading": "Chargement des fichiers",
+			"openingithub": "Ouvrir dans GitHub",
+			"publishing_done": "Publication réussie du dépôt '{0}' sur GitHub."
 		},
 		"dist/pushErrorHandler": {
+			"ok": "OK",
+			"fork unable": "Vous n'avez pas les autorisations nécessaires pour effectuer un envoi (push) vers '{0}/{1}' sur GitHub.",
 			"create a fork": "Créer une duplication (fork)",
 			"no": "Non",
 			"fork": "Vous n'avez pas les autorisations nécessaires pour effectuer un envoi (push) vers '{0}/{1}' sur GitHub. Voulez-vous créer une duplication (fork) pour y effectuer l'envoi à la place ?",
 			"create fork": "Créer une duplication (fork) GitHub",
 			"forking": "Création d'une duplication (fork) '{0}/{1}'...",
-			"pushing": "Envoi (push) des changements...",
+			"forking_pushing": "Envoi (push) des changements...",
 			"openingithub": "Ouvrir dans GitHub",
 			"createpr": "Créer une demande de tirage (PR)",
-			"done": "La duplication (fork) '{0}' a été correctement créée sur GitHub.",
+			"forking_done": "La duplication (fork) '{0}' a été correctement créée sur GitHub.",
 			"createghpr": "Création d'une demande de tirage (pull request) GitHub...",
 			"openpr": "Ouvrir la demande de tirage (PR)",
 			"donepr": "La demande de tirage (PR) '{0}/{1}#{2}' a été correctement créée sur GitHub."
