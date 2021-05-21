@@ -36,6 +36,15 @@ export enum CellOutputKind {
 	Rich = 3
 }
 
+export enum KernelsLanguage {
+	SQL = 'sql',
+	Python = 'python',
+	PySpark = 'python',
+	SparkScala = 'scala',
+	SparkR = 'sparkr',
+	PowerShell = 'powershell'
+}
+
 export const NOTEBOOK_DISPLAY_ORDER = [
 	'application/json',
 	'application/javascript',
