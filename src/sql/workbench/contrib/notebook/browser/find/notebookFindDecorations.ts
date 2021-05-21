@@ -17,16 +17,20 @@ export class NotebookFindDecorations implements IDisposable {
 
 	private _decorations: string[];
 	private _overviewRulerApproximateDecorations: string[];
-	private _findScopeDecorationId: string | null;
+	private _findScopeDecorationIds: string[];
+	private _codeCellFindScopeDecorationIds: string[];
 	private _rangeHighlightDecorationId: string | null;
 	private _highlightedDecorationId: string | null;
 	private _startPosition: NotebookRange;
 	private _currentMatch: NotebookRange;
+	private _codeCellDecorations: Map<string, string[]>;
 
 	constructor(private readonly _editor: NotebookEditor) {
 		this._decorations = [];
 		this._overviewRulerApproximateDecorations = [];
-		this._findScopeDecorationId = null;
+		this._findScopeDecorationIds = [];
+		this._codeCellDecorations = new Map<string, string[]>();
+		this._codeCellFindScopeDecorationIds = [];
 		this._rangeHighlightDecorationId = null;
 		this._highlightedDecorationId = null;
 		this._startPosition = this._editor.getPosition();
@@ -37,7 +41,9 @@ export class NotebookFindDecorations implements IDisposable {
 
 		this._decorations = [];
 		this._overviewRulerApproximateDecorations = [];
-		this._findScopeDecorationId = null;
+		this._findScopeDecorationIds = [];
+		this._codeCellDecorations = new Map<string, string[]>();
+		this._codeCellFindScopeDecorationIds = [];
 		this._rangeHighlightDecorationId = null;
 		this._highlightedDecorationId = null;
 	}
@@ -45,7 +51,9 @@ export class NotebookFindDecorations implements IDisposable {
 	public reset(): void {
 		this._decorations = [];
 		this._overviewRulerApproximateDecorations = [];
-		this._findScopeDecorationId = null;
+		this._findScopeDecorationIds = [];
+		this._codeCellDecorations = new Map<string, string[]>();
+		this._codeCellFindScopeDecorationIds = [];
 		this._rangeHighlightDecorationId = null;
 		this._highlightedDecorationId = null;
 	}
@@ -55,8 +63,20 @@ export class NotebookFindDecorations implements IDisposable {
 	}
 
 	public getFindScope(): NotebookRange | null {
-		if (this._currentMatch) {
-			return this._currentMatch;
+		if (this._findScopeDecorationIds[0]) {
+			return this._editor.notebookFindModel.getDecorationRange(this._findScopeDecorationIds[0]);
+		}
+		return null;
+	}
+
+	public getFindScopes(): NotebookRange[] | null {
+		if (this._findScopeDecorationIds.length) {
+			const scopes = this._findScopeDecorationIds.map(findScopeDecorationId =>
+				this._editor.notebookFindModel.getDecorationRange(findScopeDecorationId)
+			).filter(element => !!element);
+			if (scopes.length) {
+				return scopes as NotebookRange[];
+			}
 		}
 		return null;
 	}
@@ -73,6 +93,14 @@ export class NotebookFindDecorations implements IDisposable {
 	}
 
 	public clearDecorations(): void {
+		let ranges = this.getFindScopes();
+		this._editor.updateDecorations(undefined, ranges);
+		for (let cellGuid of this._codeCellDecorations.keys()) {
+			this._editor.getCellEditor(cellGuid).getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
+				this._codeCellDecorations.get(cellGuid).forEach(decorationId => changeAccessor.removeDecoration(decorationId));
+				changeAccessor.deltaDecorations(this._codeCellFindScopeDecorationIds, []);
+			});
+		}
 		this.removePrevDecorations();
 	}
 
@@ -84,7 +112,6 @@ export class NotebookFindDecorations implements IDisposable {
 				let range = this._editor.notebookFindModel.getDecorationRange(this._decorations[i]);
 				if (nextMatch.equalsRange(range)) {
 					newCurrentDecorationId = this._decorations[i];
-					this._findScopeDecorationId = newCurrentDecorationId;
 					matchPosition = (i + 1);
 					break;
 				}
@@ -156,48 +183,11 @@ export class NotebookFindDecorations implements IDisposable {
 		return range && range.cell && !!(this._editor.getCellEditor(range.cell.cellGuid)) && (range.cell.cellType === 'code' || range.isMarkdownSourceCell);
 	}
 
-	public set(findMatches: NotebookFindMatch[], findScope: NotebookRange | null): void {
+	public set(findMatches: NotebookFindMatch[], findScopes: NotebookRange[] | null): void {
+		this._editor.updateDecorations(findScopes, undefined);
+		let _cellFindScopeDecorationIds: string[] = [];
 		this._editor.changeDecorations((accessor) => {
-
-			let findMatchesOptions: ModelDecorationOptions = NotebookFindDecorations._FIND_MATCH_DECORATION;
-			let newOverviewRulerApproximateDecorations: IModelDeltaDecoration[] = [];
-
-			if (findMatches.length > 1000) {
-				// we go into a mode where the overview ruler gets "approximate" decorations
-				// the reason is that the overview ruler paints all the decorations in the file and we don't want to cause freezes
-				findMatchesOptions = NotebookFindDecorations._FIND_MATCH_NO_OVERVIEW_DECORATION;
-
-				// approximate a distance in lines where matches should be merged
-				const lineCount = this._editor.notebookFindModel.getLineCount();
-				const height = this._editor.getConfiguration().layoutInfo.height;
-				const approxPixelsPerLine = height / lineCount;
-				const mergeLinesDelta = Math.max(2, Math.ceil(3 / approxPixelsPerLine));
-
-				// merge decorations as much as possible
-				let prevStartLineNumber = findMatches[0].range.startLineNumber;
-				let prevEndLineNumber = findMatches[0].range.endLineNumber;
-				for (let i = 1, len = findMatches.length; i < len; i++) {
-					const range: NotebookRange = findMatches[i].range;
-					if (prevEndLineNumber + mergeLinesDelta >= range.startLineNumber) {
-						if (range.endLineNumber > prevEndLineNumber) {
-							prevEndLineNumber = range.endLineNumber;
-						}
-					} else {
-						newOverviewRulerApproximateDecorations.push({
-							range: new NotebookRange(range.cell, prevStartLineNumber, 1, prevEndLineNumber, 1),
-							options: NotebookFindDecorations._FIND_MATCH_ONLY_OVERVIEW_DECORATION
-						});
-						prevStartLineNumber = range.startLineNumber;
-						prevEndLineNumber = range.endLineNumber;
-					}
-				}
-
-				newOverviewRulerApproximateDecorations.push({
-					range: new NotebookRange(findMatches[0].range.cell, prevStartLineNumber, 1, prevEndLineNumber, 1),
-					options: NotebookFindDecorations._FIND_MATCH_ONLY_OVERVIEW_DECORATION
-				});
-			}
-
+			let findMatchesOptions = NotebookFindDecorations._FIND_MATCH_NO_OVERVIEW_DECORATION;
 			// Find matches
 			let newFindMatchesDecorations: IModelDeltaDecoration[] = new Array<IModelDeltaDecoration>(findMatches.length);
 			for (let i = 0, len = findMatches.length; i < len; i++) {
@@ -208,24 +198,92 @@ export class NotebookFindDecorations implements IDisposable {
 			}
 			this._decorations = accessor.deltaDecorations(this._decorations, newFindMatchesDecorations);
 
-			// Overview ruler approximate decorations
-			this._overviewRulerApproximateDecorations = accessor.deltaDecorations(this._overviewRulerApproximateDecorations, newOverviewRulerApproximateDecorations);
-
-			// Range highlight
-			if (this._rangeHighlightDecorationId) {
-				accessor.removeDecoration(this._rangeHighlightDecorationId);
-				this._rangeHighlightDecorationId = null;
-			}
-
 			// Find scope
-			if (this._findScopeDecorationId) {
-				accessor.removeDecoration(this._findScopeDecorationId);
-				this._findScopeDecorationId = null;
+			if (this._findScopeDecorationIds.length) {
+				this._findScopeDecorationIds.forEach(findScopeDecorationId => accessor.removeDecoration(findScopeDecorationId));
+				this._findScopeDecorationIds = [];
 			}
-			if (findScope) {
-				this._currentMatch = findScope;
-				this._findScopeDecorationId = accessor.addDecoration(findScope, NotebookFindDecorations._FIND_SCOPE_DECORATION);
+			if (findScopes.length) {
+				this._findScopeDecorationIds = findScopes.map(findScope => accessor.addDecoration(findScope, NotebookFindDecorations._FIND_SCOPE_DECORATION));
 			}
+		});
+		//get all code cells which have matches
+		const cellsWithMatches = findScopes.filter((c, i, ranges) => {
+			return ranges.indexOf(ranges.find(t => t.cell.cellGuid === c.cell.cellGuid && t.cell.cellType === 'code')) === i;
+		});
+		cellsWithMatches.forEach(findMatch => {
+			this._editor.getCellEditor(findMatch.cell.cellGuid)?.getControl().changeDecorations((accessor) => {
+
+				let findMatchesOptions: ModelDecorationOptions = NotebookFindDecorations._FIND_MATCH_DECORATION;
+				let newOverviewRulerApproximateDecorations: IModelDeltaDecoration[] = [];
+
+				let cellfindScopes = findScopes.filter(f => f.cell.cellGuid === findMatch.cell.cellGuid);
+				let findMatchesInCell = findMatches?.filter(m => m.range.cell.cellGuid === findMatch.cell.cellGuid) || [];
+				if (findMatchesInCell.length > 1000) {
+					// we go into a mode where the overview ruler gets "approximate" decorations
+					// the reason is that the overview ruler paints all the decorations in the file and we don't want to cause freezes
+					findMatchesOptions = NotebookFindDecorations._FIND_MATCH_NO_OVERVIEW_DECORATION;
+
+					// approximate a distance in lines where matches should be merged
+					const lineCount = this._editor.notebookFindModel.getLineCount();
+					const height = this._editor.getConfiguration().layoutInfo.height;
+					const approxPixelsPerLine = height / lineCount;
+					const mergeLinesDelta = Math.max(2, Math.ceil(3 / approxPixelsPerLine));
+
+					// merge decorations as much as possible
+					let prevStartLineNumber = findMatchesInCell[0].range.startLineNumber;
+					let prevEndLineNumber = findMatchesInCell[0].range.endLineNumber;
+					for (let i = 1, len = findMatchesInCell.length; i < len; i++) {
+						const range = findMatchesInCell[i].range;
+						if (prevEndLineNumber + mergeLinesDelta >= range.startLineNumber) {
+							if (range.endLineNumber > prevEndLineNumber) {
+								prevEndLineNumber = range.endLineNumber;
+							}
+						} else {
+							newOverviewRulerApproximateDecorations.push({
+								range: new Range(prevStartLineNumber, 1, prevEndLineNumber, 1),
+								options: NotebookFindDecorations._FIND_MATCH_ONLY_OVERVIEW_DECORATION
+							});
+							prevStartLineNumber = range.startLineNumber;
+							prevEndLineNumber = range.endLineNumber;
+						}
+					}
+
+					newOverviewRulerApproximateDecorations.push({
+						range: new Range(prevStartLineNumber, 1, prevEndLineNumber, 1),
+						options: NotebookFindDecorations._FIND_MATCH_ONLY_OVERVIEW_DECORATION
+					});
+				}
+
+				// Find matches
+				let newFindMatchesDecorations: IModelDeltaDecoration[] = new Array<IModelDeltaDecoration>(findMatchesInCell.length);
+				for (let i = 0, len = findMatchesInCell.length; i < len; i++) {
+					newFindMatchesDecorations[i] = {
+						range: findMatchesInCell[i].range,
+						options: findMatchesOptions
+					};
+				}
+				let decorations = accessor.deltaDecorations(this._decorations, newFindMatchesDecorations);
+				this._codeCellDecorations.set(findMatch.cell.cellGuid, decorations);
+				// Overview ruler approximate decorations
+				this._overviewRulerApproximateDecorations = accessor.deltaDecorations(this._overviewRulerApproximateDecorations, newOverviewRulerApproximateDecorations);
+
+				// Range highlight
+				if (this._rangeHighlightDecorationId) {
+					accessor.removeDecoration(this._rangeHighlightDecorationId);
+					this._rangeHighlightDecorationId = null;
+				}
+
+				// Find scope
+				if (_cellFindScopeDecorationIds.length) {
+					_cellFindScopeDecorationIds.forEach(findScopeDecorationId => accessor.removeDecoration(findScopeDecorationId));
+					_cellFindScopeDecorationIds = [];
+				}
+				if (cellfindScopes.length) {
+					_cellFindScopeDecorationIds = cellfindScopes.map(findScope => accessor.addDecoration(findScope, NotebookFindDecorations._FIND_SCOPE_DECORATION));
+					this._codeCellFindScopeDecorationIds.push(..._cellFindScopeDecorationIds);
+				}
+			});
 		});
 	}
 
@@ -233,8 +291,8 @@ export class NotebookFindDecorations implements IDisposable {
 		let result: string[] = [];
 		result = result.concat(this._decorations);
 		result = result.concat(this._overviewRulerApproximateDecorations);
-		if (this._findScopeDecorationId) {
-			result.push(this._findScopeDecorationId);
+		if (this._findScopeDecorationIds.length) {
+			result.push(...this._findScopeDecorationIds);
 		}
 		if (this._rangeHighlightDecorationId) {
 			result.push(this._rangeHighlightDecorationId);

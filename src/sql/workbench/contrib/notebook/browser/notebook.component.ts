@@ -154,14 +154,36 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		return editors;
 	}
 
-	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
-		if (newDecorationRange && newDecorationRange.cell && newDecorationRange.cell.cellType === 'markdown') {
-			let cell = this.cellEditors.filter(c => c.cellGuid() === newDecorationRange.cell.cellGuid);
-			cell[cell.length - 1].deltaDecorations(newDecorationRange, undefined);
+	public deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
+		if (oldDecorationsRange) {
+			if (Array.isArray(oldDecorationsRange)) {
+				oldDecorationsRange.forEach(oldDecorationRange => {
+					if (oldDecorationRange.cell.cellType === 'markdown') {
+						let cell = this.cellEditors.filter(c => c.cellGuid() === oldDecorationRange.cell.cellGuid);
+						cell[cell.length - 1].deltaDecorations(undefined, [oldDecorationRange]);
+					}
+				});
+			} else {
+				if (oldDecorationsRange.cell.cellType === 'markdown') {
+					let cell = this.cellEditors.filter(c => c.cellGuid() === oldDecorationsRange.cell.cellGuid);
+					cell[cell.length - 1].deltaDecorations(undefined, oldDecorationsRange);
+				}
+			}
 		}
-		if (oldDecorationRange && oldDecorationRange.cell && oldDecorationRange.cell.cellType === 'markdown') {
-			let cell = this.cellEditors.filter(c => c.cellGuid() === oldDecorationRange.cell.cellGuid);
-			cell[cell.length - 1].deltaDecorations(undefined, oldDecorationRange);
+		if (newDecorationsRange) {
+			if (Array.isArray(newDecorationsRange)) {
+				newDecorationsRange.forEach(newDecorationRange => {
+					if (newDecorationRange.cell.cellType === 'markdown') {
+						let cell = this.cellEditors.filter(c => c.cellGuid() === newDecorationRange.cell.cellGuid);
+						cell[cell.length - 1].deltaDecorations([newDecorationRange], undefined);
+					}
+				});
+			} else {
+				if (newDecorationsRange.cell.cellType === 'markdown') {
+					let cell = this.cellEditors.filter(c => c.cellGuid() === newDecorationsRange.cell.cellGuid);
+					cell[cell.length - 1].deltaDecorations(newDecorationsRange, undefined);
+				}
+			}
 		}
 	}
 

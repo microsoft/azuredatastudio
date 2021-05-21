@@ -353,58 +353,79 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		return this.cellModel && this.cellModel.id === this.activeCellId;
 	}
 
-	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
-		if (oldDecorationRange) {
-			this._highlightRange = oldDecorationRange === this._highlightRange ? undefined : this._highlightRange;
-			this.removeDecoration(oldDecorationRange);
+	public deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
+		if (newDecorationsRange) {
+			if (Array.isArray(newDecorationsRange)) {
+				this.highlightAllMatches();
+			} else {
+				this._highlightRange = newDecorationsRange;
+				this.addDecoration(newDecorationsRange);
+			}
 		}
-
-		if (newDecorationRange) {
-			this._highlightRange = newDecorationRange;
-			this.addDecoration(newDecorationRange);
+		if (oldDecorationsRange) {
+			if (Array.isArray(oldDecorationsRange)) {
+				this.removeDecoration();
+			} else {
+				this._highlightRange = oldDecorationsRange === this._highlightRange ? undefined : this._highlightRange;
+				this.removeDecoration(oldDecorationsRange);
+			}
 		}
 	}
 
 	private addDecoration(range?: NotebookRange): void {
 		range = range ?? this._highlightRange;
 		if (range && this.output && this.output.nativeElement) {
-			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
-			let elements = this.getHtmlElements();
-			if (elements?.length >= range.startLineNumber) {
-				let elementContainingText = elements[range.startLineNumber - 1];
-				let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
-				let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
-				if (editor) {
-					let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
-					if (findModel?.findMatches?.length > 0) {
-						let searchString = findModel.findExpression;
-						markAllOccurances.mark(searchString, {
-							className: findHighlightClass
-						});
-					}
+			if (range) {
+				this.highlightAllMatches();
+				let elements = this.getHtmlElements();
+				if (elements?.length >= range.startLineNumber) {
+					let elementContainingText = elements[range.startLineNumber - 1];
+					let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
+
+					markCurrent.markRanges([{
+						start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
+						length: range.endColumn - range.startColumn
+					}], {
+						className: findRangeSpecificClass,
+						each: function (node, range) {
+							// node is the marked DOM element
+							node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+						}
+					});
 				}
-				markCurrent.markRanges([{
-					start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
-					length: range.endColumn - range.startColumn
-				}], {
-					className: findRangeSpecificClass,
-					each: function (node, range) {
-						// node is the marked DOM element
-						node.scrollIntoView({ behavior: 'smooth', block: 'center' });
-					}
-				});
 			}
 		}
 	}
 
-	private removeDecoration(range: NotebookRange): void {
-		if (range && this.output && this.output.nativeElement) {
-			let markAllOccurances = new Mark(this.output.nativeElement);
-			let elements = this.getHtmlElements();
-			let elementContainingText = elements[range.startLineNumber - 1];
-			let markCurrent = new Mark(elementContainingText);
-			markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
-			markCurrent.unmark({ acrossElements: true, className: findRangeSpecificClass });
+	private highlightAllMatches(): void {
+		if (this.output && this.output.nativeElement) {
+			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
+			let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
+			if (editor) {
+				let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
+				if (findModel?.findMatches?.length > 0) {
+					let searchString = findModel.findExpression;
+					markAllOccurances.mark(searchString, {
+						className: findHighlightClass
+					});
+				}
+			}
+		}
+	}
+
+	private removeDecoration(range?: NotebookRange): void {
+		if (this.output && this.output.nativeElement) {
+			if (range) {
+				let elements = this.getHtmlElements();
+				let elementContainingText = elements[range.startLineNumber - 1];
+				let markCurrent = new Mark(elementContainingText);
+				markCurrent.unmark({ acrossElements: true, className: findRangeSpecificClass });
+			} else {
+				let markAllOccurances = new Mark(this.output.nativeElement);
+				markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
+				markAllOccurances.unmark({ acrossElements: true, className: findRangeSpecificClass });
+				this._highlightRange = undefined;
+			}
 		}
 	}
 

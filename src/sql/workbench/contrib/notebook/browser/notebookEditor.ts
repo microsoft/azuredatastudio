@@ -103,10 +103,10 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 
 	// updateDecorations is only used for modifying decorations on markdown cells
 	// changeDecorations is the function that handles the decorations w.r.t codeEditor cells.
-	public updateDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
+	public updateDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
 		let editorImpl = this._notebookService.findNotebookEditor(this.notebookInput.notebookUri);
 		if (editorImpl) {
-			editorImpl.deltaDecorations(newDecorationRange, oldDecorationRange);
+			editorImpl.deltaDecorations(newDecorationsRange, oldDecorationsRange);
 		}
 	}
 
@@ -282,6 +282,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 				this._finder.focusFindInput();
 				this._updateFinderMatchState();
 				// if find is closed and opened again, highlight the last position.
+				this._findDecorations.set(this.notebookFindModel.findMatches, this.notebookFindModel.findArray);
 				this._findDecorations.setStartPosition(this.getPosition());
 			} else {
 				this._finder.getDomNode().style.visibility = 'hidden';
@@ -325,7 +326,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 					}
 					this._updateFinderMatchState();
 					this._finder.focusFindInput();
-					this._findDecorations.set(this.notebookFindModel.findMatches, this._currentMatch);
+					this._findDecorations.set(this.notebookFindModel.findMatches, this.notebookFindModel.findArray);
 					this._findState.changeMatchInfo(
 						this.notebookFindModel.getFindIndex(),
 						this._findDecorations.getCount(),
@@ -339,7 +340,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 		}
 		if (e.searchScope) {
 			await this.notebookInput.notebookFindModel.find(this._findState.searchString, this._findState.matchCase, this._findState.wholeWord, NOTEBOOK_MAX_MATCHES);
-			this._findDecorations.set(this.notebookFindModel.findMatches, this._currentMatch);
+			this._findDecorations.set(this.notebookFindModel.findMatches, this.notebookFindModel.findArray);
 			this._findState.changeMatchInfo(
 				this.notebookFindModel.getIndexByRange(this._currentMatch),
 				this._findDecorations.getCount(),
