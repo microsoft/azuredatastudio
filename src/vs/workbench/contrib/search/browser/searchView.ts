@@ -17,7 +17,7 @@ import * as errors from 'vs/base/common/errors';
 import { Event } from 'vs/base/common/event';
 import { Iterable } from 'vs/base/common/iterator';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
-import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import * as env from 'vs/base/common/platform';
 import * as strings from 'vs/base/common/strings';
 import { URI } from 'vs/base/common/uri';
@@ -45,7 +45,7 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IProgress, IProgressService, IProgressStep } from 'vs/platform/progress/common/progress';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { diffInserted, diffInsertedOutline, diffRemoved, diffRemovedOutline, editorFindMatchHighlight, editorFindMatchHighlightBorder, foreground, listActiveSelectionForeground } from 'vs/platform/theme/common/colorRegistry';
+import { diffInserted, diffInsertedOutline, diffRemoved, diffRemovedOutline, editorFindMatchHighlight, editorFindMatchHighlightBorder, foreground, listActiveSelectionForeground, textLinkActiveForeground, textLinkForeground } from 'vs/platform/theme/common/colorRegistry';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant, ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { OpenFileFolderAction, OpenFolderAction } from 'vs/workbench/browser/actions/workspaceActions';
@@ -115,11 +115,11 @@ export class SearchView extends ViewPane {
 
 	protected contextMenu: IMenu | null = null; // {{SQL CARBON EDIT}}
 
-	protected tree!: WorkbenchObjectTree<RenderableMatch>; // {{SQL CARBON EDIT}}
+	protected tree!: WorkbenchObjectTree<RenderableMatch>; // {{SQL CARBON EDIT}} Increase visibility
 	protected treeLabels!: ResourceLabels; // {{SQL CARBON EDIT}}
 	protected viewletState: MementoObject; // {{SQL CARBON EDIT}}
 	protected messagesElement!: HTMLElement; // {{SQL CARBON EDIT}}
-	protected messageDisposables: IDisposable[] = []; // {{SQL CARBON EDIT}}
+	protected readonly messageDisposables: DisposableStore = new DisposableStore(); // {{SQL CARBON EDIT}}
 	private searchWidgetsContainerElement!: HTMLElement;
 	private searchWidget!: SearchWidget;
 	protected size!: dom.Dimension; // {{SQL CARBON EDIT}}
@@ -322,7 +322,6 @@ export class SearchView extends ViewPane {
 		this.inputPatternIncludes.setValue(patternIncludes);
 		this.inputPatternIncludes.setOnlySearchInOpenEditors(onlyOpenEditors);
 
-		this._register(this.inputPatternIncludes.onSubmit(triggeredOnType => this.triggerQueryChange({ triggeredOnType, delay: this.searchConfig.searchOnTypeDebouncePeriod })));
 		this._register(this.inputPatternIncludes.onCancel(() => this.cancelSearch(false)));
 		this._register(this.inputPatternIncludes.onChangeSearchInEditorsBox(() => this.triggerQueryChange()));
 
@@ -688,8 +687,7 @@ export class SearchView extends ViewPane {
 		const wasHidden = this.messagesElement.style.display === 'none';
 		dom.clearNode(this.messagesElement);
 		dom.show(this.messagesElement);
-		dispose(this.messageDisposables);
-		this.messageDisposables = [];
+		this.messageDisposables.clear();
 
 		const newMessage = dom.append(this.messagesElement, $('.message'));
 		if (wasHidden) {
@@ -1284,6 +1282,8 @@ export class SearchView extends ViewPane {
 	triggerQueryChange(_options?: { preserveFocus?: boolean, triggeredOnType?: boolean, delay?: number }) {
 		const options = { preserveFocus: true, triggeredOnType: false, delay: 0, ..._options };
 
+		if (options.triggeredOnType && !this.searchConfig.searchOnType) { return; }
+
 		if (!this.pauseSearching) {
 			this.triggerQueryDelayer.trigger(() => {
 				this._onQueryChanged(options.preserveFocus, options.triggeredOnType);
@@ -1484,32 +1484,23 @@ export class SearchView extends ViewPane {
 				const p = dom.append(messageEl, $('p', undefined, message));
 
 				if (!completed) {
-					const searchAgainLink = dom.append(p, $('a.pointer.prominent', undefined, nls.localize('rerunSearch.message', "Search again")));
-					this.messageDisposables.push(dom.addDisposableListener(searchAgainLink, dom.EventType.CLICK, (e: MouseEvent) => {
-						dom.EventHelper.stop(e, false);
-						this.triggerQueryChange({ preserveFocus: false });
-					}));
+					const searchAgainButton = this.messageDisposables.add(new SearchLinkButton(
+						nls.localize('rerunSearch.message', "Search again"),
+						() => this.triggerQueryChange({ preserveFocus: false })));
+					dom.append(p, searchAgainButton.element);
 				} else if (hasIncludes || hasExcludes) {
-					const searchAgainLink = dom.append(p, $('a.pointer.prominent', { tabindex: 0 }, nls.localize('rerunSearchInAll.message', "Search again in all files")));
-					this.messageDisposables.push(dom.addDisposableListener(searchAgainLink, dom.EventType.CLICK, (e: MouseEvent) => {
-						dom.EventHelper.stop(e, false);
-
-						this.inputPatternExcludes.setValue('');
-						this.inputPatternIncludes.setValue('');
-						this.inputPatternIncludes.setOnlySearchInOpenEditors(false);
-
-						this.triggerQueryChange({ preserveFocus: false });
-					}));
+					const searchAgainButton = this.messageDisposables.add(new SearchLinkButton(nls.localize('rerunSearchInAll.message', "Search again in all files"), this.onSearchAgain.bind(this)));
+					dom.append(p, searchAgainButton.element);
 				} else {
-					const openSettingsLink = dom.append(p, $('a.pointer.prominent', { tabindex: 0 }, nls.localize('openSettings.message', "Open Settings")));
-					this.addClickEvents(openSettingsLink, this.onOpenSettings);
+					const openSettingsButton = this.messageDisposables.add(new SearchLinkButton(nls.localize('openSettings.message', "Open Settings"), this.onOpenSettings.bind(this)));
+					dom.append(p, openSettingsButton.element);
 				}
 
 				if (completed) {
 					dom.append(p, $('span', undefined, ' - '));
 
-					const learnMoreLink = dom.append(p, $('a.pointer.prominent', { tabindex: 0 }, nls.localize('openSettings.learnMore', "Learn More")));
-					this.addClickEvents(learnMoreLink, this.onLearnMore);
+					const learnMoreButton = this.messageDisposables.add(new SearchLinkButton(nls.localize('openSettings.learnMore', "Learn More"), this.onLearnMore.bind(this)));
+					dom.append(p, learnMoreButton.element);
 				}
 
 				if (this.contextService.getWorkbenchState() === WorkbenchState.EMPTY) {
@@ -1561,30 +1552,10 @@ export class SearchView extends ViewPane {
 			.then(onComplete, onError);
 	}
 
-	protected addClickEvents = (element: HTMLElement, handler: (event: any) => void): void => { // {{SQL CARBON EDIT}}
-		this.messageDisposables.push(dom.addDisposableListener(element, dom.EventType.CLICK, handler));
-		this.messageDisposables.push(dom.addDisposableListener(element, dom.EventType.KEY_DOWN, e => {
-			const event = new StandardKeyboardEvent(e);
-			let eventHandled = true;
-
-			if (event.equals(KeyCode.Space) || event.equals(KeyCode.Enter)) {
-				handler(e);
-			} else {
-				eventHandled = false;
-			}
-
-			if (eventHandled) {
-				event.preventDefault();
-				event.stopPropagation();
-			}
-		}));
-	};
-
-	protected onOpenSettings = (e: dom.EventLike): void => { // {{SQL CARBON EDIT}}
+	protected onOpenSettings(e: dom.EventLike): void { // {{SQL CARBON EDIT}} Increase visibility for overriding in Notebook search
 		dom.EventHelper.stop(e, false);
-
-		this.openSettings('.exclude');
-	};
+		this.openSettings('@id:files.exclude,search.exclude,search.useGlobalIgnoreFiles,search.useIgnoreFiles');
+	}
 
 	private openSettings(query: string): Promise<IEditorPane | undefined> {
 		const options: ISettingsEditorOptions = { query };
@@ -1593,11 +1564,22 @@ export class SearchView extends ViewPane {
 			this.preferencesService.openGlobalSettings(undefined, options);
 	}
 
-	protected onLearnMore = (e: MouseEvent): void => { // {{SQL CARBON EDIT}}
-		dom.EventHelper.stop(e, false);
-
+	protected onLearnMore(): void {
 		this.openerService.open(URI.parse('https://go.microsoft.com/fwlink/?linkid=853977'));
-	};
+	}
+
+	protected onSearchAgain(): void { // {{SQL CARBON EDIT}} Increase visibility for overriding in Notebook search
+		this.inputPatternExcludes.setValue('');
+		this.inputPatternIncludes.setValue('');
+		this.inputPatternIncludes.setOnlySearchInOpenEditors(false);
+
+		this.triggerQueryChange({ preserveFocus: false });
+	}
+
+	private onEnableExcludes(): void {
+		this.toggleQueryDetails(false, true);
+		this.searchExcludePattern.setUseExcludesAndIgnoreFiles(true);
+	}
 
 	protected updateSearchResultCount(disregardExcludesAndIgnores?: boolean, showOpenInEditor: boolean = true): void { // {{SQL CARBON EDIT}} - Hide Open in Editor in Notebooks viewlet
 		const fileCount = this.viewModel.searchResult.fileCount();
@@ -1606,32 +1588,32 @@ export class SearchView extends ViewPane {
 		const msgWasHidden = this.messagesElement.style.display === 'none';
 
 		const messageEl = this.clearMessage();
-		let resultMsg = this.buildResultCountMessage(this.viewModel.searchResult.count(), fileCount);
+		const resultMsg = this.buildResultCountMessage(this.viewModel.searchResult.count(), fileCount);
 		this.tree.ariaLabel = resultMsg + nls.localize('forTerm', " - Search: {0}", this.searchResult.query?.contentPattern.pattern ?? '');
+		dom.append(messageEl, resultMsg);
 
 		if (fileCount > 0) {
 			if (disregardExcludesAndIgnores) {
-				resultMsg += nls.localize('useIgnoresAndExcludesDisabled', " - exclude settings and ignore files are disabled");
+				const excludesDisabledMessage = ' - ' + nls.localize('useIgnoresAndExcludesDisabled', "exclude settings and ignore files are disabled") + ' ';
+				const enableExcludesButton = this.messageDisposables.add(new SearchLinkButton(nls.localize('excludes.enable', "enable"), this.onEnableExcludes.bind(this), nls.localize('useExcludesAndIgnoreFilesDescription', "Use Exclude Settings and Ignore Files")));
+				dom.append(messageEl, $('span', undefined, excludesDisabledMessage, '(', enableExcludesButton.element, ')'));
 			}
 
 			if (showOpenInEditor) { // {{SQL CARBON EDIT}} - Hide Open in Editor in Notebooks viewlet
-				dom.append(messageEl, $('span', undefined, resultMsg + ' - '));
+				dom.append(messageEl, ' - ');
 			} else {
-				dom.append(messageEl, $('span', undefined, resultMsg));
+				dom.append(messageEl);
 			}
-			const span = dom.append(messageEl, $('span'));
 
 			if (showOpenInEditor) { // {{SQL CARBON EDIT}} - Hide Open in Editor in Notebooks viewlet
-				const openInEditorLink = dom.append(span, $('a.pointer.prominent', undefined, nls.localize('openInEditor.message', "Open in editor")));
-
-				openInEditorLink.title = appendKeyBindingLabel(
+				const openInEditorTooltip = appendKeyBindingLabel(
 					nls.localize('openInEditor.tooltip', "Copy current search results to an editor"),
 					this.keybindingService.lookupKeybinding(Constants.OpenInEditorCommandId), this.keybindingService);
-
-				this.messageDisposables.push(dom.addDisposableListener(openInEditorLink, dom.EventType.CLICK, (e: MouseEvent) => {
-					dom.EventHelper.stop(e, false);
-					this.instantiationService.invokeFunction(createEditorFromSearchResult, this.searchResult, this.searchIncludePattern?.getValue(), this.searchExcludePattern?.getValue(), this.searchIncludePattern.onlySearchInOpenEditors()); // {{SQL CARBON EDIT}}
-				}));
+				const openInEditorButton = this.messageDisposables.add(new SearchLinkButton(
+					nls.localize('openInEditor.message', "Open in editor"),
+					() => this.instantiationService.invokeFunction(createEditorFromSearchResult, this.searchResult, this.searchIncludePattern.getValue(), this.searchExcludePattern.getValue(), this.searchIncludePattern.onlySearchInOpenEditors()),
+					openInEditorTooltip));
+				dom.append(messageEl, openInEditorButton.element);
 			}
 
 			this.reLayout();
@@ -1658,24 +1640,22 @@ export class SearchView extends ViewPane {
 		const textEl = dom.append(this.searchWithoutFolderMessageElement,
 			$('p', undefined, nls.localize('searchWithoutFolder', "You have not opened or specified a folder. Only open files are currently searched - ")));
 
-		const openFolderLink = dom.append(textEl,
-			$('a.pointer.prominent', { tabindex: 0 }, nls.localize('openFolder', "Open Folder")));
+		const actionRunner = this.messageDisposables.add(new ActionRunner());
+		const openFolderButton = this.messageDisposables.add(new SearchLinkButton(
+			nls.localize('openFolder', "Open Folder"),
+			() => {
+				const action = env.isMacintosh ?
+					this.instantiationService.createInstance(OpenFileFolderAction, OpenFileFolderAction.ID, OpenFileFolderAction.LABEL) :
+					this.instantiationService.createInstance(OpenFolderAction, OpenFolderAction.ID, OpenFolderAction.LABEL);
 
-		const actionRunner = new ActionRunner();
-		this.messageDisposables.push(dom.addDisposableListener(openFolderLink, dom.EventType.CLICK, (e: MouseEvent) => {
-			dom.EventHelper.stop(e, false);
-
-			const action = env.isMacintosh ?
-				this.instantiationService.createInstance(OpenFileFolderAction, OpenFileFolderAction.ID, OpenFileFolderAction.LABEL) :
-				this.instantiationService.createInstance(OpenFolderAction, OpenFolderAction.ID, OpenFolderAction.LABEL);
-
-			actionRunner.run(action).then(() => {
-				action.dispose();
-			}, err => {
-				action.dispose();
-				errors.onUnexpectedError(err);
-			});
-		}));
+				actionRunner.run(action).then(() => {
+					action.dispose();
+				}, err => {
+					action.dispose();
+					errors.onUnexpectedError(err);
+				});
+			}));
+		dom.append(textEl, openFolderButton.element);
 	}
 
 	protected showEmptyStage(forceHideMessages = false): void { // {{SQL CARBON EDIT}}
@@ -1943,4 +1923,42 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 			collector.addRule(`.search-view .message { color: ${fgWithOpacity}; }`);
 		}
 	}
+
+	const link = theme.getColor(textLinkForeground);
+	if (link) {
+		collector.addRule(`.monaco-workbench .search-view .message a { color: ${link}; }`);
+	}
+
+	const activeLink = theme.getColor(textLinkActiveForeground);
+	if (activeLink) {
+		collector.addRule(`.monaco-workbench .search-view .message a:hover,
+			.monaco-workbench .search-view .message a:active { color: ${activeLink}; }`);
+	}
 });
+
+export class SearchLinkButton extends Disposable {
+	public readonly element: HTMLElement;
+
+	constructor(label: string, handler: (e: dom.EventLike) => unknown, tooltip?: string) {
+		super();
+		this.element = $('a.pointer', { tabindex: 0, title: tooltip }, label);
+		this.addEventHandlers(handler);
+	}
+
+	private addEventHandlers(handler: (e: dom.EventLike) => unknown): void {
+		const wrappedHandler = (e: dom.EventLike) => {
+			dom.EventHelper.stop(e, false);
+			handler(e);
+		};
+
+		this._register(dom.addDisposableListener(this.element, dom.EventType.CLICK, wrappedHandler));
+		this._register(dom.addDisposableListener(this.element, dom.EventType.KEY_DOWN, e => {
+			const event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyCode.Space) || event.equals(KeyCode.Enter)) {
+				wrappedHandler(e);
+				event.preventDefault();
+				event.stopPropagation();
+			}
+		}));
+	}
+}

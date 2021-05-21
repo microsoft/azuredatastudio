@@ -1044,7 +1044,8 @@
 							"CustomEditorProvider",
 							"CustomReadonlyEditorProvider",
 							"TerminalLinkProvider",
-							"AuthenticationProvider"
+							"AuthenticationProvider",
+							"NotebookContentProvider"
 						]
 					}
 				],

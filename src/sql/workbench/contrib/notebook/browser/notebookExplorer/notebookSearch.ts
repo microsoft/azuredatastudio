@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SearchView } from 'vs/workbench/contrib/search/browser/searchView';
+import { SearchLinkButton, SearchView } from 'vs/workbench/contrib/search/browser/searchView';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPane';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -210,7 +210,7 @@ export class NotebookSearchView extends SearchView {
 		const openFolderLink = dom.append(textEl,
 			$('a.pointer.prominent', { tabindex: 0 }, nls.localize('openNotebookFolder', "Open Notebooks")));
 
-		this.messageDisposables.push(dom.addDisposableListener(openFolderLink, dom.EventType.CLICK, async (e: MouseEvent) => {
+		this.messageDisposables.add(dom.addDisposableListener(openFolderLink, dom.EventType.CLICK, async (e: MouseEvent) => {
 			dom.EventHelper.stop(e, false);
 			this.commandService.executeCommand('notebook.command.openNotebookFolder');
 			this.setExpanded(false);
@@ -315,26 +315,16 @@ export class NotebookSearchView extends SearchView {
 				const p = dom.append(messageEl, $('p', undefined, message));
 
 				if (!completed) {
-					const searchAgainLink = dom.append(p, $('a.pointer.prominent', undefined, nls.localize('rerunSearch.message', "Search again")));
-					this.messageDisposables.push(dom.addDisposableListener(searchAgainLink, dom.EventType.CLICK, (e: MouseEvent) => {
-						dom.EventHelper.stop(e, false);
-						this.triggerSearchQueryChange(query, excludePatternText, includePatternText, triggeredOnType, searchWidget);
-					}));
-					// cancel search
-					dom.append(p, $('span', undefined, ' / '));
-					const cancelSearchLink = dom.append(p, $('a.pointer.prominent', undefined, nls.localize('cancelSearch.message', "Cancel Search")));
-					this.messageDisposables.push(dom.addDisposableListener(cancelSearchLink, dom.EventType.CLICK, (e: MouseEvent) => {
-						dom.EventHelper.stop(e, false);
-						this.cancelSearch();
-					}));
+					const searchAgainButton = this.messageDisposables.add(new SearchLinkButton(
+						nls.localize('rerunSearch.message', "Search again"),
+						() => this.triggerQueryChange({ preserveFocus: false })));
+					dom.append(p, searchAgainButton.element);
 				} else if (hasIncludes || hasExcludes) {
-					const searchAgainLink = dom.append(p, $('a.pointer.prominent', { tabindex: 0 }, nls.localize('rerunSearchInAll.message', "Search again in all files")));
-					this.messageDisposables.push(dom.addDisposableListener(searchAgainLink, dom.EventType.CLICK, (e: MouseEvent) => {
-						dom.EventHelper.stop(e, false);
-					}));
+					const searchAgainButton = this.messageDisposables.add(new SearchLinkButton(nls.localize('rerunSearchInAll.message', "Search again in all files"), this.onSearchAgain.bind(this)));
+					dom.append(p, searchAgainButton.element);
 				} else {
-					const openSettingsLink = dom.append(p, $('a.pointer.prominent', { tabindex: 0 }, nls.localize('openSettings.message', "Open Settings")));
-					this.addClickEvents(openSettingsLink, this.onOpenSettings);
+					const openSettingsButton = this.messageDisposables.add(new SearchLinkButton(nls.localize('openSettings.message', "Open Settings"), this.onOpenSettings.bind(this)));
+					dom.append(p, openSettingsButton.element);
 				}
 
 				if (this.contextService.getWorkbenchState() === WorkbenchState.EMPTY && !this.contextKeyService.getContextKeyValue('bookOpened')) {

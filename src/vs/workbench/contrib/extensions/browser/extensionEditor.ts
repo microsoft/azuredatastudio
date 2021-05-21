@@ -67,6 +67,7 @@ import { editorBackground } from 'vs/platform/theme/common/colorRegistry';
 import { registerAction2, Action2 } from 'vs/platform/actions/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { insane } from 'vs/base/common/insane/insane';
+import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 
 function removeEmbeddedSVGs(documentContent: string): string {
 	return insane(documentContent, {
@@ -79,7 +80,8 @@ function removeEmbeddedSVGs(documentContent: string): string {
 		allowedAttributes: {
 			'*': [
 				'align',
-			]
+			],
+			img: ['src', 'alt', 'title', 'aria-label', 'width', 'height'],
 		},
 		filter(token: { tag: string, attrs: { readonly [key: string]: string } }): boolean {
 			return token.tag !== 'svg';
@@ -1537,7 +1539,7 @@ export class ExtensionEditor extends EditorPane {
 	}
 }
 
-const contextKeyExpr = ContextKeyExpr.and(ContextKeyExpr.equals('activeEditor', ExtensionEditor.ID), ContextKeyExpr.not('editorFocus'));
+const contextKeyExpr = ContextKeyExpr.and(ContextKeyExpr.equals('activeEditor', ExtensionEditor.ID), EditorContextKeys.focus.toNegated());
 registerAction2(class ShowExtensionEditorFindAction extends Action2 {
 	constructor() {
 		super({
