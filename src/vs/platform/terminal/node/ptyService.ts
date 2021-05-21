@@ -201,6 +201,8 @@ export class PersistentTerminalProcess extends Disposable {
 	readonly onProcessOverrideDimensions = this._onProcessOverrideDimensions.event;
 	private readonly _onProcessData = this._register(new Emitter<IProcessDataEvent>());
 	readonly onProcessData = this._onProcessData.event;
+	private readonly _onLastListenerRemove = this._register(new Emitter<any>());
+	readonly onLastListenerRemove = this._onLastListenerRemove.event;
 
 	private _inReplay = false;
 
@@ -231,6 +233,14 @@ export class PersistentTerminalProcess extends Disposable {
 			this._logService.info(`Persistent terminal "${this._persistentTerminalId}": The short reconnection grace time of ${printTime(LocalReconnectConstants.ReconnectionShortGraceTime)} has expired, so the process (pid=${this._pid}) will be shutdown.`);
 			this.shutdown(true);
 		}, LocalReconnectConstants.ReconnectionShortGraceTime));
+
+		this.onLastListenerRemove(() => {
+			if (this.shouldPersistTerminal) {
+				this._disconnectRunner1.schedule();
+			} else {
+				this.shutdown(true);
+			}
+		});
 
 		// TODO: Bring back bufferer
 		// this._bufferer = new TerminalDataBufferer((id, data) => {
