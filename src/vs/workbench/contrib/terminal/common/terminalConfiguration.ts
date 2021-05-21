@@ -91,7 +91,7 @@ export const terminalConfiguration: IConfigurationNode = {
 			default: false
 		},
 		'terminal.integrated.altClickMovesCursor': {
-			description: localize('terminal.integrated.altClickMovesCursor', "If enabled, alt/option + click will reposition the prompt cursor to underneath the mouse when `#editor.multiCursorModifier#` is set to `'alt'` (the default value). This may not work reliably depending on your shell."),
+			markdownDescription: localize('terminal.integrated.altClickMovesCursor', "If enabled, alt/option + click will reposition the prompt cursor to underneath the mouse when `#editor.multiCursorModifier#` is set to `'alt'` (the default value). This may not work reliably depending on your shell."),
 			type: 'boolean',
 			default: true
 		},
@@ -392,11 +392,6 @@ export const terminalConfiguration: IConfigurationNode = {
 					default: '#ff0000',
 				}
 			]
-		},
-		'terminal.integrated.serverSpawn': {
-			description: localize('terminal.integrated.serverSpawn', "Experimental: spawn remote terminals from the remote agent process instead of the remote extension host"),
-			type: 'boolean',
-			default: true
 		},
 		'terminal.integrated.enablePersistentSessions': {
 			description: localize('terminal.integrated.enablePersistentSessions', "Persist terminal sessions for the workspace across window reloads."),

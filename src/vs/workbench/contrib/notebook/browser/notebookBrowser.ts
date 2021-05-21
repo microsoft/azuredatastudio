@@ -618,6 +618,7 @@ export interface INotebookEditor extends IEditor, ICommonNotebookEditor {
 export interface INotebookCellList {
 	isDisposed: boolean;
 	readonly contextKeyService: IContextKeyService;
+	element(index: number): ICellViewModel | undefined;
 	elementAt(position: number): ICellViewModel | undefined;
 	elementHeight(element: ICellViewModel): number;
 	onWillScroll: Event<ScrollEvent>;
@@ -633,6 +634,7 @@ export interface INotebookCellList {
 	rowsContainer: HTMLElement;
 	readonly onDidRemoveOutput: Event<ICellOutputViewModel>;
 	readonly onDidHideOutput: Event<ICellOutputViewModel>;
+	readonly onDidRemoveCellFromView: Event<ICellViewModel>;
 	readonly onMouseUp: Event<IListMouseEvent<CellViewModel>>;
 	readonly onMouseDown: Event<IListMouseEvent<CellViewModel>>;
 	readonly onContextMenu: Event<IListContextMenuEvent<CellViewModel>>;
@@ -671,8 +673,6 @@ export interface INotebookCellList {
 
 	// TODO@roblourens resolve differences between List<CellViewModel> and INotebookCellList<ICellViewModel>
 	getFocus(): number[];
-	setFocus(indexes: number[]): void;
-	setSelection(indexes: number[]): void;
 }
 
 export interface BaseCellRenderTemplate {

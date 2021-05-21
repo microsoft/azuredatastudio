@@ -49,7 +49,8 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 	readonly onDidRemoveOutput: Event<ICellOutputViewModel> = this._onDidRemoveOutput.event;
 	private readonly _onDidHideOutput = new Emitter<ICellOutputViewModel>();
 	readonly onDidHideOutput: Event<ICellOutputViewModel> = this._onDidHideOutput.event;
-
+	private readonly _onDidRemoveCellFromView = new Emitter<ICellViewModel>();
+	readonly onDidRemoveCellFromView: Event<ICellViewModel> = this._onDidRemoveCellFromView.event;
 	private _viewModel: NotebookViewModel | null = null;
 	private _hiddenRangeIds: string[] = [];
 	private hiddenRangesPrefixSum: PrefixSumComputer | null = null;
@@ -383,7 +384,10 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 		const newRanges = reduceCellRanges(hiddenRanges);
 		const viewCells = model.viewCells.slice(0) as CellViewModel[];
 		newRanges.reverse().forEach(range => {
-			viewCells.splice(range.start, range.end - range.start + 1);
+			const removedCells = viewCells.splice(range.start, range.end - range.start + 1);
+			removedCells.forEach(cell => {
+				this._onDidRemoveCellFromView.fire(cell);
+			});
 		});
 
 		this.splice2(0, 0, viewCells);
@@ -473,6 +477,7 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 			// remove output in the webview
 			const hideOutputs: ICellOutputViewModel[] = [];
 			const deletedOutputs: ICellOutputViewModel[] = [];
+			const removedMarkdownCells: ICellViewModel[] = [];
 
 			for (let i = diff.start; i < diff.start + diff.deleteCount; i++) {
 				const cell = this.element(i);
@@ -482,6 +487,8 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 					} else {
 						deletedOutputs.push(...cell?.outputsViewModels);
 					}
+				} else {
+					removedMarkdownCells.push(cell);
 				}
 			}
 
@@ -489,6 +496,7 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 
 			hideOutputs.forEach(output => this._onDidHideOutput.fire(output));
 			deletedOutputs.forEach(output => this._onDidRemoveOutput.fire(output));
+			removedMarkdownCells.forEach(cell => this._onDidRemoveCellFromView.fire(cell));
 		});
 	}
 
@@ -577,7 +585,12 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 	focusElement(cell: ICellViewModel) {
 		const index = this._getViewIndexUpperBound(cell);
 
-		if (index >= 0) {
+		if (index >= 0 && this._viewModel) {
+			// update view model first, which will update both `focus` and `selection` in a single transaction
+			const focusedElementHandle = this.element(index).handle;
+			this._viewModel.updateSelectionsFromView(focusedElementHandle, [focusedElementHandle]);
+
+			// update the view as previous model update will not trigger event
 			this.setFocus([index], undefined, false);
 		}
 	}
@@ -590,11 +603,25 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 	}
 
 	focusNext(n: number | undefined, loop: boolean | undefined, browserEvent?: UIEvent, filter?: (element: CellViewModel) => boolean): void {
-		this._focusNextPreviousDelegate.onFocusNext(() => super.focusNext(n, loop, browserEvent, filter));
+		this._focusNextPreviousDelegate.onFocusNext(() => {
+			super.focusNext(n, loop, browserEvent, filter);
+			const focus = this.getFocus();
+			if (focus.length) {
+				const focusedElementHandle = this.element(focus[0]).handle;
+				this._viewModel?.updateSelectionsFromView(focusedElementHandle, [focusedElementHandle]);
+			}
+		});
 	}
 
 	focusPrevious(n: number | undefined, loop: boolean | undefined, browserEvent?: UIEvent, filter?: (element: CellViewModel) => boolean): void {
-		this._focusNextPreviousDelegate.onFocusPrevious(() => super.focusPrevious(n, loop, browserEvent, filter));
+		this._focusNextPreviousDelegate.onFocusPrevious(() => {
+			super.focusPrevious(n, loop, browserEvent, filter);
+			const focus = this.getFocus();
+			if (focus.length) {
+				const focusedElementHandle = this.element(focus[0]).handle;
+				this._viewModel?.updateSelectionsFromView(focusedElementHandle, [focusedElementHandle]);
+			}
+		});
 	}
 
 	setFocus(indexes: number[], browserEvent?: UIEvent, ignoreTextModelUpdate?: boolean): void {
@@ -610,7 +637,7 @@ export class NotebookCellList extends WorkbenchList<CellViewModel> implements ID
 		} else {
 			if (this._viewModel) {
 				const focusedElementHandle = this.element(indexes[0]).handle;
-				this._viewModel.updateSelectionsFromView(focusedElementHandle, this.getSelection());
+				this._viewModel.updateSelectionsFromView(focusedElementHandle, this.getSelection().map(selection => this.element(selection).handle));
 			}
 		}
 

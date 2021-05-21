@@ -10873,10 +10873,10 @@ typescript@^3.0.1:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.9.tgz#e69905c54bc0681d0518bd4d587cc6f2d0b1a674"
   integrity sha512-kdMjTiekY+z/ubJCATUPlRDl39vXYiMV9iyeMuEuXZh2we6zz80uovNN2WlAxmmdE/Z/YQe+EbOEXB5RHEED3w==
 
-typescript@^4.3.0-dev.20210216:
-  version "4.3.0-dev.20210216"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.0-dev.20210216.tgz#233327e6094008c02265ba140f8d9ece9133421e"
-  integrity sha512-pJLcC/kqnE+0rftTRc2/gYBkz9nl+kJfaU8sSOLYnzUvD8p+LOZMzXfaLoKPdGFJ6U9+Ox/sYV9HBTJVEjSTYg==
+typescript@^4.3.0-dev.20210226:
+  version "4.3.0-dev.20210226"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.0-dev.20210226.tgz#e754283dfaa01d79cea9df6d0f8a18114ace41ec"
+  integrity sha512-jxqKjVQsHkEMbyacr5CFpWnU3pv7H9QBljjORr3ct7qq+Q7ynHHmmFd5zQjU8HgHZYOMapIBhLsZSeqUeduQGQ==
 
 typical@^4.0.0:
   version "4.0.0"
@@ -11272,10 +11272,10 @@ vm-browserify@^1.0.1:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
-vscode-debugprotocol@1.45.0-pre.0:
-  version "1.45.0-pre.0"
-  resolved "https://registry.yarnpkg.com/vscode-debugprotocol/-/vscode-debugprotocol-1.45.0-pre.0.tgz#7ea4c6e84d966e96a8398241e46bdf98e0dacfde"
-  integrity sha512-q0ivFfnjFQyL4Qyxp1K8gSdTpfcvlCxmys5adLydBef1XvDKZNONAKalCZZCyaG/vtOlbV1ma6hS5eALNaLd8w==
+vscode-debugprotocol@1.45.0:
+  version "1.45.0"
+  resolved "https://registry.yarnpkg.com/vscode-debugprotocol/-/vscode-debugprotocol-1.45.0.tgz#8419583fa3ad7f25350b98bd994485027cf52e2d"
+  integrity sha512-xU6XtdKJ0waWIt79Zt4WVyIQ3oDkhilku9Shbv7Vc4KXEr/npsf8dhinyIZXSIlH2lzJiE3imp1xbYpyRTIrhg==
 
 vscode-nls-dev@^3.3.1:
   version "3.3.1"

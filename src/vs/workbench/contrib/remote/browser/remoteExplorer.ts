@@ -6,7 +6,7 @@ import * as nls from 'vs/nls';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { Extensions, IViewContainersRegistry, IViewDescriptorService, IViewsRegistry, IViewsService, ViewContainer, ViewContainerLocation } from 'vs/workbench/common/views';
-import { IRemoteExplorerService, makeAddress, mapHasAddressLocalhostOrAllInterfaces, OnPortForward, PortsAttributes, PORT_AUTO_FORWARD_SETTING, PORT_AUTO_SOURCE_SETTING, PORT_AUTO_SOURCE_SETTING_OUTPUT, PORT_AUTO_SOURCE_SETTING_PROCESS, TUNNEL_VIEW_ID } from 'vs/workbench/services/remote/common/remoteExplorerService';
+import { IRemoteExplorerService, makeAddress, mapHasAddressLocalhostOrAllInterfaces, OnPortForward, PortsAttributes, PORT_AUTO_FORWARD_SETTING, PORT_AUTO_SOURCE_SETTING, PORT_AUTO_SOURCE_SETTING_OUTPUT, PORT_AUTO_SOURCE_SETTING_PROCESS, TUNNEL_VIEW_CONTAINER_ID, TUNNEL_VIEW_ID } from 'vs/workbench/services/remote/common/remoteExplorerService';
 import { forwardedPortsViewEnabled, ForwardPortAction, OpenPortInBrowserAction, TunnelPanel, TunnelPanelDescriptor, TunnelViewModel, OpenPortInPreviewAction } from 'vs/workbench/contrib/remote/browser/tunnelView';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
@@ -20,7 +20,7 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { ITerminalService } from 'vs/workbench/contrib/terminal/browser/terminal';
 import { IDebugService } from 'vs/workbench/contrib/debug/common/debug';
 import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
-import { OperatingSystem } from 'vs/base/common/platform';
+import { isWeb, OperatingSystem } from 'vs/base/common/platform';
 import { isPortPrivileged, ITunnelService, RemoteTunnel } from 'vs/platform/remote/common/tunnel';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
@@ -59,11 +59,11 @@ export class ForwardedPortsView extends Disposable implements IWorkbenchContribu
 
 	private async getViewContainer(): Promise<ViewContainer | null> {
 		return Registry.as<IViewContainersRegistry>(Extensions.ViewContainersRegistry).registerViewContainer({
-			id: TunnelPanel.ID,
+			id: TUNNEL_VIEW_CONTAINER_ID,
 			title: nls.localize('ports', "Ports"),
 			icon: portsViewIcon,
-			ctorDescriptor: new SyncDescriptor(ViewPaneContainer, [TunnelPanel.ID, { mergeViewWithContainerWhenSingleView: true, donotShowContainerTitleWhenMergedWithContainer: true }]),
-			storageId: TunnelPanel.ID,
+			ctorDescriptor: new SyncDescriptor(ViewPaneContainer, [TUNNEL_VIEW_CONTAINER_ID, { mergeViewWithContainerWhenSingleView: true, donotShowContainerTitleWhenMergedWithContainer: true }]),
+			storageId: TUNNEL_VIEW_CONTAINER_ID,
 			hideIfEmpty: true,
 			order: 5
 		}, ViewContainerLocation.Panel);
@@ -318,7 +318,10 @@ class OnAutoForwardedAction extends Disposable {
 			this.lastNotification.close();
 		}
 		let message = this.basicMessage(tunnel);
-		const choices = [this.openBrowserChoice(tunnel), this.openPreviewChoice(tunnel)];
+		const choices = [this.openBrowserChoice(tunnel)];
+		if (!isWeb) {
+			choices.push(this.openPreviewChoice(tunnel));
+		}
 
 		if ((tunnel.tunnelLocalPort !== tunnel.tunnelRemotePort) && this.tunnelService.canElevate && isPortPrivileged(tunnel.tunnelRemotePort)) {
 			// Privileged ports are not on Windows, so it's safe to use "superuser"
