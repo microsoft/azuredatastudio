@@ -249,6 +249,7 @@ export class MarkersFilterActionViewItem extends BaseActionViewItem {
 	private filterBadge: HTMLElement | null = null;
 	private focusContextKey: IContextKey<boolean>;
 	private readonly filtersAction: IAction;
+	private actionbar: ActionBar | null = null;
 
 	constructor(
 		action: IAction,
@@ -372,7 +373,7 @@ export class MarkersFilterActionViewItem extends BaseActionViewItem {
 	}
 
 	private createFilters(container: HTMLElement): void {
-		const actionbar = this._register(new ActionBar(container, {
+		this.actionbar = this._register(new ActionBar(container, {
 			actionViewItemProvider: action => {
 				if (action.id === this.filtersAction.id) {
 					return this.instantiationService.createInstance(FiltersDropdownMenuActionViewItem, action, this.markersView.filters, this.actionRunner);
@@ -380,7 +381,7 @@ export class MarkersFilterActionViewItem extends BaseActionViewItem {
 				return undefined;
 			}
 		}));
-		actionbar.push(this.filtersAction, { icon: true, label: false });
+		this.actionbar.push(this.filtersAction, { icon: true, label: false });
 	}
 
 	private onDidInputChange(inputbox: HistoryInputBox) {
@@ -419,6 +420,10 @@ export class MarkersFilterActionViewItem extends BaseActionViewItem {
 		let handled = false;
 		if (event.equals(KeyCode.Escape)) {
 			this.clearFilterText();
+			handled = true;
+		}
+		if (event.equals(KeyCode.Tab)) {
+			this.actionbar?.focus();
 			handled = true;
 		}
 		if (handled) {
