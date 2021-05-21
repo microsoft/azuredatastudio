@@ -18,20 +18,36 @@
 	height: 100%;
 }
 
-.monaco-table .slick-sort-indicator-asc {
-	background: url('sort-asc.gif');
+.monaco-table .slick-sort-indicator {
+	background-size: 8px;
+	background-repeat: no-repeat;
+}
+.vs .monaco-table .slick-sort-indicator-asc {
+	background-image: url('sort_asc.svg');
 }
 
-.monaco-table .slick-sort-indicator-desc {
-	background: url('sort-desc.gif');
+.vs-dark .monaco-table .slick-sort-indicator-asc,
+.hc-black .monaco-table .slick-sort-indicator-asc {
+	background-image: url('sort_asc_inverse.svg');
+}
+
+.vs .monaco-table .slick-sort-indicator-desc {
+	background-image: url('sort_desc.svg');
+}
+
+.vs-dark .monaco-table .slick-sort-indicator-desc,
+.hc-black .monaco-table .slick-sort-indicator-desc {
+	background-image: url('sort_desc_inverse.svg');
 }
 
 .monaco-table .slick-sort-indicator {
 	display: inline-block;
 	width: 8px;
-	height: 5px;
+	height: 8px;
 	margin-left: 4px;
+	margin-right: 4px;
 	margin-top: 6px;
+	flex: 0 0 auto;
 }
 
 .slick-header-menubutton {
