@@ -80,6 +80,7 @@ import 'vs/workbench/services/remote/electron-browser/tunnelServiceImpl';
 //#endregion
 
 // {{SQL CARBON EDIT}} - SQL-specific services
+import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
 import { SqlOAuthService } from 'sql/platform/oAuth/electron-browser/sqlOAuthServiceImpl';
 import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboard/common/clipboardService';
