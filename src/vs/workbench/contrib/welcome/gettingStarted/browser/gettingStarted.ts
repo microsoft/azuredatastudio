@@ -93,6 +93,7 @@ export class GettingStartedPage extends EditorPane {
 
 	private contextService: IContextKeyService;
 	private tasExperimentService?: ITASExperimentService;
+	private previousSelection?: string;
 
 	constructor(
 		@ICommandService private readonly commandService: ICommandService,
@@ -111,6 +112,7 @@ export class GettingStartedPage extends EditorPane {
 		super(GettingStartedPage.ID, telemetryService, themeService, storageService);
 
 		this.container = $('.gettingStartedContainer');
+		this.tasExperimentService = tasExperimentService;
 
 		this.contextService = this._register(contextService.createScoped(this.container));
 		inGettingStartedContext.bindTo(this.contextService).set(true);
@@ -241,6 +243,7 @@ export class GettingStartedPage extends EditorPane {
 			});
 			setTimeout(() => (taskElement as HTMLElement).focus(), delayFocus ? SLIDE_TRANSITION_TIME_MS : 0);
 			if (this.editorInput.selectedTask === id && contractIfAlreadySelected) {
+				this.previousSelection = this.editorInput.selectedTask;
 				this.editorInput.selectedTask = undefined;
 				return;
 			}
@@ -254,6 +257,13 @@ export class GettingStartedPage extends EditorPane {
 			mediaElement.setAttribute('alt', taskToExpand.media.altText);
 			mediaElement.onload = () => mediaElement.width = mediaElement.naturalWidth * 2 / 3;
 			this.updateMediaSourceForColorMode(mediaElement, taskToExpand.media.path);
+			this.taskDisposables.add(addDisposableListener(mediaElement, 'load', () => mediaElement.width = mediaElement.naturalWidth * 2 / 3));
+			if (taskToExpand.button.link) {
+				this.taskDisposables.add(addDisposableListener(mediaElement, 'click', () => taskElement.querySelector('button')?.click()));
+				mediaElement.classList.add('clickable');
+			} else {
+				mediaElement.classList.remove('clickable');
+			}
 			this.taskDisposables.add(this.themeService.onDidColorThemeChange(() => this.updateMediaSourceForColorMode(mediaElement, taskToExpand.media.path)));
 			this.taskDisposables.add(addDisposableListener(mediaElement, 'click', () => taskElement.querySelector('button')?.click()));
 			taskElement.classList.add('expanded');
@@ -577,7 +587,8 @@ export class GettingStartedPage extends EditorPane {
 		if (this.editorInput.selectedCategory) {
 			const allTasks = this.currentCategory?.content.type === 'items' && this.currentCategory.content.items;
 			if (allTasks) {
-				const selectedIndex = allTasks.findIndex(task => task.id === this.editorInput.selectedTask);
+				const toFind = this.editorInput.selectedTask ?? this.previousSelection;
+				const selectedIndex = allTasks.findIndex(task => task.id === toFind);
 				if (allTasks[selectedIndex + 1]?.id) { this.selectTask(allTasks[selectedIndex + 1]?.id, true, false); }
 			}
 		} else {
@@ -589,7 +600,8 @@ export class GettingStartedPage extends EditorPane {
 		if (this.editorInput.selectedCategory) {
 			const allTasks = this.currentCategory?.content.type === 'items' && this.currentCategory.content.items;
 			if (allTasks) {
-				const selectedIndex = allTasks.findIndex(task => task.id === this.editorInput.selectedTask);
+				const toFind = this.editorInput.selectedTask ?? this.previousSelection;
+				const selectedIndex = allTasks.findIndex(task => task.id === toFind);
 				if (allTasks[selectedIndex - 1]?.id) { this.selectTask(allTasks[selectedIndex - 1]?.id, true, false); }
 			}
 		} else {
