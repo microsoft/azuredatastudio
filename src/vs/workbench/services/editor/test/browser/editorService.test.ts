@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -9,19 +9,20 @@ import { URI } from 'vs/base/common/uri';
 import { Event } from 'vs/base/common/event';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { EditorInput, EditorsOrder, SideBySideEditorInput } from 'vs/workbench/common/editor';
-import { workbenchInstantiationService, TestServiceAccessor, TestFileEditorInput, ITestInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { workbenchInstantiationService, TestServiceAccessor, registerTestEditor, TestFileEditorInput, ITestInstantiationService, registerTestResourceEditor, registerTestSideBySideEditor, createEditorPart } from 'vs/workbench/test/browser/workbenchTestServices';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { EditorService, DelegatingEditorService } from 'vs/workbench/services/editor/browser/editorService';
 import { IEditorGroup, IEditorGroupsService, GroupDirection, GroupsArrangement } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { EditorPart } from 'vs/workbench/browser/parts/editor/editorPart';
 import { IEditorService, SIDE_GROUP } from 'vs/workbench/services/editor/common/editorService';
+import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { timeout } from 'vs/base/common/async';
 import { toResource } from 'vs/base/test/common/utils';
 import { IFileService, FileOperationEvent, FileOperation } from 'vs/platform/files/common/files';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { ModesRegistry } from 'vs/editor/common/modes/modesRegistry';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { NullFileSystemProvider } from 'vs/platform/files/test/common/nullFileSystemProvider';
@@ -30,24 +31,33 @@ import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServic
 import { isLinux } from 'vs/base/common/platform';
 import { MockScopableContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 
-const TEST_EDITOR_ID = 'MyTestEditorForEditorService';
-const TEST_EDITOR_INPUT_ID = 'testEditorInputForEditorService';
+suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 
-class FileServiceProvider extends Disposable {
-	constructor(scheme: string, @IFileService fileService: IFileService) {
-		super();
+	const TEST_EDITOR_ID = 'MyTestEditorForEditorService';
+	const TEST_EDITOR_INPUT_ID = 'testEditorInputForEditorService';
 
-		this._register(fileService.registerProvider(scheme, new NullFileSystemProvider()));
+	class FileServiceProvider extends Disposable {
+		constructor(scheme: string, @IFileService fileService: IFileService) {
+			super();
+
+			this._register(fileService.registerProvider(scheme, new NullFileSystemProvider()));
+		}
 	}
-}
 
-suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} skip suite
+	const disposables = new DisposableStore();
 
+	setup(() => {
+		disposables.add(registerTestEditor(TEST_EDITOR_ID, [new SyncDescriptor(TestFileEditorInput)], TEST_EDITOR_INPUT_ID));
+		disposables.add(registerTestResourceEditor());
+		disposables.add(registerTestSideBySideEditor());
+	});
+
+	teardown(() => {
+		disposables.clear();
+	});
 
 	function createEditorService(instantiationService: ITestInstantiationService = workbenchInstantiationService()): [EditorPart, EditorService, TestServiceAccessor] {
-		const part = instantiationService.createInstance(EditorPart);
-		part.create(document.createElement('div'));
-		part.layout(400, 300);
+		const part = createEditorPart(instantiationService, disposables);
 
 		instantiationService.stub(IEditorGroupsService, part);
 
@@ -484,6 +494,32 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} skip suite
 		part.arrangeGroups(GroupsArrangement.MINIMIZE_OTHERS);
 		editor = await service.openEditor(input1, { pinned: true, preserveFocus: true, activation: EditorActivation.RESTORE }, rootGroup);
 		assert.strictEqual(part.activeGroup, sideGroup);
+	});
+
+	test('inactive editor group does not activate when closing editor (#117686)', async () => {
+		const [part, service] = createEditorService();
+
+		const input1 = new TestFileEditorInput(URI.parse('my://resource1-openside'), TEST_EDITOR_INPUT_ID);
+		const input2 = new TestFileEditorInput(URI.parse('my://resource2-openside'), TEST_EDITOR_INPUT_ID);
+
+		const rootGroup = part.activeGroup;
+
+		await part.whenRestored;
+
+		await service.openEditor(input1, { pinned: true }, rootGroup);
+		await service.openEditor(input2, { pinned: true }, rootGroup);
+
+		const sideGroup = (await service.openEditor(input2, { pinned: true }, SIDE_GROUP))?.group;
+		assert.strictEqual(part.activeGroup, sideGroup);
+		assert.notStrictEqual(rootGroup, sideGroup);
+
+		part.arrangeGroups(GroupsArrangement.MINIMIZE_OTHERS, part.activeGroup);
+
+		await rootGroup.closeEditor(input2);
+		assert.strictEqual(part.activeGroup, sideGroup);
+
+		assert.strictEqual(rootGroup.isMinimized, true);
+		assert.strictEqual(part.activeGroup.isMinimized, false);
 	});
 
 	test('active editor change / visible editor change events', async function () {
