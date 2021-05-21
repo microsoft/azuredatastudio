@@ -625,11 +625,14 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}
 
 		if (this.state.sortState) {
+			const sortAsc = this.state.sortState.sortAsc;
+			const sortCol = this.columns.find((column) => column.field === this.state.sortState.field);
+			this.table.grid.setSortColumn(sortCol.id, sortAsc);
 			await this.dataProvider.sort({
 				multiColumnSort: false,
 				grid: this.table.grid,
-				sortAsc: this.state.sortState.sortAsc,
-				sortCol: this.columns.find((column) => column.field === this.state.sortState.field)
+				sortAsc: sortAsc,
+				sortCol: sortCol
 			});
 		}
 

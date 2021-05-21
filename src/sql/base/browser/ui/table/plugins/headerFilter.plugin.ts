@@ -142,6 +142,15 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			// the the filter button has already being added to the header
 			return;
 		}
+
+		// The default sorting feature is triggered by clicking on the column header, but that is conflicting with query editor grid,
+		// For query editor grid when column header is clicked, the entire column will be selected.
+		// If the column is not defined as sortable because of the above reason, we will add the sort indicator here.
+		if (column.sortable !== true) {
+			args.node.classList.add('slick-header-sortable');
+			append(args.node, $('span.slick-sort-indicator'));
+		}
+
 		args.node.classList.add('slick-header-with-filter');
 		const $el = jQuery(`<button tabindex="-1" aria-label="${ShowFilterText}" title="${ShowFilterText}"></button>`)
 			.addClass('slick-header-menubutton')
@@ -478,6 +487,9 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private async handleMenuItemClick(command: HeaderFilterCommands, columnDef: Slick.Column<T>) {
 		this.hideMenu();
 		const dataView = this.grid.getData();
+		if (command === 'sort-asc' || command === 'sort-desc') {
+			this.grid.setSortColumn(columnDef.id, command === 'sort-asc');
+		}
 		if (instanceOfIDisposableDataProvider<T>(dataView) && (command === 'sort-asc' || command === 'sort-desc')) {
 			await dataView.sort({
 				grid: this.grid,
