@@ -416,6 +416,7 @@ export class SelectActionViewItem extends BaseActionViewItem {
 		super(ctx, action);
 
 		this.selectBox = new SelectBox(options, selected, contextViewProvider, undefined, selectBoxOptions);
+		this.selectBox.setFocusable(false);
 
 		this._register(this.selectBox);
 		this.registerListeners();
@@ -437,6 +438,10 @@ export class SelectActionViewItem extends BaseActionViewItem {
 
 	protected getActionContext(option: string, index: number) {
 		return option;
+	}
+
+	setFocusable(focusable: boolean): void {
+		this.selectBox.setFocusable(focusable);
 	}
 
 	focus(): void {
