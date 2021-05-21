@@ -20,7 +20,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { IAction } from 'vs/base/common/actions';
+import { IAction, SubmenuAction } from 'vs/base/common/actions';
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -151,8 +151,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 		let secondary: IAction[] = [];
 		let notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
 		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
-		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined || group === '');
-		//this.addPrimaryContributedActions(primary);
+		fillInActions(groups, { primary, secondary }, false, 'navigation', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
 	}
 
 	private get modelFactory(): IModelFactory {

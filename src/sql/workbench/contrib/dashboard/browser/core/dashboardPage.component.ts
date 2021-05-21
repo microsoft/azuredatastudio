@@ -30,7 +30,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
 import * as objects from 'vs/base/common/objects';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Action, IAction } from 'vs/base/common/actions';
+import { Action, IAction, SubmenuAction } from 'vs/base/common/actions';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -181,7 +181,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			let secondary: IAction[] = [];
 			const menu = this.menuService.createMenu(MenuId.DashboardToolbar, this.contextKeyService);
 			let groups = menu.getActions({ arg: this.connectionManagementService.connectionInfo.connectionProfile.toIConnectionProfile(), shouldForwardArgs: true });
-			fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined || group === '');
+			fillInActions(groups, { primary, secondary }, false, 'navigation', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
 
 			primary.forEach(a => {
 				if (a instanceof MenuItemAction) {

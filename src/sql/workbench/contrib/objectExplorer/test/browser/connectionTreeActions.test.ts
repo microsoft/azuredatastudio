@@ -139,6 +139,9 @@ suite('SQL Connection Tree Action tests', () => {
 			getActiveViewWithId<T extends IView>(id: string): T | null {
 				throw new Error('Method not implemented.');
 			}
+			getViewWithId<T extends IView>(id: string): T | null {
+				throw new Error('Method not implemented.');
+			}
 			_serviceBrand: undefined;
 			openView<T extends IView>(id: string, focus?: boolean): Promise<T | null> {
 				return Promise.resolve(<T><any>{

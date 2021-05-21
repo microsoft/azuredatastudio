@@ -294,7 +294,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		this.wizard.wizardObject.message = { text: '' };
 		let eulaAccepted = true;
 		for (const tool of this._tools) {
-			eulaAccepted = tool.isEulaAccepted() || await tool.promptForEula();
+			eulaAccepted = await tool.isEulaAccepted() || await tool.promptForEula();
 			if (!eulaAccepted) {
 				this.wizard.wizardObject.message = {
 					level: azdata.window.MessageLevel.Error,
@@ -419,10 +419,10 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		this.toolsService.toolsForCurrentProvider = this._tools;
 	}
 
-	private areToolsEulaAccepted(): boolean {
+	private async areToolsEulaAccepted(): Promise<boolean> {
 		// we run 'map' on each tool before doing 'every' so that we collect eula messages for all tools (instead of bailing out after 1st failure)
-		this._eulaValidationSucceeded = this._tools.map(tool => {
-			const eulaAccepted = tool.isEulaAccepted();
+		this._eulaValidationSucceeded = (await Promise.all(this._tools.map(async tool => {
+			const eulaAccepted = await tool.isEulaAccepted();
 			if (!eulaAccepted) {
 				this.wizard.wizardObject.message = {
 					level: azdata.window.MessageLevel.Error,
@@ -430,7 +430,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 				};
 			}
 			return eulaAccepted;
-		}).every(isEulaAccepted => isEulaAccepted);
+		}))).every(isEulaAccepted => isEulaAccepted);
 		return this._eulaValidationSucceeded;
 	}
 
@@ -507,8 +507,13 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 				text: infoText.join(EOL)
 			};
 		} else if (!this.areToolsEulaAccepted()) {
-			this.wizard.wizardObject.doneButton.label = loc.acceptEulaAndSelect;
-			this.wizard.wizardObject.nextButton.label = loc.acceptEulaAndSelect;
+			this.areToolsEulaAccepted().then(toolsEulaAccepted => {
+				if (!toolsEulaAccepted) {
+					this.wizard.wizardObject.doneButton.label = loc.acceptEulaAndSelect;
+					this.wizard.wizardObject.nextButton.label = loc.acceptEulaAndSelect;
+				}
+			});
+
 		}
 		this._toolsLoadingComponent.loading = false;
 	}

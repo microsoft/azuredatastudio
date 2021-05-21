@@ -15,7 +15,7 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
-import { IAction, Action } from 'vs/base/common/actions';
+import { IAction, Action, SubmenuAction } from 'vs/base/common/actions';
 import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import * as DOM from 'vs/base/browser/dom';
@@ -534,7 +534,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let secondary: IAction[] = [];
 		let notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
 		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
-		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined || group === '');
+		fillInActions(groups, { primary, secondary }, false, 'navigation', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
 		this.addPrimaryContributedActions(primary);
 	}
 
