@@ -498,13 +498,25 @@ export class Project implements ISqlProject {
 	}
 
 	public getSystemDacpacUri(dacpac: string): Uri {
-		let version = this.getProjectTargetVersion();
-		return Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', version, dacpac));
+		const versionFolder = this.getSystemDacpacFolderName();
+		return Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', versionFolder, dacpac));
 	}
 
 	public getSystemDacpacSsdtUri(dacpac: string): Uri {
+		const versionFolder = this.getSystemDacpacFolderName();
+		return Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', versionFolder, 'SqlSchemas', dacpac));
+	}
+
+	public getSystemDacpacFolderName(): string {
 		let version = this.getProjectTargetVersion();
-		return Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', version, 'SqlSchemas', dacpac));
+
+		// DW is special because the target version is DW, but the folder name for system dacpacs is AzureDW in SSDT
+		// the other target versions have the same version name and folder name
+		if (version === constants.targetPlatformToVersion.get(constants.sqlDW)) {
+			version = constants.AzureDwFolder;
+		}
+
+		return version;
 	}
 
 	public getProjectTargetVersion(): string {
