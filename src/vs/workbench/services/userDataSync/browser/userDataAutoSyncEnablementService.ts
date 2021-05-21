@@ -3,7 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { UserDataAutoSyncEnablementService } from 'vs/platform/userDataSync/common/userDataAutoSyncService';
+import { IUserDataAutoSyncEnablementService } from 'vs/platform/userDataSync/common/userDataSync';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 
 export class WebUserDataAutoSyncEnablementService extends UserDataAutoSyncEnablementService {
@@ -47,5 +49,6 @@ export class WebUserDataAutoSyncEnablementService extends UserDataAutoSyncEnable
 	private isTrusted(): boolean {
 		return !!this.workbenchEnvironmentService.options?.workspaceProvider?.trusted;
 	}
-
 }
+
+registerSingleton(IUserDataAutoSyncEnablementService, WebUserDataAutoSyncEnablementService);
