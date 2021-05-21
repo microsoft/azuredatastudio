@@ -400,7 +400,7 @@ suite.skip('UserDataSyncService', () => { // {{SQL CARBON EDIT}} skip failing te
 
 
 		const syncTask = (await testObject.createSyncTask());
-		syncTask.run();
+		syncTask.run().then(null, () => null /* ignore error */);
 		await syncTask.stop();
 
 		assert.deepEqual(testObject.status, SyncStatus.Idle);
