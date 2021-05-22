@@ -4037,7 +4037,7 @@
 					"versions": [
 						{
 							"version": "0.2.0",
-							"lastUpdated": "05/05/2021",
+							"lastUpdated": "05/22/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -4062,6 +4062,68 @@
 									"source": "https://github.com/ernstc/SqlDataInspector/blob/main/LICENSE"
 								}
 							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/ernstc/SqlDataInspector"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
+				},
+				{
+					"extensionId": "81",
+					"extensionName": "ADS-add-columns",
+					"displayName": "ADD COLUMNS",
+					"shortDescription": "Use this extension to add columns to existing table using the context menu.",
+					"publisher": {
+						"displayName": "Sahal Moidu",
+						"publisherId": "sahalMoidu",
+						"publisherName": "SahalMoidu"
+					},
+					"versions": [
+						{
+							"version": "0.0.11",
+							"lastUpdated": "05/05/2021",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/sahalMoidu/ADS-add-columns/releases/tag/0.0.11"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://github.com/sahalMoidu/ADS-add-columns/raw/master/logo.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://github.com/sahalMoidu/ADS-add-columns/raw/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://github.com/sahalMoidu/ADS-add-columns/raw/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://github.com/sahalMoidu/ADS-add-columns/raw/master/LICENSE"
+								}
+							],
+							
 							"properties": [
 								{
 									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
