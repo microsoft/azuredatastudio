@@ -29,7 +29,7 @@ SERVER_BUILD_NAME_WEB="azuredatastudio-server-$PLATFORM_LINUX-web"
 SERVER_TARBALL_FILENAME_WEB="azuredatastudio-server-$PLATFORM_LINUX-web.tar.gz"
 SERVER_TARBALL_PATH_WEB="$REPO/.build/linux/server/$SERVER_TARBALL_FILENAME_WEB"
 
-rm -rf $ROOT/azuredatastudio-server-*.tar.*
-(cd $ROOT && mv vscode-reh-web-linux-x64 $SERVER_BUILD_NAME_WEB && tar --owner=0 --group=0 -czf $SERVER_TARBALL_PATH_WEB $SERVER_BUILD_NAME_WEB)
+# rm -rf $ROOT/azuredatastudio-server-*.tar.*
+# (cd $ROOT && mv vscode-reh-web-linux-x64 $SERVER_BUILD_NAME_WEB && tar --owner=0 --group=0 -czf $SERVER_TARBALL_PATH_WEB $SERVER_BUILD_NAME_WEB)
 
 node build/azure-pipelines/common/copyArtifacts.js
