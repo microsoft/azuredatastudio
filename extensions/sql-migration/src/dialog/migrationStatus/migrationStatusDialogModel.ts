@@ -15,6 +15,9 @@ export class MigrationStatusDialogModel {
 			displayName: 'Status: Ongoing',
 			name: AdsMigrationStatus.ONGOING,
 		}, {
+			displayName: 'Status: Completing',
+			name: AdsMigrationStatus.COMPLETING
+		}, {
 			displayName: 'Status: Succeeded',
 			name: AdsMigrationStatus.SUCCEEDED,
 		}, {
@@ -26,38 +29,7 @@ export class MigrationStatusDialogModel {
 	constructor(public _migrations: MigrationContext[]) {
 	}
 
-	public filterMigration(databaseName: string, category: string): MigrationContext[] {
-		let filteredMigration: MigrationContext[] = [];
-		if (category === AdsMigrationStatus.ALL) {
-			filteredMigration = this._migrations;
-		} else if (category === AdsMigrationStatus.ONGOING) {
-			filteredMigration = this._migrations.filter((value) => {
-				const status = value.migrationContext.properties.migrationStatus;
-				const provisioning = value.migrationContext.properties.provisioningState;
-				return status === 'InProgress' || status === 'Creating' || status === 'Completing' || provisioning === 'Creating';
-			});
-		} else if (category === AdsMigrationStatus.SUCCEEDED) {
-			filteredMigration = this._migrations.filter((value) => {
-				const status = value.migrationContext.properties.migrationStatus;
-				return status === 'Succeeded';
-			});
-		} else if (category === AdsMigrationStatus.FAILED) {
-			filteredMigration = this._migrations.filter((value) => {
-				const status = value.migrationContext.properties.migrationStatus;
-				const provisioning = value.migrationContext.properties.provisioningState;
-				return status === 'Failed' || provisioning === 'Failed';
-			});
-		}
-		if (databaseName) {
-			filteredMigration = filteredMigration.filter((value) => {
-				return value.migrationContext.name.toLowerCase().includes(databaseName.toLowerCase());
-			});
-		}
-
-		return filteredMigration;
-	}
 }
-
 
 /**
  * This enum is used to categorize migrations internally in ADS. A migration has 2 statuses: Provisioning Status and Migration Status. The values from both the statuses are mapped to different values in this enum
@@ -66,5 +38,6 @@ export enum AdsMigrationStatus {
 	ALL = 'all',
 	ONGOING = 'ongoing',
 	SUCCEEDED = 'succeeded',
-	FAILED = 'failed'
+	FAILED = 'failed',
+	COMPLETING = 'completing'
 }

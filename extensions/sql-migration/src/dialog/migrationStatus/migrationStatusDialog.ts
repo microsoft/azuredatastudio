@@ -10,7 +10,7 @@ import { MigrationContext, MigrationLocalStorage } from '../../models/migrationL
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
 import { AdsMigrationStatus, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
-import { convertTimeDifferenceToDuration } from '../../api/utils';
+import { convertTimeDifferenceToDuration, filterMigrations } from '../../api/utils';
 export class MigrationStatusDialog {
 	private _model: MigrationStatusDialogModel;
 	private _dialogObject!: azdata.window.Dialog;
@@ -128,10 +128,7 @@ export class MigrationStatusDialog {
 
 	private populateMigrationTable(): void {
 		try {
-			const migrations = this._model.filterMigration(
-				this._searchBox.value!,
-				(<azdata.CategoryValue>this._statusDropdown.value).name
-			);
+			const migrations = filterMigrations(this._model._migrations, (<azdata.CategoryValue>this._statusDropdown.value).name, this._searchBox.value!);
 
 			const data: azdata.DeclarativeTableCellValue[][] = [];
 
