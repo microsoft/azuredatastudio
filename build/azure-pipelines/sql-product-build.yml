@@ -63,16 +63,16 @@ jobs:
   - template: web/sql-product-build-web.yml
   timeoutInMinutes: 90
 
-- job: Docker
-  condition: and(succeeded(), eq(variables['VSCODE_BUILD_DOCKER'], 'true'))
-  pool:
-    vmImage: 'Ubuntu-16.04'
-  container: linux-x64
-  dependsOn:
-  - Linux
-  steps:
-  - template: docker/sql-product-build-docker.yml
-  timeoutInMinutes: 90
+# - job: Docker
+#   condition: and(succeeded(), eq(variables['VSCODE_BUILD_DOCKER'], 'true'))
+#   pool:
+#     vmImage: 'Ubuntu-16.04'
+#   container: linux-x64
+#   dependsOn:
+#   - Linux
+#   steps:
+#   - template: docker/sql-product-build-docker.yml
+#   timeoutInMinutes: 90
 
 - job: Windows
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
