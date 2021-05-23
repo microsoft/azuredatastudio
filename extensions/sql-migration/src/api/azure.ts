@@ -377,8 +377,8 @@ export interface DatabaseMigration {
 }
 export interface DatabaseMigrationProperties {
 	scope: string;
-	provisioningState: string;
-	migrationStatus: string;
+	provisioningState: 'Succeeded' | 'Failed' | 'Creating';
+	migrationStatus: 'InProgress' | 'Failed' | 'Succeeded' | 'Creating' | 'Completing' | 'Cancelling';
 	migrationStatusDetails?: MigrationStatusDetails;
 	startedOn: string;
 	endedOn: string;

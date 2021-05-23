@@ -261,6 +261,7 @@ export const PRE_REQ_1 = localize('sql.migration.pre.req.1', "Azure account deta
 export const PRE_REQ_2 = localize('sql.migration.pre.req.2', "Azure SQL Managed Instance or SQL Server on Azure Virtual Machine");
 export const PRE_REQ_3 = localize('sql.migration.pre.req.3', "Backup location details");
 export const MIGRATION_IN_PROGRESS = localize('sql.migration.migration.in.progress', "Database migration in progress");
+export const MIGRATION_FAILED = localize('sql.migration.failed', "Migration failed");
 export const LOG_SHIPPING_IN_PROGRESS = localize('sql.migration.log.shipping.in.progress', "Log shipping in progress");
 export const MIGRATION_COMPLETED = localize('sql.migration.migration.completed', "Database migration completed");
 export const SUCCESSFULLY_MIGRATED_TO_AZURE_SQL = localize('sql.migration.successfully.migrated.to.azure.sql', "Successfully migrated to Azure SQL");
