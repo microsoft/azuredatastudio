@@ -63,8 +63,8 @@ export class NotebookFindDecorations implements IDisposable {
 	}
 
 	public getFindScope(): NotebookRange | null {
-		if (this._findScopeDecorationIds[0]) {
-			return this._editor.notebookFindModel.getDecorationRange(this._findScopeDecorationIds[0]);
+		if (this._currentMatch) {
+			return this._currentMatch;
 		}
 		return null;
 	}
@@ -94,14 +94,26 @@ export class NotebookFindDecorations implements IDisposable {
 
 	public clearDecorations(): void {
 		let ranges = this.getFindScopes();
-		this._editor.updateDecorations(undefined, ranges);
+		if (ranges) {
+			this._editor.updateDecorations(undefined, ranges);
+		}
 		for (let cellGuid of this._codeCellDecorations.keys()) {
 			this._editor.getCellEditor(cellGuid).getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
 				this._codeCellDecorations.get(cellGuid).forEach(decorationId => changeAccessor.removeDecoration(decorationId));
 				changeAccessor.deltaDecorations(this._codeCellFindScopeDecorationIds, []);
 			});
 		}
-		this.removePrevDecorations();
+		this.removeLastDecoration();
+	}
+
+	public addDecorations(): void {
+		let findScopes = this.getFindScopes();
+		if (findScopes) {
+			this._editor.updateDecorations(findScopes, undefined);
+
+			this.setCodeCellDecorations(this._editor.notebookFindModel.findMatches, findScopes);
+		}
+
 	}
 
 	public setCurrentFindMatch(nextMatch: NotebookRange | null): number {
@@ -119,11 +131,11 @@ export class NotebookFindDecorations implements IDisposable {
 		}
 
 		if (this._highlightedDecorationId !== null || newCurrentDecorationId !== null) {
-			this.removePrevDecorations();
+			this.removeLastDecoration();
 			if (this.checkValidEditor(nextMatch)) {
 				this._editor.getCellEditor(nextMatch.cell.cellGuid).getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
 					if (this._highlightedDecorationId !== null) {
-						changeAccessor.changeDecorationOptions(this._highlightedDecorationId, NotebookFindDecorations._FIND_MATCH_DECORATION);
+						changeAccessor.changeDecorationOptions(this._highlightedDecorationId, NotebookFindDecorations._RANGE_HIGHLIGHT_DECORATION);
 						this._highlightedDecorationId = null;
 					}
 					if (newCurrentDecorationId !== null) {
@@ -138,7 +150,7 @@ export class NotebookFindDecorations implements IDisposable {
 							let lineBeforeEndMaxColumn = this._editor.notebookFindModel.getLineMaxColumn(lineBeforeEnd);
 							rng = new NotebookRange(rng.cell, rng.startLineNumber, rng.startColumn, lineBeforeEnd, lineBeforeEndMaxColumn);
 						}
-						this._rangeHighlightDecorationId = changeAccessor.addDecoration(rng, NotebookFindDecorations._RANGE_HIGHLIGHT_DECORATION);
+						this._rangeHighlightDecorationId = changeAccessor.addDecoration(rng, NotebookFindDecorations._FIND_MATCH_DECORATION);
 						this._revealRangeInCenterIfOutsideViewport(nextMatch);
 						this._currentMatch = nextMatch;
 					}
@@ -153,7 +165,7 @@ export class NotebookFindDecorations implements IDisposable {
 		return matchPosition;
 	}
 
-	private removePrevDecorations(): void {
+	private removeLastDecoration(): void {
 		if (this._currentMatch && this._currentMatch.cell) {
 			let prevEditor = this._currentMatch.cell.cellType === 'markdown' && !this._currentMatch.isMarkdownSourceCell ? undefined : this._editor.getCellEditor(this._currentMatch.cell.cellGuid);
 			if (prevEditor) {
@@ -184,41 +196,49 @@ export class NotebookFindDecorations implements IDisposable {
 	}
 
 	public set(findMatches: NotebookFindMatch[], findScopes: NotebookRange[] | null): void {
-		this._editor.updateDecorations(findScopes, undefined);
-		let _cellFindScopeDecorationIds: string[] = [];
-		this._editor.changeDecorations((accessor) => {
-			let findMatchesOptions = NotebookFindDecorations._FIND_MATCH_NO_OVERVIEW_DECORATION;
-			// Find matches
-			let newFindMatchesDecorations: IModelDeltaDecoration[] = new Array<IModelDeltaDecoration>(findMatches.length);
-			for (let i = 0, len = findMatches.length; i < len; i++) {
-				newFindMatchesDecorations[i] = {
-					range: findMatches[i].range,
-					options: findMatchesOptions
-				};
-			}
-			this._decorations = accessor.deltaDecorations(this._decorations, newFindMatchesDecorations);
+		if (findScopes) {
+			this._editor.updateDecorations(findScopes, undefined);
 
-			// Find scope
-			if (this._findScopeDecorationIds.length) {
-				this._findScopeDecorationIds.forEach(findScopeDecorationId => accessor.removeDecoration(findScopeDecorationId));
-				this._findScopeDecorationIds = [];
-			}
-			if (findScopes.length) {
-				this._findScopeDecorationIds = findScopes.map(findScope => accessor.addDecoration(findScope, NotebookFindDecorations._FIND_SCOPE_DECORATION));
-			}
-		});
+			this._editor.changeDecorations((accessor) => {
+				let findMatchesOptions = NotebookFindDecorations._FIND_MATCH_NO_OVERVIEW_DECORATION;
+				// Find matches
+				let newFindMatchesDecorations: IModelDeltaDecoration[] = new Array<IModelDeltaDecoration>(findMatches.length);
+				for (let i = 0, len = findMatches.length; i < len; i++) {
+					newFindMatchesDecorations[i] = {
+						range: findMatches[i].range,
+						options: findMatchesOptions
+					};
+				}
+				this._decorations = accessor.deltaDecorations(this._decorations, newFindMatchesDecorations);
+
+				// Find scope
+				if (this._findScopeDecorationIds.length) {
+					this._findScopeDecorationIds.forEach(findScopeDecorationId => accessor.removeDecoration(findScopeDecorationId));
+					this._findScopeDecorationIds = [];
+				}
+				if (findScopes.length) {
+					this._findScopeDecorationIds = findScopes.map(findScope => accessor.addDecoration(findScope, NotebookFindDecorations._FIND_SCOPE_DECORATION));
+				}
+			});
+
+			this.setCodeCellDecorations(findMatches, findScopes);
+		}
+	}
+
+	private setCodeCellDecorations(findMatches: NotebookFindMatch[], findScopes: NotebookRange[] | null): void {
 		//get all code cells which have matches
-		const cellsWithMatches = findScopes.filter((c, i, ranges) => {
+		const codeCellsFindMatches = findScopes.filter((c, i, ranges) => {
 			return ranges.indexOf(ranges.find(t => t.cell.cellGuid === c.cell.cellGuid && t.cell.cellType === 'code')) === i;
 		});
-		cellsWithMatches.forEach(findMatch => {
+		codeCellsFindMatches.forEach(findMatch => {
 			this._editor.getCellEditor(findMatch.cell.cellGuid)?.getControl().changeDecorations((accessor) => {
 
-				let findMatchesOptions: ModelDecorationOptions = NotebookFindDecorations._FIND_MATCH_DECORATION;
+				let findMatchesOptions: ModelDecorationOptions = NotebookFindDecorations._RANGE_HIGHLIGHT_DECORATION;
 				let newOverviewRulerApproximateDecorations: IModelDeltaDecoration[] = [];
 
-				let cellfindScopes = findScopes.filter(f => f.cell.cellGuid === findMatch.cell.cellGuid);
+				let cellFindScopes = findScopes.filter(f => f.cell.cellGuid === findMatch.cell.cellGuid);
 				let findMatchesInCell = findMatches?.filter(m => m.range.cell.cellGuid === findMatch.cell.cellGuid) || [];
+				let _cellFindScopeDecorationIds: string[] = [];
 				if (findMatchesInCell.length > 1000) {
 					// we go into a mode where the overview ruler gets "approximate" decorations
 					// the reason is that the overview ruler paints all the decorations in the file and we don't want to cause freezes
@@ -279,8 +299,8 @@ export class NotebookFindDecorations implements IDisposable {
 					_cellFindScopeDecorationIds.forEach(findScopeDecorationId => accessor.removeDecoration(findScopeDecorationId));
 					_cellFindScopeDecorationIds = [];
 				}
-				if (cellfindScopes.length) {
-					_cellFindScopeDecorationIds = cellfindScopes.map(findScope => accessor.addDecoration(findScope, NotebookFindDecorations._FIND_SCOPE_DECORATION));
+				if (cellFindScopes.length) {
+					_cellFindScopeDecorationIds = cellFindScopes.map(findScope => accessor.addDecoration(findScope, NotebookFindDecorations._FIND_SCOPE_DECORATION));
 					this._codeCellFindScopeDecorationIds.push(..._cellFindScopeDecorationIds);
 				}
 			});

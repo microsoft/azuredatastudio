@@ -282,7 +282,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 				this._finder.focusFindInput();
 				this._updateFinderMatchState();
 				// if find is closed and opened again, highlight the last position.
-				this._findDecorations.set(this.notebookFindModel.findMatches, this.notebookFindModel.findArray);
+				this._findDecorations.addDecorations();
 				this._findDecorations.setStartPosition(this.getPosition());
 			} else {
 				this._finder.getDomNode().style.visibility = 'hidden';
