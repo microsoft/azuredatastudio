@@ -19,6 +19,7 @@ import * as constants from '../../common/constants';
 
 import { NotebookUriHandler } from '../../protocol/notebookUriHandler';
 import { CellTypes } from '../../contracts/content';
+import { winPlatform } from '../../common/constants';
 
 describe('Notebook URI Handler', function (): void {
 	let notebookUriHandler: NotebookUriHandler;
@@ -127,7 +128,14 @@ describe('Notebook URI Handler', function (): void {
 		let notebookPath: string = path.join(notebookDir, 'hello.ipynb');
 
 		await fs.mkdir(notebookDir);
-		let fileURI = 'azuredatastudio://microsoft.notebook/open?url=file://' + notebookPath;
+		let baseUrl = 'azuredatastudio://microsoft.notebook/open?url=file://';
+		if (process.platform === winPlatform) {
+			// URI paths are formatted as "hostname/path", but since we're using a local path
+			// we omit the host part and just add the slash. Unix paths already start with a
+			// forward slash, but we have to prepend it manually when using Windows paths.
+			baseUrl = baseUrl + '/';
+		}
+		let fileURI = baseUrl + notebookPath;
 		let fileNotebookUri = vscode.Uri.parse(fileURI);
 		let notebookContent: azdata.nb.INotebookContents = {
 			cells: [{
