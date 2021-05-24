@@ -445,7 +445,7 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	/**
-	 * Sets the default values in the database name and variable text boxes if they are enabled based
+	 * Sets the default values in the database name and variable text boxes if they are enabled
 	 */
 	private setDefaultDatabaseValues(): void {
 		if (this.databaseNameTextbox!.enabled) {
