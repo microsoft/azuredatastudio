@@ -144,6 +144,7 @@ export const ENTER_NETWORK_SHARE_INFORMATION = localize('sql.migration.enter.net
 export const ENTER_BLOB_CONTAINER_INFORMATION = localize('sql.migration.blob.container.information', "Enter the target name and select the blob container location for selected databases");
 export const ENTER_FILE_SHARE_INFORMATION = localize('sql.migration.enter.file.share.information', "Enter the target name and select the file share location of selected databases");
 export const INVALID_TARGET_NAME_ERROR = localize('sql.migration.invalid.target.name.error', "Please enter a valid name for the target database.");
+export const PROVIDE_UNIQUE_CONTAINERS = localize('sql.migration.provide.unique.containers', "Please provide unique containers for target databases. Databases affected: ");
 
 // integration runtime page
 export const IR_PAGE_TITLE = localize('sql.migration.ir.page.title', "Azure Database Migration Service");
