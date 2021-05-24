@@ -10,7 +10,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 export interface ITelemetryData {
 	readonly from?: string;
 	readonly target?: string;
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 export type WorkbenchActionExecutedClassification = {
@@ -31,13 +31,14 @@ export interface IAction extends IDisposable {
 	enabled: boolean;
 	checked: boolean;
 	expanded: boolean | undefined; // {{SQL CARBON EDIT}}
-	run(event?: any): Promise<any>;
+	run(event?: unknown): Promise<unknown>;
 }
 
 export interface IActionRunner extends IDisposable {
-	run(action: IAction, context?: any): Promise<any>;
 	readonly onDidRun: Event<IRunEvent>;
 	readonly onBeforeRun: Event<IRunEvent>;
+
+	run(action: IAction, context?: unknown): Promise<unknown>;
 }
 
 export interface IActionChangeEvent {
@@ -61,9 +62,9 @@ export class Action extends Disposable implements IAction {
 	protected _enabled: boolean = true;
 	protected _checked: boolean = false;
 	protected _expanded: boolean = false; // {{SQL CARBON EDIT}}
-	protected readonly _actionCallback?: (event?: any) => Promise<any>;
+	protected readonly _actionCallback?: (event?: unknown) => Promise<unknown>;
 
-	constructor(id: string, label: string = '', cssClass: string = '', enabled: boolean = true, actionCallback?: (event?: any) => Promise<any>) {
+	constructor(id: string, label: string = '', cssClass: string = '', enabled: boolean = true, actionCallback?: (event?: unknown) => Promise<unknown>) {
 		super();
 		this._id = id;
 		this._label = label;
@@ -167,19 +168,16 @@ export class Action extends Disposable implements IAction {
 		}
 	}
 
-	run(event?: any, _data?: ITelemetryData): Promise<any> {
+	async run(event?: unknown, data?: ITelemetryData): Promise<void> {
 		if (this._actionCallback) {
-			return this._actionCallback(event);
+			await this._actionCallback(event);
 		}
-
-		return Promise.resolve(true);
 	}
 }
 
 export interface IRunEvent {
 	readonly action: IAction;
-	readonly result?: any;
-	readonly error?: any;
+	readonly error?: Error;
 }
 
 export class ActionRunner extends Disposable implements IActionRunner {
@@ -190,24 +188,25 @@ export class ActionRunner extends Disposable implements IActionRunner {
 	private _onDidRun = this._register(new Emitter<IRunEvent>());
 	readonly onDidRun = this._onDidRun.event;
 
-	async run(action: IAction, context?: any): Promise<any> {
+	async run(action: IAction, context?: unknown): Promise<void> {
 		if (!action.enabled) {
-			return Promise.resolve(null);
+			return;
 		}
 
-		this._onBeforeRun.fire({ action: action });
+		this._onBeforeRun.fire({ action });
 
+		let error: Error | undefined = undefined;
 		try {
-			const result = await this.runAction(action, context);
-			this._onDidRun.fire({ action: action, result: result });
-		} catch (error) {
-			this._onDidRun.fire({ action: action, error: error });
+			await this.runAction(action, context);
+		} catch (e) {
+			error = e;
 		}
+
+		this._onDidRun.fire({ action, error });
 	}
 
-	protected runAction(action: IAction, context?: any): Promise<any> {
-		const res = context ? action.run(context) : action.run();
-		return Promise.resolve(res);
+	protected async runAction(action: IAction, context?: unknown): Promise<void> {
+		await action.run(context);
 	}
 }
 
@@ -217,6 +216,7 @@ export class Separator extends Action {
 
 	constructor(label?: string) {
 		super(Separator.ID, label, label ? 'separator text' : 'separator');
+
 		this.checked = false;
 		this.enabled = false;
 	}
@@ -232,6 +232,7 @@ export class SubmenuAction implements IAction {
 	readonly checked: boolean = false;
 
 	private readonly _actions: readonly IAction[];
+	get actions(): readonly IAction[] { return this._actions; }
 
 	constructor(id: string, label: string, actions: readonly IAction[], cssClass?: string) {
 		this.id = id;
@@ -246,11 +247,7 @@ export class SubmenuAction implements IAction {
 		// to bridge into the rendering world.
 	}
 
-	get actions(): readonly IAction[] {
-		return this._actions;
-	}
-
-	async run(): Promise<any> { }
+	async run(): Promise<void> { }
 
 	// {{SQL CARBON EDIT}}
 	get expanded(): boolean {
@@ -263,7 +260,9 @@ export class SubmenuAction implements IAction {
 }
 
 export class EmptySubmenuAction extends Action {
+
 	static readonly ID = 'vs.actions.empty';
+
 	constructor() {
 		super(EmptySubmenuAction.ID, nls.localize('submenu.empty', '(empty)'), undefined, false);
 	}
