@@ -17,7 +17,7 @@
 		"html-query-plan": "git://github.com/kburtram/html-query-plan.git#2.6",
 		"iconv-lite-umd": "0.6.8",
     "jquery": "3.5.0",
-		"jschardet": "2.2.1",
+		"jschardet": "2.3.0",
 		"mark.js": "^8.11.1",
 		"ng2-charts": "^1.6.0",
 		"reflect-metadata": "^0.1.8",
