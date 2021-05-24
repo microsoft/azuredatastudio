@@ -434,8 +434,6 @@ export class SimpleNotebookEditorModel extends EditorModel implements INotebookE
 	}
 
 	async load(options?: INotebookLoadOptions): Promise<IResolvedNotebookEditorModel> {
-		// todo@bpasero,jrieken is this right?
-		// resolve return a working copy but I believe it is always THIS
 		await this._workingCopy.resolve(options);
 		return this;
 	}
@@ -526,8 +524,7 @@ export class NotebookFileWorkingCopyModel implements IFileWorkingCopyModel {
 	}
 
 	getAlternativeVersionId(): number {
-		//todo@jrieken,@rebornix -> add alternative version id
-		return this._notebookModel.versionId;
+		return this._notebookModel.alternativeVersionId;
 	}
 
 	pushStackElement(): void {

@@ -661,7 +661,10 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		description: NEW_UNTITLED_FILE_LABEL,
 		args: [
 			{
-				name: 'viewType', description: 'The editor view type', schema: {
+				isOptional: true,
+				name: 'viewType',
+				description: 'The editor view type',
+				schema: {
 					'type': 'object',
 					'required': ['viewType'],
 					'properties': {
