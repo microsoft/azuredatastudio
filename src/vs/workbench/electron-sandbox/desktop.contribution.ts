@@ -374,6 +374,10 @@ import { SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID } from 'vs/workbench/contrib/e
 				items: {
 					type: 'string'
 				}
+			},
+			'log-level': {
+				type: 'string',
+				description: localize('argv.logLevel', "Log level to use. Default is 'info'. Allowed values are 'critical', 'error', 'warn', 'info', 'debug', 'trace', 'off'.")
 			}
 		}
 	};

@@ -3810,7 +3810,7 @@ declare namespace monaco.editor {
 		 */
 		snippetsPreventQuickSuggestions?: boolean;
 		/**
-		 * Favours words that appear close to the cursor.
+		 * Favors words that appear close to the cursor.
 		 */
 		localityBonus?: boolean;
 		/**

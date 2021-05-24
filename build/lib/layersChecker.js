@@ -56,7 +56,9 @@ const CORE_TYPES = [
 const NATIVE_TYPES = [
     'NativeParsedArgs',
     'INativeEnvironmentService',
-    'INativeWindowConfiguration'
+    'AbstractNativeEnvironmentService',
+    'INativeWindowConfiguration',
+    'ICommonNativeHostService'
 ];
 const RULES = [
     // Tests: skip
@@ -79,19 +81,9 @@ const RULES = [
             '@types/node' // no node.js
         ]
     },
-    // Common: vs/platform/environment/common/argv.ts
+    // Common: vs/platform/environment/common/*
     {
-        target: '**/{vs,sql}/platform/environment/common/argv.ts',
-        disallowedTypes: [ /* Ignore native types that are defined from here */],
-        allowedTypes: CORE_TYPES,
-        disallowedDefinitions: [
-            'lib.dom.d.ts',
-            '@types/node' // no node.js
-        ]
-    },
-    // Common: vs/platform/environment/common/environment.ts
-    {
-        target: '**/{vs,sql}/platform/environment/common/environment.ts',
+        target: '**/{vs,sql}/platform/environment/common/*.ts',
         disallowedTypes: [ /* Ignore native types that are defined from here */],
         allowedTypes: CORE_TYPES,
         disallowedDefinitions: [

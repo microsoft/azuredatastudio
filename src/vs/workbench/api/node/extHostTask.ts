@@ -117,13 +117,14 @@ export class ExtHostTask extends ExtHostTaskBase {
 		return resolvedTaskDTO;
 	}
 
+	// {{SQL CARBON EDIT}}
 	// private async getVariableResolver(workspaceFolders: vscode.WorkspaceFolder[]): Promise<ExtHostVariableResolverService> {
 	// 	if (this._variableResolver === undefined) {
 	// 		const configProvider = await this._configurationService.getConfigProvider();
-	// 		this._variableResolver = new ExtHostVariableResolverService(workspaceFolders, this._editorService, configProvider, process.env as IProcessEnvironment);
+	// 		this._variableResolver = new ExtHostVariableResolverService(workspaceFolders, this._editorService, configProvider, this.workspaceService);
 	// 	}
 	// 	return this._variableResolver;
-	// } {{SQL CARBON EDIT}}
+	// }
 
 	public async $resolveVariables(uriComponents: UriComponents, toResolve: { process?: { name: string; cwd?: string; path?: string }, variables: string[] }): Promise<{ process?: string, variables: { [key: string]: string; } }> {
 		/*const uri: URI = URI.revive(uriComponents);

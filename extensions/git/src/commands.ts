@@ -2247,7 +2247,7 @@ export class CommandCenter {
 			return;
 		}
 
-		await repository.addRemote(name, url);
+		await repository.addRemote(name, url.trim());
 		await repository.fetch({ remote: name });
 		return name;
 	}

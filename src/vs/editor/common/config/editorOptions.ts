@@ -3145,7 +3145,7 @@ export interface ISuggestOptions {
 	 */
 	snippetsPreventQuickSuggestions?: boolean;
 	/**
-	 * Favours words that appear close to the cursor.
+	 * Favors words that appear close to the cursor.
 	 */
 	localityBonus?: boolean;
 	/**
@@ -3337,7 +3337,7 @@ class EditorSuggest extends BaseEditorOption<EditorOption.suggest, InternalSugge
 				'editor.suggest.localityBonus': {
 					type: 'boolean',
 					default: defaults.localityBonus,
-					description: nls.localize('suggest.localityBonus', "Controls whether sorting favours words that appear close to the cursor.")
+					description: nls.localize('suggest.localityBonus', "Controls whether sorting favors words that appear close to the cursor.")
 				},
 				'editor.suggest.shareSuggestSelections': {
 					type: 'boolean',
