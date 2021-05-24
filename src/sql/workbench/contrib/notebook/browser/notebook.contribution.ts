@@ -49,7 +49,7 @@ import { ToggleTabFocusModeAction } from 'vs/editor/contrib/toggleTabFocusMode/t
 import 'vs/css!./media/notebook.contribution';
 import { isMacintosh } from 'vs/base/common/platform';
 import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
-import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { ImageMimeTypes, TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -296,10 +296,16 @@ configurationRegistry.registerConfiguration({
 			'default': true,
 			'description': localize('notebook.enableDoubleClickEdit', "Enable double click to edit for text cells in notebooks")
 		},
-		'notebook.setRichTextViewByDefault': {
-			'type': 'boolean',
-			'default': true,
-			'description': localize('notebook.setRichTextViewByDefault', "Set Rich Text View mode by default for text cells")
+		'notebook.defaultTextEditMode': {
+			'type': 'string',
+			'enum': [TextCellEditModes.RichText, TextCellEditModes.SplitView, TextCellEditModes.Markdown],
+			'enumDescriptions': [
+				localize('notebook.richTextModeDescription', 'Text is displayed as Rich Text (also known as WYSIWYG).'),
+				localize('notebook.splitViewModeDescription', 'Markdown is displayed on the left, with a preview of the rendered text on the right.'),
+				localize('notebook.markdownModeDescription', 'Text is displayed as Markdown.')
+			],
+			'default': TextCellEditModes.RichText,
+			'description': localize('notebook.defaultTextEditMode', "The default editing mode used for text cells")
 		},
 		'notebook.saveConnectionName': {
 			'type': 'boolean',
