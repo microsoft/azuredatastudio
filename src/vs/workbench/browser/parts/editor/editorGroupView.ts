@@ -541,7 +541,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		// only dispose when they are not opened elsewhere.
 		for (const editor of editorsToClose) {
 			if (!this.accessor.groups.some(groupView => groupView.group.contains(editor, {
-				strictEquals: true,		// only if this input is not shared across editor groups
+				strictEquals: false,		// only if this input is not shared across editor groups // {{SQL CARBON EDIT}} - update strictEquals to false, QueryEditorInput and NotebookEditorInput should be compared against the underlying TextEditorInput, strictcompare will cause the underlying document to be closed when closing diff editor.
 				supportSideBySide: true // include side by side editor primary & secondary
 			}))) {
 				editor.dispose();
