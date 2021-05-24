@@ -39,10 +39,8 @@ suite.skip('EditorsObserver', function () {
 		const instantiationService = workbenchInstantiationService();
 		instantiationService.invokeFunction(accessor => Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).start(accessor));
 
-		const part = createEditorPart(instantiationService, disposables);
+		const part = await createEditorPart(instantiationService, disposables);
 		disposables.add(toDisposable(() => part.clearState()));
-
-		await part.whenRestored;
 
 		return part;
 	}
@@ -226,7 +224,6 @@ suite.skip('EditorsObserver', function () {
 		assert.strictEqual(observer.hasEditor(input3.resource), true);
 
 		const copiedGroup = part.copyGroup(rootGroup, rootGroup, GroupDirection.RIGHT);
-		await copiedGroup.whenRestored;
 		copiedGroup.setActive(true);
 		copiedGroup.focus();
 
