@@ -102,6 +102,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
 	private _highlightRange: NotebookRange;
+	private _isFindActive: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -247,7 +248,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 				outputElement.focus();
-				this.addDecoration();
+				if (this._isFindActive) {
+					this.addDecoration();
+				}
 			}
 		}
 	}
@@ -355,6 +358,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	public deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
 		if (newDecorationsRange) {
+			this._isFindActive = true;
 			if (Array.isArray(newDecorationsRange)) {
 				this.highlightAllMatches();
 			} else {
@@ -365,6 +369,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (oldDecorationsRange) {
 			if (Array.isArray(oldDecorationsRange)) {
 				this.removeDecoration();
+				this._isFindActive = false;
 			} else {
 				this._highlightRange = oldDecorationsRange === this._highlightRange ? undefined : this._highlightRange;
 				this.removeDecoration(oldDecorationsRange);
@@ -374,9 +379,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private addDecoration(range?: NotebookRange): void {
 		range = range ?? this._highlightRange;
-		if (range && this.output && this.output.nativeElement) {
+		if (this.output && this.output.nativeElement) {
+			this.highlightAllMatches();
 			if (range) {
-				this.highlightAllMatches();
 				let elements = this.getHtmlElements();
 				if (elements?.length >= range.startLineNumber) {
 					let elementContainingText = elements[range.startLineNumber - 1];
