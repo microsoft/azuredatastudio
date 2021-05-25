@@ -18,8 +18,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _windowsUserAccountText!: azdata.InputBoxComponent;
 	private _passwordText!: azdata.InputBoxComponent;
 	private _networkSharePath!: azdata.InputBoxComponent;
-	private _sqlServer!: azdata.InputBoxComponent;
-	private _sqlAuthenticationType!: azdata.InputBoxComponent;
+	private _sourceHelpText!: azdata.TextComponent;
 	private _sqlSourceUsernameInput!: azdata.InputBoxComponent;
 	private _sqlSourcepassword!: azdata.InputBoxComponent;
 
@@ -166,41 +165,11 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		const sqlSourceHelpText = this._view.modelBuilder.text().withProps({
-			value: constants.ENTER_YOUR_SQL_CREDS,
+		this._sourceHelpText = this._view.modelBuilder.text().withProps({
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
 				'font-size': '13px',
 			}
-		}).component();
-
-		const serverLabel = this._view.modelBuilder.text().withProps({
-			value: constants.SERVER,
-			width: WIZARD_INPUT_COMPONENT_WIDTH,
-			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold',
-			}
-		}).component();
-
-		this._sqlServer = this._view.modelBuilder.inputBox().withProps({
-			enabled: false,
-			width: WIZARD_INPUT_COMPONENT_WIDTH
-		}).component();
-
-		const authenticationTypeLable = this._view.modelBuilder.text().withProps({
-			value: constants.AUTHENTICATION_TYPE,
-			width: WIZARD_INPUT_COMPONENT_WIDTH,
-			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold',
-			}
-		}).component();
-
-		this._sqlAuthenticationType = this._view.modelBuilder.inputBox().withProps({
-			value: this.migrationStateModel._authenticationType === MigrationSourceAuthenticationType.Sql ? 'SQL Login' : 'Windows Authentication',
-			enabled: false,
-			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
 
 		const usernameLable = this._view.modelBuilder.text().withProps({
@@ -352,11 +321,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems(
 			[
 				sqlSourceHeader,
-				sqlSourceHelpText,
-				serverLabel,
-				this._sqlServer,
-				authenticationTypeLable,
-				this._sqlAuthenticationType,
+				this._sourceHelpText,
 				usernameLable,
 				this._sqlSourceUsernameInput,
 				sqlPasswordLabel,
@@ -669,8 +634,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId)), query);
 			const username = results.rows[0][0].displayValue;
 			this.migrationStateModel._authenticationType = connectionProfile.authenticationType === 'SqlLogin' ? MigrationSourceAuthenticationType.Sql : connectionProfile.authenticationType === 'Integrated' ? MigrationSourceAuthenticationType.Integrated : undefined!;
-			this._sqlServer.value = connectionProfile.serverName;
-			this._sqlAuthenticationType.value = this.migrationStateModel._authenticationType === MigrationSourceAuthenticationType.Sql ? 'SQL Login' : 'Windows Authentication';
+			this._sourceHelpText.value = constants.SQL_SOURCE_DETAILS(this.migrationStateModel._authenticationType, connectionProfile.serverName);
 			this._sqlSourceUsernameInput.value = username;
 			this._sqlSourcepassword.value = (await azdata.connection.getCredentials(this.migrationStateModel.sourceConnectionId)).password;
 

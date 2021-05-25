@@ -283,7 +283,6 @@ export class DashboardWidget {
 				this._completingMigrationButton.container.display = 'none';
 			}
 
-
 		} catch (error) {
 			console.log(error);
 		} finally {
@@ -505,7 +504,7 @@ export class DashboardWidget {
 		const statusContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '400px',
-			height: '280px',
+			height: '350px',
 			justifyContent: 'flex-start',
 		}).withProps({
 			CSSStyles: {
@@ -682,7 +681,7 @@ export class DashboardWidget {
 		const linksContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '400px',
-			height: '280px',
+			height: '350px',
 			justifyContent: 'flex-start',
 		}).withProps({
 			CSSStyles: {
