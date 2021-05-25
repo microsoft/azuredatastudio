@@ -313,7 +313,7 @@ export class RunParametersAction extends TooltipFromLabelAction {
 		// Only run action for kernels that are supported (Python, PySpark, PowerShell)
 		let supportedKernels: string[] = [KernelsLanguage.Python, KernelsLanguage.PowerShell];
 		if (!supportedKernels.includes(editor.model.languageInfo.name)) {
-			// If there is no parameters in the cell indicate to user to add them
+			// If the kernel is not supported indicate to user to use supported kernels
 			this.notificationService.notify({
 				severity: Severity.Info,
 				message: kernelNotSupported,
