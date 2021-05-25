@@ -47,8 +47,8 @@ export class JobsRefreshAction extends Action {
 		super(JobsRefreshAction.ID, JobsRefreshAction.LABEL, 'refreshIcon');
 	}
 
-	public async run(context: IJobActionInfo): Promise<void> {
-		context.component.refreshJobs();
+	public async run(context?: IJobActionInfo): Promise<void> {
+		context?.component?.refreshJobs();
 	}
 }
 
