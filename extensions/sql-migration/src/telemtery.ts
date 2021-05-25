@@ -18,17 +18,12 @@ export enum TelemetryViews {
 	AssessmentsDialog = 'AssessmentsDialog',
 	MigrationCutoverDialog = 'MigrationCutoverDialog',
 	MigrationStatusDialog = 'MigrationStatusDialog',
-	AssessmentsPage = 'AssessmentsPage',
-	FeedbackDialog = 'FeedbackDialog',
+	AssessmentsPage = 'AssessmentsPage'
 }
 
-export enum TelemetryActions {
-	SendFeedback = 'SendFeedback',
-}
-
-export function sendSqlMigrationActionEvent(telemetryView: TelemetryViews, telemetryAction: TelemetryActions, additionalProps?: TelemetryEventProperties, additionalMeasurements?: TelemetryEventMeasures): void {
+export function sendSqlMigrationActionEvent(telemetryView: string, telemetryAction: string, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {
 	TelemetryReporter.createActionEvent(telemetryView, telemetryAction)
-		.withAdditionalProperties(additionalProps || {})
-		.withAdditionalMeasurements(additionalMeasurements || {})
+		.withAdditionalProperties(additionalProps)
+		.withAdditionalMeasurements(additionalMeasurements)
 		.send();
 }
