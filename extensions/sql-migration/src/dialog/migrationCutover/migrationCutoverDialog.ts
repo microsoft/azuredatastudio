@@ -426,8 +426,7 @@ export class MigrationCutoverDialog {
 			iconHeight: '16px',
 			iconWidth: '16px',
 			height: '20px',
-			width: '140px',
-			display: 'none'	// remove when support requests are setup for sql migrations
+			width: '140px'
 		}).component();
 
 		this._newSupportRequest.onDidClick(async (e) => {
@@ -436,12 +435,13 @@ export class MigrationCutoverDialog {
 			await vscode.env.openExternal(vscode.Uri.parse(supportUrl));
 		});
 
-		headerActions.addItem(this._newSupportRequest, {
-			flex: '0',
-			CSSStyles: {
-				'margin-left': '5px'
-			}
-		});
+		// add back when support requests are setup for sql migrations
+		// headerActions.addItem(this._newSupportRequest, {
+		// 	flex: '0',
+		// 	CSSStyles: {
+		// 		'margin-left': '5px'
+		// 	}
+		// });
 
 		this._refreshLoader = this._view.modelBuilder.loadingComponent().withProps({
 			loading: false,
