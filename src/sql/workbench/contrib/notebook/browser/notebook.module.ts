@@ -38,6 +38,7 @@ import { NotebookViewsCodeCellComponent } from 'sql/workbench/contrib/notebook/b
 import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCard.component';
 import { NotebookViewsGridComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsGrid.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
+import { ModalComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/modal.component';
 
 const outputComponentRegistry = Registry.as<ICellComponentRegistry>(OutputComponentExtensions.CellComponentContributions);
 
@@ -64,6 +65,7 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			NotebookViewsCardComponent,
 			NotebookViewsGridComponent,
 			NotebookViewsCodeCellComponent,
+			ModalComponent,
 			ComponentHostDirective,
 			OutputAreaComponent,
 			OutputComponent,

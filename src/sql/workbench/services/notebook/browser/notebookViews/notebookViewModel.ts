@@ -105,8 +105,18 @@ export class NotebookViewModel implements INotebookView {
 		this._notebookViews.updateCell(cell, this, { x, y });
 	}
 
-	public resizeCell(cell: ICellModel, width: number, height: number) {
-		this._notebookViews.updateCell(cell, this, { width, height });
+	public resizeCell(cell: ICellModel, width?: number, height?: number) {
+		let data: INotebookViewCell = {};
+
+		if (width) {
+			data.width = width;
+		}
+
+		if (height) {
+			data.height = height;
+		}
+
+		this._notebookViews.updateCell(cell, this, data);
 	}
 
 	public compactCells() {

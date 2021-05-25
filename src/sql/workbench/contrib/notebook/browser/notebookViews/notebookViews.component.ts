@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./notebookViewsGrid';
 import { Component, Input, ViewChildren, QueryList, ChangeDetectorRef, forwardRef, Inject, ViewChild, ElementRef, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
-import { ICellModel, INotebookModel, ISingleNotebookEditOperation, } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, INotebookModel, ISingleNotebookEditOperation, NotebookContentChange, } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { ICellEditorProvider, INotebookParams, INotebookService, INotebookEditor, NotebookRange, INotebookSection, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
@@ -24,7 +24,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { CellType, CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
@@ -60,6 +60,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 	private _runAllCellsAction: RunAllCellsAction;
 	private _scrollTop: number;
+	public _cellsAwaitingInput: ICellModel[] = [];
 
 	constructor(
 		@Inject(IBootstrapParams) private _notebookParams: INotebookParams,
@@ -127,9 +128,10 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 			if (!isUndefinedOrNull(endCell)) {
 				endIndex = codeCells.findIndex(c => c.id === endCell.id);
 			}
-			let statusNotification = this.notificationService.notify({ severity: Severity.Info, message: localize('startingExecution', "Starting execution") });
+			let statusNotification = this.notificationService.notify({ severity: Severity.Info, message: localize('startingExecution', "Starting execution"), progress: { total: endIndex + 1, worked: 0 } });
 			for (let i = startIndex; i < endIndex; i++) {
 				statusNotification.updateMessage(localize('runningCell', "Running cell {0} of {1}", (i + 1), (endIndex)));
+				statusNotification.progress.worked(i);
 				let cellStatus = await this.runCell(codeCells[i]);
 				if (!cellStatus) {
 					statusNotification.close();
@@ -167,6 +169,8 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		this._modelReadyDeferred.resolve(this.model);
 		this.notebookService.addNotebookEditor(this);
 		this.setScrollPosition();
+
+		this._register(this.model.contentChanged((e) => this.handleContentChanged(e)));
 
 		this.doLoad().then(() => {
 		}).catch(e => onUnexpectedError(e));
@@ -306,6 +310,27 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		return undefined;
 	}
 
+	private handleContentChanged(change: NotebookContentChange) {
+		switch (change.changeType) {
+			case NotebookChangeType.CellAwaitingInput: {
+				const cell: ICellModel = change?.cells[0];
+				this._cellsAwaitingInput.push(cell);
+				this.detectChanges();
+				break;
+			}
+			case NotebookChangeType.CellExecuted: {
+				const cell: ICellModel = change?.cells[0];
+				const indexToRemove = this._cellsAwaitingInput.findIndex(c => c.id === cell.id);
+				if (indexToRemove >= 0) {
+					this._cellsAwaitingInput.splice(indexToRemove, 1);
+					this.model.serializationStateChanged(NotebookChangeType.CellsModified, cell);
+					this.detectChanges();
+				}
+				break;
+			}
+		}
+	}
+
 	private detectChanges(): void {
 		if (!(this._changeRef['destroyed'])) {
 			this._changeRef.detectChanges();
@@ -326,5 +351,13 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 			editors.push(...this.textCells.toArray());
 		}
 		return editors;
+	}
+
+	public get cellsAwaitingInput(): ICellModel[] {
+		return this.gridstack.hiddenItems.filter(i => this._cellsAwaitingInput.includes(i.cell)).map(i => i.cell);
+	}
+
+	public get cellsAwaitingInputModalTitle(): string {
+		return localize('cellAwaitingInputTitle', "Cell Awaiting Input");
 	}
 }

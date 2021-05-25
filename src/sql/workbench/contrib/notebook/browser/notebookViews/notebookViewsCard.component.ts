@@ -167,7 +167,7 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	}
 
 	public get awaitingInput(): boolean {
-		return this.cell.future && this.cell.future.inProgress;// && (this.cell.outputs.length > 0 || this.cell.stdInVisible);
+		return this.cell.future && this.cell.future.inProgress;// && this.cell.stdInVisible;//&& (this.cell.outputs.length > 0 || this.cell.stdInVisible);
 	}
 
 	public get showActionBar(): boolean {

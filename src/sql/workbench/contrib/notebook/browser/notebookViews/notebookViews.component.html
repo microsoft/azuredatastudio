@@ -9,7 +9,11 @@
 	<div #container class="scrollable" style="flex: 1 1 auto; position: relative; outline: none" (click)="unselectActiveCell()" (scroll)="scrollHandler($event)">
 		<loading-spinner [loading]="isLoading"></loading-spinner>
 		<notebook-views-grid-component #gridstack [views]="views" activeView=[activeView] [cells]="cells" [model]="model"></notebook-views-grid-component>
-		<div class="book-nav" #bookNav [style.visibility]="navigationVisibility">
-		</div>
+
+		<ng-container *ngFor="let cell of cellsAwaitingInput">
+			<views-modal-component class="modal" [title]="cellsAwaitingInputModalTitle">
+				<views-code-cell-component *ngIf="cell.cellType === 'code'"  [cellModel]="cell" [model]="model" [activeCellId]="activeCellId"></views-code-cell-component>
+			</views-modal-component>
+		</ng-container>
 	</div>
 </div>

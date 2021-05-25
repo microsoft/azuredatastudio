@@ -38,7 +38,6 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	}
 
 	private handleContentChanged(change: NotebookContentChange): void {
-		//if(change.changeType === NotebookChangeType.
 		this.detectChanges();
 	}
 
@@ -108,7 +107,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	/**
 	 * Update the document model with the gridstack data as metadata
 	 */
-	persist(action: GridStackEvent, changedItems: GridStackNode[], grid: GridStack, items: QueryList<NotebookViewsCardComponent>): void {
+	persist(action: GridStackEvent, changedItems: GridStackNode[] = [], grid: GridStack, items: QueryList<NotebookViewsCardComponent>): void {
 		changedItems.forEach((changedItem) => {
 			const cellId = changedItem.el.getAttribute('data-cell-id');
 			const item = items.toArray().find(item => item.cell.cellGuid === cellId);

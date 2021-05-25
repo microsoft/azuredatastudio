@@ -52,7 +52,7 @@ class CellDisplayGroup extends DisplayGroup<ICellModel> {
 		let visInfo = new VisInfo<ICellModel>();
 		visInfo.cell = cell;
 
-		if ((cell.cellType !== CellTypes.Code && !this.isHeader(cell)) || (cell.cellType === CellTypes.Code && !this.hasGraph(cell))) {
+		if (cell.cellType !== CellTypes.Code && !this.isHeader(cell)) {
 			visInfo.display = false;
 			return visInfo;
 		}
@@ -62,18 +62,21 @@ class CellDisplayGroup extends DisplayGroup<ICellModel> {
 			return visInfo;
 		}
 
+		//For graphs
 		if (this.hasGraph(cell)) {
 			visInfo.width = 6;
 		}
 
+		//For tables
+		if (this.hasTable(cell)) {
+			visInfo.height = 3;
+		}
 
 		//For headers
 		if (this.isHeader(cell)) {
-			visInfo.height = 1;
+			visInfo.display = false;
 			return visInfo;
 		}
-
-		//const output = cell.renderedOutputTextContent.concat();
 
 		visInfo.display = true;
 		return visInfo;
@@ -122,8 +125,8 @@ export class AutoDash extends Disposable {
 				initialView.hideCell(v.cell);
 			}
 
-			if (v.width) {
-				initialView.resizeCell(v.cell, v.width, v.height ?? 4);
+			if (v.width || v.height) {
+				initialView.resizeCell(v.cell, v.width, v.height);
 			}
 		});
 

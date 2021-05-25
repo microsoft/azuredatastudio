@@ -859,6 +859,9 @@ export class CellModel extends Disposable implements ICellModel {
 				}
 			}
 		};
+
+		this.sendChangeToNotebook(NotebookChangeType.CellAwaitingInput);
+
 		return handler();
 	}
 

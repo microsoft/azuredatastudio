@@ -31,7 +31,4 @@
 			</div>
 		</div>
 	</div>
-	<div *ngIf="!display && modal">
-		<views-code-cell-component *ngIf="cell.cellType === 'code'" [class.modal]="modal" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId"></views-code-cell-component>
-	</div>
 </ng-template>

@@ -62,13 +62,6 @@ export class NotebookViewsCodeCellComponent extends CodeCellComponent implements
 
 	get outputs(): readonly nb.ICellOutput[] {
 		return this.cellModel.outputs;
-		/*
-		.filter((output: nb.IDisplayResult) => output.data)
-		//.filter((output: nb.IDisplayResult) => output.data['text/plain'] !== '<IPython.core.display.HTML object>')
-		.filter((output: nb.IDisplayResult) => output.output_type !== 'execute_result')
-		.map((output: nb.ICellOutput) => ({ ...output }))
-		.map((output: nb.ICellOutput) => { output.metadata = { ...output.metadata, displayActionBar: false }; return output; });
-		*/
 	}
 
 	get viewCellModel(): ICellModel {
@@ -82,13 +75,10 @@ export class NotebookViewsCodeCellComponent extends CodeCellComponent implements
 
 export class NotebookViewsCellModel extends CellModel {
 	public get outputs(): Array<nb.ICellOutput> {
-		return super.outputs;
-		/*
-			.filter((output: nb.IDisplayResult) => output.data)
-			//.filter((output: nb.IDisplayResult) => output.data['text/plain'] !== '<IPython.core.display.HTML object>')
-			//.filter((output: nb.IDisplayResult) => output.output_type !== 'execute_result')
+		return super.outputs
+			.filter((output: nb.IDisplayResult) => output.data === undefined || output?.data['text/plain'] !== '<IPython.core.display.HTML object>')
+			.filter((output: nb.IDisplayResult) => output.output_type !== 'execute_result')
 			.map((output: nb.ICellOutput) => ({ ...output }))
 			.map((output: nb.ICellOutput) => { output.metadata = { ...output.metadata, displayActionBar: false }; return output; });
-		*/
 	}
 }
