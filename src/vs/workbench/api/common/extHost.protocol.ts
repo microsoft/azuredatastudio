@@ -906,7 +906,8 @@ export interface MainThreadNotebookDocumentsShape extends IDisposable {
 export interface INotebookKernelDto2 {
 	id: string;
 	selector: NotebookSelector;
-	displayName: string;
+	extensionName: string;
+	extensionLocation: UriComponents;
 	label: string;
 	executeCommand: ICommandDto;
 	interruptCommand?: ICommandDto;
@@ -914,7 +915,7 @@ export interface INotebookKernelDto2 {
 	isPreferred?: boolean;
 	supportedLanguages: string[];
 	hasExecutionOrder?: boolean;
-	preloads?: URI[];
+	preloads?: UriComponents[];
 }
 
 export interface MainThreadNotebookKernelsShape extends IDisposable {
