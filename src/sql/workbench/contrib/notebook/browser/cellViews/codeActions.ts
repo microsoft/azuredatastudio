@@ -53,11 +53,10 @@ export abstract class CellActionBase extends Action {
 		return true;
 	}
 
-	public run(context: CellContext): Promise<boolean> {
+	public async run(context: CellContext): Promise<void> {
 		if (hasModelAndCell(context, this.notificationService)) {
-			return this.doRun(context).then(() => true);
+			return this.doRun(context);
 		}
-		return Promise.resolve(true);
 	}
 
 	abstract doRun(context: CellContext): Promise<void>;
@@ -172,8 +171,8 @@ export class RunCellAction extends MultiStateAction<CellExecutionState> {
 		this.ensureContextIsUpdated(context);
 	}
 
-	public run(context?: CellContext): Promise<boolean> {
-		return this.doRun(context).then(() => true);
+	public async run(context?: CellContext): Promise<void> {
+		return this.doRun(context);
 	}
 
 	public async doRun(context: CellContext): Promise<void> {

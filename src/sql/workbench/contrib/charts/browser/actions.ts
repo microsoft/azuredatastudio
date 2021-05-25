@@ -45,11 +45,10 @@ export class CreateInsightAction extends Action {
 		super(CreateInsightAction.ID, CreateInsightAction.LABEL, CreateInsightAction.ICON);
 	}
 
-	public run(context: IChartActionContext): Promise<boolean> {
+	public async run(context: IChartActionContext): Promise<void> {
 		let uriString = this.getActiveUriString();
 		if (!uriString) {
 			this.showError(localize('createInsightNoEditor', "Cannot create insight as the active editor is not a SQL Editor"));
-			return Promise.resolve(false);
 		}
 
 		let uri: URI = URI.parse(uriString);
@@ -78,18 +77,14 @@ export class CreateInsightAction extends Action {
 		};
 
 		let input = this.untitledEditorService.create({ mode: 'json', initialValue: JSON.stringify(widgetConfig) });
-
-		return this.editorService.openEditor(this.instantiationService.createInstance(UntitledTextEditorInput, input), { pinned: true })
-			.then(
-				() => true,
-				error => {
-					this.notificationService.notify({
-						severity: Severity.Error,
-						message: error
-					});
-					return false;
-				}
-			);
+		try {
+			await this.editorService.openEditor(this.instantiationService.createInstance(UntitledTextEditorInput, input), { pinned: true });
+		} catch (error) {
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: error
+			});
+		}
 	}
 
 	private getActiveUriString(): string | undefined {
@@ -120,13 +115,12 @@ export class ConfigureChartAction extends Action {
 		super(ConfigureChartAction.ID, ConfigureChartAction.LABEL, ConfigureChartAction.ICON);
 	}
 
-	public run(context: IChartActionContext): Promise<boolean> {
+	public async run(context: IChartActionContext): Promise<void> {
 		if (!this.dialog) {
 			this.dialog = this.instantiationService.createInstance(ConfigureChartDialog, ConfigureChartAction.LABEL, ConfigureChartAction.ID, this._chart);
 			this.dialog.render();
 		}
 		this.dialog.open();
-		return Promise.resolve(true);
 	}
 }
 
@@ -142,18 +136,16 @@ export class CopyAction extends Action {
 		super(CopyAction.ID, CopyAction.LABEL, CopyAction.ICON);
 	}
 
-	public run(context: IChartActionContext): Promise<boolean> {
+	public async run(context: IChartActionContext): Promise<void> {
 		if (context.insight instanceof Graph) {
 			let data = context.insight.getCanvasData();
 			if (!data) {
 				this.showError(localize('chartNotFound', "Could not find chart to save"));
-				return Promise.resolve(false);
+				return;
 			}
 
 			this.clipboardService.writeImageDataUrl(data);
-			return Promise.resolve(true);
 		}
-		return Promise.resolve(false);
 	}
 
 	private showError(errorMsg: string) {
@@ -178,7 +170,7 @@ export class SaveImageAction extends Action {
 		super(SaveImageAction.ID, SaveImageAction.LABEL, SaveImageAction.ICON);
 	}
 
-	public async run(context: IChartActionContext): Promise<boolean> {
+	public async run(context: IChartActionContext): Promise<void> {
 		if (context.insight instanceof Graph) {
 			let fileFilters = new Array<FileFilter>({ extensions: ['png'], name: localize('resultsSerializer.saveAsFileExtensionPNGTitle', "PNG") });
 
@@ -186,7 +178,7 @@ export class SaveImageAction extends Action {
 			const data = (<Graph>context.insight).getCanvasData();
 			if (!data) {
 				this.notificationService.error(localize('chartNotFound', "Could not find chart to save"));
-				return false;
+				return;
 			}
 			if (filePath) {
 				let buffer = this.decodeBase64Image(data);
@@ -204,9 +196,7 @@ export class SaveImageAction extends Action {
 					}
 				}
 			}
-			return true;
 		}
-		return Promise.resolve(false);
 	}
 
 	private decodeBase64Image(data: string): VSBuffer {

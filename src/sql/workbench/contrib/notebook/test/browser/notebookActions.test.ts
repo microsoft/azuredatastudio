@@ -151,16 +151,14 @@ suite('Notebook Actions', function (): void {
 		// Normal use case
 		mockNotebookEditor.setup(c => c.clearAllOutputs()).returns(() => Promise.resolve(true));
 
-		let result = await action.run(testUri);
-		assert.ok(result, 'Clear All Outputs Action should succeed');
+		await action.run(testUri);
 		mockNotebookEditor.verify(c => c.clearAllOutputs(), TypeMoq.Times.once());
 
 		// Handle failure case
 		mockNotebookEditor.reset();
 		mockNotebookEditor.setup(c => c.clearAllOutputs()).returns(() => Promise.resolve(false));
 
-		result = await action.run(testUri);
-		assert.strictEqual(result, false, 'Clear All Outputs Action should have failed');
+		await action.run(testUri);
 		mockNotebookEditor.verify(c => c.clearAllOutputs(), TypeMoq.Times.once());
 	});
 
@@ -177,14 +175,12 @@ suite('Notebook Actions', function (): void {
 
 		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel);
 		// Normal use case
-		let result = await action.run(testUri);
-		assert.ok(result, 'Trusted Action should succeed');
+		await action.run(testUri);
 		assert.strictEqual(action.trusted, true, 'Should be trusted after toggling trusted state');
 		assert.strictEqual(testNotebookModel.trustedMode, true, 'Model should be true after toggling trusted state');
 
 		// Should toggle trusted to false on subsequent action
-		result = await action.run(testUri);
-		assert.ok(result, 'Trusted Action should succeed again');
+		await action.run(testUri);
 		assert.strictEqual(action.trusted, false, 'Should toggle trusted to false');
 		assert.strictEqual(testNotebookModel.trustedMode, false, 'Model should be false again after toggling trusted state');
 	});
@@ -198,16 +194,14 @@ suite('Notebook Actions', function (): void {
 		// Normal use case
 		mockNotebookEditor.setup(c => c.runAllCells()).returns(() => Promise.resolve(true));
 
-		let result = await action.run(testUri);
-		assert.ok(result, 'Run All Cells Action should succeed');
+		await action.run(testUri);
 		mockNotebookEditor.verify(c => c.runAllCells(), TypeMoq.Times.once());
 
 		// Handle errors
 		mockNotebookEditor.reset();
 		mockNotebookEditor.setup(c => c.runAllCells()).throws(new Error('Test Error'));
 
-		result = await action.run(testUri);
-		assert.strictEqual(result, false, 'Run All Cells Action should fail on error');
+		await action.run(testUri);
 	});
 
 	test('Collapse Cells Action', async function (): Promise<void> {
@@ -225,8 +219,7 @@ suite('Notebook Actions', function (): void {
 		mockNotebookEditor.setup(x => x.cells).returns(() => testCells);
 
 		// Collapse cells case
-		let result = await action.run(testUri);
-		assert.ok(result, 'Collapse Cells Action should succeed');
+		await action.run(testUri);
 
 		assert.strictEqual(action.isCollapsed, true, 'Action should be collapsed after first toggle');
 		testCells.forEach(cell => {
@@ -234,8 +227,7 @@ suite('Notebook Actions', function (): void {
 		});
 
 		// Toggle cells to uncollapsed
-		result = await action.run(testUri);
-		assert.ok(result, 'Collapse Cells Action should succeed');
+		await action.run(testUri);
 
 		assert.strictEqual(action.isCollapsed, false, 'Action should not be collapsed after second toggle');
 		testCells.forEach(cell => {
@@ -254,7 +246,7 @@ suite('Notebook Actions', function (): void {
 			});
 
 		let action = new NewNotebookAction('TestId', 'TestLabel', mockCommandService.object, undefined, new NullAdsTelemetryService());
-		action.run(undefined);
+		await action.run(undefined);
 
 		assert.strictEqual(actualCmdId, NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID);
 	});

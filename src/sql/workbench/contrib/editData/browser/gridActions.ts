@@ -74,14 +74,13 @@ class SaveResultAction extends Action {
 		super(id, label);
 	}
 
-	public run(gridInfo: IGridInfo): Promise<boolean> {
+	public async run(gridInfo: IGridInfo): Promise<void> {
 		this.dataService.sendSaveRequest({
 			batchIndex: gridInfo.batchIndex,
 			resultSetNumber: gridInfo.resultSetNumber,
 			selection: gridInfo.selection,
 			format: this.format
 		});
-		return Promise.resolve(true);
 	}
 }
 
@@ -101,9 +100,8 @@ class CopyResultAction extends Action {
 		super(id, label);
 	}
 
-	public run(gridInfo: IGridInfo): Promise<boolean> {
+	public async run(gridInfo: IGridInfo): Promise<void> {
 		this.dataService.copyResults(gridInfo.selection, gridInfo.batchIndex, gridInfo.resultSetNumber, this.copyHeader);
-		return Promise.resolve(true);
 	}
 }
 
@@ -119,8 +117,7 @@ class SelectAllGridAction extends Action {
 		super(id, label);
 	}
 
-	public run(gridInfo: IGridInfo): Promise<boolean> {
+	public async run(gridInfo: IGridInfo): Promise<void> {
 		this.selectAllCallback(gridInfo.gridIndex);
-		return Promise.resolve(true);
 	}
 }

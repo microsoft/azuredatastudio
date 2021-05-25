@@ -18,12 +18,7 @@ export class CloseTabAction extends Action {
 		super(CloseTabAction.ID, CloseTabAction.LABEL, CloseTabAction.ICON);
 	}
 
-	run(): Promise<boolean> {
-		try {
-			this.closeFn.apply(this.context);
-			return Promise.resolve(true);
-		} catch (e) {
-			return Promise.resolve(false);
-		}
+	async run(): Promise<void> {
+		this.closeFn.apply(this.context);
 	}
 }
