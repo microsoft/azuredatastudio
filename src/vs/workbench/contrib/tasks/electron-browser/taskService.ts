@@ -47,7 +47,7 @@ import { IPathService } from 'vs/workbench/services/path/common/pathService';
 import { IPreferencesService } from 'vs/workbench/services/preferences/common/preferences';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { ITaskService as ISqlTaskService } from 'sql/workbench/services/tasks/common/tasksService'; // {{SQL CARBON EDIT}} integration with tasks view panel
-import { IWorkspaceTrustService } from 'vs/platform/workspace/common/workspaceTrust';
+import { IWorkspaceTrustRequestService } from 'vs/platform/workspace/common/workspaceTrust';
 
 interface WorkspaceFolderConfigurationResult {
 	workspaceFolder: IWorkspaceFolder;
@@ -87,9 +87,9 @@ export class TaskService extends AbstractTaskService {
 		@ITextModelService textModelResolverService: ITextModelService,
 		@IPreferencesService preferencesService: IPreferencesService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
-		@IWorkspaceTrustService workspaceTrustService: IWorkspaceTrustService,
+		@IWorkspaceTrustRequestService workspaceTrustRequestService: IWorkspaceTrustRequestService,
 		@ILogService logService: ILogService,
-		@ISqlTaskService sqlTaskService: ISqlTaskService) { // {{SQL CARBON EDIT}}
+		@ISqlTaskService sqlTaskService: ISqlTaskService) { // {{SQL CARBON EDIT}}) {
 		super(configurationService,
 			markerService,
 			outputService,
@@ -119,7 +119,7 @@ export class TaskService extends AbstractTaskService {
 			textModelResolverService,
 			preferencesService,
 			viewDescriptorService,
-			workspaceTrustService,
+			workspaceTrustRequestService,
 			logService,
 			sqlTaskService); // {{SQL CARBON EDIT}}
 		this._register(lifecycleService.onBeforeShutdown(event => event.veto(this.beforeShutdown(), 'veto.tasks')));
