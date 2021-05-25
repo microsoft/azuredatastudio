@@ -83,6 +83,18 @@ suite('OpenerService', function () {
 
 		assert.strictEqual(lastCommand, undefined);
 		await openerService.open(URI.parse('command:' + id));
+		assert.strictEqual(lastCommand!.id, id);
+		assert.strictEqual(lastCommand!.args.length, 0);
+
+		await openerService.open(URI.parse('command:' + id).with({ query: '\"123\"' }));
+		assert.strictEqual(lastCommand!.id, id);
+		assert.strictEqual(lastCommand!.args.length, 1);
+		assert.strictEqual(lastCommand!.args[0], '123');
+
+		await openerService.open(URI.parse('command:' + id).with({ query: '123' }));
+		assert.strictEqual(lastCommand!.id, id);
+		assert.strictEqual(lastCommand!.args.length, 1);
+		assert.strictEqual(lastCommand!.args[0], 123);
 
 		assert.strictEqual(lastCommand, undefined);
 	});
