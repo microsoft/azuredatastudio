@@ -271,7 +271,7 @@ export class GettingStartedPage extends EditorPane {
 								const taskToRun = assertIsDefined(this.currentCategory?.content.items.find(task => task.id === argument));
 								const command = taskToRun.button.command;
 								if (command) {
-									if (taskToRun.button.command && taskToRun.button.sideBySide) {
+									if (taskToRun.button.command && 'sideBySide' in taskToRun.button && taskToRun.button.sideBySide) { // {{SQL CARBON EDIT}} Compile fix
 										if (this.groupsService.count === 1) {
 											await this.commandService.executeCommand('workbench.action.editorLayoutTwoColumns');
 										}

@@ -29,7 +29,7 @@ import { TestWorkbenchConfiguration } from 'vs/workbench/test/electron-browser/w
 class MockWorkbenchEnvironmentService extends NativeWorkbenchEnvironmentService {
 
 	constructor(public userEnv: IProcessEnvironment) {
-		super({ ...TestWorkbenchConfiguration, userEnv }, undefined, undefined);
+		super({ ...TestWorkbenchConfiguration, userEnv }, undefined);
 	}
 }
 
@@ -197,6 +197,7 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			undefined,
+			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
@@ -222,6 +223,7 @@ suite('Insights Utils tests', function () {
 
 		// Create mock window service with env variable containing test folder for resolution
 		const configurationResolverService = new TestConfigurationResolverService({ getAppRoot: () => undefined, getExecPath: () => undefined }, environmentService.userEnv,
+			undefined,
 			undefined,
 			undefined,
 			undefined,

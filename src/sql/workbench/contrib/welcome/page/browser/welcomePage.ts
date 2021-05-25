@@ -253,7 +253,7 @@ class WelcomePage extends Disposable {
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 		@IThemeService private themeService: IThemeService) {
 		super();
-		this._register(lifecycleService.onShutdown(() => this.dispose()));
+		this._register(lifecycleService.onWillShutdown(() => this.dispose()));
 		const recentlyOpened = this.workspacesService.getRecentlyOpened();
 		const installedExtensions = this.instantiationService.invokeFunction(getInstalledExtensions);
 		const resource = URI.parse(require.toUrl('./az_data_welcome_page'))

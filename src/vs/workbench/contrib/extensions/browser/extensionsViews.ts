@@ -17,7 +17,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { append, $ } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Delegate, Renderer, IExtensionsViewState, EXTENSION_LIST_ELEMENT_HEIGHT } from 'vs/workbench/contrib/extensions/browser/extensionsList';
-import { ExtensionState, IExtension, IExtensionsWorkbenchService, IWorkspaceRecommendedExtensionsView } from 'vs/workbench/contrib/extensions/common/extensions';
+import { ExtensionState, IExtension, IExtensionsWorkbenchService, IWorkspaceRecommendedExtensionsView } from 'vs/workbench/contrib/extensions/common/extensions'; // {{SQL CARBON EDIT}} Add ExtensionState
 import { Query } from 'vs/workbench/contrib/extensions/common/extensionQuery';
 import { IExtensionService, toExtension } from 'vs/workbench/services/extensions/common/extensions';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -37,7 +37,7 @@ import { alert } from 'vs/base/browser/ui/aria/aria';
 import { IListContextMenuEvent } from 'vs/base/browser/ui/list/list';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IAction, Action, Separator, ActionRunner } from 'vs/base/common/actions';
-import { ExtensionIdentifier, getExtensionWorkspaceTrustRequestType, IExtensionDescription, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions';
+import { ExtensionIdentifier, ExtensionType, getExtensionWorkspaceTrustRequestType, IExtensionDescription, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions';
 import { CancelablePromise, createCancelablePromise } from 'vs/base/common/async';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { SeverityIcon } from 'vs/platform/severityIcon/common/severityIcon';

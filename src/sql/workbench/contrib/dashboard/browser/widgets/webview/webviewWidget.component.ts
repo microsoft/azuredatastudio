@@ -106,7 +106,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 
 		this._webview.mountTo(this._el.nativeElement);
 		this._onMessageDisposable = this._webview.onMessage(e => {
-			this._onMessage.fire(e);
+			this._onMessage.fire(e.message);
 		});
 		if (this._html) {
 			this._webview.html = this._html;
