@@ -24,7 +24,7 @@ export class RunInsightQueryAction extends Action {
 		super(id, label);
 	}
 
-	public run(context: InsightActionContext): Promise<boolean> {
+	public async run(context: InsightActionContext): Promise<void> {
 		let queryString: string = undefined;
 		let eol: string = this._textResourcePropertiesService.getEOL(undefined);
 		if (context.insight && context.insight.query) {
@@ -34,9 +34,9 @@ export class RunInsightQueryAction extends Action {
 				queryString = context.insight.query.join(eol);
 			}
 		} else {
-			return Promise.resolve(false);
+			return;
 		}
-		return this.instantiationService.invokeFunction(openNewQuery, context.profile, queryString,
-			RunQueryOnConnectionMode.executeQuery).then(() => true, () => false);
+		await this.instantiationService.invokeFunction(openNewQuery, context.profile, queryString,
+			RunQueryOnConnectionMode.executeQuery);
 	}
 }

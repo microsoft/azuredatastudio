@@ -126,9 +126,9 @@ export class ClearAllOutputsAction extends TooltipFromLabelAction {
 		});
 	}
 
-	public run(context: URI): Promise<boolean> {
+	public async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
-		return editor.clearAllOutputs();
+		await editor.clearAllOutputs();
 	}
 }
 
@@ -208,11 +208,10 @@ export class TrustedAction extends ToggleableAction {
 		this.toggle(value);
 	}
 
-	public async run(context: URI): Promise<boolean> {
+	public async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
 		this.trusted = !this.trusted;
 		editor.model.trustedMode = this.trusted;
-		return true;
 	}
 }
 
@@ -226,15 +225,13 @@ export class RunAllCellsAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public async run(context: URI): Promise<boolean> {
+	public async run(context: URI): Promise<void> {
 		try {
 			this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunAll);
 			const editor = this._notebookService.findNotebookEditor(context);
 			await editor.runAllCells();
-			return true;
 		} catch (e) {
 			this.notificationService.error(getErrorMessage(e));
-			return false;
 		}
 	}
 }
@@ -270,13 +267,12 @@ export class CollapseCellsAction extends ToggleableAction {
 		this.expanded = !value;
 	}
 
-	public async run(context: URI): Promise<boolean> {
+	public async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
 		this.setCollapsed(!this.isCollapsed);
 		editor.cells.forEach(cell => {
 			cell.isCollapsed = this.isCollapsed;
 		});
-		return true;
 	}
 }
 

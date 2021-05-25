@@ -40,7 +40,7 @@ export const EDIT_DATA_COMMAND_ID = 'dataExplorer.scriptAsEdit';
 // Script as Create
 CommandsRegistry.registerCommand({
 	id: SCRIPT_AS_CREATE_COMMAND_ID,
-	handler: async (accessor, args: TreeViewItemHandleArg): Promise<boolean | undefined> => {
+	handler: async (accessor, args: TreeViewItemHandleArg): Promise<void> => {
 		if (args.$treeItem?.payload) {
 			const capabilitiesService = accessor.get(ICapabilitiesService);
 			const oeShimService = accessor.get(IOEShimService);
@@ -56,16 +56,15 @@ CommandsRegistry.registerCommand({
 			};
 			const scriptCreateAction = new ScriptCreateAction(ScriptCreateAction.ID, ScriptCreateAction.LABEL,
 				queryEditorService, connectionManagementService, scriptingService, errorMessageService);
-			return progressService.withProgress({ location: VIEWLET_ID }, () => scriptCreateAction.run(baseContext));
+			await progressService.withProgress({ location: VIEWLET_ID }, async () => await scriptCreateAction.run(baseContext));
 		}
-		return undefined;
 	}
 });
 
 // Script as Delete
 CommandsRegistry.registerCommand({
 	id: SCRIPT_AS_DELETE_COMMAND_ID,
-	handler: async (accessor, args: TreeViewItemHandleArg): Promise<boolean | undefined> => {
+	handler: async (accessor, args: TreeViewItemHandleArg): Promise<void> => {
 		if (args.$treeItem?.payload) {
 			const capabilitiesService = accessor.get(ICapabilitiesService);
 			const oeShimService = accessor.get(IOEShimService);
@@ -81,16 +80,15 @@ CommandsRegistry.registerCommand({
 			};
 			const scriptDeleteAction = new ScriptDeleteAction(ScriptDeleteAction.ID, ScriptDeleteAction.LABEL,
 				queryEditorService, connectionManagementService, scriptingService, errorMessageService);
-			return progressService.withProgress({ location: VIEWLET_ID }, () => scriptDeleteAction.run(baseContext));
+			await progressService.withProgress({ location: VIEWLET_ID }, async () => await scriptDeleteAction.run(baseContext));
 		}
-		return undefined;
 	}
 });
 
 // Script as Select
 CommandsRegistry.registerCommand({
 	id: SCRIPT_AS_SELECT_COMMAND_ID,
-	handler: async (accessor, args: TreeViewItemHandleArg): Promise<boolean | undefined> => {
+	handler: async (accessor, args: TreeViewItemHandleArg): Promise<void> => {
 		if (args.$treeItem?.payload) {
 			const capabilitiesService = accessor.get(ICapabilitiesService);
 			const oeShimService = accessor.get(IOEShimService);
@@ -105,16 +103,15 @@ CommandsRegistry.registerCommand({
 			};
 			const scriptSelectAction = new ScriptSelectAction(ScriptSelectAction.ID, ScriptSelectAction.LABEL,
 				queryEditorService, connectionManagementService, scriptingService);
-			return progressService.withProgress({ location: VIEWLET_ID }, () => scriptSelectAction.run(baseContext));
+			await progressService.withProgress({ location: VIEWLET_ID }, async () => await scriptSelectAction.run(baseContext));
 		}
-		return undefined;
 	}
 });
 
 // Script as Execute
 CommandsRegistry.registerCommand({
 	id: SCRIPT_AS_EXECUTE_COMMAND_ID,
-	handler: async (accessor, args: TreeViewItemHandleArg): Promise<boolean | undefined> => {
+	handler: async (accessor, args: TreeViewItemHandleArg): Promise<void> => {
 		if (args.$treeItem?.payload) {
 			const capabilitiesService = accessor.get(ICapabilitiesService);
 			const oeShimService = accessor.get(IOEShimService);
@@ -130,16 +127,15 @@ CommandsRegistry.registerCommand({
 			};
 			const scriptExecuteAction = new ScriptExecuteAction(ScriptExecuteAction.ID, ScriptExecuteAction.LABEL,
 				queryEditorService, connectionManagementService, scriptingService, errorMessageService);
-			return progressService.withProgress({ location: VIEWLET_ID }, () => scriptExecuteAction.run(baseContext));
+			await progressService.withProgress({ location: VIEWLET_ID }, async () => await scriptExecuteAction.run(baseContext));
 		}
-		return undefined;
 	}
 });
 
 // Script as Alter
 CommandsRegistry.registerCommand({
 	id: SCRIPT_AS_ALTER_COMMAND_ID,
-	handler: async (accessor, args: TreeViewItemHandleArg): Promise<boolean | undefined> => {
+	handler: async (accessor, args: TreeViewItemHandleArg): Promise<void> => {
 		if (args.$treeItem?.payload) {
 			const capabilitiesService = accessor.get(ICapabilitiesService);
 			const oeShimService = accessor.get(IOEShimService);
@@ -155,16 +151,15 @@ CommandsRegistry.registerCommand({
 			};
 			const scriptAlterAction = new ScriptAlterAction(ScriptAlterAction.ID, ScriptAlterAction.LABEL,
 				queryEditorService, connectionManagementService, scriptingService, errorMessageService);
-			return progressService.withProgress({ location: VIEWLET_ID }, () => scriptAlterAction.run(baseContext));
+			await progressService.withProgress({ location: VIEWLET_ID }, async () => await scriptAlterAction.run(baseContext));
 		}
-		return undefined;
 	}
 });
 
 // Edit Data
 CommandsRegistry.registerCommand({
 	id: EDIT_DATA_COMMAND_ID,
-	handler: async (accessor, args: TreeViewItemHandleArg): Promise<boolean | undefined> => {
+	handler: async (accessor, args: TreeViewItemHandleArg): Promise<void> => {
 		if (args.$treeItem?.payload) {
 			const capabilitiesService = accessor.get(ICapabilitiesService);
 			const oeShimService = accessor.get(IOEShimService);
@@ -179,9 +174,8 @@ CommandsRegistry.registerCommand({
 			};
 			const editDataAction = new EditDataAction(EditDataAction.ID, EditDataAction.LABEL,
 				queryEditorService, connectionManagementService, scriptingService);
-			return progressService.withProgress({ location: VIEWLET_ID }, () => editDataAction.run(baseContext));
+			await progressService.withProgress({ location: VIEWLET_ID }, async () => await editDataAction.run(baseContext));
 		}
-		return undefined;
 	}
 });
 //#endregion
@@ -367,8 +361,8 @@ export class ExplorerScriptSelectAction extends ScriptSelectAction {
 		super(id, label, queryEditorService, connectionManagementService, scriptingService);
 	}
 
-	public run(actionContext: BaseActionContext): Promise<boolean> {
-		return this.progressService.withProgress({ location: ProgressLocation.Window }, () => super.run(actionContext));
+	public async run(actionContext: BaseActionContext): Promise<void> {
+		await this.progressService.withProgress({ location: ProgressLocation.Window }, async () => await super.run(actionContext));
 	}
 }
 
@@ -384,8 +378,8 @@ export class ExplorerScriptCreateAction extends ScriptCreateAction {
 		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
 	}
 
-	public run(actionContext: BaseActionContext): Promise<boolean> {
-		return this.progressService.withProgress({ location: ProgressLocation.Window }, () => super.run(actionContext));
+	public async run(actionContext: BaseActionContext): Promise<void> {
+		await this.progressService.withProgress({ location: ProgressLocation.Window }, async () => await super.run(actionContext));
 	}
 }
 
@@ -401,8 +395,8 @@ export class ExplorerScriptAlterAction extends ScriptAlterAction {
 		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
 	}
 
-	public run(actionContext: BaseActionContext): Promise<boolean> {
-		return this.progressService.withProgress({ location: ProgressLocation.Window }, () => super.run(actionContext));
+	public async run(actionContext: BaseActionContext): Promise<void> {
+		await this.progressService.withProgress({ location: ProgressLocation.Window }, async () => await super.run(actionContext));
 	}
 }
 
@@ -418,8 +412,8 @@ export class ExplorerScriptExecuteAction extends ScriptExecuteAction {
 		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
 	}
 
-	public run(actionContext: BaseActionContext): Promise<boolean> {
-		return this.progressService.withProgress({ location: ProgressLocation.Window }, () => super.run(actionContext));
+	public async run(actionContext: BaseActionContext): Promise<void> {
+		await this.progressService.withProgress({ location: ProgressLocation.Window }, async () => await super.run(actionContext));
 	}
 }
 //#endregion

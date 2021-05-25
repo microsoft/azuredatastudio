@@ -52,17 +52,9 @@ export class EditCellAction extends ToggleableAction {
 		this.toggle(value);
 	}
 
-	public run(context: CellContext): Promise<boolean> {
-		let self = this;
-		return new Promise<boolean>((resolve, reject) => {
-			try {
-				self.editMode = !self.editMode;
-				context.cell.isEditMode = self.editMode;
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
-		});
+	public async run(context: CellContext): Promise<void> {
+		this.editMode = !this.editMode;
+		context.cell.isEditMode = this.editMode;
 	}
 }
 
@@ -358,13 +350,12 @@ export class ToggleMoreActions extends Action {
 		super(ToggleMoreActions.ID, ToggleMoreActions.LABEL, ToggleMoreActions.ICON);
 	}
 
-	run(context: StandardKeyboardEvent): Promise<boolean> {
+	async run(context: StandardKeyboardEvent): Promise<void> {
 		this._contextMenuService.showContextMenu({
 			getAnchor: () => context.target,
 			getActions: () => this._actions,
 			getActionsContext: () => this._context
 		});
-		return Promise.resolve(true);
 	}
 }
 

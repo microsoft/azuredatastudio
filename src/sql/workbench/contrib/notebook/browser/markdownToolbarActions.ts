@@ -31,14 +31,13 @@ export class TransformMarkdownAction extends Action {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
 	}
-	public async run(context: any): Promise<boolean> {
+	public async run(context: any): Promise<void> {
 		if (!context?.cellModel?.showMarkdown && context?.cellModel?.showPreview) {
 			this.transformDocumentCommand();
 		} else {
 			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel);
 			await markdownTextTransformer.transformText(this._type);
 		}
-		return true;
 	}
 
 	private transformDocumentCommand() {
@@ -607,7 +606,7 @@ export class ToggleViewAction extends Action {
 		this._tooltip = tooltip;
 	}
 
-	public async run(context: MarkdownToolbarComponent): Promise<boolean> {
+	public async run(context: MarkdownToolbarComponent): Promise<void> {
 		context.removeActiveClassFromModeActions();
 		this.class += ' active';
 		context.cellModel.showPreview = this.showPreview;
@@ -618,6 +617,5 @@ export class ToggleViewAction extends Action {
 		} else {
 			context.showLinkAndImageButtons();
 		}
-		return true;
 	}
 }

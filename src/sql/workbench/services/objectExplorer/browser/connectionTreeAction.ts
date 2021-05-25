@@ -43,7 +43,7 @@ export class RefreshAction extends Action {
 	) {
 		super(id, label);
 	}
-	public async run(): Promise<boolean> {
+	public async run(): Promise<void> {
 		let treeNode: TreeNode | undefined = undefined;
 		if (this.element instanceof ConnectionProfile) {
 			let connection: ConnectionProfile = this.element;
@@ -67,7 +67,7 @@ export class RefreshAction extends Action {
 					}
 				} catch (error) {
 					this.showError(error);
-					return true;
+					return;
 				}
 				if (this._tree instanceof AsyncServerTree) {
 					await this._tree.updateChildren(this.element);
@@ -76,10 +76,9 @@ export class RefreshAction extends Action {
 				}
 			} catch (ex) {
 				this._logService.error(ex);
-				return true;
+				return;
 			}
 		}
-		return true;
 	}
 
 	private showError(errorMessage: string) {
@@ -104,13 +103,10 @@ export class EditConnectionAction extends Action {
 		this.class = 'edit-server-action';
 	}
 
-	public async run(): Promise<boolean> {
-		if (!this._connectionProfile) {
-			return false;
+	public async run(): Promise<void> {
+		if (this._connectionProfile) {
+			await this._connectionManagementService.showEditConnectionDialog(this._connectionProfile);
 		}
-
-		await this._connectionManagementService.showEditConnectionDialog(this._connectionProfile);
-		return true;
 	}
 }
 
@@ -162,7 +158,7 @@ export class AddServerAction extends Action {
 		super(id, label, SqlIconId.addServerAction);
 	}
 
-	public async run(element: ConnectionProfileGroup): Promise<boolean> {
+	public async run(element: ConnectionProfileGroup): Promise<void> {
 		// Not sure how to fix this....
 		let connection: Partial<IConnectionProfile> | undefined = element === undefined ? undefined : {
 			connectionName: undefined,
@@ -182,7 +178,6 @@ export class AddServerAction extends Action {
 			id: element.id!
 		} as Partial<IConnectionProfile>;
 		await this._connectionManagementService.showConnectionDialog(undefined, undefined, connection);
-		return true;
 	}
 }
 
@@ -201,9 +196,8 @@ export class AddServerGroupAction extends Action {
 		super(id, label, SqlIconId.addServerGroupAction);
 	}
 
-	public async run(): Promise<boolean> {
-		await this.serverGroupController.showCreateGroupDialog();
-		return true;
+	public async run(): Promise<void> {
+		return this.serverGroupController.showCreateGroupDialog();
 	}
 }
 
@@ -224,9 +218,8 @@ export class EditServerGroupAction extends Action {
 		this.class = 'edit-server-group-action';
 	}
 
-	public run(): Promise<boolean> {
-		this.serverGroupController.showEditGroupDialog(this._group);
-		return Promise.resolve(true);
+	public run(): Promise<void> {
+		return this.serverGroupController.showEditGroupDialog(this._group);
 	}
 }
 
@@ -248,7 +241,7 @@ export class ActiveConnectionsFilterAction extends Action {
 		super(id, label, SqlIconId.activeConnectionsAction);
 	}
 
-	public async run(): Promise<boolean> {
+	public async run(): Promise<void> {
 		const serverTreeView = this._objectExplorerService.getServerTreeView();
 		if (serverTreeView.view !== ServerTreeViewView.active) {
 			// show active connections in the tree
@@ -257,7 +250,6 @@ export class ActiveConnectionsFilterAction extends Action {
 			// show full tree
 			await serverTreeView.refreshTree();
 		}
-		return true;
 	}
 }
 
@@ -289,12 +281,11 @@ export class DeleteConnectionAction extends Action {
 		}
 	}
 
-	public run(): Promise<boolean> {
+	public async run(): Promise<void> {
 		if (this.element instanceof ConnectionProfile) {
-			this._connectionManagementService.deleteConnection(this.element);
+			await this._connectionManagementService.deleteConnection(this.element);
 		} else if (this.element instanceof ConnectionProfileGroup) {
-			this._connectionManagementService.deleteConnectionGroup(this.element);
+			await this._connectionManagementService.deleteConnectionGroup(this.element);
 		}
-		return Promise.resolve(true);
 	}
 }
