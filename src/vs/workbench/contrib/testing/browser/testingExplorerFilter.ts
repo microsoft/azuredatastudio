@@ -227,7 +227,9 @@ class FiltersDropdownMenuActionViewItem extends DropdownMenuActionViewItem {
 				expanded: undefined, // {{SQL CARBON EDIT}} We added expanded
 				id: v,
 				label,
-				run: async () => this.filters.stateFilter.value = v,
+				run: async () => {
+					this.filters.stateFilter.value = this.filters.stateFilter.value === v ? TestExplorerStateFilter.All : v;
+				},
 				tooltip: '',
 				dispose: () => null
 			})),
