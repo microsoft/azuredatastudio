@@ -99,7 +99,7 @@ import { SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID } from 'vs/workbench/contrib/e
 
 // Menu
 (function registerMenu(): void {
-
+	/*
 	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, { // {{SQL CARBON EDIT}} - Add install VSIX menu item
 		group: '5.1_installExtension',
 		command: {
@@ -107,7 +107,7 @@ import { SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID } from 'vs/workbench/contrib/e
 			title: localize({ key: 'miinstallVsix', comment: ['&& denotes a mnemonic'] }, "Install Extension from VSIX Package")
 		}
 	});
-
+	*/
 
 	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 		group: '6_close',
