@@ -155,19 +155,19 @@ describe('Project: sqlproj content operations', function (): void {
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.masterDacpac)).fsPath);
 		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '150', 'SqlSchemas', constants.masterDacpac)).fsPath);
 
-		project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlServer2016)!);
+		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlServer2016)!);
 		uri = project.getSystemDacpacUri(constants.masterDacpac);
 		ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.masterDacpac)).fsPath);
 		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '130', 'SqlSchemas', constants.masterDacpac)).fsPath);
 
-		project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlAzure)!);
+		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlAzure)!);
 		uri = project.getSystemDacpacUri(constants.masterDacpac);
 		ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12', constants.masterDacpac)).fsPath);
 		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', 'AzureV12', 'SqlSchemas', constants.masterDacpac)).fsPath);
 
-		project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlDW)!);
+		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlDW)!);
 		uri = project.getSystemDacpacUri(constants.masterDacpac);
 		ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureDw', constants.masterDacpac)).fsPath);
@@ -214,7 +214,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.msdbDacpac)).fsPath);
 		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '150', 'SqlSchemas', constants.msdbDacpac)).fsPath);
 
-		project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlServer2016)!);
+		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlServer2016)!);
 		uri = project.getSystemDacpacUri(constants.msdbDacpac);
 		ssdtUri = project.getSystemDacpacSsdtUri(constants.msdbDacpac);
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.msdbDacpac)).fsPath);
@@ -225,7 +225,7 @@ describe('Project: sqlproj content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		project.changeTargetPlatform('invalidPlatform');
+		await project.changeTargetPlatform('invalidPlatform');
 		await testUtils.shouldThrowSpecificError(async () => await project.getSystemDacpacUri(constants.masterDacpac), constants.invalidDataSchemaProvider);
 	});
 

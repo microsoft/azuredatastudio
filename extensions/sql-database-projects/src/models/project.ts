@@ -441,6 +441,13 @@ export class Project implements ISqlProject {
 	 */
 	public async changeTargetPlatform(compatLevel: string): Promise<void> {
 		if (this.getProjectTargetVersion() !== compatLevel) {
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.changePlatformType)
+				.withAdditionalProperties({
+					from: this.getProjectTargetVersion(),
+					to: compatLevel
+				})
+				.send();
+
 			const newDSP = `${constants.MicrosoftDatatoolsSchemaSqlSql}${compatLevel}${constants.databaseSchemaProvider}`;
 			this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].data = newDSP;
 			this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].nodeValue = newDSP;
@@ -462,13 +469,6 @@ export class Project implements ISqlProject {
 			}
 
 			await this.serializeToProjFile(this.projFileXmlDoc);
-
-			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.changePlatformType)
-				.withAdditionalProperties({
-					from: this.getProjectTargetVersion(),
-					to: compatLevel
-				})
-				.send();
 		}
 	}
 
