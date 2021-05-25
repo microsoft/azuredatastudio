@@ -315,6 +315,8 @@ export const CANCEL_MIGRATION_CONFIRMATION = localize('sql.cancel.migration.conf
 export const YES = localize('sql.migration.yes', "Yes");
 export const NO = localize('sql.migration.no', "No");
 
+export const NEW_SUPPORT_REQUEST = localize('sql.migration.newsupportrequest', "New support request");
+
 //Migration confirm cutover dialog
 export const BUSINESS_CRITICAL_INFO = localize('sql.migration.bc.info', "Managed Instance migration cutover for Business Critical service tier can take significantly longer than General Purpose as three secondary replicas have to be seeded for Always On High Availability group. This operation duration depends on the size of data. Seeding speed in 90% of cases is 220 GB/hour or higher.");
 export const CUTOVER_HELP_MAIN = localize('sql.migration.cutover.help.main', "When you are ready to do the migration cutover, perform the following steps to complete the database migration. Please note that the database is ready for cutover only after a full backup has been restored on the target Azure SQL Database Managed Instance.");
@@ -421,3 +423,15 @@ export function WARNINGS_COUNT(totalCount: number): string {
 export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type', "Authentication Type");
 export const SQL_LOGIN = localize('sql.migration.sql.login', "SQL Login");
 export const WINDOWS_AUTHENTICATION = localize('sql.migration.windows.auth', "Windows Authentication");
+
+export const FEEDBACK_DIALOG_SUBMIT_BUTTON = localize('sql.migration.feedback.submit.button', "Submit");
+export const FEEDBACK_DIALOG_CANCEL_BUTTON = localize('sql.migration.feedback.cancel.button', "Cancel");
+export const FEEDBACK_DIALOG_TITLE = localize('sql.migration.feedback.title', "Submit Feedback");
+export const FEEDBACK_DIALOG_HEADING = localize('sql.migration.feedback.heading', "Overall, how satisfied or dissatisfied are you with Azure SQL Migration experience?");
+export const FEEDBACK_DIALOG_PLACEHOLDER = localize('sql.migration.feedback.placeholder', "We appreciate your feedback. How can we improve? (optional).");
+export const FEEDBACK_DIALOG_RATING_1 = localize('sql.migration.feedback.rating.one', "Rating one out of five");
+export const FEEDBACK_DIALOG_RATING_2 = localize('sql.migration.feedback.rating.two', "Rating two out of five");
+export const FEEDBACK_DIALOG_RATING_3 = localize('sql.migration.feedback.rating.three', "Rating three out of five");
+export const FEEDBACK_DIALOG_RATING_4 = localize('sql.migration.feedback.rating.four', "Rating four out of five");
+export const FEEDBACK_DIALOG_RATING_5 = localize('sql.migration.feedback.rating.five', 'Rating five out of five');
+export const FEEDBACK_DIALOG_SENT_MESSAGE = localize('sql.migration.feedback.sent.message', 'Thank you for the feedback!  Your feedback was submitted successfully.');
