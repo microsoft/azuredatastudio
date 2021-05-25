@@ -161,13 +161,13 @@ export class ComplexNotebookEditorModel extends EditorModel implements INotebook
 			return this;
 		}
 
-		if ((this as NotebookEditorModel).isResolved()) {
+		if ((this as ComplexNotebookEditorModel).isResolved()) { // {{SQL CARBON EDIT}} Fix strict null checks
 			return this;
 		}
 
 		const backup = await this._backupFileService.resolve<NotebookDocumentBackupData>(this._workingCopyResource);
 
-		if ((this as NotebookEditorModel).isResolved()) { // {{SQL CARBON EDIT}} Fix strict null checks
+		if ((this as ComplexNotebookEditorModel).isResolved()) { // {{SQL CARBON EDIT}} Fix strict null checks
 			return this; // Make sure meanwhile someone else did not succeed in loading
 		}
 

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IEditorInputFactory, IEditorInputFactoryRegistry, Extensions as EditorInputExtensions, IEditorInput } from 'vs/workbench/common/editor';
+import { IEditorInputFactoryRegistry, Extensions as EditorInputExtensions, IEditorInput, IEditorInputSerializer } from 'vs/workbench/common/editor';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
@@ -96,13 +96,13 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 	}
 }
 
-export class FileQueryEditorInputFactory implements IEditorInputFactory {
+export class FileQueryEditorInputSerializer implements IEditorInputSerializer {
 
 	constructor(@IFileService private readonly fileService: IFileService) {
 
 	}
 	serialize(editorInput: FileQueryEditorInput): string {
-		const factory = editorInputFactoryRegistry.getEditorInputFactory(FILE_EDITOR_INPUT_ID);
+		const factory = editorInputFactoryRegistry.getEditorInputSerializer(FILE_EDITOR_INPUT_ID);
 		if (factory) {
 			return factory.serialize(editorInput.text); // serialize based on the underlying input
 		}
@@ -110,7 +110,7 @@ export class FileQueryEditorInputFactory implements IEditorInputFactory {
 	}
 
 	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): FileQueryEditorInput | undefined {
-		const factory = editorInputFactoryRegistry.getEditorInputFactory(FILE_EDITOR_INPUT_ID);
+		const factory = editorInputFactoryRegistry.getEditorInputSerializer(FILE_EDITOR_INPUT_ID);
 		const fileEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as FileEditorInput;
 		// only successfully deserilize the file if the resource actually exists
 		if (this.fileService.exists(fileEditorInput.resource)) {
@@ -127,11 +127,11 @@ export class FileQueryEditorInputFactory implements IEditorInputFactory {
 	}
 }
 
-export class UntitledQueryEditorInputFactory implements IEditorInputFactory {
+export class UntitledQueryEditorInputSerializer implements IEditorInputSerializer {
 
 	constructor(@IConfigurationService private readonly configurationService: IConfigurationService) { }
 	serialize(editorInput: UntitledQueryEditorInput): string {
-		const factory = editorInputFactoryRegistry.getEditorInputFactory(UntitledTextEditorInput.ID);
+		const factory = editorInputFactoryRegistry.getEditorInputSerializer(UntitledTextEditorInput.ID);
 		// only serialize non-dirty files if the user has that setting
 		if (factory && (editorInput.isDirty() || this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').promptToSaveGeneratedFiles)) {
 			return factory.serialize(editorInput.text); // serialize based on the underlying input
@@ -140,7 +140,7 @@ export class UntitledQueryEditorInputFactory implements IEditorInputFactory {
 	}
 
 	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): UntitledQueryEditorInput | undefined {
-		const factory = editorInputFactoryRegistry.getEditorInputFactory(UntitledTextEditorInput.ID);
+		const factory = editorInputFactoryRegistry.getEditorInputSerializer(UntitledTextEditorInput.ID);
 		const untitledEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as UntitledTextEditorInput;
 		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledEditorInput.resource.toString());
 		return instantiationService.createInstance(UntitledQueryEditorInput, '', untitledEditorInput, queryResultsInput);

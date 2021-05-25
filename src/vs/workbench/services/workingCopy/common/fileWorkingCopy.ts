@@ -707,7 +707,7 @@ export class FileWorkingCopy<T extends IFileWorkingCopyModel> extends Disposable
 		});
 
 		// Update existing model if we had been resolved
-		if (this.isResolved()) {
+		if ((this as FileWorkingCopy<T>).isResolved()) { // {{SQL CARBON EDIT}} Compile fixes
 			await this.doUpdateModel(content.value);
 		}
 
@@ -884,7 +884,7 @@ export class FileWorkingCopy<T extends IFileWorkingCopyModel> extends Disposable
 		// Scenario: user invoked the save action multiple times quickly for the same contents
 		//           while the save was not yet finished to disk
 		//
-		if (this.saveSequentializer.hasPending(versionId)) {
+		if ((this.saveSequentializer as TaskSequentializer).hasPending(versionId)) { // {{SQL CARBON EDIT}} Compile fixes
 			this.logService.trace(`[file working copy] doSave(${versionId}) - exit - found a pending save for versionId ${versionId}`, this.resource.toString(true));
 
 			return this.saveSequentializer.pending;
@@ -907,7 +907,7 @@ export class FileWorkingCopy<T extends IFileWorkingCopyModel> extends Disposable
 		// Scenario B: save is very slow (e.g. network share) and the user manages to change the working copy and trigger another save
 		//             while the first save has not returned yet.
 		//
-		if (this.saveSequentializer.hasPending()) {
+		if ((this.saveSequentializer as TaskSequentializer).hasPending()) { // {{SQL CARBON EDIT}} Compile fixes
 			this.logService.trace(`[file working copy] doSave(${versionId}) - exit - because busy saving`, this.resource.toString(true));
 
 			// Indicate to the save sequentializer that we want to

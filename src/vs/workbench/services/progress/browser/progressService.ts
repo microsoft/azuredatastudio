@@ -132,7 +132,7 @@ export class ProgressService extends Disposable implements IProgressService {
 			let progressCommand = (<IProgressWindowOptions>options).command;
 			let text: string;
 			let title: string;
-			const source = options.source && typeof options.source !== 'string' ? options.source.label : options.source;
+			const source = options.source && typeof options.source !== 'string' ? options.source.label : options.source as string; // {{SQL CARBON EDIT}} Strict null
 
 			if (progressTitle && progressMessage) {
 				// <title>: <message>

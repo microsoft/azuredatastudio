@@ -336,7 +336,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 		@IExtensionGalleryService extensionGalleryService: IExtensionGalleryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IViewletService private readonly viewletService: IViewletService,
+		// @IViewletService private readonly viewletService: IViewletService, {{SQL CARBON EDIT}} Unused
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
@@ -615,7 +615,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 		const isExtensionInstallationAllowed = (configurationService: IConfigurationService, notificationService: INotificationService): boolean => {
 			const allowAll = configurationService.getValue<string>(ExtensionsPolicyKey) === ExtensionsPolicy.allowAll;
 			if (!allowAll) {
-				this.notificationService.error(localize('InstallVSIXAction.allowNone', 'Your extension policy does not allow installing extensions. Please change your extension policy and try again.'));
+				notificationService.error(localize('InstallVSIXAction.allowNone', 'Your extension policy does not allow installing extensions. Please change your extension policy and try again.'));
 			}
 			return allowAll;
 		};
@@ -682,7 +682,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 				await Promises.settled(extensions.map(async (vsix) => {
 					if (!storageService.getBoolean(vsix.fsPath, StorageScope.GLOBAL)) {
 						const accept = await new Promise<boolean>(resolve => {
-							this.notificationService.prompt(
+							notificationService.prompt(
 								Severity.Warning,
 								localize('thirdPartyExtension.vsix', 'This is a third party extension and might involve security risks. Are you sure you want to install this extension?'),
 								[

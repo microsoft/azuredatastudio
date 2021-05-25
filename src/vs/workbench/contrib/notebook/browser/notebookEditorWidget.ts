@@ -352,7 +352,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 		this._kernelManger = instantiationService.createInstance(NotebookEditorKernelManager, <IKernelManagerDelegate>{
 			getId() { return that.getId(); },
 			loadKernelPreloads: that._loadKernelPreloads.bind(that),
-			onDidChangeViewModel: that.onDidChangeModel,
+			onDidChangeViewModel: <any>that.onDidChangeModel, // {{SQL CARBON EDIT}} Compile error..this is going away anyways in a future merge
 			get viewModel() { return that.viewModel; },
 			getContributedNotebookProviders(resource?: URI) {
 				return that.notebookService.getContributedNotebookProviders(resource);

@@ -41,12 +41,12 @@ export class NotificationsTelemetry extends Disposable implements IWorkbenchCont
 
 	private registerListeners(): void {
 		this._register(this.notificationService.onDidAddNotification(notification => {
-			const source = notification.source && typeof notification.source !== 'string' ? notification.source.id : notification.source;
+			const source = notification.source && typeof notification.source !== 'string' ? notification.source.id : notification.source as string; // {{SQL CARBON EDIT}} Strict null
 			this.telemetryService.publicLog2<NotificationMetrics, NotificationMetricsClassification>('notification:show', notificationToMetrics(notification.message, source, !!notification.silent));
 		}));
 
 		this._register(this.notificationService.onDidRemoveNotification(notification => {
-			const source = notification.source && typeof notification.source !== 'string' ? notification.source.id : notification.source;
+			const source = notification.source && typeof notification.source !== 'string' ? notification.source.id : notification.source as string; // {{SQL CARBON EDIT}} Strict null
 			this.telemetryService.publicLog2<NotificationMetrics, NotificationMetricsClassification>('notification:close', notificationToMetrics(notification.message, source, !!notification.silent));
 		}));
 	}

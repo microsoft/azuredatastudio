@@ -860,7 +860,7 @@ export class ExtHostNotebookController implements ExtHostNotebookShape {
 
 		// TODO@roblou also validate kernelId, once kernel has moved from editor to document
 		if (this._activeExecutions.has(cell.uri)) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict null
 		}
 
 		const execution = new NotebookCellExecutionTask(docUri, document, cell, this._proxy);
@@ -1113,7 +1113,7 @@ class NotebookCellExecutionTask extends Disposable {
 	private cellIndexToHandle(cellIndex: number | undefined): number | undefined {
 		const cell = typeof cellIndex === 'number' ? this._document.getCellFromIndex(cellIndex) : this._cell;
 		if (!cell) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict null
 		}
 
 		return cell.handle;

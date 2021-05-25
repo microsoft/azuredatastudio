@@ -58,12 +58,12 @@
 		}
 
 		// Correctly inherit the parent's environment (TODO@sandbox non-sandboxed only)
-		if (!sandbox) {
+		if (!safeProcess.sandboxed) {
 			Object.assign(safeProcess.env, configuration.userEnv);
 		}
 
 		// Enable ASAR support (TODO@sandbox non-sandboxed only)
-		if (!sandbox) {
+		if (!safeProcess.sandboxed) {
 			globalThis.MonacoBootstrap.enableASARSupport(configuration.appRoot);
 		}
 
@@ -72,7 +72,7 @@
 		}
 
 		// Get the nls configuration into the process.env as early as possible  (TODO@sandbox non-sandboxed only)
-		const nlsConfig = sandbox ? { availableLanguages: {} } : globalThis.MonacoBootstrap.setupNLS();
+		const nlsConfig = safeProcess.sandboxed ? { availableLanguages: {} } : globalThis.MonacoBootstrap.setupNLS();
 
 		let locale = nlsConfig.availableLanguages['*'] || 'en';
 		if (locale === 'zh-tw') {

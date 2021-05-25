@@ -86,7 +86,7 @@ export class NotebookEditorModel extends EditorModel {
 					let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
 					this.setDirty(dirty);
 				}));
-				this._register(this.textEditorModel.onDidLoad(async (e) => {
+				this._register(this.textEditorModel.onDidResolve(async (e) => {
 					if (this.textEditorModel instanceof TextFileEditorModel) {
 						let model = this.getNotebookModel() as NotebookModel;
 						await model.loadContents(model.trustedMode, true);
@@ -401,7 +401,8 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 			} else {
 				const textEditorModelReference = await this.textModelService.createModelReference(this.resource);
 				textEditorModelReference.object.textEditorModel.onBeforeAttached();
-				textOrUntitledEditorModel = await textEditorModelReference.object.load() as TextFileEditorModel | ResourceEditorModel;
+				await textEditorModelReference.object.resolve();
+				textOrUntitledEditorModel = textEditorModelReference.object as TextFileEditorModel | ResourceEditorModel;
 			}
 			this._model = this._register(this.instantiationService.createInstance(NotebookEditorModel, this.resource, textOrUntitledEditorModel));
 			this.hookDirtyListener(this._model.onDidChangeDirty, () => this._onDidChangeDirty.fire());

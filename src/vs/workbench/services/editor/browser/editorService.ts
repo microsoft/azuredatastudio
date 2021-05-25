@@ -564,7 +564,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 			}
 		}
 
-		return;
+		return undefined; // {{SQL CARBON EDIT}} Strict null
 	}
 
 	//#endregion

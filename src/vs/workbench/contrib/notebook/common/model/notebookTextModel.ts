@@ -653,7 +653,7 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 			return;
 		}
 
-		const newMetadata: NotebookCellMetadata = {
+		const newMetadata: /*NotebookCellMetadata = {*/ any = { // {{SQL CARBON EDIT}} Fix compile error
 			...cell.metadata
 		};
 		let k: keyof NullablePartialNotebookCellMetadata;

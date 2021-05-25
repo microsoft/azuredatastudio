@@ -169,7 +169,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 			this._updateFinderMatchState();
 		}, er => { });
 
-		this._input.onDispose(() => {
+		this._input.onWillDispose(() => {
 			this._disposeStatusbarItem();
 		});
 		return Promise.resolve(null);

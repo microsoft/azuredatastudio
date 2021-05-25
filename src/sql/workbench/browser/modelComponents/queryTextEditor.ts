@@ -85,11 +85,11 @@ export class QueryTextEditor extends BaseTextEditor {
 		return options;
 	}
 
-	setInput(input: UntitledTextEditorInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
-		return super.setInput(input, options, context, CancellationToken.None)
-			.then(() => this.input.resolve()
-				.then(editorModel => editorModel.load())
-				.then(editorModel => this.getControl().setModel((<ResourceEditorModel>editorModel).textEditorModel)));
+	async setInput(input: UntitledTextEditorInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
+		await super.setInput(input, options, context, CancellationToken.None);
+		const editorModel = await this.input.resolve() as ResourceEditorModel;
+		await editorModel.resolve();
+		this.getControl().setModel(editorModel.textEditorModel);
 	}
 
 	protected getAriaLabel(): string {

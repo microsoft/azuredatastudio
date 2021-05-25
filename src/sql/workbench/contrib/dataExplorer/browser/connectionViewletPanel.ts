@@ -43,7 +43,7 @@ export class ConnectionViewletPanel extends ViewPane {
 		@ILogService private readonly logService: ILogService,
 		@ITelemetryService telemetryService: ITelemetryService,
 	) {
-		super({ ...(options as IViewPaneOptions) }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, opener, themeService, telemetryService);
+		super({ ...(options as IViewPaneOptions) }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 		this._serverTreeView = this.objectExplorerService.getServerTreeView() as ServerTreeView;
 		if (!this._serverTreeView) {
 			this._serverTreeView = this.instantiationService.createInstance(ServerTreeView);
