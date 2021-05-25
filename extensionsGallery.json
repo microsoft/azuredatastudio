@@ -4084,6 +4084,68 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "82",
+					"extensionName": "ADS-add-columns",
+					"displayName": "Add Columns",
+					"shortDescription": "Use this extension to add columns to existing table using the context menu.",
+					"publisher": {
+						"displayName": "Sahal Moidu",
+						"publisherId": "sahalMoidu",
+						"publisherName": "SahalMoidu"
+					},
+					"versions": [
+						{
+							"version": "0.0.12",
+							"lastUpdated": "05/25/2021",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/sahalMoidu/ADS-add-columns/releases/tag/0.0.12"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://github.com/sahalMoidu/ADS-add-columns/raw/master/logo.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://github.com/sahalMoidu/ADS-add-columns/raw/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://github.com/sahalMoidu/ADS-add-columns/raw/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://github.com/sahalMoidu/ADS-add-columns/raw/master/LICENSE"
+								}
+							],
+							
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/sahalMoidu/ADS-add-columns"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
@@ -4092,7 +4154,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 67
+							"count": 68
 						}
 					]
 				}
