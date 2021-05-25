@@ -100,11 +100,7 @@ export class SummaryPage extends MigrationWizardPage {
 				flexContainer.addItems(
 					[
 						createInformationRow(this._view, constants.TYPE, constants.BLOB_CONTAINER),
-						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name),
-						// createInformationRow(this._view, constants.LOCATION, this.migrationStateModel._databaseBackup.blob.storageAccount.location),
-						// createInformationRow(this._view, constants.RESOURCE_GROUP, this.migrationStateModel._databaseBackup.blob.storageAccount.resourceGroup!),
-						// createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel._databaseBackup.blob.storageAccount.name),
-						// createInformationRow(this._view, constants.BLOB_CONTAINER, this.migrationStateModel._databaseBackup.blob.blobContainer.name)
+						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name)
 					]
 				);
 		}
