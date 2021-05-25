@@ -6,6 +6,12 @@
 //@ts-check
 'use strict';
 
+/**
+ * @typedef {import('./vs/base/common/product').IProductConfiguration} IProductConfiguration
+ * @typedef {import('./vs/base/node/languagePacks').NLSConfiguration} NLSConfiguration
+ * @typedef {import('./vs/platform/environment/common/argv').NativeParsedArgs} NativeParsedArgs
+ */
+
 const perf = require('./vs/base/common/performance');
 perf.mark('code/didStartMain');
 
@@ -16,7 +22,7 @@ const { getNLSConfiguration } = require('./vs/base/node/languagePacks');
 const bootstrap = require('./bootstrap');
 const bootstrapNode = require('./bootstrap-node');
 const { getUserDataPath } = require('./vs/platform/environment/node/userDataPath');
-/** @type {Partial<import('./vs/platform/product/common/productService').IProductConfiguration>} */
+/** @type {Partial<IProductConfiguration>} */
 const product = require('../product.json');
 const { app, protocol, crashReporter } = require('electron');
 
@@ -81,7 +87,7 @@ const nodeCachedDataDir = getNodeCachedDir();
  * Support user defined locale: load it early before app('ready')
  * to have more things running in parallel.
  *
- * @type {Promise<import('./vs/base/node/languagePacks').NLSConfiguration> | undefined}
+ * @type {Promise<NLSConfiguration> | undefined}
  */
 let nlsConfigurationPromise = undefined;
 
@@ -111,7 +117,7 @@ app.once('ready', function () {
  * Main startup routine
  *
  * @param {string | undefined} cachedDataDir
- * @param {import('./vs/base/node/languagePacks').NLSConfiguration} nlsConfig
+ * @param {NLSConfiguration} nlsConfig
  */
 function startup(cachedDataDir, nlsConfig) {
 	nlsConfig._languagePackSupport = true;
@@ -139,7 +145,7 @@ async function onReady() {
 }
 
 /**
- * @param {import('./vs/platform/environment/common/argv').NativeParsedArgs} cliArgs
+ * @param {NativeParsedArgs} cliArgs
  */
 function configureCommandlineSwitchesSync(cliArgs) {
 	const SUPPORTED_ELECTRON_SWITCHES = [
@@ -166,15 +172,17 @@ function configureCommandlineSwitchesSync(cliArgs) {
 		'enable-proposed-api',
 
 		// TODO@sandbox remove me once testing is done on `vscode-file` protocol
-		// (all traces of `enable-browser-code-loading` and `ENABLE_VSCODE_BROWSER_CODE_LOADING`)
+		// (all traces of `enable-browser-code-loading` and `VSCODE_BROWSER_CODE_LOADING`)
 		'enable-browser-code-loading',
 
 		// Log level to use. Default is 'info'. Allowed values are 'critical', 'error', 'warn', 'info', 'debug', 'trace', 'off'.
-		'log-level',
+		'log-level'
 	];
 
 	// Read argv config
 	const argvConfig = readArgvConfigSync();
+
+	let browserCodeLoadingStrategy = undefined;
 
 	Object.keys(argvConfig).forEach(argvKey => {
 		const argvValue = argvConfig[argvKey];
@@ -211,8 +219,10 @@ function configureCommandlineSwitchesSync(cliArgs) {
 					break;
 
 				case 'enable-browser-code-loading':
-					if (typeof argvValue === 'string') {
-						process.env['ENABLE_VSCODE_BROWSER_CODE_LOADING'] = argvValue;
+					if (argvValue === false) {
+						browserCodeLoadingStrategy = undefined;
+					} else if (typeof argvValue === 'string') {
+						browserCodeLoadingStrategy = argvValue;
 					}
 					break;
 
@@ -231,9 +241,9 @@ function configureCommandlineSwitchesSync(cliArgs) {
 		app.commandLine.appendSwitch('js-flags', jsFlags);
 	}
 
-	// Support __sandbox flag
-	if (cliArgs.__sandbox) {
-		process.env['ENABLE_VSCODE_BROWSER_CODE_LOADING'] = 'bypassHeatCheck';
+	// Configure vscode-file:// code loading environment
+	if (cliArgs.__sandbox || browserCodeLoadingStrategy) {
+		process.env['VSCODE_BROWSER_CODE_LOADING'] = browserCodeLoadingStrategy || 'bypassHeatCheck';
 	}
 
 	return argvConfig;
@@ -418,7 +428,7 @@ function configureCrashReporter() {
 }
 
 /**
- * @param {import('./vs/platform/environment/common/argv').NativeParsedArgs} cliArgs
+ * @param {NativeParsedArgs} cliArgs
  * @returns {string | null}
  */
 function getJSFlags(cliArgs) {
@@ -438,7 +448,7 @@ function getJSFlags(cliArgs) {
 }
 
 /**
- * @returns {import('./vs/platform/environment/common/argv').NativeParsedArgs}
+ * @returns {NativeParsedArgs}
  */
 function parseCLIArgs() {
 	const minimist = require('minimist');
@@ -556,7 +566,7 @@ function mkdirp(dir) {
 /**
  * Resolve the NLS configuration
  *
- * @return {Promise<import('./vs/base/node/languagePacks').NLSConfiguration>}
+ * @return {Promise<NLSConfiguration>}
  */
 async function resolveNlsConfiguration() {
 

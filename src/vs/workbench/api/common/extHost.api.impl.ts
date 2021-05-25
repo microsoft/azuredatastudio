@@ -640,6 +640,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 					if (nameOrOptions.initialText) {
 						checkProposedApiEnabled(extension);
 					}
+					if (nameOrOptions.icon) {
+						checkProposedApiEnabled(extension);
+					}
 					return extHostTerminalService.createTerminalFromOptions(nameOrOptions);
 				}
 				return extHostTerminalService.createTerminal(nameOrOptions, shellPath, shellArgs);
@@ -1269,8 +1272,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			NotebookCellOutputItem: extHostTypes.NotebookCellOutputItem,
 			LinkedEditingRanges: extHostTypes.LinkedEditingRanges,
 			TestItem: extHostTypes.TestItem,
-			TestState: extHostTypes.TestState,
-			TestResult: extHostTypes.TestResult,
+			TestResultState: extHostTypes.TestResultState,
 			TestMessage: extHostTypes.TestMessage,
 			TestMessageSeverity: extHostTypes.TestMessageSeverity,
 			WorkspaceTrustState: extHostTypes.WorkspaceTrustState

@@ -31,6 +31,10 @@ const terminalProfileSchema: IJSONSchema = {
 		overrideName: {
 			description: localize('terminalProfile.overrideName', 'Controls whether or not the profile name overrides the auto detected one.'),
 			type: 'boolean'
+		},
+		icon: {
+			description: localize('terminalProfile.icon', 'A codicon ID to associate with this terminal.'),
+			type: 'string'
 		}
 	}
 };
@@ -117,14 +121,16 @@ export const terminalConfiguration: IConfigurationNode = {
 			type: 'object',
 			default: {
 				'PowerShell': {
-					source: 'PowerShell'
+					source: 'PowerShell',
+					icon: 'terminal-powershell'
 				},
 				'Command Prompt': {
 					path: [
 						'${env:windir}\\Sysnative\\cmd.exe',
 						'${env:windir}\\System32\\cmd.exe'
 					],
-					args: []
+					args: [],
+					icon: 'terminal-cmd'
 				},
 				'Git Bash': {
 					source: 'Git Bash'
@@ -143,6 +149,10 @@ export const terminalConfiguration: IConfigurationNode = {
 							overrideName: {
 								description: localize('terminalProfile.overrideName', 'Controls whether or not the profile name overrides the auto detected one.'),
 								type: 'boolean'
+							},
+							icon: {
+								description: localize('terminalProfile.icon', 'A codicon ID to associate with this terminal.'),
+								type: 'string'
 							}
 						}
 					},
@@ -171,10 +181,12 @@ export const terminalConfiguration: IConfigurationNode = {
 					path: 'fish'
 				},
 				'tmux': {
-					path: 'tmux'
+					path: 'tmux',
+					icon: 'terminal-tmux'
 				},
 				'pwsh': {
-					path: 'pwsh'
+					path: 'pwsh',
+					icon: 'terminal-powershell'
 				}
 			},
 			additionalProperties: {
@@ -204,10 +216,12 @@ export const terminalConfiguration: IConfigurationNode = {
 					path: 'fish'
 				},
 				'tmux': {
-					path: 'tmux'
+					path: 'tmux',
+					icon: 'terminal-tmux'
 				},
 				'pwsh': {
-					path: 'pwsh'
+					path: 'pwsh',
+					icon: 'terminal-powershell'
 				}
 			},
 			additionalProperties: {
