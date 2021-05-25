@@ -18,9 +18,8 @@ export class ExplorerManageAction extends ManageAction {
 		super(id, label, connectionManagementService, angularEventingService);
 	}
 
-	public run(actionContext: ManageActionContext): Promise<boolean> {
-		const promise = super.run(actionContext);
-		return promise;
+	public async run(actionContext: ManageActionContext): Promise<void> {
+		await super.run(actionContext);
 	}
 }
 
