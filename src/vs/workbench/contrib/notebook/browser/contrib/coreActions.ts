@@ -335,8 +335,8 @@ registerAction2(class ExecuteCell extends NotebookCellAction<ICellRange> {
 
 		const activeEditorContext = this.getEditorContextFromArgsOrActive(accessor);
 
-		if (!activeEditorContext || !activeEditorContext.notebookEditor.viewModel || context.start >= activeEditorContext.notebookEditor.viewModel.viewCells.length) {
-			return undefined; // {{SQL CARBON EDIT}}
+		if (!activeEditorContext || !activeEditorContext.notebookEditor.viewModel || context.start >= activeEditorContext.notebookEditor.viewModel.length) {
+			return undefined; // {{SQL CARBON EDIT}} Fix strict null
 		}
 
 		const cells = activeEditorContext.notebookEditor.viewModel.viewCells;
@@ -422,8 +422,8 @@ registerAction2(class CancelExecuteCell extends NotebookCellAction<ICellRange> {
 
 		const activeEditorContext = this.getEditorContextFromArgsOrActive(accessor);
 
-		if (!activeEditorContext || !activeEditorContext.notebookEditor.viewModel || context.start >= activeEditorContext.notebookEditor.viewModel.viewCells.length) {
-			return undefined; // {{SQL CARBON EDIT}}
+		if (!activeEditorContext || !activeEditorContext.notebookEditor.viewModel || context.start >= activeEditorContext.notebookEditor.viewModel.length) {
+			return undefined; // {{SQL CARBON EDIT}} Fix strict null
 		}
 
 		const cells = activeEditorContext.notebookEditor.viewModel.viewCells;
@@ -1384,8 +1384,8 @@ export class ChangeCellLanguageAction extends NotebookCellAction<ICellRange> {
 		const language = additionalArgs.length && typeof additionalArgs[0] === 'string' ? additionalArgs[0] : undefined;
 		const activeEditorContext = this.getEditorContextFromArgsOrActive(accessor);
 
-		if (!activeEditorContext || !activeEditorContext.notebookEditor.viewModel || context.start >= activeEditorContext.notebookEditor.viewModel.viewCells.length) {
-			return undefined;
+		if (!activeEditorContext || !activeEditorContext.notebookEditor.viewModel || context.start >= activeEditorContext.notebookEditor.viewModel.length) {
+			return undefined; // {{SQL CARBON EDIT}} Fix strict null
 		}
 
 		const cells = activeEditorContext.notebookEditor.viewModel.viewCells;
