@@ -34,22 +34,18 @@ export class ProfilerConnect extends Action {
 		super(id, label, 'connect');
 	}
 
-	public run(input: ProfilerInput): Promise<boolean> {
+	public async run(input: ProfilerInput): Promise<void> {
 		this.enabled = false;
 		if (!this._connected) {
-			return Promise.resolve(this._profilerService.connectSession(input.id).then(() => {
-				this.enabled = true;
-				this.connected = true;
-				input.state.change({ isConnected: true, isRunning: false, isPaused: false, isStopped: true });
-				return true;
-			}));
+			await this._profilerService.connectSession(input.id);
+			this.enabled = true;
+			this.connected = true;
+			input.state.change({ isConnected: true, isRunning: false, isPaused: false, isStopped: true });
 		} else {
-			return Promise.resolve(this._profilerService.disconnectSession(input.id).then(() => {
-				this.enabled = true;
-				this.connected = false;
-				input.state.change({ isConnected: false, isRunning: false, isPaused: false, isStopped: false });
-				return true;
-			}));
+			await this._profilerService.disconnectSession(input.id);
+			this.enabled = true;
+			this.connected = false;
+			input.state.change({ isConnected: false, isRunning: false, isPaused: false, isStopped: false });
 		}
 	}
 
@@ -75,9 +71,9 @@ export class ProfilerStart extends Action {
 		super(id, label, 'sql start');
 	}
 
-	public run(input: ProfilerInput): Promise<boolean> {
+	public async run(input: ProfilerInput): Promise<void> {
 		input.data.clear();
-		return Promise.resolve(this._profilerService.startSession(input.id, input.sessionName));
+		await this._profilerService.startSession(input.id, input.sessionName);
 	}
 }
 
@@ -92,10 +88,8 @@ export class ProfilerCreate extends Action {
 		super(id, label, 'add');
 	}
 
-	public run(input: ProfilerInput): Promise<boolean> {
-		return Promise.resolve(this._profilerService.launchCreateSessionDialog(input).then(() => {
-			return true;
-		}));
+	public async run(input: ProfilerInput): Promise<void> {
+		return this._profilerService.launchCreateSessionDialog(input);
 	}
 }
 
@@ -117,12 +111,10 @@ export class ProfilerPause extends Action {
 		super(id, label, ProfilerPause.PauseCssClass);
 	}
 
-	public run(input: ProfilerInput): Promise<boolean> {
-		return Promise.resolve(this._profilerService.pauseSession(input.id).then(() => {
-			this.paused = !this._paused;
-			input.state.change({ isPaused: this.paused, isStopped: false, isRunning: !this.paused });
-			return true;
-		}));
+	public async run(input: ProfilerInput): Promise<void> {
+		await this._profilerService.pauseSession(input.id);
+		this.paused = !this._paused;
+		input.state.change({ isPaused: this.paused, isStopped: false, isRunning: !this.paused });
 	}
 
 	public set paused(value: boolean) {
@@ -147,8 +139,8 @@ export class ProfilerStop extends Action {
 		super(id, label, 'sql stop');
 	}
 
-	public run(input: ProfilerInput): Promise<boolean> {
-		return Promise.resolve(this._profilerService.stopSession(input.id));
+	public async run(input: ProfilerInput): Promise<void> {
+		await this._profilerService.stopSession(input.id);
 	}
 }
 
@@ -189,12 +181,11 @@ export class ProfilerAutoScroll extends Action {
 		super(id, label, ProfilerAutoScroll.CheckedCssClass);
 	}
 
-	run(input: ProfilerInput): Promise<boolean> {
+	async run(input: ProfilerInput): Promise<void> {
 		this.checked = !this.checked;
 		this.label = this.checked ? ProfilerAutoScroll.AutoScrollOnText : ProfilerAutoScroll.AutoScrollOffText;
 		this._setClass(this.checked ? ProfilerAutoScroll.CheckedCssClass : '');
 		input.state.change({ autoscroll: this.checked });
-		return Promise.resolve(true);
 	}
 }
 
@@ -208,10 +199,9 @@ export class ProfilerCollapsablePanelAction extends Action {
 		super(id, label, 'codicon-chevron-down');
 	}
 
-	public run(input: ProfilerInput): Promise<boolean> {
+	public async run(input: ProfilerInput): Promise<void> {
 		this.collapsed = !this._collapsed;
 		input.state.change({ isPanelCollapsed: this._collapsed });
-		return Promise.resolve(true);
 	}
 
 	get collapsed(): boolean {
@@ -235,8 +225,8 @@ export class ProfilerEditColumns extends Action {
 		super(id, label);
 	}
 
-	public run(input: ProfilerInput): Promise<boolean> {
-		return Promise.resolve(this._profilerService.launchColumnEditor(input)).then(() => true);
+	public async run(input: ProfilerInput): Promise<void> {
+		await this._profilerService.launchColumnEditor(input);
 	}
 }
 
@@ -247,9 +237,8 @@ export class ProfilerFindNext implements IEditorAction {
 
 	constructor(private profiler: IProfilerController) { }
 
-	run(): Promise<void> {
+	async run(): Promise<void> {
 		this.profiler.findNext();
-		return Promise.resolve(null);
 	}
 
 	isSupported(): boolean {
@@ -264,9 +253,8 @@ export class ProfilerFindPrevious implements IEditorAction {
 
 	constructor(private profiler: IProfilerController) { }
 
-	run(): Promise<void> {
+	async run(): Promise<void> {
 		this.profiler.findPrevious();
-		return Promise.resolve(null);
 	}
 
 	isSupported(): boolean {
@@ -290,20 +278,17 @@ export class NewProfilerAction extends Task {
 		});
 	}
 
-	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
+	public async runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
 		let profilerInput = accessor.get<IInstantiationService>(IInstantiationService).createInstance(ProfilerInput, profile);
-		return accessor.get<IEditorService>(IEditorService).openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP).then(() => {
-			let options: IConnectionCompletionOptions = {
-				params: undefined,
-				saveTheConnection: false,
-				showConnectionDialogOnError: true,
-				showDashboard: false,
-				showFirewallRuleOnError: true
-			};
-			accessor.get<IConnectionManagementService>(IConnectionManagementService).connect(this._connectionProfile, profilerInput.id, options);
-
-			return Promise.resolve(void 0);
-		});
+		await accessor.get<IEditorService>(IEditorService).openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP);
+		let options: IConnectionCompletionOptions = {
+			params: undefined,
+			saveTheConnection: false,
+			showConnectionDialogOnError: true,
+			showDashboard: false,
+			showFirewallRuleOnError: true
+		};
+		await accessor.get<IConnectionManagementService>(IConnectionManagementService).connect(this._connectionProfile, profilerInput.id, options);
 	}
 }
 
@@ -318,9 +303,8 @@ export class ProfilerFilterSession extends Action {
 		super(id, label, 'filterLabel');
 	}
 
-	public run(input: ProfilerInput): Promise<boolean> {
+	public async run(input: ProfilerInput): Promise<void> {
 		this._profilerService.launchFilterSessionDialog(input);
-		return Promise.resolve(true);
 	}
 }
 
