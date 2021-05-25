@@ -32,7 +32,7 @@ import { URI } from 'vs/base/common/uri';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { KernelsLanguage } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { KernelsLanguage } from 'sql/workbench/services/notebook/common/notebookConstants';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
