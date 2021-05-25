@@ -312,7 +312,7 @@ export class RunParametersAction extends TooltipFromLabelAction {
 		const editor = this._notebookService.findNotebookEditor(context);
 		// Only run action for kernels that are supported (Python, PySpark, PowerShell)
 		let supportedKernels: string[] = [KernelsLanguage.Python, KernelsLanguage.PowerShell];
-		if (!supportedKernels.includes(editor.model.language)) {
+		if (!supportedKernels.includes(editor.model.languageInfo.name)) {
 			// If there is no parameters in the cell indicate to user to add them
 			this.notificationService.notify({
 				severity: Severity.Info,
