@@ -266,8 +266,10 @@ suite('Job Management Actions', () => {
 	});
 
 	test('Delete Operator Action', async () => {
-		mockDeleteOperatorAction = TypeMoq.Mock.ofType(DeleteOperatorAction, TypeMoq.MockBehavior.Strict, DeleteOperatorAction.ID, DeleteOperatorAction.LABEL, null, null, mockJobManagementService);
-		mockDeleteOperatorAction.setup(s => s.run(TypeMoq.It.isAny()));
+		mockDeleteOperatorAction = TypeMoq.Mock.ofType(DeleteOperatorAction, TypeMoq.MockBehavior.Strict, null, null, mockJobManagementService);
+		mockDeleteOperatorAction.setup(s => s.run(TypeMoq.It.isAny())).returns(async () => {
+			await mockJobManagementService.object.deleteOperator(null, null);
+		});
 		mockDeleteOperatorAction.setup(s => s.id).returns(() => DeleteOperatorAction.ID);
 		mockDeleteOperatorAction.setup(s => s.label).returns(() => DeleteOperatorAction.LABEL);
 		assert.equal(mockDeleteOperatorAction.object.id, DeleteOperatorAction.ID);
