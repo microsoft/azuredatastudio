@@ -108,7 +108,7 @@ export class ExtensionsListView extends ViewPane {
 		@INotificationService protected notificationService: INotificationService,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IInstantiationService protected instantiationService: IInstantiationService,
+		@IInstantiationService instantiationService: IInstantiationService,
 		@IThemeService themeService: IThemeService,
 		@IExtensionService private readonly extensionService: IExtensionService,
 		@IExtensionsWorkbenchService protected extensionsWorkbenchService: IExtensionsWorkbenchService,
@@ -990,7 +990,7 @@ export class ExtensionsListView extends ViewPane {
 		return new PagedModel(pager);
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		super.dispose();
 		if (this.queryRequest) {
 			this.queryRequest.request.cancel();
@@ -1061,7 +1061,7 @@ export class ExtensionsListView extends ViewPane {
 		return /@recommended:keymaps/i.test(query);
 	}
 
-	focus(): void {
+	override focus(): void {
 		super.focus();
 		if (!this.list) {
 			return;
@@ -1129,7 +1129,7 @@ export class DefaultRecommendedExtensionsView extends ExtensionsListView {
 	// {{SQL CARBON EDIT}}
 	private readonly recommendedExtensionsQuery = '@allmarketplace';
 
-	renderBody(container: HTMLElement): void {
+	override renderBody(container: HTMLElement): void {
 		super.renderBody(container);
 
 		this._register(this.extensionRecommendationsService.onDidChangeRecommendations(() => {
@@ -1154,7 +1154,7 @@ export class DefaultRecommendedExtensionsView extends ExtensionsListView {
 export class RecommendedExtensionsView extends ExtensionsListView {
 	// private readonly recommendedExtensionsQuery = '@recommended'; {{SQL CARBON EDIT}} no unused
 
-	renderBody(container: HTMLElement): void {
+	override renderBody(container: HTMLElement): void {
 		super.renderBody(container);
 
 		this._register(this.extensionRecommendationsService.onDidChangeRecommendations(() => {
