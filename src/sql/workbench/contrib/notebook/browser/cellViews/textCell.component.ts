@@ -102,6 +102,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
 	private _highlightRange: NotebookRange;
+	private _previewModeChanged = true;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -175,6 +176,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this._changeRef.detectChanges();
 		}));
 		this._register(this.cellModel.onCellPreviewModeChanged(preview => {
+			if (this.previewMode !== preview) {
+				this.previewMode = preview;
+			}
 			this.previewMode = preview;
 			this.focusIfPreviewMode();
 		}));
@@ -221,8 +225,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		let trustedChanged = this.cellModel && this._lastTrustedMode !== this.cellModel.trustedMode;
 		let cellModelSourceJoined = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
 		let contentJoined = Array.isArray(this._content) ? this._content.join('') : this._content;
-		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0 || this._previewMode === true;
-		if (trustedChanged || contentChanged) {
+		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0;
+		if (trustedChanged || contentChanged || this._previewMode) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
 			if ((!cellModelSourceJoined) && !this.isEditMode) {
 				if (this.doubleClickEditEnabled) {
@@ -241,13 +245,14 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			});
 			this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
 			this.setLoading(false);
-			if (this._previewMode) {
+			if ((this._previewMode && this._previewModeChanged) || contentChanged) {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 				outputElement.focus();
 				this.addDecoration();
+				this._previewModeChanged = false; //reset after rendering
 			}
 		}
 	}
@@ -305,6 +310,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public set previewMode(value: boolean) {
 		if (this._previewMode !== value) {
 			this._previewMode = value;
+			this._previewModeChanged = true;
 			this.updatePreview();
 			this._changeRef.detectChanges();
 		}
