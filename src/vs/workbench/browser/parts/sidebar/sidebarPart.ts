@@ -158,7 +158,7 @@ export class SidebarPart extends CompositePart<Viewlet> implements IViewletServi
 		}));
 	}
 
-	create(parent: HTMLElement): void {
+	override create(parent: HTMLElement): void {
 		this.element = parent;
 
 		super.create(parent);
@@ -168,7 +168,7 @@ export class SidebarPart extends CompositePart<Viewlet> implements IViewletServi
 		this._register(focusTracker.onDidBlur(() => this.sideBarFocusContextKey.set(false)));
 	}
 
-	createTitleArea(parent: HTMLElement): HTMLElement {
+	override createTitleArea(parent: HTMLElement): HTMLElement {
 		const titleArea = super.createTitleArea(parent);
 
 		this._register(addDisposableListener(titleArea, EventType.CONTEXT_MENU, e => {
@@ -186,7 +186,7 @@ export class SidebarPart extends CompositePart<Viewlet> implements IViewletServi
 		return titleArea;
 	}
 
-	updateStyles(): void {
+	override updateStyles(): void {
 		super.updateStyles();
 
 		// Part container
@@ -206,7 +206,7 @@ export class SidebarPart extends CompositePart<Viewlet> implements IViewletServi
 		container.style.outlineColor = this.getColor(SIDE_BAR_DRAG_AND_DROP_BACKGROUND) ?? '';
 	}
 
-	layout(width: number, height: number): void {
+	override layout(width: number, height: number): void {
 		if (!this.layoutService.isVisible(Parts.SIDEBAR_PART)) {
 			return;
 		}
@@ -278,7 +278,7 @@ export class SidebarPart extends CompositePart<Viewlet> implements IViewletServi
 		return this.openComposite(id, focus) as Viewlet;
 	}
 
-	protected getTitleAreaDropDownAnchorAlignment(): AnchorAlignment {
+	protected override getTitleAreaDropDownAnchorAlignment(): AnchorAlignment {
 		return this.layoutService.getSideBarPosition() === SideBarPosition.LEFT ? AnchorAlignment.LEFT : AnchorAlignment.RIGHT;
 	}
 

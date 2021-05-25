@@ -270,7 +270,7 @@ export class RemoteExtensionHost extends Disposable implements IExtensionHost {
 		return Promise.resolve(false);
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		super.dispose();
 
 		this._terminating = true;

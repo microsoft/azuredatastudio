@@ -383,7 +383,7 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 				super(id, undefined!, new TestThemeService(), new TestStorageService());
 			}
 
-			getId(): string {
+			override getId(): string {
 				return 'myEditor';
 			}
 

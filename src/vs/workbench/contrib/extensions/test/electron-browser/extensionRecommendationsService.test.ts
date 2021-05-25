@@ -261,7 +261,7 @@ suite.skip('ExtensionRecommendationsService Test', () => { // {{SQL CARBON EDIT}
 		prompted = false;
 
 		class TestNotificationService2 extends TestNotificationService {
-			public prompt(severity: Severity, message: string, choices: IPromptChoice[], options?: IPromptOptions) {
+			public override prompt(severity: Severity, message: string, choices: IPromptChoice[], options?: IPromptOptions) {
 				prompted = true;
 				promptedEmitter.fire();
 				return super.prompt(severity, message, choices, options);

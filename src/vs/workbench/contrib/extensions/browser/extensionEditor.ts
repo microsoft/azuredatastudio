@@ -210,7 +210,7 @@ export class ExtensionEditor extends EditorPane {
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IViewletService private readonly viewletService: IViewletService,
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
-		@IThemeService protected themeService: IThemeService,
+		@IThemeService themeService: IThemeService,
 		@IKeybindingService private readonly keybindingService: IKeybindingService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IOpenerService private readonly openerService: IOpenerService,
@@ -346,7 +346,7 @@ export class ExtensionEditor extends EditorPane {
 		return disposables;
 	}
 
-	async setInput(input: ExtensionsInput, options: EditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
+	override async setInput(input: ExtensionsInput, options: EditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		await super.setInput(input, options, context, token);
 		if (this.template) {
 			await this.updateTemplate(input, this.template, !!options?.preserveFocus);
@@ -546,14 +546,14 @@ export class ExtensionEditor extends EditorPane {
 		this.transientDisposables.add(this.extensionRecommendationsService.onDidChangeRecommendations(() => updateRecommendationFn()));
 	}
 
-	clearInput(): void {
+	override clearInput(): void {
 		this.contentDisposables.clear();
 		this.transientDisposables.clear();
 
 		super.clearInput();
 	}
 
-	focus(): void {
+	override focus(): void {
 		this.activeElement?.focus();
 	}
 

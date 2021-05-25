@@ -1657,7 +1657,7 @@ export class ModifierKeyEmitter extends Emitter<IModifierKeyStatus> {
 		return ModifierKeyEmitter.instance;
 	}
 
-	dispose() {
+	override dispose() {
 		super.dispose();
 		this._subscriptions.dispose();
 	}

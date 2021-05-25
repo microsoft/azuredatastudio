@@ -22,4 +22,4 @@ Steps to Reproduce:
 <!-- 🔧 Launch with `azuredatastudio --disable-extensions` to check. -->
 Does this issue occur when all extensions are disabled?: Yes/No
 
-<!-- 📣 Issues caused by an extension need to be reported direct to the extension publisher. The 'Help > Report Issue' dialog can assist with this. -->
+<!-- 📣 Issues caused by an extension need to be reported directly to the extension publisher. The 'Help > Report Issue' dialog can assist with this. -->

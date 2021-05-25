@@ -154,24 +154,24 @@ export class SearchView extends ViewPane {
 		@INotificationService protected readonly notificationService: INotificationService, // {{SQL CARBON EDIT}}
 		@IDialogService protected readonly dialogService: IDialogService, // {{SQL CARBON EDIT}}
 		@IContextViewService protected readonly contextViewService: IContextViewService, // {{SQL CARBON EDIT}}
-		@IInstantiationService instantiationService: IInstantiationService, // {{SQL CARBON EDIT}}
-		@IViewDescriptorService viewDescriptorService: IViewDescriptorService, // {{SQL CARBON EDIT}}
-		@IConfigurationService configurationService: IConfigurationService, // {{SQL CARBON EDIT}}
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
+		@IConfigurationService configurationService: IConfigurationService,
 		@IWorkspaceContextService protected readonly contextService: IWorkspaceContextService, // {{SQL CARBON EDIT}}
 		@ISearchWorkbenchService protected readonly searchWorkbenchService: ISearchWorkbenchService, // {{SQL CARBON EDIT}}
-		@IContextKeyService readonly contextKeyService: IContextKeyService, // {{SQL CARBON EDIT}}
+		@IContextKeyService contextKeyService: IContextKeyService,
 		@IReplaceService protected readonly replaceService: IReplaceService, // {{SQL CARBON EDIT}}
 		@ITextFileService protected readonly textFileService: ITextFileService, // {{SQL CARBON EDIT}}
 		@IPreferencesService protected readonly preferencesService: IPreferencesService, // {{SQL CARBON EDIT}}
-		@IThemeService themeService: IThemeService, // {{SQL CARBON EDIT}}
+		@IThemeService themeService: IThemeService,
 		@ISearchHistoryService protected readonly searchHistoryService: ISearchHistoryService, // {{SQL CARBON EDIT}}
-		@IContextMenuService contextMenuService: IContextMenuService, // {{SQL CARBON EDIT}}
+		@IContextMenuService contextMenuService: IContextMenuService,
 		@IMenuService protected readonly menuService: IMenuService, // {{SQL CARBON EDIT}}
 		@IAccessibilityService protected readonly accessibilityService: IAccessibilityService, // {{SQL CARBON EDIT}}
-		@IKeybindingService keybindingService: IKeybindingService, // {{SQL CARBON EDIT}}
-		@IStorageService storageService: IStorageService, // {{SQL CARBON EDIT}}
-		@IOpenerService openerService: IOpenerService, // {{SQL CARBON EDIT}}
-		@ITelemetryService telemetryService: ITelemetryService, // {{SQL CARBON EDIT}}
+		@IKeybindingService keybindingService: IKeybindingService,
+		@IStorageService storageService: IStorageService,
+		@IOpenerService openerService: IOpenerService,
+		@ITelemetryService telemetryService: ITelemetryService,
 	) {
 
 		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
@@ -258,7 +258,7 @@ export class SearchView extends ViewPane {
 		}
 	}
 
-	renderBody(parent: HTMLElement): void {
+	override renderBody(parent: HTMLElement): void {
 		super.renderBody(parent);
 		this.container = dom.append(parent, dom.$('.search-view'));
 
@@ -897,7 +897,7 @@ export class SearchView extends ViewPane {
 		this.tree.domFocus();
 	}
 
-	focus(): void {
+	override focus(): void {
 		super.focus();
 		if (this.lastFocusState === 'input' || !this.hasSearchResults()) {
 			const updatedText = this.searchConfig.seedOnFocus ? this.updateTextFromSelection({ allowSearchOnType: false }) : false;
@@ -1052,7 +1052,7 @@ export class SearchView extends ViewPane {
 		this.tree.layout(); // The tree will measure its container
 	}
 
-	protected layoutBody(height: number, width: number): void {
+	protected override layoutBody(height: number, width: number): void {
 		super.layoutBody(height, width);
 		this.size = new dom.Dimension(width, height);
 		this.reLayout();
@@ -1811,7 +1811,7 @@ export class SearchView extends ViewPane {
 		this.inputPatternIncludes.clearHistory();
 	}
 
-	public saveState(): void {
+	public override saveState(): void {
 		const isRegex = this.searchWidget.searchInput.getRegex();
 		const isWholeWords = this.searchWidget.searchInput.getWholeWords();
 		const isCaseSensitive = this.searchWidget.searchInput.getCaseSensitive();
@@ -1881,7 +1881,7 @@ export class SearchView extends ViewPane {
 		}
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		this.isDisposed = true;
 		this.saveState();
 		super.dispose();

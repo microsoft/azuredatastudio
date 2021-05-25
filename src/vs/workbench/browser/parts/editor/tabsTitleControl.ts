@@ -382,7 +382,7 @@ export class TabsTitleControl extends TitleControl {
 		this.layout(this.dimensions);
 	}
 
-	protected updateEditorActionsToolbar(): void {
+	protected override updateEditorActionsToolbar(): void {
 		super.updateEditorActionsToolbar();
 
 		// Changing the actions in the toolbar can have an impact on the size of the
@@ -574,7 +574,7 @@ export class TabsTitleControl extends TitleControl {
 		}
 	}
 
-	updateStyles(): void {
+	override updateStyles(): void {
 		this.redraw();
 	}
 
@@ -1809,7 +1809,7 @@ export class TabsTitleControl extends TitleControl {
 		}
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		super.dispose();
 
 		this.tabDisposables = dispose(this.tabDisposables);

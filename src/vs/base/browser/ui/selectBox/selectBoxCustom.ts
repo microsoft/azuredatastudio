@@ -1058,7 +1058,7 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 		}
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		this.hideSelectDropDown(false);
 		super.dispose();
 	}
