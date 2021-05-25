@@ -45,6 +45,7 @@ import { IUserDataAutoSyncService } from 'vs/platform/userDataSync/common/userDa
 import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator'; // {{SQL CARBON EDIT}}
 import { IOpenerService } from 'vs/platform/opener/common/opener'; // {{SQL CARBON EDIT}}
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { isBoolean } from 'vs/base/common/types';
 
 interface IExtensionStateProvider<T> {
 	(extension: Extension): T;
@@ -600,6 +601,12 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			}
 		}, this));
 
+		this._register(extensionEnablementService.onEnablementChanged(platformExtensions => {
+			if (this.getAutoUpdateValue() === 'onlyEnabledExtensions' && platformExtensions.some(e => this.extensionEnablementService.isEnabled(e))) {
+				this.checkForUpdates();
+			}
+		}, this));
+
 		this.queryLocal().then(() => {
 			this.resetIgnoreAutoUpdateExtensions();
 			this.eventuallySyncWithGallery(true);
@@ -875,8 +882,13 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		return Promise.resolve(this.syncDelayer.trigger(() => this.syncWithGallery(), 0));
 	}
 
+	private getAutoUpdateValue(): boolean | 'onlyEnabledExtensions' {
+		const autoUpdate = this.configurationService.getValue<boolean | 'onlyEnabledExtensions'>(AutoUpdateConfigurationKey);
+		return isBoolean(autoUpdate) || autoUpdate === 'onlyEnabledExtensions' ? autoUpdate : true;
+	}
+
 	private isAutoUpdateEnabled(): boolean {
-		return this.configurationService.getValue(AutoUpdateConfigurationKey);
+		return this.getAutoUpdateValue() !== false;
 	}
 
 	private isAutoCheckUpdatesEnabled(): boolean {
@@ -925,9 +937,13 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			return Promise.resolve();
 		}
 
-		// {{SQL CARBON EDIT}} - Add && !e.downloadPage condition
-		const toUpdate = this.outdated.filter(e => !this.isAutoUpdateIgnored(new ExtensionIdentifierWithVersion(e.identifier, e.version)) && !e.downloadPage);
-		return Promise.all(toUpdate.map(e => this.install(e)));
+		const toUpdate = this.outdated.filter(e =>
+			!e.downloadPage && // {{SQL CARBON EDIT}} - Don't auto-update DownloadPage extensions
+			!this.isAutoUpdateIgnored(new ExtensionIdentifierWithVersion(e.identifier, e.version)) &&
+			(this.getAutoUpdateValue() === true || (e.local && this.extensionEnablementService.isEnabled(e.local)))
+		);
+
+		return Promises.settled(toUpdate.map(e => this.install(e)));
 	}
 
 	canInstall(extension: IExtension): boolean {
