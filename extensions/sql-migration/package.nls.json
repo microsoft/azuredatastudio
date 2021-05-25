@@ -5,5 +5,7 @@
 	"migration-dashboard-title": "Azure SQL Migration",
 	"migration-dashboard-tasks": "Migration Tasks",
 	"migration-command-category": "Azure SQL Migration",
-	"start-migration-command": "Migrate to Azure SQL"
+	"start-migration-command": "Migrate to Azure SQL",
+	"new-support-request-command": "New support request",
+	"send-feedback-command": "Feedback"
 }

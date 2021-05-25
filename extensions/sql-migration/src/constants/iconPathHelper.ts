@@ -30,6 +30,10 @@ export class IconPathHelper {
 	public static cancel: IconPath;
 	public static warning: IconPath;
 	public static info: IconPath;
+	public static newSupportRequest: IconPath;
+	public static sendFeedback: IconPath;
+	public static solidBlueStar: IconPath;
+	public static blueStar: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -107,6 +111,22 @@ export class IconPathHelper {
 		IconPathHelper.info = {
 			light: context.asAbsolutePath('images/info.svg'),
 			dark: context.asAbsolutePath('images/infoBox.svg')
+		};
+		IconPathHelper.newSupportRequest = {
+			light: context.asAbsolutePath('images/newSupportRequest.svg'),
+			dark: context.asAbsolutePath('images/newSupportRequest.svg')
+		};
+		IconPathHelper.sendFeedback = {
+			light: context.asAbsolutePath('images/sendFeedback.svg'),
+			dark: context.asAbsolutePath('images/sendFeedback.svg')
+		};
+		IconPathHelper.solidBlueStar = {
+			light: context.asAbsolutePath('images/solidBlueStar.svg'),
+			dark: context.asAbsolutePath('images/solidBlueStar.svg')
+		};
+		IconPathHelper.blueStar = {
+			light: context.asAbsolutePath('images/blueStar.svg'),
+			dark: context.asAbsolutePath('images/blueStar.svg')
 		};
 	}
 }
