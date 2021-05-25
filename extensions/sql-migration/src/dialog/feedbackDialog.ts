@@ -28,7 +28,7 @@ export class FeedbackDialog {
 			this._dialog = azdata.window.createModelViewDialog(
 				'',
 				FeedbackDialog.DialogName,
-				440,
+				360,
 				'normal',
 				'below');
 

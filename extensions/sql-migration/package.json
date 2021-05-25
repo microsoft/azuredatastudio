@@ -73,6 +73,7 @@
               "widget": {
                 "tasks-widget": [
                   "sqlmigration.start",
+                  "sqlmigration.newsupportrequest",
                   "sqlmigration.sendfeedback"
                 ]
               }
