@@ -7,7 +7,7 @@ text-cell-component {
 	display: block;
 }
 text-cell-component .notebook-text {
-	display: flex;
+	display: inline-block;
 	outline: none;
 	min-height: 50px;
 }
