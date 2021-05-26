@@ -15,24 +15,17 @@ import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookS
 
 export class NotebookFindDecorations implements IDisposable {
 
-	private _decorations: string[];
-	private _overviewRulerApproximateDecorations: string[];
-	private _findScopeDecorationIds: string[];
-	private _codeCellFindScopeDecorationIds: string[];
-	private _rangeHighlightDecorationId: string | null;
-	private _highlightedDecorationId: string | null;
+	private _decorations: string[] = [];
+	private _overviewRulerApproximateDecorations: string[] = [];
+	private _findScopeDecorationIds: string[] = [];
+	private _codeCellFindScopeDecorationIds: string[] = [];
+	private _rangeHighlightDecorationId: string | null = null;
+	private _highlightedDecorationId: string | null = null;
 	private _startPosition: NotebookRange;
 	private _currentMatch: NotebookRange;
-	private _codeCellDecorations: Map<string, string[]>;
+	private _codeCellDecorations: Map<string, string[]> = new Map<string, string[]>();
 
 	constructor(private readonly _editor: NotebookEditor) {
-		this._decorations = [];
-		this._overviewRulerApproximateDecorations = [];
-		this._findScopeDecorationIds = [];
-		this._codeCellDecorations = new Map<string, string[]>();
-		this._codeCellFindScopeDecorationIds = [];
-		this._rangeHighlightDecorationId = null;
-		this._highlightedDecorationId = null;
 		this._startPosition = this._editor.getPosition();
 	}
 
@@ -93,24 +86,28 @@ export class NotebookFindDecorations implements IDisposable {
 	}
 
 	public clearDecorations(): void {
+		// clear markdown decorations
 		let ranges = this.getFindScopes();
 		if (ranges) {
 			this._editor.updateDecorations(undefined, ranges);
 		}
+		// clear code cell decorations
 		for (let cellGuid of this._codeCellDecorations.keys()) {
 			this._editor.getCellEditor(cellGuid).getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
 				this._codeCellDecorations.get(cellGuid).forEach(decorationId => changeAccessor.removeDecoration(decorationId));
 				changeAccessor.deltaDecorations(this._codeCellFindScopeDecorationIds, []);
 			});
 		}
+		// remove the current highlight
 		this.removeLastDecoration();
 	}
 
 	public addDecorations(): void {
 		let findScopes = this.getFindScopes();
 		if (findScopes) {
+			// add markdown decorations
 			this._editor.updateDecorations(findScopes, undefined);
-
+			// add code cell decorations
 			this.setCodeCellDecorations(this._editor.notebookFindModel.findMatches, findScopes);
 		}
 
