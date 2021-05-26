@@ -94,7 +94,7 @@
     "plotly.js-dist-min": "^1.53.0",
     "reflect-metadata": "^0.1.8",
     "rxjs": "5.4.0",
-    "sanitize-html": "^1.19.1",
+    "sanitize-html": "^2.3.2",
     "semver-umd": "^5.5.7",
     "slickgrid": "github:kburtram/SlickGrid#2.3.33",
     "spdlog": "^0.11.1",
