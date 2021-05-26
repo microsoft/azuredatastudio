@@ -78,6 +78,9 @@ export class FeedbackDialog {
 					.withProperties<azdata.ComponentProperties>({
 						display: 'inline-flex',
 						ariaLabel: loc.FEEDBACK_DIALOG_HEADING,
+						CSSStyles: {
+							'margin-left': '40px'
+						}
 					})
 					.component();
 
