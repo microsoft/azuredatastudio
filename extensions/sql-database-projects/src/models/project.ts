@@ -508,15 +508,11 @@ export class Project implements ISqlProject {
 	}
 
 	public getSystemDacpacFolderName(): string {
-		let version = this.getProjectTargetVersion();
+		const version = this.getProjectTargetVersion();
 
 		// DW is special because the target version is DW, but the folder name for system dacpacs is AzureDW in SSDT
 		// the other target versions have the same version name and folder name
-		if (version === constants.targetPlatformToVersion.get(constants.sqlDW)) {
-			version = constants.AzureDwFolder;
-		}
-
-		return version;
+		return version === constants.targetPlatformToVersion.get(constants.sqlDW) ? constants.AzureDwFolder : version;
 	}
 
 	public getProjectTargetVersion(): string {
