@@ -342,10 +342,12 @@ suite.skip('EditorGroupsService', () => {
 		part.dispose();
 	});
 
-	test('whenRestored', async () => {
+	test('whenCreated / whenRestored', async () => {
 		const [part] = await createPart();
 
+		await part.whenCreated;
 		await part.whenRestored;
+
 		assert.ok(true);
 	});
 
