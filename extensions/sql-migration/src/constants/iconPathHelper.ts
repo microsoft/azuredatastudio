@@ -121,7 +121,7 @@ export class IconPathHelper {
 		IconPathHelper.completingCutover = {
 			light: context.asAbsolutePath('images/completingCutover.svg'),
 			dark: context.asAbsolutePath('images/completingCutover.svg')
-    };
+		};
 		IconPathHelper.newSupportRequest = {
 			light: context.asAbsolutePath('images/newSupportRequest.svg'),
 			dark: context.asAbsolutePath('images/newSupportRequest.svg')
