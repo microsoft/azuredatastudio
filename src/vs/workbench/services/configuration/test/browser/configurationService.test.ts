@@ -650,7 +650,7 @@ suite.skip('WorkspaceConfigurationService - Folder', () => { // {{SQL CARBON EDI
 				'configurationService.folder.untrustedSetting': {
 					'type': 'string',
 					'default': 'isSet',
-					requireTrustedTarget: true
+					requireTrust: true
 				},
 			}
 		});
@@ -1259,13 +1259,13 @@ suite.skip('WorkspaceConfigurationService-Multiroot', () => { // {{SQL CARBON ED
 				'configurationService.workspace.testUntrustedSetting1': {
 					'type': 'string',
 					'default': 'isSet',
-					requireTrustedTarget: true,
+					requireTrust: true,
 					scope: ConfigurationScope.RESOURCE
 				},
 				'configurationService.workspace.testUntrustedSetting2': {
 					'type': 'string',
 					'default': 'isSet',
-					requireTrustedTarget: true,
+					requireTrust: true,
 					scope: ConfigurationScope.RESOURCE
 				}
 			}

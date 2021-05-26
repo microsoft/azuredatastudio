@@ -269,8 +269,8 @@ export interface IButtonStyleOverrides extends IStyleOverrides {
 	buttonSecondaryForeground?: ColorIdentifier;
 	buttonSecondaryBackground?: ColorIdentifier;
 	buttonSecondaryHoverBackground?: ColorIdentifier;
-	// {{SQL CARBON EDIT}}
 	buttonBorder?: ColorIdentifier;
+	// {{SQL CARBON EDIT}}
 	buttonSecondaryBorder?: ColorIdentifier;
 	buttonDisabledForeground?: ColorIdentifier;
 	buttonDisabledBackground?: ColorIdentifier;
@@ -285,12 +285,12 @@ export function attachButtonStyler(widget: IThemable, themeService: IThemeServic
 		buttonSecondaryForeground: style?.buttonSecondaryForeground || buttonSecondaryForeground,
 		buttonSecondaryBackground: style?.buttonSecondaryBackground || buttonSecondaryBackground,
 		buttonSecondaryHoverBackground: style?.buttonSecondaryHoverBackground || buttonSecondaryHoverBackground,
+		buttonBorder: style?.buttonBorder || buttonBorder,
 		// {{SQL CARBON EDIT}}
-		buttonBorder: (style && style.buttonBorder) || buttonBorder,
-		buttonSecondaryBorder: (style && style.buttonSecondaryBorder) || buttonSecondaryBorder,
-		buttonDisabledBorder: (style && style.buttonDisabledBorder) || buttonDisabledBorder,
-		buttonDisabledBackground: (style && style.buttonDisabledBackground) || buttonDisabledBackground,
-		buttonDisabledForeground: (style && style.buttonDisabledForeground) || buttonDisabledForeground
+		buttonSecondaryBorder: style?.buttonSecondaryBorder || buttonSecondaryBorder,
+		buttonDisabledBorder: style?.buttonDisabledBorder || buttonDisabledBorder,
+		buttonDisabledBackground: style?.buttonDisabledBackground || buttonDisabledBackground,
+		buttonDisabledForeground: style?.buttonDisabledForeground || buttonDisabledForeground
 	} as IButtonStyleOverrides, widget);
 }
 
@@ -388,7 +388,7 @@ export const defaultDialogStyles = <IDialogStyleOverrides>{
 	buttonForeground: buttonForeground,
 	buttonBackground: buttonBackground,
 	buttonHoverBackground: buttonHoverBackground,
-	buttonBorder: contrastBorder,
+	buttonBorder: buttonBorder,
 	checkboxBorder: simpleCheckboxBorder,
 	checkboxBackground: simpleCheckboxBackground,
 	checkboxForeground: simpleCheckboxForeground,

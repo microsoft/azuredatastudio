@@ -232,13 +232,14 @@ export const simpleCheckboxBorder = registerColor('checkbox.border', { dark: sel
 export const buttonForeground = registerColor('button.foreground', { dark: '#111111', light: Color.white, hc: Color.white }, nls.localize('buttonForeground', "Button foreground color."));
 export const buttonBackground = registerColor('button.background', { dark: '#4894FE', light: '#0078D4', hc: null }, nls.localize('buttonBackground', "Button background color."));
 export const buttonHoverBackground = registerColor('button.hoverBackground', { dark: '#6CA9FE', light: '#106EBE', hc: null }, nls.localize('buttonHoverBackground', "Button background color when hovering."));
+export const buttonBorder = registerColor('button.border', { dark: '#4894FE', light: '#0078D4', hc: contrastBorder }, nls.localize('button.border', "Primary button border color."));
 
 export const buttonSecondaryForeground = registerColor('button.secondaryForeground', { dark: '#4894FE', light: '#323130', hc: Color.white }, nls.localize('buttonSecondaryForeground', "Secondary button foreground color."));
 export const buttonSecondaryBackground = registerColor('button.secondaryBackground', { dark: '#212121', light: Color.white, hc: null }, nls.localize('buttonSecondaryBackground', "Secondary button background color."));
 export const buttonSecondaryHoverBackground = registerColor('button.secondaryHoverBackground', { dark: new Color(new RGBA(127, 127, 127, 0.1)), light: '#F3F2F1', hc: null }, nls.localize('buttonSecondaryHoverBackground', "Secondary button background color when hovering."));
 
 // new button colors introduced by ADS
-export const buttonBorder = registerColor('button.border', { dark: '#4894FE', light: '#0078D4', hc: contrastBorder }, nls.localize('button.border', "Primary button border color."));
+
 export const buttonSecondaryBorder = registerColor('button.secondaryBorder', { dark: '#4894FE', light: '#8A8886', hc: contrastBorder }, nls.localize('button.secondaryBorder', "Secondary button border color."));
 export const buttonDisabledBorder = registerColor('button.disabledBorder', { dark: new Color(new RGBA(127, 127, 127, 0.1)), light: '#F3F2F1', hc: '#00FF00' }, nls.localize('button.secondaryBorder', "Secondary button border color."));
 export const buttonDisabledForeground = registerColor('button.disabledForeground', { dark: new Color(new RGBA(127, 127, 127, 0.7)), light: '#A19F9D', hc: '#00FF00' }, nls.localize('button.disabledForeground', "Disabled button foreground color."));
