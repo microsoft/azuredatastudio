@@ -43,9 +43,8 @@ export class DeleteRowAction extends Action {
 		super(id, label);
 	}
 
-	public run(gridInfo: IGridInfo): Promise<boolean> {
+	public async run(gridInfo: IGridInfo): Promise<void> {
 		this.callback(gridInfo.rowIndex);
-		return Promise.resolve(true);
 	}
 }
 
@@ -61,8 +60,7 @@ export class RevertRowAction extends Action {
 		super(id, label);
 	}
 
-	public run(gridInfo: IGridInfo): Promise<boolean> {
+	public async run(gridInfo: IGridInfo): Promise<void> {
 		this.callback();
-		return Promise.resolve(true);
 	}
 }

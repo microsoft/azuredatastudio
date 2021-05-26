@@ -541,9 +541,14 @@ export class MigrationCutoverDialog {
 			this._fullBackupFile.value = fullBackupFileName! ?? '-';
 			let backupLocation;
 
+			const isBlobMigration = this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob !== undefined;
 			// Displaying storage accounts and blob container for azure blob backups.
-			if (this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob) {
-				backupLocation = `${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation.azureBlob.storageAccountResourceId.split('/').pop()} - ${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation.azureBlob.blobContainerName}`;
+			if (isBlobMigration) {
+				backupLocation = `${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob?.storageAccountResourceId.split('/').pop()} - ${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob?.blobContainerName}`;
+				this._fileCount.display = 'none';
+				this.fileTable.updateCssStyles({
+					'display': 'none'
+				});
 			} else {
 				backupLocation = this._model._migration.migrationContext.properties.backupConfiguration?.sourceLocation?.fileShare?.path! ?? '-';
 			}
@@ -571,7 +576,7 @@ export class MigrationCutoverDialog {
 
 			if (migrationStatusTextValue === MigrationStatus.InProgress) {
 				const restoredCount = (this._model.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.filter(a => a.listOfBackupFiles[0].status === 'Restored'))?.length ?? 0;
-				if (restoredCount > 0) {
+				if (restoredCount > 0 || isBlobMigration) {
 					this._cutoverButton.enabled = true;
 				}
 				this._cancelButton.enabled = true;

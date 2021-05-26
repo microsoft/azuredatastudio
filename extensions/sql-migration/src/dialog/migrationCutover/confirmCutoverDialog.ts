@@ -72,7 +72,8 @@ export class ConfirmCutoverDialog {
 				}
 			}).component();
 
-			const pendingBackupCount = this.migrationCutoverModel.migrationStatus.properties.migrationStatusDetails?.activeBackupSets.filter(f => f.listOfBackupFiles[0].status !== 'Restored' && f.listOfBackupFiles[0].status !== 'Ignored').length;
+
+			const pendingBackupCount = this.migrationCutoverModel.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.filter(f => f.listOfBackupFiles[0].status !== 'Restored' && f.listOfBackupFiles[0].status !== 'Ignored').length ?? 0;
 			const pendingText = this._view.modelBuilder.text().withProps({
 				CSSStyles: {
 					'font-size': '13px',

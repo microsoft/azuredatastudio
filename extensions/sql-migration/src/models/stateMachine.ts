@@ -58,10 +58,9 @@ export enum NetworkContainerType {
 export interface DatabaseBackupModel {
 	migrationMode: MigrationMode;
 	networkContainerType: NetworkContainerType;
-	storageKey: string;
 	networkShare: NetworkShare;
 	subscription: azureResource.AzureResourceSubscription;
-	blob: Blob;
+	blobs: Blob[];
 }
 
 export interface NetworkShare {
@@ -70,12 +69,14 @@ export interface NetworkShare {
 	password: string;
 	resourceGroup: azureResource.AzureResourceResourceGroup;
 	storageAccount: StorageAccount;
+	storageKey: string;
 }
 
 export interface Blob {
 	resourceGroup: azureResource.AzureResourceResourceGroup;
 	storageAccount: StorageAccount;
 	blobContainer: azureResource.BlobContainer;
+	storageKey: string;
 }
 
 export interface Model {
@@ -144,7 +145,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._currentState = State.INIT;
 		this._databaseBackup = {} as DatabaseBackupModel;
 		this._databaseBackup.networkShare = {} as NetworkShare;
-		this._databaseBackup.blob = {} as Blob;
+		this._databaseBackup.blobs = [];
 	}
 
 	public get sourceConnectionId(): string {
@@ -667,38 +668,38 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				scope: this._targetServerInstance.id
 			}
 		};
-		switch (this._databaseBackup.networkContainerType) {
-			case NetworkContainerType.BLOB_CONTAINER:
-				requestBody.properties.backupConfiguration = {
-					targetLocation: undefined!,
-					sourceLocation: {
-						azureBlob: {
-							storageAccountResourceId: this._databaseBackup.blob.storageAccount.id,
-							accountKey: this._databaseBackup.storageKey,
-							blobContainerName: this._databaseBackup.blob.blobContainer.name
-						}
-					}
-				};
-				break;
-			case NetworkContainerType.NETWORK_SHARE:
-				requestBody.properties.backupConfiguration = {
-					targetLocation: {
-						storageAccountResourceId: this._databaseBackup.networkShare.storageAccount.id,
-						accountKey: this._databaseBackup.storageKey,
-					},
-					sourceLocation: {
-						fileShare: {
-							path: this._databaseBackup.networkShare.networkShareLocation,
-							username: this._databaseBackup.networkShare.windowsUser,
-							password: this._databaseBackup.networkShare.password,
-						}
-					}
-				};
-				break;
-		}
 
 		for (let i = 0; i < this._migrationDbs.length; i++) {
 			try {
+				switch (this._databaseBackup.networkContainerType) {
+					case NetworkContainerType.BLOB_CONTAINER:
+						requestBody.properties.backupConfiguration = {
+							targetLocation: undefined!,
+							sourceLocation: {
+								azureBlob: {
+									storageAccountResourceId: this._databaseBackup.blobs[i].storageAccount.id,
+									accountKey: this._databaseBackup.blobs[i].storageKey,
+									blobContainerName: this._databaseBackup.blobs[i].blobContainer.name
+								}
+							}
+						};
+						break;
+					case NetworkContainerType.NETWORK_SHARE:
+						requestBody.properties.backupConfiguration = {
+							targetLocation: {
+								storageAccountResourceId: this._databaseBackup.networkShare.storageAccount.id,
+								accountKey: this._databaseBackup.networkShare.storageKey,
+							},
+							sourceLocation: {
+								fileShare: {
+									path: this._databaseBackup.networkShare.networkShareLocation,
+									username: this._databaseBackup.networkShare.windowsUser,
+									password: this._databaseBackup.networkShare.password,
+								}
+							}
+						};
+						break;
+				}
 				requestBody.properties.sourceDatabaseName = this._migrationDbs[i];
 				const response = await startDatabaseMigration(
 					this._azureAccount,

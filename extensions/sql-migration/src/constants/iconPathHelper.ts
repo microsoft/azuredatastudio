@@ -30,6 +30,8 @@ export class IconPathHelper {
 	public static cancel: IconPath;
 	public static warning: IconPath;
 	public static info: IconPath;
+	public static error: IconPath;
+	public static completingCutover: IconPath;
 	public static newSupportRequest: IconPath;
 	public static sendFeedback: IconPath;
 	public static solidBlueStar: IconPath;
@@ -112,6 +114,14 @@ export class IconPathHelper {
 			light: context.asAbsolutePath('images/info.svg'),
 			dark: context.asAbsolutePath('images/infoBox.svg')
 		};
+		IconPathHelper.error = {
+			light: context.asAbsolutePath('images/error.svg'),
+			dark: context.asAbsolutePath('images/error.svg')
+		};
+		IconPathHelper.completingCutover = {
+			light: context.asAbsolutePath('images/completingCutover.svg'),
+			dark: context.asAbsolutePath('images/completingCutover.svg')
+    };
 		IconPathHelper.newSupportRequest = {
 			light: context.asAbsolutePath('images/newSupportRequest.svg'),
 			dark: context.asAbsolutePath('images/newSupportRequest.svg')
