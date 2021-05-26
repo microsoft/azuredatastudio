@@ -11,7 +11,7 @@ import { sendSqlMigrationActionEvent, TelemetryActions, TelemetryViews } from '.
 
 export class FeedbackDialog {
 
-	private static readonly DialogName: string = 'FeedbackDialog';
+	private static readonly DialogName: string = 'SqlMigrationFeedbackDialog';
 
 	private _dialog!: azdata.window.Dialog;
 	private _buttonGroup!: azdata.FlexContainer;
@@ -29,8 +29,7 @@ export class FeedbackDialog {
 				'',
 				FeedbackDialog.DialogName,
 				440,
-				'normal',
-				'below');
+				'normal');
 
 			this._dialog.registerContent(async view => {
 				const headingGroup = view.modelBuilder
@@ -98,6 +97,15 @@ export class FeedbackDialog {
 				feedbackInputBox.onTextChanged(
 					value => this._feedbackText = value);
 
+				const privacyLink = view.modelBuilder
+					.hyperlink()
+					.withProperties<azdata.HyperlinkComponentProperties>({
+						label: loc.FEEDBACK_DIALOG_PRIVACY_LINK,
+						url: 'https://privacy.microsoft.com/privacystatement',
+						showLinkIcon: true
+					})
+					.component();
+
 				const formModel = view.modelBuilder
 					.formContainer()
 					.withFormItems([{
@@ -110,6 +118,9 @@ export class FeedbackDialog {
 							},
 							{
 								component: feedbackInputBox,
+							},
+							{
+								component: privacyLink,
 							}
 						],
 						title: ''
@@ -133,7 +144,7 @@ export class FeedbackDialog {
 
 	private async _execute() {
 		sendSqlMigrationActionEvent(
-			TelemetryViews.FeedbackDialog,
+			TelemetryViews.SqlMigrationFeedbackDialog,
 			TelemetryActions.SendFeedback,
 			{
 				'FeedbackRating': this._feedbackRating?.toString() || '',
@@ -153,15 +164,13 @@ export class FeedbackDialog {
 			.button()
 			.withProperties<azdata.ButtonProperties>({
 				ariaLabel: ariaLabel,
-				height: '26px',
-				width: '26px',
+				height: '40px',
 				buttonType: azdata.ButtonType.Normal,
 				iconHeight: '24px',
-				iconWidth: '24px',
+				iconWidth: '38px',
 				iconPath: IconPathHelper.blueStar,
 				CSSStyles: {
 					'margin': '0 10px 0 0',
-					'padding': '0 0 0 0',
 				},
 			})
 			.component();

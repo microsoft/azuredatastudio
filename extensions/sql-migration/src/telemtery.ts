@@ -19,7 +19,7 @@ export enum TelemetryViews {
 	MigrationCutoverDialog = 'MigrationCutoverDialog',
 	MigrationStatusDialog = 'MigrationStatusDialog',
 	AssessmentsPage = 'AssessmentsPage',
-	FeedbackDialog = 'FeedbackDialog',
+	SqlMigrationFeedbackDialog = 'SqlMigrationFeedbackDialog',
 }
 
 export enum TelemetryActions {

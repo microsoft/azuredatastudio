@@ -435,3 +435,4 @@ export const FEEDBACK_DIALOG_RATING_3 = localize('sql.migration.feedback.rating.
 export const FEEDBACK_DIALOG_RATING_4 = localize('sql.migration.feedback.rating.four', "Rating four out of five");
 export const FEEDBACK_DIALOG_RATING_5 = localize('sql.migration.feedback.rating.five', 'Rating five out of five');
 export const FEEDBACK_DIALOG_SENT_MESSAGE = localize('sql.migration.feedback.sent.message', 'Thank you for the feedback!  Your feedback was submitted successfully.');
+export const FEEDBACK_DIALOG_PRIVACY_LINK = localize('sql.migration.feedback.privacy.link', 'Privacy policy');
