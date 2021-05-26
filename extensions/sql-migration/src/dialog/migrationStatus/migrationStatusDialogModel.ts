@@ -10,47 +10,34 @@ export class MigrationStatusDialogModel {
 	public statusDropdownValues: azdata.CategoryValue[] = [
 		{
 			displayName: 'Status: All',
-			name: 'All',
+			name: AdsMigrationStatus.ALL,
 		}, {
 			displayName: 'Status: Ongoing',
-			name: 'Ongoing',
+			name: AdsMigrationStatus.ONGOING,
+		}, {
+			displayName: 'Status: Completing',
+			name: AdsMigrationStatus.COMPLETING
 		}, {
 			displayName: 'Status: Succeeded',
-			name: 'Succeeded',
+			name: AdsMigrationStatus.SUCCEEDED,
+		}, {
+			displayName: 'Status: Failed',
+			name: AdsMigrationStatus.FAILED
 		}
 	];
 
 	constructor(public _migrations: MigrationContext[]) {
 	}
 
-	public filterMigration(databaseName: string, category: string): MigrationContext[] {
-		let filteredMigration: MigrationContext[] = [];
-		if (category === 'All') {
-			filteredMigration = this._migrations;
-		} else if (category === 'Ongoing') {
-			filteredMigration = this._migrations.filter((value) => {
-				const status = value.migrationContext.properties.migrationStatus;
-				const provisioning = value.migrationContext.properties.provisioningState;
-				return status === 'InProgress' || status === 'Creating' || status === 'Completing' || provisioning === 'Creating';
-			});
-		} else if (category === 'Succeeded') {
-			filteredMigration = this._migrations.filter((value) => {
-				const status = value.migrationContext.properties.migrationStatus;
-				return status === 'Succeeded';
-			});
-		}
-		if (databaseName) {
-			filteredMigration = filteredMigration.filter((value) => {
-				return value.migrationContext.name.toLowerCase().includes(databaseName.toLowerCase());
-			});
-		}
-
-		return filteredMigration;
-	}
 }
 
-export enum MigrationCategory {
-	ALL,
-	ONGOING,
-	SUCCEEDED
+/**
+ * This enum is used to categorize migrations internally in ADS. A migration has 2 statuses: Provisioning Status and Migration Status. The values from both the statuses are mapped to different values in this enum
+ */
+export enum AdsMigrationStatus {
+	ALL = 'all',
+	ONGOING = 'ongoing',
+	SUCCEEDED = 'succeeded',
+	FAILED = 'failed',
+	COMPLETING = 'completing'
 }
