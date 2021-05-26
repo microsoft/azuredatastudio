@@ -11,7 +11,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 
 import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, MoveDirection, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
-import { nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
+import { KernelsLanguage, nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
@@ -882,12 +882,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				language = language.replace(mimeTypePrefix, '');
 			} else if (language.toLowerCase() === 'ipython') {
 				// Special case ipython because in many cases this is defined as the code mirror mode for python notebooks
-				language = 'python';
+				language = KernelsLanguage.Python;
 			} else if (language.toLowerCase() === 'c#') {
-				language = 'cs';
+				language = KernelsLanguage.CSharp;
 			}
 		} else {
-			language = 'python';
+			language = KernelsLanguage.Python;
 		}
 
 		this._language = language.toLowerCase();
