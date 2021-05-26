@@ -16,7 +16,7 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { getPinnedNotebooks, confirmMessageDialog, getNotebookType, FileExtension } from '../common/utils';
+import { getPinnedNotebooks, confirmMessageDialog, getNotebookType, FileExtension, INotebook } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { CreateBookDialog } from '../dialog/createBookDialog';
@@ -78,7 +78,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (this.viewId === constants.PINNED_BOOKS_VIEWID) {
 			await Promise.all(getPinnedNotebooks().map(async (notebook) => {
 				try {
-					await this.createAndAddBookModel(notebook.notebookPath, true, notebook.bookPath);
+					await this.createAndAddBookModel(notebook.notebookPath, true, notebook);
 				} catch {
 					// no-op, not all workspace folders are going to be valid books
 				}
@@ -254,8 +254,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async addNotebookToPinnedView(bookItem: BookTreeItem): Promise<void> {
 		let notebookPath: string = bookItem.book.contentPath;
 		if (notebookPath) {
-			let rootPath: string = bookItem.book.root ? bookItem.book.root : '';
-			await this.createAndAddBookModel(notebookPath, true, rootPath);
+			let notebookDetails: INotebook = bookItem.book.root ? { bookPath: bookItem.book.root, notebookPath: notebookPath, title: bookItem.book.title } : { notebookPath: notebookPath };
+			await this.createAndAddBookModel(notebookPath, true, notebookDetails);
 		}
 	}
 
@@ -318,9 +318,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 * @param isNotebook A boolean value to know we are creating a model for a notebook or a book
 	 * @param notebookBookRoot For pinned notebooks we need to know if the notebook is part of a book or it's a standalone notebook
 	 */
-	private async createAndAddBookModel(bookPath: string, isNotebook: boolean, notebookBookRoot?: string): Promise<void> {
+	private async createAndAddBookModel(bookPath: string, isNotebook: boolean, notebookDetails?: INotebook): Promise<void> {
 		if (!this.books.find(x => x.bookPath === bookPath)) {
-			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext, this._onDidChangeTreeData, notebookBookRoot);
+			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext, this._onDidChangeTreeData, notebookDetails);
 			await book.initializeContents();
 			this.books.push(book);
 			if (!this.currentBook) {
