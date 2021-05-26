@@ -86,17 +86,20 @@ function registerProxyConfigurations(scope: ConfigurationScope): void {
 			'http.proxy': {
 				type: 'string',
 				pattern: '^https?://([^:]*(:[^@]*)?@)?([^:]+|\\[[:0-9a-fA-F]+\\])(:\\d+)?/?$|^$',
-				markdownDescription: localize('proxy', "The proxy setting to use. If not set, will be inherited from the `http_proxy` and `https_proxy` environment variables.")
+				markdownDescription: localize('proxy', "The proxy setting to use. If not set, will be inherited from the `http_proxy` and `https_proxy` environment variables."),
+				requireTrust: true
 			},
 			'http.proxyStrictSSL': {
 				type: 'boolean',
 				default: true,
-				description: localize('strictSSL', "Controls whether the proxy server certificate should be verified against the list of supplied CAs.")
+				description: localize('strictSSL', "Controls whether the proxy server certificate should be verified against the list of supplied CAs."),
+				requireTrust: true
 			},
 			'http.proxyAuthorization': {
 				type: ['null', 'string'],
 				default: null,
-				markdownDescription: localize('proxyAuthorization', "The value to send as the `Proxy-Authorization` header for every network request.")
+				markdownDescription: localize('proxyAuthorization', "The value to send as the `Proxy-Authorization` header for every network request."),
+				requireTrust: true
 			},
 			'http.proxySupport': {
 				type: 'string',
@@ -107,12 +110,14 @@ function registerProxyConfigurations(scope: ConfigurationScope): void {
 					localize('proxySupportOverride', "Enable proxy support for extensions, override request options."),
 				],
 				default: 'override',
-				description: localize('proxySupport', "Use the proxy support for extensions.")
+				description: localize('proxySupport', "Use the proxy support for extensions."),
+				requireTrust: true
 			},
 			'http.systemCertificates': {
 				type: 'boolean',
 				default: true,
-				description: localize('systemCertificates', "Controls whether CA certificates should be loaded from the OS. (On Windows and macOS, a reload of the window is required after turning this off.)")
+				description: localize('systemCertificates', "Controls whether CA certificates should be loaded from the OS. (On Windows and macOS, a reload of the window is required after turning this off.)"),
+				requireTrust: true
 			}
 		}
 	};
