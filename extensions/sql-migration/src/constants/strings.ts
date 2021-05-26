@@ -5,6 +5,7 @@
 
 import { AzureAccount } from 'azurecore';
 import * as nls from 'vscode-nls';
+import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 const localize = nls.loadMessageBundle();
 
 
@@ -144,6 +145,15 @@ export const ENTER_NETWORK_SHARE_INFORMATION = localize('sql.migration.enter.net
 export const ENTER_BLOB_CONTAINER_INFORMATION = localize('sql.migration.blob.container.information', "Enter the target name and select the blob container location for selected databases");
 export const ENTER_FILE_SHARE_INFORMATION = localize('sql.migration.enter.file.share.information', "Enter the target name and select the file share location of selected databases");
 export const INVALID_TARGET_NAME_ERROR = localize('sql.migration.invalid.target.name.error', "Please enter a valid name for the target database.");
+export const PROVIDE_UNIQUE_CONTAINERS = localize('sql.migration.provide.unique.containers', "Please provide unique containers for target databases. Databases affected: ");
+export function SQL_SOURCE_DETAILS(authMethod: MigrationSourceAuthenticationType, serverName: string): string {
+	switch (authMethod) {
+		case MigrationSourceAuthenticationType.Integrated:
+			return localize('sql.migration.source.details.windowAuth', "Enter the Windows Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)", serverName);
+		case MigrationSourceAuthenticationType.Sql:
+			return localize('sql.migration.source.details.sqlAuth', "Enter the SQL Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)", serverName);
+	}
+}
 
 // integration runtime page
 export const IR_PAGE_TITLE = localize('sql.migration.ir.page.title', "Azure Database Migration Service");
@@ -261,8 +271,10 @@ export const PRE_REQ_1 = localize('sql.migration.pre.req.1', "Azure account deta
 export const PRE_REQ_2 = localize('sql.migration.pre.req.2', "Azure SQL Managed Instance or SQL Server on Azure Virtual Machine");
 export const PRE_REQ_3 = localize('sql.migration.pre.req.3', "Backup location details");
 export const MIGRATION_IN_PROGRESS = localize('sql.migration.migration.in.progress', "Database migration in progress");
+export const MIGRATION_FAILED = localize('sql.migration.failed', "Migration failed");
 export const LOG_SHIPPING_IN_PROGRESS = localize('sql.migration.log.shipping.in.progress', "Log shipping in progress");
-export const MIGRATION_COMPLETED = localize('sql.migration.migration.completed', "Database migration completed");
+export const MIGRATION_COMPLETED = localize('sql.migration.migration.completed', "Migration completed");
+export const MIGRATION_CUTOVER_CARD = localize('sql.migration.cutover.card', "Completing cutover");
 export const SUCCESSFULLY_MIGRATED_TO_AZURE_SQL = localize('sql.migration.successfully.migrated.to.azure.sql', "Successfully migrated to Azure SQL");
 export const MIGRATION_NOT_STARTED = localize('sql.migration.migration.not.started', "Migration not started");
 export const CHOOSE_TO_MIGRATE_TO_AZURE_SQL = localize('sql.migration.choose.to.migrate.to.azure.sql', "Choose to migrate to Azure SQL");

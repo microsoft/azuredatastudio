@@ -8,9 +8,9 @@ import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationContext, MigrationLocalStorage } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
-import { MigrationCategory, MigrationStatusDialogModel } from './migrationStatusDialogModel';
+import { AdsMigrationStatus, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
-import { convertTimeDifferenceToDuration } from '../../api/utils';
+import { convertTimeDifferenceToDuration, filterMigrations } from '../../api/utils';
 export class MigrationStatusDialog {
 	private _model: MigrationStatusDialogModel;
 	private _dialogObject!: azdata.window.Dialog;
@@ -21,7 +21,7 @@ export class MigrationStatusDialog {
 	private _statusTable!: azdata.DeclarativeTableComponent;
 	private _refreshLoader!: azdata.LoadingComponent;
 
-	constructor(migrations: MigrationContext[], private _filter: MigrationCategory) {
+	constructor(migrations: MigrationContext[], private _filter: AdsMigrationStatus) {
 		this._model = new MigrationStatusDialogModel(migrations);
 		this._dialogObject = azdata.window.createModelViewDialog(loc.MIGRATION_STATUS, 'MigrationControllerDialog', 'wide');
 	}
@@ -40,7 +40,11 @@ export class MigrationStatusDialog {
 				this.populateMigrationTable();
 			});
 
-			this._statusDropdown.value = this._statusDropdown.values![this._filter];
+			if (this._filter) {
+				this._statusDropdown.value = (<azdata.CategoryValue[]>this._statusDropdown.values).find((value) => {
+					return value.name === this._filter;
+				});
+			}
 
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
@@ -124,10 +128,7 @@ export class MigrationStatusDialog {
 
 	private populateMigrationTable(): void {
 		try {
-			const migrations = this._model.filterMigration(
-				this._searchBox.value!,
-				(<azdata.CategoryValue>this._statusDropdown.value).name
-			);
+			const migrations = filterMigrations(this._model._migrations, (<azdata.CategoryValue>this._statusDropdown.value).name, this._searchBox.value!);
 
 			const data: azdata.DeclarativeTableCellValue[][] = [];
 
