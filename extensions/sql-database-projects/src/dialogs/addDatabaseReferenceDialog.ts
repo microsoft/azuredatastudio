@@ -315,8 +315,8 @@ export class AddDatabaseReferenceDialog {
 			this.setDefaultDatabaseValues();
 		});
 
-		// only master is a valid system db reference for projects targetting Azure
-		if (this.project.getProjectTargetVersion().toLowerCase().includes('azure')) {
+		// only master is a valid system db reference for projects targetting Azure and DW
+		if (this.project.getProjectTargetVersion().toLowerCase().includes('azure') || this.project.getProjectTargetVersion().toLowerCase().includes('dw')) {
 			this.systemDatabaseDropdown.values?.splice(1);
 		}
 
