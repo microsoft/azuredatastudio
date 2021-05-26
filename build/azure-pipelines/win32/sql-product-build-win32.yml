@@ -119,6 +119,19 @@ steps:
       vstsPackageVersion: '*'
     condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'))
 
+  - powershell: |
+      # Install TSGOps specific extensions
+      $ErrorActionPreference = "Stop"
+      $tempFilePath = (New-TemporaryFile).FullName
+      $zipFilePath = $tempFilePath + ".zip"
+      $extensionUri = "$(standalone-extensions-uri)"
+      $adsExtensionPath = "$(agent.builddirectory)\azuredatastudio-win32-x64\resources\app\extensions"
+      Invoke-WebRequest -Uri $extensionUri -OutFile $tempFilePath
+      Move-Item $tempFilePath $zipFilePath
+      Expand-Archive $zipFilePath -DestinationPath $adsExtensionPath
+    displayName: Install SAW Extensions
+    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'))
+
   # - powershell: | @anthonydresser unit tests timeout never existing the node process
   #     . build/azure-pipelines/win32/exec.ps1
   #     $ErrorActionPreference = "Stop"
