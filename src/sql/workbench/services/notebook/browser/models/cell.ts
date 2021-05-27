@@ -34,7 +34,7 @@ import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
-const validBase64OctetStreamRegex = /^data:application\/octet-stream;base64,(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})/;
+const validBase64OctetStreamRegex = /data:(?:(application\/octet-stream|image\/png));base64,(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})/;
 export interface QueryResultId {
 	batchId: number;
 	id: number;
@@ -295,6 +295,7 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public set source(newSource: string | string[]) {
+		newSource = this.attachImageFromSource(newSource);
 		newSource = this.getMultilineSource(newSource);
 		if (this._source !== newSource) {
 			this._source = newSource;
@@ -303,6 +304,29 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 		this._modelContentChangedEvent = undefined;
 		this._preventNextChartCache = true;
+	}
+
+	private attachImageFromSource(newSource: string | string[]): string | string[] {
+		if (!Array.isArray(newSource) && this.isValidBase64OctetStream(newSource)) {
+			let results = validBase64OctetStreamRegex.exec(newSource);
+			let imageName: string = this.getUniqueImageName();
+			this.addAttachment(results[1], results[0], imageName);
+			newSource = newSource.replace(results[0], `attachment:${imageName}`);
+			return newSource;
+		}
+		return newSource;
+	}
+
+	private getUniqueImageName(): string {
+		let nextVal = 0;
+		// Note: this will go forever if it's coded wrong, or you have infinite Untitled notebooks!
+		while (true) {
+			let imageName = `image${nextVal}.png`;
+			if (!this._attachments || !this._attachments[imageName]) {
+				return imageName;
+			}
+			nextVal++;
+		}
 	}
 
 	public get modelContentChangedEvent(): IModelContentChangedEvent {
