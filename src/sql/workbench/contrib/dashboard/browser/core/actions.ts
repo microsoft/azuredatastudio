@@ -30,14 +30,9 @@ export class EditDashboardAction extends Action {
 		super(EditDashboardAction.ID, EditDashboardAction.EDITLABEL, EditDashboardAction.ICON);
 	}
 
-	run(): Promise<boolean> {
-		try {
-			this.editFn.apply(this.context);
-			this.toggleLabel();
-			return Promise.resolve(true);
-		} catch (e) {
-			return Promise.resolve(false);
-		}
+	async run(): Promise<void> {
+		this.editFn.apply(this.context);
+		this.toggleLabel();
 	}
 
 	private toggleLabel(): void {
@@ -64,13 +59,8 @@ export class RefreshWidgetAction extends Action {
 		super(RefreshWidgetAction.ID, RefreshWidgetAction.LABEL, RefreshWidgetAction.ICON);
 	}
 
-	run(): Promise<boolean> {
-		try {
-			this.refreshFn.apply(this.context);
-			return Promise.resolve(true);
-		} catch (e) {
-			return Promise.resolve(false);
-		}
+	async run(): Promise<void> {
+		this.refreshFn.apply(this.context);
 	}
 }
 
@@ -86,13 +76,11 @@ export class ToolbarAction extends Action {
 		super(id, label, cssClass);
 	}
 
-	run(): Promise<boolean> {
+	async run(): Promise<void> {
 		try {
 			this.runFn.apply(this.context, [this.id]);
-			return Promise.resolve(true);
 		} catch (e) {
 			this.logService.error(e);
-			return Promise.resolve(false);
 		}
 	}
 }
@@ -111,13 +99,12 @@ export class ToggleMoreWidgetAction extends Action {
 		super(ToggleMoreWidgetAction.ID, ToggleMoreWidgetAction.LABEL, ToggleMoreWidgetAction.ICON);
 	}
 
-	run(context: StandardKeyboardEvent): Promise<boolean> {
+	async run(context: StandardKeyboardEvent): Promise<void> {
 		this._contextMenuService.showContextMenu({
 			getAnchor: () => context.target,
 			getActions: () => this._actions,
 			getActionsContext: () => this._context
 		});
-		return Promise.resolve(true);
 	}
 }
 
@@ -134,9 +121,8 @@ export class DeleteWidgetAction extends Action {
 		super(DeleteWidgetAction.ID, DeleteWidgetAction.LABEL, DeleteWidgetAction.ICON);
 	}
 
-	run(): Promise<boolean> {
+	async run(): Promise<void> {
 		this.angularEventService.sendAngularEvent(this._uri, AngularEventType.DELETE_WIDGET, { id: this._widgetId });
-		return Promise.resolve(true);
 	}
 }
 
@@ -167,11 +153,10 @@ export class PinUnpinTabAction extends Action {
 		}
 	}
 
-	public run(): Promise<boolean> {
+	public async run(): Promise<void> {
 		this._isPinned = !this._isPinned;
 		this.updatePinStatus();
 		this.angularEventService.sendAngularEvent(this._uri, AngularEventType.PINUNPIN_TAB, { tabId: this._tabId, isPinned: this._isPinned });
-		return Promise.resolve(true);
 	}
 }
 
@@ -191,9 +176,8 @@ export class AddFeatureTabAction extends Action {
 		this._register(this._angularEventService.onAngularEvent(this._uri)(event => this.handleDashboardEvent(event)));
 	}
 
-	run(): Promise<boolean> {
+	async run(): Promise<void> {
 		this._newDashboardTabService.showDialog(this._dashboardTabs, this._openedTabs, this._uri);
-		return Promise.resolve(true);
 	}
 
 	private handleDashboardEvent(event: IAngularEvent): void {
@@ -236,10 +220,9 @@ export class CollapseWidgetAction extends Action {
 		this.expanded = !this.collpasedState;
 	}
 
-	run(): Promise<boolean> {
+	async run(): Promise<void> {
 		this._toggleState();
 		this._angularEventService.sendAngularEvent(this._uri, AngularEventType.COLLAPSE_WIDGET, this._widgetUuid);
-		return Promise.resolve(true);
 	}
 
 	private _toggleState(): void {

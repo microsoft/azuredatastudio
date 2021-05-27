@@ -30,24 +30,6 @@
 			"config.diffViewPosition.current": "現在のエディター グループで差分ビューを開きます。",
 			"config.diffViewPosition.beside": "現在のエディター グループの隣に差分ビューを開きます。",
 			"config.diffViewPosition.below": "現在のエディター グループの下にある差分ビューを開きます。"
-		},
-		"dist/codelensProvider": {
-			"acceptCurrentChange": "現在の変更を取り込む",
-			"acceptIncomingChange": "入力側の変更を取り込む",
-			"acceptBothChanges": "両方の変更を取り込む",
-			"compareChanges": "変更の比較"
-		},
-		"dist/commandHandler": {
-			"cursorNotInConflict": "エディターのカーソルがマージの競合の範囲内にありません",
-			"compareChangesTitle": "{0}: 現在の変更 ⟷ 入力側の変更",
-			"cursorOnCommonAncestorsRange": "エディターのカーソルが共通の祖先ブロック内にあります。”現在” または \"入力側\" のいずれかのブロックに移動してください",
-			"cursorOnSplitterRange": "エディターのカーソルがマージ コンフリクトのスプリッター内にあります。”現在” または \"入力側\" のいずれかのブロックに移動してください",
-			"noConflicts": "このファイルにマージの競合は存在しません",
-			"noOtherConflictsInThisFile": "このファイルに他のマージの競合は存在しません"
-		},
-		"dist/mergeDecorator": {
-			"currentChange": "(現在の変更)",
-			"incomingChange": "(入力側の変更)"
 		}
 	}
 }

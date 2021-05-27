@@ -14,3 +14,13 @@ export namespace nbversion {
 	 */
 	export const MINOR_VERSION: number = 2;
 }
+
+export enum KernelsLanguage {
+	SQL = 'sql',
+	Python = 'python',
+	PySpark = 'python',
+	SparkScala = 'scala',
+	SparkR = 'sparkr',
+	PowerShell = 'powershell',
+	CSharp = 'cs'
+}

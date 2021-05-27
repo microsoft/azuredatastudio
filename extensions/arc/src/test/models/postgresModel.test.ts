@@ -19,6 +19,11 @@ import { AzureArcTreeDataProvider } from '../../ui/tree/azureArcTreeDataProvider
 import { FakeControllerModel } from '../mocks/fakeControllerModel';
 import { FakeAzdataApi } from '../mocks/fakeAzdataApi';
 
+export const FakeStorageVolume:  azdataExt.StorageVolume[] = [{
+	className: '',
+	size: ''
+}];
+
 export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.PostgresServerShowResult> = {
 	logs: [],
 	stdout: [],
@@ -39,7 +44,11 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 			engine: {
 				extensions: [{ name: '' }],
 				settings: {
-					default: { ['']: '' }
+					default: { ['']: '' },
+					roles: {
+						coordinator: { ['']: '' },
+						worker: { ['']: '' }
+					}
 				},
 				version: ''
 			},
@@ -553,7 +562,7 @@ describe('PostgresModel', function (): void {
 			sinon.stub(azdata.dataprotocol, 'getProvider').returns(providerMock.object);
 
 			await postgresModel.getEngineSettings();
-			should(postgresModel.workerNodesEngineSettings.pop()).be.match(engineSettingsModelCompare);
+			should(postgresModel.coordinatorNodeEngineSettings.pop()).be.match(engineSettingsModelCompare);
 		});
 
 	});

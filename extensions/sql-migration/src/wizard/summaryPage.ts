@@ -96,29 +96,25 @@ export class SummaryPage extends MigrationWizardPage {
 					]
 				);
 				break;
-			case NetworkContainerType.FILE_SHARE:
-				flexContainer.addItems(
-					[
-						createInformationRow(this._view, constants.TYPE, constants.FILE_SHARE),
-						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name),
-					]
-				);
-				break;
 			case NetworkContainerType.BLOB_CONTAINER:
 				flexContainer.addItems(
 					[
 						createInformationRow(this._view, constants.TYPE, constants.BLOB_CONTAINER),
-						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name),
-						createInformationRow(this._view, constants.LOCATION, this.migrationStateModel._databaseBackup.blob.storageAccount.location),
-						createInformationRow(this._view, constants.RESOURCE_GROUP, this.migrationStateModel._databaseBackup.blob.storageAccount.resourceGroup!),
-						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel._databaseBackup.blob.storageAccount.name),
-						createInformationRow(this._view, constants.BLOB_CONTAINER, this.migrationStateModel._databaseBackup.blob.blobContainer.name)
+						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name)
 					]
 				);
 		}
 		flexContainer.addItem(createHeadingTextComponent(this._view, constants.TARGET_NAME));
 		this.migrationStateModel._migrationDbs.forEach((db, index) => {
 			flexContainer.addItem(createInformationRow(this._view, db, this.migrationStateModel._targetDatabaseNames[index]));
+			if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
+				flexContainer.addItems([
+					createInformationRow(this._view, constants.LOCATION, this.migrationStateModel._databaseBackup.blobs[index].storageAccount.location),
+					createInformationRow(this._view, constants.RESOURCE_GROUP, this.migrationStateModel._databaseBackup.blobs[index].storageAccount.resourceGroup!),
+					createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel._databaseBackup.blobs[index].storageAccount.name),
+					createInformationRow(this._view, constants.BLOB_CONTAINER, this.migrationStateModel._databaseBackup.blobs[index].blobContainer.name)
+				]);
+			}
 		});
 		return flexContainer;
 	}

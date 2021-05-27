@@ -11,6 +11,7 @@ import * as es from 'event-stream';
 import * as fs from 'fs';
 
 const files = [
+	'.build/langpacks/**/*.vsix', // langpacks
 	'.build/extensions/**/*.vsix', // external extensions
 	'.build/win32-x64/**/*.{exe,zip}', // windows binaries
 	'.build/linux/sha256hashes.txt', // linux hashes

@@ -80,7 +80,7 @@ declare module 'dataworkspace' {
 		/**
 		 * Gets the project actions to be placed on the dashboard toolbar
 		 */
-		readonly projectActions: (IProjectAction | IProjectActionGroup)[];
+		readonly projectToolbarActions: (IProjectAction | IProjectActionGroup)[];
 
 		/**
 		 * Gets the project image to be used as background in dashboard container

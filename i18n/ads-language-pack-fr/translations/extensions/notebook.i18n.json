@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"extensions/notebook/package": {
+		"package": {
 			"displayName": "Extensions principales de notebook",
 			"description": "Définit la contribution de notebook basée sur un protocole de données, et plusieurs commandes et contributions de notebook.",
 			"notebook.configuration.title": "Configuration de notebook",
@@ -16,7 +16,11 @@
 			"notebook.useExistingPython.description": "Chemin local d'une installation précédente de Python utilisée par Notebooks.",
 			"notebook.overrideEditorTheming.description": "Remplacez les paramètres d'éditeur par défaut dans l'éditeur de notebook. Les paramètres comprennent la couleur d'arrière-plan, la couleur de la ligne actuelle et la bordure",
 			"notebook.maxTableRows.description": "Nombre maximal de lignes retournées par table dans l'éditeur de notebook",
+			"notebook.trustedBooks.description": "Notebooks contained in these books will automatically be trusted.",
 			"notebook.maxBookSearchDepth.description": "Profondeur maximale des sous-répertoires où rechercher les notebooks (Entrer 0 pour l'infini)",
+			"notebook.collapseBookItems.description": "Collapse Book items at root level in the Notebooks Viewlet",
+			"notebook.remoteBookDownloadTimeout.description": "Download timeout in milliseconds for GitHub books",
+			"notebook.pinnedNotebooks.description": "Notebooks that are pinned by the user for the current workspace",
 			"notebook.command.new": "Nouveau notebook",
 			"notebook.command.open": "Ouvrir le notebook",
 			"notebook.analyzeJupyterNotebook": "Analyser dans le notebook",
@@ -40,20 +44,109 @@
 			"title.SQL19PreviewBook": "Guide SQL Server 2019",
 			"books-preview-category": "Notebooks Jupyter",
 			"title.saveJupyterBook": "Enregistrer le notebook",
+			"title.trustBook": "Trust Book",
 			"title.searchJupyterBook": "Rechercher dans le notebook",
-			"title.SavedBooks": "Notebooks enregistrés",
-			"title.UntitledBooks": "Notebooks sans titre"
+			"title.SavedBooks": "Notebooks",
+			"title.ProvidedBooks": "Provided Books",
+			"title.PinnedBooks": "Pinned notebooks",
+			"title.PreviewLocalizedBook": "Get localized SQL Server 2019 guide",
+			"title.openJupyterBook": "Open Jupyter Book",
+			"title.closeJupyterBook": "Close Jupyter Book",
+			"title.closeJupyterNotebook": "Close Jupyter Notebook",
+			"title.revealInBooksViewlet": "Reveal in Books",
+			"title.createJupyterBook": "Create Book (Preview)",
+			"title.openNotebookFolder": "Open Notebooks in Folder",
+			"title.openRemoteJupyterBook": "Add Remote Jupyter Book",
+			"title.pinNotebook": "Pin Notebook",
+			"title.unpinNotebook": "Unpin Notebook",
+			"title.moveTo": "Move to ..."
 		},
-		"extensions/notebook/dist/common/utils": {
-			"mkdirOutputMsg": "... Création de {0}",
-			"executeCommandProcessExited": "Le processus s'est arrêté avec le code {0}"
+		"dist/common/utils": {
+			"ensureDirOutputMsg": "... Ensuring {0} exists",
+			"executeCommandProcessExited": "Process exited with error code: {0}. StdErr Output: {1}"
 		},
-		"extensions/notebook/dist/common/localizedConstants": {
+		"dist/common/constants": {
+			"managePackages.localhost": "localhost",
+			"managePackages.packageNotFound": "Could not find the specified package"
+		},
+		"dist/common/localizedConstants": {
 			"msgYes": "Oui",
 			"msgNo": "Non",
-			"msgSampleCodeDataFrame": "Cet exemple de code charge le fichier dans un cadre de données et affiche les 10 premiers résultats."
+			"msgSampleCodeDataFrame": "Cet exemple de code charge le fichier dans un cadre de données et affiche les 10 premiers résultats.",
+			"noBDCConnectionError": "Spark kernels require a connection to a SQL Server Big Data Cluster master instance.",
+			"providerNotValidError": "Non-MSSQL providers are not supported for spark kernels.",
+			"allFiles": "All Files",
+			"labelSelectFolder": "Select Folder",
+			"labelBookFolder": "Select Book",
+			"confirmReplace": "Folder already exists. Are you sure you want to delete and replace this folder?",
+			"openNotebookCommand": "Open Notebook",
+			"openMarkdownCommand": "Open Markdown",
+			"openExternalLinkCommand": "Open External Link",
+			"msgBookTrusted": "Book is now trusted in the workspace.",
+			"msgBookAlreadyTrusted": "Book is already trusted in this workspace.",
+			"msgBookUntrusted": "Book is no longer trusted in this workspace",
+			"msgBookAlreadyUntrusted": "Book is already untrusted in this workspace.",
+			"msgBookPinned": "Book {0} is now pinned in the workspace.",
+			"msgBookUnpinned": "Book {0} is no longer pinned in this workspace",
+			"bookInitializeFailed": "Failed to find a Table of Contents file in the specified book.",
+			"noBooksSelected": "No books are currently selected in the viewlet.",
+			"labelBookSection": "Select Book Section",
+			"labelAddToLevel": "Add to this level",
+			"missingFileError": "Missing file : {0} from {1}",
+			"InvalidError.tocFile": "Invalid toc file",
+			"Invalid toc.yml": "Error: {0} has an incorrect toc.yml file",
+			"configFileError": "Configuration file missing",
+			"openBookError": "Open book {0} failed: {1}",
+			"readBookError": "Failed to read book {0}: {1}",
+			"openNotebookError": "Open notebook {0} failed: {1}",
+			"openMarkdownError": "Open markdown {0} failed: {1}",
+			"openUntitledNotebookError": "Open untitled notebook {0} as untitled failed: {1}",
+			"openExternalLinkError": "Open link {0} failed: {1}",
+			"closeBookError": "Close book {0} failed: {1}",
+			"duplicateFileError": "File {0} already exists in the destination folder {1} \r\n The file has been renamed to {2} to prevent data loss.",
+			"editBookError": "Error while editing book {0}: {1}",
+			"selectBookError": "Error while selecting a book or a section to edit: {0}",
+			"url": "URL",
+			"repoUrl": "Repository URL",
+			"location": "Location",
+			"addRemoteBook": "Add Remote Book",
+			"onGitHub": "GitHub",
+			"onsharedFile": "Shared File",
+			"releases": "Releases",
+			"book": "Book",
+			"version": "Version",
+			"language": "Language",
+			"booksNotFound": "No books are currently available on the provided link",
+			"urlGithubError": "The url provided is not a Github release url",
+			"search": "Search",
+			"add": "Add",
+			"close": "Close",
+			"invalidTextPlaceholder": "-",
+			"msgRemoteBookDownloadProgress": "Remote Book download is in progress",
+			"msgRemoteBookDownloadComplete": "Remote Book download is complete",
+			"msgRemoteBookDownloadError": "Error while downloading remote Book",
+			"msgRemoteBookUnpackingError": "Error while decompressing remote Book",
+			"msgRemoteBookDirectoryError": "Error while creating remote Book directory",
+			"msgTaskName": "Downloading Remote Book",
+			"msgResourceNotFound": "Resource not Found",
+			"msgBookNotFound": "Books not Found",
+			"msgReleaseNotFound": "Releases not Found",
+			"msgUndefinedAssetError": "The selected book is not valid",
+			"httpRequestError": "Http Request failed with error: {0} {1}",
+			"msgDownloadLocation": "Downloading to {0}",
+			"newGroup": "New Group",
+			"groupDescription": "Groups are used to organize Notebooks.",
+			"locationBrowser": "Browse locations...",
+			"selectContentFolder": "Select content folder",
+			"browse": "Browse",
+			"create": "Create",
+			"name": "Name",
+			"saveLocation": "Save location",
+			"contentFolder": "Content folder (Optional)",
+			"msgContentFolderError": "Content folder path does not exist",
+			"msgSaveFolderError": "Save location path does not exist"
 		},
-		"extensions/notebook/dist/jupyter/jupyterServerInstallation": {
+		"dist/jupyter/jupyterServerInstallation": {
 			"msgInstallPkgProgress": "L'installation des dépendances de notebook est en cours",
 			"msgPythonDownloadComplete": "Le téléchargement de Python est terminé",
 			"msgPythonDownloadError": "Erreur de téléchargement du programme d'installation de Python",
@@ -65,79 +158,96 @@
 			"msgInstallPkgStart": "Installation des dépendances de notebook, consultez la vue Tâches pour plus d'informations",
 			"msgInstallPkgFinish": "L'installation des dépendances de notebook est terminée",
 			"msgPythonRunningError": "Impossible de remplacer une installation Python existante quand Python est en cours d'exécution. Fermez tous les notebooks actifs avant de continuer.",
-			"msgSkipPythonInstall": "Python existe déjà à l'emplacement spécifique. Installation ignorée.",
 			"msgWaitingForInstall": "Une autre installation de Python est actuellement en cours. En attente de la fin de l'installation.",
 			"msgDependenciesInstallationFailed": "L'installation des dépendances de notebook a échoué avec l'erreur : {0}",
 			"msgDownloadPython": "Téléchargement de la version locale de Python pour la plateforme : {0} dans {1}",
-			"confirmPackageUpgrade": "Des packages Python installés ont besoin d'être mis à niveau. Voulez-vous les mettre à niveau maintenant ?",
-			"upgradePackages.pipInstall": "Installation de {0}",
-			"msgInstallStart": "Installation des packages obligatoires pour l'exécution de Notebooks...",
-			"msgJupyterInstallDone": "...Installation de Jupyter effectuée."
+			"msgPackageRetrievalFailed": "Encountered an error when trying to retrieve list of installed packages: {0}",
+			"msgGetPythonUserDirFailed": "Encountered an error when getting Python user path: {0}"
 		},
-		"extensions/notebook/dist/dialog/configurePythonDialog": {
-			"configurePython.dialogName": "Configurer Python pour Notebooks",
-			"configurePython.okButtonText": "Installer",
-			"configurePython.cancelButtonText": "Annuler",
-			"configurePython.browseButtonText": "Parcourir",
-			"configurePython.locationTextBoxText": "Emplacement d'installation de Python",
-			"configurePython.selectFileLabel": "Sélectionner",
-			"configurePython.installNote": "Cette installation dure un certain temps. Nous vous recommandons de ne pas fermer l'application avant la fin de l'installation.",
-			"configurePython.invalidLocationMsg": "L'emplacement d'installation spécifié n'est pas valide.",
-			"configurePython.pythonNotFoundMsg": "Aucune installation de Python à l'emplacement spécifié.",
-			"configurePython.pythonInstallDeclined": "L'installation de Python a été refusée.",
-			"configurePython.installationType": "Type d'installation",
-			"configurePython.newInstall": "Nouvelle installation de Python",
-			"configurePython.existingInstall": "Utiliser l'installation existante de Python"
+		"dist/dialog/configurePython/configurePythonWizard": {
+			"configurePython.okButtonText": "Install",
+			"configurePython.invalidLocationMsg": "The specified install location is invalid.",
+			"configurePython.pythonNotFoundMsg": "No Python installation was found at the specified location.",
+			"configurePython.wizardNameWithKernel": "Configure Python to run {0} kernel",
+			"configurePython.wizardNameWithoutKernel": "Configure Python to run kernels",
+			"configurePython.page0Name": "Configure Python Runtime",
+			"configurePython.page1Name": "Install Dependencies",
+			"configurePython.pythonInstallDeclined": "Python installation was declined."
 		},
-		"extensions/notebook/dist/extension": {
-			"msgSampleCodeDataFrame": "Cet exemple de code charge le fichier dans un cadre de données et affiche les 10 premiers résultats.",
-			"noNotebookVisible": "Aucun éditeur de notebook actif",
+		"dist/extension": {
 			"codeCellName": "Code",
 			"textCellName": "Texte",
-			"selectCellType": "Quel type de cellule voulez-vous ajouter ?",
-			"notebookFiles": "Notebooks"
+			"selectCellType": "Quel type de cellule voulez-vous ajouter ?"
 		},
-		"extensions/notebook/dist/jupyter/jupyterController": {
+		"dist/jupyter/jupyterController": {
 			"notebookFileType": "Notebooks",
 			"unsupportedFileType": "Seuls les notebooks .ipynb sont pris en charge",
 			"confirmReinstall": "Voulez-vous vraiment le réinstaller ?"
 		},
-		"extensions/notebook/dist/jupyter/jupyterServerManager": {
+		"dist/dialog/configurePython/configurePathPage": {
+			"configurePython.browseButtonText": "Browse",
+			"configurePython.selectFileLabel": "Select",
+			"configurePython.descriptionWithKernel": "The {0} kernel requires a Python runtime to be configured and dependencies to be installed.",
+			"configurePython.descriptionWithoutKernel": "Notebook kernels require a Python runtime to be configured and dependencies to be installed.",
+			"configurePython.installationType": "Installation Type",
+			"configurePython.locationTextBoxText": "Python Install Location",
+			"configurePython.pythonConfigured": "Python runtime configured!",
+			"configurePythyon.dropdownPathLabel": "{0} (Python {1})",
+			"configurePythyon.noVersionsFound": "No supported Python versions found.",
+			"configurePythyon.defaultPathLabel": "{0} (Default)",
+			"configurePython.newInstall": "New Python installation",
+			"configurePython.existingInstall": "Use existing Python installation",
+			"configurePythyon.customPathLabel": "{0} (Custom)"
+		},
+		"dist/dialog/configurePython/pickPackagesPage": {
+			"configurePython.pkgNameColumn": "Name",
+			"configurePython.existingVersionColumn": "Existing Version",
+			"configurePython.requiredVersionColumn": "Required Version",
+			"configurePython.kernelLabel": "Kernel",
+			"configurePython.requiredDependencies": "Install required kernel dependencies",
+			"msgUnsupportedKernel": "Could not retrieve packages for kernel {0}"
+		},
+		"dist/jupyter/jupyterServerManager": {
 			"shutdownError": "L'arrêt du serveur de notebook a échoué : {0}"
 		},
-		"extensions/notebook/dist/jupyter/serverInstance": {
+		"dist/jupyter/serverInstance": {
 			"serverStopError": "Erreur d'arrêt du serveur de notebook : {0}",
-			"notebookStartProcessExitPremature": "Le processus du notebook s'est terminé prématurément avec l'erreur : {0}, sortie StdErr : {1}",
+			"notebookStartProcessExitPremature": "Notebook process exited prematurely with error code: {0}. StdErr Output: {1}",
 			"jupyterError": "Erreur envoyée par Jupyter : {0}",
 			"jupyterOutputMsgStartSuccessful": "...Jupyter est en cours d'exécution sur {0}",
 			"jupyterOutputMsgStart": "...Démarrage du serveur de notebook"
 		},
-		"extensions/notebook/dist/jupyter/jupyterNotebookProvider": {
+		"dist/jupyter/jupyterNotebookProvider": {
 			"errNotebookUriMissing": "Le chemin du notebook est obligatoire"
 		},
-		"extensions/notebook/dist/jupyter/jupyterSessionManager": {
+		"dist/jupyter/jupyterSessionManager": {
 			"errorStartBeforeReady": "Impossible de démarrer une session, le gestionnaire n'est pas encore initialisé",
-			"connectionNotValid": "Les noyaux Spark nécessitent une connexion a une instance maître de cluster Big Data SQL Server."
+			"notebook.couldNotFindKnoxGateway": "Could not find Knox gateway endpoint",
+			"promptBDCUsername": "{0}Please provide the username to connect to the BDC Controller:",
+			"promptBDCPassword": "Please provide the password to connect to the BDC Controller",
+			"bdcConnectError": "Error: {0}. ",
+			"clusterControllerConnectionRequired": "A connection to the cluster controller is required to run Spark jobs"
 		},
-		"extensions/notebook/dist/dialog/managePackages/managePackagesDialog": {
+		"dist/dialog/managePackages/managePackagesDialog": {
 			"managePackages.dialogName": "Gérer les packages",
 			"managePackages.cancelButtonText": "Fermer"
 		},
-		"extensions/notebook/dist/dialog/managePackages/installedPackagesTab": {
+		"dist/dialog/managePackages/installedPackagesTab": {
 			"managePackages.installedTabTitle": "Installé",
 			"managePackages.pkgNameColumn": "Nom",
 			"managePackages.newPkgVersionColumn": "Version",
+			"managePackages.deleteColumn": "Delete",
 			"managePackages.uninstallButtonText": "Désinstaller les packages sélectionnés",
 			"managePackages.packageType": "Type de package",
+			"managePackages.location": "Location",
 			"managePackages.packageCount": "{0} {1} packages",
 			"managePackages.confirmUninstall": "Voulez-vous vraiment désinstaller les packages spécifiés ?",
 			"managePackages.backgroundUninstallStarted": "Désinstallation de {0}",
 			"managePackages.backgroundUninstallComplete": "Désinstallation effectuée pour {0}",
 			"managePackages.backgroundUninstallFailed": "La désinstallation de {0} a échoué. Erreur : {1}"
 		},
-		"extensions/notebook/dist/dialog/managePackages/addNewPackageTab": {
+		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.invalidTextPlaceholder": "N/A",
-			"managePackages.packageNotFound": "Package spécifié introuvable",
 			"managePackages.searchBarPlaceholder": "Rechercher dans les packages {0}",
 			"managePackages.addNewTabTitle": "Ajouter un nouveau",
 			"managePackages.searchButtonLabel": "Recherche",
@@ -146,37 +256,24 @@
 			"managePackages.packageVersionTitle": "Version du package",
 			"managePackages.packageSummaryTitle": "Récapitulatif du package",
 			"managePackages.noVersionsFound": "Les versions valides du package spécifié sont introuvables",
-			"managePackages.packageRequestError": "La demande d'informations de package a échoué avec l'erreur : {0} {1}",
 			"managePackages.backgroundInstallStarted": "Installation de {0} {1}",
 			"managePackages.backgroundInstallComplete": "Installation de {0} {1} effectuée",
 			"managePackages.backgroundInstallFailed": "L'installation de {0} {1} a échoué. Erreur : {2}"
 		},
-		"extensions/notebook/dist/protocol/notebookUriHandler": {
+		"dist/jupyter/pypiClient": {
+			"managePackages.packageRequestError": "Package info request failed with error: {0} {1}"
+		},
+		"dist/common/notebookUtils": {
+			"msgSampleCodeDataFrame": "This sample code loads the file into a data frame and shows the first 10 results.",
+			"noNotebookVisible": "No notebook editor is active",
+			"notebookFiles": "Notebooks"
+		},
+		"dist/protocol/notebookUriHandler": {
 			"notebook.unsupportedAction": "L'action {0} n'est pas prise en charge pour ce gestionnaire",
 			"unsupportedScheme": "Impossible d'ouvrir le lien {0}, car seuls les liens HTTP et HTTPS sont pris en charge",
 			"notebook.confirmOpen": "Télécharger et ouvrir '{0}' ?",
 			"notebook.fileNotFound": "Fichier spécifié introuvable",
 			"notebook.fileDownloadError": "La demande d'ouverture de fichier a échoué avec l'erreur : {0} {1}"
-		},
-		"extensions/notebook/dist/book/bookTreeView": {
-			"openBookError": "L'ouverture du notebook {0} a échoué : {1}",
-			"openNotebookError": "L'ouverture du notebook {0} a échoué : {1}",
-			"openMarkdownError": "L'ouverture du fichier Markdown {0} a échoué : {1}",
-			"openUntitledNotebookError": "Ouvrez un notebook {0} sans titre, car le {1} sans titre a échoué",
-			"allFiles": "Tous les fichiers",
-			"labelPickFolder": "Choisir un dossier",
-			"openExternalLinkError": "L'ouverture du lien {0} a échoué : {1}",
-			"confirmReplace": "Le dossier existe déjà. Voulez-vous vraiment supprimer et remplacer ce dossier ?"
-		},
-		"extensions/notebook/dist/book/bookModel": {
-			"missingFileError": "Fichier manquant : {0}",
-			"InvalidError.tocFile": "{0}",
-			"Invalid toc.yml": "Erreur : {0} a un fichier toc.yml incorrect"
-		},
-		"extensions/notebook/dist/book/bookTreeItem": {
-			"openNotebookCommand": "Ouvrir le notebook",
-			"openMarkdownCommand": "Ouvrir le fichier Markdown",
-			"openExternalLinkCommand": "Ouvrir le lien externe"
 		}
 	}
 }

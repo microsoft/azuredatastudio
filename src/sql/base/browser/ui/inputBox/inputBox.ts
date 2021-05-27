@@ -93,6 +93,16 @@ export class InputBox extends vsInputBox {
 	public setHeight(value: string) {
 		if (this._isTextAreaInput) {
 			this.inputElement.style.height = value;
+			this.inputElement.style.whiteSpace = 'normal';
+		}
+	}
+
+	public setMaxLength(value: number | undefined) {
+		if (value === undefined) {
+			this.inputElement.removeAttribute('maxLength');
+		}
+		else {
+			this.inputElement.maxLength = value;
 		}
 	}
 

@@ -17,18 +17,26 @@
 		},
 		"dist/publish": {
 			"pick folder": "Wählen Sie einen Ordner für die Veröffentlichung in GitHub aus.",
-			"ignore": "Wählen Sie aus, welche Dateien in das Repository eingeschlossen werden sollen."
+			"ignore": "Wählen Sie aus, welche Dateien in das Repository eingeschlossen werden sollen.",
+			"publishing_private": "Veröffentlichung in privatem GitHub-Repository",
+			"publishing_public": "Veröffentlichung in öffentlichem GitHub-Repository",
+			"publishing_firstcommit": "Erster Commit wird erstellt.",
+			"publishing_uploading": "Dateien werden hochgeladen.",
+			"openingithub": "In GitHub öffnen",
+			"publishing_done": "Das Repository \"{0}\" wurde erfolgreich in GitHub veröffentlicht."
 		},
 		"dist/pushErrorHandler": {
+			"ok": "OK",
+			"fork unable": "Sie besitzen keine Berechtigungen zum Pushen von \"{0}/{1}\" nach GitHub.",
 			"create a fork": "Verzweigung erstellen",
 			"no": "Nein",
 			"fork": "Sie besitzen keine Berechtigungen zum Pushen von \"{0}/{1}\" nach GitHub. Möchten Sie eine Verzweigung erstellen und den Pushvorgang stattdessen dorthin ausführen?",
 			"create fork": "GitHub-Verzweigung erstellen",
 			"forking": "Verzweigung für \"{0}/{1}\" wird erstellt...",
-			"pushing": "Änderungen pushen...",
+			"forking_pushing": "Änderungen pushen...",
 			"openingithub": "In GitHub öffnen",
 			"createpr": "PR erstellen",
-			"done": "Die Verzweigung \"{0}\" wurde erfolgreich in GitHub erstellt.",
+			"forking_done": "Die Verzweigung \"{0}\" wurde erfolgreich in GitHub erstellt.",
 			"createghpr": "GitHub-Pull Request wird erstellt...",
 			"openpr": "PR öffnen",
 			"donepr": "Der Pull Request \"{0}/{1}#{2}\" wurde erfolgreich in GitHub erstellt."

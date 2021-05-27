@@ -60,7 +60,7 @@ abstract class AsmtServerAction extends Action {
 		super(id, label, TARGET_ICON_CLASS[AssessmentTargetType.Server]);
 	}
 
-	public async run(context: IAsmtActionInfo): Promise<boolean> {
+	public async run(context: IAsmtActionInfo): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, this.id);
 		if (context && context.component && !context.component.isBusy) {
 			context.component.showProgress(this.asmtType);
@@ -87,11 +87,7 @@ abstract class AsmtServerAction extends Action {
 			}
 
 			context.component.stopProgress(this.asmtType);
-
-			return true;
 		}
-
-		return false;
 	}
 
 	abstract getServerItems(ownerUri: string): Thenable<SqlAssessmentResult>;
@@ -137,16 +133,14 @@ export class AsmtDatabaseSelectItemsAction extends Action {
 			TARGET_ICON_CLASS[AssessmentTargetType.Database]);
 	}
 
-	public async run(context: IAsmtActionInfo): Promise<boolean> {
+	public async run(context: IAsmtActionInfo): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, this.id);
 		if (context && context.component && !context.component.isBusy) {
 			context.component.showProgress(AssessmentType.AvailableRules);
 			let dbAsmtResults = await this._assessmentService.getAssessmentItems(context.ownerUri, AssessmentTargetType.Database);
 			context.component.showInitialResults(dbAsmtResults, AssessmentType.AvailableRules);
 			context.component.stopProgress(AssessmentType.AvailableRules);
-			return true;
 		}
-		return false;
 	}
 }
 
@@ -185,16 +179,14 @@ export class AsmtDatabaseInvokeItemsAction extends Action {
 			TARGET_ICON_CLASS[AssessmentTargetType.Database]);
 	}
 
-	public async run(context: IAsmtActionInfo): Promise<boolean> {
+	public async run(context: IAsmtActionInfo): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, this.id);
 		if (context && context.component && !context.component.isBusy) {
 			context.component.showProgress(AssessmentType.InvokeAssessment);
 			let dbAsmtResults = await this._assessmentService.assessmentInvoke(context.ownerUri, AssessmentTargetType.Database);
 			context.component.showInitialResults(dbAsmtResults, AssessmentType.InvokeAssessment);
 			context.component.stopProgress(AssessmentType.InvokeAssessment);
-			return true;
 		}
-		return false;
 	}
 }
 
@@ -209,14 +201,12 @@ export class AsmtExportAsScriptAction extends Action {
 		super(AsmtExportAsScriptAction.ID, AsmtExportAsScriptAction.LABEL, 'exportAsScriptIcon');
 	}
 
-	public async run(context: IAsmtActionInfo): Promise<boolean> {
+	public async run(context: IAsmtActionInfo): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtExportAsScriptAction.ID);
 		const items = context?.component?.recentResult?.result.items;
 		if (items) {
 			await this._assessmentService.generateAssessmentScript(context.ownerUri, items);
-			return true;
 		}
-		return false;
 	}
 }
 
@@ -234,9 +224,9 @@ export class AsmtSamplesLinkAction extends Action {
 		super(AsmtSamplesLinkAction.ID, AsmtSamplesLinkAction.LABEL, AsmtSamplesLinkAction.ICON);
 	}
 
-	public async run(): Promise<boolean> {
+	public async run(): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtSamplesLinkAction.ID);
-		return this._openerService.open(URI.parse(AsmtSamplesLinkAction.configHelpUri));
+		await this._openerService.open(URI.parse(AsmtSamplesLinkAction.configHelpUri));
 	}
 }
 
@@ -262,12 +252,12 @@ export class AsmtGenerateHTMLReportAction extends Action {
 		return URI.file(filePath);
 	}
 
-	public async run(context: IAsmtActionInfo): Promise<boolean> {
+	public async run(context: IAsmtActionInfo): Promise<void> {
 		context.component.showProgress(AssessmentType.ReportGeneration);
 		const choosenPath = await this._fileDialogService.pickFileToSave(this.suggestReportFile(context.component.recentResult.dateUpdated));
 		context.component.stopProgress(AssessmentType.ReportGeneration);
 		if (!choosenPath) {
-			return false;
+			return;
 		}
 
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtGenerateHTMLReportAction.ID);
@@ -291,7 +281,6 @@ export class AsmtGenerateHTMLReportAction extends Action {
 					run: () => { }
 				}]);
 		}
-		return true;
 	}
 }
 

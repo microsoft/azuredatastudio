@@ -11,7 +11,7 @@
 		"package": {
 			"displayName": "JSON 语言功能",
 			"description": "为 JSON 文件提供丰富的语言支持",
-			"json.schemas.desc": "将架构关联到当前项目中的 JSON 文件",
+			"json.schemas.desc": "将架构关联到当前项目中的 JSON 文件。",
 			"json.schemas.url.desc": "架构的 URL 或当前目录中架构的相对路径",
 			"json.schemas.fileMatch.desc": "将 JSON 文件解析为架构时要与之匹配的文件模式数组。\"*\" 可用作通配符。也可定义排除模式，并以 \"!\" 开头。当至少有一个匹配模式，且最后一个匹配模式不是排除模式时，文件匹配。",
 			"json.schemas.fileMatch.item.desc": "将 JSON 文件解析到架构时用于匹配的可以包含 \"*\" 的文件模式。",
