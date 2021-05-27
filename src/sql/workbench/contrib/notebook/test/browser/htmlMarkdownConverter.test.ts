@@ -260,6 +260,11 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `| Test | Test | Test |\n| :-: | --- | --- |\n| test | test | test |\n| test | test | test |\n| test | test | test |\n| test | test | test |`, 'Table with center align column header failed');
 	});
 
+	test('Should transform table to keep <br> for new line within table cell', () => {
+		htmlString = '<table>\n<thead>\n<tr>\n<th></th>\n<th></th>\n<th></th>\n</tr>\n</thead>\n<tbody><tr>\n<td>test</td>\n<td>test<br>test</td>\n<td></td>\n</tr>\n</tbody></table>\n';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `|  |  |  |\n| --- | --- | --- |\n| test | test<br>test |  |`, 'Table with new line in cell failed');
+	});
+
 	test('Should transform <b> and <strong> tags', () => {
 		htmlString = '<b>test string</b>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '**test string**', 'Basic bold test failed');
