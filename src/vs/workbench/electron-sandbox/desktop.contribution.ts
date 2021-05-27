@@ -22,6 +22,7 @@ import { EditorsVisibleContext, SingleEditorGroupsContext } from 'vs/workbench/c
 import { INativeHostService } from 'vs/platform/native/electron-sandbox/native';
 import { IJSONContributionRegistry, Extensions as JSONExtensions } from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 // eslint-disable-next-line code-import-patterns
 import { SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID } from 'vs/workbench/contrib/extensions/common/extensions';
@@ -100,14 +101,17 @@ import { SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID } from 'vs/workbench/contrib/e
 // Menu
 (function registerMenu(): void {
 
-	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, { // {{SQL CARBON EDIT}} - Add install VSIX menu item
-		group: '5.1_installExtension',
-		command: {
-			id: SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID,
-			title: localize({ key: 'miinstallVsix', comment: ['&& denotes a mnemonic'] }, "Install Extension from VSIX Package")
-		}
-	});
-
+	// Do not show Menu Item "Install Extension with VSIX..." for SAW builds
+	let productService: IProductService;
+	if (productService.quality !== 'saw') {
+		MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, { // {{SQL CARBON EDIT}} - Add install VSIX menu item
+			group: '5.1_installExtension',
+			command: {
+				id: SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID,
+				title: localize({ key: 'miinstallVsix', comment: ['&& denotes a mnemonic'] }, "Install Extension from VSIX Package")
+			}
+		});
+	}
 
 	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 		group: '6_close',
