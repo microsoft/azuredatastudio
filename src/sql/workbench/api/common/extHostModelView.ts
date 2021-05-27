@@ -1074,6 +1074,14 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('validationErrorMessage', v);
 	}
 
+	public get maxLength(): number | undefined {
+		return this.properties['maxLength'];
+	}
+
+	public set maxLength(v: number | undefined) {
+		this.setProperty('maxLength', v);
+	}
+
 	public get onTextChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
