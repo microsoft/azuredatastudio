@@ -30,7 +30,7 @@ import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/
 import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
-import { IResourceUndoRedoElement, UndoRedoElementType } from 'vs/platform/undoRedo/common/undoRedo';
+import { IResourceUndoRedoElement, IUndoRedoService, UndoRedoElementType } from 'vs/platform/undoRedo/common/undoRedo';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -75,9 +75,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
 				preventDefaultAndExecCommand(e, 'selectAll');
 			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y') && !this.markdownMode) {
-				preventDefaultAndExecCommand(e, 'redo');
+				this._undoRedoService.redo(this.cellModel.cellRichTextUri);
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-				preventDefaultAndExecCommand(e, 'undo');
+				this._undoRedoService.undo(this.cellModel.cellRichTextUri);
 			} else if (e.shiftKey && e.key === 'Tab') {
 				preventDefaultAndExecCommand(e, 'outdent');
 			} else if (e.key === 'Tab') {
@@ -110,6 +110,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 		@Inject(INotebookService) private _notebookService: INotebookService,
+		@Inject(IUndoRedoService) private _undoRedoService: IUndoRedoService
 	) {
 		super();
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
